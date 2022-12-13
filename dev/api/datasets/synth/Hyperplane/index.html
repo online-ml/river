@@ -10560,8 +10560,8 @@
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
-<p><strong>seed</strong> (<em>'int | np.random.RandomState | None'</em>) – defaults to <code>None</code></p>
-<p>If int, <code>seed</code> is used to seed the random number generator; If RandomState instance, <code>seed</code> is the random number generator; If None, the random number generator is the <code>RandomState</code> instance used by <code>np.random</code>.</p>
+<p><strong>seed</strong> (<em>'int | None'</em>) – defaults to <code>None</code></p>
+<p>Random seed for reproducibility.</p>
 </li>
 <li>
 <p><strong>n_features</strong> (<em>'int'</em>) – defaults to <code>10</code></p>
@@ -10598,11 +10598,11 @@
 
 <span class="o">&gt;&gt;&gt;</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">dataset</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
 <span class="o">...</span>     <span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-<span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="mf">0.7319</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="mf">0.5986</span><span class="p">}</span> <span class="mi">1</span>
-<span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="mf">0.8661</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="mf">0.6011</span><span class="p">}</span> <span class="mi">1</span>
-<span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="mf">0.8324</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="mf">0.2123</span><span class="p">}</span> <span class="mi">0</span>
-<span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="mf">0.5247</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="mf">0.4319</span><span class="p">}</span> <span class="mi">0</span>
-<span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="mf">0.2921</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="mf">0.3663</span><span class="p">}</span> <span class="mi">0</span>
+<span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="mf">0.2750</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="mf">0.2232</span><span class="p">}</span> <span class="mi">0</span>
+<span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="mf">0.0869</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="mf">0.4219</span><span class="p">}</span> <span class="mi">1</span>
+<span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="mf">0.0265</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="mf">0.1988</span><span class="p">}</span> <span class="mi">0</span>
+<span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="mf">0.5892</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="mf">0.8094</span><span class="p">}</span> <span class="mi">0</span>
+<span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="mf">0.3402</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="mf">0.1554</span><span class="p">}</span> <span class="mi">0</span>
 </code></pre></div>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <details class="- note">
@@ -10626,7 +10626,7 @@ noise and generate drift.</p>
 <ol>
 <li id="fn:1">
 <p>G. Hulten, L. Spencer, and P. Domingos. Mining time-changing data streams.
-  In KDD’01, pages 97–106, San Francisco, CA, 2001. ACM Press.&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+  In KDD'01, pages 97-106, San Francisco, CA, 2001. ACM Press.&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
 </li>
 </ol>
 </div>

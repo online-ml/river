@@ -10562,8 +10562,8 @@
 <p>Which of the two classification functions to use for the generation. Valid options are 0 or 1.</p>
 </li>
 <li>
-<p><strong>seed</strong> (<em>'int | np.random.RandomState | None'</em>) – defaults to <code>None</code></p>
-<p>If int, <code>seed</code> is used to seed the random number generator; If RandomState instance, <code>seed</code> is the random number generator; If None, the random number generator is the <code>RandomState</code> instance used by <code>np.random</code>.</p>
+<p><strong>seed</strong> (<em>'int | None'</em>) – defaults to <code>None</code></p>
+<p>Random seed for reproducibility.</p>
 </li>
 <li>
 <p><strong>balance_classes</strong> (<em>'bool'</em>) – defaults to <code>False</code></p>
@@ -10584,11 +10584,11 @@
 <span class="o">&gt;&gt;&gt;</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">dataset</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
 <span class="o">...</span>     <span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-<span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="mf">0.7319</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span> <span class="mf">0.5986</span><span class="p">}</span> <span class="mi">1</span>
-<span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="mf">0.0580</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span> <span class="mf">0.8661</span><span class="p">}</span> <span class="mi">0</span>
-<span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="mf">0.0205</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span> <span class="mf">0.9699</span><span class="p">}</span> <span class="mi">1</span>
-<span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="mf">0.4319</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span> <span class="mf">0.2912</span><span class="p">}</span> <span class="mi">0</span>
-<span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="mf">0.2921</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span> <span class="mf">0.3663</span><span class="p">}</span> <span class="mi">1</span>
+<span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="mf">0.2750</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span> <span class="mf">0.2232</span><span class="p">}</span> <span class="mi">1</span>
+<span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="mf">0.2186</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span> <span class="mf">0.5053</span><span class="p">}</span> <span class="mi">0</span>
+<span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="mf">0.8094</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span> <span class="mf">0.0064</span><span class="p">}</span> <span class="mi">1</span>
+<span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="mf">0.1010</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span> <span class="mf">0.2779</span><span class="p">}</span> <span class="mi">0</span>
+<span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="mf">0.37018</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span> <span class="mf">0.2095</span><span class="p">}</span> <span class="mi">1</span>
 </code></pre></div>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <details class="- note">
@@ -10607,7 +10607,7 @@
 <p>The sample generation works as follows: The two numeric attributes are
 generated with the random  generator initialized with the seed passed by
 the user (optional). The boolean attributes are either 0 or 1
-based on the comparison of the random number generator and 0.5 ,
+based on the comparison of the random number generator and 0.5,
 the classification function decides whether to classify the instance
 as class 0 or class 1. The next step is to verify if the classes should
 be balanced, and if so, balance the classes.</p>
@@ -10619,7 +10619,7 @@ binary-classification task).</p>
 <ol>
 <li id="fn:1">
 <p>Gama, Joao, et al. "Learning with drift detection." Advances in
-  artificial intelligence–SBIA 2004. Springer Berlin Heidelberg,
+  artificial intelligence-SBIA 2004. Springer Berlin Heidelberg,
   2004. 286-295"&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
 </li>
 </ol>
