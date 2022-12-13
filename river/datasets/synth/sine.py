@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-import numpy as np
+import math
+import random
 
 from river import datasets
-from river.utils.skmultiflow_utils import check_random_state
 
 
 class Sine(datasets.base.SyntheticDataset):
@@ -41,10 +41,7 @@ class Sine(datasets.base.SyntheticDataset):
     classification_function
         Classification functions to use. From 0 to 3.
     seed
-        If int, `seed` is used to seed the random number generator;
-        If RandomState instance, `seed` is the random number generator;
-        If None, the random number generator is the `RandomState` instance used
-        by `np.random`.
+        Random seed for reproducibility.
     balance_classes
         Whether to balance classes or not. If balanced, the class
         distribution will converge to an uniform distribution.
@@ -70,16 +67,16 @@ class Sine(datasets.base.SyntheticDataset):
 
     >>> for x, y in dataset.take(5):
     ...     print(x, y)
-    {0: 0.3750, 1: 0.6403, 2: 0.9500, 3: 0.0756} 1
-    {0: 0.7769, 1: 0.8327, 2: 0.0548, 3: 0.8176} 1
-    {0: 0.8853, 1: 0.7223, 2: 0.0025, 3: 0.9811} 0
-    {0: 0.3434, 1: 0.0947, 2: 0.3946, 3: 0.0049} 1
-    {0: 0.7367, 1: 0.9558, 2: 0.8206, 3: 0.3449} 0
+    {0: 0.4812, 1: 0.6660, 2: 0.6198, 3: 0.6994} 1
+    {0: 0.9022, 1: 0.7518, 2: 0.1625, 3: 0.2209} 0
+    {0: 0.4547, 1: 0.3901, 2: 0.9629, 3: 0.7287} 0
+    {0: 0.4683, 1: 0.3515, 2: 0.2273, 3: 0.6027} 0
+    {0: 0.9238, 1: 0.1673, 2: 0.4522, 3: 0.3447} 0
 
     References
     ----------
     [^1]: Gama, Joao, et al.'s 'Learning with drift detection.'
-          Advances in artificial intelligence–SBIA 2004.
+          Advances in artificial intelligence-SBIA 2004.
           Springer Berlin Heidelberg, 2004. 286-295."
 
     """
@@ -89,7 +86,7 @@ class Sine(datasets.base.SyntheticDataset):
     def __init__(
         self,
         classification_function: int = 0,
-        seed: int | np.random.RandomState | None = None,
+        seed: int | None = None,
         balance_classes: bool = False,
         has_noise: bool = False,
     ):
@@ -121,7 +118,7 @@ class Sine(datasets.base.SyntheticDataset):
         self.target_values = [i for i in range(self.n_classes)]
 
     def __iter__(self):
-        self._rng = check_random_state(self.seed)
+        self._rng = random.Random(self.seed)
         self.next_class_should_be_zero = False
 
         while True:
@@ -129,8 +126,8 @@ class Sine(datasets.base.SyntheticDataset):
             y = 0
             desired_class_found = False
             while not desired_class_found:
-                x[0] = self._rng.rand()
-                x[1] = self._rng.rand()
+                x[0] = self._rng.random()
+                x[1] = self._rng.random()
                 y = self._functions[self.classification_function](x[0], x[1])
 
                 if not self.balance_classes:
@@ -143,34 +140,34 @@ class Sine(datasets.base.SyntheticDataset):
                         self.next_class_should_be_zero = not self.next_class_should_be_zero
 
             if self.has_noise:
-                x[2] = self._rng.rand()
-                x[3] = self._rng.rand()
+                x[2] = self._rng.random()
+                x[3] = self._rng.random()
 
             yield x, y
 
     def generate_drift(self):
         """Generate drift by switching the classification function at random."""
-        new_function = self._rng.randint(4)
+        new_function = self._rng.randint(0, 3)
         while new_function == self.classification_function:
-            new_function = self._rng.randint(4)
+            new_function = self._rng.randint(0, 3)
         self.classification_function = new_function
 
     @staticmethod
     def _classification_function_zero(att1, att2):
         # SINE1 function
-        return 0 if (att1 >= np.sin(att2)) else 1
+        return 0 if (att1 >= math.sin(att2)) else 1
 
     @staticmethod
     def _classification_function_one(att1, att2):
         # Reversed SINE1 function
-        return 0 if (att1 < np.sin(att2)) else 1
+        return 0 if (att1 < math.sin(att2)) else 1
 
     @staticmethod
     def _classification_function_two(att1, att2):
         # SINE2 function
-        return 0 if (att1 >= 0.5 + 0.3 * np.sin(3 * np.pi * att2)) else 1
+        return 0 if (att1 >= 0.5 + 0.3 * math.sin(3 * math.pi * att2)) else 1
 
     @staticmethod
     def _classification_function_three(att1, att2):
         # Reversed SINE2 function
-        return 0 if (att1 < 0.5 + 0.3 * np.sin(3 * np.pi * att2)) else 1
+        return 0 if (att1 < 0.5 + 0.3 * math.sin(3 * math.pi * att2)) else 1

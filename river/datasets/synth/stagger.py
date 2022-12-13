@@ -1,9 +1,8 @@
 from __future__ import annotations
 
-import numpy as np
+import random
 
 from river import datasets
-from river.utils.skmultiflow_utils import check_random_state
 
 
 class STAGGER(datasets.base.SyntheticDataset):
@@ -25,7 +24,7 @@ class STAGGER(datasets.base.SyntheticDataset):
     2. `True` if the size is medium or large
 
     Concept drift can be introduced by changing the classification function.
-    This can be done manually or using `ConceptDriftStream`.
+    This can be done manually or using `datasets.synth.ConceptDriftStream`.
 
     One important feature is the possibility to balance classes, which
     means the class distribution will tend to a uniform one.
@@ -35,10 +34,7 @@ class STAGGER(datasets.base.SyntheticDataset):
     classification_function
         Classification functions to use. From 0 to 2.
     seed
-        If int, `seed` is used to seed the random number generator;
-        If RandomState instance, `seed` is the random number generator;
-        If None, the random number generator is the `RandomState` instance used
-        by `np.random`.
+        Random seed for reproducibility.
     balance_classes
         Whether to balance classes or not. If balanced, the class
         distribution will converge to an uniform distribution.
@@ -52,11 +48,11 @@ class STAGGER(datasets.base.SyntheticDataset):
 
     >>> for x, y in dataset.take(5):
     ...     print(x, y)
-    {'size': 0, 'color': 0, 'shape': 2} 0
-    {'size': 1, 'color': 0, 'shape': 1} 1
-    {'size': 0, 'color': 0, 'shape': 0} 0
-    {'size': 1, 'color': 2, 'shape': 0} 1
-    {'size': 1, 'color': 0, 'shape': 2} 1
+    {'size': 1, 'color': 2, 'shape': 2} 1
+    {'size': 2, 'color': 1, 'shape': 2} 1
+    {'size': 1, 'color': 1, 'shape': 2} 1
+    {'size': 0, 'color': 1, 'shape': 0} 0
+    {'size': 2, 'color': 1, 'shape': 0} 1
 
     Notes
     -----
@@ -75,7 +71,7 @@ class STAGGER(datasets.base.SyntheticDataset):
     def __init__(
         self,
         classification_function: int = 0,
-        seed: int | np.random.RandomState | None = None,
+        seed: int | None = None,
         balance_classes: bool = False,
     ):
         super().__init__(n_features=3, n_classes=2, n_outputs=1, task=datasets.base.BINARY_CLF)
@@ -105,7 +101,7 @@ class STAGGER(datasets.base.SyntheticDataset):
         self.target_values = [i for i in range(self.n_classes)]
 
     def __iter__(self):
-        self._rng = check_random_state(self.seed)
+        self._rng = random.Random(self.seed)
         self.next_class_should_be_zero = False
 
         while True:
@@ -115,9 +111,9 @@ class STAGGER(datasets.base.SyntheticDataset):
             y = 0
             desired_class_found = False
             while not desired_class_found:
-                size = self._rng.randint(3)
-                color = self._rng.randint(3)
-                shape = self._rng.randint(3)
+                size = self._rng.randint(0, 2)
+                color = self._rng.randint(0, 2)
+                shape = self._rng.randint(0, 2)
 
                 y = self._functions[self.classification_function](size, color, shape)
 
@@ -136,9 +132,9 @@ class STAGGER(datasets.base.SyntheticDataset):
 
     def generate_drift(self):
         """Generate drift by switching the classification function at random."""
-        new_function = self._rng.randint(3)
+        new_function = self._rng.randint(0, 2)
         while new_function == self.classification_function:
-            new_function = self._rng.randint(3)
+            new_function = self._rng.randint(0, 2)
         self.classification_function = new_function
 
     @staticmethod

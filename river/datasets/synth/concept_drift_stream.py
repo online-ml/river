@@ -1,10 +1,9 @@
+import math
+import random
 import textwrap
-
-import numpy as np
 
 from river import datasets
 from river.datasets import synth
-from river.utils.skmultiflow_utils import check_random_state
 
 
 class ConceptDriftStream(datasets.base.SyntheticDataset):
@@ -35,10 +34,7 @@ class ConceptDriftStream(datasets.base.SyntheticDataset):
     drift_stream
         Drift stream
     seed
-        If int, `seed` is used to seed the random number generator;
-        If RandomState instance, `seed` is the random number generator;
-        If None, the random number generator is the `RandomState` instance used
-        by `np.random`.
+        Random seed for reproducibility.
     alpha
         Angle of change used to estimate the width of concept drift change.
         If set, it will override the width parameter. Valid values are in the
@@ -52,30 +48,32 @@ class ConceptDriftStream(datasets.base.SyntheticDataset):
     --------
     >>> from river.datasets import synth
 
-    >>> dataset = synth.ConceptDriftStream(stream=synth.SEA(seed=42, variant=0),
-    ...                                    drift_stream=synth.SEA(seed=42, variant=1),
-    ...                                    seed=1, position=5, width=2)
+    >>> dataset = synth.ConceptDriftStream(
+    ...     stream=synth.SEA(seed=42, variant=0),
+    ...     drift_stream=synth.SEA(seed=42, variant=1),
+    ...     seed=1, position=5, width=2
+    ... )
 
     >>> for x, y in dataset.take(10):
     ...     print(x, y)
     {0: 6.3942, 1: 0.2501, 2: 2.7502} False
     {0: 2.2321, 1: 7.3647, 2: 6.7669} True
-    {0: 6.3942, 1: 0.2501, 2: 2.7502} False
     {0: 8.9217, 1: 0.8693, 2: 4.2192} True
+    {0: 0.2979, 1: 2.1863, 2: 5.0535} False
+    {0: 6.3942, 1: 0.2501, 2: 2.7502} False
     {0: 2.2321, 1: 7.3647, 2: 6.7669} True
     {0: 8.9217, 1: 0.8693, 2: 4.2192} True
     {0: 0.2979, 1: 2.1863, 2: 5.0535} False
     {0: 0.2653, 1: 1.9883, 2: 6.4988} False
     {0: 5.4494, 1: 2.2044, 2: 5.8926} False
-    {0: 8.0943, 1: 0.0649, 2: 8.0581} False
 
     Notes
     -----
     An optional way to estimate the width of the transition $w$ is based on
-    the angle $\alpha$, $w = 1/ tan(\alpha)$. Since width corresponds to
+    the angle $\\alpha$, $w = 1/ tan(\\alpha)$. Since width corresponds to
     the number of samples for the transition, the width is rounded to the
-    nearest smaller integer. Notice that larger values of $\alpha$ result in
-    smaller widths. For $\alpha > 45.0$, the width is smaller than 1 so values
+    nearest smaller integer. Notice that larger values of $\\alpha$ result in
+    smaller widths. For $\\alpha > 45.0$, the width is smaller than 1 so values
     are rounded to 1 to avoid division by zero errors.
 
     """
@@ -116,7 +114,7 @@ class ConceptDriftStream(datasets.base.SyntheticDataset):
         self.alpha = alpha
         if self.alpha is not None:
             if 0 < self.alpha <= 90.0:
-                w = int(1 / np.tan(self.alpha * np.pi / 180))
+                w = int(1 / math.tan(self.alpha * math.pi / 180))
                 self.width = w if w > 0 else 1
             else:
                 raise ValueError(
@@ -129,7 +127,7 @@ class ConceptDriftStream(datasets.base.SyntheticDataset):
         self.drift_stream = drift_stream
 
     def __iter__(self):
-        rng = check_random_state(self.seed)
+        rng = random.Random(self.seed)
         stream_generator = iter(self.stream)
         drift_stream_generator = iter(self.drift_stream)
         sample_idx = 0
@@ -137,9 +135,9 @@ class ConceptDriftStream(datasets.base.SyntheticDataset):
         while True:
             sample_idx += 1
             v = -4.0 * float(sample_idx - self.position) / float(self.width)
-            probability_drift = 1.0 / (1.0 + np.exp(v))
+            probability_drift = 1.0 / (1.0 + math.exp(v))
             try:
-                if rng.rand() > probability_drift:
+                if rng.random() > probability_drift:
                     x, y = next(stream_generator)
                 else:
                     x, y = next(drift_stream_generator)

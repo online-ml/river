@@ -1,9 +1,8 @@
 from __future__ import annotations
 
-import numpy as np
+import random
 
 from river import datasets
-from river.utils.skmultiflow_utils import check_random_state
 
 
 class Hyperplane(datasets.base.SyntheticDataset):
@@ -33,10 +32,7 @@ class Hyperplane(datasets.base.SyntheticDataset):
     Parameters
     ----------
     seed
-        If int, `seed` is used to seed the random number generator;
-        If RandomState instance, `seed` is the random number generator;
-        If None, the random number generator is the `RandomState` instance used
-        by `np.random`.
+        Random seed for reproducibility.
     n_features
         The number of attributes to generate. Higher than 2.
     n_drift_features
@@ -57,11 +53,11 @@ class Hyperplane(datasets.base.SyntheticDataset):
 
     >>> for x, y in dataset.take(5):
     ...     print(x, y)
-    {0: 0.7319, 1: 0.5986} 1
-    {0: 0.8661, 1: 0.6011} 1
-    {0: 0.8324, 1: 0.2123} 0
-    {0: 0.5247, 1: 0.4319} 0
-    {0: 0.2921, 1: 0.3663} 0
+    {0: 0.2750, 1: 0.2232} 0
+    {0: 0.0869, 1: 0.4219} 1
+    {0: 0.0265, 1: 0.1988} 0
+    {0: 0.5892, 1: 0.8094} 0
+    {0: 0.3402, 1: 0.1554} 0
 
     Notes
     -----
@@ -75,13 +71,13 @@ class Hyperplane(datasets.base.SyntheticDataset):
     References
     ----------
     [^1]: G. Hulten, L. Spencer, and P. Domingos. Mining time-changing data streams.
-          In KDD’01, pages 97–106, San Francisco, CA, 2001. ACM Press.
+          In KDD'01, pages 97-106, San Francisco, CA, 2001. ACM Press.
 
     """
 
     def __init__(
         self,
-        seed: int | np.random.RandomState | None = None,
+        seed: int | None = None,
         n_features: int = 10,
         n_drift_features: int = 2,
         mag_change: float = 0.0,
@@ -111,23 +107,24 @@ class Hyperplane(datasets.base.SyntheticDataset):
         self.target_values = [0, 1]
 
     def __iter__(self):
-        self._rng = check_random_state(self.seed)
-        self._weights = self._rng.rand(self.n_features)
-        self._change_direction = np.zeros(self.n_features)
-        self._change_direction[: self.n_drift_features] = 1
+        self._rng = random.Random(self.seed)
+        self._weights = [self._rng.random() for _ in range(self.n_features)]
+        self._change_direction = [1] * self.n_drift_features + [0] * (
+            self.n_features - self.n_drift_features
+        )
 
         while True:
             x = dict()
 
-            sum_weights = np.sum(self._weights)
+            sum_weights = sum(self._weights)
             sum_value = 0
             for i in range(self.n_features):
-                x[i] = self._rng.rand()
+                x[i] = self._rng.random()
                 sum_value += self._weights[i] * x[i]
 
             y = 1 if sum_value >= sum_weights * 0.5 else 0
 
-            if 0.01 + self._rng.rand() <= self.noise_percentage:
+            if 0.01 + self._rng.random() <= self.noise_percentage:
                 y = 1 if (y == 0) else 0
 
             self._generate_drift()
@@ -137,5 +134,5 @@ class Hyperplane(datasets.base.SyntheticDataset):
     def _generate_drift(self):
         for i in range(self.n_drift_features):
             self._weights[i] += self._change_direction[i] * self.mag_change
-            if (0.01 + self._rng.rand()) <= self.sigma:
+            if (0.01 + self._rng.random()) <= self.sigma:
                 self._change_direction[i] *= -1

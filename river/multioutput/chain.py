@@ -306,7 +306,7 @@ class ProbabilisticClassifierChain(ClassifierChain):
     ...    model = model.learn_one(x, y)
 
     >>> metric
-    MicroAverage(Jaccard): 54.83%
+    MicroAverage(Jaccard): 51.97%
 
     References
     ----------
@@ -400,7 +400,7 @@ class MonteCarloClassifierChain(ProbabilisticClassifierChain):
     ...    model = model.learn_one(x, y)
 
     >>> metric
-    MicroAverage(Jaccard): 54.75%
+    MicroAverage(Jaccard): 51.87%
 
     References
     ----------
