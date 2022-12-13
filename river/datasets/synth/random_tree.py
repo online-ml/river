@@ -1,9 +1,8 @@
 from __future__ import annotations
 
-import numpy as np
+import random
 
 from river import datasets
-from river.utils.skmultiflow_utils import check_random_state
 
 
 class RandomTree(datasets.base.SyntheticDataset):
@@ -52,11 +51,11 @@ class RandomTree(datasets.base.SyntheticDataset):
 
     >>> for x, y in dataset.take(5):
     ...     print(x, y)
-    {'x_num_0': 0.3745, 'x_num_1': 0.9507, 'x_cat_0': 0, 'x_cat_1': 1} 1
-    {'x_num_0': 0.5986, 'x_num_1': 0.1560, 'x_cat_0': 0, 'x_cat_1': 0} 1
-    {'x_num_0': 0.0580, 'x_num_1': 0.8661, 'x_cat_0': 1, 'x_cat_1': 1} 0
-    {'x_num_0': 0.7080, 'x_num_1': 0.0205, 'x_cat_0': 1, 'x_cat_1': 1} 0
-    {'x_num_0': 0.8324, 'x_num_1': 0.2123, 'x_cat_0': 1, 'x_cat_1': 1} 0
+    {'x_num_0': 0.6394, 'x_num_1': 0.0250, 'x_cat_0': 1, 'x_cat_1': 0} 0
+    {'x_num_0': 0.2232, 'x_num_1': 0.7364, 'x_cat_0': 0, 'x_cat_1': 1} 1
+    {'x_num_0': 0.0317, 'x_num_1': 0.0936, 'x_cat_0': 0, 'x_cat_1': 0} 0
+    {'x_num_0': 0.5612, 'x_num_1': 0.7160, 'x_cat_0': 1, 'x_cat_1': 0} 0
+    {'x_num_0': 0.4492, 'x_num_1': 0.2781, 'x_cat_0': 0, 'x_cat_1': 0} 0
 
     References
     ----------
@@ -68,8 +67,8 @@ class RandomTree(datasets.base.SyntheticDataset):
 
     def __init__(
         self,
-        seed_tree: int | np.random.RandomState | None = None,
-        seed_sample: int | np.random.RandomState | None = None,
+        seed_tree: int | None = None,
+        seed_sample: int | None = None,
         n_classes: int = 2,
         n_num_features: int = 5,
         n_cat_features: int = 5,
@@ -108,10 +107,10 @@ class RandomTree(datasets.base.SyntheticDataset):
         The tree is recursively generated, node by node, until it reaches the
         maximum tree depth.
         """
-        rng_tree = check_random_state(self.seed_tree)
-        candidate_features = np.arange(self.n_num_features + self.n_cat_features)
-        min_numeric_values = np.zeros(self.n_num_features)
-        max_numeric_values = np.ones(self.n_num_features)
+        rng_tree = random.Random(self.seed_tree)
+        candidate_features = list(range(self.n_num_features + self.n_cat_features))
+        min_numeric_values = [0] * self.n_num_features
+        max_numeric_values = [1] * self.n_num_features
 
         self.tree_root = self._generate_random_tree_node(
             0, candidate_features, min_numeric_values, max_numeric_values, rng_tree
@@ -120,10 +119,10 @@ class RandomTree(datasets.base.SyntheticDataset):
     def _generate_random_tree_node(
         self,
         current_depth: int,
-        candidate_features: np.ndarray,
-        min_numeric_value: np.ndarray,
-        max_numeric_value: np.ndarray,
-        rng: np.random.RandomState,
+        candidate_features: list,
+        min_numeric_value: list,
+        max_numeric_value: list,
+        rng: random.Random,
     ):
         """
         Creates a node, choosing at random the splitting feature and value.
@@ -153,7 +152,7 @@ class RandomTree(datasets.base.SyntheticDataset):
         max_numeric_value
             The minimum numeric feature value, on this branch of the tree.
         rng
-            A numpy random number generator instance.
+            A random number generator instance.
 
         Notes
         -----
@@ -165,22 +164,22 @@ class RandomTree(datasets.base.SyntheticDataset):
         # Stop recursive call
         if (current_depth >= self.max_tree_depth) or (
             (current_depth >= self.first_leaf_level)
-            and (self.fraction_leaves_per_level >= (1.0 - rng.rand()))
+            and (self.fraction_leaves_per_level >= (1.0 - rng.random()))
         ):
             leaf_node = TreeNode()
-            leaf_node.class_label = rng.randint(self.n_classes)
+            leaf_node.class_label = rng.randint(0, self.n_classes - 1)
             return leaf_node
         # Create a new node
         split_node = TreeNode()
-        chosen_feature = rng.randint(candidate_features.size)
+        chosen_feature = rng.randint(0, len(candidate_features) - 1)
         if chosen_feature < self.n_num_features:
             # Chosen feature is numeric
             split_node.split_feature_idx = chosen_feature
             min_val = min_numeric_value[chosen_feature]
             max_val = max_numeric_value[chosen_feature]
-            split_node.split_feature_val = (max_val - min_val) * rng.rand() + min_val
+            split_node.split_feature_val = (max_val - min_val) * rng.random() + min_val
             # Left node
-            new_max_value = np.array(max_numeric_value)
+            new_max_value = list(max_numeric_value)
             new_max_value[chosen_feature] = split_node.split_feature_val
             split_node.children.append(
                 self._generate_random_tree_node(
@@ -192,7 +191,7 @@ class RandomTree(datasets.base.SyntheticDataset):
                 )
             )
             # Right node
-            new_min_value = np.array(min_numeric_value)
+            new_min_value = list(min_numeric_value)
             new_min_value[chosen_feature] = split_node.split_feature_val
             split_node.children.append(
                 self._generate_random_tree_node(
@@ -207,10 +206,7 @@ class RandomTree(datasets.base.SyntheticDataset):
             # Chosen feature is categorical
             split_node.split_feature_idx = candidate_features[chosen_feature]
             # Remove chosen features from candidates
-            new_candidates = np.delete(
-                candidate_features,
-                np.argwhere(candidate_features == split_node.split_feature_idx),
-            )
+            new_candidates = [c for c in candidate_features if c != split_node.split_feature_idx]
             # Generate children per category
             for i in range(self.n_categories_per_feature):
                 split_node.children.append(
@@ -237,7 +233,7 @@ class RandomTree(datasets.base.SyntheticDataset):
             return self._classify_instance(node.children[idx], x)
 
     def __iter__(self):
-        rng_sample = check_random_state(self.seed_sample)
+        rng_sample = random.Random(self.seed_sample)
         # Generate random tree model which will be used to classify instances
         self._generate_random_tree()
 
@@ -245,9 +241,9 @@ class RandomTree(datasets.base.SyntheticDataset):
         while True:
             x = dict()
             for feature in self.features_num:
-                x[feature] = rng_sample.rand()
+                x[feature] = rng_sample.random()
             for feature in self.features_cat:
-                x[feature] = rng_sample.randint(self.n_categories_per_feature)
+                x[feature] = rng_sample.randint(0, self.n_categories_per_feature - 1)
             y = self._classify_instance(self.tree_root, x)
             yield x, y
 

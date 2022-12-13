@@ -1,11 +1,9 @@
 from __future__ import annotations
 
+import random
 import warnings
 
-import numpy as np
-
 from river import datasets
-from river.utils.skmultiflow_utils import check_random_state
 
 
 class RandomRBF(datasets.base.SyntheticDataset):
@@ -24,17 +22,9 @@ class RandomRBF(datasets.base.SyntheticDataset):
     Parameters
     ----------
     seed_model
-        Model's seed to generate centroids
-        If int, `seed` is used to seed the random number generator;
-        If RandomState instance, `seed` is the random number generator;
-        If None, the random number generator is the `RandomState` instance used
-        by `np.random`.
+        Model's random seed to generate centroids.
     seed_sample
-        Sample's seed
-        If int, `seed` is used to seed the random number generator;
-        If RandomState instance, `seed` is the random number generator;
-        If None, the random number generator is the `RandomState` instance used
-        by `np.random`.
+        Sample's random seed.
     n_classes
         The number of class labels to generate.
     n_features
@@ -51,18 +41,18 @@ class RandomRBF(datasets.base.SyntheticDataset):
     >>>
     >>> for x, y in dataset.take(5):
     ...     print(x, y)
-    {0: 0.9518, 1: 0.5263, 2: 0.2509, 3: 0.4177} 0
-    {0: 0.3383, 1: 0.8072, 2: 0.8051, 3: 0.4140} 3
-    {0: -0.2640, 1: 0.2275, 2: 0.6286, 3: -0.0532} 2
-    {0: 0.9050, 1: 0.6443, 2: 0.1270, 3: 0.4520} 2
-    {0: 0.1874, 1: 0.4348, 2: 0.9819, 3: -0.0459} 2
+    {0: 1.0989, 1: 0.3840, 2: 0.7759, 3: 0.6592} 2
+    {0: 0.2366, 1: 1.3233, 2: 0.5691, 3: 0.2083} 0
+    {0: 1.3540, 1: -0.3306, 2: 0.1683, 3: 0.8865} 0
+    {0: 0.2585, 1: -0.2217, 2: 0.4739, 3: 0.6522} 0
+    {0: 0.1295, 1: 0.5953, 2: 0.1774, 3: 0.6673} 1
 
     """
 
     def __init__(
         self,
-        seed_model: int | np.random.RandomState | None = None,
-        seed_sample: int | np.random.RandomState | None = None,
+        seed_model: int | None = None,
+        seed_sample: int | None = None,
         n_classes: int = 2,
         n_features: int = 10,
         n_centroids: int = 50,
@@ -83,22 +73,22 @@ class RandomRBF(datasets.base.SyntheticDataset):
 
     def __iter__(self):
         self._generate_centroids()
-        rng_sample = check_random_state(self.seed_sample)
+        rng_sample = random.Random(self.seed_sample)
 
         while True:
             x, y = self._generate_sample(rng_sample)
             yield x, y
 
-    def _generate_sample(self, rng_sample: np.random.RandomState):
+    def _generate_sample(self, rng_sample: random.Random):
         idx = random_index_based_on_weights(self.centroid_weights, rng_sample)
         current_centroid = self.centroids[idx]
         att_vals = dict()
         magnitude = 0.0
         for i in range(self.n_features):
-            att_vals[i] = (rng_sample.rand() * 2.0) - 1.0
+            att_vals[i] = (rng_sample.random() * 2.0) - 1.0
             magnitude += att_vals[i] * att_vals[i]
-        magnitude = np.sqrt(magnitude)
-        desired_mag = rng_sample.normal() * current_centroid.std_dev
+        magnitude = magnitude**0.5
+        desired_mag = rng_sample.gauss(0, 1) * current_centroid.std_dev
         scale = desired_mag / magnitude
         x = {i: current_centroid.centre[i] + att_vals[i] * scale for i in range(self.n_features)}
         y = current_centroid.class_label
@@ -111,18 +101,18 @@ class RandomRBF(datasets.base.SyntheticDataset):
         a label, a standard deviation and a weight.
 
         """
-        rng_model = check_random_state(self.seed_model)
+        rng_model = random.Random(self.seed_model)
         self.centroids = []
         self.centroid_weights = []
         for i in range(self.n_centroids):
             self.centroids.append(Centroid())
             rand_centre = []
             for j in range(self.n_num_features):
-                rand_centre.append(rng_model.rand())
+                rand_centre.append(rng_model.random())
             self.centroids[i].centre = rand_centre
-            self.centroids[i].class_label = rng_model.randint(self.n_classes)
-            self.centroids[i].std_dev = rng_model.rand()
-            self.centroid_weights.append(rng_model.rand())
+            self.centroids[i].class_label = rng_model.randint(0, self.n_classes - 1)
+            self.centroids[i].std_dev = rng_model.random()
+            self.centroid_weights.append(rng_model.random())
 
 
 class RandomRBFDrift(RandomRBF):
@@ -138,17 +128,9 @@ class RandomRBFDrift(RandomRBF):
     Parameters
     ----------
     seed_model
-        Model's seed to generate centroids
-        If int, `seed` is used to seed the random number generator;
-        If RandomState instance, `seed` is the random number generator;
-        If None, the random number generator is the `RandomState` instance used
-        by `np.random`.
+        Model's random seed to generate centroids.
     seed_sample
-        Sample's seed
-        If int, `seed` is used to seed the random number generator;
-        If RandomState instance, `seed` is the random number generator;
-        If None, the random number generator is the `RandomState` instance used
-        by `np.random`.
+        Sample's random seed.
     n_classes
         The number of class labels to generate.
     n_features
@@ -170,19 +152,19 @@ class RandomRBFDrift(RandomRBF):
     >>>
     >>> for x, y in dataset.take(5):
     ...     print(x, y)
-    {0: 1.1965, 1: 0.5729, 2: 0.8607, 3: 0.5888} 0
-    {0: 0.3383, 1: 0.8072, 2: 0.8051, 3: 0.4140} 3
-    {0: 0.5362, 1: -0.2867, 2: 0.0962, 3: 0.8974} 2
-    {0: 1.1875, 1: 1.0385, 2: 0.8323, 3: -0.0553} 2
-    {0: 0.3256, 1: 0.9206, 2: 0.8595, 3: 0.5907} 2
+    {0: 1.0989, 1: 0.3840, 2: 0.7759, 3: 0.6592} 2
+    {0: 1.1496, 1: 1.9014, 2: 1.5393, 3: 0.3210} 0
+    {0: 0.7146, 1: -0.2414, 2: 0.8933, 3: 1.6633} 0
+    {0: 0.3797, 1: -0.1027, 2: 0.8717, 3: 1.1635} 0
+    {0: 0.1295, 1: 0.5953, 2: 0.1774, 3: 0.6673} 1
 
 
     """
 
     def __init__(
         self,
-        seed_model: int | np.random.RandomState | None = None,
-        seed_sample: int | np.random.RandomState | None = None,
+        seed_model: int | None = None,
+        seed_sample: int | None = None,
         n_classes: int = 2,
         n_features: int = 10,
         n_centroids: int = 50,
@@ -209,7 +191,7 @@ class RandomRBFDrift(RandomRBF):
 
     def __iter__(self):
         self._generate_centroids()
-        rng_sample = check_random_state(self.seed_sample)
+        rng_sample = random.Random(self.seed_sample)
 
         while True:
             # Move centroids
@@ -235,18 +217,18 @@ class RandomRBFDrift(RandomRBF):
 
         """
         super()._generate_centroids()
-        rng_model = check_random_state(self.seed_model)
+        rng_model = random.Random(self.seed_model)
         self.centroid_speed = []
 
         for i in range(self.n_drift_centroids):
-            rand_speed = np.zeros(self.n_features)
+            rand_speed = [0] * self.n_features
             norm_speed = 0.0
 
             for j in range(self.n_features):
-                rand_speed[j] = rng_model.rand()
+                rand_speed[j] = rng_model.random()
                 norm_speed += rand_speed[j] * rand_speed[j]
 
-            norm_speed = np.sqrt(norm_speed)
+            norm_speed = norm_speed**0.5
 
             for j in range(self.n_features):
                 rand_speed[j] /= norm_speed
@@ -263,7 +245,7 @@ class Centroid:
         self.std_dev = None
 
 
-def random_index_based_on_weights(weights: list, random_state: np.random.RandomState):
+def random_index_based_on_weights(weights: list, rng: random.Random):
     """Generate a random index, based on index weights and a random number generator.
 
     Parameters
@@ -271,7 +253,7 @@ def random_index_based_on_weights(weights: list, random_state: np.random.RandomS
     weights
         The weights of the centroid's indexes.
 
-    random_state
+    rng
         Random number generator instance.
 
     Returns
@@ -280,8 +262,8 @@ def random_index_based_on_weights(weights: list, random_state: np.random.RandomS
         The generated index.
 
     """
-    prob_sum = np.sum(weights)
-    val = random_state.rand() * prob_sum
+    prob_sum = sum(weights)
+    val = rng.random() * prob_sum
     index = 0
     sum_value = 0.0
     while (sum_value <= val) & (index < len(weights)):

@@ -80,11 +80,11 @@ class Agrawal(datasets.base.SyntheticDataset):
 
     >>> for x, y in dataset.take(5):
     ...     print(list(x.values()), y)
-    [103125.48379952488, 0, 21, 5, 8, 3, 433926.44288929366, 24, 51247.58808575375] 1
-    [116286.80680679786, 0, 54, 0, 18, 6, 159534.80384453508, 3, 109318.98740180169] 0
-    [85696.18745343712, 0, 21, 4, 6, 8, 91951.98209616587, 15, 294632.84193795436] 1
-    [125225.95936811746, 0, 20, 1, 13, 5, 311148.53666865674, 7, 478606.5361033906] 1
-    [63757.29086464148, 16955.938253511093, 26, 2, 11, 9, 0.0, 2, 364865.89334690897] 1
+    [103125.4837, 0, 21, 2, 8, 3, 319768.9642, 4, 338349.7437] 1
+    [135983.3438, 0, 25, 4, 14, 0, 423837.7755, 7, 116330.4466] 1
+    [98262.4347, 0, 55, 1, 18, 6, 144088.1244, 19, 139095.3541] 0
+    [133009.0417, 0, 68, 1, 14, 5, 233361.4025, 7, 478606.5361] 1
+    [63757.2908, 16955.9382, 26, 2, 12, 4, 522851.3093, 24, 229712.4398] 1
 
     Notes
     -----
@@ -162,15 +162,15 @@ class Agrawal(datasets.base.SyntheticDataset):
             y = 0
             desired_class_found = False
             while not desired_class_found:
-                salary = 20000 + 130000 * self._rng.uniform(0, 1)
-                commission = 0 if (salary >= 75000) else (10000 + 75000 * self._rng.uniform(0, 1))
-                age = 20 + self._rng.randint(0, 61)
-                elevel = self._rng.randint(0, 5)
-                car = self._rng.randint(0, 20)
-                zipcode = self._rng.randint(0, 9)
-                hvalue = (9 - zipcode) * 100000 * (0.5 + self._rng.uniform(0, 1))
-                hyears = 1 + self._rng.randint(0, 30)
-                loan = self._rng.uniform(0, 1) * 500000
+                salary = 20000 + 130000 * self._rng.random()
+                commission = 0 if (salary >= 75000) else (10000 + 75000 * self._rng.random())
+                age = self._rng.randint(20, 80)
+                elevel = self._rng.randint(0, 4)
+                car = self._rng.randint(1, 20)
+                zipcode = self._rng.randint(0, 8)
+                hvalue = (8 - zipcode) * 100000 * (0.5 + self._rng.random())
+                hyears = self._rng.randint(1, 30)
+                loan = self._rng.random() * 500000
                 y = self._classification_functions[self.classification_function](
                     salary, commission, age, elevel, car, zipcode, hvalue, hyears, loan
                 )
@@ -201,7 +201,7 @@ class Agrawal(datasets.base.SyntheticDataset):
     def _perturb_value(self, val, val_min, val_max, val_range=None):
         if val_range is None:
             val_range = val_max - val_min
-        val += val_range * (2 * (self._rng.uniform(0, 1) - 0.5)) * self.perturbation
+        val += val_range * (2 * (self._rng.random() - 0.5)) * self.perturbation
         if val < val_min:
             val = val_min
         elif val > val_max:
@@ -213,9 +213,9 @@ class Agrawal(datasets.base.SyntheticDataset):
         Generate drift by switching the classification function randomly.
 
         """
-        new_function = self._rng.randint(0, 10)
+        new_function = self._rng.randint(0, 9)
         while new_function == self.classification_function:
-            new_function = self._rng.randint(0, 10)
+            new_function = self._rng.randint(0, 9)
         self.classification_function = new_function
 
     @staticmethod
