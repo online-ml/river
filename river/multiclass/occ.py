@@ -56,7 +56,7 @@ class OutputCodeClassifier(base.Wrapper, base.Classifier):
     >>> dataset = datasets.ImageSegments()
 
     >>> scaler = preprocessing.StandardScaler()
-    >>> ooc = OutputCodeClassifier(
+    >>> ooc = multiclass.OutputCodeClassifier(
     ...     classifier=linear_model.LogisticRegression(),
     ...     code_size=10,
     ...     seed=24
