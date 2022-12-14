@@ -83,6 +83,7 @@ setuptools.setup(
             "mike",
             "mkdocs",
             "mkdocs-awesome-pages-plugin",
+            "mkdocs-charts-plugin",
             "mkdocs-material",
             "nbconvert",
             "python-slugify",

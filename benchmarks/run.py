@@ -1,3 +1,6 @@
+import itertools
+import multiprocessing
+
 import pandas as pd
 
 from config import MODELS, TRACKS
@@ -14,11 +17,12 @@ def run_dataset(model,dataset, track):
     results = []
     for i in track.run(model, dataset, n_checkpoints=50):
         res = {
+            "step": i["Step"],
             "track": track.name,
             "model": model_name,
             "dataset": dataset.__class__.__name__,
             "Memory": i['Memory'],
-            # "Time": i['Time'],
+            "Time": str(i['Time']),
         }
         for k, v in i.items():
             if isinstance(v, metrics.base.Metric):
@@ -28,7 +32,7 @@ def run_dataset(model,dataset, track):
 
 def run_track(models: dict, track: evaluate.Track, n_workers: int = 5):
     #pool = multiprocessing.Pool(processes=n_workers)
-    #runs = itertools.product(models, track.datasets, [track])
+    #runs = itertools.product(models.items(), track.datasets, [track])
     #results = pool.starmap(run_dataset, runs)
     results = []
     for model in models.items():
