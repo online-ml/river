@@ -77,7 +77,7 @@ def test_memory_usage_reg(dataset, model):
     for x, y in dataset:
         model.learn_one(x, y)
 
-    assert model._raw_memory_usage / (2**20) < 0.5
+    assert model._raw_memory_usage / (2**20) < 0.7
 
 
 def test_memory_usage_multilabel():
