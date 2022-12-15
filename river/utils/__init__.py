@@ -1,5 +1,5 @@
 """Shared utility classes and functions"""
-from . import inspect, math, pretty, random, skmultiflow_utils
+from . import inspect, math, norm, pretty, random
 from .context_managers import log_method_calls
 from .data_conversion import dict2numpy, numpy2dict
 from .param_grid import expand_param_grid
@@ -16,7 +16,7 @@ __all__ = [
     "pretty",
     "numpy2dict",
     "random",
-    "skmultiflow_utils",
+    "norm",
     "Rolling",
     "SortedWindow",
     "VectorDict",
