@@ -6,6 +6,7 @@ from model_zoo.vw import VW2RiverClassifier
 from river import preprocessing, linear_model, tree, naive_bayes, ensemble, neighbors, rules, neural_net, dummy
 from river import compat, optim, evaluate, stats
 
+N_CHECKPOINTS = 50
 
 LEARNING_RATE = 0.005
 
@@ -23,14 +24,6 @@ MODELS = {
         ),
         "ALMA": preprocessing.StandardScaler() | linear_model.ALMAClassifier(),
         "Stochastic Gradient Tree": tree.SGTClassifier(),
-        # "onelearn AMFClassifier": (
-        #     compat.SKL2RiverClassifier(
-        #         AMFClassifier(
-        #             classes=[False, True],
-        #         ),
-        #         classes=[False, True],
-        #     )
-        # ),
         "sklearn SGDClassifier": (
             preprocessing.StandardScaler()
             | compat.SKL2RiverClassifier(
