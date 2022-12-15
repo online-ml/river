@@ -7,8 +7,7 @@ from typing import List
 import pandas as pd
 
 from config import MODELS, TRACKS, N_CHECKPOINTS
-import json
-from river import metrics, evaluate
+from river import metrics
 import logging
 
 logging.basicConfig(level=logging.WARN)
@@ -48,15 +47,9 @@ def run_track(models: List[str], no_track: int, n_workers: int = 50):
     runs = list(itertools.product(models, range(len(track.datasets)), [no_track]))
     results = []
 
-
     for val in pool.starmap(run_dataset, runs):
         results.extend(val)
-    #for model in models.items():
-    #    for dataset in track.datasets:
-    #        results.extend(run_dataset(model,dataset,track))
-    #pool.join()
     pd.DataFrame(results).to_csv(f"{track.name}.csv", index=False)
-    #json.dump(results, open(f"{track.name}.json", "w+"), indent=4)
 
 
 if __name__ == '__main__':

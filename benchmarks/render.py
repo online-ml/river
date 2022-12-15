@@ -6,8 +6,9 @@ from watermark import watermark
 import pandas as pd
 
 
-def render_df(df:pd.DataFrame, measures:List[str])-> dict:
+def render_df(df:pd.DataFrame)-> dict:
     unique_datasets = list(df['dataset'].unique())
+    measures = list(df.columns)[4:]
     res = {
         "data" : {"values": df.to_dict(orient="records")},
         "params": [
@@ -67,8 +68,9 @@ def render_df(df:pd.DataFrame, measures:List[str])-> dict:
     }
     return res
 
-
 if __name__ == '__main__':
+
+    details = json.load(open('details.json'))
 
     with open("../docs/benchmarks/index.md", "w", encoding='utf-8') as f:
         print_ = lambda x: print(x, file=f, end="\n\n")
@@ -80,30 +82,28 @@ hide:
 """
         )
 
-        print_("# Benchmarks")
+        print_('# Benchmark')
 
-        print_("## Binary Classification")
-        print_("```vegalite")
-        bin_clf_df = pd.read_csv("Binary classification.csv")
-        measures = list(bin_clf_df.columns)[4:]
-        print_(json.dumps(render_df(bin_clf_df, measures), indent=4))
-        print_("```")
+        for track_name, track_details in details.items():
+            print_(f'## {track_name}')
 
-        print_("## Multi-Class Classification")
-        print_("```vegalite")
-        bin_clf_df = pd.read_csv("Multiclass classification.csv")
-        measures = list(bin_clf_df.columns)[4:]
-        print_(json.dumps(render_df(bin_clf_df, measures), indent=4))
-        print_("```")
 
-        print_("## Regression")
-        print_("```vegalite")
-        bin_clf_df = pd.read_csv("Regression.csv")
-        measures = list(bin_clf_df.columns)[4:]
-        print_(json.dumps(render_df(bin_clf_df, measures), indent=4))
-        print_("```")
+            df = pd.read_csv(f'{track_name}.csv')
+            print_("```vegalite")
+            print_(json.dumps(render_df(df=df), indent=2))
+            print_("```")
 
-        print_("## Environment")
+            print_('### Datasets')
+            for dataset_name, dataset_details in track_details['Dataset'].items():
+                print_(f'#### {dataset_name}')
+                print_(dataset_details)
+
+            #print_('### Models')
+            #for model_name, model_details in track_details['Model'].items():
+            #    print_(f'#### {model_name}')
+            #    print_(model_details)
+
+        print_("# Environment")
         print_(
             pre(watermark(python=True,
                           packages="river,numpy,scikit-learn,pandas,scipy",
