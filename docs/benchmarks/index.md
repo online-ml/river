@@ -20111,9 +20111,11 @@ hide:
 
 ### Datasets
 
-#### Bananas
+<details>
 
-Bananas dataset.
+<summary>Bananas</summary>
+
+<pre>Bananas dataset.
 
 An artificial dataset where instances belongs to several clusters with a banana shape.
 There are two attributes that correspond to the x and y axis, respectively.
@@ -20123,11 +20125,15 @@ There are two attributes that correspond to the x and y axis, respectively.
  Samples  5,300                                                                                                  
 Features  2                                                                                                      
   Sparse  False                                                                                                  
-    Path  /Users/mastelini/miniconda3/envs/river-benchmarks/lib/python3.9/site-packages/river/datasets/banana.zip
+    Path  /Users/mastelini/miniconda3/envs/river-benchmarks/lib/python3.9/site-packages/river/datasets/banana.zip</pre>
 
-#### Phishing
+</details>
 
-Phishing websites.
+<details>
+
+<summary>Phishing</summary>
+
+<pre>Phishing websites.
 
 This dataset contains features from web pages that are classified as phishing or not.
 
@@ -20136,7 +20142,1284 @@ This dataset contains features from web pages that are classified as phishing or
  Samples  1,250                                                                                                       
 Features  9                                                                                                           
   Sparse  False                                                                                                       
-    Path  /Users/mastelini/miniconda3/envs/river-benchmarks/lib/python3.9/site-packages/river/datasets/phishing.csv.gz
+    Path  /Users/mastelini/miniconda3/envs/river-benchmarks/lib/python3.9/site-packages/river/datasets/phishing.csv.gz</pre>
+
+</details>
+
+### Models
+
+<details>
+
+<summary>ADWIN Bagging</summary>
+
+<pre>[HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+)]</pre>
+
+</details>
+
+<details>
+
+<summary>ALMA</summary>
+
+<pre>Pipeline (
+  StandardScaler (
+    with_std=True
+  ),
+  ALMAClassifier (
+    p=2
+    alpha=0.9
+    B=1.111111
+    C=1.414214
+  )
+)</pre>
+
+</details>
+
+<details>
+
+<summary>AdaBoost</summary>
+
+<pre>[HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+)]</pre>
+
+</details>
+
+<details>
+
+<summary>Adaptive Random Forest</summary>
+
+<pre>[]</pre>
+
+</details>
+
+<details>
+
+<summary>Bagging</summary>
+
+<pre>[HoeffdingAdaptiveTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  bootstrap_sampling=False
+  drift_window_threshold=300
+  drift_detector=ADWIN (
+    delta=0.002
+    clock=32
+    max_buckets=5
+    min_window_length=5
+    grace_period=10
+  )
+  switch_significance=0.05
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+  seed=None
+), HoeffdingAdaptiveTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  bootstrap_sampling=False
+  drift_window_threshold=300
+  drift_detector=ADWIN (
+    delta=0.002
+    clock=32
+    max_buckets=5
+    min_window_length=5
+    grace_period=10
+  )
+  switch_significance=0.05
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+  seed=None
+), HoeffdingAdaptiveTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  bootstrap_sampling=False
+  drift_window_threshold=300
+  drift_detector=ADWIN (
+    delta=0.002
+    clock=32
+    max_buckets=5
+    min_window_length=5
+    grace_period=10
+  )
+  switch_significance=0.05
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+  seed=None
+), HoeffdingAdaptiveTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  bootstrap_sampling=False
+  drift_window_threshold=300
+  drift_detector=ADWIN (
+    delta=0.002
+    clock=32
+    max_buckets=5
+    min_window_length=5
+    grace_period=10
+  )
+  switch_significance=0.05
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+  seed=None
+), HoeffdingAdaptiveTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  bootstrap_sampling=False
+  drift_window_threshold=300
+  drift_detector=ADWIN (
+    delta=0.002
+    clock=32
+    max_buckets=5
+    min_window_length=5
+    grace_period=10
+  )
+  switch_significance=0.05
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+  seed=None
+), HoeffdingAdaptiveTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  bootstrap_sampling=False
+  drift_window_threshold=300
+  drift_detector=ADWIN (
+    delta=0.002
+    clock=32
+    max_buckets=5
+    min_window_length=5
+    grace_period=10
+  )
+  switch_significance=0.05
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+  seed=None
+), HoeffdingAdaptiveTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  bootstrap_sampling=False
+  drift_window_threshold=300
+  drift_detector=ADWIN (
+    delta=0.002
+    clock=32
+    max_buckets=5
+    min_window_length=5
+    grace_period=10
+  )
+  switch_significance=0.05
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+  seed=None
+), HoeffdingAdaptiveTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  bootstrap_sampling=False
+  drift_window_threshold=300
+  drift_detector=ADWIN (
+    delta=0.002
+    clock=32
+    max_buckets=5
+    min_window_length=5
+    grace_period=10
+  )
+  switch_significance=0.05
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+  seed=None
+), HoeffdingAdaptiveTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  bootstrap_sampling=False
+  drift_window_threshold=300
+  drift_detector=ADWIN (
+    delta=0.002
+    clock=32
+    max_buckets=5
+    min_window_length=5
+    grace_period=10
+  )
+  switch_significance=0.05
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+  seed=None
+), HoeffdingAdaptiveTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  bootstrap_sampling=False
+  drift_window_threshold=300
+  drift_detector=ADWIN (
+    delta=0.002
+    clock=32
+    max_buckets=5
+    min_window_length=5
+    grace_period=10
+  )
+  switch_significance=0.05
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+  seed=None
+)]</pre>
+
+</details>
+
+<details>
+
+<summary>Extremely Fast Decision Tree</summary>
+
+<pre>ExtremelyFastDecisionTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  min_samples_reevaluate=20
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+)</pre>
+
+</details>
+
+<details>
+
+<summary>Hoeffding Adaptive Tree</summary>
+
+<pre>HoeffdingAdaptiveTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  bootstrap_sampling=True
+  drift_window_threshold=300
+  drift_detector=ADWIN (
+    delta=0.002
+    clock=32
+    max_buckets=5
+    min_window_length=5
+    grace_period=10
+  )
+  switch_significance=0.05
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+  seed=42
+)</pre>
+
+</details>
+
+<details>
+
+<summary>Hoeffding Tree</summary>
+
+<pre>HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+)</pre>
+
+</details>
+
+<details>
+
+<summary>Leveraging Bagging</summary>
+
+<pre>[HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+)]</pre>
+
+</details>
+
+<details>
+
+<summary>Logistic regression</summary>
+
+<pre>Pipeline (
+  StandardScaler (
+    with_std=True
+  ),
+  LogisticRegression (
+    optimizer=SGD (
+      lr=Constant (
+        learning_rate=0.005
+      )
+    )
+    loss=Log (
+      weight_pos=1.
+      weight_neg=1.
+    )
+    l2=0.
+    l1=0.
+    intercept_init=0.
+    intercept_lr=Constant (
+      learning_rate=0.01
+    )
+    clip_gradient=1e+12
+    initializer=Zeros ()
+  )
+)</pre>
+
+</details>
+
+<details>
+
+<summary>Naive Bayes</summary>
+
+<pre>GaussianNB ()</pre>
+
+</details>
+
+<details>
+
+<summary>PyTorch logistic regression</summary>
+
+<pre>Pipeline (
+  StandardScaler (
+    with_std=True
+  ),
+  PyTorchBinaryClassifier (
+    network_func=&lt;class '__main__.PyTorchLogReg'&gt;
+    loss=BCELoss()
+    optimizer_func=&quot;&lt;lambda&gt;&quot;
+  )
+)</pre>
+
+</details>
+
+<details>
+
+<summary>Stacking</summary>
+
+<pre>[Pipeline (
+  StandardScaler (
+    with_std=True
+  ),
+  SoftmaxRegression (
+    optimizer=SGD (
+      lr=Constant (
+        learning_rate=0.01
+      )
+    )
+    loss=CrossEntropy (
+      class_weight={}
+    )
+    l2=0
+  )
+), GaussianNB (), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), Pipeline (
+  StandardScaler (
+    with_std=True
+  ),
+  KNNClassifier (
+    n_neighbors=5
+    window_size=100
+    min_distance_keep=0.
+    weighted=True
+    cleanup_every=0
+    distance_func=functools.partial(&lt;function minkowski_distance at 0x163ae7430&gt;, p=2)
+    softmax=False
+  )
+)]</pre>
+
+</details>
+
+<details>
+
+<summary>Stochastic Gradient Tree</summary>
+
+<pre>SGTClassifier (
+  delta=1e-07
+  grace_period=200
+  init_pred=0.
+  max_depth=inf
+  lambda_value=0.1
+  gamma=1.
+  nominal_attributes=[]
+  feature_quantizer=StaticQuantizer (
+    n_bins=64
+    warm_start=100
+    buckets=None
+  )
+)</pre>
+
+</details>
+
+<details>
+
+<summary>Streaming Random Patches</summary>
+
+<pre>SRPClassifier (
+  model=HoeffdingTreeClassifier (
+    grace_period=50
+    max_depth=inf
+    split_criterion=&quot;info_gain&quot;
+    delta=0.01
+    tau=0.05
+    leaf_prediction=&quot;nba&quot;
+    nb_threshold=0
+    nominal_attributes=None
+    splitter=GaussianSplitter (
+      n_splits=10
+    )
+    binary_split=False
+    max_size=100.
+    memory_estimate_period=1000000
+    stop_mem_management=False
+    remove_poor_attrs=False
+    merit_preprune=True
+  )
+  n_models=10
+  subspace_size=0.6
+  training_method=&quot;patches&quot;
+  lam=6
+  drift_detector=ADWIN (
+    delta=1e-05
+    clock=32
+    max_buckets=5
+    min_window_length=5
+    grace_period=10
+  )
+  warning_detector=ADWIN (
+    delta=0.0001
+    clock=32
+    max_buckets=5
+    min_window_length=5
+    grace_period=10
+  )
+  disable_detector=&quot;off&quot;
+  disable_weighted_vote=False
+  seed=None
+  metric=Accuracy (
+    cm=ConfusionMatrix (
+      classes=[]
+    )
+  )
+)</pre>
+
+</details>
+
+<details>
+
+<summary>Voting</summary>
+
+<pre>VotingClassifier (
+  models=[Pipeline (
+  StandardScaler (
+    with_std=True
+  ),
+  SoftmaxRegression (
+    optimizer=SGD (
+      lr=Constant (
+        learning_rate=0.01
+      )
+    )
+    loss=CrossEntropy (
+      class_weight={}
+    )
+    l2=0
+  )
+), GaussianNB (), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), Pipeline (
+  StandardScaler (
+    with_std=True
+  ),
+  KNNClassifier (
+    n_neighbors=5
+    window_size=100
+    min_distance_keep=0.
+    weighted=True
+    cleanup_every=0
+    distance_func=functools.partial(&lt;function minkowski_distance at 0x163ae7430&gt;, p=2)
+    softmax=False
+  )
+)]
+  use_probabilities=True
+)</pre>
+
+</details>
+
+<details>
+
+<summary>Vowpal Wabbit logistic regression</summary>
+
+<pre>VW2RiverClassifier ()</pre>
+
+</details>
+
+<details>
+
+<summary>[baseline] Last Class</summary>
+
+<pre>NoChangeClassifier ()</pre>
+
+</details>
+
+<details>
+
+<summary>k-Nearest Neighbors</summary>
+
+<pre>Pipeline (
+  StandardScaler (
+    with_std=True
+  ),
+  KNNClassifier (
+    n_neighbors=5
+    window_size=100
+    min_distance_keep=0.
+    weighted=True
+    cleanup_every=0
+    distance_func=functools.partial(&lt;function minkowski_distance at 0x163ae7430&gt;, p=2)
+    softmax=False
+  )
+)</pre>
+
+</details>
+
+<details>
+
+<summary>sklearn SGDClassifier</summary>
+
+<pre>Pipeline (
+  StandardScaler (
+    with_std=True
+  ),
+  SKL2RiverClassifier (
+    estimator=SGDClassifier(eta0=0.005, learning_rate='constant', loss='log', penalty='none')
+    classes=[False, True]
+  )
+)</pre>
+
+</details>
 
 ## Multiclass classification
 
@@ -43345,9 +44628,11 @@ Features  9
 
 ### Datasets
 
-#### ImageSegments
+<details>
 
-Image segments classification.
+<summary>ImageSegments</summary>
+
+<pre>Image segments classification.
 
 This dataset contains features that describe image segments into 7 classes: brickface, sky,
 foliage, cement, window, path, and grass.
@@ -43357,11 +44642,15 @@ foliage, cement, window, path, and grass.
  Samples  2,310                                                                                                       
 Features  18                                                                                                          
   Sparse  False                                                                                                       
-    Path  /Users/mastelini/miniconda3/envs/river-benchmarks/lib/python3.9/site-packages/river/datasets/segment.csv.zip
+    Path  /Users/mastelini/miniconda3/envs/river-benchmarks/lib/python3.9/site-packages/river/datasets/segment.csv.zip</pre>
 
-#### Insects
+</details>
 
-Insects dataset.
+<details>
+
+<summary>Insects</summary>
+
+<pre>Insects dataset.
 
 This dataset has different variants, which are:
 
@@ -43395,16 +44684,20 @@ Downloaded  True
 Parameters
 ----------
     variant
-        Indicates which variant of the dataset to load.
+        Indicates which variant of the dataset to load.</pre>
 
-#### Keystroke
+</details>
 
-CMU keystroke dataset.
+<details>
+
+<summary>Keystroke</summary>
+
+<pre>CMU keystroke dataset.
 
 Users are tasked to type in a password. The task is to determine which user is typing in the
 password.
 
-The only difference with the original dataset is that the "sessionIndex" and "rep" attributes
+The only difference with the original dataset is that the &quot;sessionIndex&quot; and &quot;rep&quot; attributes
 have been dropped.
 
       Name  Keystroke                                                       
@@ -43415,7 +44708,1173 @@ have been dropped.
       Path  /Users/mastelini/river_data/Keystroke/DSL-StrongPasswordData.csv
        URL  http://www.cs.cmu.edu/~keystroke/DSL-StrongPasswordData.csv     
       Size  4.45 MB                                                         
-Downloaded  True                                                            
+Downloaded  True                                                            </pre>
+
+</details>
+
+### Models
+
+<details>
+
+<summary>ADWIN Bagging</summary>
+
+<pre>[HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+)]</pre>
+
+</details>
+
+<details>
+
+<summary>AdaBoost</summary>
+
+<pre>[HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+)]</pre>
+
+</details>
+
+<details>
+
+<summary>Adaptive Random Forest</summary>
+
+<pre>[]</pre>
+
+</details>
+
+<details>
+
+<summary>Bagging</summary>
+
+<pre>[HoeffdingAdaptiveTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  bootstrap_sampling=False
+  drift_window_threshold=300
+  drift_detector=ADWIN (
+    delta=0.002
+    clock=32
+    max_buckets=5
+    min_window_length=5
+    grace_period=10
+  )
+  switch_significance=0.05
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+  seed=None
+), HoeffdingAdaptiveTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  bootstrap_sampling=False
+  drift_window_threshold=300
+  drift_detector=ADWIN (
+    delta=0.002
+    clock=32
+    max_buckets=5
+    min_window_length=5
+    grace_period=10
+  )
+  switch_significance=0.05
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+  seed=None
+), HoeffdingAdaptiveTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  bootstrap_sampling=False
+  drift_window_threshold=300
+  drift_detector=ADWIN (
+    delta=0.002
+    clock=32
+    max_buckets=5
+    min_window_length=5
+    grace_period=10
+  )
+  switch_significance=0.05
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+  seed=None
+), HoeffdingAdaptiveTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  bootstrap_sampling=False
+  drift_window_threshold=300
+  drift_detector=ADWIN (
+    delta=0.002
+    clock=32
+    max_buckets=5
+    min_window_length=5
+    grace_period=10
+  )
+  switch_significance=0.05
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+  seed=None
+), HoeffdingAdaptiveTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  bootstrap_sampling=False
+  drift_window_threshold=300
+  drift_detector=ADWIN (
+    delta=0.002
+    clock=32
+    max_buckets=5
+    min_window_length=5
+    grace_period=10
+  )
+  switch_significance=0.05
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+  seed=None
+), HoeffdingAdaptiveTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  bootstrap_sampling=False
+  drift_window_threshold=300
+  drift_detector=ADWIN (
+    delta=0.002
+    clock=32
+    max_buckets=5
+    min_window_length=5
+    grace_period=10
+  )
+  switch_significance=0.05
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+  seed=None
+), HoeffdingAdaptiveTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  bootstrap_sampling=False
+  drift_window_threshold=300
+  drift_detector=ADWIN (
+    delta=0.002
+    clock=32
+    max_buckets=5
+    min_window_length=5
+    grace_period=10
+  )
+  switch_significance=0.05
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+  seed=None
+), HoeffdingAdaptiveTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  bootstrap_sampling=False
+  drift_window_threshold=300
+  drift_detector=ADWIN (
+    delta=0.002
+    clock=32
+    max_buckets=5
+    min_window_length=5
+    grace_period=10
+  )
+  switch_significance=0.05
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+  seed=None
+), HoeffdingAdaptiveTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  bootstrap_sampling=False
+  drift_window_threshold=300
+  drift_detector=ADWIN (
+    delta=0.002
+    clock=32
+    max_buckets=5
+    min_window_length=5
+    grace_period=10
+  )
+  switch_significance=0.05
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+  seed=None
+), HoeffdingAdaptiveTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  bootstrap_sampling=False
+  drift_window_threshold=300
+  drift_detector=ADWIN (
+    delta=0.002
+    clock=32
+    max_buckets=5
+    min_window_length=5
+    grace_period=10
+  )
+  switch_significance=0.05
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+  seed=None
+)]</pre>
+
+</details>
+
+<details>
+
+<summary>Extremely Fast Decision Tree</summary>
+
+<pre>ExtremelyFastDecisionTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  min_samples_reevaluate=20
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+)</pre>
+
+</details>
+
+<details>
+
+<summary>Hoeffding Adaptive Tree</summary>
+
+<pre>HoeffdingAdaptiveTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  bootstrap_sampling=True
+  drift_window_threshold=300
+  drift_detector=ADWIN (
+    delta=0.002
+    clock=32
+    max_buckets=5
+    min_window_length=5
+    grace_period=10
+  )
+  switch_significance=0.05
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+  seed=42
+)</pre>
+
+</details>
+
+<details>
+
+<summary>Hoeffding Tree</summary>
+
+<pre>HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+)</pre>
+
+</details>
+
+<details>
+
+<summary>Leveraging Bagging</summary>
+
+<pre>[HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+)]</pre>
+
+</details>
+
+<details>
+
+<summary>Naive Bayes</summary>
+
+<pre>GaussianNB ()</pre>
+
+</details>
+
+<details>
+
+<summary>Stacking</summary>
+
+<pre>[Pipeline (
+  StandardScaler (
+    with_std=True
+  ),
+  SoftmaxRegression (
+    optimizer=SGD (
+      lr=Constant (
+        learning_rate=0.01
+      )
+    )
+    loss=CrossEntropy (
+      class_weight={}
+    )
+    l2=0
+  )
+), GaussianNB (), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), Pipeline (
+  StandardScaler (
+    with_std=True
+  ),
+  KNNClassifier (
+    n_neighbors=5
+    window_size=100
+    min_distance_keep=0.
+    weighted=True
+    cleanup_every=0
+    distance_func=functools.partial(&lt;function minkowski_distance at 0x163ae7430&gt;, p=2)
+    softmax=False
+  )
+)]</pre>
+
+</details>
+
+<details>
+
+<summary>Streaming Random Patches</summary>
+
+<pre>SRPClassifier (
+  model=HoeffdingTreeClassifier (
+    grace_period=50
+    max_depth=inf
+    split_criterion=&quot;info_gain&quot;
+    delta=0.01
+    tau=0.05
+    leaf_prediction=&quot;nba&quot;
+    nb_threshold=0
+    nominal_attributes=None
+    splitter=GaussianSplitter (
+      n_splits=10
+    )
+    binary_split=False
+    max_size=100.
+    memory_estimate_period=1000000
+    stop_mem_management=False
+    remove_poor_attrs=False
+    merit_preprune=True
+  )
+  n_models=10
+  subspace_size=0.6
+  training_method=&quot;patches&quot;
+  lam=6
+  drift_detector=ADWIN (
+    delta=1e-05
+    clock=32
+    max_buckets=5
+    min_window_length=5
+    grace_period=10
+  )
+  warning_detector=ADWIN (
+    delta=0.0001
+    clock=32
+    max_buckets=5
+    min_window_length=5
+    grace_period=10
+  )
+  disable_detector=&quot;off&quot;
+  disable_weighted_vote=False
+  seed=None
+  metric=Accuracy (
+    cm=ConfusionMatrix (
+      classes=[]
+    )
+  )
+)</pre>
+
+</details>
+
+<details>
+
+<summary>Voting</summary>
+
+<pre>VotingClassifier (
+  models=[Pipeline (
+  StandardScaler (
+    with_std=True
+  ),
+  SoftmaxRegression (
+    optimizer=SGD (
+      lr=Constant (
+        learning_rate=0.01
+      )
+    )
+    loss=CrossEntropy (
+      class_weight={}
+    )
+    l2=0
+  )
+), GaussianNB (), HoeffdingTreeClassifier (
+  grace_period=200
+  max_depth=inf
+  split_criterion=&quot;info_gain&quot;
+  delta=1e-07
+  tau=0.05
+  leaf_prediction=&quot;nba&quot;
+  nb_threshold=0
+  nominal_attributes=None
+  splitter=GaussianSplitter (
+    n_splits=10
+  )
+  binary_split=False
+  max_size=100.
+  memory_estimate_period=1000000
+  stop_mem_management=False
+  remove_poor_attrs=False
+  merit_preprune=True
+), Pipeline (
+  StandardScaler (
+    with_std=True
+  ),
+  KNNClassifier (
+    n_neighbors=5
+    window_size=100
+    min_distance_keep=0.
+    weighted=True
+    cleanup_every=0
+    distance_func=functools.partial(&lt;function minkowski_distance at 0x163ae7430&gt;, p=2)
+    softmax=False
+  )
+)]
+  use_probabilities=True
+)</pre>
+
+</details>
+
+<details>
+
+<summary>[baseline] Last Class</summary>
+
+<pre>NoChangeClassifier ()</pre>
+
+</details>
+
+<details>
+
+<summary>k-Nearest Neighbors</summary>
+
+<pre>Pipeline (
+  StandardScaler (
+    with_std=True
+  ),
+  KNNClassifier (
+    n_neighbors=5
+    window_size=100
+    min_distance_keep=0.
+    weighted=True
+    cleanup_every=0
+    distance_func=functools.partial(&lt;function minkowski_distance at 0x163ae7430&gt;, p=2)
+    softmax=False
+  )
+)</pre>
+
+</details>
 
 ## Regression
 
@@ -78725,9 +81184,11 @@ Downloaded  True
 
 ### Datasets
 
-#### Friedman7k
+<details>
 
-Sample from the stationary version of the Friedman dataset.
+<summary>Friedman7k</summary>
+
+<pre>Sample from the stationary version of the Friedman dataset.
 
 This sample contains 10k instances sampled from the Friedman generator.
 
@@ -78735,11 +81196,15 @@ This sample contains 10k instances sampled from the Friedman generator.
     Task  Regression
  Samples  7,000     
 Features  10        
-  Sparse  False     
+  Sparse  False     </pre>
 
-#### FriedmanGSG10k
+</details>
 
-Sample from the FriedmanGSG generator.
+<details>
+
+<summary>FriedmanGSG10k</summary>
+
+<pre>Sample from the FriedmanGSG generator.
 
 This sample contains 10k instances sampled from the Friedman generator and presents
 global and slow gradual concept drifts that affect the data and happen after
@@ -78750,11 +81215,15 @@ global and slow gradual concept drifts that affect the data and happen after
     Task  Regression    
  Samples  10,000        
 Features  10            
-  Sparse  False         
+  Sparse  False         </pre>
 
-#### FriedmanLEA10k
+</details>
 
-Sample from the FriedmanLEA generator.
+<details>
+
+<summary>FriedmanLEA10k</summary>
+
+<pre>Sample from the FriedmanLEA generator.
 
 This sample contains 10k instances sampled from the Friedman generator and presents
 local-expanding abrupt concept drifts that locally affect the data and happen after
@@ -78764,11 +81233,15 @@ local-expanding abrupt concept drifts that locally affect the data and happen af
     Task  Regression    
  Samples  10,000        
 Features  10            
-  Sparse  False         
+  Sparse  False         </pre>
 
-#### TrumpApproval
+</details>
 
-Donald Trump approval ratings.
+<details>
+
+<summary>TrumpApproval</summary>
+
+<pre>Donald Trump approval ratings.
 
 This dataset was obtained by reshaping the data used by FiveThirtyEight for analyzing Donald
 Trump's approval ratings. It contains 5 features, which are approval ratings collected by
@@ -78780,7 +81253,1022 @@ this task is to see if we can reproduce FiveThirtyEight's model.
  Samples  1,001                                                                                                             
 Features  6                                                                                                                 
   Sparse  False                                                                                                             
-    Path  /Users/mastelini/miniconda3/envs/river-benchmarks/lib/python3.9/site-packages/river/datasets/trump_approval.csv.gz
+    Path  /Users/mastelini/miniconda3/envs/river-benchmarks/lib/python3.9/site-packages/river/datasets/trump_approval.csv.gz</pre>
+
+</details>
+
+### Models
+
+<details>
+
+<summary>Adaptive Model Rules</summary>
+
+<pre>Pipeline (
+  StandardScaler (
+    with_std=True
+  ),
+  AMRules (
+    n_min=200
+    delta=1e-07
+    tau=0.05
+    pred_type=&quot;adaptive&quot;
+    pred_model=LinearRegression (
+      optimizer=SGD (
+        lr=Constant (
+          learning_rate=0.01
+        )
+      )
+      loss=Squared ()
+      l2=0.
+      l1=0.
+      intercept_init=0.
+      intercept_lr=Constant (
+        learning_rate=0.01
+      )
+      clip_gradient=1e+12
+      initializer=Zeros ()
+    )
+    splitter=TEBSTSplitter (
+      digits=1
+    )
+    drift_detector=ADWIN (
+      delta=0.002
+      clock=32
+      max_buckets=5
+      min_window_length=5
+      grace_period=10
+    )
+    alpha=0.99
+    anomaly_threshold=-0.75
+    m_min=30
+    ordered_rule_set=True
+    min_samples_split=5
+  )
+)</pre>
+
+</details>
+
+<details>
+
+<summary>Adaptive Random Forest</summary>
+
+<pre>Pipeline (
+  StandardScaler (
+    with_std=True
+  ),
+  []
+)</pre>
+
+</details>
+
+<details>
+
+<summary>Bagging</summary>
+
+<pre>Pipeline (
+  StandardScaler (
+    with_std=True
+  ),
+  [HoeffdingAdaptiveTreeRegressor (
+    grace_period=200
+    max_depth=inf
+    delta=1e-07
+    tau=0.05
+    leaf_prediction=&quot;adaptive&quot;
+    leaf_model=LinearRegression (
+      optimizer=SGD (
+        lr=Constant (
+          learning_rate=0.01
+        )
+      )
+      loss=Squared ()
+      l2=0.
+      l1=0.
+      intercept_init=0.
+      intercept_lr=Constant (
+        learning_rate=0.01
+      )
+      clip_gradient=1e+12
+      initializer=Zeros ()
+    )
+    model_selector_decay=0.95
+    nominal_attributes=None
+    splitter=TEBSTSplitter (
+      digits=1
+    )
+    min_samples_split=5
+    bootstrap_sampling=False
+    drift_window_threshold=300
+    drift_detector=ADWIN (
+      delta=0.002
+      clock=32
+      max_buckets=5
+      min_window_length=5
+      grace_period=10
+    )
+    switch_significance=0.05
+    binary_split=False
+    max_size=500.
+    memory_estimate_period=1000000
+    stop_mem_management=False
+    remove_poor_attrs=False
+    merit_preprune=True
+    seed=None
+  ), HoeffdingAdaptiveTreeRegressor (
+    grace_period=200
+    max_depth=inf
+    delta=1e-07
+    tau=0.05
+    leaf_prediction=&quot;adaptive&quot;
+    leaf_model=LinearRegression (
+      optimizer=SGD (
+        lr=Constant (
+          learning_rate=0.01
+        )
+      )
+      loss=Squared ()
+      l2=0.
+      l1=0.
+      intercept_init=0.
+      intercept_lr=Constant (
+        learning_rate=0.01
+      )
+      clip_gradient=1e+12
+      initializer=Zeros ()
+    )
+    model_selector_decay=0.95
+    nominal_attributes=None
+    splitter=TEBSTSplitter (
+      digits=1
+    )
+    min_samples_split=5
+    bootstrap_sampling=False
+    drift_window_threshold=300
+    drift_detector=ADWIN (
+      delta=0.002
+      clock=32
+      max_buckets=5
+      min_window_length=5
+      grace_period=10
+    )
+    switch_significance=0.05
+    binary_split=False
+    max_size=500.
+    memory_estimate_period=1000000
+    stop_mem_management=False
+    remove_poor_attrs=False
+    merit_preprune=True
+    seed=None
+  ), HoeffdingAdaptiveTreeRegressor (
+    grace_period=200
+    max_depth=inf
+    delta=1e-07
+    tau=0.05
+    leaf_prediction=&quot;adaptive&quot;
+    leaf_model=LinearRegression (
+      optimizer=SGD (
+        lr=Constant (
+          learning_rate=0.01
+        )
+      )
+      loss=Squared ()
+      l2=0.
+      l1=0.
+      intercept_init=0.
+      intercept_lr=Constant (
+        learning_rate=0.01
+      )
+      clip_gradient=1e+12
+      initializer=Zeros ()
+    )
+    model_selector_decay=0.95
+    nominal_attributes=None
+    splitter=TEBSTSplitter (
+      digits=1
+    )
+    min_samples_split=5
+    bootstrap_sampling=False
+    drift_window_threshold=300
+    drift_detector=ADWIN (
+      delta=0.002
+      clock=32
+      max_buckets=5
+      min_window_length=5
+      grace_period=10
+    )
+    switch_significance=0.05
+    binary_split=False
+    max_size=500.
+    memory_estimate_period=1000000
+    stop_mem_management=False
+    remove_poor_attrs=False
+    merit_preprune=True
+    seed=None
+  ), HoeffdingAdaptiveTreeRegressor (
+    grace_period=200
+    max_depth=inf
+    delta=1e-07
+    tau=0.05
+    leaf_prediction=&quot;adaptive&quot;
+    leaf_model=LinearRegression (
+      optimizer=SGD (
+        lr=Constant (
+          learning_rate=0.01
+        )
+      )
+      loss=Squared ()
+      l2=0.
+      l1=0.
+      intercept_init=0.
+      intercept_lr=Constant (
+        learning_rate=0.01
+      )
+      clip_gradient=1e+12
+      initializer=Zeros ()
+    )
+    model_selector_decay=0.95
+    nominal_attributes=None
+    splitter=TEBSTSplitter (
+      digits=1
+    )
+    min_samples_split=5
+    bootstrap_sampling=False
+    drift_window_threshold=300
+    drift_detector=ADWIN (
+      delta=0.002
+      clock=32
+      max_buckets=5
+      min_window_length=5
+      grace_period=10
+    )
+    switch_significance=0.05
+    binary_split=False
+    max_size=500.
+    memory_estimate_period=1000000
+    stop_mem_management=False
+    remove_poor_attrs=False
+    merit_preprune=True
+    seed=None
+  ), HoeffdingAdaptiveTreeRegressor (
+    grace_period=200
+    max_depth=inf
+    delta=1e-07
+    tau=0.05
+    leaf_prediction=&quot;adaptive&quot;
+    leaf_model=LinearRegression (
+      optimizer=SGD (
+        lr=Constant (
+          learning_rate=0.01
+        )
+      )
+      loss=Squared ()
+      l2=0.
+      l1=0.
+      intercept_init=0.
+      intercept_lr=Constant (
+        learning_rate=0.01
+      )
+      clip_gradient=1e+12
+      initializer=Zeros ()
+    )
+    model_selector_decay=0.95
+    nominal_attributes=None
+    splitter=TEBSTSplitter (
+      digits=1
+    )
+    min_samples_split=5
+    bootstrap_sampling=False
+    drift_window_threshold=300
+    drift_detector=ADWIN (
+      delta=0.002
+      clock=32
+      max_buckets=5
+      min_window_length=5
+      grace_period=10
+    )
+    switch_significance=0.05
+    binary_split=False
+    max_size=500.
+    memory_estimate_period=1000000
+    stop_mem_management=False
+    remove_poor_attrs=False
+    merit_preprune=True
+    seed=None
+  ), HoeffdingAdaptiveTreeRegressor (
+    grace_period=200
+    max_depth=inf
+    delta=1e-07
+    tau=0.05
+    leaf_prediction=&quot;adaptive&quot;
+    leaf_model=LinearRegression (
+      optimizer=SGD (
+        lr=Constant (
+          learning_rate=0.01
+        )
+      )
+      loss=Squared ()
+      l2=0.
+      l1=0.
+      intercept_init=0.
+      intercept_lr=Constant (
+        learning_rate=0.01
+      )
+      clip_gradient=1e+12
+      initializer=Zeros ()
+    )
+    model_selector_decay=0.95
+    nominal_attributes=None
+    splitter=TEBSTSplitter (
+      digits=1
+    )
+    min_samples_split=5
+    bootstrap_sampling=False
+    drift_window_threshold=300
+    drift_detector=ADWIN (
+      delta=0.002
+      clock=32
+      max_buckets=5
+      min_window_length=5
+      grace_period=10
+    )
+    switch_significance=0.05
+    binary_split=False
+    max_size=500.
+    memory_estimate_period=1000000
+    stop_mem_management=False
+    remove_poor_attrs=False
+    merit_preprune=True
+    seed=None
+  ), HoeffdingAdaptiveTreeRegressor (
+    grace_period=200
+    max_depth=inf
+    delta=1e-07
+    tau=0.05
+    leaf_prediction=&quot;adaptive&quot;
+    leaf_model=LinearRegression (
+      optimizer=SGD (
+        lr=Constant (
+          learning_rate=0.01
+        )
+      )
+      loss=Squared ()
+      l2=0.
+      l1=0.
+      intercept_init=0.
+      intercept_lr=Constant (
+        learning_rate=0.01
+      )
+      clip_gradient=1e+12
+      initializer=Zeros ()
+    )
+    model_selector_decay=0.95
+    nominal_attributes=None
+    splitter=TEBSTSplitter (
+      digits=1
+    )
+    min_samples_split=5
+    bootstrap_sampling=False
+    drift_window_threshold=300
+    drift_detector=ADWIN (
+      delta=0.002
+      clock=32
+      max_buckets=5
+      min_window_length=5
+      grace_period=10
+    )
+    switch_significance=0.05
+    binary_split=False
+    max_size=500.
+    memory_estimate_period=1000000
+    stop_mem_management=False
+    remove_poor_attrs=False
+    merit_preprune=True
+    seed=None
+  ), HoeffdingAdaptiveTreeRegressor (
+    grace_period=200
+    max_depth=inf
+    delta=1e-07
+    tau=0.05
+    leaf_prediction=&quot;adaptive&quot;
+    leaf_model=LinearRegression (
+      optimizer=SGD (
+        lr=Constant (
+          learning_rate=0.01
+        )
+      )
+      loss=Squared ()
+      l2=0.
+      l1=0.
+      intercept_init=0.
+      intercept_lr=Constant (
+        learning_rate=0.01
+      )
+      clip_gradient=1e+12
+      initializer=Zeros ()
+    )
+    model_selector_decay=0.95
+    nominal_attributes=None
+    splitter=TEBSTSplitter (
+      digits=1
+    )
+    min_samples_split=5
+    bootstrap_sampling=False
+    drift_window_threshold=300
+    drift_detector=ADWIN (
+      delta=0.002
+      clock=32
+      max_buckets=5
+      min_window_length=5
+      grace_period=10
+    )
+    switch_significance=0.05
+    binary_split=False
+    max_size=500.
+    memory_estimate_period=1000000
+    stop_mem_management=False
+    remove_poor_attrs=False
+    merit_preprune=True
+    seed=None
+  ), HoeffdingAdaptiveTreeRegressor (
+    grace_period=200
+    max_depth=inf
+    delta=1e-07
+    tau=0.05
+    leaf_prediction=&quot;adaptive&quot;
+    leaf_model=LinearRegression (
+      optimizer=SGD (
+        lr=Constant (
+          learning_rate=0.01
+        )
+      )
+      loss=Squared ()
+      l2=0.
+      l1=0.
+      intercept_init=0.
+      intercept_lr=Constant (
+        learning_rate=0.01
+      )
+      clip_gradient=1e+12
+      initializer=Zeros ()
+    )
+    model_selector_decay=0.95
+    nominal_attributes=None
+    splitter=TEBSTSplitter (
+      digits=1
+    )
+    min_samples_split=5
+    bootstrap_sampling=False
+    drift_window_threshold=300
+    drift_detector=ADWIN (
+      delta=0.002
+      clock=32
+      max_buckets=5
+      min_window_length=5
+      grace_period=10
+    )
+    switch_significance=0.05
+    binary_split=False
+    max_size=500.
+    memory_estimate_period=1000000
+    stop_mem_management=False
+    remove_poor_attrs=False
+    merit_preprune=True
+    seed=None
+  ), HoeffdingAdaptiveTreeRegressor (
+    grace_period=200
+    max_depth=inf
+    delta=1e-07
+    tau=0.05
+    leaf_prediction=&quot;adaptive&quot;
+    leaf_model=LinearRegression (
+      optimizer=SGD (
+        lr=Constant (
+          learning_rate=0.01
+        )
+      )
+      loss=Squared ()
+      l2=0.
+      l1=0.
+      intercept_init=0.
+      intercept_lr=Constant (
+        learning_rate=0.01
+      )
+      clip_gradient=1e+12
+      initializer=Zeros ()
+    )
+    model_selector_decay=0.95
+    nominal_attributes=None
+    splitter=TEBSTSplitter (
+      digits=1
+    )
+    min_samples_split=5
+    bootstrap_sampling=False
+    drift_window_threshold=300
+    drift_detector=ADWIN (
+      delta=0.002
+      clock=32
+      max_buckets=5
+      min_window_length=5
+      grace_period=10
+    )
+    switch_significance=0.05
+    binary_split=False
+    max_size=500.
+    memory_estimate_period=1000000
+    stop_mem_management=False
+    remove_poor_attrs=False
+    merit_preprune=True
+    seed=None
+  )]
+)</pre>
+
+</details>
+
+<details>
+
+<summary>Exponentially Weighted Average</summary>
+
+<pre>Pipeline (
+  StandardScaler (
+    with_std=True
+  ),
+  [LinearRegression (
+    optimizer=SGD (
+      lr=Constant (
+        learning_rate=0.01
+      )
+    )
+    loss=Squared ()
+    l2=0.
+    l1=0.
+    intercept_init=0.
+    intercept_lr=Constant (
+      learning_rate=0.01
+    )
+    clip_gradient=1e+12
+    initializer=Zeros ()
+  ), HoeffdingAdaptiveTreeRegressor (
+    grace_period=200
+    max_depth=inf
+    delta=1e-07
+    tau=0.05
+    leaf_prediction=&quot;adaptive&quot;
+    leaf_model=LinearRegression (
+      optimizer=SGD (
+        lr=Constant (
+          learning_rate=0.01
+        )
+      )
+      loss=Squared ()
+      l2=0.
+      l1=0.
+      intercept_init=0.
+      intercept_lr=Constant (
+        learning_rate=0.01
+      )
+      clip_gradient=1e+12
+      initializer=Zeros ()
+    )
+    model_selector_decay=0.95
+    nominal_attributes=None
+    splitter=TEBSTSplitter (
+      digits=1
+    )
+    min_samples_split=5
+    bootstrap_sampling=True
+    drift_window_threshold=300
+    drift_detector=ADWIN (
+      delta=0.002
+      clock=32
+      max_buckets=5
+      min_window_length=5
+      grace_period=10
+    )
+    switch_significance=0.05
+    binary_split=False
+    max_size=500.
+    memory_estimate_period=1000000
+    stop_mem_management=False
+    remove_poor_attrs=False
+    merit_preprune=True
+    seed=None
+  ), KNNRegressor (
+    n_neighbors=5
+    window_size=100
+    aggregation_method=&quot;mean&quot;
+    min_distance_keep=0.
+    distance_func=functools.partial(&lt;function minkowski_distance at 0x163ae7430&gt;, p=2)
+  ), AMRules (
+    n_min=200
+    delta=1e-07
+    tau=0.05
+    pred_type=&quot;adaptive&quot;
+    pred_model=LinearRegression (
+      optimizer=SGD (
+        lr=Constant (
+          learning_rate=0.01
+        )
+      )
+      loss=Squared ()
+      l2=0.
+      l1=0.
+      intercept_init=0.
+      intercept_lr=Constant (
+        learning_rate=0.01
+      )
+      clip_gradient=1e+12
+      initializer=Zeros ()
+    )
+    splitter=TEBSTSplitter (
+      digits=1
+    )
+    drift_detector=ADWIN (
+      delta=0.002
+      clock=32
+      max_buckets=5
+      min_window_length=5
+      grace_period=10
+    )
+    alpha=0.99
+    anomaly_threshold=-0.75
+    m_min=30
+    ordered_rule_set=True
+    min_samples_split=5
+  )]
+)</pre>
+
+</details>
+
+<details>
+
+<summary>Hoeffding Adaptive Tree</summary>
+
+<pre>Pipeline (
+  StandardScaler (
+    with_std=True
+  ),
+  HoeffdingAdaptiveTreeRegressor (
+    grace_period=200
+    max_depth=inf
+    delta=1e-07
+    tau=0.05
+    leaf_prediction=&quot;adaptive&quot;
+    leaf_model=LinearRegression (
+      optimizer=SGD (
+        lr=Constant (
+          learning_rate=0.01
+        )
+      )
+      loss=Squared ()
+      l2=0.
+      l1=0.
+      intercept_init=0.
+      intercept_lr=Constant (
+        learning_rate=0.01
+      )
+      clip_gradient=1e+12
+      initializer=Zeros ()
+    )
+    model_selector_decay=0.95
+    nominal_attributes=None
+    splitter=TEBSTSplitter (
+      digits=1
+    )
+    min_samples_split=5
+    bootstrap_sampling=True
+    drift_window_threshold=300
+    drift_detector=ADWIN (
+      delta=0.002
+      clock=32
+      max_buckets=5
+      min_window_length=5
+      grace_period=10
+    )
+    switch_significance=0.05
+    binary_split=False
+    max_size=500.
+    memory_estimate_period=1000000
+    stop_mem_management=False
+    remove_poor_attrs=False
+    merit_preprune=True
+    seed=42
+  )
+)</pre>
+
+</details>
+
+<details>
+
+<summary>Hoeffding Tree</summary>
+
+<pre>Pipeline (
+  StandardScaler (
+    with_std=True
+  ),
+  HoeffdingTreeRegressor (
+    grace_period=200
+    max_depth=inf
+    delta=1e-07
+    tau=0.05
+    leaf_prediction=&quot;adaptive&quot;
+    leaf_model=LinearRegression (
+      optimizer=SGD (
+        lr=Constant (
+          learning_rate=0.01
+        )
+      )
+      loss=Squared ()
+      l2=0.
+      l1=0.
+      intercept_init=0.
+      intercept_lr=Constant (
+        learning_rate=0.01
+      )
+      clip_gradient=1e+12
+      initializer=Zeros ()
+    )
+    model_selector_decay=0.95
+    nominal_attributes=None
+    splitter=TEBSTSplitter (
+      digits=1
+    )
+    min_samples_split=5
+    binary_split=False
+    max_size=500.
+    memory_estimate_period=1000000
+    stop_mem_management=False
+    remove_poor_attrs=False
+    merit_preprune=True
+  )
+)</pre>
+
+</details>
+
+<details>
+
+<summary>Linear Regression</summary>
+
+<pre>Pipeline (
+  StandardScaler (
+    with_std=True
+  ),
+  LinearRegression (
+    optimizer=SGD (
+      lr=Constant (
+        learning_rate=0.01
+      )
+    )
+    loss=Squared ()
+    l2=0.
+    l1=0.
+    intercept_init=0.
+    intercept_lr=Constant (
+      learning_rate=0.01
+    )
+    clip_gradient=1e+12
+    initializer=Zeros ()
+  )
+)</pre>
+
+</details>
+
+<details>
+
+<summary>Linear Regression with l1 regularization</summary>
+
+<pre>Pipeline (
+  StandardScaler (
+    with_std=True
+  ),
+  LinearRegression (
+    optimizer=SGD (
+      lr=Constant (
+        learning_rate=0.01
+      )
+    )
+    loss=Squared ()
+    l2=0.
+    l1=1.
+    intercept_init=0.
+    intercept_lr=Constant (
+      learning_rate=0.01
+    )
+    clip_gradient=1e+12
+    initializer=Zeros ()
+  )
+)</pre>
+
+</details>
+
+<details>
+
+<summary>Linear Regression with l2 regularization</summary>
+
+<pre>Pipeline (
+  StandardScaler (
+    with_std=True
+  ),
+  LinearRegression (
+    optimizer=SGD (
+      lr=Constant (
+        learning_rate=0.01
+      )
+    )
+    loss=Squared ()
+    l2=1.
+    l1=0.
+    intercept_init=0.
+    intercept_lr=Constant (
+      learning_rate=0.01
+    )
+    clip_gradient=1e+12
+    initializer=Zeros ()
+  )
+)</pre>
+
+</details>
+
+<details>
+
+<summary>Multi-layer Perceptron</summary>
+
+<pre>Pipeline (
+  StandardScaler (
+    with_std=True
+  ),
+  MLPRegressor (
+    hidden_dims=(5,)
+    activations=(&lt;class 'river.neural_net.activations.ReLU'&gt;, &lt;class 'river.neural_net.activations.ReLU'&gt;, &lt;class 'river.neural_net.activations.Identity'&gt;)
+    loss=Squared ()
+    optimizer=SGD (
+      lr=Constant (
+        learning_rate=0.001
+      )
+    )
+    seed=42
+  )
+)</pre>
+
+</details>
+
+<details>
+
+<summary>Passive-Aggressive Regressor, mode 1</summary>
+
+<pre>Pipeline (
+  StandardScaler (
+    with_std=True
+  ),
+  PARegressor (
+    C=1.
+    mode=1
+    eps=0.1
+    learn_intercept=True
+  )
+)</pre>
+
+</details>
+
+<details>
+
+<summary>Passive-Aggressive Regressor, mode 2</summary>
+
+<pre>Pipeline (
+  StandardScaler (
+    with_std=True
+  ),
+  PARegressor (
+    C=1.
+    mode=2
+    eps=0.1
+    learn_intercept=True
+  )
+)</pre>
+
+</details>
+
+<details>
+
+<summary>Stochastic Gradient Tree</summary>
+
+<pre>SGTRegressor (
+  delta=1e-07
+  grace_period=200
+  init_pred=0.
+  max_depth=inf
+  lambda_value=0.1
+  gamma=1.
+  nominal_attributes=[]
+  feature_quantizer=StaticQuantizer (
+    n_bins=64
+    warm_start=100
+    buckets=None
+  )
+)</pre>
+
+</details>
+
+<details>
+
+<summary>Streaming Random Patches</summary>
+
+<pre>Pipeline (
+  StandardScaler (
+    with_std=True
+  ),
+  SRPRegressor (
+    model=HoeffdingTreeRegressor (
+      grace_period=50
+      max_depth=inf
+      delta=0.01
+      tau=0.05
+      leaf_prediction=&quot;adaptive&quot;
+      leaf_model=LinearRegression (
+        optimizer=SGD (
+          lr=Constant (
+            learning_rate=0.01
+          )
+        )
+        loss=Squared ()
+        l2=0.
+        l1=0.
+        intercept_init=0.
+        intercept_lr=Constant (
+          learning_rate=0.01
+        )
+        clip_gradient=1e+12
+        initializer=Zeros ()
+      )
+      model_selector_decay=0.95
+      nominal_attributes=None
+      splitter=TEBSTSplitter (
+        digits=1
+      )
+      min_samples_split=5
+      binary_split=False
+      max_size=500.
+      memory_estimate_period=1000000
+      stop_mem_management=False
+      remove_poor_attrs=False
+      merit_preprune=True
+    )
+    n_models=10
+    subspace_size=0.6
+    training_method=&quot;patches&quot;
+    lam=6
+    drift_detector=ADWIN (
+      delta=1e-05
+      clock=32
+      max_buckets=5
+      min_window_length=5
+      grace_period=10
+    )
+    warning_detector=ADWIN (
+      delta=0.0001
+      clock=32
+      max_buckets=5
+      min_window_length=5
+      grace_period=10
+    )
+    disable_detector=&quot;off&quot;
+    disable_weighted_vote=True
+    drift_detection_criteria=&quot;error&quot;
+    aggregation_method=&quot;mean&quot;
+    seed=42
+    metric=MAE ()
+  )
+)</pre>
+
+</details>
+
+<details>
+
+<summary>[baseline] Mean predictor</summary>
+
+<pre>StatisticRegressor (
+  statistic=Mean ()
+)</pre>
+
+</details>
+
+<details>
+
+<summary>k-Nearest Neighbors</summary>
+
+<pre>Pipeline (
+  StandardScaler (
+    with_std=True
+  ),
+  KNNRegressor (
+    n_neighbors=5
+    window_size=100
+    aggregation_method=&quot;mean&quot;
+    min_distance_keep=0.
+    distance_func=functools.partial(&lt;function minkowski_distance at 0x163ae7430&gt;, p=2)
+  )
+)</pre>
+
+</details>
 
 # Environment
 

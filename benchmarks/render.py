@@ -95,13 +95,16 @@ hide:
 
             print_('### Datasets')
             for dataset_name, dataset_details in track_details['Dataset'].items():
-                print_(f'#### {dataset_name}')
-                print_(dataset_details)
-
-            #print_('### Models')
-            #for model_name, model_details in track_details['Model'].items():
-            #    print_(f'#### {model_name}')
-            #    print_(model_details)
+                print_(f'<details>')
+                print_(f'<summary>{dataset_name}</summary>')
+                print_(pre(dataset_details))
+                print_(f'</details>')
+            print_('### Models')
+            for model_name, model_details in track_details['Model'].items():
+                print_(f'<details>')
+                print_(f'<summary>{model_name}</summary>')
+                print_(pre(model_details))
+                print_(f'</details>')
 
         print_("# Environment")
         print_(
