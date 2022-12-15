@@ -1,6 +1,8 @@
 import copy
 import math
 
+__all__ = ["normalize_values_in_dict", "scale_values_in_dict"]
+
 
 def normalize_values_in_dict(dictionary, factor=None, inplace=True, raise_error=False):
     """Normalize the values in a dictionary using the given factor.
