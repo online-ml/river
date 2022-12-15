@@ -2,7 +2,7 @@ import random
 import typing
 
 from river import base, drift
-from river.utils.skmultiflow_utils import add_dict_values, normalize_values_in_dict
+from river.utils.norm import normalize_values_in_dict
 
 from .hoeffding_tree_classifier import HoeffdingTreeClassifier
 from .nodes.branch import DTBranch
@@ -15,6 +15,7 @@ from .nodes.hatc_nodes import (
     AdaNumMultiwayBranchClass,
 )
 from .splitter import Splitter
+from .utils import add_dict_values
 
 
 class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):

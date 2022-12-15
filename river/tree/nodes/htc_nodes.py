@@ -1,7 +1,9 @@
-from river.utils.skmultiflow_utils import normalize_values_in_dict, round_sig_fig
+from river.utils.norm import normalize_values_in_dict
 
 from ..splitter.nominal_splitter_classif import NominalSplitterClassif
 from ..utils import do_naive_bayes_prediction
+from ..utils import round_sig_fig
+
 from .leaf import HTLeaf
 
 

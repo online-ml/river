@@ -1,9 +1,11 @@
 import collections
 import copy
 
+import random
+
 from river import base, linear_model
 from river.utils.math import prod
-from river.utils.skmultiflow_utils import check_random_state
+
 
 __all__ = [
     "ClassifierChain",
@@ -400,7 +402,7 @@ class MonteCarloClassifierChain(ProbabilisticClassifierChain):
     ...    model = model.learn_one(x, y)
 
     >>> metric
-    MicroAverage(Jaccard): 51.87%
+    MicroAverage(Jaccard): 51.92%
 
     References
     ----------
@@ -413,7 +415,7 @@ class MonteCarloClassifierChain(ProbabilisticClassifierChain):
     def __init__(self, model: base.Classifier, m: int = 10, seed: int = None):
         ClassifierChain.__init__(self, model=model, order=None)
         self.seed = seed
-        self._rng = check_random_state(seed)
+        self._rng = random.Random(seed)
         self.m = m
 
     def _sample(self, x):
@@ -427,7 +429,7 @@ class MonteCarloClassifierChain(ProbabilisticClassifierChain):
 
             y_pred = clf.predict_proba_one(x)
             if y_pred:
-                y_val = self._rng.choice(len(y_pred), 1, p=[v for v in y_pred.values()])[0]
+                y_val = self._rng.choices(range(len(y_pred)), k=1, weights=[v for v in y_pred.values()])[0]
                 # Extend features
                 x[label] = y_val
                 y[label] = y_val

@@ -1,7 +1,7 @@
 import typing
 
 from river import base, tree
-from river.utils.skmultiflow_utils import normalize_values_in_dict
+from river.utils.norm import normalize_values_in_dict
 
 from .splitter import Splitter
 

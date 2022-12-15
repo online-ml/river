@@ -6,7 +6,7 @@ import typing
 from abc import ABC, abstractmethod
 
 from river import base
-from river.utils.skmultiflow_utils import calculate_object_size, normalize_values_in_dict
+from river.utils.norm import normalize_values_in_dict
 
 from .nodes.branch import (
     DTBranch,
@@ -16,6 +16,8 @@ from .nodes.branch import (
     NumericMultiwayBranch,
 )
 from .nodes.leaf import HTLeaf
+
+from .utils import calculate_object_size
 
 
 class HoeffdingTree(ABC):
