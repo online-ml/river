@@ -12,8 +12,8 @@
 
 ## datasets
 
-- Remove unnecessary Numpy usage in the `synth` submodule.
-- Change `np.random.RandomState` to `np.random.default_rng` where necessary.
+- Removed unnecessary Numpy usage in the `synth` submodule.
+- Changed `np.random.RandomState` to `np.random.default_rng` where necessary.
 
 ## linear_model
 
@@ -36,3 +36,7 @@
 - Renamed `alpha` to `fading_factor` in `stats.Entropy`.
 - Renamed `alpha` to `fading_factor` in `stats.EWMean`.
 - Renamed `alpha` to `fading_factor` in `stats.EWVar`.
+
+## utils
+
+- Removed artifacts from the merger.
