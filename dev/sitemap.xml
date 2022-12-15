@@ -2056,6 +2056,16 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://riverml.xyz/dev/api/utils/norm/normalize-values-in-dict/</loc>
+         <lastmod>2022-12-15</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://riverml.xyz/dev/api/utils/norm/scale-values-in-dict/</loc>
+         <lastmod>2022-12-15</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://riverml.xyz/dev/api/utils/pretty/humanize-bytes/</loc>
          <lastmod>2022-12-15</lastmod>
          <changefreq>daily</changefreq>
