@@ -1,11 +1,9 @@
 import collections
 import copy
-
 import random
 
 from river import base, linear_model
 from river.utils.math import prod
-
 
 __all__ = [
     "ClassifierChain",
@@ -429,7 +427,9 @@ class MonteCarloClassifierChain(ProbabilisticClassifierChain):
 
             y_pred = clf.predict_proba_one(x)
             if y_pred:
-                y_val = self._rng.choices(range(len(y_pred)), k=1, weights=[v for v in y_pred.values()])[0]
+                y_val = self._rng.choices(
+                    range(len(y_pred)), k=1, weights=[v for v in y_pred.values()]
+                )[0]
                 # Extend features
                 x[label] = y_val
                 y[label] = y_val

@@ -16,7 +16,6 @@ from .nodes.branch import (
     NumericMultiwayBranch,
 )
 from .nodes.leaf import HTLeaf
-
 from .utils import calculate_object_size
 
 
