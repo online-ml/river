@@ -10,6 +10,11 @@
 - Added a `conf.Interval` dataclass to represent predictive intervals.
 - Added `conf.RegressionJackknife`.
 
+## datasets
+
+- Remove unnecessary Numpy usage in the `synth` submodule.
+- Change `np.random.RandomState` to `np.random.default_rng` where necessary.
+
 ## linear_model
 
 - Renamed `use_dist` to `with_dist` in `linear_model.BayesianLinearRegression`'s `predict_one` method.
