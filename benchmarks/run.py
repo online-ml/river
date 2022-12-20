@@ -58,4 +58,4 @@ if __name__ == '__main__':
 
     # Create details for each model
     for i, track in enumerate(TRACKS):
-        run_track(models=MODELS[track.name].keys(), no_track=i, n_workers=1)
+        run_track(models=MODELS[track.name].keys(), no_track=i, n_workers=70)
