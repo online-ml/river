@@ -10610,7 +10610,6 @@
 </ul>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">stats</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">scipy.stats</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="o">&gt;&gt;&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
@@ -10630,18 +10629,6 @@
 <span class="mf">0.4536710660918704</span>
 <span class="mf">0.4123070197493227</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
-<span class="o">...</span>     <span class="nb">print</span><span class="p">(</span><span class="n">scipy</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">skew</span><span class="p">(</span><span class="n">X</span><span class="p">[:</span><span class="n">i</span><span class="p">],</span> <span class="n">bias</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
-<span class="mf">0.0</span>
-<span class="o">-</span><span class="mf">1.4802398132849874</span>
-<span class="mf">0.5127437186677893</span>
-<span class="mf">0.7803466510704746</span>
-<span class="mf">1.056115628922055</span>
-<span class="mf">0.5057840774320389</span>
-<span class="mf">0.3478402420400927</span>
-<span class="mf">0.4536710660918703</span>
-<span class="mf">0.4123070197493223</span>
-
 <span class="o">&gt;&gt;&gt;</span> <span class="n">skew</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">Skew</span><span class="p">(</span><span class="n">bias</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">X</span><span class="p">:</span>
 <span class="o">...</span>     <span class="nb">print</span><span class="p">(</span><span class="n">skew</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">())</span>
@@ -10655,18 +10642,6 @@
 <span class="mf">0.278892645224261</span>
 <span class="mf">0.37425953513864063</span>
 <span class="mf">0.3476878073823696</span>
-
-<span class="o">&gt;&gt;&gt;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
-<span class="o">...</span>     <span class="nb">print</span><span class="p">(</span><span class="n">scipy</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">skew</span><span class="p">(</span><span class="n">X</span><span class="p">[:</span><span class="n">i</span><span class="p">],</span> <span class="n">bias</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
-<span class="mf">0.0</span>
-<span class="o">-</span><span class="mf">0.604305373250144</span>
-<span class="mf">0.29603272399813796</span>
-<span class="mf">0.5234724473423671</span>
-<span class="mf">0.7712778043924865</span>
-<span class="mf">0.39022088752624845</span>
-<span class="mf">0.2788926452242604</span>
-<span class="mf">0.3742595351386406</span>
-<span class="mf">0.34768780738236926</span>
 </code></pre></div>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <details class="- note">
