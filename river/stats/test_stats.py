@@ -84,8 +84,6 @@ def test_repr_with_no_updates(stat):
 )
 def test_univariate(stat, func):
 
-    np.warnings.filterwarnings("ignore")
-
     X = [random.random() for _ in range(30)]
 
     for i, x in enumerate(X):
@@ -109,8 +107,6 @@ def test_univariate(stat, func):
 def test_univariate_frequency_weights(stat, func):
     """https://www.wikiwand.com/en/Weighted_arithmetic_mean"""
 
-    np.warnings.filterwarnings("ignore")
-
     X = [random.random() for _ in range(30)]
     W = [random.randint(1, 5) for _ in range(30)]
 
@@ -128,8 +124,6 @@ def test_univariate_frequency_weights(stat, func):
 )
 def test_univariate_reliability_weights(stat, func):
     """https://www.wikiwand.com/en/Weighted_arithmetic_mean"""
-
-    np.warnings.filterwarnings("ignore")
 
     X = [random.random() for _ in range(30)]
     W = [random.random() for _ in range(30)]
@@ -150,30 +144,27 @@ def test_univariate_reliability_weights(stat, func):
         (utils.Rolling(stats.Var(ddof=0), 10), np.var),  # type: ignore
         (
             stats.RollingQuantile(0.0, 10),
-            functools.partial(np.quantile, q=0.0, interpolation="linear"),
+            functools.partial(np.quantile, q=0.0, method="linear"),
         ),
         (
             stats.RollingQuantile(0.25, 10),
-            functools.partial(np.quantile, q=0.25, interpolation="linear"),
+            functools.partial(np.quantile, q=0.25, method="linear"),
         ),
         (
             stats.RollingQuantile(0.5, 10),
-            functools.partial(np.quantile, q=0.5, interpolation="linear"),
+            functools.partial(np.quantile, q=0.5, method="linear"),
         ),
         (
             stats.RollingQuantile(0.75, 10),
-            functools.partial(np.quantile, q=0.75, interpolation="linear"),
+            functools.partial(np.quantile, q=0.75, method="linear"),
         ),
         (
             stats.RollingQuantile(1, 10),
-            functools.partial(np.quantile, q=1, interpolation="linear"),
+            functools.partial(np.quantile, q=1, method="linear"),
         ),
     ],
 )
 def test_rolling_univariate(stat, func):
-
-    np.warnings.filterwarnings("ignore")
-
     def tail(iterable, n):
         return collections.deque(iterable, maxlen=n)
 
@@ -195,9 +186,6 @@ def test_rolling_univariate(stat, func):
     ],
 )
 def test_rolling_univariate_sample_weights(stat, func):
-
-    np.warnings.filterwarnings("ignore")
-
     def tail(iterable, n):
         return collections.deque(iterable, maxlen=n)
 
@@ -222,9 +210,6 @@ def test_rolling_univariate_sample_weights(stat, func):
     ],
 )
 def test_rolling_univariate_reliability_weights(stat, func):
-
-    np.warnings.filterwarnings("ignore")
-
     def tail(iterable, n):
         return collections.deque(iterable, maxlen=n)
 
@@ -249,8 +234,6 @@ def test_rolling_univariate_reliability_weights(stat, func):
 )
 def test_bivariate(stat, func):
 
-    np.warnings.filterwarnings("ignore")
-
     X = [random.random() for _ in range(30)]
     Y = [random.random() * x for x in X]
 
@@ -271,8 +254,7 @@ def test_bivariate(stat, func):
 )
 def test_rolling_bivariate(stat, func):
 
-    # Enough already
-    np.warnings.filterwarnings("ignore")
+    # Enough alread
 
     def tail(iterable, n):
         return collections.deque(iterable, maxlen=n)
