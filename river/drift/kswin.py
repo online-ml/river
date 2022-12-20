@@ -2,6 +2,7 @@ import collections
 import itertools
 import random
 import typing
+import warnings
 
 from scipy import stats
 
@@ -141,7 +142,10 @@ class KSWIN(DriftDetector):
                 itertools.islice(self.window, self.window_size - self.stat_size, self.window_size)
             )
 
-            st, self.p_value = stats.ks_2samp(rnd_window, most_recent)
+            # ks_2samp raises a warning when method="auto"
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore", category=RuntimeWarning)
+                st, self.p_value = stats.ks_2samp(rnd_window, most_recent, method="auto")
 
             if self.p_value <= self.alpha and st > 0.1:
                 self._drift_detected = True
