@@ -32,12 +32,12 @@ def run_dataset(model_str,no_dataset, no_track):
             "track": track.name,
             "model": model_name,
             "dataset": dataset.__class__.__name__,
-            "Memory": i['Memory'],
-            "Time": time,
         }
         for k, v in i.items():
             if isinstance(v, metrics.base.Metric):
                 res[k] = v.get()
+        res["Memory"] = i['Memory'] / 1024 ** 2
+        res["Time"] = time
         results.append(res)
     return results
 
@@ -58,4 +58,4 @@ if __name__ == '__main__':
 
     # Create details for each model
     for i, track in enumerate(TRACKS):
-        run_track(models=MODELS[track.name].keys(), no_track=i, n_workers=70)
+        run_track(models=MODELS[track.name].keys(), no_track=i, n_workers=1)
