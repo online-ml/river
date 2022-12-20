@@ -53,7 +53,7 @@ def test_memory_usage_class(dataset, model):
     for x, y in dataset:
         model.learn_one(x, y)
 
-    assert model._raw_memory_usage / (2**20) < 0.05
+    assert model._raw_memory_usage / (2**20) < 0.065
 
 
 @pytest.mark.parametrize(

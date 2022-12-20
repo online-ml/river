@@ -1,9 +1,8 @@
 from __future__ import annotations
 
-import numpy as np
+import random
 
 from river import datasets
-from river.utils.skmultiflow_utils import check_random_state
 
 
 class Agrawal(datasets.base.SyntheticDataset):
@@ -43,10 +42,7 @@ class Agrawal(datasets.base.SyntheticDataset):
         The classification function to use for the generation.
         Valid values are from 0 to 9.
     seed
-        If int, `seed` is used to seed the random number generator;
-        If RandomState instance, `seed` is the random number generator;
-        If None, the random number generator is the `RandomState` instance used
-        by `np.random`.
+        Random seed for reproducibility.
     balance_classes
         If True, the class distribution will converge to a uniform distribution.
     perturbation
@@ -84,11 +80,11 @@ class Agrawal(datasets.base.SyntheticDataset):
 
     >>> for x, y in dataset.take(5):
     ...     print(list(x.values()), y)
-    [68690.2154, 81303.5729, 62, 4, 6, 2, 419982.4410, 11, 433088.0728] 1
-    [98144.9515, 0, 43, 2, 1, 7, 266488.5281, 6, 389.3829] 0
-    [148987.502, 0, 52, 3, 11, 8, 79122.9140, 27, 199930.4858] 0
-    [26066.5362, 83031.6639, 34, 2, 11, 6, 444969.2657, 25, 23225.2063] 1
-    [98980.8307, 0, 40, 0, 6, 1, 1159108.4298, 28, 281644.1089] 0
+    [103125.4837, 0, 21, 2, 8, 3, 319768.9642, 4, 338349.7437] 1
+    [135983.3438, 0, 25, 4, 14, 0, 423837.7755, 7, 116330.4466] 1
+    [98262.4347, 0, 55, 1, 18, 6, 144088.1244, 19, 139095.3541] 0
+    [133009.0417, 0, 68, 1, 14, 5, 233361.4025, 7, 478606.5361] 1
+    [63757.2908, 16955.9382, 26, 2, 12, 4, 522851.3093, 24, 229712.4398] 1
 
     Notes
     -----
@@ -110,7 +106,7 @@ class Agrawal(datasets.base.SyntheticDataset):
     def __init__(
         self,
         classification_function: int = 0,
-        seed: int | np.random.RandomState | None = None,
+        seed: int | None = None,
         balance_classes: bool = False,
         perturbation: float = 0.0,
     ):
@@ -159,22 +155,22 @@ class Agrawal(datasets.base.SyntheticDataset):
         self.target_values = [i for i in range(self.n_classes)]
 
     def __iter__(self):
-        self._rng = check_random_state(self.seed)
+        self._rng = random.Random(self.seed)
         self._next_class_should_be_zero = False
 
         while True:
             y = 0
             desired_class_found = False
             while not desired_class_found:
-                salary = 20000 + 130000 * self._rng.rand()
-                commission = 0 if (salary >= 75000) else (10000 + 75000 * self._rng.rand())
-                age = 20 + self._rng.randint(61)
-                elevel = self._rng.randint(5)
-                car = self._rng.randint(20)
-                zipcode = self._rng.randint(9)
-                hvalue = (9 - zipcode) * 100000 * (0.5 + self._rng.rand())
-                hyears = 1 + self._rng.randint(30)
-                loan = self._rng.rand() * 500000
+                salary = 20000 + 130000 * self._rng.random()
+                commission = 0 if (salary >= 75000) else (10000 + 75000 * self._rng.random())
+                age = self._rng.randint(20, 80)
+                elevel = self._rng.randint(0, 4)
+                car = self._rng.randint(1, 20)
+                zipcode = self._rng.randint(0, 8)
+                hvalue = (8 - zipcode) * 100000 * (0.5 + self._rng.random())
+                hyears = self._rng.randint(1, 30)
+                loan = self._rng.random() * 500000
                 y = self._classification_functions[self.classification_function](
                     salary, commission, age, elevel, car, zipcode, hvalue, hyears, loan
                 )
@@ -191,9 +187,9 @@ class Agrawal(datasets.base.SyntheticDataset):
                 salary = self._perturb_value(salary, 20000, 150000)
                 if commission > 0:
                     commission = self._perturb_value(commission, 10000, 75000)
-                age = np.round(self._perturb_value(age, 20, 80))
+                age = round(self._perturb_value(age, 20, 80))
                 hvalue = self._perturb_value(hvalue, (9 - zipcode) * 100000, 0, 135000)
-                hyears = np.round(self._perturb_value(hyears, 1, 30))
+                hyears = round(self._perturb_value(hyears, 1, 30))
                 loan = self._perturb_value(loan, 0, 500000)
 
             x = dict()
@@ -205,7 +201,7 @@ class Agrawal(datasets.base.SyntheticDataset):
     def _perturb_value(self, val, val_min, val_max, val_range=None):
         if val_range is None:
             val_range = val_max - val_min
-        val += val_range * (2 * (self._rng.rand() - 0.5)) * self.perturbation
+        val += val_range * (2 * (self._rng.random() - 0.5)) * self.perturbation
         if val < val_min:
             val = val_min
         elif val > val_max:
@@ -217,9 +213,9 @@ class Agrawal(datasets.base.SyntheticDataset):
         Generate drift by switching the classification function randomly.
 
         """
-        new_function = self._rng.randint(10)
+        new_function = self._rng.randint(0, 9)
         while new_function == self.classification_function:
-            new_function = self._rng.randint(10)
+            new_function = self._rng.randint(0, 9)
         self.classification_function = new_function
 
     @staticmethod

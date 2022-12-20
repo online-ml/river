@@ -106,7 +106,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
     >>> metric = metrics.Accuracy()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    Accuracy: 87.89%
+    Accuracy: 87.29%
     """
 
     def __init__(
@@ -208,6 +208,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
         Returns
         -------
         self
+
         """
         # Updates the set of observed classes
         self.classes.add(y)

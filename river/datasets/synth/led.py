@@ -1,9 +1,8 @@
 from __future__ import annotations
 
-import numpy as np
+import random
 
 from river import datasets
-from river.utils.skmultiflow_utils import check_random_state
 
 
 class LED(datasets.base.SyntheticDataset):
@@ -20,10 +19,7 @@ class LED(datasets.base.SyntheticDataset):
     Parameters
     ----------
     seed
-        If int, `seed` is used to seed the random number generator;
-        If RandomState instance, `seed` is the random number generator;
-        If None, the random number generator is the `RandomState` instance used
-        by `np.random`.
+        Random seed for reproducibility.
     noise_percentage
         The probability that noise will happen in the generation. At each
         new sample generated, a random number is generated, and if it is equal
@@ -39,11 +35,11 @@ class LED(datasets.base.SyntheticDataset):
 
     >>> for x, y in dataset.take(5):
     ...     print(x, y)
-    {0: 0, 1: 1, 2: 1, 3: 1, 4: 0, 5: 0, 6: 0} 4
-    {0: 0, 1: 1, 2: 0, 3: 1, 4: 0, 5: 0, 6: 0} 4
-    {0: 1, 1: 0, 2: 1, 3: 1, 4: 0, 5: 0, 6: 1} 3
-    {0: 0, 1: 1, 2: 1, 3: 0, 4: 0, 5: 1, 6: 1} 0
-    {0: 1, 1: 1, 2: 1, 3: 1, 4: 0, 5: 1, 6: 0} 4
+    {0: 1, 1: 0, 2: 1, 3: 0, 4: 0, 5: 1, 6: 0} 7
+    {0: 1, 1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 6: 0} 8
+    {0: 1, 1: 1, 2: 1, 3: 1, 4: 0, 5: 1, 6: 0} 9
+    {0: 0, 1: 0, 2: 1, 3: 0, 4: 0, 5: 1, 6: 0} 1
+    {0: 0, 1: 1, 2: 1, 3: 0, 4: 0, 5: 0, 6: 0} 1
 
     Notes
     -----
@@ -59,7 +55,7 @@ class LED(datasets.base.SyntheticDataset):
           Monterey, CA,1984.
 
     [^2]: A. Asuncion and D. J. Newman. UCI Machine Learning Repository
-          [http://www.ics.uci.edu/∼mlearn/mlrepository.html].
+          [http://www.ics.uci.edu/~mlearn/mlrepository.html].
           University of California, Irvine, School of Information and
           Computer Sciences,2007.
 
@@ -67,25 +63,22 @@ class LED(datasets.base.SyntheticDataset):
 
     _N_RELEVANT_FEATURES = 7
     _N_FEATURES_INCLUDING_NOISE = 24
-    _ORIGINAL_INSTANCES = np.array(
-        [
-            [1, 1, 1, 0, 1, 1, 1],
-            [0, 0, 1, 0, 0, 1, 0],
-            [1, 0, 1, 1, 1, 0, 1],
-            [1, 0, 1, 1, 0, 1, 1],
-            [0, 1, 1, 1, 0, 1, 0],
-            [1, 1, 0, 1, 0, 1, 1],
-            [1, 1, 0, 1, 1, 1, 1],
-            [1, 0, 1, 0, 0, 1, 0],
-            [1, 1, 1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 0, 1, 1],
-        ],
-        dtype=int,
-    )
+    _ORIGINAL_INSTANCES = [
+        [1, 1, 1, 0, 1, 1, 1],
+        [0, 0, 1, 0, 0, 1, 0],
+        [1, 0, 1, 1, 1, 0, 1],
+        [1, 0, 1, 1, 0, 1, 1],
+        [0, 1, 1, 1, 0, 1, 0],
+        [1, 1, 0, 1, 0, 1, 1],
+        [1, 1, 0, 1, 1, 1, 1],
+        [1, 0, 1, 0, 0, 1, 0],
+        [1, 1, 1, 1, 1, 1, 1],
+        [1, 1, 1, 1, 0, 1, 1],
+    ]
 
     def __init__(
         self,
-        seed: int | np.random.RandomState | None = None,
+        seed: int | None = None,
         noise_percentage: float = 0.0,
         irrelevant_features: bool = False,
     ):
@@ -98,7 +91,7 @@ class LED(datasets.base.SyntheticDataset):
             task=datasets.base.MULTI_CLF,
         )
         self.seed = seed
-        self._rng = None  # This is the actual random_state object used internally
+        self._rng = None
         if not (0.0 <= noise_percentage <= 1.0):
             raise ValueError(
                 f"Invalid noise_percentage ({noise_percentage}). " "Valid range is [0.0, 1.0]"
@@ -109,21 +102,21 @@ class LED(datasets.base.SyntheticDataset):
         self.target_values = [i for i in range(self.n_classes)]
 
     def __iter__(self):
-        self._rng = check_random_state(self.seed)
+        self._rng = random.Random(self.seed)
 
         while True:
             x = dict()
-            y = self._rng.randint(self.n_classes)
+            y = self._rng.randint(0, self.n_classes - 1)
 
             for i in range(self._N_RELEVANT_FEATURES):
-                if (0.01 + self._rng.rand()) <= self.noise_percentage:
-                    x[i] = int(self._ORIGINAL_INSTANCES[y, i] == 0)
+                if (0.01 + self._rng.random()) <= self.noise_percentage:
+                    x[i] = int(self._ORIGINAL_INSTANCES[y][i] == 0)
                 else:
-                    x[i] = self._ORIGINAL_INSTANCES[y, i]
+                    x[i] = self._ORIGINAL_INSTANCES[y][i]
 
             if self.irrelevant_features:
                 for i in range(self._N_RELEVANT_FEATURES, self._N_FEATURES_INCLUDING_NOISE):
-                    x[i] = self._rng.randint(2)
+                    x[i] = self._rng.choice([0, 1])
 
             yield x, y
 
@@ -137,10 +130,7 @@ class LEDDrift(LED):
     Parameters
     ----------
     seed
-        If int, `seed` is used to seed the random number generator;
-        If RandomState instance, `seed` is the random number generator;
-        If None, the random number generator is the `RandomState` instance used
-        by `np.random`.
+        Random seed for reproducibility.
     noise_percentage
         The probability that noise will happen in the generation. At each
         new sample generated, a random number is generated, and if it is equal
@@ -159,11 +149,11 @@ class LEDDrift(LED):
 
     >>> for x, y in dataset.take(5):
     ...     print(list(x.values()), y)
-    [1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 1, 0, 1, 1, 1, 0, 0, 1, 0, 1, 1, 1, 0, 1] 8
-    [0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1] 5
-    [1, 1, 1, 1, 0, 1, 0, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0, 0, 1, 1, 0, 1] 8
-    [0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0] 3
-    [0, 0, 1, 1, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0] 5
+    [1, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 1, 0, 0, 0, 0, 1] 7
+    [1, 1, 0, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0] 6
+    [0, 0, 0, 1, 1, 0, 1, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0, 1] 1
+    [1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 0, 1] 6
+    [1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0] 7
 
     Notes
     -----
@@ -177,7 +167,7 @@ class LEDDrift(LED):
 
     def __init__(
         self,
-        seed: int | np.random.RandomState | None = None,
+        seed: int | None = None,
         noise_percentage: float = 0.0,
         irrelevant_features: bool = False,
         n_drift_features: int = 0,
@@ -190,13 +180,13 @@ class LEDDrift(LED):
         self.n_drift_features = n_drift_features
 
     def __iter__(self):
-        self._rng = check_random_state(self.seed)
-        self._attr_idx = np.arange(self._N_FEATURES_INCLUDING_NOISE)
+        self._rng = random.Random(self.seed)
+        self._attr_idx = list(range(self._N_FEATURES_INCLUDING_NOISE))
 
         # Change attributes
         if self.irrelevant_features and self.n_drift_features > 0:
-            random_int = self._rng.randint(7)
-            offset = self._rng.randint(self._N_IRRELEVANT_ATTRIBUTES)
+            random_int = self._rng.randint(0, 6)
+            offset = self._rng.randint(0, self._N_IRRELEVANT_ATTRIBUTES - 1)
             for i in range(self.n_drift_features):
                 value_1 = (i + random_int) % 7
                 value_2 = 7 + (i + offset) % self._N_IRRELEVANT_ATTRIBUTES
@@ -205,15 +195,15 @@ class LEDDrift(LED):
 
         while True:
             x = {i: -1 for i in range(self.n_features)}  # Initialize to keep order in dictionary
-            y = self._rng.randint(self.n_classes)
+            y = self._rng.randint(0, self.n_classes - 1)
 
             for i in range(self._N_RELEVANT_FEATURES):
-                if (0.01 + self._rng.rand()) <= self.noise_percentage:
-                    x[self._attr_idx[i]] = int(self._ORIGINAL_INSTANCES[y, i] == 0)
+                if (0.01 + self._rng.random()) <= self.noise_percentage:
+                    x[self._attr_idx[i]] = int(self._ORIGINAL_INSTANCES[y][i] == 0)
                 else:
-                    x[self._attr_idx[i]] = self._ORIGINAL_INSTANCES[y, i]
+                    x[self._attr_idx[i]] = self._ORIGINAL_INSTANCES[y][i]
             if self.irrelevant_features:
                 for i in range(self._N_RELEVANT_FEATURES, self._N_FEATURES_INCLUDING_NOISE):
-                    x[self._attr_idx[i]] = self._rng.randint(2)
+                    x[self._attr_idx[i]] = self._rng.choice([0, 1])
 
             yield x, y
