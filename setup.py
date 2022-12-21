@@ -7,7 +7,7 @@ import subprocess
 import sys
 
 import setuptools  # type: ignore
-from setuptools_rust import Binding, RustExtension  # type: ignore
+from cd  import Binding, RustExtension  # type: ignore
 
 
 try:
@@ -97,7 +97,6 @@ setuptools.setup(
             "scipy==1.9.3",
             "torch==1.13.0",
             "vowpalwabbit==9.6.0",
-            "river==0.12.0",
             "torch==1.13.0",
             "dominate==2.7.0",
             "slugify==0.0.1",

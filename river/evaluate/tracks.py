@@ -1,5 +1,6 @@
-from river import datasets, evaluate, metrics
+import importlib
 
+from river import datasets, evaluate, metrics
 from .gen import Friedman7k, FriedmanGSG10k, FriedmanLEA10k
 
 
@@ -44,36 +45,50 @@ class Track:
 
 
 class BinaryClassificationTrack(Track):
-    def __init__(self):
+    def __init__(self, n_samples=10_000):
+        dsets = [getattr(importlib.import_module("river.datasets"), i).take(
+            n_samples)
+                 for i in importlib.import_module("river.datasets").__all__
+                 if callable(
+                getattr(importlib.import_module("river.datasets"), i)) and
+                 getattr(importlib.import_module("river.datasets"),
+                         i)().task == datasets.base.BINARY_CLF]
+
         super().__init__(
             name="Binary classification",
-            datasets=[datasets.Phishing(), datasets.Bananas()],
+            datasets=dsets,
             metric=metrics.Accuracy() + metrics.F1(),
         )
 
 
 class MultiClassClassificationTrack(Track):
-    def __init__(self):
+    def __init__(self, n_samples=10_000):
+        dsets = [getattr(importlib.import_module("river.datasets"), i).take(
+            n_samples)
+                 for i in importlib.import_module("river.datasets").__all__
+                 if callable(
+                getattr(importlib.import_module("river.datasets"), i)) and
+                 getattr(importlib.import_module("river.datasets"),
+                         i)().task == datasets.base.MULTI_CLF]
+
         super().__init__(
             name="Multiclass classification",
-            datasets=[
-                datasets.ImageSegments(),
-                datasets.Insects(),
-                datasets.Keystroke(),
-            ],
+            datasets=dsets,
             metric=metrics.Accuracy() + metrics.MicroF1() + metrics.MacroF1(),
         )
 
 
 class RegressionTrack(Track):
-    def __init__(self):
+    def __init__(self, n_samples=10_000):
+        dsets = [getattr(importlib.import_module("river.datasets"), i).take(
+            n_samples)
+                 for i in importlib.import_module("river.datasets").__all__
+                 if callable(
+                getattr(importlib.import_module("river.datasets"), i)) and
+                 getattr(importlib.import_module("river.datasets"),
+                         i)().task == datasets.base.REG]
         super().__init__(
             "Regression",
-            datasets=[
-                datasets.TrumpApproval(),
-                Friedman7k(),
-                FriedmanLEA10k(),
-                FriedmanGSG10k(),
-            ],
+            datasets=dsets,
             metric=metrics.MAE() + metrics.RMSE() + metrics.R2(),
         )
