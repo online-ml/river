@@ -7,6 +7,10 @@ import pandas as pd
 
 
 def render_df(df:pd.DataFrame)-> dict:
+    if 'Time' in df.columns:
+        df.rename(columns={'Time': 'Time in s'}, inplace=True)
+    if 'Memory' in df.columns:
+        df.rename(columns={'Memory': 'Memory in MB'}, inplace=True)
     unique_datasets = list(df['dataset'].unique())
     measures = list(df.columns)[4:]
     res = {
