@@ -54,17 +54,18 @@ class BinaryClassificationTrack(Track):
 
     """
     def __init__(self):
-        dsets = [
-            getattr(importlib.import_module("river.datasets"), i)()
-            for i in importlib.import_module("river.datasets").__all__
-            if callable(getattr(importlib.import_module("river.datasets"), i))
-            and getattr(importlib.import_module("river.datasets"), i)().task
-            == datasets.base.BINARY_CLF
-        ]
 
         super().__init__(
             name="Binary classification",
-            datasets=dsets,
+            datasets=[
+                datasets.bananas.Bananas(),
+                datasets.elec2.Elec2(),
+                datasets.http.HTTP(),
+                datasets.phishing.Phishing(),
+                datasets.sms_spam.SMSSpam(),
+                datasets.smtp.SMTP(),
+                datasets.trec07.TREC07()
+            ],
             metric=metrics.Accuracy() + metrics.F1(),
         )
 
@@ -80,17 +81,13 @@ class MultiClassClassificationTrack(Track):
 
     """
     def __init__(self):
-        dsets = [
-            getattr(importlib.import_module("river.datasets"), i)()
-            for i in importlib.import_module("river.datasets").__all__
-            if callable(getattr(importlib.import_module("river.datasets"), i))
-            and getattr(importlib.import_module("river.datasets"), i)().task
-            == datasets.base.MULTI_CLF
-        ]
-
         super().__init__(
             name="Multiclass classification",
-            datasets=dsets,
+            datasets=[
+                datasets.segment.ImageSegments(),
+                datasets.insects.Insects(),
+                datasets.keystroke.Keystroke()
+            ],
             metric=metrics.Accuracy() + metrics.MicroF1() + metrics.MacroF1(),
         )
 
@@ -106,14 +103,14 @@ class RegressionTrack(Track):
 
     """
     def __init__(self):
-        dsets = [
-            getattr(importlib.import_module("river.datasets"), i)()
-            for i in importlib.import_module("river.datasets").__all__
-            if callable(getattr(importlib.import_module("river.datasets"), i))
-            and getattr(importlib.import_module("river.datasets"), i)().task == datasets.base.REG
-        ]
         super().__init__(
             "Regression",
-            datasets=dsets,
+            datasets=[
+                datasets.airline_passengers.AirlinePassengers(),
+                datasets.bikes.Bikes(),
+                datasets.chick_weights.ChickWeights(),
+                datasets.trump_approval.TrumpApproval(),
+                datasets.water_flow.WaterFlow()
+            ],
             metric=metrics.MAE() + metrics.RMSE() + metrics.R2(),
         )
