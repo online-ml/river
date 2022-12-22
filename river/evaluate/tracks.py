@@ -1,7 +1,6 @@
 import importlib
 
 from river import datasets, evaluate, metrics
-from .gen import Friedman7k, FriedmanGSG10k, FriedmanLEA10k
 
 
 class Track:
@@ -46,13 +45,13 @@ class Track:
 
 class BinaryClassificationTrack(Track):
     def __init__(self, n_samples=10_000):
-        dsets = [getattr(importlib.import_module("river.datasets"), i)().take(
-            k=n_samples)
-                 for i in importlib.import_module("river.datasets").__all__
-                 if callable(
-                getattr(importlib.import_module("river.datasets"), i)) and
-                 getattr(importlib.import_module("river.datasets"),
-                         i)().task == datasets.base.BINARY_CLF]
+        dsets = [
+            getattr(importlib.import_module("river.datasets"), i)().take(k=n_samples)
+            for i in importlib.import_module("river.datasets").__all__
+            if callable(getattr(importlib.import_module("river.datasets"), i))
+            and getattr(importlib.import_module("river.datasets"), i)().task
+            == datasets.base.BINARY_CLF
+        ]
 
         super().__init__(
             name="Binary classification",
@@ -63,13 +62,13 @@ class BinaryClassificationTrack(Track):
 
 class MultiClassClassificationTrack(Track):
     def __init__(self, n_samples=10_000):
-        dsets = [getattr(importlib.import_module("river.datasets"), i)().take(
-            k=n_samples)
-                 for i in importlib.import_module("river.datasets").__all__
-                 if callable(
-                getattr(importlib.import_module("river.datasets"), i)) and
-                 getattr(importlib.import_module("river.datasets"),
-                         i)().task == datasets.base.MULTI_CLF]
+        dsets = [
+            getattr(importlib.import_module("river.datasets"), i)().take(k=n_samples)
+            for i in importlib.import_module("river.datasets").__all__
+            if callable(getattr(importlib.import_module("river.datasets"), i))
+            and getattr(importlib.import_module("river.datasets"), i)().task
+            == datasets.base.MULTI_CLF
+        ]
 
         super().__init__(
             name="Multiclass classification",
@@ -80,13 +79,12 @@ class MultiClassClassificationTrack(Track):
 
 class RegressionTrack(Track):
     def __init__(self, n_samples=10_000):
-        dsets = [getattr(importlib.import_module("river.datasets"), i)().take(k=
-            n_samples)
-                 for i in importlib.import_module("river.datasets").__all__
-                 if callable(
-                getattr(importlib.import_module("river.datasets"), i)) and
-                 getattr(importlib.import_module("river.datasets"),
-                         i)().task == datasets.base.REG]
+        dsets = [
+            getattr(importlib.import_module("river.datasets"), i)().take(k=n_samples)
+            for i in importlib.import_module("river.datasets").__all__
+            if callable(getattr(importlib.import_module("river.datasets"), i))
+            and getattr(importlib.import_module("river.datasets"), i)().task == datasets.base.REG
+        ]
         super().__init__(
             "Regression",
             datasets=dsets,
