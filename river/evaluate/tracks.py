@@ -44,9 +44,17 @@ class Track:
 
 
 class BinaryClassificationTrack(Track):
-    def __init__(self, n_samples=10_000):
+    """This track evaluates a model's performance on binary classification tasks.
+
+    Parameter
+    ---------
+    n_samples
+        The number of samples to use for each dataset.
+
+    """
+    def __init__(self):
         dsets = [
-            getattr(importlib.import_module("river.datasets"), i)().take(k=n_samples)
+            getattr(importlib.import_module("river.datasets"), i)()
             for i in importlib.import_module("river.datasets").__all__
             if callable(getattr(importlib.import_module("river.datasets"), i))
             and getattr(importlib.import_module("river.datasets"), i)().task
@@ -61,9 +69,17 @@ class BinaryClassificationTrack(Track):
 
 
 class MultiClassClassificationTrack(Track):
-    def __init__(self, n_samples=10_000):
+    """This track evaluates a model's performance on multi-class classification tasks.
+
+    Parameter
+    ---------
+    n_samples
+        The number of samples to use for each dataset.
+
+    """
+    def __init__(self):
         dsets = [
-            getattr(importlib.import_module("river.datasets"), i)().take(k=n_samples)
+            getattr(importlib.import_module("river.datasets"), i)()
             for i in importlib.import_module("river.datasets").__all__
             if callable(getattr(importlib.import_module("river.datasets"), i))
             and getattr(importlib.import_module("river.datasets"), i)().task
@@ -78,9 +94,17 @@ class MultiClassClassificationTrack(Track):
 
 
 class RegressionTrack(Track):
-    def __init__(self, n_samples=10_000):
+    """This track evaluates a model's performance on regression tasks.
+
+    Parameter
+    ---------
+    n_samples
+        The number of samples to use for each dataset.
+
+    """
+    def __init__(self):
         dsets = [
-            getattr(importlib.import_module("river.datasets"), i)().take(k=n_samples)
+            getattr(importlib.import_module("river.datasets"), i)()
             for i in importlib.import_module("river.datasets").__all__
             if callable(getattr(importlib.import_module("river.datasets"), i))
             and getattr(importlib.import_module("river.datasets"), i)().task == datasets.base.REG
