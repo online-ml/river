@@ -101,6 +101,7 @@ setuptools.setup(
             "dominate==2.7.0",
             "slugify==0.0.1",
             "watermark==2.3.1",
+            "river-torch==0.1.2"
         ],
         ":python_version == '3.6'": ["dataclasses"],
     },
