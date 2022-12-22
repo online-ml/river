@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 from typing import List
 
 from dominate.tags import pre
@@ -6,15 +7,17 @@ from watermark import watermark
 import pandas as pd
 
 
-def render_df(df:pd.DataFrame)-> dict:
-    if 'Time' in df.columns:
-        df.rename(columns={'Time': 'Time in s'}, inplace=True)
-    if 'Memory' in df.columns:
-        df.rename(columns={'Memory': 'Memory in MB'}, inplace=True)
+def render_df(df_path:Path)-> dict:
+    df = pd.read_csv(str(df_path))
+
     unique_datasets = list(df['dataset'].unique())
     measures = list(df.columns)[4:]
     res = {
-        "data" : {"values": df.to_dict(orient="records")},
+        "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+        "data" : {
+            #"values": df.to_dict(orient="records")
+            "url": f"benchmarks/{df_path.name}"
+        },
         "params": [
             {
                 "name": "models",
@@ -23,10 +26,13 @@ def render_df(df:pd.DataFrame)-> dict:
             },
             {
                 "name": "Dataset",
-                "type": "single",
-                "fields": ["dataset"],
                 "value" : unique_datasets[0],
                 "bind": {"input": "select", "options": unique_datasets}
+            },
+            {
+                "name": "grid",
+                "select": "interval",
+                "bind": "scales"
             }
         ],
         "transform": [
@@ -54,6 +60,7 @@ def render_df(df:pd.DataFrame)-> dict:
                 },
                 "color": {
                     "field": "model",
+                    "type": "ordinal",
                     "scale": {"scheme": "category20b"},
                     "title": "Models",
                     "legend": {
@@ -91,9 +98,10 @@ hide:
             print_(f'## {track_name}')
 
 
-            df = pd.read_csv(f'{track_name}.csv')
+            #df = pd.read_csv(f'{track_name}.csv')
+            df_path = Path(f'../docs/benchmarks/{track_name}.csv')
             print_("```vegalite")
-            print_(json.dumps(render_df(df=df), indent=2))
+            print_(json.dumps(render_df(df_path), indent=2))
             print_("```")
 
             print_('### Datasets')
