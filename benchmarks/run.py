@@ -1,5 +1,6 @@
 import copy
 import itertools
+import json
 import multiprocessing
 from datetime import timedelta
 from typing import List
@@ -25,7 +26,7 @@ def run_dataset(model_str,no_dataset, no_track):
     results = []
     track = copy.deepcopy(track)
     time = 0.0
-    for i in tqdm(track.run(model, copy.deepcopy(dataset), n_checkpoints=N_CHECKPOINTS), total=N_CHECKPOINTS):
+    for i in tqdm(track.run(model, dataset, n_checkpoints=N_CHECKPOINTS), total=N_CHECKPOINTS):
         time += i['Time'] / timedelta (days=1)
         res = {
             "step": i["Step"],
@@ -56,6 +57,15 @@ if __name__ == '__main__':
 
     MODELS["Binary classification"].update(MODELS["Multiclass classification"])
 
+    details = {}
     # Create details for each model
     for i, track in enumerate(TRACKS):
+        details[track.name] = {"Dataset": {}, "Model": {}}
+        for dataset in track.datasets:
+            details[track.name]["Dataset"][dataset.__class__.__name__] = repr(
+                dataset)
+        for model_name, model in MODELS[track.name].items():
+            details[track.name]["Model"][model_name] = repr(model)
+        with open("details.json", "w") as f:
+            json.dump(details, f, indent=2)
         run_track(models=MODELS[track.name].keys(), no_track=i, n_workers=70)
