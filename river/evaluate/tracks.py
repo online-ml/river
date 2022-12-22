@@ -46,8 +46,8 @@ class Track:
 
 class BinaryClassificationTrack(Track):
     def __init__(self, n_samples=10_000):
-        dsets = [getattr(importlib.import_module("river.datasets"), i).take(
-            n_samples)
+        dsets = [getattr(importlib.import_module("river.datasets"), i)().take(
+            k=n_samples)
                  for i in importlib.import_module("river.datasets").__all__
                  if callable(
                 getattr(importlib.import_module("river.datasets"), i)) and
@@ -63,8 +63,8 @@ class BinaryClassificationTrack(Track):
 
 class MultiClassClassificationTrack(Track):
     def __init__(self, n_samples=10_000):
-        dsets = [getattr(importlib.import_module("river.datasets"), i).take(
-            n_samples)
+        dsets = [getattr(importlib.import_module("river.datasets"), i)().take(
+            k=n_samples)
                  for i in importlib.import_module("river.datasets").__all__
                  if callable(
                 getattr(importlib.import_module("river.datasets"), i)) and
@@ -80,7 +80,7 @@ class MultiClassClassificationTrack(Track):
 
 class RegressionTrack(Track):
     def __init__(self, n_samples=10_000):
-        dsets = [getattr(importlib.import_module("river.datasets"), i).take(
+        dsets = [getattr(importlib.import_module("river.datasets"), i)().take(k=
             n_samples)
                  for i in importlib.import_module("river.datasets").__all__
                  if callable(

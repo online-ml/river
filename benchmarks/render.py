@@ -39,7 +39,6 @@ def render_df(df:pd.DataFrame)-> dict:
             "mark": "line",
             "encoding": {
                 "x": {
-                    "name": "Instance",
                     "field": "step",
                     "type": "quantitative",
                     "axis": {
