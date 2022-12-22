@@ -1,7 +1,10 @@
 from sklearn.linear_model import SGDClassifier
 
-import torch
-from model_zoo.torch import PyTorchBinaryClassifier, PyTorchLogReg
+from river_torch.classification import Classifier as TorchClassifier
+from river_torch.classification import RollingClassifier as TorchRollingClassifier
+from river_torch.regression import Regressor as TorchRegressor
+from river_torch.regression import RollingRegressor as TorchRollingRegressor
+from model_zoo.torch import TorchMLPClassifier, TorchMLPRegressor, TorchLogisticRegression, TorchLinearRegression, TorchLSTMClassifier, TorchLSTMRegressor
 from model_zoo.vw import VW2RiverClassifier
 from river import preprocessing, linear_model, tree, naive_bayes, ensemble, neighbors, rules, neural_net, dummy
 from river import compat, optim, evaluate, stats
@@ -33,12 +36,33 @@ MODELS = {
                 classes=[False, True],
             )
         ),
-        "PyTorch logistic regression": (
+        "Torch MLP": (
             preprocessing.StandardScaler()
-            | PyTorchBinaryClassifier(
-                network_func=PyTorchLogReg,
-                loss=torch.nn.BCELoss(),
-                optimizer_func=lambda params: torch.optim.SGD(params, lr=LEARNING_RATE),
+            | TorchClassifier(
+                module=TorchMLPClassifier,
+                loss_fn="binary_cross_entropy",
+                optimizer="adam",
+                lr=LEARNING_RATE
+            )
+        ),
+        "Torch LogReg": (
+            preprocessing.StandardScaler()
+            | TorchClassifier(
+                module=TorchLogisticRegression,
+                loss_fn="binary_cross_entropy",
+                optimizer="adam",
+                lr=LEARNING_RATE
+            )
+        ),
+        "Torch LSTM": (
+            preprocessing.StandardScaler()
+            | TorchRollingClassifier(
+                module=TorchLSTMClassifier,
+                loss_fn="binary_cross_entropy",
+                optimizer="adam",
+                window_size=20,
+                lr=LEARNING_RATE,
+                append_predict=False
             )
         ),
         "Vowpal Wabbit logistic regression": VW2RiverClassifier(
@@ -99,6 +123,15 @@ MODELS = {
         | linear_model.LinearRegression(l1=1.0),
         "Linear Regression with l2 regularization": preprocessing.StandardScaler()
         | linear_model.LinearRegression(l2=1.0),
+        "Torch Linear Regression": (
+            preprocessing.StandardScaler()
+            | TorchRegressor(
+                module=TorchLinearRegression,
+                loss_fn="mse",
+                optimizer="adam",
+                lr=LEARNING_RATE
+            )
+        ),
         "Passive-Aggressive Regressor, mode 1": preprocessing.StandardScaler()
         | linear_model.PARegressor(mode=1),
         "Passive-Aggressive Regressor, mode 2": preprocessing.StandardScaler()
@@ -127,7 +160,16 @@ MODELS = {
                 rules.AMRules(),
             ],
         ),
-        "Multi-layer Perceptron": preprocessing.StandardScaler()
+        "Torch MLP": (
+            preprocessing.StandardScaler()
+            | TorchRegressor(
+                module=TorchMLPRegressor,
+                loss_fn="mse",
+                optimizer="adam",
+                lr=LEARNING_RATE,
+            )
+        ),
+        "River MLP": preprocessing.StandardScaler()
         | neural_net.MLPRegressor(
             hidden_dims=(5,),
             activations=(
@@ -137,6 +179,17 @@ MODELS = {
             ),
             optimizer=optim.SGD(1e-3),
             seed=42,
+        ),
+        "Torch LSTM": (
+            preprocessing.StandardScaler()
+            | TorchRollingRegressor(
+                module=TorchLSTMRegressor,
+                loss_fn="mse",
+                optimizer="adam",
+                window_size=20,
+                lr=LEARNING_RATE,
+                append_predict=False
+            )
         ),
         # Baseline
         "[baseline] Mean predictor": dummy.StatisticRegressor(stats.Mean()),

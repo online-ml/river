@@ -1,54 +1,67 @@
-from river import base
 import torch
-
-class PyTorchLogReg(torch.nn.Module):
-    def __init__(self, n_features):
+class TorchMLPClassifier(torch.nn.Module):
+    def __init__(self, n_features: int, n_classes: int, hidden_size: int = 5):
         super().__init__()
-        self.linear = torch.nn.Linear(n_features, 1)
-        self.sigmoid = torch.nn.Sigmoid()
-        torch.nn.init.constant_(self.linear.weight, 0)
-        torch.nn.init.constant_(self.linear.bias, 0)
+        self.linear1 = torch.nn.Linear(n_features, hidden_size)
+        self.nonlin = torch.nn.ReLU()
+        self.linear2 = torch.nn.Linear(hidden_size, 2)
+        self.softmax = torch.nn.Softmax(dim=-1)
 
     def forward(self, x):
-        return self.sigmoid(self.linear(x))
+        x = self.nonlin(self.linear1(x))
+        x = self.nonlin(self.linear2(x))
+        x = self.softmax(x)
+        return x
 
+class TorchMLPRegressor(torch.nn.Module):
 
-class PyTorchModel:
-    def __init__(self, network_func, loss, optimizer_func):
-        self.network_func = network_func
-        self.loss = loss
-        self.optimizer_func = optimizer_func
+    def __init__(self, n_features: int, n_classes: int, hidden_size: int = 5):
+        super().__init__()
+        self.linear1 = torch.nn.Linear(n_features, hidden_size)
+        self.nonlin = torch.nn.ReLU()
+        self.linear2 = torch.nn.Linear(hidden_size, 2)
 
-        self.network = None
-        self.optimizer = None
+    def forward(self, x):
+        x = self.nonlin(self.linear1(x))
+        x = self.nonlin(self.linear2(x))
+        return x
 
-    def learn_one(self, x, y):
+class TorchLogisticRegression(torch.nn.Module):
+    def __init__(self, n_features: int, n_classes: int = 2):
+        super().__init__()
+        self.linear = torch.nn.Linear(n_features, n_classes)
+        self.softmax = torch.nn.Softmax(dim=-1)
 
-        # We only know how many features a dataset contains at runtime
-        if self.network is None:
-            self.network = self.network_func(n_features=len(x))
-            self.optimizer = self.optimizer_func(self.network.parameters())
+    def forward(self, X):
+        X = self.linear(X)
+        return self.softmax(X)
 
-        x = torch.FloatTensor(list(x.values()))
-        y = torch.FloatTensor([y])
+class TorchLinearRegression(torch.nn.Module):
+    def __init__(self, n_features: int, n_classes: int = 2):
+        super().__init__()
+        self.linear = torch.nn.Linear(n_features, n_classes)
 
-        y_pred = self.network(x)
-        loss = self.loss(y_pred, y)
-        self.optimizer.zero_grad()
-        loss.backward()
-        self.optimizer.step()
+    def forward(self, X):
+        return self.linear(X)
+class TorchLSTMClassifier(torch.nn.Module):
+    def __init__(self, n_features: int, hidden_size: int = 1):
+        super().__init__()
+        self.n_features = n_features
+        self.lstm = torch.nn.LSTM(input_size=n_features, hidden_size=hidden_size, num_layers=1)
+        self.softmax = torch.nn.Softmax(dim=-1)
 
-        return self
+    def forward(self, X):
+        output, (hn, cn) = self.lstm(X)  # lstm with input, hidden, and internal state
+        hn = hn.view(-1, self.lstm.hidden_size)
+        return self.softmax(hn)
 
+class TorchLSTMRegressor(torch.nn.Module):
+    def __init__(self, n_features: int, hidden_size: int = 1):
+        super().__init__()
+        self.n_features = n_features
+        self.lstm = torch.nn.LSTM(input_size=n_features, hidden_size=hidden_size, num_layers=1)
 
-class PyTorchBinaryClassifier(PyTorchModel, base.Classifier):
-    def predict_proba_one(self, x):
-
-        # We only know how many features a dataset contains at runtime
-        if self.network is None:
-            self.network = self.network_func(n_features=len(x))
-            self.optimizer = self.optimizer_func(self.network.parameters())
-
-        x = torch.FloatTensor(list(x.values()))
-        p = self.network(x).item()
-        return {True: p, False: 1.0 - p}
+    def forward(self, X):
+        output, (hn, cn) = self.lstm(X)  # lstm with input, hidden, and internal state
+        hn = hn.view(-1, self.lstm.hidden_size)
+        return hn
