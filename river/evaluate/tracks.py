@@ -45,6 +45,7 @@ class Track:
 
 class BinaryClassificationTrack(Track):
     """This track evaluates a model's performance on binary classification tasks.
+    These do not include synthetic datasets.
 
     Parameter
     ---------
@@ -70,6 +71,7 @@ class BinaryClassificationTrack(Track):
 
 class MultiClassClassificationTrack(Track):
     """This track evaluates a model's performance on multi-class classification tasks.
+    These do not include synthetic datasets.
 
     Parameter
     ---------
@@ -95,6 +97,7 @@ class MultiClassClassificationTrack(Track):
 
 class RegressionTrack(Track):
     """This track evaluates a model's performance on regression tasks.
+    These do not include synthetic datasets.
 
     Parameter
     ---------
