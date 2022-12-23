@@ -40,6 +40,8 @@ def run_dataset(model_str,no_dataset, no_track):
         res["Memory in Mb"] = i['Memory'] / 1024 ** 2
         res["Time in s"] = time
         results.append(res)
+        if time > 3600:
+            break
     return results
 
 def run_track(models: List[str], no_track: int, n_workers: int = 50):
@@ -50,7 +52,7 @@ def run_track(models: List[str], no_track: int, n_workers: int = 50):
 
     for val in pool.starmap(run_dataset, runs):
         results.extend(val)
-    pd.DataFrame(results).to_csv(f"../docs/benchmarks{track.name}.csv", index=False)
+    pd.DataFrame(results).to_csv(f"../docs/benchmarks/{track.name}.csv", index=False)
 
 
 if __name__ == '__main__':
