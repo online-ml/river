@@ -1,12 +1,16 @@
 import collections
+import copy
 import math
 import typing
 
+import numpy as np
+
 from river import base, linear_model
+from river.drift import DDM
 from river.utils.norm import normalize_values_in_dict, scale_values_in_dict
 from river.utils.random import poisson
 
-__all__ = ["AdaBoostClassifier"]
+__all__ = ["AdaBoostClassifier", "BOLEClassifier"]
 
 
 class AdaBoostClassifier(base.WrapperEnsemble, base.Classifier):
@@ -119,3 +123,210 @@ class AdaBoostClassifier(base.WrapperEnsemble, base.Classifier):
 
         normalize_values_in_dict(y_proba, inplace=True)
         return y_proba
+
+
+class BOLEClassifier(AdaBoostClassifier):
+    """Boosting Online Learning Ensemble (BOLE)
+
+    A modified version of Oza Online Boosting Algorithm [^1]. For each incoming observation, each model's `learn_one` method is called `k` times where
+    `k` is sampled from a Poisson distribution of parameter lambda. The first model to be trained will be the one with worst correct_weight / (correct_weight + wrong_weight).
+    The worst model's not yet trained will receive lambda values for training from the model's that incorrectly classified an instance, and the best model's not yet trained
+    will receive lambda values for training from the model's that correctly classified an instance. For more details, see [^2].
+
+    Parameters
+    ----------
+    model
+        The classifier to boost.
+    n_models
+        The number of models in the ensemble.
+    seed
+        Random number generator seed for reproducibility.
+    error_bound
+        Error bound percentage for allowing models to vote.
+
+    Attributes
+    ----------
+    wrong_weight : collections.defaultdict
+        Number of times a model has made a mistake when making predictions.
+    correct_weight : collections.defaultdict
+        Number of times a model has predicted the right label when making predictions.
+    orderPosition :
+        Array with the index of the models with best (correct_weight / correct_weight + wrong_weight) in descending order.
+    instances_seen :
+        Number of instances that the ensemble trained with.
+    allow_vote :
+        Variable to track if a model is allowed to vote (see get_model_weight)
+
+    Examples
+    --------
+
+    >>> from river import datasets
+    >>> from river import ensemble
+    >>> from river.ensemble.boosting import BOLEBaseModel
+    >>> from river import evaluate
+    >>> from river import metrics
+    >>> from river import tree
+
+    >>> dataset = datasets.Phishing()
+
+
+    >>> model = ensemble.BOLEClassifier(
+    ...     model= BOLEBaseModel(model=tree.HoeffdingTreeClassifier()),
+    ...     n_models=10,
+    ...     seed=42
+    ... )
+
+    >>> metric = metrics.F1()
+
+    >>> evaluate.progressive_val_score(dataset, model, metric)
+    F1: 84.23%
+
+
+
+    References
+    ----------
+    [^1]: [Oza, N.C., 2005, October. Online bagging and boosting. In 2005 IEEE international conference on systems, man and cybernetics (Vol. 3, pp. 2340-2345). Ieee.](https://ti.arc.nasa.gov/m/profile/oza/files/ozru01a.pdf)
+
+    [^2]: R. S. M. d. Barros, S. Garrido T. de Carvalho Santos and P. M. Gonçalves Júnior, "A Boosting-like Online Learning Ensemble," 2016 International Joint Conference on Neural Networks (IJCNN), 2016, pp. 1871-1878, doi: 10.1109/IJCNN.2016.7727427.
+    """
+
+    def __init__(self, model: base.Classifier, n_models=10, seed: int = None, error_bound=0.5):
+        super().__init__(model=model, n_models=n_models, seed=seed)
+        self.error_bound = error_bound
+        self.orderPosition = np.arange(n_models)
+        self.instances_seen = 0
+        self.allow_vote = True
+
+    def learn_one(self, x, y):
+        self.instances_seen += 1
+
+        acc = np.zeros(self.n_models)
+        for i in range(self.n_models):
+            acc[i] = (
+                self.correct_weight[self.orderPosition[i]]
+                + self.wrong_weight[self.orderPosition[i]]
+            )
+            if acc[i] != 0:
+                acc[i] = self.correct_weight[self.orderPosition[i]] / acc[i]
+
+        # sort models in descending order by correct_weight / correct_weight + error_weight (best case insertion sort)
+        for i in range(1, self.n_models):
+            key_position = self.orderPosition[i]
+            key_acc = acc[i]
+            j = i - 1
+            while (j >= 0) and (acc[j] < key_acc):
+                self.orderPosition[j + 1] = self.orderPosition[j]
+                acc[j + 1] = acc[j]
+                j -= 1
+            self.orderPosition[j + 1] = key_position
+            acc[j + 1] = key_acc
+
+        correct = False
+        maxAcc = 0
+        minAcc = self.n_models - 1
+        lambda_poisson = 1
+
+        models = list(enumerate(self))
+        for i in range(len(models)):
+            if correct:
+                pos = self.orderPosition[maxAcc]
+                maxAcc += 1
+            else:
+                pos = self.orderPosition[minAcc]
+                minAcc -= 1
+
+            for _ in range(poisson(lambda_poisson, self._rng)):
+                models[pos][1].learn_one(x, y)
+
+            if models[pos][1].predict_one(x) == y:
+                self.correct_weight[pos] += lambda_poisson
+                lambda_poisson *= (self.instances_seen) / (2 * self.correct_weight[pos])
+                correct = True
+            else:
+                self.wrong_weight[pos] += lambda_poisson
+                lambda_poisson *= (self.instances_seen) / (2 * self.wrong_weight[pos])
+                correct = False
+        return self
+
+    def predict_proba_one(self, x):
+        y_proba = collections.Counter()
+        for i, model in enumerate(self):
+            model_weight = self.get_model_weight(i)
+            predictions = model.predict_proba_one(x)
+            normalize_values_in_dict(predictions, inplace=True)
+            if model_weight is not None:
+                scale_values_in_dict(predictions, model_weight, inplace=True)
+            if self.allow_vote:
+                y_proba.update(predictions)
+
+        normalize_values_in_dict(y_proba, inplace=True)
+        return y_proba
+
+    def get_model_weight(self, i: int):
+        em = 0.0
+        Bm = 0.0
+        if self.correct_weight[i] > 0.0 and self.wrong_weight[i] > 0.0:
+            em = self.wrong_weight[i] / (self.correct_weight[i] + self.wrong_weight[i])
+            if em <= self.error_bound:
+                Bm = em / (1 - em)
+                self.allow_vote = True
+                return np.log(1 / Bm)
+        else:
+            self.allow_vote = False
+            return 0.0
+
+
+class BOLEBaseModel(base.Classifier):
+    """BOLEBaseModel
+
+    Has a DDM drift detector. In case a warning is detected, a background model starts to train. If a drift is detected, the model will be replaced by the background model.
+
+    Parameters
+    ----------
+    model
+        The classifier and background classifier class.
+    n
+        The minimum required number of analyzed samples so change can be detected. Warm start parameter
+        for the drift detector.
+    warning
+        Threshold to decide if the detector is in a warning zone. The default value gives 95\\% of
+        confidence level to the warning assessment.
+    drift
+        Threshold to decide if a drift was detected. The default value gives a 99\\% of confidence
+        level to the drift assessment.
+
+
+    """
+
+    def __init__(
+        self, model: base.Classifier, n: int = 30, warning: float = 2.0, drift: float = 3.0
+    ):
+        self.base_class = model
+        self.model = copy.deepcopy(self.base_class)
+        self.bkg_model = None
+        self.drift_detection_method = DDM(
+            warm_start=n, warning_threshold=warning, drift_threshold=drift
+        )
+
+    def predict_proba_one(self, x):
+        return self.model.predict_proba_one(x)
+
+    def learn_one(self, x, y):
+        self.update_ddm(x, y)
+        return self.model.learn_one(x, y)
+
+    def update_ddm(self, x, y):
+        y_pred = self.model.predict_one(x)
+        if y_pred is not None:
+            incorrectly_classifies = int(y_pred != y)
+            self.drift_detection_method.update(incorrectly_classifies)
+            if self.drift_detection_method.warning_detected:
+                if self.bkg_model is None:
+                    self.bkg_model = copy.deepcopy(self.base_class)
+                self.bkg_model.learn_one(x, y)
+            elif self.drift_detection_method._drift_detected:
+                if self.bkg_model is not None:
+                    self.model = copy.deepcopy(self.bkg_model)
+                    self.bkg_model = None
+                else:
+                    self.model = copy.deepcopy(self.base_class)
