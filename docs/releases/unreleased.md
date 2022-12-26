@@ -19,6 +19,10 @@
 
 - Renamed `use_dist` to `with_dist` in `linear_model.BayesianLinearRegression`'s `predict_one` method.
 
+## multiclass
+
+- Added a `coding_method` method to `multiclass.OCC` to control how the codes are randomly generated.
+
 ## preprocessing
 
 - Renamed `alpha` to `fading_factor` in `preprocessing.AdaptiveStandardScaler`.
