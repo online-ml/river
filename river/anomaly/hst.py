@@ -176,6 +176,23 @@ class HalfSpaceTrees(anomaly.base.AnomalyDetector):
     >>> auc
     ROCAUC: 91.15%
 
+    You can also use the `evaluate.progressive_val_score` function to evaluate the model on a
+    data stream.
+
+    >>> from river import evaluate
+
+    >>> model = model.clone()
+
+    >>> evaluate.progressive_val_score(
+    ...     dataset=datasets.CreditCard().take(2500),
+    ...     model=model,
+    ...     metric=metrics.ROCAUC(),
+    ...     print_every=1000
+    ... )
+    [1,000] ROCAUC: 88.43%
+    [2,000] ROCAUC: 89.28%
+    ROCAUC: 91.15%
+
     References
     ----------
     [^1]: [Tan, S.C., Ting, K.M. and Liu, T.F., 2011, June. Fast anomaly detection for streaming data. In Twenty-Second International Joint Conference on Artificial Intelligence.](https://www.ijcai.org/Proceedings/11/Papers/254.pdf)

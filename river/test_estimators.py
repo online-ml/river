@@ -51,7 +51,6 @@ def iter_estimators_which_can_be_tested():
     ignored = (
         River2SKLBase,
         SKL2RiverBase,
-        anomaly.base.AnomalyFilter,
         compose.FuncTransformer,
         compose.Grouper,
         compose.Pipeline,

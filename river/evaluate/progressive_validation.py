@@ -24,7 +24,7 @@ def _progressive_validation(
         raise ValueError(f"{metric.__class__.__name__} metric is not compatible with {model}")
 
     # Determine if predict_one or predict_proba_one should be used in case of a classifier
-    if utils.inspect.isanomalydetector(model):
+    if utils.inspect.isanomalydetector(model) or utils.inspect.isanomalyfilter(model):
         pred_func = model.score_one
     elif utils.inspect.isclassifier(model) and not metric.requires_labels:  # type: ignore
         pred_func = model.predict_proba_one
@@ -44,7 +44,9 @@ def _progressive_validation(
 
         # Case 1: no ground truth, just make a prediction
         if y is None:
-            preds[i] = pred_func(x=x, **kwargs)
+            preds[i] = pred_func(x, **kwargs)
+            if utils.inspect.isanomalyfilter(model):
+                preds[i] = model.classify(preds[i])
             continue
 
         # Case 2: there's a ground truth, model and metric can be updated
@@ -56,9 +58,9 @@ def _progressive_validation(
 
         # Update the model
         if model._supervised:
-            model.learn_one(x=x, y=y, **kwargs)
+            model.learn_one(x, y, **kwargs)
         else:
-            model.learn_one(x=x, **kwargs)
+            model.learn_one(x, **kwargs)
 
         # Yield current results
         n_total_answers += 1
