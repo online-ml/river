@@ -94,6 +94,15 @@ class ThresholdFilter(anomaly.base.AnomalyFilter):
     def classify(self, score):
         return score >= self.threshold
 
+    @classmethod
+    def _unit_test_params(cls):
+        from river import preprocessing
+
+        yield {
+            "anomaly_detector": preprocessing.MinMaxScaler() | anomaly.HalfSpaceTrees(),
+            "threshold": 0.95,
+        }
+
 
 class QuantileFilter(anomaly.base.AnomalyFilter):
     """Threshold anomaly filter.
@@ -170,3 +179,12 @@ class QuantileFilter(anomaly.base.AnomalyFilter):
             self.anomaly_detector.learn_one(*args)
         self.quantile.update(score)
         return self
+
+    @classmethod
+    def _unit_test_params(cls):
+        from river import preprocessing
+
+        yield {
+            "anomaly_detector": preprocessing.StandardScaler() | anomaly.OneClassSVM(nu=0.2),
+            "q": 0.995,
+        }

@@ -71,6 +71,11 @@ def isanomalydetector(model):
     return ischildobject(obj=model, class_name="AnomalyDetector")
 
 
+def isanomalyfilter(model):
+    model = extract_relevant(model)
+    return ischildobject(obj=model, class_name="AnomalyFilter")
+
+
 def isclassifier(model):
     return isinstance(extract_relevant(model), base.Classifier)
 
