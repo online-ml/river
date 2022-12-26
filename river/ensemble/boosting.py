@@ -163,6 +163,7 @@ class BOLEClassifier(AdaBoostClassifier):
     >>> from river import datasets
     >>> from river import ensemble
     >>> from river import evaluate
+    >>> from river import drift
     >>> from river import metrics
     >>> from river import tree
 
