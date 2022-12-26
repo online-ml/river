@@ -713,6 +713,8 @@ class Pipeline(base.Estimator):
             _print()
             if utils.inspect.isclassifier(final):
                 print_dict(final.predict_proba_one(x), show_types=False, space_after=False)
+            elif utils.inspect.isanomalydetector(final):
+                _print(f"Score: {format_value(final.score_one(x))}")
             else:
                 _print(f"Prediction: {format_value(final.predict_one(x))}")
 

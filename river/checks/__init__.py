@@ -10,7 +10,7 @@ from river.base import Estimator
 from river.model_selection.base import ModelSelector
 from river.reco.base import Ranker
 
-from . import clf, common, model_selection, reco
+from . import anomaly, clf, common, model_selection, reco
 
 __all__ = ["check_estimator", "yield_checks"]
 
@@ -106,6 +106,11 @@ def _yield_datasets(model: Estimator):
         if model._multiclass and base.tags.POSITIVE_INPUT not in model._tags:  # type: ignore
             yield datasets.ImageSegments().take(200)
 
+    # Anomaly detection
+    elif utils.inspect.isanomalydetector(model):
+
+        yield datasets.CreditCard().take(1000)
+
 
 def yield_checks(model: Estimator) -> typing.Iterator[typing.Callable]:
     """Generates unit tests for a given model.
@@ -135,7 +140,7 @@ def yield_checks(model: Estimator) -> typing.Iterator[typing.Callable]:
         yield clf.check_multiclass_is_bool
 
     # Checks that make use of datasets
-    checks = [
+    dataset_checks = [
         common.check_learn_one,
         common.check_pickling,
         common.check_shuffle_features_no_impact,
@@ -144,27 +149,32 @@ def yield_checks(model: Estimator) -> typing.Iterator[typing.Callable]:
     ]
 
     if hasattr(model, "debug_one"):
-        checks.append(common.check_debug_one)
+        dataset_checks.append(common.check_debug_one)
 
     if model._is_stochastic:
-        checks.append(common.check_seeding_is_idempotent)
+        dataset_checks.append(common.check_seeding_is_idempotent)
 
     # Classifier checks
     if utils.inspect.isclassifier(model) and not utils.inspect.ismoclassifier(model):
-        checks.append(_allow_exception(clf.check_predict_proba_one, NotImplementedError))
+        dataset_checks.append(_allow_exception(clf.check_predict_proba_one, NotImplementedError))
         # Specific checks for binary classifiers
         if not model._multiclass:  # type: ignore
-            checks.append(_allow_exception(clf.check_predict_proba_one_binary, NotImplementedError))
+            dataset_checks.append(
+                _allow_exception(clf.check_predict_proba_one_binary, NotImplementedError)
+            )
 
     if isinstance(utils.inspect.extract_relevant(model), ModelSelector):
-        checks.append(model_selection.check_model_selection_order_does_not_matter)
+        dataset_checks.append(model_selection.check_model_selection_order_does_not_matter)
 
     if isinstance(utils.inspect.extract_relevant(model), Ranker):
         yield reco.check_reco_routine
 
-    for check in checks:
+    if utils.inspect.isanomalydetector(model):
+        dataset_checks.append(anomaly.check_roc_auc)
+
+    for dataset_check in dataset_checks:
         for dataset in _yield_datasets(model):
-            yield _wrapped_partial(check, dataset=dataset)
+            yield _wrapped_partial(dataset_check, dataset=dataset)
 
 
 def check_estimator(model: Estimator):

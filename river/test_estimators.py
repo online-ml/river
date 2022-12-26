@@ -127,6 +127,7 @@ def iter_estimators_which_can_be_tested():
                 | preprocessing.StandardScaler()
                 | linear_model.LinearRegression()
             ),
+            preprocessing.MinMaxScaler() | anomaly.HalfSpaceTrees(),
         ]
         for check in checks.yield_checks(estimator)
         if check.__name__ not in estimator._unit_test_skips()
