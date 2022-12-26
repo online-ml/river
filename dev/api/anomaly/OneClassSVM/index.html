@@ -10635,6 +10635,23 @@
 <span class="o">&gt;&gt;&gt;</span> <span class="n">auc</span>
 <span class="n">ROCAUC</span><span class="p">:</span> <span class="mf">74.68</span><span class="o">%</span>
 </code></pre></div>
+<p>You can also use the <code>evaluate.progressive_val_score</code> function to evaluate the model on a
+data stream.</p>
+<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">evaluate</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span>
+<span class="o">...</span>     <span class="n">dataset</span><span class="o">=</span><span class="n">datasets</span><span class="o">.</span><span class="n">CreditCard</span><span class="p">()</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="mi">2500</span><span class="p">),</span>
+<span class="o">...</span>     <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+<span class="o">...</span>     <span class="n">metric</span><span class="o">=</span><span class="n">metrics</span><span class="o">.</span><span class="n">ROCAUC</span><span class="p">(),</span>
+<span class="o">...</span>     <span class="n">print_every</span><span class="o">=</span><span class="mi">1000</span>
+<span class="o">...</span> <span class="p">)</span>
+<span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">000</span><span class="p">]</span> <span class="n">ROCAUC</span><span class="p">:</span> <span class="mf">74.40</span><span class="o">%</span>
+<span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">000</span><span class="p">]</span> <span class="n">ROCAUC</span><span class="p">:</span> <span class="mf">74.60</span><span class="o">%</span>
+<span class="n">ROCAUC</span><span class="p">:</span> <span class="mf">74.68</span><span class="o">%</span>
+</code></pre></div>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <details class="- note">
 <summary>learn_many</summary>
