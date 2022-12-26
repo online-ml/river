@@ -108,6 +108,7 @@ class OutputCodeClassifier(base.Wrapper, base.Classifier):
     ):
         self.classifier = classifier
         self.code_size = code_size
+        self.coding_method = coding_method
         self.seed = seed
         self._rng = random.Random(seed)
 
