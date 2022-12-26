@@ -13,22 +13,6 @@ def l1_dist(a, b):
     return sum(abs(ai - bi) for ai, bi in zip(a, b))
 
 
-def _sample_codes_exact(code_size, rng=random):
-    """Lists all possible codes of a given size in memory, and streams them in a random order."""
-    integers = list(range(2**code_size))
-    rng.shuffle(integers)
-    for i in integers:
-        b = bin(i)[2:]  # convert to a string of 0s and 1s
-        b = b.zfill(code_size)  # ensure the code is of length code_size
-        yield tuple(int(c) for c in b)
-
-
-def _sample_codes_random(code_size, rng=random):
-    """Generates random codes of a given size on the fly."""
-    while True:
-        yield tuple(rng.randint(0, 1) for _ in range(code_size))
-
-
 class OutputCodeClassifier(base.Wrapper, base.Classifier):
     """Output-code multiclass strategy.
 
@@ -83,6 +67,7 @@ class OutputCodeClassifier(base.Wrapper, base.Classifier):
     >>> ooc = multiclass.OutputCodeClassifier(
     ...     classifier=linear_model.LogisticRegression(),
     ...     code_size=10,
+    ...     coding_method='random',
     ...     seed=1
     ... )
     >>> model = scaler | ooc
@@ -118,14 +103,20 @@ class OutputCodeClassifier(base.Wrapper, base.Classifier):
         # from the start. Therefore, we define a random queue of integers. When a new class
         # appears, we get the next integer and convert it to a code. There are different ways to do
         # this.
-        self._codes = (
-            _sample_codes_random(code_size, rng=self._rng)
-            if coding_method == "random"
-            else _sample_codes_exact(code_size, rng=self._rng)
-        )
-        self.code_book: typing.DefaultDict = collections.defaultdict(
-            functools.partial(next, self._codes)
-        )
+        if self.coding_method == "exact":
+            integers = list(range(2**code_size))
+            self._rng.shuffle(integers)
+            self._integers = iter(integers)
+        self.code_book: typing.DefaultDict = collections.defaultdict(self._next_code)
+
+    def _next_code(self):
+        if self.coding_method == "random":
+            return tuple(self._rng.randint(0, 1) for _ in range(self.code_size))
+        elif self.coding_method == "exact":
+            i = next(self._integers)
+            b = bin(i)[2:]  # convert to a string of 0s and 1s
+            b = b.zfill(self.code_size)  # ensure the code is of length code_size
+            return tuple(int(c) for c in b)
 
     @property
     def _multiclass(self):
@@ -137,7 +128,17 @@ class OutputCodeClassifier(base.Wrapper, base.Classifier):
 
     @classmethod
     def _unit_test_params(cls):
-        yield {"classifier": linear_model.LogisticRegression(), "code_size": 6}
+        yield {
+            "classifier": linear_model.LogisticRegression(),
+            "code_size": 6,
+            "coding_method": "exact",
+        }
+        # A code size of 30 would overload RAM with the exact method
+        yield {
+            "classifier": linear_model.LogisticRegression(),
+            "code_size": 30,
+            "coding_method": "random",
+        }
 
     def learn_one(self, x, y):
 
