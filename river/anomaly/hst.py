@@ -174,7 +174,7 @@ class HalfSpaceTrees(anomaly.base.AnomalyDetector):
     ...     auc = auc.update(y, score)
 
     >>> auc
-    ROCAUC: 93.94%
+    ROCAUC: 91.15%
 
     References
     ----------
@@ -226,7 +226,7 @@ class HalfSpaceTrees(anomaly.base.AnomalyDetector):
         if not self.trees:
             self.trees = [
                 make_padded_tree(
-                    limits={i: self.limits[i] for i in x},
+                    limits={i: self.limits[i] for i in sorted(x)},
                     height=self.height,
                     padding=0.15,
                     rng=self.rng,

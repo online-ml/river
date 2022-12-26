@@ -15,7 +15,10 @@ def check_learn_one(model, dataset):
 
         xx, yy = copy.deepcopy(x), copy.deepcopy(y)
 
-        model = model.learn_one(x, y)
+        if model._supervised:
+            model.learn_one(x, y)
+        else:
+            model.learn_one(x)
 
         # Check the model returns itself
         assert isinstance(model, klass)
@@ -50,49 +53,78 @@ def check_shuffle_features_no_impact(model, dataset):
             except NotImplementedError:
                 y_pred = model.predict_one(x)
                 y_pred_shuffled = shuffled.predict_one(x_shuffled)
+        elif utils.inspect.isanomalydetector(model):
+            y_pred = model.score_one(x)
+            y_pred_shuffled = shuffled.score_one(x_shuffled)
         else:
             y_pred = model.predict_one(x)
             y_pred_shuffled = shuffled.predict_one(x_shuffled)
 
         assert_predictions_are_close(y_pred, y_pred_shuffled)
 
-        model.learn_one(x, y)
-        shuffled.learn_one(x_shuffled, y)
+        if utils.inspect.isanomalydetector(model):
+            model.learn_one(x)
+            shuffled.learn_one(x_shuffled)
+        else:
+            model.learn_one(x, y)
+            shuffled.learn_one(x_shuffled, y)
 
 
 def check_emerging_features(model, dataset):
     """The model should work fine when new features appear."""
+    from river import utils
 
     for x, y in dataset:
         features = list(x.keys())
         random.shuffle(features)
-        model.predict_one(x)
-        model.learn_one({i: x[i] for i in features[:-3]}, y)  # drop 3 features at random
+        if utils.inspect.isanomalydetector(model):
+            model.score_one(x)
+        else:
+            model.predict_one(x)
+        if utils.inspect.isanomalydetector(model):
+            model.learn_one({i: x[i] for i in features[:-3]})  # drop 3 features at random
+        else:
+            model.learn_one({i: x[i] for i in features[:-3]}, y)
 
 
 def check_disappearing_features(model, dataset):
     """The model should work fine when features disappear."""
 
+    from river import utils
+
     for x, y in dataset:
         features = list(x.keys())
         random.shuffle(features)
-        model.predict_one({i: x[i] for i in features[:-3]})  # drop 3 features at random
-        model.learn_one(x, y)
+        if utils.inspect.isanomalydetector(model):
+            model.score_one({i: x[i] for i in features[:-3]})  # drop 3 features at random
+            model.learn_one(x)
+        else:
+            model.predict_one({i: x[i] for i in features[:-3]})
+            model.learn_one(x, y)
 
 
 def check_debug_one(model, dataset):
     for x, y in dataset:
         model.debug_one(x)
-        model.learn_one(x, y)
+        if model._supervised:
+            model.learn_one(x, y)
+        else:
+            model.learn_one(x)
         model.debug_one(x)
         break
 
 
 def check_pickling(model, dataset):
+    from river import utils
+
     assert isinstance(pickle.loads(pickle.dumps(model)), model.__class__)
     for x, y in dataset:
-        model.predict_one(x)
-        model.learn_one(x, y)
+        if utils.inspect.isanomalydetector(model):
+            model.score_one(x)
+            model.learn_one(x)
+        else:
+            model.predict_one(x)
+            model.learn_one(x, y)
     assert isinstance(pickle.loads(pickle.dumps(model)), model.__class__)
 
 
@@ -160,6 +192,7 @@ def check_clone_changes_memory_addresses(model):
 
 
 def check_seeding_is_idempotent(model, dataset):
+    from river import utils
 
     params = model._get_params()
     seeded_params = seed_params(params, seed=42)
@@ -168,9 +201,16 @@ def check_seeding_is_idempotent(model, dataset):
     B = model.clone(seeded_params)
 
     for x, y in dataset:
-        assert A.predict_one(x) == B.predict_one(x)
-        A.learn_one(x, y)
-        B.learn_one(x, y)
+        if utils.inspect.isanomalydetector(model):
+            assert A.score_one(x) == B.score_one(x)
+        else:
+            assert A.predict_one(x) == B.predict_one(x)
+        if model._supervised:
+            A.learn_one(x, y)
+            B.learn_one(x, y)
+        else:
+            A.learn_one(x)
+            B.learn_one(x)
 
 
 def check_mutable_attributes_exist(model):

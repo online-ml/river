@@ -139,14 +139,14 @@ class QuantileFilter(anomaly.base.AnomalyFilter):
     >>> report
                    Precision   Recall   F1       Support
     <BLANKLINE>
-           0      99.91%   97.78%   98.83%      7975
-           1       9.23%   72.00%   16.36%        25
+           0      99.75%   98.46%   99.10%      7975
+           1       3.91%   20.00%    6.54%        25
     <BLANKLINE>
-       Macro      54.57%   84.89%   57.60%
-       Micro      97.70%   97.70%   97.70%
-    Weighted      99.63%   97.70%   98.58%
+       Macro      51.83%   59.23%   52.82%
+       Micro      98.21%   98.21%   98.21%
+    Weighted      99.45%   98.21%   98.81%
     <BLANKLINE>
-                     97.70% accuracy
+                     98.21% accuracy
 
     """
 
