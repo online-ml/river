@@ -6,6 +6,7 @@ import typing
 import numpy as np
 
 from river import base, linear_model
+from river.base import DriftDetector
 from river.drift import DDM
 from river.utils.norm import normalize_values_in_dict, scale_values_in_dict
 from river.utils.random import poisson
@@ -154,32 +155,30 @@ class BOLEClassifier(AdaBoostClassifier):
         Array with the index of the models with best (correct_weight / correct_weight + wrong_weight) in descending order.
     instances_seen :
         Number of instances that the ensemble trained with.
-    allow_vote :
-        Variable to track if a model is allowed to vote (see get_model_weight)
 
     Examples
     --------
 
+    >>> from river.ensemble.boosting import BOLEBaseModel
     >>> from river import datasets
     >>> from river import ensemble
-    >>> from river.ensemble.boosting import BOLEBaseModel
     >>> from river import evaluate
     >>> from river import metrics
     >>> from river import tree
 
-    >>> dataset = datasets.Phishing()
+    >>> dataset = datasets.Elec2()
 
 
     >>> model = ensemble.BOLEClassifier(
-    ...     model= BOLEBaseModel(model=tree.HoeffdingTreeClassifier()),
+    ...     model= BOLEBaseModel(model=tree.HoeffdingTreeClassifier(), drift_detection_method= drift.DDM()),
     ...     n_models=10,
     ...     seed=42
     ... )
 
-    >>> metric = metrics.F1()
+    >>> metric = metrics.Accuracy()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    F1: 84.23%
+    Accuracy: 92.02%
 
 
 
@@ -195,7 +194,6 @@ class BOLEClassifier(AdaBoostClassifier):
         self.error_bound = error_bound
         self.orderPosition = np.arange(n_models)
         self.instances_seen = 0
-        self.allow_vote = True
 
     def learn_one(self, x, y):
         self.instances_seen += 1
@@ -251,61 +249,42 @@ class BOLEClassifier(AdaBoostClassifier):
     def predict_proba_one(self, x):
         y_proba = collections.Counter()
         for i, model in enumerate(self):
-            model_weight = self.get_model_weight(i)
-            predictions = model.predict_proba_one(x)
-            normalize_values_in_dict(predictions, inplace=True)
-            if model_weight is not None:
+            model_weight = 0.0
+            if self.correct_weight[i] > 0.0 and self.wrong_weight[i] > 0.0:
+                epsilon = self.wrong_weight[i] / (self.correct_weight[i] + self.wrong_weight[i])
+                if epsilon <= self.error_bound:
+                    beta_inv = (1 - epsilon) / epsilon
+                    model_weight = np.log(beta_inv)
+
+            if model_weight != 0.0:
+                predictions = model.predict_proba_one(x)
+                normalize_values_in_dict(predictions, inplace=True)
                 scale_values_in_dict(predictions, model_weight, inplace=True)
-            if self.allow_vote:
                 y_proba.update(predictions)
 
         normalize_values_in_dict(y_proba, inplace=True)
         return y_proba
 
-    def get_model_weight(self, i: int):
-        em = 0.0
-        Bm = 0.0
-        if self.correct_weight[i] > 0.0 and self.wrong_weight[i] > 0.0:
-            em = self.wrong_weight[i] / (self.correct_weight[i] + self.wrong_weight[i])
-            if em <= self.error_bound:
-                Bm = em / (1 - em)
-                self.allow_vote = True
-                return np.log(1 / Bm)
-        else:
-            self.allow_vote = False
-            return 0.0
-
 
 class BOLEBaseModel(base.Classifier):
     """BOLEBaseModel
 
-    Has a DDM drift detector. In case a warning is detected, a background model starts to train. If a drift is detected, the model will be replaced by the background model.
+    In case a warning is detected, a background model starts to train. If a drift is detected, the model will be replaced by the background model.
 
     Parameters
     ----------
     model
         The classifier and background classifier class.
-    n
-        The minimum required number of analyzed samples so change can be detected. Warm start parameter
-        for the drift detector.
-    warning
-        Threshold to decide if the detector is in a warning zone. The default value gives 95\\% of
-        confidence level to the warning assessment.
-    drift
-        Threshold to decide if a drift was detected. The default value gives a 99\\% of confidence
-        level to the drift assessment.
-
-
+    drift_detection_method
+        Algorithm to track warnings and concept drifts
     """
 
-    def __init__(
-        self, model: base.Classifier, n: int = 30, warning: float = 2.0, drift: float = 3.0
-    ):
+    def __init__(self, model: base.Classifier, drift_detection_method: DriftDetector):
         self.base_class = model
         self.model = copy.deepcopy(self.base_class)
         self.bkg_model = None
-        self.drift_detection_method = DDM(
-            warm_start=n, warning_threshold=warning, drift_threshold=drift
+        self.drift_detection_method = (
+            drift_detection_method if drift_detection_method is not None else DDM()
         )
 
     def predict_proba_one(self, x):
