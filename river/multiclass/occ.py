@@ -1,6 +1,5 @@
 import collections
 import copy
-import functools
 import random
 import typing
 
