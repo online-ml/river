@@ -10599,6 +10599,10 @@
 <p>The code size, which dictates how many copies of the provided classifiers to train. Must be strictly positive.</p>
 </li>
 <li>
+<p><strong>coding_method</strong> (<em>str</em>) – defaults to <code>random</code></p>
+<p>The method used to generate the codes. Can be either 'exact' or 'random'. The 'exact' method generates all possible codes of a given size in memory, and streams them in a random order. The 'random' method generates random codes of a given size on the fly. The 'exact' method necessarily generates different codes for each class, but requires more memory. The 'random' method can generate duplicate codes for different classes, but requires less memory.</p>
+</li>
+<li>
 <p><strong>seed</strong> (<em>int</em>) – defaults to <code>None</code></p>
 <p>A random seed number that can be set for reproducibility.</p>
 </li>
@@ -10617,14 +10621,15 @@
 <span class="o">&gt;&gt;&gt;</span> <span class="n">ooc</span> <span class="o">=</span> <span class="n">multiclass</span><span class="o">.</span><span class="n">OutputCodeClassifier</span><span class="p">(</span>
 <span class="o">...</span>     <span class="n">classifier</span><span class="o">=</span><span class="n">linear_model</span><span class="o">.</span><span class="n">LogisticRegression</span><span class="p">(),</span>
 <span class="o">...</span>     <span class="n">code_size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
-<span class="o">...</span>     <span class="n">seed</span><span class="o">=</span><span class="mi">24</span>
+<span class="o">...</span>     <span class="n">coding_method</span><span class="o">=</span><span class="s1">&#39;random&#39;</span><span class="p">,</span>
+<span class="o">...</span>     <span class="n">seed</span><span class="o">=</span><span class="mi">1</span>
 <span class="o">...</span> <span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">model</span> <span class="o">=</span> <span class="n">scaler</span> <span class="o">|</span> <span class="n">ooc</span>
 
 <span class="o">&gt;&gt;&gt;</span> <span class="n">metric</span> <span class="o">=</span> <span class="n">metrics</span><span class="o">.</span><span class="n">MacroF1</span><span class="p">()</span>
 
 <span class="o">&gt;&gt;&gt;</span> <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">metric</span><span class="p">)</span>
-<span class="n">MacroF1</span><span class="p">:</span> <span class="mf">79.71</span><span class="o">%</span>
+<span class="n">MacroF1</span><span class="p">:</span> <span class="mf">79.32</span><span class="o">%</span>
 </code></pre></div>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <details class="- note">
@@ -10666,7 +10671,7 @@
 <p><a href="https://arxiv.org/pdf/cs/9501101.pdf">Dietterich, T.G. and Bakiri, G., 1994. Solving multiclass learning problems via error-correcting output codes. Journal of artificial intelligence research, 2, pp.263-286.</a>&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
 </li>
 <li id="fn:2">
-<p><a href="https://www.cs.princeton.edu/~schapire/talks/ecoc-icml10.pdf">Allwein, E.L., Schapire, R.E. and Singer, Y., 2000. Reducing multiclass to binary: A unifying approach for margin classifiers. Journal of machine learning research, 1(Dec), pp.113-141.</a>&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+<p><a href="https://www.semanticscholar.org/paper/The-Error-Coding-Method-and-PICTs-James-Hastie/73abc83ed720921ed912a709aab6b734915b1012">James, G. and Hastie, T., 1998. The error coding method and PICTs. Journal of Computational and Graphical statistics, 7(3), pp.377-387.</a>&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
 </li>
 </ol>
 </div>
