@@ -104,7 +104,6 @@ class RegressionTrack(Track):
             "Regression",
             datasets=[
                 datasets.airline_passengers.AirlinePassengers(),
-                datasets.bikes.Bikes(),
                 datasets.chick_weights.ChickWeights(),
                 datasets.trump_approval.TrumpApproval(),
                 datasets.water_flow.WaterFlow()

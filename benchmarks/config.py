@@ -53,7 +53,6 @@ MODELS = {
         "Naive Bayes": naive_bayes.GaussianNB(),
         "Hoeffding Tree": tree.HoeffdingTreeClassifier(),
         "Hoeffding Adaptive Tree": tree.HoeffdingAdaptiveTreeClassifier(seed=42),
-        "Extremely Fast Decision Tree": tree.ExtremelyFastDecisionTreeClassifier(),
         "Adaptive Random Forest": ensemble.AdaptiveRandomForestClassifier(seed=42),
         "Streaming Random Patches": ensemble.SRPClassifier(),
         "k-Nearest Neighbors": preprocessing.StandardScaler()
