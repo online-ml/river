@@ -60,11 +60,8 @@ class BinaryClassificationTrack(Track):
             datasets=[
                 datasets.bananas.Bananas(),
                 datasets.elec2.Elec2(),
-                #datasets.http.HTTP(),
                 datasets.phishing.Phishing(),
-                #datasets.sms_spam.SMSSpam(),
                 datasets.smtp.SMTP(),
-                #datasets.trec07.TREC07()
             ],
             metric=metrics.Accuracy() + metrics.F1(),
         )

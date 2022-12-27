@@ -26,7 +26,6 @@ MODELS = {
             | linear_model.LogisticRegression(optimizer=optim.SGD(LEARNING_RATE))
         ),
         "ALMA": preprocessing.StandardScaler() | linear_model.ALMAClassifier(),
-        "Stochastic Gradient Tree": tree.SGTClassifier(),
         "sklearn SGDClassifier": (
             preprocessing.StandardScaler()
             | compat.SKL2RiverClassifier(
@@ -103,6 +102,7 @@ MODELS = {
         "Hoeffding Tree": preprocessing.StandardScaler() | tree.HoeffdingTreeRegressor(),
         "Hoeffding Adaptive Tree": preprocessing.StandardScaler()
         | tree.HoeffdingAdaptiveTreeRegressor(seed=42),
+        "Stochastic Gradient Tree": tree.SGTRegressor(),
         "Adaptive Random Forest": preprocessing.StandardScaler()
         | ensemble.AdaptiveRandomForestRegressor(seed=42),
         "Adaptive Model Rules": preprocessing.StandardScaler()
