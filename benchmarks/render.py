@@ -1,4 +1,5 @@
 import json
+import shutil
 from pathlib import Path
 from typing import List
 
@@ -80,7 +81,12 @@ def render_df(df_path:Path)-> dict:
 
 if __name__ == '__main__':
 
-    details = json.load(open('details.json'))
+
+    if Path('details.json').exists():
+        if Path('../docs/benchmarks/details.json').exists():
+            Path('../docs/benchmarks/details.json').unlink()
+        shutil.move('details.json','../docs/benchmarks/details.json')
+    details = json.load(open('../docs/benchmarks/details.json'))
 
     with open("../docs/benchmarks/index.md", "w", encoding='utf-8') as f:
         print_ = lambda x: print(x, file=f, end="\n\n")
@@ -96,10 +102,13 @@ hide:
 
         for track_name, track_details in details.items():
             print_(f'## {track_name}')
+            csv_name = track_name.replace(' ', '_').lower()
+            if Path(f'{csv_name}.csv').exists():
+                if Path(f'../docs/benchmarks/{csv_name}.csv').exists():
+                    Path(f'../docs/benchmarks/{csv_name}.csv').unlink()
+                shutil.move(f'{csv_name}.csv', '../docs/benchmarks/', )
 
-
-            #df = pd.read_csv(f'{track_name}.csv')
-            df_path = Path(f'../docs/benchmarks/{track_name}.csv')
+            df_path = Path(f'../docs/benchmarks/{csv_name}.csv')
             print_("```vegalite")
             print_(json.dumps(render_df(df_path), indent=2))
             print_("```")

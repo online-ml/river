@@ -31,38 +31,9 @@ MODELS = {
             preprocessing.StandardScaler()
             | compat.SKL2RiverClassifier(
                 SGDClassifier(
-                    loss="log_loss", learning_rate="constant", eta0=LEARNING_RATE, penalty="none"
+                    loss="log", learning_rate="constant", eta0=LEARNING_RATE, penalty="none"
                 ),
                 classes=[False, True],
-            )
-        ),
-        "Torch MLP": (
-            preprocessing.StandardScaler()
-            | TorchClassifier(
-                module=TorchMLPClassifier,
-                loss_fn="binary_cross_entropy",
-                optimizer="adam",
-                lr=LEARNING_RATE
-            )
-        ),
-        "Torch LogReg": (
-            preprocessing.StandardScaler()
-            | TorchClassifier(
-                module=TorchLogisticRegression,
-                loss_fn="binary_cross_entropy",
-                optimizer="adam",
-                lr=LEARNING_RATE
-            )
-        ),
-        "Torch LSTM": (
-            preprocessing.StandardScaler()
-            | TorchRollingClassifier(
-                module=TorchLSTMClassifier,
-                loss_fn="binary_cross_entropy",
-                optimizer="adam",
-                window_size=20,
-                lr=LEARNING_RATE,
-                append_predict=False
             )
         ),
         "Vowpal Wabbit logistic regression": VW2RiverClassifier(
@@ -123,15 +94,6 @@ MODELS = {
         | linear_model.LinearRegression(l1=1.0),
         "Linear Regression with l2 regularization": preprocessing.StandardScaler()
         | linear_model.LinearRegression(l2=1.0),
-        "Torch Linear Regression": (
-            preprocessing.StandardScaler()
-            | TorchRegressor(
-                module=TorchLinearRegression,
-                loss_fn="mse",
-                optimizer="adam",
-                lr=LEARNING_RATE
-            )
-        ),
         "Passive-Aggressive Regressor, mode 1": preprocessing.StandardScaler()
         | linear_model.PARegressor(mode=1),
         "Passive-Aggressive Regressor, mode 2": preprocessing.StandardScaler()
@@ -141,7 +103,6 @@ MODELS = {
         "Hoeffding Tree": preprocessing.StandardScaler() | tree.HoeffdingTreeRegressor(),
         "Hoeffding Adaptive Tree": preprocessing.StandardScaler()
         | tree.HoeffdingAdaptiveTreeRegressor(seed=42),
-        "Stochastic Gradient Tree": tree.SGTRegressor(),
         "Adaptive Random Forest": preprocessing.StandardScaler()
         | ensemble.AdaptiveRandomForestRegressor(seed=42),
         "Adaptive Model Rules": preprocessing.StandardScaler()
@@ -160,15 +121,6 @@ MODELS = {
                 rules.AMRules(),
             ],
         ),
-        "Torch MLP": (
-            preprocessing.StandardScaler()
-            | TorchRegressor(
-                module=TorchMLPRegressor,
-                loss_fn="mse",
-                optimizer="adam",
-                lr=LEARNING_RATE,
-            )
-        ),
         "River MLP": preprocessing.StandardScaler()
         | neural_net.MLPRegressor(
             hidden_dims=(5,),
@@ -179,17 +131,6 @@ MODELS = {
             ),
             optimizer=optim.SGD(1e-3),
             seed=42,
-        ),
-        "Torch LSTM": (
-            preprocessing.StandardScaler()
-            | TorchRollingRegressor(
-                module=TorchLSTMRegressor,
-                loss_fn="mse",
-                optimizer="adam",
-                window_size=20,
-                lr=LEARNING_RATE,
-                append_predict=False
-            )
         ),
         # Baseline
         "[baseline] Mean predictor": dummy.StatisticRegressor(stats.Mean()),

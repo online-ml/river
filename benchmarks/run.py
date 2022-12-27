@@ -26,8 +26,8 @@ def run_dataset(model_str,no_dataset, no_track):
     results = []
     track = copy.deepcopy(track)
     time = 0.0
-    for i in tqdm(track.run(model, dataset, n_checkpoints=N_CHECKPOINTS), total=N_CHECKPOINTS):
-        time += i['Time'] / timedelta (days=1)
+    for i in tqdm(track.run(model, dataset, n_checkpoints=N_CHECKPOINTS), total=N_CHECKPOINTS, desc=f"{model_str} on {dataset.__class__.__name__}"):
+        time += i['Time'].total_seconds()
         res = {
             "step": i["Step"],
             "track": track.name,
@@ -40,8 +40,6 @@ def run_dataset(model_str,no_dataset, no_track):
         res["Memory in Mb"] = i['Memory'] / 1024 ** 2
         res["Time in s"] = time
         results.append(res)
-        if time > 3600:
-            break
     return results
 
 def run_track(models: List[str], no_track: int, n_workers: int = 50):
@@ -52,7 +50,8 @@ def run_track(models: List[str], no_track: int, n_workers: int = 50):
 
     for val in pool.starmap(run_dataset, runs):
         results.extend(val)
-    pd.DataFrame(results).to_csv(f"../docs/benchmarks/{track.name}.csv", index=False)
+    csv_name = track.name.replace(" ", "_").lower()
+    pd.DataFrame(results).to_csv(f"./{csv_name}.csv", index=False)
 
 
 if __name__ == '__main__':
@@ -70,4 +69,4 @@ if __name__ == '__main__':
             details[track.name]["Model"][model_name] = repr(model)
         with open("details.json", "w") as f:
             json.dump(details, f, indent=2)
-        run_track(models=MODELS[track.name].keys(), no_track=i, n_workers=70)
+        run_track(models=MODELS[track.name].keys(), no_track=i, n_workers=50)
