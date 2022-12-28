@@ -1,5 +1,3 @@
-import importlib
-
 from river import datasets, evaluate, metrics
 
 
@@ -53,6 +51,7 @@ class BinaryClassificationTrack(Track):
         The number of samples to use for each dataset.
 
     """
+
     def __init__(self):
 
         super().__init__(
@@ -77,13 +76,14 @@ class MultiClassClassificationTrack(Track):
         The number of samples to use for each dataset.
 
     """
+
     def __init__(self):
         super().__init__(
             name="Multiclass classification",
             datasets=[
                 datasets.segment.ImageSegments(),
                 datasets.insects.Insects(),
-                datasets.keystroke.Keystroke()
+                datasets.keystroke.Keystroke(),
             ],
             metric=metrics.Accuracy() + metrics.MicroF1() + metrics.MacroF1(),
         )
@@ -99,6 +99,7 @@ class RegressionTrack(Track):
         The number of samples to use for each dataset.
 
     """
+
     def __init__(self):
         super().__init__(
             "Regression",
