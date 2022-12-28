@@ -151,7 +151,7 @@ class BOLEClassifier(AdaBoostClassifier):
         Number of times a model has made a mistake when making predictions.
     correct_weight : collections.defaultdict
         Number of times a model has predicted the right label when making predictions.
-    orderPosition :
+    order_position :
         Array with the index of the models with best (correct_weight / correct_weight + wrong_weight) in descending order.
     instances_seen :
         Number of instances that the ensemble trained with.
@@ -193,7 +193,7 @@ class BOLEClassifier(AdaBoostClassifier):
     def __init__(self, model: base.Classifier, n_models=10, seed: int = None, error_bound=0.5):
         super().__init__(model=model, n_models=n_models, seed=seed)
         self.error_bound = error_bound
-        self.orderPosition = np.arange(n_models)
+        self.order_position = [i for i in range(n_models)]
         self.instances_seen = 0
 
     def learn_one(self, x, y):
@@ -202,37 +202,37 @@ class BOLEClassifier(AdaBoostClassifier):
         acc = np.zeros(self.n_models)
         for i in range(self.n_models):
             acc[i] = (
-                self.correct_weight[self.orderPosition[i]]
-                + self.wrong_weight[self.orderPosition[i]]
+                self.correct_weight[self.order_position[i]]
+                + self.wrong_weight[self.order_position[i]]
             )
             if acc[i] != 0:
-                acc[i] = self.correct_weight[self.orderPosition[i]] / acc[i]
+                acc[i] = self.correct_weight[self.order_position[i]] / acc[i]
 
         # sort models in descending order by correct_weight / correct_weight + error_weight (best case insertion sort)
         for i in range(1, self.n_models):
-            key_position = self.orderPosition[i]
+            key_position = self.order_position[i]
             key_acc = acc[i]
             j = i - 1
             while (j >= 0) and (acc[j] < key_acc):
-                self.orderPosition[j + 1] = self.orderPosition[j]
+                self.order_position[j + 1] = self.order_position[j]
                 acc[j + 1] = acc[j]
                 j -= 1
-            self.orderPosition[j + 1] = key_position
+            self.order_position[j + 1] = key_position
             acc[j + 1] = key_acc
 
         correct = False
-        maxAcc = 0
-        minAcc = self.n_models - 1
+        max_acc = 0
+        min_acc = self.n_models - 1
         lambda_poisson = 1
 
         models = list(enumerate(self))
         for i in range(len(models)):
             if correct:
-                pos = self.orderPosition[maxAcc]
-                maxAcc += 1
+                pos = self.order_position[max_acc]
+                max_acc += 1
             else:
-                pos = self.orderPosition[minAcc]
-                minAcc -= 1
+                pos = self.order_position[min_acc]
+                min_acc -= 1
 
             for _ in range(poisson(lambda_poisson, self._rng)):
                 models[pos][1].learn_one(x, y)
