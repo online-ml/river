@@ -3,8 +3,6 @@ import copy
 import math
 import typing
 
-import numpy as np
-
 from river import base, linear_model
 from river.base import DriftDetector
 from river.drift import DDM
@@ -199,7 +197,7 @@ class BOLEClassifier(AdaBoostClassifier):
     def learn_one(self, x, y):
         self.instances_seen += 1
 
-        acc = np.zeros(self.n_models)
+        acc = [0] * self.n_models
         for i in range(self.n_models):
             acc[i] = (
                 self.correct_weight[self.order_position[i]]
@@ -225,8 +223,7 @@ class BOLEClassifier(AdaBoostClassifier):
         min_acc = self.n_models - 1
         lambda_poisson = 1
 
-        models = list(enumerate(self))
-        for i in range(len(models)):
+        for i in range(self.n_models):
             if correct:
                 pos = self.order_position[max_acc]
                 max_acc += 1
@@ -235,9 +232,9 @@ class BOLEClassifier(AdaBoostClassifier):
                 min_acc -= 1
 
             for _ in range(poisson(lambda_poisson, self._rng)):
-                models[pos][1].learn_one(x, y)
+                self.models[pos].learn_one(x, y)
 
-            if models[pos][1].predict_one(x) == y:
+            if self.models[pos].predict_one(x) == y:
                 self.correct_weight[pos] += lambda_poisson
                 lambda_poisson *= (self.instances_seen) / (2 * self.correct_weight[pos])
                 correct = True
@@ -255,7 +252,7 @@ class BOLEClassifier(AdaBoostClassifier):
                 epsilon = self.wrong_weight[i] / (self.correct_weight[i] + self.wrong_weight[i])
                 if epsilon <= self.error_bound:
                     beta_inv = (1 - epsilon) / epsilon
-                    model_weight = np.log(beta_inv)
+                    model_weight = math.log(beta_inv)
 
             if model_weight != 0.0:
                 predictions = model.predict_proba_one(x)
