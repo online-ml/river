@@ -103,10 +103,8 @@ class RegressionTrack(Track):
         super().__init__(
             "Regression",
             datasets=[
-                datasets.airline_passengers.AirlinePassengers(),
                 datasets.chick_weights.ChickWeights(),
                 datasets.trump_approval.TrumpApproval(),
-                datasets.water_flow.WaterFlow()
             ],
             metric=metrics.MAE() + metrics.RMSE() + metrics.R2(),
         )
