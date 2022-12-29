@@ -2,7 +2,7 @@ import collections
 import math
 import typing
 
-from river import base, drift, linear_model, utils
+from river import base, linear_model, utils
 
 __all__ = ["AdaBoostClassifier", "BOLEClassifier"]
 
