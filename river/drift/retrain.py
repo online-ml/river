@@ -14,7 +14,7 @@ class DriftRetrainingClassifier(base.Wrapper, base.Classifier):
     model
         The classifier and background classifier class.
     drift_detector
-        Algorithm to track warnings and concept drifts.
+        Algorithm to track warnings and concept drifts. Attention! The drift_detector must have a warning tracker.
 
     Examples
     --------
