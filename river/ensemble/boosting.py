@@ -3,9 +3,7 @@ import copy
 import math
 import typing
 
-from river import base, drift, linear_model
-from river.utils.norm import normalize_values_in_dict, scale_values_in_dict
-from river.utils.random import poisson
+from river import base, drift, linear_model, utils
 
 __all__ = ["AdaBoostClassifier", "BOLEClassifier"]
 
@@ -86,7 +84,7 @@ class AdaBoostClassifier(base.WrapperEnsemble, base.Classifier):
         lambda_poisson = 1
 
         for i, model in enumerate(self):
-            for _ in range(poisson(lambda_poisson, self._rng)):
+            for _ in range(utils.random.poisson(lambda_poisson, self._rng)):
                 model.learn_one(x, y)
 
             if model.predict_one(x) == y:
@@ -114,11 +112,11 @@ class AdaBoostClassifier(base.WrapperEnsemble, base.Classifier):
                 beta_inv = (1 - epsilon) / epsilon
                 model_weight = math.log(beta_inv) if beta_inv != 0 else 0
             predictions = model.predict_proba_one(x)
-            normalize_values_in_dict(predictions, inplace=True)
-            scale_values_in_dict(predictions, model_weight, inplace=True)
+            utils.norm.normalize_values_in_dict(predictions, inplace=True)
+            utils.norm.scale_values_in_dict(predictions, model_weight, inplace=True)
             y_proba.update(predictions)
 
-        normalize_values_in_dict(y_proba, inplace=True)
+        utils.norm.normalize_values_in_dict(y_proba, inplace=True)
         return y_proba
 
 
@@ -180,8 +178,8 @@ class BOLEClassifier(AdaBoostClassifier):
     References
     ----------
     [^1]: [Oza, N.C., 2005, October. Online bagging and boosting. In 2005 IEEE international conference on systems, man and cybernetics (Vol. 3, pp. 2340-2345). Ieee.](https://ti.arc.nasa.gov/m/profile/oza/files/ozru01a.pdf)
-
     [^2]: R. S. M. d. Barros, S. Garrido T. de Carvalho Santos and P. M. Gonçalves Júnior, "A Boosting-like Online Learning Ensemble," 2016 International Joint Conference on Neural Networks (IJCNN), 2016, pp. 1871-1878, doi: 10.1109/IJCNN.2016.7727427.
+
     """
 
     def __init__(self, model: base.Classifier, n_models=10, seed: int = None, error_bound=0.5):
@@ -235,7 +233,7 @@ class BOLEClassifier(AdaBoostClassifier):
                 pos = self.order_position[min_acc]
                 min_acc -= 1
 
-            for _ in range(poisson(lambda_poisson, self._rng)):
+            for _ in range(utils.random.poisson(lambda_poisson, self._rng)):
                 self.models[pos].learn_one(x, y)
 
             if self.models[pos].predict_one(x) == y:
@@ -260,11 +258,11 @@ class BOLEClassifier(AdaBoostClassifier):
 
             if model_weight:
                 predictions = model.predict_proba_one(x)
-                normalize_values_in_dict(predictions, inplace=True)
-                scale_values_in_dict(predictions, model_weight, inplace=True)
+                utils.norm.normalize_values_in_dict(predictions, inplace=True)
+                utils.norm.scale_values_in_dict(predictions, model_weight, inplace=True)
                 y_proba.update(predictions)
 
-        normalize_values_in_dict(y_proba, inplace=True)
+        utils.norm.normalize_values_in_dict(y_proba, inplace=True)
         return y_proba
 
 
