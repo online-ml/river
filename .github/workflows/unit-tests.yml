@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - feature/xdist
 
 jobs:
   test:
@@ -47,6 +48,7 @@ jobs:
           pip install wheel
           pip install -e ".[dev]"
           pip install scikit-learn sqlalchemy
+          pip install pytest-xdist[psutil]
 
       - name: Cache datasets
         uses: actions/cache@v2
@@ -58,4 +60,4 @@ jobs:
         run: python -c "from river import datasets; datasets.CreditCard().download(); datasets.Elec2().download()"
 
       - name: pytest
-        run: pytest -m "not datasets"
+        run: pytest -m "not datasets" -n 2
