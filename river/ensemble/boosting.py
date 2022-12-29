@@ -3,9 +3,7 @@ import copy
 import math
 import typing
 
-from river import base, linear_model
-from river.base import DriftDetector
-from river.drift import DDM
+from river import base, drift, linear_model
 from river.utils.norm import normalize_values_in_dict, scale_values_in_dict
 from river.utils.random import poisson
 
@@ -157,7 +155,6 @@ class BOLEClassifier(AdaBoostClassifier):
     Examples
     --------
 
-    >>> from river.ensemble.boosting import BOLEBaseModel
     >>> from river import datasets
     >>> from river import ensemble
     >>> from river import evaluate
@@ -169,7 +166,7 @@ class BOLEClassifier(AdaBoostClassifier):
 
 
     >>> model = ensemble.BOLEClassifier(
-    ...     model= BOLEBaseModel(model=tree.HoeffdingTreeClassifier(), drift_detection_method= drift.DDM()),
+    ...     model= BOLEBaseModel(model=tree.HoeffdingTreeClassifier(), drift_detector= drift.DDM()),
     ...     n_models=10,
     ...     seed=42
     ... )
@@ -178,7 +175,6 @@ class BOLEClassifier(AdaBoostClassifier):
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
     Accuracy: 92.02%
-
 
 
     References
@@ -223,6 +219,14 @@ class BOLEClassifier(AdaBoostClassifier):
         min_acc = self.n_models - 1
         lambda_poisson = 1
 
+        # does boosting not in a linear way (i.e a model boosts the model created after him in the ensemble creation process)
+        # the first model to be trained will be the one with worst correct_weight / correct_weight + wrong_weight
+        # The worst model's not yet trained will receive lambda values for training from the model's that incorrectly classified an instance.
+        # the best model's not yet trained will receive lambda values for training from the model's that correctly classified an instance.
+        # the values of lambda increase in case a mistake is made and decrease in case a right prediction is made.
+        # the worst models are more likely to make mistakes, increasing the value of lambda.
+        # Then, the best's model are likely to receive a high value of lambda and decreasing gradually throughout the remaning models to be trained
+        # It's similar to a system where the rich get richer.
         for i in range(self.n_models):
             if correct:
                 pos = self.order_position[max_acc]
@@ -254,7 +258,7 @@ class BOLEClassifier(AdaBoostClassifier):
                     beta_inv = (1 - epsilon) / epsilon
                     model_weight = math.log(beta_inv)
 
-            if model_weight != 0.0:
+            if model_weight:
                 predictions = model.predict_proba_one(x)
                 normalize_values_in_dict(predictions, inplace=True)
                 scale_values_in_dict(predictions, model_weight, inplace=True)
@@ -277,13 +281,11 @@ class BOLEBaseModel(base.Classifier):
         Algorithm to track warnings and concept drifts
     """
 
-    def __init__(self, model: base.Classifier, drift_detection_method: DriftDetector):
+    def __init__(self, model: base.Classifier, drift_detector: base.DriftDetector):
         self.base_class = model
         self.model = copy.deepcopy(self.base_class)
         self.bkg_model = None
-        self.drift_detection_method = (
-            drift_detection_method if drift_detection_method is not None else DDM()
-        )
+        self.drift_detector = drift_detector if drift_detector is not None else drift.DDM()
 
     def predict_proba_one(self, x):
         return self.model.predict_proba_one(x)
@@ -294,16 +296,17 @@ class BOLEBaseModel(base.Classifier):
 
     def update_ddm(self, x, y):
         y_pred = self.model.predict_one(x)
-        if y_pred is not None:
-            incorrectly_classifies = int(y_pred != y)
-            self.drift_detection_method.update(incorrectly_classifies)
-            if self.drift_detection_method.warning_detected:
-                if self.bkg_model is None:
-                    self.bkg_model = copy.deepcopy(self.base_class)
-                self.bkg_model.learn_one(x, y)
-            elif self.drift_detection_method._drift_detected:
-                if self.bkg_model is not None:
-                    self.model = copy.deepcopy(self.bkg_model)
-                    self.bkg_model = None
-                else:
-                    self.model = copy.deepcopy(self.base_class)
+        if y_pred is None:
+            return
+        incorrectly_classifies = int(y_pred != y)
+        self.drift_detector.update(incorrectly_classifies)
+        if self.drift_detector.warning_detected:
+            if self.bkg_model is None:
+                self.bkg_model = copy.deepcopy(self.base_class)
+            self.bkg_model.learn_one(x, y)
+        elif self.drift_detector._drift_detected:
+            if self.bkg_model is not None:
+                self.model = copy.deepcopy(self.bkg_model)
+                self.bkg_model = None
+            else:
+                self.model = copy.deepcopy(self.base_class)
