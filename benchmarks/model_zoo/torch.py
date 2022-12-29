@@ -44,24 +44,29 @@ class TorchLinearRegression(torch.nn.Module):
     def forward(self, X):
         return self.linear(X)
 class TorchLSTMClassifier(torch.nn.Module):
-    def __init__(self, n_features: int, hidden_size: int = 1):
+    def __init__(self, n_features, num_layers=1, hidden_size=1):
         super().__init__()
-        self.n_features = n_features
-        self.lstm = torch.nn.LSTM(input_size=n_features, hidden_size=hidden_size, num_layers=1)
+        self.n_features=n_features
+        self.hidden_size = hidden_size
+        self.num_layers = num_layers
+        self.lstm = torch.nn.LSTM(input_size=n_features, num_layers=num_layers, hidden_size=hidden_size, batch_first=False, bias=True)
+        self.fc = torch.nn.Linear(hidden_size, 1)
         self.softmax = torch.nn.Softmax(dim=-1)
 
-    def forward(self, X):
-        output, (hn, cn) = self.lstm(X)  # lstm with input, hidden, and internal state
-        hn = hn.view(-1, self.lstm.hidden_size)
-        return self.softmax(hn)
+    def forward(self, X, **kwargs):
+        out, (hn, cn) = self.lstm(X)
+        X = self.fc(out[-1, :])
+        return self.softmax(X)
 
 class TorchLSTMRegressor(torch.nn.Module):
-    def __init__(self, n_features: int, hidden_size: int = 1):
+    def __init__(self, n_features, num_layers=1, hidden_size=1):
         super().__init__()
-        self.n_features = n_features
-        self.lstm = torch.nn.LSTM(input_size=n_features, hidden_size=hidden_size, num_layers=1)
+        self.n_features=n_features
+        self.hidden_size = hidden_size
+        self.num_layers = num_layers
+        self.lstm = torch.nn.LSTM(input_size=n_features, num_layers=num_layers, hidden_size=hidden_size, batch_first=False, bias=True)
+        self.fc = torch.nn.Linear(hidden_size, 1)
 
-    def forward(self, X):
-        output, (hn, cn) = self.lstm(X)  # lstm with input, hidden, and internal state
-        hn = hn.view(-1, self.lstm.hidden_size)
-        return hn
+    def forward(self, X, **kwargs):
+        out, (hn, cn) = self.lstm(X)
+        return self.fc(out[-1, :])
