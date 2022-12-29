@@ -279,8 +279,7 @@ class BOLEBaseModel(base.Classifier):
     """
 
     def __init__(self, model: base.Classifier, drift_detector: base.DriftDetector):
-        self.base_class = model
-        self.model = copy.deepcopy(self.base_class)
+        self.model = model
         self.bkg_model = None
         self.drift_detector = drift_detector if drift_detector is not None else drift.DDM()
 
@@ -299,11 +298,11 @@ class BOLEBaseModel(base.Classifier):
         self.drift_detector.update(incorrectly_classifies)
         if self.drift_detector.warning_detected:
             if self.bkg_model is None:
-                self.bkg_model = copy.deepcopy(self.base_class)
+                self.bkg_model = self.model.clone()
             self.bkg_model.learn_one(x, y)
         elif self.drift_detector._drift_detected:
             if self.bkg_model is not None:
                 self.model = copy.deepcopy(self.bkg_model)
                 self.bkg_model = None
             else:
-                self.model = copy.deepcopy(self.base_class)
+                self.model = self.model.clone()
