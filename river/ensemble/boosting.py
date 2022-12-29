@@ -190,30 +190,30 @@ class BOLEClassifier(AdaBoostClassifier):
     def learn_one(self, x, y):
         self.instances_seen += 1
 
-        acc = [0] * self.n_models
+        correct_rate = [0] * self.n_models
         for i in range(self.n_models):
-            acc[i] = (
+            correct_rate[i] = (
                 self.correct_weight[self.order_position[i]]
                 + self.wrong_weight[self.order_position[i]]
             )
-            if acc[i] != 0:
-                acc[i] = self.correct_weight[self.order_position[i]] / acc[i]
+            if correct_rate[i] != 0:
+                correct_rate[i] = self.correct_weight[self.order_position[i]] / correct_rate[i]
 
         # sort models in descending order by correct_weight / correct_weight + error_weight (best case insertion sort)
         for i in range(1, self.n_models):
             key_position = self.order_position[i]
-            key_acc = acc[i]
+            key_correct_rate = correct_rate[i]
             j = i - 1
-            while (j >= 0) and (acc[j] < key_acc):
+            while (j >= 0) and (correct_rate[j] < key_correct_rate):
                 self.order_position[j + 1] = self.order_position[j]
-                acc[j + 1] = acc[j]
+                correct_rate[j + 1] = correct_rate[j]
                 j -= 1
             self.order_position[j + 1] = key_position
-            acc[j + 1] = key_acc
+            correct_rate[j + 1] = key_correct_rate
 
         correct = False
-        max_acc = 0
-        min_acc = self.n_models - 1
+        max_correct_rate = 0
+        min_correct_rate = self.n_models - 1
         lambda_poisson = 1
 
         # does boosting not in a linear way (i.e a model boosts the model created after him in the ensemble creation process)
@@ -226,11 +226,11 @@ class BOLEClassifier(AdaBoostClassifier):
         # It's similar to a system where the rich get richer.
         for i in range(self.n_models):
             if correct:
-                pos = self.order_position[max_acc]
-                max_acc += 1
+                pos = self.order_position[max_correct_rate]
+                max_correct_rate += 1
             else:
-                pos = self.order_position[min_acc]
-                min_acc -= 1
+                pos = self.order_position[min_correct_rate]
+                min_correct_rate -= 1
 
             for _ in range(utils.random.poisson(lambda_poisson, self._rng)):
                 self.models[pos].learn_one(x, y)
@@ -247,19 +247,22 @@ class BOLEClassifier(AdaBoostClassifier):
 
     def predict_proba_one(self, x):
         y_proba = collections.Counter()
+        y_proba_all = collections.Counter() #stores prediction of every model of the ensemble, if y_proba is null, returns y_proba_all
         for i, model in enumerate(self):
             model_weight = 0.0
             if self.correct_weight[i] > 0.0 and self.wrong_weight[i] > 0.0:
-                epsilon = self.wrong_weight[i] / (self.correct_weight[i] + self.wrong_weight[i])
+                epsilon = self.wrong_weight[i] / (self.correct_weight[i] + self.wrong_weight[i]) + 1e-16
                 if epsilon <= self.error_bound:
                     beta_inv = (1 - epsilon) / epsilon
                     model_weight = math.log(beta_inv)
-
+            predictions = model.predict_proba_one(x)
             if model_weight:
-                predictions = model.predict_proba_one(x)
                 utils.norm.normalize_values_in_dict(predictions, inplace=True)
                 utils.norm.scale_values_in_dict(predictions, model_weight, inplace=True)
                 y_proba.update(predictions)
-
+            y_proba_all.update(predictions)
+        if not len(y_proba):
+            utils.norm.normalize_values_in_dict(y_proba_all, inplace=True)
+            return y_proba_all
         utils.norm.normalize_values_in_dict(y_proba, inplace=True)
         return y_proba
