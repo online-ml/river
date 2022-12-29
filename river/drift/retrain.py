@@ -1,7 +1,7 @@
 from river import base, drift
 
 
-class DriftRetrainingClassifier(base.Classifier, base.Wrapper):
+class DriftRetrainingClassifier(base.Wrapper, base.Classifier):
     """Drift retraining classifier.
 
     This classifier is a wrapper for any classifier. It monitors the incoming data for concept
@@ -53,7 +53,8 @@ class DriftRetrainingClassifier(base.Classifier, base.Wrapper):
 
     def learn_one(self, x, y):
         self._update_ddm(x, y)
-        return self.model.learn_one(x, y)
+        self.model.learn_one(x, y)
+        return self
 
     def _update_ddm(self, x, y):
         y_pred = self.model.predict_one(x)
@@ -73,6 +74,10 @@ class DriftRetrainingClassifier(base.Classifier, base.Wrapper):
 
     @classmethod
     def _unit_test_params(cls):
-        from river import naive_bayes
+        from river import linear_model, naive_bayes, preprocessing
 
+        yield {
+            "model": preprocessing.StandardScaler() | linear_model.LogisticRegression(),
+            "drift_detector": drift.DDM(),
+        }
         yield {"model": naive_bayes.GaussianNB(), "drift_detector": drift.DDM()}
