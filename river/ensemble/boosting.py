@@ -1,5 +1,4 @@
 import collections
-import copy
 import math
 import typing
 
