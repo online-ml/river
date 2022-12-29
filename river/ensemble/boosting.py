@@ -160,8 +160,7 @@ class BOLEClassifier(AdaBoostClassifier):
     >>> from river import metrics
     >>> from river import tree
 
-    >>> dataset = datasets.Elec2()
-
+    >>> dataset = datasets.Elec2().take(3000)
 
     >>> model = ensemble.BOLEClassifier(
     ...     model= BOLEBaseModel(model=tree.HoeffdingTreeClassifier(), drift_detector= drift.DDM()),
@@ -172,7 +171,7 @@ class BOLEClassifier(AdaBoostClassifier):
     >>> metric = metrics.Accuracy()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    Accuracy: 92.02%
+    Accuracy: 93.63%
 
 
     References
