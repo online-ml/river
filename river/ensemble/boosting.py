@@ -267,19 +267,20 @@ class BOLEClassifier(AdaBoostClassifier):
 class BOLEBaseModel(base.Classifier, base.Wrapper):
     """BOLEBaseModel
 
-    In case a warning is detected, a background model starts to train. If a drift is detected, the model will be replaced by the background model.
+    In case a warning is detected, a background model starts to train. If a drift is detected, the model will be replaced by the background model, and the background model will be reset.
 
     Parameters
     ----------
     model
         The classifier and background classifier class.
-    drift_detection_method
-        Algorithm to track warnings and concept drifts
+    drift_detector
+        Algorithm to track warnings and concept drifts.
+
     """
 
     def __init__(self, model: base.Classifier, drift_detector: base.DriftDetector = None):
         self.model = model
-        self.bkg_model = None
+        self.bkg_model = model.clone()
         self.drift_detector = drift_detector if drift_detector is not None else drift.DDM()
 
     @property
@@ -290,25 +291,24 @@ class BOLEBaseModel(base.Classifier, base.Wrapper):
         return self.model.predict_proba_one(x)
 
     def learn_one(self, x, y):
-        self.update_ddm(x, y)
+        self._update_ddm(x, y)
         return self.model.learn_one(x, y)
 
-    def update_ddm(self, x, y):
+    def _update_ddm(self, x, y):
         y_pred = self.model.predict_one(x)
         if y_pred is None:
             return
+
         incorrectly_classifies = int(y_pred != y)
         self.drift_detector.update(incorrectly_classifies)
+
         if self.drift_detector.warning_detected:
-            if self.bkg_model is None:
-                self.bkg_model = self.model.clone()
+            # If there's a warning, we train the background model
             self.bkg_model.learn_one(x, y)
-        elif self.drift_detector._drift_detected:
-            if self.bkg_model is not None:
-                self.model = copy.deepcopy(self.bkg_model)
-                self.bkg_model = None
-            else:
-                self.model = self.model.clone()
+        elif self.drift_detector.drift_detected:
+            # If there's a drift, we replace the model with the background model
+            self.model = self.bkg_model
+            self.bkg_model = self.model.clone()
 
     @classmethod
     def _unit_test_params(cls):
