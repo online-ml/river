@@ -247,11 +247,15 @@ class BOLEClassifier(AdaBoostClassifier):
 
     def predict_proba_one(self, x):
         y_proba = collections.Counter()
-        y_proba_all = collections.Counter() #stores prediction of every model of the ensemble, if y_proba is null, returns y_proba_all
+        y_proba_all = (
+            collections.Counter()
+        )  # stores prediction of every model of the ensemble, if y_proba is null, returns y_proba_all
         for i, model in enumerate(self):
             model_weight = 0.0
             if self.correct_weight[i] > 0.0 and self.wrong_weight[i] > 0.0:
-                epsilon = self.wrong_weight[i] / (self.correct_weight[i] + self.wrong_weight[i]) + 1e-16
+                epsilon = (
+                    self.wrong_weight[i] / (self.correct_weight[i] + self.wrong_weight[i]) + 1e-16
+                )
                 if epsilon <= self.error_bound:
                     beta_inv = (1 - epsilon) / epsilon
                     model_weight = math.log(beta_inv)
