@@ -111,7 +111,6 @@ class AdaBoostClassifier(base.WrapperEnsemble, base.Classifier):
                 beta_inv = (1 - epsilon) / epsilon
                 model_weight = math.log(beta_inv) if beta_inv != 0 else 0
             predictions = model.predict_proba_one(x)
-            utils.norm.normalize_values_in_dict(predictions, inplace=True)
             utils.norm.scale_values_in_dict(predictions, model_weight, inplace=True)
             y_proba.update(predictions)
 
