@@ -173,7 +173,6 @@ class BOLEClassifier(AdaBoostClassifier):
     >>> evaluate.progressive_val_score(dataset, model, metric)
     Accuracy: 93.63%
 
-
     References
     ----------
     [^1]: [Oza, N.C., 2005, October. Online bagging and boosting. In 2005 IEEE international conference on systems, man and cybernetics (Vol. 3, pp. 2340-2345). Ieee.](https://ti.arc.nasa.gov/m/profile/oza/files/ozru01a.pdf)
@@ -265,7 +264,7 @@ class BOLEClassifier(AdaBoostClassifier):
         return y_proba
 
 
-class BOLEBaseModel(base.Classifier):
+class BOLEBaseModel(base.Classifier, base.Wrapper):
     """BOLEBaseModel
 
     In case a warning is detected, a background model starts to train. If a drift is detected, the model will be replaced by the background model.
@@ -278,10 +277,14 @@ class BOLEBaseModel(base.Classifier):
         Algorithm to track warnings and concept drifts
     """
 
-    def __init__(self, model: base.Classifier, drift_detector: base.DriftDetector):
+    def __init__(self, model: base.Classifier, drift_detector: base.DriftDetector = None):
         self.model = model
         self.bkg_model = None
         self.drift_detector = drift_detector if drift_detector is not None else drift.DDM()
+
+    @property
+    def _wrapped_model(self):
+        return self.model
 
     def predict_proba_one(self, x):
         return self.model.predict_proba_one(x)
@@ -306,3 +309,9 @@ class BOLEBaseModel(base.Classifier):
                 self.bkg_model = None
             else:
                 self.model = self.model.clone()
+
+    @classmethod
+    def _unit_test_params(cls):
+        from river import naive_bayes
+
+        yield {"model": naive_bayes.GaussianNB(), "drift_detector": drift.DDM()}
