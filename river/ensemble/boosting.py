@@ -261,7 +261,6 @@ class BOLEClassifier(AdaBoostClassifier):
                     model_weight = math.log(beta_inv)
             predictions = model.predict_proba_one(x)
             if model_weight:
-                utils.norm.normalize_values_in_dict(predictions, inplace=True)
                 utils.norm.scale_values_in_dict(predictions, model_weight, inplace=True)
                 y_proba.update(predictions)
             y_proba_all.update(predictions)
