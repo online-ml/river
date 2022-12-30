@@ -3,7 +3,7 @@ from river import base, utils
 __all__ = ["PredClipper"]
 
 
-class PredClipper(base.Regressor, base.Wrapper):
+class PredClipper(base.Wrapper, base.Regressor):
     """Clips the target after predicting.
 
     Parameters
