@@ -27,6 +27,7 @@ __all__ = [
     "sherman_morrison",
     "softmax",
     "woodbury_matrix",
+    "log_sum_2_exp",
 ]
 
 
@@ -353,3 +354,27 @@ def woodbury_matrix(A: np.ndarray, U: np.ndarray, V: np.ndarray):
     eye = np.eye(len(V))
     Au = A @ U
     A -= Au @ np.linalg.inv(eye + V @ Au) @ V @ A
+
+
+def log_sum_2_exp(a: float, b: float) -> float:
+    """Computation of log( (e^a + e^b) / 2) in an overflow-proof way
+
+    Parameters
+    ----------
+    a : float
+        First number
+
+    b : float
+        Second number
+
+    Returns
+    -------
+    output : float
+        Value of log( (e^a + e^b) / 2) for the given a and b
+    """
+    # TODO: if |a - b| > 50 skip
+    # TODO: try several log and exp implementations
+    if a > b:
+        return a + math.log((1 + math.exp(b - a)) / 2)
+    else:
+        return b + math.log((1 + math.exp(a - b)) / 2)

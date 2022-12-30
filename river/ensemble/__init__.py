@@ -18,6 +18,7 @@ from .ewa import EWARegressor
 from .stacking import StackingClassifier
 from .streaming_random_patches import SRPClassifier, SRPRegressor
 from .voting import VotingClassifier
+from .aggregated_mondrian_forest import AMFClassifier
 
 __all__ = [
     "AdaptiveRandomForestClassifier",
@@ -32,4 +33,5 @@ __all__ = [
     "SRPRegressor",
     "StackingClassifier",
     "VotingClassifier",
+    "AMFClassifier"
 ]

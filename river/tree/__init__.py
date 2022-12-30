@@ -59,6 +59,7 @@ from .hoeffding_tree_regressor import HoeffdingTreeRegressor
 from .isoup_tree_regressor import iSOUPTreeRegressor
 from .label_combination_hoeffding_tree import LabelCombinationHoeffdingTreeClassifier
 from .stochastic_gradient_tree import SGTClassifier, SGTRegressor
+from .mondrian_tree_classifier import MondrianTreeClassifier
 
 __all__ = [
     "base",
@@ -72,4 +73,5 @@ __all__ = [
     "LabelCombinationHoeffdingTreeClassifier",
     "SGTClassifier",
     "SGTRegressor",
+    "MondrianTreeClassifier",
 ]
