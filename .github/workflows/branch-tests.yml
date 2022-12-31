@@ -36,6 +36,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install wheel
           pip install -e ".[dev]"
+          pip install pytest-xdist[psutil]
 
       - name: Cache datasets
         uses: actions/cache@v2
@@ -47,4 +48,4 @@ jobs:
         run: python -c "from river import datasets; datasets.CreditCard().download(); datasets.Elec2().download()"
 
       - name: pytest
-        run: pytest
+        run: pytest -n logical # Run pytest on all logical CPU cores
