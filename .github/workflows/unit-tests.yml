@@ -48,10 +48,16 @@ jobs:
           pip install -e ".[dev]"
           pip install scikit-learn sqlalchemy
 
-      - name: Cache datasets
+      - name: Cache River datasets
         uses: actions/cache@v2
         with:
           path: ~/river_data
+          key: ${{ runner.os }}
+
+      - name: Cache scikit-learn datasets
+        uses: actions/cache@v2
+        with:
+          path: ~/scikit_learn_data
           key: ${{ runner.os }}
 
       - name: Download datasets
