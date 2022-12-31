@@ -60,4 +60,4 @@ jobs:
         run: python -c "from river import datasets; datasets.CreditCard().download(); datasets.Elec2().download()"
 
       - name: pytest
-        run: pytest -m "not datasets" -n logical
+        run: pytest -m "not datasets" -n logical # Run pytest on all logical CPU cores
