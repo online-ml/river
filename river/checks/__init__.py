@@ -94,7 +94,7 @@ def _yield_datasets(model: Estimator):
 
     # Multi-output classification
     if utils.inspect.ismoclassifier(model):
-        yield datasets.Music().take(200)
+        yield datasets.Music().take(50)
 
     # Classification
     elif utils.inspect.isclassifier(model):

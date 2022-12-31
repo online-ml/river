@@ -8,7 +8,7 @@ __all__ = ["AdaBoostClassifier", "BOLEClassifier"]
 
 
 class AdaBoostClassifier(base.WrapperEnsemble, base.Classifier):
-    """Boosting for classification
+    """Boosting for classification.
 
     For each incoming observation, each model's `learn_one` method is called `k` times where
     `k` is sampled from a Poisson distribution of parameter lambda. The lambda parameter is
@@ -119,7 +119,7 @@ class AdaBoostClassifier(base.WrapperEnsemble, base.Classifier):
 
 
 class BOLEClassifier(AdaBoostClassifier):
-    """Boosting Online Learning Ensemble (BOLE)
+    """Boosting Online Learning Ensemble (BOLE).
 
     A modified version of Oza Online Boosting Algorithm [^1]. For each incoming observation, each model's `learn_one` method is called `k` times where
     `k` is sampled from a Poisson distribution of parameter lambda. The first model to be trained will be the one with worst correct_weight / (correct_weight + wrong_weight).
