@@ -18,31 +18,31 @@ class MondrianTreeClassifier(MondrianTree):
 
     Parameters
     ----------
-        n_classes: int
-            Number of classes of the problem
-        n_features: int
-            Number of features of the data in entry
-        step: float
-            Step of the tree
-        use_aggregation: bool
-            Whether to use aggregation weighting techniques or not.
-        dirichlet: float
-            Dirichlet parameter of the problem
-        split_pure: bool
-            Whether the tree should split pure leafs during training or not
-        iteration: int
-            Number iterations to do during training
+    n_classes:
+        Number of classes of the problem
+    n_features:
+        Number of features of the data in entry
+    step:
+        Step of the tree
+    use_aggregation:
+        Whether to use aggregation weighting techniques or not.
+    dirichlet:
+        Dirichlet parameter of the problem
+    split_pure:
+        Whether the tree should split pure leafs during training or not
+    iteration:
+        Number iterations to do during training
     """
 
     def __init__(
             self,
-            n_classes: int,
-            n_features: int,
-            step: float,
-            use_aggregation: bool,
-            dirichlet: float,
-            split_pure: bool,
-            iteration: int,
+            n_classes: int = 2,
+            n_features: int = 1,
+            step: float = 0.1,
+            use_aggregation: bool = True,
+            dirichlet: float = None,
+            split_pure: bool = False,
+            iteration: int = 0,
     ):
 
         super().__init__(
@@ -66,55 +66,50 @@ class MondrianTreeClassifier(MondrianTree):
         # The current label being proceeded
         self._y = None
 
-    def score(self, node: MondrianTreeLeafClassifier):
+    def score(self, node: MondrianTreeLeafClassifier) -> float:
         """
         Computes the score of the node regarding the current sample being proceeded
+
         Parameters
         ----------
-        node: MondrianTreeLeafClassifier
+        node
+            Node to evaluate the score of
 
-        Returns
-        -------
-        score: float
         """
         return node.score(self._y, self.dirichlet)
 
-    def predict(self, node: MondrianTreeLeafClassifier):
+    def predict(self, node: MondrianTreeLeafClassifier) -> dict[float]:
         """
-        Computes the predictions scores of the node regarding all the scores.
+        Computes the predictions scores of the node regarding all the classes scores.
+
         Parameters
         ----------
-        node: MondrianTreeLeafClassifier
+        node
+            Node to make predictions with
 
-        Returns
-        -------
-        scores: dict
         """
         return node.predict(self.dirichlet)
 
-    def loss(self, node: MondrianTreeLeafClassifier):
+    def loss(self, node: MondrianTreeLeafClassifier) -> float:
         """
         Computes the loss for the given node regarding the current label
+
         Parameters
         ----------
-        node: MondrianTreeLeafClassifier
-
-        Returns
-        -------
-        loss: float
+        node
+            Node to evaluate the loss for
         """
         return node.loss(self._y, self.dirichlet)
 
-    def update_weight(self, node: MondrianTreeLeafClassifier):
+    def update_weight(self, node: MondrianTreeLeafClassifier) -> float:
         """
         Updates the weight of the node regarding the current label with the tree parameters
+
         Parameters
         ----------
-        node: MondrianTreeLeafClassifier
+        node
+            Node to update the weight of
 
-        Returns
-        -------
-        loss: float
         """
         return node.update_weight(self._y, self.dirichlet, self.use_aggregation, self.step)
 
@@ -123,10 +118,8 @@ class MondrianTreeClassifier(MondrianTree):
         Update the count of labels with the current class `_y` being treated (not to use twice for one sample added)
         Parameters
         ----------
-        node: MondrianTreeLeafClassifier
-
-        Returns
-        -------
+        node
+            Target node
 
         """
         return node.update_count(self._y)
@@ -134,29 +127,26 @@ class MondrianTreeClassifier(MondrianTree):
     def update_downwards(self, node: MondrianTreeLeafClassifier, do_update_weight: bool):
         """
         Updates the node when running a downward procedure updating the tree
+
         Parameters
         ----------
-        node: MondrianTreeLeafClassifier
-        do_update_weight: bool
+        node
+            Target node
+        do_update_weight
             Whether we should update the weights or not
-
-        Returns
-        -------
 
         """
         return node.update_downwards(self._x, self._y, self.dirichlet, self.use_aggregation, self.step,
                                      do_update_weight)
 
-    def compute_split_time(self, node: MondrianTreeLeafClassifier):
+    def compute_split_time(self, node: MondrianTreeLeafClassifier) -> float:
         """
         Computes the spit time of the given node
+
         Parameters
         ----------
         node: MondrianTreeLeafClassifier
 
-        Returns
-        -------
-        split_time: float
         """
         #  Don't split if the node is pure: all labels are equal to the one of y_t
         if not self.split_pure and node.is_dirac(self._y):
@@ -187,24 +177,29 @@ class MondrianTreeClassifier(MondrianTree):
 
         return 0
 
-    def split(self, node, split_time, threshold, feature, is_right_extension):
+    def split(
+            self,
+            node: MondrianTreeLeafClassifier,
+            split_time: float,
+            threshold: float,
+            feature: int,
+            is_right_extension: bool
+    ):
         """
         Splits the given node and attributes the split time, threshold, etc... to the node
 
         Parameters
         ----------
-        node: MondrianTreeLeafClassifier
-        split_time: float
+        node
+            Target node
+        split_time
             Split time of the node in the Mondrian process
-        threshold:
+        threshold
             Threshold of acceptance of the node
-        feature:
+        feature
             Feature index of the node
-        is_right_extension:
+        is_right_extension
             Should we extend the tree in the right or left direction
-
-        Returns
-        -------
 
         """
 
@@ -246,8 +241,6 @@ class MondrianTreeClassifier(MondrianTree):
     def go_downwards(self):
         """
         Updates the tree (downward procedure)
-        Returns
-        -------
 
         """
 
@@ -334,11 +327,9 @@ class MondrianTreeClassifier(MondrianTree):
         Updates the tree (upwards procedure)
         Parameters
         ----------
-        leaf: MondrianTreeLeafClassifier
+        leaf
             Leaf to start from when going upward
 
-        Returns
-        -------
         """
 
         current_node = leaf
@@ -358,14 +349,12 @@ class MondrianTreeClassifier(MondrianTree):
         Learns the sample (x, y)
         Parameters
         ----------
-        x: dict
+        x
             Feature vector
-        y: int
+        y
             Label (must be a positive integer)
-        Returns
-        -------
-
         """
+
         # Setting current sample
         # We change x in a list here to make computations easier afterwards
         self._x = list(x.values())
@@ -390,12 +379,8 @@ class MondrianTreeClassifier(MondrianTree):
         Finds the leaf that contains the sample, starting from the root
         Parameters
         ----------
-        x: dict
+        x
             Feature vector
-
-        Returns
-        -------
-
         """
 
         # We start at the root
@@ -414,17 +399,13 @@ class MondrianTreeClassifier(MondrianTree):
                     node = node.get_right()
         return node
 
-    def predict_proba_one(self, x: dict) -> dict[int, float]:
+    def predict_proba_one(self, x: dict) -> dict[float]:
         """
         Predict the probability of the samples
         Parameters
         ----------
-        x: dict
+        x
             Feature vector
-
-        Returns
-        -------
-
         """
 
         # Initialization of the scores to output to 0

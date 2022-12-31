@@ -12,35 +12,29 @@ class MondrianTree(ABC):
 
     Parameters
     ----------
-        n_features: int,
-            Number of features
-        step: float,
-            Step parameter of the tree
-        loss: str
-            Default is "log"
-        use_aggregation: bool,
-            Should it use aggregation
-        split_pure: bool,
-            Should the tree split pure leafs when training
-        iteration: int,
-            Number of iterations to run when training
-
-    Attributes
-    ----------
-        intensities: list[float]
-            List of intensity per feature
-        tree: MondrianTreeBranch or None
-            Base branch of the tree (starting root)
+    n_features
+        Number of features
+    step
+        Step parameter of the tree
+    loss
+        Loss to minimize for each node of the tree
+        Pick between: "log", ...
+    use_aggregation
+        Should it use aggregation
+    split_pure
+        Should the tree split pure leafs when training
+    iteration
+        Number of iterations to run when training
     """
 
     def __init__(
             self,
             n_features: int,
-            step: float,
-            loss,
-            use_aggregation: bool,
-            split_pure: bool,
-            iteration: int,
+            step: float = 0.1,
+            loss: str = "log",
+            use_aggregation: bool = True,
+            split_pure: bool = False,
+            iteration: int = 0,
     ):
         # Properties common to all the Mondrian Trees
         self.n_features = n_features

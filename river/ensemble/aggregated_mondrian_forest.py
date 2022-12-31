@@ -9,47 +9,38 @@ class AMFLearner(ABC):
     """
     Base class for Aggregated Mondrian Forest classifier and regressors for online learning.
 
+    Parameters
+    ----------
+    n_estimators
+        The number of trees in the forest.
+    step
+         Step-size for the aggregation weights.
+    loss
+        The loss used for the computation of the aggregation weights.
+    use_aggregation
+        Controls if aggregation is used in the trees. It is highly recommended to
+        leave it as `True`.
+    split_pure
+        Controls if nodes that contains only sample of the same class should be
+        split ("pure" nodes). Default is `False`, namely pure nodes are not split,
+        but `True` can be sometimes better.
+    random_state
+        Controls the randomness involved in the trees.
+
     Note
     ----
     This class is not intended for end users but for development only.
-
     """
 
     def __init__(
             self,
-            n_estimators: int,
-            step: float,
-            loss: str,
-            use_aggregation: bool,
-            split_pure: bool,
-            random_state: int,
+            n_estimators: int = 10,
+            step: float = 0.1,
+            loss: str = "log",
+            use_aggregation: bool = True,
+            split_pure: bool = False,
+            random_state: int or None = None,
     ):
-        """Instantiates a `AMFLearner` instance.
-
-        Parameters
-        ----------
-        n_estimators : int
-            The number of trees in the forest.
-
-        step : float
-            Step-size for the aggregation weights.
-
-        loss : str
-            The loss used for the computation of the aggregation weights.
-
-        use_aggregation : bool
-            Controls if aggregation is used in the trees. It is highly recommended to
-            leave it as `True`.
-
-        split_pure : bool
-            Controls if nodes that contains only sample of the same class should be
-            split ("pure" nodes). Default is `False`, namely pure nodes are not split,
-            but `True` can be sometimes better.
-
-        random_state : int or None
-            Controls the randomness involved in the trees.
-
-        """
 
         # This is yet to be defined by the dataset since we need to know about the amount of features namely
         self._forest = None
@@ -114,10 +105,39 @@ class AMFClassifier(AMFLearner, Classifier):
     The final predictions are the average class probabilities predicted by each of the
     ``n_estimators`` trees in the forest.
 
+    Parameters
+    ----------
+    n_classes
+        Number of expected classes in the labels. This is required since we
+        don't know the number of classes in advance in a online setting.
+
+    n_estimators
+        The number of trees in the forest.
+
+    step
+        Step-size for the aggregation weights. Default is 1 for classification with
+        the log-loss, which is usually the best choice.
+
+    use_aggregation
+        Controls if aggregation is used in the trees. It is highly recommended to
+        leave it as `True`.
+
+    dirichlet
+        Regularization level of the class frequencies used for predictions in each
+        node. Default is dirichlet=0.5 for n_classes=2 and dirichlet=0.01 otherwise.
+
+    split_pure
+        Controls if nodes that contains only sample of the same class should be
+        split ("pure" nodes). Default is `False`, namely pure nodes are not split,
+        but `True` can be sometimes better.
+
+    random_state
+        Controls the randomness involved in the trees.
+
     Note
     ----
-    All the parameters of ``AMFClassifier`` become **read-only** after the first call
-    to ``learn_one``
+    Only log_loss used for the computation of the aggregation weights. is supported for now, namely the log-loss
+    for multi-class classification.
 
     References
     ----------
@@ -127,7 +147,7 @@ class AMFClassifier(AMFLearner, Classifier):
 
     def __init__(
             self,
-            n_classes: int,
+            n_classes: int = 2,
             n_estimators: int = 10,
             step: float = 1.0,
             use_aggregation: bool = True,
@@ -135,42 +155,6 @@ class AMFClassifier(AMFLearner, Classifier):
             split_pure: bool = False,
             random_state: int = None,
     ):
-        """Instantiates a `AMFClassifier` instance.
-
-        Parameters
-        ----------
-        n_classes : :obj:`int`
-            Number of expected classes in the labels. This is required since we
-            don't know the number of classes in advance in a online setting.
-
-        n_estimators : :obj:`int`, default = 10
-            The number of trees in the forest.
-
-        step : :obj:`float`, default = 1
-            Step-size for the aggregation weights. Default is 1 for classification with
-            the log-loss, which is usually the best choice.
-
-        loss : {"log"}, default = "log"
-            The loss used for the computation of the aggregation weights. Only "log"
-            is supported for now, namely the log-loss for multi-class
-            classification.
-
-        use_aggregation : :obj:`bool`, default = `True`
-            Controls if aggregation is used in the trees. It is highly recommended to
-            leave it as `True`.
-
-        dirichlet : :obj:`float` or :obj:`None`, default = `None`
-            Regularization level of the class frequencies used for predictions in each
-            node. Default is dirichlet=0.5 for n_classes=2 and dirichlet=0.01 otherwise.
-
-        split_pure : :obj:`bool`, default = `False`
-            Controls if nodes that contains only sample of the same class should be
-            split ("pure" nodes). Default is `False`, namely pure nodes are not split,
-            but `True` can be sometimes better.
-
-        random_state : :obj:`int` or :obj:`None`, default = `None`
-            Controls the randomness involved in the trees.
-        """
         super().__init__(
             n_estimators=n_estimators,
             step=step,
@@ -194,9 +178,6 @@ class AMFClassifier(AMFLearner, Classifier):
     def _initialize_trees(self):
         """
         Initialize the forest
-        Returns
-        -------
-
         """
 
         if self._n_features is None:
@@ -249,18 +230,14 @@ class AMFClassifier(AMFLearner, Classifier):
         self.iteration += 1
         return self
 
-    def predict_proba_one(self, x: dict) -> dict[int, float]:
+    def predict_proba_one(self, x: dict) -> dict[float]:
         """
         Predicts the probability of each class for the sample x
 
         Parameters
         ----------
-        x: dict
+        x
             Feature vector
-
-        Returns
-        -------
-        scores: dict
         """
 
         # Checking that the model has been trained once at least
