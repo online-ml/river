@@ -1,6 +1,6 @@
-from river.tree.mondrian_tree_classifier import MondrianTreeClassifier
+from river.tree.mondrian.mondrian_tree_classifier import MondrianTreeClassifier
 
-from abc import ABC, abstractmethod
+from abc import ABC
 
 from river.base.classifier import Classifier
 

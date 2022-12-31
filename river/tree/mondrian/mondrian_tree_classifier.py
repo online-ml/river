@@ -2,13 +2,12 @@ from math import exp
 from math import fsum
 
 from random import uniform
+from random import choices
 
-from river.tree.mondrian_tree import MondrianTree
+from river.tree.mondrian.mondrian_tree import MondrianTree
 
-from river.utils.random import sample_discrete
-
-from river.tree.nodes.mondrian_tree_nodes import MondrianTreeBranchClassifier
-from river.tree.nodes.mondrian_tree_nodes import MondrianTreeLeafClassifier
+from river.tree.mondrian.mondrian_tree_nodes import MondrianTreeBranchClassifier
+from river.tree.mondrian.mondrian_tree_nodes import MondrianTreeLeafClassifier
 
 
 class MondrianTreeClassifier(MondrianTree):
@@ -62,6 +61,7 @@ class MondrianTreeClassifier(MondrianTree):
         self.dirichlet = dirichlet
 
         # Initialization of the root of the tree
+        # It's the root so it doesn't have any parent (hence None)
         self.tree = MondrianTreeBranchClassifier(MondrianTreeLeafClassifier(None, self.n_features, 0.0, self.n_classes))
 
         # Training attributes
@@ -283,7 +283,7 @@ class MondrianTreeClassifier(MondrianTree):
 
                     # Sample the feature at random with a probability
                     # proportional to the range extensions
-                    feature = sample_discrete(self.intensities)
+                    feature = choices(list(range(self.n_features)), self.intensities, k=1)[0]
                     x_tf = self._x[feature]
 
                     # Is it a right extension of the node ?

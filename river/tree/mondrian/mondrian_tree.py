@@ -1,5 +1,5 @@
 from abc import ABC
-from river.tree.nodes.mondrian_tree_nodes import MondrianTreeBranch
+from river.tree.mondrian.mondrian_tree_nodes import MondrianTreeBranch
 
 
 class MondrianTree(ABC):
