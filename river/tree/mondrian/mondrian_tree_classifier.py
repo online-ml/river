@@ -24,9 +24,6 @@ class MondrianTreeClassifier(MondrianTree):
             Number of features of the data in entry
         step: float
             Step of the tree
-        loss: str
-            Default is "log".
-            Loss to minimize
         use_aggregation: bool
             Whether to use aggregation weighting techniques or not.
         dirichlet: float
@@ -42,7 +39,6 @@ class MondrianTreeClassifier(MondrianTree):
             n_classes: int,
             n_features: int,
             step: float,
-            loss,
             use_aggregation: bool,
             dirichlet: float,
             split_pure: bool,
@@ -52,7 +48,7 @@ class MondrianTreeClassifier(MondrianTree):
         super().__init__(
             n_features=n_features,
             step=step,
-            loss=loss,
+            loss="log",
             use_aggregation=use_aggregation,
             split_pure=split_pure,
             iteration=iteration,
