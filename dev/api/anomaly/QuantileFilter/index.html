@@ -10651,7 +10651,7 @@
 
 <span class="o">&gt;&gt;&gt;</span> <span class="n">report</span> <span class="o">=</span> <span class="n">metrics</span><span class="o">.</span><span class="n">ClassificationReport</span><span class="p">()</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">datasets</span><span class="o">.</span><span class="n">CreditCard</span><span class="p">()</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="mi">8000</span><span class="p">):</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">datasets</span><span class="o">.</span><span class="n">CreditCard</span><span class="p">()</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="mi">2000</span><span class="p">):</span>
 <span class="o">...</span>     <span class="n">score</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">score_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 <span class="o">...</span>     <span class="n">is_anomaly</span> <span class="o">=</span> <span class="n">model</span><span class="p">[</span><span class="s1">&#39;QuantileFilter&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">classify</span><span class="p">(</span><span class="n">score</span><span class="p">)</span>
 <span class="o">...</span>     <span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
@@ -10660,14 +10660,14 @@
 <span class="o">&gt;&gt;&gt;</span> <span class="n">report</span>
                <span class="n">Precision</span>   <span class="n">Recall</span>   <span class="n">F1</span>       <span class="n">Support</span>
 <span class="o">&lt;</span><span class="n">BLANKLINE</span><span class="o">&gt;</span>
-       <span class="mi">0</span>      <span class="mf">99.75</span><span class="o">%</span>   <span class="mf">98.46</span><span class="o">%</span>   <span class="mf">99.10</span><span class="o">%</span>      <span class="mi">7975</span>
-       <span class="mi">1</span>       <span class="mf">3.91</span><span class="o">%</span>   <span class="mf">20.00</span><span class="o">%</span>    <span class="mf">6.54</span><span class="o">%</span>        <span class="mi">25</span>
+       <span class="mi">0</span>      <span class="mf">99.95</span><span class="o">%</span>   <span class="mf">94.49</span><span class="o">%</span>   <span class="mf">97.14</span><span class="o">%</span>      <span class="mi">1998</span>
+       <span class="mi">1</span>       <span class="mf">0.90</span><span class="o">%</span>   <span class="mf">50.00</span><span class="o">%</span>    <span class="mf">1.77</span><span class="o">%</span>         <span class="mi">2</span>
 <span class="o">&lt;</span><span class="n">BLANKLINE</span><span class="o">&gt;</span>
-   <span class="n">Macro</span>      <span class="mf">51.83</span><span class="o">%</span>   <span class="mf">59.23</span><span class="o">%</span>   <span class="mf">52.82</span><span class="o">%</span>
-   <span class="n">Micro</span>      <span class="mf">98.21</span><span class="o">%</span>   <span class="mf">98.21</span><span class="o">%</span>   <span class="mf">98.21</span><span class="o">%</span>
-<span class="n">Weighted</span>      <span class="mf">99.45</span><span class="o">%</span>   <span class="mf">98.21</span><span class="o">%</span>   <span class="mf">98.81</span><span class="o">%</span>
+   <span class="n">Macro</span>      <span class="mf">50.42</span><span class="o">%</span>   <span class="mf">72.25</span><span class="o">%</span>   <span class="mf">49.46</span><span class="o">%</span>
+   <span class="n">Micro</span>      <span class="mf">94.45</span><span class="o">%</span>   <span class="mf">94.45</span><span class="o">%</span>   <span class="mf">94.45</span><span class="o">%</span>
+<span class="n">Weighted</span>      <span class="mf">99.85</span><span class="o">%</span>   <span class="mf">94.45</span><span class="o">%</span>   <span class="mf">97.05</span><span class="o">%</span>
 <span class="o">&lt;</span><span class="n">BLANKLINE</span><span class="o">&gt;</span>
-                 <span class="mf">98.21</span><span class="o">%</span> <span class="n">accuracy</span>
+                 <span class="mf">94.45</span><span class="o">%</span> <span class="n">accuracy</span>
 </code></pre></div>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <details class="- note">
