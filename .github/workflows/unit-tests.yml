@@ -49,6 +49,7 @@ jobs:
           python -m pip install --upgrade pip
           python -m venv ~/.venv
           source ~/.venv/bin/activate
+          pip install wheel
           pip install scikit-learn sqlalchemy
           pip install pytest-xdist[psutil]
 
