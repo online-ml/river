@@ -139,7 +139,7 @@ class QuantileFilter(anomaly.base.AnomalyFilter):
 
     >>> report = metrics.ClassificationReport()
 
-    >>> for x, y in datasets.CreditCard().take(8000):
+    >>> for x, y in datasets.CreditCard().take(2000):
     ...     score = model.score_one(x)
     ...     is_anomaly = model['QuantileFilter'].classify(score)
     ...     model = model.learn_one(x)
@@ -148,14 +148,14 @@ class QuantileFilter(anomaly.base.AnomalyFilter):
     >>> report
                    Precision   Recall   F1       Support
     <BLANKLINE>
-           0      99.75%   98.46%   99.10%      7975
-           1       3.91%   20.00%    6.54%        25
+           0      99.95%   94.49%   97.14%      1998
+           1       0.90%   50.00%    1.77%         2
     <BLANKLINE>
-       Macro      51.83%   59.23%   52.82%
-       Micro      98.21%   98.21%   98.21%
-    Weighted      99.45%   98.21%   98.81%
+       Macro      50.42%   72.25%   49.46%
+       Micro      94.45%   94.45%   94.45%
+    Weighted      99.85%   94.45%   97.05%
     <BLANKLINE>
-                     98.21% accuracy
+                     94.45% accuracy
 
     """
 

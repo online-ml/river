@@ -115,6 +115,10 @@ class KNNClassifier(base.Classifier):
     def _multiclass(self):
         return True
 
+    @classmethod
+    def _unit_test_params(cls):
+        yield {"n_neighbors": 3, "window_size": 30}
+
     def clean_up_classes(self):
         """Clean up classes added to the window.
 
