@@ -47,4 +47,4 @@ jobs:
         run: python -c "from river import datasets; datasets.CreditCard().download(); datasets.Elec2().download()"
 
       - name: pytest
-        run: pytest
+        run: pytest --durations=10
