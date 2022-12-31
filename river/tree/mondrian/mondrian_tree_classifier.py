@@ -9,6 +9,8 @@ from river.tree.mondrian.mondrian_tree import MondrianTree
 from river.tree.mondrian.mondrian_tree_nodes import MondrianTreeBranchClassifier
 from river.tree.mondrian.mondrian_tree_nodes import MondrianTreeLeafClassifier
 
+from river.base import typing
+
 
 class MondrianTreeClassifier(MondrianTree):
     """
@@ -61,9 +63,12 @@ class MondrianTreeClassifier(MondrianTree):
         self.tree = MondrianTreeBranchClassifier(MondrianTreeLeafClassifier(None, self.n_features, 0.0, self.n_classes))
 
         # Training attributes
+        # The previously observed classes dictionary: enables to convert the class label into a positive integer
+        self._classes = {}
+
         # The current sample being proceeded
         self._x = None
-        # The current label being proceeded
+        # The current label index being proceeded
         self._y = None
 
     def score(self, node: MondrianTreeLeafClassifier) -> float:
@@ -344,22 +349,26 @@ class MondrianTreeClassifier(MondrianTree):
                 # We go up to the root in the tree
                 current_node = current_node.parent
 
-    def learn_one(self, x: dict, y: int):
+    def learn_one(self, x: dict, y: typing.ClfTarget):
         """
         Learns the sample (x, y)
         Parameters
         ----------
         x
-            Feature vector
+            Feature vector of the sample
         y
-            Label (must be a positive integer)
+            Label of the sample
         """
+
+        # Updating the previously seen classes with the new sample
+        if y not in self._classes:
+            self._classes[y] = len(self._classes)
 
         # Setting current sample
         # We change x in a list here to make computations easier afterwards
         self._x = list(x.values())
-        # Current sample label
-        self._y = y
+        # Current sample label index
+        self._y = self._classes[y]
 
         # Learning step
         leaf = self.go_downwards()
@@ -399,7 +408,7 @@ class MondrianTreeClassifier(MondrianTree):
                     node = node.get_right()
         return node
 
-    def predict_proba_one(self, x: dict) -> dict[float]:
+    def predict_proba_one(self, x: dict):
         """
         Predict the probability of the samples
         Parameters
@@ -408,15 +417,23 @@ class MondrianTreeClassifier(MondrianTree):
             Feature vector
         """
 
+        # We turn the indexes into the labels names
+        classes_name = list(self._classes.keys())
+
+        def set_scores(values: list):
+            """Turns the list of score values into the dictionary of scores output"""
+            for k in range(self.n_classes):
+                scores[classes_name[k]] = values[k]
+
         # Initialization of the scores to output to 0
         scores = {}
-        for i in range(0, self.n_classes):
-            scores[i] = 0
+        set_scores([0] * self.n_features)
 
         leaf = self.find_leaf(x)
 
         if not self.use_aggregation:
-            scores = self.predict(leaf)
+            predictions = self.predict(leaf)
+            set_scores(list(predictions.values()))
             return scores
 
         current = leaf
@@ -424,15 +441,17 @@ class MondrianTreeClassifier(MondrianTree):
         while True:
             # This test is useless ?
             if current.is_leaf:
-                scores = self.predict(current)
+                predictions = self.predict(current)
+                set_scores(list(predictions.values()))
             else:
                 weight = current.weight
                 log_weight_tree = current.log_weight_tree
                 w = exp(weight - log_weight_tree)
                 # Get the predictions of the current node
                 pred_new = self.predict(current)
-                for c in range(self.n_classes):
-                    scores[c] = 0.5 * w * pred_new[c] + (1 - 0.5 * w) * scores[c]
+                for i in range(self.n_classes):
+                    label = classes_name[i]
+                    scores[label] = 0.5 * w * pred_new[i] + (1 - 0.5 * w) * scores[label]
 
             # Root must be updated as well
             if current.parent is None:

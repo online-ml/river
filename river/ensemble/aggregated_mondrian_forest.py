@@ -3,6 +3,7 @@ from river.tree.mondrian.mondrian_tree_classifier import MondrianTreeClassifier
 from abc import ABC
 
 from river.base.classifier import Classifier
+from river.base import typing
 
 
 class AMFLearner(ABC):
@@ -173,7 +174,8 @@ class AMFClassifier(AMFLearner, Classifier):
         else:
             self.dirichlet = dirichlet
 
-        self._classes = set(range(n_classes))
+        # memory of the classes (converts label into positive integers)
+        self._classes = {}
 
     def _initialize_trees(self):
         """
@@ -198,25 +200,25 @@ class AMFClassifier(AMFLearner, Classifier):
             for _ in range(self.n_estimators)
         ]
 
-    def learn_one(self, x: dict, y: int):
+    def learn_one(self, x: dict, y: typing.ClfTarget):
         """
         Learns the sample (x, y)
 
         Parameters
         ----------
-        x: dict
-            Feature vector
-        y: int
-            Label
+        x
+            Feature vector of the sample
+        y
+            Label of the sample
 
         Returns
         -------
         AMFClassifier
         """
 
-        # Checking that y is defined nicely for the trees computation
-        if not isinstance(y, int) or y < 0:
-            raise Exception("Labels must be positive integers.")
+        # Updating the previously seen classes with the new sample
+        if y not in self._classes:
+            self._classes[y] = len(self._classes)
 
         # Checking the features consistency
         self.check_features_consistency(x)
@@ -230,7 +232,7 @@ class AMFClassifier(AMFLearner, Classifier):
         self.iteration += 1
         return self
 
-    def predict_proba_one(self, x: dict) -> dict[float]:
+    def predict_proba_one(self, x: dict):
         """
         Predicts the probability of each class for the sample x
 
@@ -244,16 +246,19 @@ class AMFClassifier(AMFLearner, Classifier):
         if not self.is_trained():
             raise Exception("No sample has been learnt yet. You need to train your model before making predictions.")
 
+        # We turn the indexes into the labels names
+        classes_name = list(self._classes.keys())
+
         # initialize the scores
         scores = {}
         for j in range(self.n_classes):
-            scores[j] = 0
+            scores[classes_name[j]] = 0
 
         # Simply computes the prediction for each tree and average it
         for tree in self._forest:
             tree.use_aggregation = self.use_aggregation
             predictions = tree.predict_proba_one(x)
             for j in range(self.n_classes):
-                scores[j] += predictions[j] / self.n_estimators
+                scores[classes_name[j]] += predictions[classes_name[j]] / self.n_estimators
 
         return scores
