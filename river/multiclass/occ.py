@@ -1,5 +1,4 @@
 import collections
-import copy
 import random
 import typing
 
@@ -96,7 +95,7 @@ class OutputCodeClassifier(base.Wrapper, base.Classifier):
         self.seed = seed
         self._rng = random.Random(seed)
 
-        self.classifiers = {i: copy.deepcopy(classifier) for i in range(code_size)}
+        self.classifiers = {i: classifier.clone() for i in range(code_size)}
 
         # We don't know how many classes there are, therefore we can't generate the code book
         # from the start. Therefore, we define a random queue of integers. When a new class

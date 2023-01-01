@@ -1,5 +1,4 @@
 """General tests that all estimators need to pass."""
-import copy
 import importlib
 import inspect
 
@@ -133,4 +132,4 @@ def iter_estimators_which_can_be_tested():
     ],
 )
 def test_check_estimator(estimator, check):
-    check(copy.deepcopy(estimator))
+    check(estimator.clone())
