@@ -138,12 +138,14 @@ class ADWINBoostingClassifier(AdaBoostClassifier):
 
     Examples
     --------
+    
     >>> from river import datasets
     >>> from river import ensemble
     >>> from river import evaluate
     >>> from river import linear_model
     >>> from river import metrics
     >>> from river import preprocessing
+    
     >>> dataset = datasets.Phishing()
     >>> model = ensemble.ADWINBoostingClassifier(
     ...     model=(
@@ -154,6 +156,7 @@ class ADWINBoostingClassifier(AdaBoostClassifier):
     ...     seed=42
     ... )
     >>> metric = metrics.F1()
+    
     >>> evaluate.progressive_val_score(dataset, model, metric)
     F1: 87.41%
 
