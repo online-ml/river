@@ -121,10 +121,12 @@ class AdaBoostClassifier(base.WrapperEnsemble, base.Classifier):
 
 class ADWINBoostingClassifier(AdaBoostClassifier):
     """ADWIN Boosting classifier.
+
     ADWIN Boosting [^1] is the online boosting method of Oza and Russell [^2]
     with the addition of the `ADWIN` algorithm as a change detector. If concept
     drift is detected, the worst member of the ensemble (based on the error
     estimation by ADWIN) is replaced by a new (empty) classifier.
+
     Parameters
     ----------
     model
@@ -133,6 +135,7 @@ class ADWINBoostingClassifier(AdaBoostClassifier):
         The number of models in the ensemble.
     seed
         Random number generator seed for reproducibility.
+
     Examples
     --------
     >>> from river import datasets
@@ -163,11 +166,12 @@ class ADWINBoostingClassifier(AdaBoostClassifier):
     [^2]: Oza, N., Russell, S. "Online bagging and boosting."
     In: Artificial Intelligence and Statistics 2001, pp. 105–112.
     Morgan Kaufmann, 2001.
+
     """
 
     def __init__(self, model: base.Classifier, n_models=10, seed: int = None):
         super().__init__(model, n_models, seed)
-        self._drift_detectors = [copy.deepcopy(drift.ADWIN()) for _ in range(self.n_models)]
+        self._drift_detectors = [drift.ADWIN() for _ in range(self.n_models)]
 
     def learn_one(self, x, y):
 
