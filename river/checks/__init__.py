@@ -1,6 +1,5 @@
 """Utilities for unit testing and sanity checking estimators."""
 
-import copy
 import functools
 import typing
 
@@ -191,4 +190,4 @@ def check_estimator(model: Estimator):
     for check in yield_checks(model):
         if check.__name__ in model._unit_test_skips():
             continue
-        check(copy.deepcopy(model))
+        check(model.clone())

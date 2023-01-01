@@ -1,5 +1,4 @@
 import collections
-import copy
 import math
 import typing
 
@@ -208,7 +207,7 @@ class ADWINBoostingClassifier(AdaBoostClassifier):
                 range(len(self._drift_detectors)),
                 key=lambda j: self._drift_detectors[j].estimation,
             )
-            self.models[max_error_idx] = copy.deepcopy(self.model)
+            self.models[max_error_idx] = self.model.clone()
             self._drift_detectors[max_error_idx] = drift.ADWIN()
             self.correct_weight[max_error_idx] = 0
             self.wrong_weight[max_error_idx] = 0
