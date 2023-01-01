@@ -231,15 +231,12 @@ class ADWINBaggingClassifier(BaggingClassifier):
             for _ in range(utils.random.poisson(1, self._rng)):
                 model.learn_one(x, y)
 
-            try:
-                y_pred = model.predict_one(x)
-                error_estimation = self._drift_detectors[i].estimation
-                self._drift_detectors[i].update(int(y_pred == y))
-                if self._drift_detectors[i].drift_detected:
-                    if self._drift_detectors[i].estimation > error_estimation:
-                        change_detected = True
-            except ValueError:
-                change_detected = False
+            y_pred = model.predict_one(x)
+            error_estimation = self._drift_detectors[i].estimation
+            self._drift_detectors[i].update(int(y_pred == y))
+            if self._drift_detectors[i].drift_detected:
+                if self._drift_detectors[i].estimation > error_estimation:
+                    change_detected = True
 
         if change_detected:
             max_error_idx = max(

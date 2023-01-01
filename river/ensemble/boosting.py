@@ -138,14 +138,14 @@ class ADWINBoostingClassifier(AdaBoostClassifier):
 
     Examples
     --------
-    
+
     >>> from river import datasets
     >>> from river import ensemble
     >>> from river import evaluate
     >>> from river import linear_model
     >>> from river import metrics
     >>> from river import preprocessing
-    
+
     >>> dataset = datasets.Phishing()
     >>> model = ensemble.ADWINBoostingClassifier(
     ...     model=(
@@ -156,7 +156,7 @@ class ADWINBoostingClassifier(AdaBoostClassifier):
     ...     seed=42
     ... )
     >>> metric = metrics.F1()
-    
+
     >>> evaluate.progressive_val_score(dataset, model, metric)
     F1: 87.41%
 
@@ -196,15 +196,12 @@ class ADWINBoostingClassifier(AdaBoostClassifier):
                     2 * self.wrong_weight[i]
                 )
 
-            try:
-                y_pred = model.predict_one(x)
-                error_estimation = self._drift_detectors[i].estimation
-                self._drift_detectors[i].update(int(y_pred == y))
-                if self._drift_detectors[i].drift_detected:
-                    if self._drift_detectors[i].estimation > error_estimation:
-                        change_detected = True
-            except ValueError:
-                change_detected = False
+            y_pred = model.predict_one(x)
+            error_estimation = self._drift_detectors[i].estimation
+            self._drift_detectors[i].update(int(y_pred == y))
+            if self._drift_detectors[i].drift_detected:
+                if self._drift_detectors[i].estimation > error_estimation:
+                    change_detected = True
 
         if change_detected:
             max_error_idx = max(
