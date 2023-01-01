@@ -1,5 +1,4 @@
 import collections
-import copy
 import statistics
 
 from river import base, drift, linear_model, utils
