@@ -20,11 +20,11 @@ class MondrianTree(ABC):
         Loss to minimize for each node of the tree
         Pick between: "log", ...
     use_aggregation
-        Should it use aggregation
+        Whether or not the tree should it use aggregation.
     split_pure
-        Should the tree split pure leafs when training
+        Whether or not the tree should split pure leaves when training.
     iteration
-        Number of iterations to run when training
+        Number of iterations to run when training.
     """
 
     def __init__(
