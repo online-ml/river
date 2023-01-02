@@ -280,7 +280,7 @@ class MondrianTreeLeafClassifier(MondrianTreeLeaf):
             Dirichlet parameter of the problem
         """
         sc = self.score(sample_class, dirichlet)
-        return -log(sc)
+        return -math.log(sc)
 
     def update_weight(self, sample_class: int, dirichlet: float, use_aggregation: bool, step: float) -> float:
         """
