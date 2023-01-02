@@ -246,7 +246,7 @@ class MondrianTreeLeafClassifier(MondrianTreeLeaf):
 
         Notes
         -----
-        This uses Jeffreys prior with dirichlet parameter for smoothing
+        This uses Jeffreys prior with Dirichlet parameter for smoothing.
         """
 
         count = self.counts[sample_class]
