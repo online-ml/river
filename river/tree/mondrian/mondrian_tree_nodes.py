@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 
 from river.utils.math import log_sum_2_exp
 
-from math import log
+import math
 
 from river.tree.base import Leaf
 from river.tree.base import Branch
@@ -61,49 +61,22 @@ class MondrianTreeLeaf(Leaf, ABC):
         -------
 
         """
+
+        self.parent = node.parent
+        self.time = node.time
         self.is_leaf = node.is_leaf
         self.depth = node.depth
-        self.parent = node.parent
-        self._left = node.get_left()
-        self._right = node.get_right()
+        self.left = node.left
+        self.right = node.right
         self.feature = node.feature
         self.weight = node.weight
         self.log_weight_tree = node.log_weight_tree
         self.threshold = node.threshold
-        self.time = node.time
-
-    def set_left(self, node):
-        """
-        Set the left child node
-        Parameters
-        ----------
-        node
-            Child node to be set as left node
-
-        Returns
-        -------
-
-        """
-        self._left = node
-
-    def set_right(self, node):
-        """
-        Set the right child node
-        Parameters
-        ----------
-        node
-            Child node to be set as right node
-
-        Returns
-        -------
-
-        """
-        self._right = node
 
     @abstractmethod
-    def _get_child_node(self, node):
+    def _init_node(self, node):
         """
-        Get the child node (either left or right) and initialize it with default value if None exist
+        Get the node and initialize it with default value if None is the current one
         This is meant to be used as a private function.
         Parameters
         ----------
@@ -111,13 +84,25 @@ class MondrianTreeLeaf(Leaf, ABC):
             Child node
         """
 
-    def get_left(self):
-        """Get the left child"""
-        return self._get_child_node(self._left)
+    @property
+    def left(self):
+        if self._left is None:
+            self._left = self._init_node(self._left)
+        return self._left
 
-    def get_right(self):
-        """Get the right child"""
-        return self._get_child_node(self._right)
+    @property
+    def right(self):
+        if self._right is None:
+            self._right = self._init_node(self._right)
+        return self._right
+
+    @left.setter
+    def left(self, node):
+        self._left = node
+
+    @right.setter
+    def right(self, node):
+        self._right = node
 
     def update_depth(self, depth: int):
         """
@@ -139,11 +124,8 @@ class MondrianTreeLeaf(Leaf, ABC):
             return
 
         # Updating the depth of the children as well
-        self._left = self.get_left()
-        self._right = self.get_right()
-
-        self._left.update_depth(depth)
-        self._right.update_depth(depth)
+        self.left.update_depth(depth)
+        self.left.update_depth(depth)
 
     def update_weight_tree(self):
         """
@@ -155,12 +137,8 @@ class MondrianTreeLeaf(Leaf, ABC):
         if self.is_leaf:
             self.log_weight_tree = self.weight
         else:
-            left = self.get_left()
-            right = self.get_right()
-            weight = self.weight
-
             self.log_weight_tree = log_sum_2_exp(
-                weight, left.log_weight_tree + right.log_weight_tree
+                self.weight, self.left.log_weight_tree + self.right.log_weight_tree
             )
 
     def get_child(self, x: dict):
@@ -177,9 +155,9 @@ class MondrianTreeLeaf(Leaf, ABC):
 
         """
         if x[self.feature] <= self.threshold:
-            return self.get_left()
+            return self.left
         else:
-            return self.get_right()
+            return self.right
 
     @property
     def __repr__(self):
@@ -201,6 +179,7 @@ class MondrianTreeLeafClassifier(MondrianTreeLeaf):
     n_classes
         Number of classes of the problem
     """
+
     def __init__(
             self,
             parent: MondrianTreeLeaf or None,
@@ -212,9 +191,9 @@ class MondrianTreeLeafClassifier(MondrianTreeLeaf):
         self.n_classes = n_classes
         self.counts = [0] * n_classes
 
-    def _get_child_node(self, node: MondrianTreeLeaf) -> MondrianTreeLeaf:
+    def _init_node(self, node: MondrianTreeLeaf) -> MondrianTreeLeaf:
         """
-        Get the child node and initialize if none exists.
+        Initialize a child node of the current one with the default values
         Parameters
         ----------
         node
@@ -224,12 +203,11 @@ class MondrianTreeLeafClassifier(MondrianTreeLeaf):
         -------
 
         """
-        # If the child is None, it means we have to initialize it with default values, at the right depth
+        # Initialize the node with default values, at the right depth (depth + 1 since it's a child node)
         # This is mostly to have material to work with during computations, rather than handling the None situation
         # separately each time we encounter it
-        if node is None:
-            node = MondrianTreeLeafClassifier(self, self.n_features, 0, self.n_classes)
-            node.depth = self.depth + 1
+        node = MondrianTreeLeafClassifier(self, self.n_features, 0, self.n_classes)
+        node.depth = self.depth + 1
         return node
 
     def score(self, sample_class: int, dirichlet: float) -> float:
@@ -432,7 +410,7 @@ class MondrianTreeBranch(Branch, ABC):
     """
 
     def __init__(self, parent: MondrianTreeLeaf):
-        super().__init__((parent.get_left(), parent.get_right()))
+        super().__init__((parent.left, parent.right))
         self.parent = parent
 
     def next(self, x) -> typing.Union["Branch", "Leaf"]:
@@ -451,7 +429,6 @@ class MondrianTreeBranch(Branch, ABC):
 
 
 class MondrianTreeBranchClassifier(MondrianTreeBranch):
-
     """
     A generic Mondrian Tree Branch for Classifiers.
     The specificity resides in the nature of the nodes which are all MondrianTreeLeafClassifier instances.

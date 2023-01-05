@@ -25,6 +25,7 @@ __all__ = [
     "AdaptiveRandomForestRegressor",
     "AdaBoostClassifier",
     "ADWINBaggingClassifier",
+    "AMFClassifier",
     "BaggingClassifier",
     "BaggingRegressor",
     "EWARegressor",
@@ -33,5 +34,4 @@ __all__ = [
     "SRPRegressor",
     "StackingClassifier",
     "VotingClassifier",
-    "AMFClassifier"
 ]

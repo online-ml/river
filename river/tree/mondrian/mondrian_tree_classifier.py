@@ -1,5 +1,4 @@
-from math import exp
-from math import fsum
+import math
 
 from random import uniform
 from random import choices
@@ -163,7 +162,7 @@ class MondrianTreeClassifier(MondrianTree):
             # Sample an exponential with intensity = extensions_sum
             # try catch to handle the Overflow situation in the exponential
             try:
-                T = exp(1 / extensions_sum)
+                T = math.exp(1 / extensions_sum)
             except OverflowError:
                 T = float('inf')
             time = node.time
@@ -174,7 +173,7 @@ class MondrianTreeClassifier(MondrianTree):
                 return split_time
             # Otherwise we apply Mondrian process dark magic :)
             # 1. We get the creation time of the childs (left and right is the same)
-            left = node.get_left()
+            left = node.left
             child_time = left.time
             # 2. We check if splitting time occurs before child creation time
             if split_time < child_time:
@@ -220,8 +219,8 @@ class MondrianTreeClassifier(MondrianTree):
 
             # If the node previously had children, we have to update it
             if not parent.is_leaf:
-                old_left = parent.get_left()
-                old_right = parent.get_right()
+                old_left = parent.left
+                old_right = parent.right
                 old_right.parent = main_child
                 old_left.parent = main_child
 
@@ -237,8 +236,8 @@ class MondrianTreeClassifier(MondrianTree):
             extend_child(node, right, left)
 
         # Updating current node parameters
-        node.set_left(left)
-        node.set_right(right)
+        node.left = left
+        node.right = right
         node.feature = feature
         node.threshold = threshold
         node.is_leaf = False
@@ -271,7 +270,7 @@ class MondrianTreeClassifier(MondrianTree):
                     # leaf, or because we add a new node along the path
 
                     # We normalize the range extensions to get probabilities
-                    intensities_sum = fsum(self.intensities)
+                    intensities_sum = math.fsum(self.intensities)
                     for i in range(len(self.intensities)):
                         self.intensities[i] /= intensities_sum
 
@@ -300,8 +299,8 @@ class MondrianTreeClassifier(MondrianTree):
                     # Update the current node
                     self.update_downwards(current_node, True)
 
-                    left = current_node.get_left()
-                    right = current_node.get_right()
+                    left = current_node.left
+                    right = current_node.right
                     depth = current_node.depth
 
                     # Now, get the next node
@@ -403,9 +402,9 @@ class MondrianTreeClassifier(MondrianTree):
                 feature = list(x.keys())[feature_index]
                 threshold = node.threshold
                 if x[feature] <= threshold:
-                    node = node.get_left()
+                    node = node.left
                 else:
-                    node = node.get_right()
+                    node = node.right
         return node
 
     def predict_proba_one(self, x: dict):
@@ -446,7 +445,7 @@ class MondrianTreeClassifier(MondrianTree):
             else:
                 weight = current.weight
                 log_weight_tree = current.log_weight_tree
-                w = exp(weight - log_weight_tree)
+                w = math.exp(weight - log_weight_tree)
                 # Get the predictions of the current node
                 pred_new = self.predict(current)
                 for i in range(self.n_classes):

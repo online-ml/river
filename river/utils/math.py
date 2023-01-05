@@ -361,16 +361,11 @@ def log_sum_2_exp(a: float, b: float) -> float:
 
     Parameters
     ----------
-    a : float
+    a
         First number
 
-    b : float
+    b
         Second number
-
-    Returns
-    -------
-    output : float
-        Value of log( (e^a + e^b) / 2) for the given a and b
     """
     # TODO: if |a - b| > 50 skip
     # TODO: try several log and exp implementations
