@@ -45,6 +45,7 @@ jobs:
   branch-tests:
     if: github.event_name == 'pull_request'
     runs-on: "ubuntu-latest"
+    needs: build-river
 
     steps:
       - uses: ./.github/actions/unit-tests
