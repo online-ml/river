@@ -7,7 +7,10 @@ runs:
       default: "3.9" # Used for branches
 
   steps:
-    - uses: ./.github/actions/retrieve-env
+    - uses: actions/checkout@v3
+
+    - name: Retrieve the environment and the River build
+      uses: ./.github/actions/retrieve-env
       with:
         python: ${{ inputs.python }}
 

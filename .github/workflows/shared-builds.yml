@@ -38,6 +38,7 @@ jobs:
         os: [ ubuntu-latest, macos-latest ]
 
     steps:
+      - uses: actions/checkout@v3
       - uses: ./.github/actions/unit-tests
         with:
           python: ${{ matrix.python }}
@@ -49,8 +50,8 @@ jobs:
     needs: build-river
 
     steps:
+      - uses: actions/checkout@v3
       - uses: ./.github/actions/unit-tests
-
 
 
 
