@@ -1,0 +1,23 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1628779247699.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "4BE2C37B",
+    "lastKnownWriteTime" : 1628779352,
+    "last_content_update" : 1628779352849,
+    "path" : "~/Documents/EnergyDataLab_V2/these_margaux_Z/Conformal/R/coverage.R",
+    "project_path" : "R/coverage.R",
+    "properties" : {
+        "cursorPosition" : "4,1",
+        "scrollLine" : "0",
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 6,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

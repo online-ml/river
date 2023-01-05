@@ -1,0 +1,208 @@
+rm(list=objects())
+library(opera)
+library(mgcv)
+library(tidyverse)
+
+source("R/loss_conf.R")
+source("R/coverage.R")
+
+f1 <- function(x)
+{
+  x^2+(0.5-x)^3
+}
+
+f2 <- function(x)
+{
+  x^2-0.5*(0.5-x)^3
+}
+
+f3 <- function(x)
+{
+  2*x-0.2*x^2-0.5*(0.5-x)^3
+}
+
+
+n <- 500
+Nsimu <- 1
+perf_simu <- NULL
+regret_simu <- NULL
+regret_simu_conv <- NULL
+
+#for(i  in c(1:Nsimu))
+#{
+  X1 <- rnorm(n,0,1)
+  X2 <- rnorm(n,0,1)
+  X3 <- rnorm(n,0,1)
+  sd1 <- X1^2+1
+  sd2 <- X2^2+1
+  sd3 <- X3^2+1
+  eps1 <-  rnorm(n,0, sd1)
+  eps2 <-  rnorm(n,0, sd2)
+  eps3 <-  rnorm(n,0, sd3)
+  Y1 <- f1(X1) + eps1
+  Y2 <- f2(X2) + eps2
+  Y3 <- f3(X3) + eps3
+  
+  Y <- 1/3*Y1+1/3*Y2+1/3*Y3
+  
+  
+  Data <- data.frame(Y,Y1, Y2, Y3, X1, X2, X3,  f1=f1(X1), f2=f2(X2), f3=f3(X3), sd1=sd1, sd2=sd2)
+  Data0 <- Data[1:(n/2),]
+  Data1 <- Data[-c(1:(n/2)),]
+  
+  g0_a <- gam(c(Y1~s(X1), ~ s(X1)), data=Data0, family="gaulss")
+  g0_b <- gam(c(Y2~s(X2), ~ s(X2)), data=Data0, family="gaulss")
+  g0_c <- gam(c(Y3~s(X3), ~ s(X3)), data=Data0, family="gaulss")
+
+  kalmanPreVarMat <- cbind(exp(g0_a.forecast[,2])^2, exp(g0_b.forecast[,2])^2, exp(g0_c.forecast[,2])^2)
+  
+  
+  g0_a.forecast <- predict(g0_a, newdata=Data1)
+  g0_a.forecast_low <- qnorm(0.05, mean=g0_a.forecast[,1], sd=exp(g0_a.forecast[,2]))
+  g0_a.forecast_high <- qnorm(0.95, mean=g0_a.forecast[,1], sd=exp(g0_a.forecast[,2]))
+
+  plot(Data1$Y, type='l')
+  lines(g0_a.forecast[,1], col='gray', ylim=range(g0_a.forecast_low, g0_a.forecast_high))
+  lines(g0_a.forecast_low, col='blue')
+  lines(g0_a.forecast_high, col='red')
+  
+  g0_b.forecast <- predict(g0_b, newdata=Data1)
+  g0_b.forecast_low <- qnorm(0.05, mean=g0_b.forecast[,1], sd=exp(g0_b.forecast[,2]))
+  g0_b.forecast_high <- qnorm(0.95, mean=g0_b.forecast[,1], sd=exp(g0_b.forecast[,2]))
+  
+  plot(Data1$Y, type='l')
+  lines(g0_b.forecast[,1], col='gray', ylim=range(g0_b.forecast_low, g0_b.forecast_high))
+  lines(g0_b.forecast_low, col='blue')
+  lines(g0_b.forecast_high, col='red')
+  
+  g0_c.forecast <- predict(g0_c, newdata=Data1)
+  g0_c.forecast_low <- qnorm(0.05, mean=g0_c.forecast[,1], sd=exp(g0_c.forecast[,2]))
+  g0_c.forecast_high <- qnorm(0.95, mean=g0_c.forecast[,1], sd=exp(g0_c.forecast[,2]))
+  
+  plot(Data1$Y, type='l')
+  lines(g0_c.forecast[,1], col='gray', ylim=range(g0_c.forecast_low, g0_c.forecast_high))
+  lines(g0_c.forecast_low, col='blue')
+  lines(g0_c.forecast_high, col='red')
+  
+la <- loss_conf(y=Data1$Y, qlow=g0_a.forecast_low, qhigh=g0_a.forecast_high)
+lb <- loss_conf(y=Data1$Y, qlow=g0_b.forecast_low, qhigh=g0_b.forecast_high)
+lc <- loss_conf(y=Data1$Y, qlow=g0_c.forecast_low, qhigh=g0_c.forecast_high)
+
+eta <- 1
+
+
+q <- la
+for(i in c(1:length(Data1$Y)))
+{
+  q[i] <- quantile(la[1:i], probs=0.9)
+  
+}
+
+
+wa <- exp(-eta*la)
+wb <- exp(-eta*lb)
+wc <- exp(-eta*lc)
+
+W <- cbind(wa, wb, wc) 
+W <- W/rowSums(W)
+
+wlow <- rowSums(cbind(g0_a.forecast_low, g0_b.forecast_low, g0_c.forecast_low)*W)
+whigh<- rowSums(cbind(g0_a.forecast_high, g0_b.forecast_high, g0_c.forecast_high)*W)
+
+wl<- loss_conf(y=Data1$Y, qlow=wlow, qhigh=whigh)
+
+################################################
+####Conformal regression
+################################################
+
+conformal_a_low <- g0_a.forecast_low
+conformal_a_high <- g0_a.forecast_high
+
+q <- la
+for(i in c(1:length(Data1$Y)))
+{
+  q[i] <- quantile(la[1:i], probs=0.9)
+}
+conformal_a_low <- g0_a.forecast_low - q
+conformal_a_high <- g0_a.forecast_high + q
+
+q <- lb
+for(i in c(1:length(Data1$Y)))
+{
+  q[i] <- quantile(lb[1:i], probs=0.9)
+}
+conformal_b_low <- g0_b.forecast_low - q
+conformal_b_high <- g0_b.forecast_high + q
+
+q <- lc
+for(i in c(1:length(Data1$Y)))
+{
+  q[i] <- quantile(lc[1:i], probs=0.9)
+}
+conformal_c_low <- g0_c.forecast_low - q
+conformal_c_high <- g0_c.forecast_high + q
+
+
+
+
+
+plot(conformal_a_low)
+
+####coverage
+coverage(Data1$Y, g0_a.forecast_low, g0_a.forecast_high)
+coverage(Data1$Y, g0_b.forecast_low, g0_b.forecast_high)
+coverage(Data1$Y, g0_c.forecast_low, g0_c.forecast_high)
+
+coverage(Data1$Y, conformal_a_low, conformal_a_high)
+coverage(Data1$Y, conformal_b_low, conformal_b_high)
+coverage(Data1$Y, conformal_c_low, conformal_c_high)
+
+#length
+mean(g0_a.forecast_high-g0_a.forecast_low)
+mean(g0_b.forecast_high-g0_b.forecast_low)
+mean(g0_c.forecast_high-g0_c.forecast_low)
+
+mean(conformal_a_high-conformal_a_low)
+mean(conformal_b_high-conformal_b_low)
+mean(conformal_c_high-conformal_c_low)
+
+######regression quantile mélange
+
+experts_low <- cbind(g0_a.forecast_low, g0_b.forecast_low, g0_c.forecast_low)
+mlpol_grad_low <- mixture(Y=Data1$Y, experts=experts_low, model = "MLpol", loss.gradient = T ,
+                      loss.type = list(name="pinball", tau=0.05))
+
+experts_high <- cbind(g0_a.forecast_high, g0_b.forecast_high, g0_c.forecast_high)
+mlpol_grad_high <- mixture(Y=Data1$Y, experts=experts_high, model = "MLpol", loss.gradient = T ,
+                          loss.type = list(name="pinball", tau=0.95))
+
+coverage(Data1$Y, mlpol_grad_low$prediction, mlpol_grad_high$prediction)
+mean(mlpol_grad_high$prediction - mlpol_grad_low$prediction)
+
+
+####
+experts <- cbind(experts_low, experts_high)
+mlpol_grad_low <- mixture(Y=Data1$Y, experts=experts_low, model = "MLpol", loss.gradient = T ,
+                          loss.type = list(name="pinball", tau=0.05))
+mlpol_grad_high <- mixture(Y=Data1$Y, experts=experts, model = "MLpol", loss.gradient = T ,
+                           loss.type = list(name="pinball", tau=0.95))
+
+coverage(Data1$Y, mlpol_grad_low$prediction, mlpol_grad_high$prediction)
+mean(mlpol_grad_high$prediction - mlpol_grad_low$prediction)
+
+####
+experts_conf_low <- cbind(conformal_a_low, conformal_b_low, conformal_c_low)
+experts_conf_high <- cbind(conformal_a_high, conformal_b_high, conformal_c_high)
+
+experts <- cbind(experts_conf_low, experts_conf_high)
+mlpol_grad_low <- mixture(Y=Data1$Y, experts=experts_conf_low, model = "MLpol", loss.gradient = T ,
+                          loss.type = list(name="pinball", tau=0.05))
+mlpol_grad_high <- mixture(Y=Data1$Y, experts=experts_conf_high, model = "MLpol", loss.gradient = T ,
+                           loss.type = list(name="pinball", tau=0.95))
+
+coverage(Data1$Y, mlpol_grad_low$prediction, mlpol_grad_high$prediction)
+mean(mlpol_grad_high$prediction - mlpol_grad_low$prediction)
+
+
+
+

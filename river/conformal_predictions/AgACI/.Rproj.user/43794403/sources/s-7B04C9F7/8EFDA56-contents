@@ -1,0 +1,305 @@
+source('R/utils.R')
+source('R/score.R')
+# prev <- readRDS('Results/prev.RDS')
+# prev <- readRDS('data/day_by_day/prev_0126.RDS')
+# prev_corr <- readRDS('data/day_by_day/prev_0126_corr.RDS')
+prev <- readRDS('data/day_by_day/prev_0213_V3.RDS')
+prev_corr <- readRDS('data/day_by_day/prev_0213_corr_V3.RDS')
+for (j in 4:ncol(prev_corr))
+  names(prev_corr)[j] <- paste(names(prev_corr)[j],'_corr',sep='')
+
+# outliers
+hist(prev$Load-prev$GAM_bayesian,1000)
+sum(abs(prev$Load-prev$GAM_bayesian) > 3*10^5)
+data$Time[which(abs(prev$Load-prev$GAM_bayesian) > 2.5*10^5)]
+
+test3 <- which(prev$Time >= as.POSIXct(strptime("2020-07-01 00:00:00", "%Y-%m-%d %H:%M:%S"), tz="UTC") & 
+                 prev$Time < as.POSIXct(strptime("2021-02-12 08:00:00", "%Y-%m-%d %H:%M:%S"), tz="UTC"))
+prev <- prev[test3,]
+prev_corr <- prev_corr[test3,]
+
+opera_discriminate <- function(experts,y,hour) {
+  yhat <- numeric(length(y))
+  for (h in 0:23) {
+    sel <- which(hour==h)
+    agg <- opera::mixture(Y=y[sel], experts=experts[sel,], model="MLpol", loss.gradient=T,
+                          loss.type='absolute')
+    # print(c(h,colnames(experts)[colSums(agg$weights[(nrow(agg$weights)-25):nrow(agg$weights),]) > 0]))
+    w <- if (h<8) agg$weights else agg$weights[c(1,1:(length(sel)-1)),]
+    yhat[sel] <- rowSums(w * experts[sel,])
+  }
+  yhat
+}
+
+test <- which(prev$Time >= as.POSIXct(strptime("2020-12-18 00:00:00", "%Y-%m-%d %H:%M:%S"), tz="UTC"))
+# experts <- data.matrix(cbind(prev[,4:36],prev_corr[,4:36]))
+# sel_experts <- c(55,31,49,36,44,34,56,2,47,1,52,33,32,43,3,39,53,35)
+
+experts <- data.matrix(cbind(prev[,4:39],prev_corr[,4:39]))
+# sel_experts <- c(58,31,52,39,37,59,2,50,1,55,33,32,3,42,56,38,70)
+sel_experts <- c(58,31,52,39,37,59,2,50,1,55,33,32,3,42,56,38,35,53)
+experts <- experts[,sel_experts]
+colnames(experts)
+
+y_complete <- prev$Load
+
+h <- 20
+sel <- which(prev$Hour == h)
+agg <- opera::mixture(Y=y_complete[sel], experts=experts[sel,], model="MLpol", loss.gradient=T,
+                      loss.type='absolute')
+plot(agg)
+
+#########################################################################################
+##### UNIQUE AGGREGATION
+agg <- opera::mixture(Y=y_complete, experts=experts, model="MLpol", loss.gradient=T,
+                      loss.type='absolute')
+plot(agg)
+yhat.opera.unique <- rowSums(agg$weights[sapply(1:nrow(experts), function(t) {24*max(0,(t-1)%/%24-2)+9}),] * experts)
+source('R/plot.weights.R')
+plot.weights(agg)
+
+#########################################################################################
+##### ONE AGGREGATION FOR EACH HOUR
+yhat.opera.discr <- opera_discriminate(experts, y_complete, prev$Hour)
+
+#########################################################################################
+##### ONLINE RF STACKING
+experts_rfstacking <- cbind(prev[,4:39],prev_corr[,4:39],prev$Hour,
+                            lubridate::wday(prev$Time), prev$Load)
+colnames(experts_rfstacking)[73:75] <- c('Hour','DayType','Load')
+
+# eq_exp <- paste(colnames(experts_rfstacking)[sel_experts], collapse='+')
+eq_exp <- paste(colnames(experts_rfstacking)[1:74], collapse='+')
+eq <- paste("Load~", eq_exp, "+ Hour + DayType")
+
+prev$Time[185*24+8]
+nrow(prev)/24
+yhat.rfstacking.ol <- numeric(nrow(prev))
+for (d in 186:((nrow(prev)-1)/24)) {
+  print(prev$Time[d*24+1])
+  # rf_ol <- ranger::ranger(eq, data=experts_rfstacking[1:((d-1)*24+8),], seed=1, max.depth=6, mtry=5, num.tree=1000)
+  # yhat.rfstacking.ol[(d*24+1):min(d*24+24,nrow(prev))] <-
+  #   predict(rf_ol, data=experts_rfstacking[(d*24+1):min(d*24+24,nrow(prev)),])$prediction
+  set.seed(1)
+  rf_ol <- ranger::ranger(eq, data=experts_rfstacking[1:((d-1)*24+8),], max.depth=6, mtry=5, num.tree=1000, quantreg=T)
+  yhat.rfstacking.ol[(d*24+1):min(d*24+24,nrow(prev))] <-
+    predict(rf_ol, data=experts_rfstacking[(d*24+1):min(d*24+24,nrow(prev)),], quantiles=c(0.5), type='quantiles')$prediction
+}
+
+yhat.avg <- (yhat.opera.discr + yhat.rfstacking.ol) / 2
+
+#########################################################################################
+# performance for now
+# test0118 <- which(prev$Time >= as.POSIXct(strptime("2021-01-18 00:00:00", "%Y-%m-%d %H:%M:%S"), tz="UTC") &
+#                     prev$Time < as.POSIXct(strptime("2021-02-09 08:00:00", "%Y-%m-%d %H:%M:%S"), tz="UTC"))
+test0118 <- which(prev$Time >= as.POSIXct(strptime("2021-01-18 00:00:00", "%Y-%m-%d %H:%M:%S"), tz="UTC") &
+                    prev$Time < as.POSIXct(strptime("2021-02-12 08:00:00", "%Y-%m-%d %H:%M:%S"), tz="UTC") &
+                    substr(prev$Time,6,10) != "02-05")
+# prev$Time[test0118]
+mae(prev$Load[test0118], yhat.opera.discr[test0118])
+mae(prev$Load[test0118], yhat.opera.unique[test0118])
+mae(prev$Load[test0118], yhat.rfstacking.ol[test0118])
+mae(prev$Load[test0118], prev_corr$Lin_dynamicbig_corr[test0118])
+mae(prev$Load[test0118], yhat.avg[test0118])
+mae(prev$Load[test0118], prev$Benchmark[test0118])
+
+# our submissions
+yhat <- c()
+for (d in 18:31)
+  yhat <- c(yhat, read.csv(paste('submissions/January-',d,'-de Vilmarest-Joseph.csv',sep=''),header=F)[,1])
+for (d in c(1:4,6:9))
+  yhat <- c(yhat, read.csv(paste('submissions/February-0',d,'-de Vilmarest-Joseph.csv',sep=''),header=F)[,1])
+for (d in 10:11)
+  yhat <- c(yhat, read.csv(paste('submissions/February-',d,'-de Vilmarest-Joseph.csv',sep=''),header=F)[,1])
+mae(prev$Load[test0118], yhat[1:length(test0118)])
+mae(yhat.avg[test0118], yhat[1:length(test0118)])
+
+####################################### ORACLE
+### best linear combination
+experts_or <- data.matrix(cbind(prev[,4:39],prev_corr[,4:39]))
+or <- opera::oracle(Y=y_complete[test0118], experts=experts_or[test0118,], loss.type='absolute',
+                    niter=10)
+# or
+mae(prev$Load[test0118], experts_or[test0118,] %*% t(or$coefficients))
+
+### best expert
+v <- sapply(1:ncol(experts_or), function(i) {mae(prev$Load[test0118], experts_or[test0118,i])})
+best_expert <- which.min(v)
+colnames(experts_or)[order(v)]
+min(v)
+
+### best expert per hour
+mae_best24 <- 0
+for (h in 0:23) {
+  sel_h <- test0118[which(prev$Hour[test0118] == h)]
+  v <- sapply(1:ncol(experts_or), function(i) {mae(prev$Load[sel_h], experts_or[sel_h,i])})
+  print(colnames(experts_or)[which.min(v)])
+  mae_best24 <- mae_best24 + length(sel_h) / length(test0118) * min(v)
+}
+mae_best24
+#########################################################################################
+
+mae_day.best <- numeric(floor(length(test)/24))
+mae_day <- numeric(floor(length(test)/24))
+mae_day.avg <- numeric(floor(length(test)/24))
+mae_day.avg2 <- numeric(floor(length(test)/24))
+for (d in 1:length(mae_day)) {
+  print(prev$Time[test[(d-1)*24+1]])
+  print(c(mean((prev$Load-yhat.avg)[test[(d-2)*24+9:24]]),
+          mean(abs((prev$Load-yhat.avg)[test[(d-1)*24+1:24]])),
+          mean(abs((prev$Load-yhat.avg)[test[(d-1)*24+1:24]]))))
+  # mae_day.best[d] <- mae(prev$Load[test[(d-1)*24+1:24]], experts_or[test[(d-1)*24+1:24],best_expert])
+  mae_day[d] <- mae(prev$Load[test[(d-1)*24+1:24]], yhat.opera.discr[test[(d-1)*24+1:24]])
+  mae_day.avg[d] <- mae(prev$Load[test[(d-1)*24+1:24]], yhat.avg[test[(d-1)*24+1:24]])
+  mae_day.avg2[d] <- mae(prev$Load[test[(d-1)*24+1:24]], yhat.avg2[test[(d-1)*24+1:24]])
+}
+plot(prev$Time[test[1+24*(0:(length(mae_day)-1))]], mae_day, type='l')
+# lines(prev$Time[test[1+24*(0:(length(mae_day)-1))]], mae_day.best, type='l', col='blue')
+lines(prev$Time[test[1+24*(0:(length(mae_day)-1))]], mae_day.avg, type='l', col='green')
+lines(prev$Time[test[1+24*(0:(length(mae_day)-1))]], mae_day.avg2, type='l', col='red')
+
+
+
+
+
+
+h <- 15
+w <- 7
+# sel <- test[which(prev$Hour[test] == h)]
+sel <- which(prev$Hour == h)
+# sel <- 1:nrow(prev)
+plot(prev$Time[sel], mv_avg(abs(prev$Load-prev$GAM)[sel], w), type='l', ylim=c(0,50000))
+# lines(prev$Time[sel], mv_avg(abs(prev$Load-experts_or[,best_expert])[sel], w), col='red')
+lines(prev$Time[sel], mv_avg(abs(prev$Load-prev_corr$GAM_bayesian)[sel], w), col='red')
+lines(prev$Time[sel], mv_avg(abs(prev$Load-yhat.opera.discr)[sel], w), col='green')
+# lines(prev$Time[sel], mv_avg(abs(prev$Load-yhat.opera.discr.smooth)[sel], w), col='red')
+lines(prev$Time[sel], mv_avg(abs(prev$Load-yhat.opera.unique)[sel], w), col='blue')
+
+
+plot(prev$Time[sel], mv_avg((prev$Load-prev$GAM)[sel], w), type='l', ylim=c(-50000,50000))
+lines(prev$Time[sel], mv_avg((prev$Load-prev$GAM_dynamic)[sel], w), col='red')
+lines(prev$Time[sel], mv_avg((prev$Load-yhat.opera.discr)[sel], w), col='green')
+# lines(prev$Time[sel], mv_avg((prev$Load-yhat.opera.discr.smooth)[sel], w), col='red')
+# lines(prev$Time[sel], mv_avg((prev$Load-yhat.opera.unique)[sel], w), col='blue')
+lines(prev$Time[sel], rep(0,length(sel)), col='black', lty=3)
+
+
+
+###############################################################################################
+test0 <- which(prev$Time >= as.POSIXct(strptime("2020-12-01 00:00:00", "%Y-%m-%d %H:%M:%S"), tz="UTC") & 
+                 prev$Time < as.POSIXct(strptime("2021-01-18 00:00:00", "%Y-%m-%d %H:%M:%S"), tz="UTC"))
+# error as a function of the hour, the day of the week
+mae.discr <- numeric(24)
+mae.best <- numeric(24)
+mae.avg <- numeric(24)
+for (h in 0:23) {
+  sel <- test0118[which(prev$Hour[test0118] == h)]
+  # sel <- test[which(prev$Hour[test] == h)]
+  # sel <- test0[which(prev$Hour[test0] == h)]
+  mae.discr[h+1] <- mae(prev$Load[sel], yhat.opera.discr[sel])
+  mae.best[h+1] <- mae(prev$Load[sel], experts_or[sel,best_expert])
+  mae.avg[h+1] <- mae(prev$Load[sel], yhat.avg[sel])
+  # mae.discr[h+1] <- mae(prev$Load[sel], prev$GAM_dynamicbig[sel])
+  # mae.unique[h+1] <- mae(prev$Load[sel], prev_corr$GAM_dynamicbig[sel])
+  # mae.discr[h+1] <- mean(prev$Load[sel]- yhat.opera.discr[sel])/mean(prev$Load[sel])
+  # mae.unique[h+1] <- mean(prev$Load[sel]- yhat.opera.unique[sel])/mean(prev$Load[sel])
+}
+plot(mae.discr, type='l', col='green', ylim=range(c(mae.discr,mae.best)))
+lines(mae.best, col='blue')
+lines(mae.avg, col='red')
+legend('topleft', legend=c('MLpol par heure', 'MLpol unique', 'Meilleur expert'), 
+       col=c('green', 'blue', 'red'), lty=1)
+
+mae.discr <- numeric(7)
+# mae.discr.smooth <- numeric(7)
+mae.best <- numeric(7)
+mae.avg <- numeric(7)
+for (d in 1:7) {
+  # sel <- test[which(lubridate::wday(prev$Time[test]) == d)]
+  sel <- test0[which(lubridate::wday(prev$Time[test0]) == d)]
+  # sel <- test0118[which(lubridate::wday(prev$Time[test0118]) == d)]
+  # mae.discr[d] <- mae(prev$Load[sel], yhat.opera.discr[sel])
+  # mae.discr.smooth[d] <- mae(prev$Load[sel], yhat.opera.discr.smooth[sel])
+  mae.best[d] <- mae(prev$Load[sel], prev_corr$GAM_bayesian[sel])
+  mae.discr[d] <- mae(prev$Load[sel], yhat.opera.discr[sel])
+  # mae.unique[d] <- mae(prev$Load[sel], prev_corr$GAM_dynamicbig[sel])
+  # mae.discr[d] <- mae(prev$Load[sel], yhat.opera.discr[sel])
+  mae.avg[d] <- mae(prev$Load[sel], yhat.avg[sel])
+  # mae.unique[d] <- mean(prev$Load[sel]- yhat.opera.unique[sel])/mean(prev$Load[sel])
+}
+plot(mae.discr, type='l', col='green', ylim=range(c(mae.discr,mae.best)))
+lines(mae.best, col='red')
+lines(mae.avg, col='blue')
+
+
+mae.discr <- numeric(168)
+mae.avg <- numeric(168)
+for (i in 0:167) {
+  # sel <- test0118[which(lubridate::wday(prev$Time[test0118]) == 1+i%/%24 & prev$Hour[test0118] == i%%24)]
+  sel <- test0[which(lubridate::wday(prev$Time[test0]) == 1+i%/%24 & prev$Hour[test0] == i%%24)]
+  # sel <- test[which(lubridate::wday(prev$Time[test]) == 1+i%/%24 & prev$Hour[test] == i%%24)]
+  # mae.discr[i+1] <- mae(prev$Load[sel], yhat.opera.discr[sel])
+  # mae.unique[i+1] <- mae(prev$Load[sel], yhat.opera.unique[sel])
+  v <- (prev$Load - yhat.opera.discr)[sel]
+  v <- v[order(v)]
+  mae.discr[i+1] <- median(v)
+  mae.avg[i+1] <- median((prev$Load - yhat.avg)[sel])
+  # mae.discr[i+1] <- mae(prev$Load[sel], yhat.opera.discr[sel])
+  # mae.best[i+1] <- mae(prev$Load[sel], prev_corr$Lin_dynamicbig_corr[sel])
+}
+plot(mae.discr[6*24+1:24], type='l',ylim=c(-10000,10000))
+lines(mae.avg[6*24+1:24], col='blue')
+
+plot(mae.discr[1:24],type='l',ylim=range(mae.discr))
+lines(mae.discr[1*24+1:24], col='green')
+lines(mae.discr[2*24+1:24], col='pink')
+lines(mae.discr[3*24+1:24], col='purple')
+lines(mae.discr[4*24+1:24], col='blue')
+lines(mae.discr[5*24+1:24], col='orange')
+lines(mae.discr[6*24+1:24], col='red')
+legend('topleft', legend=c('Lundi', 'Samedi'), 
+       col=c('green', 'red'), lty=1)
+
+
+test0 <- which(prev$Time >= as.POSIXct(strptime("2020-12-01 00:00:00", "%Y-%m-%d %H:%M:%S"), tz="UTC"))
+d_list <- c()
+for (d in 0:((length(test0)-1)/24)) {
+  if (lubridate::wday(prev$Time[test0[d*24+1]]) == 2)
+    d_list <- c(d_list, d)
+}
+plot(rep(0,24), type='l', ylim=c(-50000,50000))
+for (d in d_list)
+  lines((prev$Load - yhat.opera.discr)[test0[d*24+1:24]], col='grey')
+avg_day <- sapply(d_list, function(d) {mean((prev$Load - yhat.opera.discr)[test0[d*24+1:24]])})
+
+hist((prev$Load - yhat.opera.discr)[d_list*24+8], 10)
+hist(avg_day,10)
+
+
+d <- 183
+prev$Time[d*24+1]
+plot(prev$Time[d*24+1:168], prev$Load[d*24+1:168], type='l')
+# lines(prev$Time[d*24+1:168], prev_corr$GAM_dynamicbig[d*24+1:168], col='purple')
+lines(prev$Time[d*24+1:168], yhat.opera.discr[d*24+1:168], col='green')
+# lines(prev$Time[d*24+1:168], yhat.opera.discr.smooth[d*24+1:168], col='red')
+# lines(prev$Time[d*24+1:168], yhat.opera.unique[d*24+1:168], col='blue')
+
+
+plot(prev$Time[d*24+1:168], (prev$Load-yhat.opera.discr)[d*24+1:168], type='l')
+
+
+h <- 0
+sel <- which(prev$Hour == h)
+acf((prev$Load-yhat.opera.discr)[test], 50)
+
+
+mae(prev$Load[test], yhat.opera.discr[test])
+# mae(prev$Load[test], yhat.opera.discr.smooth[test])
+mae(prev$Load[test], yhat.opera.unique[test])
+
+
+yhat <- 0.95 * yhat.opera.discr + 0.05 * yhat.opera.unique
+mae(prev$Load[test4], yhat[test4])
+
+
+

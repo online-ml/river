@@ -1,0 +1,5 @@
+
+coverage <- function(y, qlow, qhigh)
+{
+  sum((y>qlow)&(y<qhigh))/length(y)
+}

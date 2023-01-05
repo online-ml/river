@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1628779199460.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "8EFDA56",
+    "lastKnownWriteTime" : 1618136110,
+    "last_content_update" : 1618136110,
+    "path" : "~/Documents/EnergyDataLab_V2/These_joseph/competition-covid/R/aggregation.R",
+    "project_path" : null,
+    "properties" : {
+        "cursorPosition" : "16,86",
+        "scrollLine" : "0"
+    },
+    "relative_order" : 4,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

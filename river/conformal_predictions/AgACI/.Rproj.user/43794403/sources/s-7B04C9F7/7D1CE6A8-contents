@@ -1,0 +1,64 @@
+# Quantile fidelity (pinball loss évaluée sur les données de test) surtout pour
+# comparer les estimations de différents modèles pour un même quantile
+Rho <- function(u, tau) u * (tau - (u < 0))
+
+# Critère de Kolmogorov Smirnov pe et pr respectivement les proportions estimées
+# et attendues
+KS <- function(pe, pr) max(abs(pe - pr))
+
+# Mean Absolute Excess Probability pe et pr respectivement les proportions
+# estimées et attendues
+MAEP <- function(pe, pr) sum(abs(pe - pr))
+
+# Quantile scoring
+score <- function(y, ychap, tau) {
+  mean((1 - tau) * (ychap - y) * (y < ychap) + tau * (y - ychap) * (y >= ychap))
+}
+
+# largeur moyenne IC(95\%) qr = quantile 97.5 estimé ql = quantile 2.5 estimé
+larg <- function(qr, ql) mean(qr - ql)
+
+perteQ <- function(y, yproba) {
+  a <- 1:99
+  return(mean((y < yproba) * (yproba - y) * (1 - a/100) + (y > yproba) * (y - yproba) * 
+                (a/100)))
+}
+
+
+L <- function(y, yproba) {
+  score <- 0
+  for (i in c(1:length(y))) {
+    score <- score + perteQ(y[i], yproba[i, ])
+  }
+  return(score/length(y))
+}
+
+
+
+scorePB <- function(y, ListPrev, ListTau, sel=NULL)
+  {
+    if(is.null(sel)){sel<-c(1:length(y))}
+    PB_Bench<-array(0,dim=length(ListTau))
+  
+    for(i in c(1:length(ListTau)))
+    
+    {
+      PB_Bench[i]<-score(y[sel],ychap=ListPrev[[i]][sel],tau=ListTau[i])
+    }
+  return(PB_Bench)
+}
+
+
+coverage <- function(y,ListPrev,ListTau)
+  {
+    coverage<-ListTau
+    for(i in c(1:length(ListTau)))
+    {
+      coverage[i]<-mean(y<ListPrev[[i]])
+    }
+  names(coverage)<-ListTau
+  return(coverage)
+}
+
+
+

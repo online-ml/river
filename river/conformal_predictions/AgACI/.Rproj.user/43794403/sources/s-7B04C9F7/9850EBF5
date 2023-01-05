@@ -1,0 +1,23 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1628771865970.000,
+    "dirty" : true,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "9850EBF5",
+    "lastKnownWriteTime" : 1628781238,
+    "last_content_update" : 1628847066963,
+    "path" : "~/Documents/EnergyDataLab_V2/these_margaux_Z/Conformal/Script/test_gam.R",
+    "project_path" : "Script/test_gam.R",
+    "properties" : {
+        "cursorPosition" : "184,34",
+        "scrollLine" : "160",
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

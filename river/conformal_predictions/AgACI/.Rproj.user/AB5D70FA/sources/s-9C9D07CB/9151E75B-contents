@@ -1,0 +1,12 @@
+loss_conf <- function(y, qlow, qhigh)
+  {
+  max <- y
+  for(i in c(1:length(max)))
+  {
+    #max[i] <- g0_a.forecast_low[i]-Y[i]
+    max[i] <- max(qlow[i]-y[i], y[i] - qhigh[i])
+  }
+   return(max)
+  }
+
+

@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1628771931954.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "1C9B39BF",
+    "lastKnownWriteTime" : 1619444021,
+    "last_content_update" : 1619444021,
+    "path" : "~/Documents/Eric Adjakossa/Simu_GAMLSS_KAO/Scripts/simulation_GAM_monte_carlo_iid_setting_FINAL.R",
+    "project_path" : null,
+    "properties" : {
+        "cursorPosition" : "133,2",
+        "scrollLine" : "115"
+    },
+    "relative_order" : 3,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

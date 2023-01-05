@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1628779231228.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "7D1CE6A8",
+    "lastKnownWriteTime" : 1532442195,
+    "last_content_update" : 1532442195,
+    "path" : "~/Documents/IRSDI2018_2019_aggregation/onlinemix-insights/R/scores.R",
+    "project_path" : null,
+    "properties" : {
+        "cursorPosition" : "51,0",
+        "scrollLine" : "40"
+    },
+    "relative_order" : 5,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

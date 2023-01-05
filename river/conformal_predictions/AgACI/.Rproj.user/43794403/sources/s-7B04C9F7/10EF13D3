@@ -1,0 +1,23 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1628771700270.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "10EF13D3",
+    "lastKnownWriteTime" : 1628774367,
+    "last_content_update" : 1628774367208,
+    "path" : "~/Documents/EnergyDataLab_V2/these_margaux_Z/Conformal/R/loss_conf.R",
+    "project_path" : "R/loss_conf.R",
+    "properties" : {
+        "cursorPosition" : "6,48",
+        "scrollLine" : "0",
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
