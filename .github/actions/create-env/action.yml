@@ -1,10 +1,12 @@
 name: Create Environment
+description: Installs the necessary dependencies and builds River
+
+inputs:
+  python:
+    default: '3.9' # Used for branches
 
 runs:
   using: "composite"
-  inputs:
-    python:
-      default: 3.9 # Used for branches
 
   steps:
     - uses: actions/checkout@v2
@@ -19,6 +21,7 @@ runs:
 
     - run: curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain=nightly --profile=minimal -y && rustup show
       if: runner.os == 'Linux'
+      shell: bash
 
     - name: Set up Python ${{ inputs.python }}
       uses: actions/setup-python@v2
@@ -38,6 +41,7 @@ runs:
 
     - name: Install Python dependencies
       if: ${{ steps.cache-venv.outputs.cache-hit != 'true' }}
+      shell: bash
       run: |
         python -m pip install --upgrade pip
         python -m venv ~/.venv
@@ -49,6 +53,7 @@ runs:
         pip install git+https://github.com/MaxHalford/yamp
 
     - name: Build River
+      shell: bash
       run: |
         source ~/.venv/bin/activate
         pip install -e ".[dev,docs]"
