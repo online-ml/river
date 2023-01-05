@@ -3,7 +3,7 @@ import typing
 from river import base
 
 
-class TargetTransformRegressor(base.Regressor, base.Wrapper):
+class TargetTransformRegressor(base.Wrapper, base.Regressor):
     """Modifies the target before training.
 
     The user is expected to check that `func` and `inverse_func` are coherent with each other.

@@ -1,9 +1,7 @@
 import collections
-import copy
 import statistics
 
-from river import base, linear_model, utils
-from river.drift import ADWIN
+from river import base, drift, linear_model, utils
 
 __all__ = [
     "BaggingClassifier",
@@ -222,7 +220,7 @@ class ADWINBaggingClassifier(BaggingClassifier):
 
     def __init__(self, model: base.Classifier, n_models=10, seed: int = None):
         super().__init__(model=model, n_models=n_models, seed=seed)
-        self._drift_detectors = [copy.deepcopy(ADWIN()) for _ in range(self.n_models)]
+        self._drift_detectors = [drift.ADWIN() for _ in range(self.n_models)]
 
     def learn_one(self, x, y):
 
@@ -231,23 +229,20 @@ class ADWINBaggingClassifier(BaggingClassifier):
             for _ in range(utils.random.poisson(1, self._rng)):
                 model.learn_one(x, y)
 
-            try:
-                y_pred = model.predict_one(x)
-                error_estimation = self._drift_detectors[i].estimation
-                self._drift_detectors[i].update(int(y_pred == y))
-                if self._drift_detectors[i].drift_detected:
-                    if self._drift_detectors[i].estimation > error_estimation:
-                        change_detected = True
-            except ValueError:
-                change_detected = False
+            y_pred = model.predict_one(x)
+            error_estimation = self._drift_detectors[i].estimation
+            self._drift_detectors[i].update(int(y_pred == y))
+            if self._drift_detectors[i].drift_detected:
+                if self._drift_detectors[i].estimation > error_estimation:
+                    change_detected = True
 
         if change_detected:
             max_error_idx = max(
                 range(len(self._drift_detectors)),
                 key=lambda j: self._drift_detectors[j].estimation,
             )
-            self.models[max_error_idx] = copy.deepcopy(self.model)
-            self._drift_detectors[max_error_idx] = ADWIN()
+            self.models[max_error_idx] = self.model.clone()
+            self._drift_detectors[max_error_idx] = drift.ADWIN()
 
         return self
 
@@ -335,9 +330,7 @@ class LeveragingBaggingClassifier(BaggingClassifier):
         self.w = w
         self.adwin_delta = adwin_delta
         self.bagging_method = bagging_method
-        self._drift_detectors = [
-            copy.deepcopy(ADWIN(delta=self.adwin_delta)) for _ in range(self.n_models)
-        ]
+        self._drift_detectors = [drift.ADWIN(delta=self.adwin_delta) for _ in range(self.n_models)]
 
         # Set bagging function
         if bagging_method == "bag":
@@ -411,8 +404,8 @@ class LeveragingBaggingClassifier(BaggingClassifier):
                 range(len(self._drift_detectors)),
                 key=lambda j: self._drift_detectors[j].estimation,
             )
-            self[max_error_idx] = copy.deepcopy(self.model)
-            self._drift_detectors[max_error_idx] = ADWIN(delta=self.adwin_delta)
+            self[max_error_idx] = self.model.clone()
+            self._drift_detectors[max_error_idx] = drift.ADWIN(delta=self.adwin_delta)
 
         return self
 

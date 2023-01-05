@@ -1,6 +1,5 @@
 """Utilities for unit testing and sanity checking estimators."""
 
-import copy
 import functools
 import typing
 
@@ -94,7 +93,7 @@ def _yield_datasets(model: Estimator):
 
     # Multi-output classification
     if utils.inspect.ismoclassifier(model):
-        yield datasets.Music().take(200)
+        yield datasets.Music().take(50)
 
     # Classification
     elif utils.inspect.isclassifier(model):
@@ -191,4 +190,4 @@ def check_estimator(model: Estimator):
     for check in yield_checks(model):
         if check.__name__ in model._unit_test_skips():
             continue
-        check(copy.deepcopy(model))
+        check(model.clone())

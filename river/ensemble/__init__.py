@@ -13,7 +13,7 @@ from .bagging import (
     BaggingRegressor,
     LeveragingBaggingClassifier,
 )
-from .boosting import AdaBoostClassifier
+from .boosting import AdaBoostClassifier, ADWINBoostingClassifier, BOLEClassifier
 from .ewa import EWARegressor
 from .stacking import StackingClassifier
 from .streaming_random_patches import SRPClassifier, SRPRegressor
@@ -25,9 +25,11 @@ __all__ = [
     "AdaptiveRandomForestRegressor",
     "AdaBoostClassifier",
     "ADWINBaggingClassifier",
+    "ADWINBoostingClassifier",
     "AMFClassifier",
     "BaggingClassifier",
     "BaggingRegressor",
+    "BOLEClassifier",
     "EWARegressor",
     "LeveragingBaggingClassifier",
     "SRPClassifier",

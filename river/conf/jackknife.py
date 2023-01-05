@@ -3,7 +3,7 @@ from river import base, stats
 from . import interval
 
 
-class RegressionJackknife(base.Regressor, base.Wrapper):
+class RegressionJackknife(base.Wrapper, base.Regressor):
     """Jackknife method for regression.
 
     This is a conformal prediction method for regression. It is based on the jackknife method. The

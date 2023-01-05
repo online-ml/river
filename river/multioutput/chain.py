@@ -99,7 +99,7 @@ class ClassifierChain(BaseChain, base.Classifier, base.MultiOutputMixin):
         yield {"model": linear_model.LogisticRegression()}  # binary classifier
         yield {"model": linear_model.SoftmaxRegression()}  # multi-class classifier
         yield {
-            "model": neighbors.KNNClassifier(n_neighbors=3, window_size=8)
+            "model": neighbors.KNNClassifier(n_neighbors=1, window_size=5)
         }  # multi-class classifier
 
     @property

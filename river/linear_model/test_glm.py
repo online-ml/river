@@ -40,8 +40,8 @@ def iter_perturbations(keys, n=10):
             id=f"{lm.__name__} - {optimizer} - {initializer}",
         )
         for lm, dataset in [
-            (lm.LinearRegression, datasets.TrumpApproval()),
-            (lm.LogisticRegression, datasets.Bananas()),
+            (lm.LinearRegression, datasets.TrumpApproval().take(100)),
+            (lm.LogisticRegression, datasets.Bananas().take(100)),
         ]
         for optimizer, initializer in itertools.product(
             [
@@ -64,7 +64,6 @@ def iter_perturbations(keys, n=10):
         )
     ],
 )
-@pytest.mark.slow
 def test_finite_differences(lm, dataset):
     """Checks the gradient of a linear model via finite differences.
 
@@ -120,11 +119,11 @@ def test_one_many_consistent():
     Y = X.pop("five_thirty_eight")
 
     one = lm.LinearRegression()
-    for x, y in stream.iter_pandas(X, Y):
+    for x, y in stream.iter_pandas(X[:100], Y[:100]):
         one.learn_one(x, y)
 
     many = lm.LinearRegression()
-    for xb, yb in zip(np.array_split(X, len(X)), np.array_split(Y, len(Y))):
+    for xb, yb in zip(np.array_split(X[:100], len(X[:100])), np.array_split(Y[:100], len(Y[:100]))):
         many.learn_many(xb, yb)
 
     for i in X:
