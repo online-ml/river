@@ -25,7 +25,7 @@ jobs:
           python: ${{ matrix.python }}
 
   main-tests:
-    if: github.event_name == "push"
+    if: github.event_name == 'push'
     needs: build-river
 
     runs-on: ${{ matrix.os }}
@@ -43,7 +43,7 @@ jobs:
 
 
   branch-tests:
-    if: github.event_name == "pull_request"
+    if: github.event_name == 'pull_request'
     runs-on: "ubuntu-latest"
 
     steps:
