@@ -1,6 +1,10 @@
 name: Build docs
 description: Builds docs
 
+inputs:
+  github-token:
+    description: 'Python version'
+
 runs:
   using: "composite"
   steps:
@@ -23,7 +27,7 @@ runs:
       if: github.event_name == 'push'
       shell: bash
       env:
-        GH_TOKEN: ${{ secrets.GitHubToken }}
+        GH_TOKEN: ${{ inputs.github-token }}
       run: |
         git config user.name github-actions
         git config user.email github-actions@github.com

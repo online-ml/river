@@ -67,6 +67,8 @@ jobs:
 
       - name: Build Docs
         uses: ./.github/actions/docs
+        with:
+          github-token: ${{ secrets.GitHubToken }}
 
 
 
