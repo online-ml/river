@@ -19,10 +19,10 @@ jobs:
         python: [ 3.8, 3.9, "3.10" ]
         os: [ ubuntu-latest, macos-latest ]
 
-        steps:
-          - uses: ./.github/actions/create-env
-            with:
-              python: ${{ matrix.python }}
+    steps:
+      - uses: ./.github/actions/create-env
+        with:
+          python: ${{ matrix.python }}
 
   main-tests:
     if: github.event_name == "push"
