@@ -1,0 +1,24 @@
+name: Create Environment
+
+runs:
+  using: "composite"
+  inputs:
+    python:
+      default: "3.9" # Used for branches
+
+  steps:
+    - name: Retrieve the Python environment
+      uses: actions/cache/restore@v3
+      id: retrieve-venv
+      with:
+        path: ~/.venv
+        key: ${{ github.run_id }}-venv-${{ runner.os }}-${{ inputs.python }}
+        restore-keys: |
+          ${{ runner.os }}-${{ inputs.python }}-venv
+
+    - name: Retrieve River
+      uses: actions/cache/restore@v3
+      id: retrieve-river
+      with:
+        path: ${{ github.workspace }}
+        key: river-build-${{ github.run_id }}-${{ runner.os }}-${{ inputs.python }}

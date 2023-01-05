@@ -1,0 +1,55 @@
+name: shared-builds
+
+on:
+  push:
+    branches:
+      - main
+      - feature/new_dep_jobs
+
+  pull_request:
+    branches:
+      - "*"
+
+jobs:
+  build-river:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        python: [ 3.8, 3.9, "3.10" ]
+        os: [ ubuntu-latest, macos-latest ]
+
+        steps:
+          - uses: ./.github/actions/create-env
+            with:
+              python: ${{ matrix.python }}
+
+  main-tests:
+    if: github.event_name == "push"
+    needs: build-river
+
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        python: [ 3.8, 3.9, "3.10" ]
+        os: [ ubuntu-latest, macos-latest ]
+
+    steps:
+      - uses: ./.github/actions/unit-tests
+        with:
+          python: ${{ matrix.python }}
+
+
+  branch-tests:
+    if: github.event_name == "pull_request"
+    runs-on: "ubuntu-latest"
+
+    steps:
+      - uses: ./.github/actions/unit-tests
+
+
+
+
+

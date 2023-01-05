@@ -1,0 +1,35 @@
+name: Run Unittests
+
+runs:
+  using: "composite"
+  inputs:
+    python:
+      default: "3.9" # Used for branches
+
+  steps:
+    - uses: ./.github/actions/retrieve-env
+      with:
+        python: ${{ inputs.python }}
+
+    - name: Cache River datasets
+      uses: actions/cache@v2
+      with:
+        path: ~/river_data
+        key: ${{ runner.os }}
+
+    - name: Cache scikit-learn datasets
+      uses: actions/cache@v2
+      with:
+        path: ~/scikit_learn_data
+        key: ${{ runner.os }}
+
+    - name: Download datasets
+      run: python -c "from river import datasets; datasets.CreditCard().download(); datasets.Elec2().download()"
+
+    - name: pytest [Branch]
+      if: github.event_name == "pull_request"
+      run: pytest --durations=10 -n logical # Run pytest on all logical CPU cores
+
+    - name: pytest [Main]
+      if: github.event_name == "push"
+      run: pytest -m "not datasets" --durations=10 -n logical # Run pytest on all logical CPU cores
