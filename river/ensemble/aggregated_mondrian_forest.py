@@ -25,9 +25,8 @@ class AMFLearner(ABC):
         Controls if nodes that contains only sample of the same class should be
         split ("pure" nodes). Default is `False`, namely pure nodes are not split,
         but `True` can be sometimes better.
-    random_state
-        Controls the randomness involved in the trees.
-
+    seed
+        Random seed for reproducibility
     Note
     ----
     This class is not intended for end users but for development only.
@@ -40,7 +39,7 @@ class AMFLearner(ABC):
             loss: str = "log",
             use_aggregation: bool = True,
             split_pure: bool = False,
-            random_state: int or None = None,
+            seed: int = None
     ):
 
         # This is yet to be defined by the dataset since we need to know about the amount of features namely
@@ -52,7 +51,7 @@ class AMFLearner(ABC):
         self.loss = loss
         self.use_aggregation = use_aggregation
         self.split_pure = split_pure
-        self.random_state = random_state
+        self.seed = seed
 
     def is_trained(self) -> bool:
         """
@@ -135,6 +134,9 @@ class AMFClassifier(AMFLearner, Classifier):
     random_state
         Controls the randomness involved in the trees.
 
+    seed
+        Random seed for reproducibility
+
     Note
     ----
     Only log_loss used for the computation of the aggregation weights. is supported for now, namely the log-loss
@@ -154,7 +156,7 @@ class AMFClassifier(AMFLearner, Classifier):
             use_aggregation: bool = True,
             dirichlet: float = None,
             split_pure: bool = False,
-            random_state: int = None,
+            seed: int = None
     ):
         super().__init__(
             n_estimators=n_estimators,
@@ -162,7 +164,7 @@ class AMFClassifier(AMFLearner, Classifier):
             loss="log",
             use_aggregation=use_aggregation,
             split_pure=split_pure,
-            random_state=random_state
+            seed=seed
         )
 
         self.n_classes = n_classes
@@ -187,8 +189,14 @@ class AMFClassifier(AMFLearner, Classifier):
                             "Please learn a data point first.")
 
         self.iteration = 0
-        self._forest = [
-            MondrianTreeClassifier(
+        self._forest = []
+        for i in range(self.n_estimators):
+            seed = self.seed
+            # We don't want to have the same stochastic scheme for each tree, or it'll break the randomness
+            # Hence we introduce a new seed for each, that is derived of the given seed by a deterministic process
+            if seed is not None:
+                seed += i
+            tree = MondrianTreeClassifier(
                 self.n_classes,
                 self._n_features,
                 self.step,
@@ -196,9 +204,9 @@ class AMFClassifier(AMFLearner, Classifier):
                 self.dirichlet,
                 self.split_pure,
                 self.iteration,
+                seed
             )
-            for _ in range(self.n_estimators)
-        ]
+            self._forest.append(tree)
 
     def learn_one(self, x: dict, y: typing.ClfTarget):
         """

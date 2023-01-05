@@ -1,5 +1,5 @@
 from abc import ABC
-from river.tree.mondrian.mondrian_tree_nodes import MondrianTreeBranch
+import random
 
 
 class MondrianTree(ABC):
@@ -20,11 +20,13 @@ class MondrianTree(ABC):
         Loss to minimize for each node of the tree
         Pick between: "log", ...
     use_aggregation
-        Whether or not the tree should it use aggregation.
+        Whether or not the tree should it use aggregation
     split_pure
-        Whether or not the tree should split pure leaves when training.
+        Whether or not the tree should split pure leaves when training
     iteration
-        Number of iterations to run when training.
+        Number of iterations to run when training
+    seed
+        Random seed for reproducibility
     """
 
     def __init__(
@@ -35,6 +37,7 @@ class MondrianTree(ABC):
             use_aggregation: bool = True,
             split_pure: bool = False,
             iteration: int = 0,
+            seed: int = None,
     ):
         # Properties common to all the Mondrian Trees
         self.n_features = n_features
@@ -45,3 +48,4 @@ class MondrianTree(ABC):
         self.iteration = iteration
         self.intensities = [0] * n_features
         self.tree = None
+        self.random_generator = random.Random(seed)

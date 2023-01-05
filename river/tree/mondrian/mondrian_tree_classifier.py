@@ -1,7 +1,5 @@
 import math
-
-from random import uniform
-from random import choices
+import sys
 
 from river.tree.mondrian.mondrian_tree import MondrianTree
 
@@ -19,20 +17,22 @@ class MondrianTreeClassifier(MondrianTree):
 
     Parameters
     ----------
-    n_classes:
+    n_classes
         Number of classes of the problem
-    n_features:
+    n_features
         Number of features of the data in entry
-    step:
+    step
         Step of the tree
-    use_aggregation:
+    use_aggregation
         Whether to use aggregation weighting techniques or not.
-    dirichlet:
+    dirichlet
         Dirichlet parameter of the problem
-    split_pure:
+    split_pure
         Whether the tree should split pure leafs during training or not
-    iteration:
+    iteration
         Number iterations to do during training
+    seed
+        Random seed for reproducibility
     """
 
     def __init__(
@@ -44,6 +44,7 @@ class MondrianTreeClassifier(MondrianTree):
             dirichlet: float = None,
             split_pure: bool = False,
             iteration: int = 0,
+            seed: int = None
     ):
 
         super().__init__(
@@ -53,6 +54,7 @@ class MondrianTreeClassifier(MondrianTree):
             use_aggregation=use_aggregation,
             split_pure=split_pure,
             iteration=iteration,
+            seed=seed,
         )
         self.n_classes = n_classes
         self.dirichlet = dirichlet
@@ -164,7 +166,7 @@ class MondrianTreeClassifier(MondrianTree):
             try:
                 T = math.exp(1 / extensions_sum)
             except OverflowError:
-                T = float('inf')
+                T = sys.float_info.max  # we get the largest possible output instead
             time = node.time
             # Splitting time of the node (if splitting occurs)
             split_time = time + T
@@ -276,16 +278,16 @@ class MondrianTreeClassifier(MondrianTree):
 
                     # Sample the feature at random with a probability
                     # proportional to the range extensions
-                    feature = choices(list(range(self.n_features)), self.intensities, k=1)[0]
+                    feature = self.random_generator.choices(list(range(self.n_features)), self.intensities, k=1)[0]
                     x_tf = self._x[feature]
 
                     # Is it a right extension of the node ?
                     range_min, range_max = current_node.range(feature)
                     is_right_extension = x_tf > range_max
                     if is_right_extension:
-                        threshold = uniform(range_max, x_tf)
+                        threshold = self.random_generator.uniform(range_max, x_tf)
                     else:
-                        threshold = uniform(x_tf, range_min)
+                        threshold = self.random_generator.uniform(x_tf, range_min)
 
                     # We split the current node
                     self.split(
