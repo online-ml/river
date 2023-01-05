@@ -4,6 +4,7 @@ description: Installs the necessary dependencies and builds River
 inputs:
   python:
     default: '3.9' # Used for branches
+    description: 'Python version'
 
 runs:
   using: "composite"

@@ -1,10 +1,13 @@
 name: Run Unittests
+description: Runs unittests
+
+inputs:
+  python:
+    default: '3.9' # Used for branches
+    description: 'Python version'
 
 runs:
   using: "composite"
-  inputs:
-    python:
-      default: "3.9" # Used for branches
 
   steps:
     - uses: actions/checkout@v3
@@ -27,12 +30,21 @@ runs:
         key: ${{ runner.os }}
 
     - name: Download datasets
-      run: python -c "from river import datasets; datasets.CreditCard().download(); datasets.Elec2().download()"
+      shell: bash
+      run: |
+        source ~/.venv/bin/activate
+        python -c "from river import datasets; datasets.CreditCard().download(); datasets.Elec2().download()"
 
     - name: pytest [Branch]
-      if: github.event_name == "pull_request"
-      run: pytest --durations=10 -n logical # Run pytest on all logical CPU cores
+      if: github.event_name == 'pull_request'
+      shell: bash
+      run: |
+        source ~/.venv/bin/activate
+        pytest --durations=10 -n logical # Run pytest on all logical CPU cores
 
     - name: pytest [Main]
-      if: github.event_name == "push"
-      run: pytest -m "not datasets" --durations=10 -n logical # Run pytest on all logical CPU cores
+      if: github.event_name == 'push'
+      shell: bash
+      run: |
+        source ~/.venv/bin/activate
+        pytest -m "not datasets" --durations=10 -n logical # Run pytest on all logical CPU cores

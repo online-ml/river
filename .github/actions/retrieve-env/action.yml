@@ -1,10 +1,14 @@
 name: Create Environment
+description: Retrieves Python
+
+inputs:
+  python:
+    default: '3.9' # Used for branches
+    description: 'Python version'
 
 runs:
   using: "composite"
-  inputs:
-    python:
-      default: "3.9" # Used for branches
+
 
   steps:
     - name: Retrieve the Python environment

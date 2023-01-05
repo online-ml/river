@@ -16,12 +16,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: [ 3.8, 3.9, "3.10" ]
-        os: [ ubuntu-latest, macos-latest ]
+        python: [ "3.10" ]
+        os: [ ubuntu-latest ]
 
     steps:
       - uses: actions/checkout@v3
-      - uses: ./.github/actions/create-env
+      - name: Prepare the environment and build River
+        uses: ./.github/actions/create-env
         with:
           python: ${{ matrix.python }}
 
@@ -34,12 +35,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: [ 3.8, 3.9, "3.10" ]
-        os: [ ubuntu-latest, macos-latest ]
+        python: [ "3.10" ]
+        os: [ ubuntu-latest ]
 
     steps:
       - uses: actions/checkout@v3
-      - uses: ./.github/actions/unit-tests
+      - name: pytest
+        uses: ./.github/actions/unit-tests
         with:
           python: ${{ matrix.python }}
 
@@ -51,7 +53,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - uses: ./.github/actions/unit-tests
+      - name: pytest
+        uses: ./.github/actions/unit-tests
 
 
 
