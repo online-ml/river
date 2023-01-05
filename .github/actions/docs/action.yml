@@ -1,0 +1,40 @@
+name: Build docs
+description: Builds docs
+
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/checkout@v3
+
+    - name: Install Ubuntu dependencies
+      shell: bash
+      run: sudo apt-get install graphviz pandoc
+
+    - name: Retrieve the environment and the River build
+      uses: ./.github/actions/retrieve-env
+      with:
+        python: ${{ inputs.python }}
+
+    - name: Build docs
+      shell: bash
+      run: make doc
+
+    - name: Deploy docs
+      if: github.event_name == 'push'
+      shell: bash
+      env:
+        GH_TOKEN: ${{ secrets.GitHubToken }}
+      run: |
+        git config user.name github-actions
+        git config user.email github-actions@github.com
+        git config pull.rebase false
+
+        git add --all
+        git commit -m "Release dev docs" --allow-empty
+
+        git fetch
+        git checkout gh-pages
+        git pull
+
+        git checkout main
+        mike deploy dev --push --remote https://github.com/online-ml/river.git

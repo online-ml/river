@@ -21,6 +21,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+
       - name: Prepare the environment and build River
         uses: ./.github/actions/create-env
         with:
@@ -40,11 +41,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - name: pytest
+
+      - name: pytest (Action)
         uses: ./.github/actions/unit-tests
         with:
           python: ${{ matrix.python }}
-
 
   branch-tests:
     if: github.event_name == 'pull_request'
@@ -53,9 +54,19 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - name: pytest
+
+      - name: pytest (Action)
         uses: ./.github/actions/unit-tests
 
+  docs:
+    runs-on: "ubuntu-latest"
+    needs: build-river
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Build Docs
+        uses: ./.github/actions/docs
 
 
 
