@@ -40,6 +40,22 @@ class BaseTransformer:
         return self * other
 
     @abc.abstractmethod
+    def learn_one(self, x: dict) -> dict:
+        """Learn a set of features `x`.
+
+        Parameters
+        ----------
+        x
+            A dictionary of features.
+
+        Returns
+        -------
+        The learned values.
+
+        """
+        pass
+
+    @abc.abstractmethod
     def transform_one(self, x: dict) -> dict:
         """Transform a set of features `x`.
 
@@ -186,3 +202,4 @@ class MiniBatchSupervisedTransformer(Transformer):
         A new DataFrame.
 
         """
+        
