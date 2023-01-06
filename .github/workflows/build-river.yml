@@ -29,10 +29,10 @@ jobs:
       - run: curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain=nightly --profile=minimal -y && rustup show
         if: runner.os == 'Linux'
 
-      - name: Set up Python ${{ matrix.python }}
+      - name: Set up Python ${{ inputs.python }}
         uses: actions/setup-python@v2
         with:
-          python-version: ${{ matrix.python }}
+          python-version: ${{ inputs.python }}
 
       - name: Cache the Python environment
         uses: actions/cache@v3
