@@ -19,13 +19,10 @@ jobs:
         python: [ "3.10" ]
         os: [ ubuntu-latest ]
 
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Prepare the environment and build River
-        uses: ./.github/actions/create-env
-        with:
-          python: ${{ matrix.python }}
+    uses: ./.github/workflows/build-river.yml
+    with:
+      os: ${{ matrix.os }}
+      python: ${{ matrix.python }}
 
   main-tests:
     if: github.event_name == 'push'
