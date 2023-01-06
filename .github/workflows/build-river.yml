@@ -8,6 +8,7 @@ on:
         required: true
 
       python:
+        type: string
         required: true
 
 jobs:
