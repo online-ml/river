@@ -53,7 +53,7 @@ def get_minmax(A):
     ...     (1, 0): 5, (1, 1): 6, (1, 2): 0
     ... }
 
-    >>> mini, maxi = utils.math.get_minmax_array_dico(A)
+    >>> mini, maxi = utils.math.get_minmax(A)
     >>> print(mini, maxi)
     {0: 2, 1: 0, 2: 0} {0: 5, 1: 6, 2: 4}
 
