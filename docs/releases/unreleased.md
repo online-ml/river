@@ -21,6 +21,7 @@
 
 ## ensemble
 
+- Added `ensemble.ADWINBoostingClassifier`.
 - Added `ensemble.BOLEClassifier`.
 
 ## linear_model

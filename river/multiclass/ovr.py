@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import copy
-
 import pandas as pd
 
 from river import base, linear_model
@@ -84,7 +82,7 @@ class OneVsRestClassifier(base.Wrapper, base.Classifier):
 
         # Instantiate a new binary classifier if the class is new
         if y not in self.classifiers:
-            self.classifiers[y] = copy.deepcopy(self.classifier)
+            self.classifiers[y] = self.classifier.clone()
 
         # Train each label's associated classifier
         for label, model in self.classifiers.items():
@@ -113,7 +111,7 @@ class OneVsRestClassifier(base.Wrapper, base.Classifier):
         # Instantiate a new binary classifier for the classes that have not yet been seen
         for label in y.unique():
             if label not in self.classifiers:
-                self.classifiers[label] = copy.deepcopy(self.classifier)
+                self.classifiers[label] = self.classifier.clone()
 
         # Train each label's associated classifier
         for label, model in self.classifiers.items():

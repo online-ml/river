@@ -1,5 +1,4 @@
 from collections import UserList
-from copy import deepcopy
 from random import Random
 from typing import Iterator
 
@@ -49,7 +48,7 @@ class WrapperEnsemble(Ensemble, Wrapper):
     """
 
     def __init__(self, model, n_models, seed):
-        super().__init__(deepcopy(model) for _ in range(n_models))
+        super().__init__(model.clone() for _ in range(n_models))
         self.model = model
         self.n_models = n_models
         self.seed = seed

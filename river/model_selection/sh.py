@@ -1,5 +1,4 @@
 import abc
-import copy
 import math
 
 from river import metrics
@@ -26,7 +25,7 @@ class SuccessiveHalving(abc.ABC):
         self.print_kwargs = print_kwargs
 
         self._n = len(models)
-        self._metrics = [copy.deepcopy(metric) for _ in range(self._n)]
+        self._metrics = [metric.clone() for _ in range(self._n)]
         self._s = self._n
         self._n_rungs = 0
         self._rankings = list(range(self._n))
