@@ -11,6 +11,7 @@ on:
 jobs:
   test:
     runs-on: ${{ inputs.os }}
+
     # Instead of using two matrices in the calling Workflow, we can use conditionals here
     if: (inputs.os == 'ubuntu-latest' && inputs.python == '3.9') || github.event_name == 'push'
 
