@@ -3,7 +3,6 @@ description: Retrieves Python
 
 inputs:
   python:
-    default: '3.9' # Used for branches
     description: 'Python version'
 
 runs:
