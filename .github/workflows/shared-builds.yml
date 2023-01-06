@@ -12,7 +12,16 @@ on:
 
 jobs:
   build-river:
+    strategy:
+      fail-fast: false
+      matrix:
+        python: [ 3.8, 3.9, "3.10" ]
+        os: [ ubuntu-latest, macos-latest ]
+
     uses: ./.github/workflows/build-river.yml
+    with:
+      python: matrix.python
+      os: matrix.os
 
   unit-tests:
     needs: build-river
