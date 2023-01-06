@@ -35,13 +35,14 @@ jobs:
     with:
       python: matrix.python
       os: matrix.os
-  branch-docs:
+
+  dev-docs:
     if: github.event_name == 'push'
     needs: unit-tests # The workflow will actually update docs, so it's best to wait for unit tests too.
     uses: ./.github/workflows/docs.yml
     secrets: inherit
 
-  dev-docs:
+  branch-docs:
     if: github.event_name == 'pull_request'
     needs: build-river # The workflow will only build docs, so no need to wait for unit tests.
     uses: ./.github/workflows/docs.yml
