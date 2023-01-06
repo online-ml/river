@@ -45,4 +45,3 @@ jobs:
     if: github.event_name == 'pull_request'
     needs: build-river # The workflow will only build docs, so no need to wait for unit tests.
     uses: ./.github/workflows/docs.yml
-
