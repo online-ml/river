@@ -16,21 +16,12 @@ jobs:
     if: (matrix.os == 'ubuntu-latest' && matrix.python == '3.9') || github.event_name == 'push'
 
     steps:
-      - name: Retrieve the Python environment
-        uses: actions/cache/restore@v3
-        id: retrieve-venv
-        with:
-          path: ~/.venv
-          key: ${{ github.run_id }}-venv-${{ runner.os }}-${{ matrix.python }}
-          restore-keys: |
-            ${{ runner.os }}-${{ matrix.python }}-venv
+      - uses: actions/checkout@v3
 
-      - name: Retrieve River
-        uses: actions/cache/restore@v3
-        id: retrieve-river
+      - name: Retrieve the environment and the River build
+        uses: ./.github/actions/retrieve-env
         with:
-          path: ${{ github.workspace }}
-          key: river-build-${{ github.run_id }}-${{ runner.os }}-${{ matrix.python }}
+          python: ${{ matrix.python }}
 
       - name: Cache River datasets
         uses: actions/cache@v3

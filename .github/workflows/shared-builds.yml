@@ -15,21 +15,17 @@ jobs:
     uses: ./.github/workflows/build-river.yml
 
   unit-tests:
-    if: github.event_name == 'push'
     needs: build-river
     uses: ./.github/workflows/unit-tests.yml
 
-  docs:
-    runs-on: "ubuntu-latest"
-    needs: build-river
+  branch-docs:
+    if: github.event_name == 'push'
+    needs: unit-tests # The workflow will actually update docs, so it's best to wait for unit tests too.
+    uses: ./.github/workflows/docs.yml
+    secrets: inherit
 
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Build Docs
-        uses: ./.github/actions/docs
-        with:
-          github-token: ${{ secrets.GitHubToken }}
-
-
+  dev-docs:
+    if: github.event_name == 'pull_request'
+    needs: build-river # The workflow will only build docs, so no need to wait for unit tests.
+    uses: ./.github/workflows/docs.yml
 
