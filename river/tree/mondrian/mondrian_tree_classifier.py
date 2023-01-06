@@ -331,6 +331,7 @@ class MondrianTreeClassifier(MondrianTree):
     def go_upwards(self, leaf: MondrianTreeLeafClassifier):
         """
         Updates the tree (upwards procedure)
+
         Parameters
         ----------
         leaf
