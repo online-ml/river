@@ -4,36 +4,39 @@ on:
   workflow_call:
 
 jobs:
-  runs-on: ubuntu-latest
+
 
   docs:
-    - uses: actions/checkout@v3
+    runs-on: ubuntu-latest
 
-    - name: Retrieve the environment and the River build
-      uses: ./.github/actions/retrieve-env
-      with:
-        python: 3.9
+    steps:
+      - uses: actions/checkout@v3
 
-    - name: Install Ubuntu dependencies
-      run: sudo apt-get install graphviz pandoc
+      - name: Retrieve the environment and the River build
+        uses: ./.github/actions/retrieve-env
+        with:
+          python: 3.9
 
-    - name: Build docs
-      run: |
-        source ~/.venv/bin/activate
-        make doc
+      - name: Install Ubuntu dependencies
+        run: sudo apt-get install graphviz pandoc
 
-    - name: Deploy docs
-      if: github.event_name == 'push'
-      env:
-        GH_TOKEN: ${{ secrets.GitHubToken }}
-      run: |
-        git config user.name github-actions
-        git config user.email github-actions@github.com
-        git config pull.rebase false
-        git add --all
-        git commit -m "Release dev docs" --allow-empty
-        git fetch
-        git checkout gh-pages
-        git pull
-        git checkout main
-        mike deploy dev --push --remote https://github.com/online-ml/river.git
+      - name: Build docs
+        run: |
+          source ~/.venv/bin/activate
+          make doc
+
+      - name: Deploy docs
+        if: github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ secrets.GitHubToken }}
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git config pull.rebase false
+          git add --all
+          git commit -m "Release dev docs" --allow-empty
+          git fetch
+          git checkout gh-pages
+          git pull
+          git checkout main
+          mike deploy dev --push --remote https://github.com/online-ml/river.git
