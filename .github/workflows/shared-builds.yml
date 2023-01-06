@@ -25,8 +25,16 @@ jobs:
 
   unit-tests:
     needs: build-river
-    uses: ./.github/workflows/unit-tests.yml
+    strategy:
+      fail-fast: false
+      matrix:
+        python: [ 3.8, 3.9, "3.10" ]
+        os: [ ubuntu-latest, macos-latest ]
 
+    uses: ./.github/workflows/unit-tests.yml
+    with:
+      python: matrix.python
+      os: matrix.os
   branch-docs:
     if: github.event_name == 'push'
     needs: unit-tests # The workflow will actually update docs, so it's best to wait for unit tests too.
