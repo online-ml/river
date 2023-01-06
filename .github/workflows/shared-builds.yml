@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      - feature/new_dep_jobs
+      - feature/new_dep_jobs_workflows
 
   pull_request:
     branches:
