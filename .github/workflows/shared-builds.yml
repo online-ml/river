@@ -12,7 +12,6 @@ on:
 
 jobs:
   build-river:
-    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
