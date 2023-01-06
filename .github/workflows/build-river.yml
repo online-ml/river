@@ -13,7 +13,7 @@ jobs:
         os: [ubuntu-latest, macos-latest]
 
     # Instead of using two matrices in the calling Workflow, we can use conditionals here
-    if: (matrix.os == 'ubuntu-latest' && matrix.python == '3.9') || github.event_name == 'push'
+    if: (${{ matrix.os }} == 'ubuntu-latest' && ${{ matrix.python }} == '3.9') || github.event_name == 'push'
 
     steps:
       - uses: actions/checkout@v3
