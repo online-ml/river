@@ -2,18 +2,17 @@ name: unit-tests
 
 on:
   workflow_call:
+    inputs:
+      python:
+        type: string
+      os:
+        type: string
 
 jobs:
   test:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        python: [3.8, 3.9, "3.10"]
-        os: [ubuntu-latest, macos-latest]
-
+    runs-on: ${{ inputs.os }}
     # Instead of using two matrices in the calling Workflow, we can use conditionals here
-    if: (matrix.os == 'ubuntu-latest' && matrix.python == '3.9') || github.event_name == 'push'
+    if: (inputs.os == 'ubuntu-latest' && inputs.python == '3.9') || github.event_name == 'push'
 
     steps:
       - uses: actions/checkout@v3
@@ -21,7 +20,7 @@ jobs:
       - name: Retrieve the environment and the River build
         uses: ./.github/actions/retrieve-env
         with:
-          python: ${{ matrix.python }}
+          python: ${{ inputs.python }}
 
       - name: Cache River datasets
         uses: actions/cache@v3
