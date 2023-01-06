@@ -16,7 +16,6 @@ from .filter import QuantileFilter, ThresholdFilter
 from .gaussian import GaussianScorer
 from .hst import HalfSpaceTrees
 from .svm import OneClassSVM
-from .xstream import xStream
 
 __all__ = [
     "base",
@@ -26,5 +25,4 @@ __all__ = [
     "OneClassSVM",
     "QuantileFilter",
     "ThresholdFilter",
-    "xStream",
 ]

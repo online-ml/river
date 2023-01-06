@@ -18,12 +18,10 @@ __all__ = [
     "argmax",
     "chain_dot",
     "clamp",
-    "dict_zeros",
     "dot",
     "dotvecmat",
-    "get_minmax",
+    "get_minmax_array_dico",
     "matmul2d",
-    "merge",
     "minkowski_distance",
     "norm",
     "outer",
@@ -36,8 +34,8 @@ __all__ = [
 ]
 
 
-def get_minmax(A):
-    """Returns the boundaries for each feature.
+def get_minmax_array_dico(A):
+    """returns the boundaries for each feature
 
     Parameters
     ----------
@@ -49,11 +47,11 @@ def get_minmax(A):
     >>> from river import utils
 
     >>> A = {
-    ...     (0, 0): 2, (0, 1): 0, (0, 2): 4
+    ...     (0, 0): 2, (0, 1): 0, (0, 2): 4,
     ...     (1, 0): 5, (1, 1): 6, (1, 2): 0
     ... }
 
-    >>> mini, maxi = utils.math.get_minmax(A)
+    >>> mini, maxi = utils.math.get_minmax_array_dico(A)
     >>> print(mini, maxi)
     {0: 2, 1: 0, 2: 0} {0: 5, 1: 6, 2: 4}
 
@@ -84,34 +82,6 @@ def _iterate(X, y=None):
     else:
         for xi, yi in iterator.iter(X, y):
             yield xi, yi
-
-
-def merge(X: dict, Y: dict) -> dict:
-    """Merge two dictionaries.
-
-    Parameters
-    ----------
-    X
-    y
-
-    """
-    res = {**X, **Y}
-    return res
-
-
-def dict_zeros(X: dict, nb_comp) -> dict:
-    """Create a dictionary of zero values.
-
-    Parameters
-    ----------
-    X
-    nb_comp
-        Desired dictionary length.
-
-    """
-    for i in range(nb_comp):
-        X[i] = 0
-    return X
 
 
 def dotvecmat(x, A):

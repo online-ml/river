@@ -39,13 +39,16 @@ class BaseTransformer:
     @abc.abstractmethod
     def transform_one(self, x: dict) -> dict:
         """Transform a set of features `x`.
+
         Parameters
         ----------
         x
             A dictionary of features.
+
         Returns
         -------
         The transformed values.
+
         """
 
 
@@ -58,17 +61,21 @@ class Transformer(base.Estimator, BaseTransformer):
 
     def learn_one(self, x: dict) -> "Transformer":
         """Update with a set of features `x`.
+
         A lot of transformers don't actually have to do anything during the `learn_one` step
         because they are stateless. For this reason the default behavior of this function is to do
         nothing. Transformers that however do something during the `learn_one` can override this
         method.
+
         Parameters
         ----------
         x
             A dictionary of features.
+
         Returns
         -------
         self
+
         """
         return self
 
@@ -82,15 +89,18 @@ class SupervisedTransformer(base.Estimator, BaseTransformer):
 
     def learn_one(self, x: dict, y: base.typing.Target) -> "SupervisedTransformer":
         """Update with a set of features `x` and a target `y`.
+
         Parameters
         ----------
         x
             A dictionary of features.
         y
             A target.
+
         Returns
         -------
         self
+
         """
         return self
 
@@ -101,28 +111,35 @@ class MiniBatchTransformer(Transformer):
     @abc.abstractmethod
     def transform_many(self, X: "pd.DataFrame") -> "pd.DataFrame":
         """Transform a mini-batch of features.
+
         Parameters
         ----------
         X
             A DataFrame of features.
+
         Returns
         -------
         A new DataFrame.
+
         """
 
     def learn_many(self, X: "pd.DataFrame") -> "Transformer":
         """Update with a mini-batch of features.
+
         A lot of transformers don't actually have to do anything during the `learn_many` step
         because they are stateless. For this reason the default behavior of this function is to do
         nothing. Transformers that however do something during the `learn_many` can override this
         method.
+
         Parameters
         ----------
         X
             A DataFrame of features.
+
         Returns
         -------
         self
+
         """
         return self
 
@@ -137,26 +154,32 @@ class MiniBatchSupervisedTransformer(Transformer):
     @abc.abstractmethod
     def learn_many(self, X: "pd.DataFrame", y: "pd.Series") -> "MiniBatchSupervisedTransformer":
         """Update the model with a mini-batch of features `X` and targets `y`.
+
         Parameters
         ----------
         X
             A dataframe of features.
         y
             A series of boolean target values.
+
         Returns
         -------
         self
+
         """
         return self
 
     @abc.abstractmethod
     def transform_many(self, X: "pd.DataFrame") -> "pd.DataFrame":
         """Transform a mini-batch of features.
+
         Parameters
         ----------
         X
             A DataFrame of features.
+
         Returns
         -------
         A new DataFrame.
+
         """
