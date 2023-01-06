@@ -20,8 +20,8 @@ jobs:
 
     uses: ./.github/workflows/build-river.yml
     with:
-      python: matrix.python
-      os: matrix.os
+      python: ${{ matrix.python }}
+      os: ${{ matrix.os }}
 
   unit-tests:
     needs: build-river
@@ -33,8 +33,8 @@ jobs:
 
     uses: ./.github/workflows/unit-tests.yml
     with:
-      python: matrix.python
-      os: matrix.os
+      python: ${{ matrix.python }}
+      os: ${{ matrix.os }}
 
   dev-docs:
     if: github.event_name == 'push'
