@@ -12,47 +12,12 @@ on:
 
 jobs:
   build-river:
-    strategy:
-      fail-fast: false
-      matrix:
-        python: [ "3.10" ]
-        os: [ ubuntu-latest ]
-
     uses: ./.github/workflows/build-river.yml
-    with:
-      os: ${{ matrix.os }}
-      python: ${{ matrix.python }}
 
-  main-tests:
+  unit-tests:
     if: github.event_name == 'push'
     needs: build-river
-
-    runs-on: ${{ matrix.os }}
-
-    strategy:
-      fail-fast: false
-      matrix:
-        python: [ "3.10" ]
-        os: [ ubuntu-latest ]
-
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: pytest (Action)
-        uses: ./.github/actions/unit-tests
-        with:
-          python: ${{ matrix.python }}
-
-  branch-tests:
-    if: github.event_name == 'pull_request'
-    runs-on: "ubuntu-latest"
-    needs: build-river
-
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: pytest (Action)
-        uses: ./.github/actions/unit-tests
+    uses: ./.github/workflows/unit-tests.yml
 
   docs:
     runs-on: "ubuntu-latest"

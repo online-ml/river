@@ -1,19 +1,19 @@
-name: Build River
+name: build-river
 
 on:
   workflow_call:
-    inputs:
-      os:
-        type: string
-        required: true
-
-      python:
-        type: string
-        required: true
 
 jobs:
   build-river:
-    runs-on: ${{ inputs.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        python: [3.8, 3.9, "3.10"]
+        os: [ubuntu-latest, macos-latest]
+
+    # Instead of using two matrices in the calling Workflow, we can use conditionals here
+    if: (matrix.os == 'ubuntu-latest' && matrix.python == '3.9') || github.event_name == 'push'
 
     steps:
       - uses: actions/checkout@v3
@@ -30,10 +30,10 @@ jobs:
         if: runner.os == 'Linux'
         shell: bash
 
-      - name: Set up Python ${{ inputs.python }}
+      - name: Set up Python ${{ matrix.python }}
         uses: actions/setup-python@v2
         with:
-          python-version: ${{ inputs.python }}
+          python-version: ${{ matrix.python }}
 
       - name: Cache the Python environment
         uses: actions/cache@v3
@@ -41,10 +41,10 @@ jobs:
         with:
           path: |
             ~/.venv
-          key: ${{ runner.os }}-${{ inputs.python }}-venv-${{ hashFiles('**/setup.py') }}
+          key: ${{ runner.os }}-${{ matrix.python }}-venv-${{ hashFiles('**/setup.py') }}
           restore-keys: |
-            ${{ github.run_id }}-venv-${{ runner.os }}-${{ inputs.python }}
-            ${{ runner.os }}-${{ inputs.python }}-venv-
+            ${{ github.run_id }}-venv-${{ runner.os }}-${{ matrix.python }}
+            ${{ runner.os }}-${{ matrix.python }}-venv-
 
       - name: Install Python dependencies
         if: ${{ steps.cache-venv.outputs.cache-hit != 'true' }}
@@ -69,4 +69,4 @@ jobs:
         id: cache-river
         with:
           path: ${{ github.workspace }}
-          key: river-build-${{ github.run_id }}-${{ runner.os }}-${{ inputs.python }}
+          key: river-build-${{ github.run_id }}-${{ runner.os }}-${{ matrix.python }}
