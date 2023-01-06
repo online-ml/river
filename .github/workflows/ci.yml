@@ -1,4 +1,4 @@
-name: shared-builds
+name: ci
 
 on:
   push:
