@@ -15,8 +15,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: [ 3.9 ]
-        os: [ ubuntu-latest ]
+        python: [3.8, 3.9, "3.10"]
+        os: [ubuntu-latest, macos-latest]
 
     uses: ./.github/workflows/build-river.yml
     with:
@@ -28,8 +28,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: [ 3.9 ]
-        os: [ ubuntu-latest ]
+        python: [3.8, 3.9, "3.10"]
+        os: [ubuntu-latest, macos-latest]
 
     uses: ./.github/workflows/unit-tests.yml
     with:
