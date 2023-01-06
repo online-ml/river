@@ -11,12 +11,16 @@ import operator
 import numpy as np
 import scipy as sp
 
+from river.stream import iter_array
+
 __all__ = [
+    "_iterate",
     "argmax",
     "chain_dot",
     "clamp",
     "dot",
     "dotvecmat",
+    "get_minmax_array_dico",
     "matmul2d",
     "minkowski_distance",
     "norm",
@@ -28,6 +32,56 @@ __all__ = [
     "softmax",
     "woodbury_matrix",
 ]
+
+
+def get_minmax_array_dico(A):
+    """returns the boundaries for each feature
+
+    Parameters
+    ----------
+    A
+
+    Examples
+    --------
+
+    >>> from river import utils
+
+    >>> A = {
+    ...     (0, 0): 2, (0, 1): 0, (0, 2): 4
+    ...     (1, 0): 5, (1, 1): 6, (1, 2): 0
+    ... }
+
+    >>> mini, maxi = utils.math.get_minmax_array_dico(A)
+    >>> print(mini, maxi)
+    {0: 2, 1: 0, 2: 0} {0: 5, 1: 6, 2: 4}
+
+    """
+    mini = {}
+    maxi = {}
+    for j in range(list(A.keys())[-1][1] + 1):
+        mini[j] = min([A[i, j] for i in range(list(A.keys())[-1][0] + 1)])
+        maxi[j] = max([A[i, j] for i in range(list(A.keys())[-1][0] + 1)])
+    return mini, maxi
+
+
+def _iterate(X, y=None):
+    """Iterates array of features and possibly labels.
+
+    Parameters
+    ----------
+    X
+    y
+
+    """
+
+    iterator = iter_array(shuffle=False)
+
+    if y is None:
+        for xi in iterator.iter(X):
+            yield xi, None
+    else:
+        for xi, yi in iterator.iter(X, y):
+            yield xi, yi
 
 
 def dotvecmat(x, A):

@@ -1,6 +1,9 @@
 import abc
 
+import numpy as np
+
 from river import base
+from river.utils.math import _iterate
 
 __all__ = ["AnomalyDetector"]
 
@@ -44,6 +47,63 @@ class AnomalyDetector(base.Estimator):
         normal observation.
 
         """
+
+    def fit(self, X, y=None):
+        """Fits the model to all instances in order.
+
+        Parameters
+        ----------
+        X
+            Instances in order to fit.
+        y
+            Labels of the instances in order to fit (Optional for unsupervised models, default=None).
+
+        Returns
+        -------
+        Fitted model.
+
+        """
+        for xi, yi in _iterate(X, y):
+            self.learn_one(xi, yi)
+
+        return self
+
+    def score(self, X):
+        """Scores all instaces via score_partial iteratively.
+
+        Parameters
+        ----------
+        X
+            Instances in order to score.
+
+        Returns
+        -------
+        The anomalousness scores of the instances in order.
+
+        """
+
+        y_pred = np.empty(X.shape[0], dtype=np.float)
+        for i, (xi, _) in enumerate(_iterate(X)):
+            y_pred[i] = self.score_one(xi)
+
+        return y_pred
+
+    def learn_score_one(self, X, y=None):
+        """Applies fit_partial and score_partial to the next instance, respectively.
+
+        Parameters
+        ----------
+        X
+            Instance to fit and score.
+        y
+            Label of the instance (Optional for unsupervised models, default=None).
+
+        Returns
+        -------
+        The anomalousness score of the input instance.
+
+        """
+        return self.learn_one(X, y).score_one(X)
 
 
 class SupervisedAnomalyDetector(base.Estimator):
