@@ -61,6 +61,10 @@ jobs:
           source ~/.venv/bin/activate
           pip install -e ".[dev,docs]"
 
+      # We should delete the git project from the build cache to avoid conflicts
+      - name: Delete the Git project
+        run: rm -r .git
+
       - uses: actions/cache/save@v3
         id: cache-river
         with:
