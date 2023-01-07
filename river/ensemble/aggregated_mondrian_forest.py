@@ -1,8 +1,8 @@
 from abc import ABC
 
-from river.base import typing
+from river import base
 from river.base.classifier import Classifier
-from river.tree.mondrian.mondrian_tree_classifier import MondrianTreeClassifier
+from river.tree.mondrian.mondrian_tree_classifier import MondrianTree, MondrianTreeClassifier
 
 
 class AMFLearner(ABC):
@@ -42,8 +42,8 @@ class AMFLearner(ABC):
     ):
 
         # This is yet to be defined by the dataset since we need to know about the amount of features namely
-        self._forest = None
-        self._n_features = None
+        self._forest: list[MondrianTree] = []
+        self._n_features: int = 0
 
         self.n_estimators = n_estimators
         self.step = step
@@ -59,7 +59,7 @@ class AMFLearner(ABC):
         -------
         trained: bool
         """
-        return self._forest is not None
+        return len(self._forest) != 0
 
     def _check_features_consistency(self, x: dict):
         """
@@ -74,8 +74,10 @@ class AMFLearner(ABC):
 
         """
         n_features = len(list(x.keys()))
-        if self._n_features is None:
+        # First case corresponds to a situation for which the number of features has never been set (0)
+        if self._n_features == 0:
             self._n_features = n_features
+        # The features have already been set, we make sure they keep being consistent
         elif self._n_features != n_features:
             raise Exception("Number of features must be consistent during learning")
 
@@ -167,21 +169,22 @@ class AMFClassifier(AMFLearner, Classifier):
             self.dirichlet = dirichlet
 
         # memory of the classes (converts label into positive integers)
-        self._classes = {}
+        self._classes: dict[base.typing.ClfTarget, int] = {}
 
     def _initialize_trees(self):
         """
         Initialize the forest
         """
 
-        if self._n_features is None:
+        # If the number of features is 0, it means we don't know the number of features
+        if self._n_features == 0:
             raise Exception(
                 "You can't initialize the forest without knowning the number of features of the problem. "
                 "Please learn a data point first."
             )
 
         self.iteration = 0
-        self._forest = []
+        self._forest: list[MondrianTreeClassifier] = []
         for i in range(self.n_estimators):
             seed = self.seed
             # We don't want to have the same stochastic scheme for each tree, or it'll break the randomness
@@ -200,7 +203,7 @@ class AMFClassifier(AMFLearner, Classifier):
             )
             self._forest.append(tree)
 
-    def learn_one(self, x: dict, y: typing.ClfTarget):
+    def learn_one(self, x: dict, y: base.typing.ClfTarget):
         """
         Learns the sample (x, y)
 
@@ -224,7 +227,7 @@ class AMFClassifier(AMFLearner, Classifier):
         self._check_features_consistency(x)
 
         # Checking if the forest has been created
-        if self._forest is None:
+        if not self.is_trained():
             self._initialize_trees()
         # we fit all the trees using the new sample
         for tree in self._forest:

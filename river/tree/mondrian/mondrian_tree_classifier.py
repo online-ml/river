@@ -4,6 +4,7 @@ import sys
 from river import base
 from river.tree.mondrian.mondrian_tree import MondrianTree
 from river.tree.mondrian.mondrian_tree_nodes import (
+    MondrianLeaf,
     MondrianLeafClassifier,
     MondrianTreeBranchClassifier,
 )
@@ -62,24 +63,31 @@ class MondrianTreeClassifier(MondrianTree):
             split_pure=split_pure,
             iteration=iteration,
             seed=seed,
+            tree_init_args=(n_features, n_classes),
         )
         self.n_classes = n_classes
-        self.dirichlet = dirichlet
+        if dirichlet is None:
+            if self.n_classes == 2:
+                self.dirichlet = 0.5
+            else:
+                self.dirichlet = 0.01
+        else:
+            self.dirichlet = dirichlet
+
+        # Training attributes
+        # The previously observed classes dictionary: enables to convert the class label into a positive integer
+        self._classes: dict[base.typing.ClfTarget, int] = {}
+
+        # The current sample being proceeded
+        self._x: list[float] = []
+        # The current label index being proceeded
+        self._y: int = -1
 
         # Initialization of the root of the tree
         # It's the root so it doesn't have any parent (hence None)
         self.tree = MondrianTreeBranchClassifier(
-            MondrianLeafClassifier(None, self.n_features, 0.0, self.n_classes)
+            MondrianLeafClassifier(None, n_features, 0.0, n_classes)
         )
-
-        # Training attributes
-        # The previously observed classes dictionary: enables to convert the class label into a positive integer
-        self._classes = {}
-
-        # The current sample being proceeded
-        self._x = None
-        # The current label index being proceeded
-        self._y = None
 
     def _score(self, node: MondrianLeafClassifier) -> float:
         """
@@ -93,7 +101,7 @@ class MondrianTreeClassifier(MondrianTree):
         """
         return node.score(self._y, self.dirichlet)
 
-    def _predict(self, node: MondrianLeafClassifier) -> dict[float]:
+    def _predict(self, node: MondrianLeafClassifier) -> dict[int, float]:
         """
         Computes the predictions scores of the node regarding all the classes scores.
 
@@ -336,7 +344,7 @@ class MondrianTreeClassifier(MondrianTree):
                     else:
                         current_node = current_node.get_child(self._x)
 
-    def _go_upwards(self, leaf: MondrianLeafClassifier):
+    def _go_upwards(self, leaf: MondrianLeaf):
         """
         Updates the tree (upwards procedure)
 
@@ -434,14 +442,14 @@ class MondrianTreeClassifier(MondrianTree):
         # We turn the indexes into the labels names
         classes_name = list(self._classes.keys())
 
-        def set_scores(values: list):
+        def set_scores(values: list[float]):
             """Turns the list of score values into the dictionary of scores output"""
             for k in range(self.n_classes):
                 scores[classes_name[k]] = values[k]
 
         # Initialization of the scores to output to 0
-        scores = {}
-        set_scores([0] * self.n_features)
+        scores: dict[base.typing.ClfTarget, float] = {}
+        set_scores([0.0 for _ in range(self.n_features)])
 
         leaf = self._find_leaf(x)
 
@@ -470,6 +478,7 @@ class MondrianTreeClassifier(MondrianTree):
             # Root must be updated as well
             if current.parent is None:
                 break
+
             # And now we go up
             current = current.parent
 

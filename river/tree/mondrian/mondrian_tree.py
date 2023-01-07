@@ -1,5 +1,5 @@
-from abc import ABC
 import random
+from abc import ABC
 
 
 class MondrianTree(ABC):
@@ -27,17 +27,20 @@ class MondrianTree(ABC):
         Number of iterations to run when training
     seed
         Random seed for reproducibility
+    tree_init_args
+        Arguments to initialize the tree root
     """
 
     def __init__(
-            self,
-            n_features: int,
-            step: float = 0.1,
-            loss: str = "log",
-            use_aggregation: bool = True,
-            split_pure: bool = False,
-            iteration: int = 0,
-            seed: int = None,
+        self,
+        n_features: int,
+        step: float = 0.1,
+        loss: str = "log",
+        use_aggregation: bool = True,
+        split_pure: bool = False,
+        iteration: int = 0,
+        seed: int = None,
+        tree_init_args: tuple = None,
     ):
         # Properties common to all the Mondrian Trees
         self.n_features = n_features
@@ -46,6 +49,7 @@ class MondrianTree(ABC):
         self.use_aggregation = use_aggregation
         self.split_pure = split_pure
         self.iteration = iteration
-        self.intensities = [0] * n_features
-        self.tree = None
+        self.intensities = [0.0 for _ in range(n_features)]
         self.random_generator = random.Random(seed)
+
+        # One should initialize the tree in the child class as well

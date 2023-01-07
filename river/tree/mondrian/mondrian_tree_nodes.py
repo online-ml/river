@@ -20,7 +20,7 @@ class MondrianLeaf(Leaf, ABC):
         Split time of the node for Mondrian process
     """
 
-    def __init__(self, parent: Leaf or None, n_features: int, time: float):
+    def __init__(self, parent: typing.Union["MondrianLeaf", None], n_features: int, time: float):
 
         super().__init__()
 
@@ -33,14 +33,14 @@ class MondrianLeaf(Leaf, ABC):
         self._right = None
         self.feature = 0
         self.weight = 0.0
-        self.log_weight_tree = 0
+        self.log_weight_tree = 0.0
         self.threshold = 0.0
         self.n_samples = 0
         self.n_features = n_features
-        self.memory_range_min = [0] * n_features
-        self.memory_range_max = [0] * n_features
+        self.memory_range_min = [0.0 for _ in range(n_features)]
+        self.memory_range_max = [0.0 for _ in range(n_features)]
 
-    def copy(self, node):
+    def copy(self, node: "MondrianLeaf"):
         """
         Copies the node into the current one.
         Parameters
@@ -81,15 +81,15 @@ class MondrianLeaf(Leaf, ABC):
             self._left = self._init_node(self._left)
         return self._left
 
+    @left.setter
+    def left(self, node):
+        self._left = node
+
     @property
     def right(self):
         if self._right is None:
             self._right = self._init_node(self._right)
         return self._right
-
-    @left.setter
-    def left(self, node):
-        self._left = node
 
     @right.setter
     def right(self, node):
@@ -132,7 +132,7 @@ class MondrianLeaf(Leaf, ABC):
                 self.weight, self.left.log_weight_tree + self.right.log_weight_tree
             )
 
-    def get_child(self, x: dict):
+    def get_child(self, x: list[float]):
         """
         Get child node classifying x properly
         Parameters
@@ -171,12 +171,20 @@ class MondrianLeafClassifier(MondrianLeaf):
         Number of classes of the problem
     """
 
-    def __init__(self, parent: MondrianLeaf or None, n_features: int, time: float, n_classes: int):
+    def __init__(
+        self,
+        parent: typing.Union["MondrianLeafClassifier", None],
+        n_features: int,
+        time: float,
+        n_classes: int,
+    ):
         super().__init__(parent, n_features, time)
         self.n_classes = n_classes
-        self.counts = [0] * n_classes
+        self.counts = [0 for _ in range(n_classes)]
 
-    def _init_node(self, node: MondrianLeaf) -> MondrianLeaf:
+    def _init_node(
+        self, node: typing.Union["MondrianLeafClassifier", None]
+    ) -> "MondrianLeafClassifier":
         """
         Initialize a child node of the current one with the default values
         Parameters
@@ -194,6 +202,26 @@ class MondrianLeafClassifier(MondrianLeaf):
         node = MondrianLeafClassifier(self, self.n_features, 0, self.n_classes)
         node.depth = self.depth + 1
         return node
+
+    @property
+    def left(self) -> "MondrianLeafClassifier":
+        if isinstance(super().left, type(self)):
+            return super().left
+        raise Exception("Leaf of a Mondrian Tree Classifier should be a classifier leaf.")
+
+    @left.setter
+    def left(self, node: typing.Union["MondrianLeafClassifier", None]):
+        self._left = node
+
+    @property
+    def right(self) -> "MondrianLeafClassifier":
+        if isinstance(super().right, type(self)):
+            return super().right
+        raise Exception("Leaf of a Mondrian Tree Classifier should be a classifier leaf.")
+
+    @right.setter
+    def right(self, node: typing.Union["MondrianLeafClassifier", None]):
+        self._right = node
 
     def score(self, sample_class: int, dirichlet: float) -> float:
         """
@@ -217,7 +245,7 @@ class MondrianLeafClassifier(MondrianLeaf):
         # We use the Jeffreys prior with dirichlet parameter
         return (count + dirichlet) / (self.n_samples + dirichlet * n_classes)
 
-    def predict(self, dirichlet: float) -> dict[float]:
+    def predict(self, dirichlet: float) -> dict[int, float]:
         """
         Predict the scores of all classes and output a `scores` dictionary with the new values
 
@@ -370,7 +398,7 @@ class MondrianLeafClassifier(MondrianLeaf):
         extensions
             List of range extension per feature to update
         """
-        extensions_sum = 0
+        extensions_sum = 0.0
         for j in range(self.n_features):
             x_tj = x_t[j]
             feature_min_j, feature_max_j = self.range(j)
