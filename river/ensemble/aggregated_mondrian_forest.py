@@ -62,7 +62,7 @@ class AMFLearner(ABC):
         """
         return self._forest is not None
 
-    def check_features_consistency(self, x: dict):
+    def _check_features_consistency(self, x: dict):
         """
         Makes sure that the features are consistent and set it to the first encountered value is no standard is set.
         Parameters
@@ -92,7 +92,7 @@ class AMFClassifier(AMFLearner, Classifier):
     with parameter ``dirichlet``. For each class with `count` labels in the
     node and `n_samples` samples in it, the prediction of a node is given by
 
-        (count + dirichlet) / (n_samples + dirichlet * n_classes)
+        $\frac{count + dirichlet}{n_{samples} + dirichlet \times n_{classes}}$
 
     The prediction for a sample is computed as the aggregated predictions of all the
     subtrees along the path leading to the leaf node containing the sample. The
@@ -110,30 +110,21 @@ class AMFClassifier(AMFLearner, Classifier):
     n_classes
         Number of expected classes in the labels. This is required since we
         don't know the number of classes in advance in a online setting.
-
     n_estimators
         The number of trees in the forest.
-
     step
         Step-size for the aggregation weights. Default is 1 for classification with
         the log-loss, which is usually the best choice.
-
     use_aggregation
         Controls if aggregation is used in the trees. It is highly recommended to
         leave it as `True`.
-
     dirichlet
         Regularization level of the class frequencies used for predictions in each
         node. Default is dirichlet=0.5 for n_classes=2 and dirichlet=0.01 otherwise.
-
     split_pure
         Controls if nodes that contains only sample of the same class should be
         split ("pure" nodes). Default is `False`, namely pure nodes are not split,
         but `True` can be sometimes better.
-
-    random_state
-        Controls the randomness involved in the trees.
-
     seed
         Random seed for reproducibility
 
@@ -229,7 +220,7 @@ class AMFClassifier(AMFLearner, Classifier):
             self._classes[y] = len(self._classes)
 
         # Checking the features consistency
-        self.check_features_consistency(x)
+        self._check_features_consistency(x)
 
         # Checking if the forest has been created
         if self._forest is None:

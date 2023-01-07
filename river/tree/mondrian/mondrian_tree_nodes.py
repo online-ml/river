@@ -10,7 +10,7 @@ from river.tree.base import Leaf
 from river.tree.base import Branch
 
 
-class MondrianTreeLeaf(Leaf, ABC):
+class MondrianLeaf(Leaf, ABC):
     """
     Abstract class for all types of nodes in a Mondrian Tree
 
@@ -151,7 +151,7 @@ class MondrianTreeLeaf(Leaf, ABC):
 
         Returns
         -------
-            MondrianTreeLeaf
+            MondrianLeaf
 
         """
         if x[self.feature] <= self.threshold:
@@ -164,7 +164,7 @@ class MondrianTreeLeaf(Leaf, ABC):
         return f"Node : {self.parent}, {self.time}"
 
 
-class MondrianTreeLeafClassifier(MondrianTreeLeaf):
+class MondrianLeafClassifier(MondrianLeaf):
     """
     Defines a node in a Mondrian Tree Classifier.
 
@@ -182,7 +182,7 @@ class MondrianTreeLeafClassifier(MondrianTreeLeaf):
 
     def __init__(
             self,
-            parent: MondrianTreeLeaf or None,
+            parent: MondrianLeaf or None,
             n_features: int,
             time: float,
             n_classes: int
@@ -191,7 +191,7 @@ class MondrianTreeLeafClassifier(MondrianTreeLeaf):
         self.n_classes = n_classes
         self.counts = [0] * n_classes
 
-    def _init_node(self, node: MondrianTreeLeaf) -> MondrianTreeLeaf:
+    def _init_node(self, node: MondrianLeaf) -> MondrianLeaf:
         """
         Initialize a child node of the current one with the default values
         Parameters
@@ -206,7 +206,7 @@ class MondrianTreeLeafClassifier(MondrianTreeLeaf):
         # Initialize the node with default values, at the right depth (depth + 1 since it's a child node)
         # This is mostly to have material to work with during computations, rather than handling the None situation
         # separately each time we encounter it
-        node = MondrianTreeLeafClassifier(self, self.n_features, 0, self.n_classes)
+        node = MondrianLeafClassifier(self, self.n_features, 0, self.n_classes)
         node.depth = self.depth + 1
         return node
 
@@ -401,7 +401,7 @@ class MondrianTreeLeafClassifier(MondrianTreeLeaf):
 class MondrianTreeBranch(Branch, ABC):
     """
     A generic branch implementation for a Mondrian Tree.
-    parent and children are MondrianTreeLeaf objects
+    parent and children are MondrianLeaf objects
 
     Parameters
     ----------
@@ -409,7 +409,7 @@ class MondrianTreeBranch(Branch, ABC):
         Origin node of the branch
     """
 
-    def __init__(self, parent: MondrianTreeLeaf):
+    def __init__(self, parent: MondrianLeaf):
         super().__init__((parent.left, parent.right))
         self.parent = parent
 
@@ -431,7 +431,7 @@ class MondrianTreeBranch(Branch, ABC):
 class MondrianTreeBranchClassifier(MondrianTreeBranch):
     """
     A generic Mondrian Tree Branch for Classifiers.
-    The specificity resides in the nature of the nodes which are all MondrianTreeLeafClassifier instances.
+    The specificity resides in the nature of the nodes which are all MondrianLeafClassifier instances.
 
     Parameters
     ----------
@@ -439,7 +439,7 @@ class MondrianTreeBranchClassifier(MondrianTreeBranch):
         Origin node of the tree
     """
 
-    def __init__(self, parent: MondrianTreeLeafClassifier):
+    def __init__(self, parent: MondrianLeafClassifier):
         super().__init__(parent)
         self.parent = parent
 

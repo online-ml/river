@@ -7,6 +7,7 @@ aggregate predictions from different kinds of models.
 
 """
 from .adaptive_random_forest import AdaptiveRandomForestClassifier, AdaptiveRandomForestRegressor
+from .aggregated_mondrian_forest import AMFClassifier
 from .bagging import (
     ADWINBaggingClassifier,
     BaggingClassifier,
@@ -18,7 +19,6 @@ from .ewa import EWARegressor
 from .stacking import StackingClassifier
 from .streaming_random_patches import SRPClassifier, SRPRegressor
 from .voting import VotingClassifier
-from .aggregated_mondrian_forest import AMFClassifier
 
 __all__ = [
     "AdaptiveRandomForestClassifier",
