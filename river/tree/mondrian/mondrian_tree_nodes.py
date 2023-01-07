@@ -1,13 +1,9 @@
+import math
 import typing
-
 from abc import ABC, abstractmethod
 
+from river.tree.base import Branch, Leaf
 from river.utils.math import log_sum_2_exp
-
-import math
-
-from river.tree.base import Leaf
-from river.tree.base import Branch
 
 
 class MondrianLeaf(Leaf, ABC):
@@ -23,13 +19,7 @@ class MondrianLeaf(Leaf, ABC):
     time
         Split time of the node for Mondrian process
     """
-
-    def __init__(
-            self,
-            parent: Leaf or None,
-            n_features: int,
-            time: float
-    ):
+    def __init__(self, parent: Leaf or None, n_features: int, time: float):
 
         super().__init__()
 
@@ -180,13 +170,7 @@ class MondrianLeafClassifier(MondrianLeaf):
         Number of classes of the problem
     """
 
-    def __init__(
-            self,
-            parent: MondrianLeaf or None,
-            n_features: int,
-            time: float,
-            n_classes: int
-    ):
+    def __init__(self, parent: MondrianLeaf or None, n_features: int, time: float, n_classes: int):
         super().__init__(parent, n_features, time)
         self.n_classes = n_classes
         self.counts = [0] * n_classes
@@ -260,7 +244,9 @@ class MondrianLeafClassifier(MondrianLeaf):
         sc = self.score(sample_class, dirichlet)
         return -math.log(sc)
 
-    def update_weight(self, sample_class: int, dirichlet: float, use_aggregation: bool, step: float) -> float:
+    def update_weight(
+        self, sample_class: int, dirichlet: float, use_aggregation: bool, step: float
+    ) -> float:
         """
         Updates the weight of the node given a class and the method used
 
@@ -305,13 +291,13 @@ class MondrianLeafClassifier(MondrianLeaf):
         return self.n_samples == self.counts[sample_class]
 
     def update_downwards(
-            self,
-            x_t: list[float],
-            sample_class: int,
-            dirichlet: float,
-            use_aggregation: bool,
-            step: float,
-            do_update_weight: bool
+        self,
+        x_t: list[float],
+        sample_class: int,
+        dirichlet: float,
+        use_aggregation: bool,
+        step: float,
+        do_update_weight: bool,
     ):
         """
         Updates the node when running a downward procedure updating the tree

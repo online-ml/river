@@ -1,9 +1,8 @@
-from river.tree.mondrian.mondrian_tree_classifier import MondrianTreeClassifier
-
 from abc import ABC
 
-from river.base.classifier import Classifier
 from river.base import typing
+from river.base.classifier import Classifier
+from river.tree.mondrian.mondrian_tree_classifier import MondrianTreeClassifier
 
 
 class AMFLearner(ABC):
@@ -33,13 +32,13 @@ class AMFLearner(ABC):
     """
 
     def __init__(
-            self,
-            n_estimators: int = 10,
-            step: float = 0.1,
-            loss: str = "log",
-            use_aggregation: bool = True,
-            split_pure: bool = False,
-            seed: int = None
+        self,
+        n_estimators: int = 10,
+        step: float = 0.1,
+        loss: str = "log",
+        use_aggregation: bool = True,
+        split_pure: bool = False,
+        seed: int = None,
     ):
 
         # This is yet to be defined by the dataset since we need to know about the amount of features namely
@@ -140,14 +139,14 @@ class AMFClassifier(AMFLearner, Classifier):
     """
 
     def __init__(
-            self,
-            n_classes: int = 2,
-            n_estimators: int = 10,
-            step: float = 1.0,
-            use_aggregation: bool = True,
-            dirichlet: float = None,
-            split_pure: bool = False,
-            seed: int = None
+        self,
+        n_classes: int = 2,
+        n_estimators: int = 10,
+        step: float = 1.0,
+        use_aggregation: bool = True,
+        dirichlet: float = None,
+        split_pure: bool = False,
+        seed: int = None,
     ):
         super().__init__(
             n_estimators=n_estimators,
@@ -155,7 +154,7 @@ class AMFClassifier(AMFLearner, Classifier):
             loss="log",
             use_aggregation=use_aggregation,
             split_pure=split_pure,
-            seed=seed
+            seed=seed,
         )
 
         self.n_classes = n_classes
@@ -176,8 +175,10 @@ class AMFClassifier(AMFLearner, Classifier):
         """
 
         if self._n_features is None:
-            raise Exception("You can't initialize the forest without knowning the number of features of the problem. "
-                            "Please learn a data point first.")
+            raise Exception(
+                "You can't initialize the forest without knowning the number of features of the problem. "
+                "Please learn a data point first."
+            )
 
         self.iteration = 0
         self._forest = []
@@ -195,7 +196,7 @@ class AMFClassifier(AMFLearner, Classifier):
                 self.dirichlet,
                 self.split_pure,
                 self.iteration,
-                seed
+                seed,
             )
             self._forest.append(tree)
 
@@ -243,7 +244,9 @@ class AMFClassifier(AMFLearner, Classifier):
 
         # Checking that the model has been trained once at least
         if not self.is_trained():
-            raise Exception("No sample has been learnt yet. You need to train your model before making predictions.")
+            raise Exception(
+                "No sample has been learnt yet. You need to train your model before making predictions."
+            )
 
         # We turn the indexes into the labels names
         classes_name = list(self._classes.keys())
