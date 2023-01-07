@@ -238,9 +238,7 @@ class MondrianTreeClassifier(MondrianTree):
 
         # Create the two splits
         if is_right_extension:
-            left = MondrianLeafClassifier(
-                node, self.n_features, split_time, self.n_classes
-            )
+            left = MondrianLeafClassifier(node, self.n_features, split_time, self.n_classes)
             right = MondrianLeafClassifier(node, self.n_features, split_time, self.n_classes)
             extend_child(node, left, right)
 

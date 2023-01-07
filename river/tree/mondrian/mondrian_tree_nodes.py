@@ -19,6 +19,7 @@ class MondrianLeaf(Leaf, ABC):
     time
         Split time of the node for Mondrian process
     """
+
     def __init__(self, parent: Leaf or None, n_features: int, time: float):
 
         super().__init__()
