@@ -27,8 +27,6 @@ class MondrianTree(ABC):
         Number of iterations to run when training
     seed
         Random seed for reproducibility
-    tree_init_args
-        Arguments to initialize the tree root
     """
 
     def __init__(
@@ -40,7 +38,6 @@ class MondrianTree(ABC):
         split_pure: bool = False,
         iteration: int = 0,
         seed: int = None,
-        tree_init_args: tuple = None,
     ):
         # Properties common to all the Mondrian Trees
         self.n_features = n_features

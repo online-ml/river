@@ -61,12 +61,12 @@ class AMFLearner(ABC):
         """
         return len(self._forest) != 0
 
-    def _check_features_consistency(self, x: dict):
+    def _check_features_consistency(self, x):
         """
         Makes sure that the features are consistent and set it to the first encountered value is no standard is set.
         Parameters
         ----------
-        x: dict
+        x
             Feature vector
 
         Returns
@@ -203,7 +203,7 @@ class AMFClassifier(AMFLearner, Classifier):
             )
             self._forest.append(tree)
 
-    def learn_one(self, x: dict, y: base.typing.ClfTarget):
+    def learn_one(self, x, y):
         """
         Learns the sample (x, y)
 
@@ -235,7 +235,7 @@ class AMFClassifier(AMFLearner, Classifier):
         self.iteration += 1
         return self
 
-    def predict_proba_one(self, x: dict):
+    def predict_proba_one(self, x):
         """
         Predicts the probability of each class for the sample x
 

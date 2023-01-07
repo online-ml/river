@@ -1,5 +1,4 @@
 import math
-import typing
 from abc import ABC, abstractmethod
 
 from river.tree.base import Branch, Leaf
@@ -20,7 +19,7 @@ class MondrianLeaf(Leaf, ABC):
         Split time of the node for Mondrian process
     """
 
-    def __init__(self, parent: typing.Union["MondrianLeaf", None], n_features: int, time: float):
+    def __init__(self, parent, n_features, time):
 
         super().__init__()
 
@@ -40,7 +39,7 @@ class MondrianLeaf(Leaf, ABC):
         self.memory_range_min = [0.0 for _ in range(n_features)]
         self.memory_range_max = [0.0 for _ in range(n_features)]
 
-    def copy(self, node: "MondrianLeaf"):
+    def copy(self, node):
         """
         Copies the node into the current one.
         Parameters
@@ -95,7 +94,7 @@ class MondrianLeaf(Leaf, ABC):
     def right(self, node):
         self._right = node
 
-    def update_depth(self, depth: int):
+    def update_depth(self, depth):
         """
         Updates the depth of the current node with the given depth
         Parameters
@@ -132,7 +131,7 @@ class MondrianLeaf(Leaf, ABC):
                 self.weight, self.left.log_weight_tree + self.right.log_weight_tree
             )
 
-    def get_child(self, x: list[float]):
+    def get_child(self, x):
         """
         Get child node classifying x properly
         Parameters
@@ -172,19 +171,13 @@ class MondrianLeafClassifier(MondrianLeaf):
     """
 
     def __init__(
-        self,
-        parent: typing.Union["MondrianLeafClassifier", None],
-        n_features: int,
-        time: float,
-        n_classes: int,
+        self, parent, n_features, time, n_classes,
     ):
         super().__init__(parent, n_features, time)
         self.n_classes = n_classes
         self.counts = [0 for _ in range(n_classes)]
 
-    def _init_node(
-        self, node: typing.Union["MondrianLeafClassifier", None]
-    ) -> "MondrianLeafClassifier":
+    def _init_node(self, node):
         """
         Initialize a child node of the current one with the default values
         Parameters
@@ -203,27 +196,7 @@ class MondrianLeafClassifier(MondrianLeaf):
         node.depth = self.depth + 1
         return node
 
-    @property
-    def left(self) -> "MondrianLeafClassifier":
-        if isinstance(super().left, type(self)):
-            return super().left
-        raise Exception("Leaf of a Mondrian Tree Classifier should be a classifier leaf.")
-
-    @left.setter
-    def left(self, node: typing.Union["MondrianLeafClassifier", None]):
-        self._left = node
-
-    @property
-    def right(self) -> "MondrianLeafClassifier":
-        if isinstance(super().right, type(self)):
-            return super().right
-        raise Exception("Leaf of a Mondrian Tree Classifier should be a classifier leaf.")
-
-    @right.setter
-    def right(self, node: typing.Union["MondrianLeafClassifier", None]):
-        self._right = node
-
-    def score(self, sample_class: int, dirichlet: float) -> float:
+    def score(self, sample_class, dirichlet):
         """
         Computes the score of the node
 
@@ -245,7 +218,7 @@ class MondrianLeafClassifier(MondrianLeaf):
         # We use the Jeffreys prior with dirichlet parameter
         return (count + dirichlet) / (self.n_samples + dirichlet * n_classes)
 
-    def predict(self, dirichlet: float) -> dict[int, float]:
+    def predict(self, dirichlet):
         """
         Predict the scores of all classes and output a `scores` dictionary with the new values
 
@@ -259,7 +232,7 @@ class MondrianLeafClassifier(MondrianLeaf):
             scores[c] = self.score(c, dirichlet)
         return scores
 
-    def loss(self, sample_class: int, dirichlet: float) -> float:
+    def loss(self, sample_class, dirichlet):
         """
         Computes the loss of the node
 
@@ -273,9 +246,7 @@ class MondrianLeafClassifier(MondrianLeaf):
         sc = self.score(sample_class, dirichlet)
         return -math.log(sc)
 
-    def update_weight(
-        self, sample_class: int, dirichlet: float, use_aggregation: bool, step: float
-    ) -> float:
+    def update_weight(self, sample_class, dirichlet, use_aggregation, step):
         """
         Updates the weight of the node given a class and the method used
 
@@ -295,7 +266,7 @@ class MondrianLeafClassifier(MondrianLeaf):
             self.weight -= step * loss_t
         return loss_t
 
-    def update_count(self, sample_class: int):
+    def update_count(self, sample_class):
         """
         Updates the amount of samples that belong to that class into the node (not to use twice if you add one sample)
 
@@ -306,7 +277,7 @@ class MondrianLeafClassifier(MondrianLeaf):
         """
         self.counts[sample_class] += 1
 
-    def is_dirac(self, sample_class: int) -> bool:
+    def is_dirac(self, sample_class):
         """
 
         Says whether the node follows a dirac distribution regarding the given class.
@@ -320,13 +291,7 @@ class MondrianLeafClassifier(MondrianLeaf):
         return self.n_samples == self.counts[sample_class]
 
     def update_downwards(
-        self,
-        x_t: list[float],
-        sample_class: int,
-        dirichlet: float,
-        use_aggregation: bool,
-        step: float,
-        do_update_weight: bool,
+        self, x_t, sample_class, dirichlet, use_aggregation, step, do_update_weight,
     ):
         """
         Updates the node when running a downward procedure updating the tree
@@ -370,12 +335,12 @@ class MondrianLeafClassifier(MondrianLeaf):
 
         self.update_count(sample_class)
 
-    def range(self, j: int) -> tuple[float, float]:
+    def range(self, feature_index):
         """
         Outputs the known range of the node regarding the j-th feature
         Parameters
         ----------
-        j
+        feature_index
             Feature index for which you want to know the range
 
         Returns
@@ -383,11 +348,11 @@ class MondrianLeafClassifier(MondrianLeaf):
         tuple[float, float]
         """
         return (
-            self.memory_range_min[j],
-            self.memory_range_max[j],
+            self.memory_range_min[feature_index],
+            self.memory_range_max[feature_index],
         )
 
-    def range_extension(self, x_t: list[float], extensions: list[float]) -> float:
+    def range_extension(self, x_t, extensions):
         """
         Computes the range extension of the node for the given sample
 
@@ -424,18 +389,18 @@ class MondrianTreeBranch(Branch, ABC):
         Origin node of the branch
     """
 
-    def __init__(self, parent: MondrianLeaf):
+    def __init__(self, parent):
         super().__init__((parent.left, parent.right))
         self.parent = parent
 
-    def next(self, x) -> typing.Union["Branch", "Leaf"]:
+    def next(self, x):
         child = self.parent.get_child(x)
         if child.is_leaf:
             return child
         else:
             return MondrianTreeBranch(child)
 
-    def most_common_path(self) -> typing.Tuple[int, typing.Union["Leaf", "Branch"]]:
+    def most_common_path(self):
         raise NotImplementedError
 
     @property
@@ -454,11 +419,11 @@ class MondrianTreeBranchClassifier(MondrianTreeBranch):
         Origin node of the tree
     """
 
-    def __init__(self, parent: MondrianLeafClassifier):
+    def __init__(self, parent):
         super().__init__(parent)
         self.parent = parent
 
-    def most_common_path(self) -> typing.Tuple[int, typing.Union["Leaf", "Branch"]]:
+    def most_common_path(self):
         raise NotImplementedError
 
     @property

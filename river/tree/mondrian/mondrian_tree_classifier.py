@@ -4,7 +4,6 @@ import sys
 from river import base
 from river.tree.mondrian.mondrian_tree import MondrianTree
 from river.tree.mondrian.mondrian_tree_nodes import (
-    MondrianLeaf,
     MondrianLeafClassifier,
     MondrianTreeBranchClassifier,
 )
@@ -63,7 +62,6 @@ class MondrianTreeClassifier(MondrianTree):
             split_pure=split_pure,
             iteration=iteration,
             seed=seed,
-            tree_init_args=(n_features, n_classes),
         )
         self.n_classes = n_classes
         if dirichlet is None:
@@ -89,7 +87,7 @@ class MondrianTreeClassifier(MondrianTree):
             MondrianLeafClassifier(None, n_features, 0.0, n_classes)
         )
 
-    def _score(self, node: MondrianLeafClassifier) -> float:
+    def _score(self, node) -> float:
         """
         Computes the score of the node regarding the current sample being proceeded
 
@@ -101,7 +99,7 @@ class MondrianTreeClassifier(MondrianTree):
         """
         return node.score(self._y, self.dirichlet)
 
-    def _predict(self, node: MondrianLeafClassifier) -> dict[int, float]:
+    def _predict(self, node) -> dict[int, float]:
         """
         Computes the predictions scores of the node regarding all the classes scores.
 
@@ -113,7 +111,7 @@ class MondrianTreeClassifier(MondrianTree):
         """
         return node.predict(self.dirichlet)
 
-    def _loss(self, node: MondrianLeafClassifier) -> float:
+    def _loss(self, node) -> float:
         """
         Computes the loss for the given node regarding the current label
 
@@ -124,7 +122,7 @@ class MondrianTreeClassifier(MondrianTree):
         """
         return node.loss(self._y, self.dirichlet)
 
-    def _update_weight(self, node: MondrianLeafClassifier) -> float:
+    def _update_weight(self, node) -> float:
         """
         Updates the weight of the node regarding the current label with the tree parameters
 
@@ -136,7 +134,7 @@ class MondrianTreeClassifier(MondrianTree):
         """
         return node.update_weight(self._y, self.dirichlet, self.use_aggregation, self.step)
 
-    def _update_count(self, node: MondrianLeafClassifier):
+    def _update_count(self, node):
         """
         Update the count of labels with the current class `_y` being treated (not to use twice for one sample added)
         Parameters
@@ -147,7 +145,7 @@ class MondrianTreeClassifier(MondrianTree):
         """
         return node.update_count(self._y)
 
-    def _update_downwards(self, node: MondrianLeafClassifier, do_update_weight: bool):
+    def _update_downwards(self, node, do_update_weight):
         """
         Updates the node when running a downward procedure updating the tree
 
@@ -163,7 +161,7 @@ class MondrianTreeClassifier(MondrianTree):
             self._x, self._y, self.dirichlet, self.use_aggregation, self.step, do_update_weight
         )
 
-    def _compute_split_time(self, node: MondrianLeafClassifier) -> float:
+    def _compute_split_time(self, node):
         """
         Computes the spit time of the given node
 
@@ -344,7 +342,7 @@ class MondrianTreeClassifier(MondrianTree):
                     else:
                         current_node = current_node.get_child(self._x)
 
-    def _go_upwards(self, leaf: MondrianLeaf):
+    def _go_upwards(self, leaf):
         """
         Updates the tree (upwards procedure)
 
@@ -367,7 +365,7 @@ class MondrianTreeClassifier(MondrianTree):
                 # We go up to the root in the tree
                 current_node = current_node.parent
 
-    def _find_leaf(self, x: dict) -> MondrianLeafClassifier:
+    def _find_leaf(self, x):
         """
         Finds the leaf that contains the sample, starting from the root
 
@@ -398,7 +396,7 @@ class MondrianTreeClassifier(MondrianTree):
     def _multiclass(self):
         return True
 
-    def learn_one(self, x: dict, y: base.typing.ClfTarget):
+    def learn_one(self, x, y):
         """
         Learns the sample (x, y)
 
@@ -429,7 +427,7 @@ class MondrianTreeClassifier(MondrianTree):
         self.iteration += 1
         return self
 
-    def predict_proba_one(self, x: dict):
+    def predict_proba_one(self, x):
         """
         Predict the probability of the samples
 
