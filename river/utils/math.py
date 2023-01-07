@@ -92,7 +92,7 @@ def merge(X: dict, Y: dict) -> dict:
     Parameters
     ----------
     X
-    y
+    Y
 
     """
     res = {**X, **Y}
