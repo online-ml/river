@@ -53,9 +53,9 @@ setuptools.setup(
     packages=setuptools.find_packages(exclude=("tests",)),
     install_requires=(base_packages := [f"numpy>={numpy_version}", "scipy>=1.5", "pandas>=1.3"]),
     extras_require={
-        "dev": base_packages + [
+        "dev": base_packages
+        + [
             "black>=22.1.0",
-            "flake8>=4.0.1",
             "graphviz>=0.10.1",
             "gym>=0.26.1",
             "isort>=5.9.3",
@@ -64,9 +64,10 @@ setuptools.setup(
             "pre-commit>=2.9.2",
             "pytest>=4.5.0",
             "pyupgrade>=3.2.0",
+            "ruff>=0.0.213",
             "scikit-learn>=1.0.1",
             "sqlalchemy>=1.4",
-            "sympy>=1.10.1"
+            "sympy>=1.10.1",
         ],
         "compat": base_packages
         + [
