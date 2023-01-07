@@ -89,15 +89,15 @@ class AMFClassifier(AMFLearner, Classifier):
 
     Each node in a tree predicts according to the distribution of the labels
     it contains. This distribution is regularized using a "Jeffreys" prior
-    with parameter ``dirichlet``. For each class with `count` labels in the
+    with parameter `dirichlet`. For each class with `count` labels in the
     node and `n_samples` samples in it, the prediction of a node is given by
 
         $\frac{count + dirichlet}{n_{samples} + dirichlet \times n_{classes}}$
 
     The prediction for a sample is computed as the aggregated predictions of all the
     subtrees along the path leading to the leaf node containing the sample. The
-    aggregation weights are exponential weights with learning rate ``step`` and log-loss
-    when ``use_aggregation`` is ``True``.
+    aggregation weights are exponential weights with learning rate `step` and log-loss
+    when `use_aggregation` is `True`.
 
     This computation is performed exactly thanks to a context tree weighting algorithm.
     More details can be found in the paper cited in references below.
@@ -130,7 +130,7 @@ class AMFClassifier(AMFLearner, Classifier):
 
     Note
     ----
-    Only log_loss used for the computation of the aggregation weights. is supported for now, namely the log-loss
+    Only log_loss used for the computation of the aggregation weights is supported for now, namely the log-loss
     for multi-class classification.
 
     References
@@ -206,9 +206,9 @@ class AMFClassifier(AMFLearner, Classifier):
         Parameters
         ----------
         x
-            Feature vector of the sample
+            Feature vector of the sample.
         y
-            Label of the sample
+            Label of the sample.
 
         Returns
         -------
