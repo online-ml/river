@@ -1,0 +1,68 @@
+name: build-river
+
+on:
+  workflow_call:
+    inputs:
+      python:
+        type: string
+      os:
+        type: string
+
+jobs:
+  build-river:
+    runs-on: ${{ inputs.os }}
+
+    # Instead of using two matrices in the calling Workflow, we can use conditionals here
+    if: (inputs.os == 'ubuntu-latest' && inputs.python == '3.9') || github.event_name == 'push'
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: set up rust
+        if: runner.os != 'Linux'
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: nightly
+          override: true
+
+      - run: curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain=nightly --profile=minimal -y && rustup show
+        if: runner.os == 'Linux'
+
+      - name: Set up Python ${{ inputs.python }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ inputs.python }}
+
+      - name: Cache the Python environment
+        uses: actions/cache@v3
+        id: cache-venv
+        with:
+          path: ~/.venv
+          key: ${{ runner.os }}-${{ inputs.python }}-venv-${{ hashFiles('**/setup.py') }}
+          restore-keys: |
+            ${{ github.run_id }}-venv-${{ runner.os }}-${{ inputs.python }}
+            ${{ runner.os }}-${{ inputs.python }}-venv-
+
+      - name: Install Python dependencies
+        if: ${{ steps.cache-venv.outputs.cache-hit != 'true' }}
+        run: |
+          python -m pip install --upgrade pip
+          python -m venv ~/.venv
+          source ~/.venv/bin/activate
+          pip install wheel
+          pip install scikit-learn sqlalchemy
+          pip install pytest-xdist[psutil]
+          pip install numpydoc jupyter
+          pip install git+https://github.com/MaxHalford/yamp
+
+      - name: Build River
+        run: |
+          source ~/.venv/bin/activate
+          pip install -e ".[dev,docs]"
+
+      - uses: actions/cache/save@v3
+        id: cache-river
+        with:
+          path: ${{ github.workspace }}
+          key: river-build-${{ github.run_id }}-${{ runner.os }}-${{ inputs.python }}

@@ -1,0 +1,47 @@
+name: ci
+
+on:
+  push:
+    branches:
+      - main
+
+  pull_request:
+    branches:
+      - "*"
+
+jobs:
+  build-river:
+    strategy:
+      fail-fast: false
+      matrix:
+        python: [3.8, 3.9, "3.10"]
+        os: [ubuntu-latest, macos-latest]
+
+    uses: ./.github/workflows/build-river.yml
+    with:
+      python: ${{ matrix.python }}
+      os: ${{ matrix.os }}
+
+  unit-tests:
+    needs: build-river
+    strategy:
+      fail-fast: false
+      matrix:
+        python: [3.8, 3.9, "3.10"]
+        os: [ubuntu-latest, macos-latest]
+
+    uses: ./.github/workflows/unit-tests.yml
+    with:
+      python: ${{ matrix.python }}
+      os: ${{ matrix.os }}
+
+  dev-docs:
+    if: github.event_name == 'push'
+    needs: unit-tests # The workflow will actually update docs, so it's best to wait for unit tests too.
+    uses: ./.github/workflows/docs.yml
+    secrets: inherit
+
+  branch-docs:
+    if: github.event_name == 'pull_request'
+    needs: build-river # The workflow will only build docs, so no need to wait for unit tests.
+    uses: ./.github/workflows/docs.yml
