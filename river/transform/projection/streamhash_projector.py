@@ -17,7 +17,6 @@ class StreamhashProjector(BaseTransformer):
     """
 
     def __init__(self, num_components, density=1 / 3.0):
-        super().__init__(num_components)
         self.keys = list(range(0, num_components, 1))
         self.constant = math.sqrt(1.0 / density) / math.sqrt(num_components)
         self.density = density
