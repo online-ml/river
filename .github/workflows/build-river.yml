@@ -30,7 +30,7 @@ jobs:
         if: runner.os == 'Linux'
 
       - name: Set up Python ${{ inputs.python }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ inputs.python }}
 
