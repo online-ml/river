@@ -1,4 +1,6 @@
 import torch
+
+
 class TorchMLPClassifier(torch.nn.Module):
     def __init__(self, n_features: int, hidden_size: int = 5):
         super().__init__()
@@ -13,8 +15,8 @@ class TorchMLPClassifier(torch.nn.Module):
         x = self.softmax(x)
         return x
 
-class TorchMLPRegressor(torch.nn.Module):
 
+class TorchMLPRegressor(torch.nn.Module):
     def __init__(self, n_features: int, hidden_size: int = 5):
         super().__init__()
         self.linear1 = torch.nn.Linear(n_features, hidden_size)
@@ -26,6 +28,7 @@ class TorchMLPRegressor(torch.nn.Module):
         x = self.nonlin(self.linear2(x))
         return x
 
+
 class TorchLogisticRegression(torch.nn.Module):
     def __init__(self, n_features: int, n_classes: int = 2):
         super().__init__()
@@ -36,6 +39,7 @@ class TorchLogisticRegression(torch.nn.Module):
         X = self.linear(X)
         return self.softmax(X)
 
+
 class TorchLinearRegression(torch.nn.Module):
     def __init__(self, n_features: int):
         super().__init__()
@@ -43,13 +47,21 @@ class TorchLinearRegression(torch.nn.Module):
 
     def forward(self, X):
         return self.linear(X)
+
+
 class TorchLSTMClassifier(torch.nn.Module):
     def __init__(self, n_features, num_layers=1, hidden_size=1):
         super().__init__()
-        self.n_features=n_features
+        self.n_features = n_features
         self.hidden_size = hidden_size
         self.num_layers = num_layers
-        self.lstm = torch.nn.LSTM(input_size=n_features, num_layers=num_layers, hidden_size=hidden_size, batch_first=False, bias=True)
+        self.lstm = torch.nn.LSTM(
+            input_size=n_features,
+            num_layers=num_layers,
+            hidden_size=hidden_size,
+            batch_first=False,
+            bias=True,
+        )
         self.fc = torch.nn.Linear(hidden_size, 1)
         self.softmax = torch.nn.Softmax(dim=-1)
 
@@ -58,13 +70,20 @@ class TorchLSTMClassifier(torch.nn.Module):
         X = self.fc(out[-1, :])
         return self.softmax(X)
 
+
 class TorchLSTMRegressor(torch.nn.Module):
     def __init__(self, n_features, num_layers=1, hidden_size=1):
         super().__init__()
-        self.n_features=n_features
+        self.n_features = n_features
         self.hidden_size = hidden_size
         self.num_layers = num_layers
-        self.lstm = torch.nn.LSTM(input_size=n_features, num_layers=num_layers, hidden_size=hidden_size, batch_first=False, bias=True)
+        self.lstm = torch.nn.LSTM(
+            input_size=n_features,
+            num_layers=num_layers,
+            hidden_size=hidden_size,
+            batch_first=False,
+            bias=True,
+        )
         self.fc = torch.nn.Linear(hidden_size, 1)
 
     def forward(self, X, **kwargs):

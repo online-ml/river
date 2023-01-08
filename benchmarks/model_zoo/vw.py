@@ -1,5 +1,8 @@
-from river import base
 from vowpalwabbit import pyvw
+
+from river import base
+
+
 class VW2RiverBase:
     def __init__(self, *args, **kwargs):
         self.vw = pyvw.Workspace(*args, **kwargs)

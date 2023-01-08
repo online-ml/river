@@ -1,13 +1,33 @@
-from sklearn.linear_model import SGDClassifier
-
+from model_zoo.torch import (
+    TorchLinearRegression,
+    TorchLogisticRegression,
+    TorchLSTMClassifier,
+    TorchLSTMRegressor,
+    TorchMLPClassifier,
+    TorchMLPRegressor,
+)
+from model_zoo.vw import VW2RiverClassifier
 from river_torch.classification import Classifier as TorchClassifier
 from river_torch.classification import RollingClassifier as TorchRollingClassifier
 from river_torch.regression import Regressor as TorchRegressor
 from river_torch.regression import RollingRegressor as TorchRollingRegressor
-from model_zoo.torch import TorchMLPClassifier, TorchMLPRegressor, TorchLogisticRegression, TorchLinearRegression, TorchLSTMClassifier, TorchLSTMRegressor
-from model_zoo.vw import VW2RiverClassifier
-from river import preprocessing, linear_model, tree, naive_bayes, ensemble, neighbors, rules, neural_net, dummy
-from river import compat, optim, evaluate, stats
+from sklearn.linear_model import SGDClassifier
+
+from river import (
+    compat,
+    dummy,
+    ensemble,
+    evaluate,
+    linear_model,
+    naive_bayes,
+    neighbors,
+    neural_net,
+    optim,
+    preprocessing,
+    rules,
+    stats,
+    tree,
+)
 
 N_CHECKPOINTS = 50
 
@@ -60,8 +80,7 @@ MODELS = {
         "ADWIN Bagging": ensemble.ADWINBaggingClassifier(tree.HoeffdingTreeClassifier(), seed=42),
         "AdaBoost": ensemble.AdaBoostClassifier(tree.HoeffdingTreeClassifier(), seed=42),
         "Bagging": ensemble.BaggingClassifier(
-            tree.HoeffdingAdaptiveTreeClassifier(bootstrap_sampling=False),
-            seed=42
+            tree.HoeffdingAdaptiveTreeClassifier(bootstrap_sampling=False), seed=42
         ),
         "Leveraging Bagging": ensemble.LeveragingBaggingClassifier(
             tree.HoeffdingTreeClassifier(), seed=42
@@ -90,7 +109,7 @@ MODELS = {
                 loss_fn="binary_cross_entropy",
                 optimizer_fn="adam",
                 is_class_incremental=True,
-                lr=LEARNING_RATE
+                lr=LEARNING_RATE,
             )
         ),
         "Torch MLP": (
@@ -100,7 +119,7 @@ MODELS = {
                 loss_fn="binary_cross_entropy",
                 optimizer_fn="adam",
                 is_class_incremental=True,
-                lr=LEARNING_RATE
+                lr=LEARNING_RATE,
             )
         ),
         "Torch LSTM": (
@@ -112,7 +131,7 @@ MODELS = {
                 is_class_incremental=True,
                 lr=LEARNING_RATE,
                 window_size=20,
-                append_predict=False
+                append_predict=False,
             )
         ),
         # Baseline
@@ -136,12 +155,11 @@ MODELS = {
         "Stochastic Gradient Tree": tree.SGTRegressor(),
         "Adaptive Random Forest": preprocessing.StandardScaler()
         | ensemble.AdaptiveRandomForestRegressor(seed=42),
-        "Adaptive Model Rules": preprocessing.StandardScaler()
-        | rules.AMRules(),
+        "Adaptive Model Rules": preprocessing.StandardScaler() | rules.AMRules(),
         "Streaming Random Patches": preprocessing.StandardScaler() | ensemble.SRPRegressor(seed=42),
-        "Bagging": preprocessing.StandardScaler() | ensemble.BaggingRegressor(
-            model=tree.HoeffdingAdaptiveTreeRegressor(bootstrap_sampling=False),
-            seed=42
+        "Bagging": preprocessing.StandardScaler()
+        | ensemble.BaggingRegressor(
+            model=tree.HoeffdingAdaptiveTreeRegressor(bootstrap_sampling=False), seed=42
         ),
         "Exponentially Weighted Average": preprocessing.StandardScaler()
         | ensemble.EWARegressor(
@@ -189,7 +207,7 @@ MODELS = {
                 optimizer_fn="adam",
                 learning_rate=LEARNING_RATE,
                 window_size=20,
-                append_predict=False
+                append_predict=False,
             )
         ),
         # Baseline

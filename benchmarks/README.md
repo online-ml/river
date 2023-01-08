@@ -1,6 +1,6 @@
 # Benchmarks
 
-## Installation 
+## Installation
 ```sh
 pip install ".[benchmarks]"
 ```
