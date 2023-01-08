@@ -1,16 +1,15 @@
 import abc
-import collections
 import numbers
 import operator
-import typing
+import dataclasses
 
 from river import base, stats, utils
 
-from . import confusion
+__all__=[
+    "Interval",
+    "RegressionInterval"
+]
 
-
-
-import dataclasses
 
 # from river/metrics/base.py
 @dataclasses.dataclass
@@ -57,7 +56,7 @@ class Interval(base.Base, abc.ABC):
         """Revert the Interval."""
 
     @abc.abstractmethod
-    def get(self) -> float:
+    def get(self) -> tuple(float):
         """Return the current value of the Interval."""
 
     @property
@@ -89,7 +88,7 @@ class Interval(base.Base, abc.ABC):
         return repr(self)
 
 
-class RegressionInterval(Interval):
+class RegressionInterval(Interval, base.Wrapper, base.Regressor):
     """Mother class for all regression Interval."""
 
     _fmt = ",.6f"  # use commas to separate big numbers and show 6 decimals

@@ -5,7 +5,7 @@ import numbers
 import typing
 from typing import Iterator, List, Optional, Tuple
 
-from river import base, metrics, time_series, conformal_predictions
+from river import base, metrics, time_series, conf
 
 TimeSeries = Iterator[
     Tuple[
@@ -78,7 +78,7 @@ def iter_evaluate(
     dataset: base.typing.Dataset,
     model: time_series.base.Forecaster,
     metric: metrics.base.RegressionMetric,
-    interval: conformal_predictions.base.RegressionConformalPrediction,
+    interval: conf.base.Interval ,
     horizon: int,
     agg_func: typing.Callable[[list[float]], float] = None,
     grace_period: int = None,

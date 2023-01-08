@@ -1,9 +1,9 @@
 from river import base, stats
 
-from .base import interval
+from .base import Interval, RegressionInterval
 
 
-class RegressionJackknife(base.Wrapper, base.Regressor):
+class RegressionJackknife(RegressionInterval):
     """Jackknife method for regression.
 
     This is a conformal prediction method for regression. It is based on the jackknife method. The
@@ -135,6 +135,7 @@ class RegressionJackknife(base.Wrapper, base.Regressor):
         if not with_interval:
             return y_pred
 
-        return interval.Interval(
-            lower=y_pred + (self._lower.get() or 0), upper=y_pred + (self._upper.get() or 0)
+        return RegressionInterval(
+            lower=y_pred + (self._lower.get() or 0), 
+            upper=y_pred + (self._upper.get() or 0)
         )
