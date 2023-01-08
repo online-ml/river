@@ -1,10 +1,9 @@
+import abc
 import random
-from abc import ABC
 
 
-class MondrianTree(ABC):
-    """
-    Base class for Mondrian Trees.
+class MondrianTree(abc.ABC):
+    """Base class for Mondrian Trees.
 
     This is an **abstract class**, so it cannot be used directly. It defines base operations
     and properties that all the Mondrian Trees must inherit or implement according to
@@ -13,20 +12,20 @@ class MondrianTree(ABC):
     Parameters
     ----------
     n_features
-        Number of features
+        Number of features.
     step
-        Step parameter of the tree
+        Step parameter of the tree.
     loss
         Loss to minimize for each node of the tree
         Pick between: "log", ...
     use_aggregation
-        Whether or not the tree should it use aggregation
+        Whether or not the tree should it use aggregation.
     split_pure
-        Whether or not the tree should split pure leaves when training
+        Whether or not the tree should split pure leaves when training.
     iteration
-        Number of iterations to run when training
+        Number of iterations to run when training.
     seed
-        Random seed for reproducibility
+        Random seed for reproducibility.
     """
 
     def __init__(
@@ -47,6 +46,8 @@ class MondrianTree(ABC):
         self.split_pure = split_pure
         self.iteration = iteration
         self.intensities = [0.0 for _ in range(n_features)]
+
+        # TODO the standard in River is to use _rng for the generator
         self.random_generator = random.Random(seed)
 
         # One should initialize the tree in the child class as well
