@@ -4,8 +4,8 @@
 
 <p align="center">
   <!-- Tests -->
-  <a href="https://github.com/online-ml/river/actions/workflows/unit-tests.yml">
-    <img src="https://github.com/online-ml/river/actions/workflows/unit-tests.yml/badge.svg" alt="tests">
+  <a href="https://github.com/online-ml/river/actions/workflows/ci.yml">
+    <img src="https://github.com/online-ml/river/actions/workflows/ci.yml/badge.svg" alt="CI Pipeline">
   </a>
   <!-- Documentation -->
   <a href="https://riverml.xyz">
