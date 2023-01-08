@@ -1,6 +1,6 @@
 from river import base, stats
 
-from . import interval
+from .base import interval
 
 
 class RegressionJackknife(base.Wrapper, base.Regressor):

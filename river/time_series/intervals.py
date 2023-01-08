@@ -4,7 +4,7 @@ import abc
 import typing
 from numbers import Number
 
-from river import base, conformal_predictions
+from river import base, conf
 
 # Using the metrics.py framework
 class ForecastingInterval(base.Base, abc.ABC):
@@ -72,9 +72,9 @@ class HorizonInterval(ForecastingInterval):
 
     """
 
-    def __init__(self, interval: conformal_predictions.base.RegressionConformalPrediction):
+    def __init__(self, interval: conf.base.RegressionConformalPrediction):
         self.interval = interval
-        self.intervals: list[conformal_predictions.base.RegressionConformalPrediction] = []
+        self.intervals: list[conf.base.RegressionConformalPrediction] = []
 
     def update(self, y_true, y_pred):
         for t, (yt, yp) in enumerate(zip(y_true, y_pred)):
