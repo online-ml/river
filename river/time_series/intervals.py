@@ -72,9 +72,9 @@ class HorizonInterval(ForecastingInterval):
 
     """
 
-    def __init__(self, interval: conf.base.RegressionConformalPrediction):
+    def __init__(self, interval: conf.base.RegressionInterval):
         self.interval = interval
-        self.intervals: list[conf.base.RegressionConformalPrediction] = []
+        self.intervals: list[conf.base.RegressionInterval] = []
 
     def update(self, y_true, y_pred):
         for t, (yt, yp) in enumerate(zip(y_true, y_pred)):
@@ -95,5 +95,5 @@ class HorizonInterval(ForecastingInterval):
         prefixes = [f"+{t+1}" for t in range(len(self.intervals))]
         prefix_pad = max(map(len, prefixes))
         return "\n".join(
-            f"{prefix:<{prefix_pad}} {interval}" for prefix, interval in zip(prefixes, self.intervals)
+            f"{prefix:<{prefix_pad}} {interval.get()}" for prefix, interval in zip(prefixes, self.intervals)
         )

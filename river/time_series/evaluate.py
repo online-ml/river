@@ -78,7 +78,7 @@ def iter_evaluate(
     dataset: base.typing.Dataset,
     model: time_series.base.Forecaster,
     metric: metrics.base.RegressionMetric,
-    interval: conf.base.Interval ,
+    interval: conf.base.RegressionInterval,
     horizon: int,
     agg_func: typing.Callable[[list[float]], float] = None,
     grace_period: int = None,
@@ -114,7 +114,7 @@ def iter_evaluate(
     )
 
     # Defining the interval for a certain horizon
-    horizon_interval = (time_series.Hori)
+    horizon_interval = (time_series.HorizonInterval(interval))
 
     steps = _iter_with_horizon(dataset, horizon)
 
@@ -130,13 +130,14 @@ def iter_evaluate(
         y_pred = model.forecast(horizon, xs=x_horizon)
         horizon_metric.update(y_horizon, y_pred)
         model.learn_one(y=y, x=x)  # type: ignore
-        yield x, y, y_pred, horizon_metric
+        yield x, y, y_pred, horizon_metric, horizon_interval
 
 
 def evaluate(
     dataset: base.typing.Dataset,
     model: time_series.base.Forecaster,
     metric: metrics.base.RegressionMetric,
+    interval: conf.base.RegressionInterval,
     horizon: int,
     agg_func: typing.Callable[[list[float]], float] = None,
     grace_period: int = None,

@@ -58,6 +58,7 @@ class Interval(base.Base, abc.ABC):
     @abc.abstractmethod
     def get(self) -> tuple(float):
         """Return the current value of the Interval."""
+        return (self.lower, self.upper)
 
     @property
     @abc.abstractmethod
@@ -80,13 +81,18 @@ class Interval(base.Base, abc.ABC):
     def __gt__(self, other):
         return self.is_better_than(other)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """Return the class name along with the current value of the Interval."""
         return f"{self.__class__.__name__}: {self.get():{self._fmt}}".rstrip("0")
 
-    def __str__(self):
+    def __str__(self) -> str:
         return repr(self)
 
+    def __eq__(self, other) -> bool:
+        """Compare two instance of interval"""
+        if isinstance(other, Interval):
+            return self.lower == other.lower and self.upper == other.upper
+        return False
 
 class RegressionInterval(Interval, base.Wrapper, base.Regressor):
     """Mother class for all regression Interval."""
@@ -96,10 +102,6 @@ class RegressionInterval(Interval, base.Wrapper, base.Regressor):
     @abc.abstractmethod
     def update(self, y_true: numbers.Number, y_pred: numbers.Number) -> "RegressionInterval":
         """Update the interval."""
-
-    @abc.abstractmethod
-    def revert(self, y_true: numbers.Number, y_pred: numbers.Number) -> "RegressionInterval":
-        """Revert the interval."""
 
     @property
     def bigger_is_better(self):
@@ -114,4 +116,4 @@ class RegressionInterval(Interval, base.Wrapper, base.Regressor):
                 f"{self.__class__.__name__} and {other.__class__.__name__} Interval "
                 "are not compatible"
             )
-        return Interval([self, other])
+        return RegressionInterval([self, other])
