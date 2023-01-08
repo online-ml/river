@@ -1,10 +1,10 @@
 import math
 
 from river import stats
-from river.base import DriftDetector
+from river.base import DriftAndWarningDetector
 
 
-class DDM(DriftDetector):
+class DDM(DriftAndWarningDetector):
     """Drift Detection Method.
 
     DDM (Drift Detection Method) is a concept change detection method
@@ -107,7 +107,6 @@ class DDM(DriftDetector):
 
     def _reset(self):
         super()._reset()
-        self._warning_detected = False
 
         # Probability of error/failure
         self._p = stats.Mean()
@@ -120,7 +119,7 @@ class DDM(DriftDetector):
         self._ps_min = float("inf")
 
     def update(self, x):
-        if self._drift_detected:
+        if self.drift_detected:
             self._reset()
 
         # Probability of error/failure

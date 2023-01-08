@@ -1,8 +1,8 @@
 from river import stats
-from river.base import DriftDetector
+from river.base import DriftAndWarningDetector
 
 
-class EDDM(DriftDetector):
+class EDDM(DriftAndWarningDetector):
     r"""Early Drift Detection Method.
 
     EDDM (Early Drift Detection Method) aims to improve the detection rate of gradual
@@ -103,7 +103,6 @@ class EDDM(DriftDetector):
 
     def _reset(self):
         super()._reset()
-        self._warning_detected = False
 
         # Variance of the distance between two error/failure reports
         self._error_distances = stats.Var()
@@ -131,7 +130,7 @@ class EDDM(DriftDetector):
 
         """
 
-        if self._drift_detected:
+        if self.drift_detected:
             self._reset()
 
         # Update the sample counter
