@@ -57,10 +57,10 @@ class BinaryClassificationTrack(Track):
         super().__init__(
             name="Binary classification",
             datasets=[
-                datasets.bananas.Bananas(),
-                datasets.elec2.Elec2(),
-                datasets.phishing.Phishing(),
-                datasets.smtp.SMTP(),
+                datasets.Bananas(),
+                datasets.Elec2(),
+                datasets.Phishing(),
+                datasets.SMTP(),
             ],
             metric=metrics.Accuracy() + metrics.F1(),
         )
@@ -81,9 +81,9 @@ class MultiClassClassificationTrack(Track):
         super().__init__(
             name="Multiclass classification",
             datasets=[
-                datasets.segment.ImageSegments(),
-                datasets.insects.Insects(),
-                datasets.keystroke.Keystroke(),
+                datasets.ImageSegments(),
+                datasets.Insects(),
+                datasets.Keystroke(),
             ],
             metric=metrics.Accuracy() + metrics.MicroF1() + metrics.MacroF1(),
         )
@@ -104,8 +104,8 @@ class RegressionTrack(Track):
         super().__init__(
             "Regression",
             datasets=[
-                datasets.chick_weights.ChickWeights(),
-                datasets.trump_approval.TrumpApproval(),
+                datasets.ChickWeights(),
+                datasets.TrumpApproval(),
             ],
             metric=metrics.MAE() + metrics.RMSE() + metrics.R2(),
         )
