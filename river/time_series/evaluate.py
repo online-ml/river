@@ -124,6 +124,14 @@ def iter_evaluate(
         x, y, x_horizon, y_horizon = next(steps)
         model.learn_one(y=y, x=x)  # type: ignore
 
+    # Get the residual that will be used for calibration
+    # calibration predictions (subset of training points)
+    y_pred_cal = model.predict(x_train[idx_cal,:])
+
+    # compute the calibrated residuals
+    res_cal = y_train[idx_cal]-y_pred_cal
+
+
     # Once done, we can use the resulting model to calibrate 
     
     for x, y, x_horizon, y_horizon in steps:

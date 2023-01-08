@@ -53,7 +53,7 @@ class HorizonInterval(ForecastingInterval):
 
     >>> from river import datasets
     >>> from river import metrics
-    >>> from river import conformal_predictions
+    >>> from river import conf
     >>> from river import time_series
 
     >>> metric = time_series.evaluate(
