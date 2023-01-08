@@ -116,10 +116,6 @@ class EDDM(DriftDetector):
 
         self._p2s_prime_max = -1
 
-    @property
-    def warning_detected(self):
-        return self._warning_detected
-
     def update(self, x):
         """Update the change detector with a single data point.
 

@@ -98,10 +98,6 @@ class HDDM_W(DriftDetector):
         self._incr_cutpoint = float("inf")
         self._decr_cutpoint = -float("inf")
 
-    @property
-    def warning_detected(self) -> bool:
-        return self._warning_detected
-
     def _mcdiarmid_bound(self, ibc: float, confidence: float):
         return math.sqrt(ibc * math.log(1 / confidence) / 2)
 

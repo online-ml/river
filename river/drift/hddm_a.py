@@ -86,10 +86,6 @@ class HDDM_A(DriftDetector):
         # Global mean
         self._z = stats.Mean()
 
-    @property
-    def warning_detected(self) -> bool:
-        return self._warning_detected
-
     def _hoeffding_bound(self, n):
         return math.sqrt(1.0 / (2 * n) * math.log(1.0 / self.drift_confidence))
 

@@ -119,10 +119,6 @@ class DDM(DriftDetector):
         # The sum of p_min and s_min, to avoid calculating it every time
         self._ps_min = float("inf")
 
-    @property
-    def warning_detected(self) -> bool:
-        return self._warning_detected
-
     def update(self, x):
         if self._drift_detected:
             self._reset()
