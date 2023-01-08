@@ -8,20 +8,11 @@ class DriftDetector(base.Base):
     """A drift detector."""
 
     def __init__(self):
-        self._drift_detected = False
+        self.drift_detected = False
 
     def _reset(self):
         """Reset the change detector."""
-        self._drift_detected = False
-
-    @property
-    def drift_detected(self) -> bool:
-        """Concept drift alarm.
-
-        True if concept drift is detected.
-
-        """
-        return self._drift_detected
+        self.drift_detected = False
 
     @abc.abstractmethod
     def update(self, x: numbers.Number) -> "DriftDetector":
@@ -37,3 +28,16 @@ class DriftDetector(base.Base):
         self
 
         """
+
+
+class WarningAndDriftDetector(DriftDetector):
+    """A drift detector that is also capable of issuing warnings."""
+
+    def __init__(self):
+        super().__init__()
+        self.warning_detected = False
+
+    def _reset(self):
+        """Reset the change detector."""
+        super()._reset()
+        self.warning_detected = False
