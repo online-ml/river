@@ -5,7 +5,7 @@ import numbers
 import typing
 from typing import Iterator, List, Optional, Tuple
 
-from river import base, metrics, time_series
+from river import base, metrics, time_series, conformal_predictions
 
 TimeSeries = Iterator[
     Tuple[
@@ -105,19 +105,25 @@ def iter_evaluate(
         parameter is equal to the horizon by default.
 
     """
-
+    # Defining the metric on a certain horizon
     horizon_metric = (
         time_series.HorizonAggMetric(metric, agg_func)
         if agg_func
         else time_series.HorizonMetric(metric)
     )
+    # Defining the interval on a certain horizon
+    horizon_interval = (conformal_predictions.ICP)
+
     steps = _iter_with_horizon(dataset, horizon)
 
+    # Pre train the model on a defined quantities of sample
     grace_period = horizon if grace_period is None else grace_period
     for _ in range(grace_period):
         x, y, x_horizon, y_horizon = next(steps)
         model.learn_one(y=y, x=x)  # type: ignore
 
+    # Once done, we can use the resulting model to calibrate 
+    
     for x, y, x_horizon, y_horizon in steps:
         y_pred = model.forecast(horizon, xs=x_horizon)
         horizon_metric.update(y_horizon, y_pred)
