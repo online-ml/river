@@ -78,6 +78,7 @@ def iter_evaluate(
     dataset: base.typing.Dataset,
     model: time_series.base.Forecaster,
     metric: metrics.base.RegressionMetric,
+    interval: conformal_predictions.base.RegressionConformalPrediction,
     horizon: int,
     agg_func: typing.Callable[[list[float]], float] = None,
     grace_period: int = None,
@@ -105,14 +106,15 @@ def iter_evaluate(
         parameter is equal to the horizon by default.
 
     """
-    # Defining the metric on a certain horizon
+    # Defining the metric for a certain horizon
     horizon_metric = (
         time_series.HorizonAggMetric(metric, agg_func)
         if agg_func
         else time_series.HorizonMetric(metric)
     )
-    # Defining the interval on a certain horizon
-    horizon_interval = (conformal_predictions.ICP)
+
+    # Defining the interval for a certain horizon
+    horizon_interval = (time_series.Hori)
 
     steps = _iter_with_horizon(dataset, horizon)
 

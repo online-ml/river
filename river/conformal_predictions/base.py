@@ -60,11 +60,11 @@ class RegressionConformalPrediction(ConformalPrediction):
 
     @abc.abstractmethod
     def update(self, y_true: numbers.Number, y_pred: numbers.Number) -> "RegressionConformalPrediction":
-        """Update the metric."""
+        """Update the interval."""
 
     @abc.abstractmethod
     def revert(self, y_true: numbers.Number, y_pred: numbers.Number) -> "RegressionConformalPrediction":
-        """Revert the metric."""
+        """Revert the interval."""
 
     @property
     def bigger_is_better(self):

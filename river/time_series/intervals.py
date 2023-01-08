@@ -72,9 +72,9 @@ class HorizonInterval(ForecastingInterval):
 
     """
 
-    def __init__(self, interval: conformal_predictions.base.ConformalPrediction):
+    def __init__(self, interval: conformal_predictions.base.RegressionConformalPrediction):
         self.interval = interval
-        self.intervals: list[conformal_predictions.base.ConformalPrediction] = []
+        self.intervals: list[conformal_predictions.base.RegressionConformalPrediction] = []
 
     def update(self, y_true, y_pred):
         for t, (yt, yp) in enumerate(zip(y_true, y_pred)):
