@@ -6,7 +6,7 @@ import typing
 from abc import ABC, abstractmethod
 
 from river import base
-from river.utils.skmultiflow_utils import calculate_object_size, normalize_values_in_dict
+from river.utils.norm import normalize_values_in_dict
 
 from .nodes.branch import (
     DTBranch,
@@ -16,13 +16,7 @@ from .nodes.branch import (
     NumericMultiwayBranch,
 )
 from .nodes.leaf import HTLeaf
-
-try:
-    import graphviz
-
-    GRAPHVIZ_INSTALLED = True
-except ImportError:
-    GRAPHVIZ_INSTALLED = False
+from .utils import calculate_object_size
 
 
 class HoeffdingTree(ABC):
@@ -407,6 +401,10 @@ class HoeffdingTree(ABC):
         .. image:: ../../docs/img/dtree_draw.svg
             :align: center
         """
+        try:
+            import graphviz
+        except ImportError as e:
+            raise ValueError("You have to install graphviz to use the draw method.") from e
         counter = 0
 
         def iterate(node=None):

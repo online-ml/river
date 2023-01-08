@@ -25,6 +25,6 @@ def test_missing_features():
     ...     auc = auc.update(y, score)
 
     >>> auc
-    ROCAUC: 88.36%
+    ROCAUC: 88.68%
 
     """

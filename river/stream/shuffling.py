@@ -14,7 +14,7 @@ def shuffle(stream: typing.Iterator, buffer_size: int, seed: int = None):
 
     If you really want to stream over your dataset in a "good" random order, the best way is to
     split your dataset into smaller datasets and loop over them in a round-robin fashion. You may
-    do this by using the ``roundrobin`` recipe from the `itertools` module.
+    do this by using the `roundrobin` recipe from the `itertools` module.
 
     Parameters
     ----------

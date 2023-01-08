@@ -1,5 +1,4 @@
 import collections
-import copy
 import random
 import typing
 
@@ -40,6 +39,13 @@ class OutputCodeClassifier(base.Wrapper, base.Classifier):
     code_size
         The code size, which dictates how many copies of the provided classifiers to train. Must be
         strictly positive.
+    coding_method
+        The method used to generate the codes. Can be either 'exact' or 'random'. The 'exact'
+        method generates all possible codes of a given size in memory, and streams them in a random
+        order. The 'random' method generates random codes of a given size on the fly. The 'exact'
+        method necessarily generates different codes for each class, but requires more memory. The
+        'random' method can generate duplicate codes for different classes, but requires less
+        memory.
     seed
         A random seed number that can be set for reproducibility.
 
@@ -59,43 +65,56 @@ class OutputCodeClassifier(base.Wrapper, base.Classifier):
     >>> ooc = multiclass.OutputCodeClassifier(
     ...     classifier=linear_model.LogisticRegression(),
     ...     code_size=10,
-    ...     seed=24
+    ...     coding_method='random',
+    ...     seed=1
     ... )
     >>> model = scaler | ooc
 
     >>> metric = metrics.MacroF1()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    MacroF1: 79.71%
+    MacroF1: 79.32%
 
     References
     ----------
     [^1]: [Dietterich, T.G. and Bakiri, G., 1994. Solving multiclass learning problems via error-correcting output codes. Journal of artificial intelligence research, 2, pp.263-286.](https://arxiv.org/pdf/cs/9501101.pdf)
-    [^2]: [Allwein, E.L., Schapire, R.E. and Singer, Y., 2000. Reducing multiclass to binary: A unifying approach for margin classifiers. Journal of machine learning research, 1(Dec), pp.113-141.](https://www.cs.princeton.edu/~schapire/talks/ecoc-icml10.pdf)
+    [^2]: [James, G. and Hastie, T., 1998. The error coding method and PICTs. Journal of Computational and Graphical statistics, 7(3), pp.377-387.](https://www.semanticscholar.org/paper/The-Error-Coding-Method-and-PICTs-James-Hastie/73abc83ed720921ed912a709aab6b734915b1012)
 
     """
 
-    def __init__(self, classifier: base.Classifier, code_size: int, seed: int = None):
+    def __init__(
+        self,
+        classifier: base.Classifier,
+        code_size: int,
+        coding_method: str = "random",
+        seed: int = None,
+    ):
         self.classifier = classifier
         self.code_size = code_size
+        self.coding_method = coding_method
         self.seed = seed
         self._rng = random.Random(seed)
 
-        self.classifiers = {i: copy.deepcopy(classifier) for i in range(code_size)}
+        self.classifiers = {i: classifier.clone() for i in range(code_size)}
 
         # We don't know how many classes there are, therefore we can't generate the code book
         # from the start. Therefore, we define a random queue of integers. When a new class
-        # appears, we get the next integer and convert it to a code.
-        integers = list(range(2**code_size))
-        self._rng.shuffle(integers)
-        self._ints = iter(integers)
+        # appears, we get the next integer and convert it to a code. There are different ways to do
+        # this.
+        if self.coding_method == "exact":
+            integers = list(range(2**code_size))
+            self._rng.shuffle(integers)
+            self._integers = iter(integers)
         self.code_book: typing.DefaultDict = collections.defaultdict(self._next_code)
 
     def _next_code(self):
-        i = next(self._ints)
-        b = bin(i)[2:]  # convert to a string of 0s and 1s
-        b = b.zfill(self.code_size)  # ensure the code is of length code_size
-        return tuple(int(c) for c in b)
+        if self.coding_method == "random":
+            return tuple(self._rng.randint(0, 1) for _ in range(self.code_size))
+        elif self.coding_method == "exact":
+            i = next(self._integers)
+            b = bin(i)[2:]  # convert to a string of 0s and 1s
+            b = b.zfill(self.code_size)  # ensure the code is of length code_size
+            return tuple(int(c) for c in b)
 
     @property
     def _multiclass(self):
@@ -107,7 +126,17 @@ class OutputCodeClassifier(base.Wrapper, base.Classifier):
 
     @classmethod
     def _unit_test_params(cls):
-        yield {"classifier": linear_model.LogisticRegression(), "code_size": 6}
+        yield {
+            "classifier": linear_model.LogisticRegression(),
+            "code_size": 6,
+            "coding_method": "exact",
+        }
+        # A code size of 30 would overload RAM with the exact method
+        yield {
+            "classifier": linear_model.LogisticRegression(),
+            "code_size": 30,
+            "coding_method": "random",
+        }
 
     def learn_one(self, x, y):
 

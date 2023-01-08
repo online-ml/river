@@ -25,7 +25,6 @@ class Skyline(collections.UserList, base.Base):
 
     >>> import random
     >>> from river import misc
-    >>> import matplotlib.pyplot as plt
 
     >>> city_prices = {
     ...     'Bordeaux': 4045,
@@ -52,19 +51,6 @@ class Skyline(collections.UserList, base.Base):
 
     >>> print(skyline[0])
     {'city': 'Toulouse', 'size': 280, 'price': 763202}
-
-    >>> fig, ax = plt.subplots()
-    >>> scatter = ax.scatter(
-    ...     x=[h['size'] for h in skyline],
-    ...     y=[h['price'] for h in skyline]
-    ... )
-    >>> grid = ax.grid()
-    >>> title = ax.set_title('Houses skyline')
-    >>> xlabel = ax.set_xlabel('Size')
-    >>> ylabel = ax.set_ylabel('Price')
-
-    .. image:: ../../docs/img/skyline_docstring.svg
-        :align: center
 
     Here is another example using the kart data from *Mario Kart: Double Dash!!*.
 

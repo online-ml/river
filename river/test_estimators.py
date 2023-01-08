@@ -1,5 +1,4 @@
 """General tests that all estimators need to pass."""
-import copy
 import importlib
 import inspect
 
@@ -51,7 +50,6 @@ def iter_estimators_which_can_be_tested():
     ignored = (
         River2SKLBase,
         SKL2RiverBase,
-        anomaly.base.AnomalyFilter,
         compose.FuncTransformer,
         compose.Grouper,
         compose.Pipeline,
@@ -127,10 +125,11 @@ def iter_estimators_which_can_be_tested():
                 | preprocessing.StandardScaler()
                 | linear_model.LinearRegression()
             ),
+            preprocessing.MinMaxScaler() | anomaly.HalfSpaceTrees(),
         ]
         for check in checks.yield_checks(estimator)
         if check.__name__ not in estimator._unit_test_skips()
     ],
 )
 def test_check_estimator(estimator, check):
-    check(copy.deepcopy(estimator))
+    check(estimator.clone())

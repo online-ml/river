@@ -15,14 +15,16 @@ from .hddm_w import HDDM_W
 from .kswin import KSWIN
 from .page_hinkley import PageHinkley
 from .periodic_trigger import PeriodicTrigger
+from .retrain import DriftRetrainingClassifier
 
 __all__ = [
     "ADWIN",
     "DDM",
+    "DriftRetrainingClassifier",
     "EDDM",
-    "PageHinkley",
     "HDDM_A",
     "HDDM_W",
     "KSWIN",
+    "PageHinkley",
     "PeriodicTrigger",
 ]

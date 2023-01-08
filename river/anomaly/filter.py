@@ -94,6 +94,15 @@ class ThresholdFilter(anomaly.base.AnomalyFilter):
     def classify(self, score):
         return score >= self.threshold
 
+    @classmethod
+    def _unit_test_params(cls):
+        from river import preprocessing
+
+        yield {
+            "anomaly_detector": preprocessing.MinMaxScaler() | anomaly.HalfSpaceTrees(),
+            "threshold": 0.95,
+        }
+
 
 class QuantileFilter(anomaly.base.AnomalyFilter):
     """Threshold anomaly filter.
@@ -130,7 +139,7 @@ class QuantileFilter(anomaly.base.AnomalyFilter):
 
     >>> report = metrics.ClassificationReport()
 
-    >>> for x, y in datasets.CreditCard().take(8000):
+    >>> for x, y in datasets.CreditCard().take(2000):
     ...     score = model.score_one(x)
     ...     is_anomaly = model['QuantileFilter'].classify(score)
     ...     model = model.learn_one(x)
@@ -139,14 +148,14 @@ class QuantileFilter(anomaly.base.AnomalyFilter):
     >>> report
                    Precision   Recall   F1       Support
     <BLANKLINE>
-           0      99.91%   97.78%   98.83%      7975
-           1       9.23%   72.00%   16.36%        25
+           0      99.95%   94.49%   97.14%      1998
+           1       0.90%   50.00%    1.77%         2
     <BLANKLINE>
-       Macro      54.57%   84.89%   57.60%
-       Micro      97.70%   97.70%   97.70%
-    Weighted      99.63%   97.70%   98.58%
+       Macro      50.42%   72.25%   49.46%
+       Micro      94.45%   94.45%   94.45%
+    Weighted      99.85%   94.45%   97.05%
     <BLANKLINE>
-                     97.70% accuracy
+                     94.45% accuracy
 
     """
 
@@ -170,3 +179,12 @@ class QuantileFilter(anomaly.base.AnomalyFilter):
             self.anomaly_detector.learn_one(*args)
         self.quantile.update(score)
         return self
+
+    @classmethod
+    def _unit_test_params(cls):
+        from river import preprocessing
+
+        yield {
+            "anomaly_detector": preprocessing.StandardScaler() | anomaly.OneClassSVM(nu=0.2),
+            "q": 0.995,
+        }

@@ -174,7 +174,24 @@ class HalfSpaceTrees(anomaly.base.AnomalyDetector):
     ...     auc = auc.update(y, score)
 
     >>> auc
-    ROCAUC: 93.94%
+    ROCAUC: 91.15%
+
+    You can also use the `evaluate.progressive_val_score` function to evaluate the model on a
+    data stream.
+
+    >>> from river import evaluate
+
+    >>> model = model.clone()
+
+    >>> evaluate.progressive_val_score(
+    ...     dataset=datasets.CreditCard().take(2500),
+    ...     model=model,
+    ...     metric=metrics.ROCAUC(),
+    ...     print_every=1000
+    ... )
+    [1,000] ROCAUC: 88.43%
+    [2,000] ROCAUC: 89.28%
+    ROCAUC: 91.15%
 
     References
     ----------
@@ -226,7 +243,7 @@ class HalfSpaceTrees(anomaly.base.AnomalyDetector):
         if not self.trees:
             self.trees = [
                 make_padded_tree(
-                    limits={i: self.limits[i] for i in x},
+                    limits={i: self.limits[i] for i in sorted(x)},
                     height=self.height,
                     padding=0.15,
                     rng=self.rng,
