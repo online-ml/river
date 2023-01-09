@@ -45,3 +45,28 @@
 .md-typeset summary::after {
   background-color: transparent;
 }
+
+select[name="Dataset"] {
+  display: block;
+  width: 50%;
+  background-color: white;
+  border: thin solid color(srgb 0.1568 0.4178 0.7853);
+  border-radius: 4px;
+  font-weight: bolder;
+  font: inherit;
+  line-height: 1.5em;
+  padding: 0.5em 3.5em 0.5em 1em;
+
+  /* reset */
+
+  margin:auto;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+.vega-bind-name {
+    display: None;
+}
