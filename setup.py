@@ -9,14 +9,13 @@ import sys
 import setuptools  # type: ignore
 from setuptools_rust import Binding, RustExtension  # type: ignore
 
-
 try:
-    from numpy import get_include
     from numpy import __version__ as numpy_version
+    from numpy import get_include
 except ImportError:
     subprocess.check_call([sys.executable, "-m", "pip", "install", "numpy"])
-    from numpy import get_include
     from numpy import __version__ as numpy_version
+    from numpy import get_include
 
 try:
     from Cython.Build import cythonize
@@ -33,7 +32,7 @@ AUTHOR = "Max Halford"
 REQUIRES_PYTHON = ">=3.8.0"
 
 here = os.path.abspath(os.path.dirname(__file__))
-with io.open(os.path.join(here, "README.md"), encoding="utf-8") as f:
+with open(os.path.join(here, "README.md"), encoding="utf-8") as f:
     long_description = "\n" + f.read()
 
 about: dict = {}
@@ -84,6 +83,7 @@ setuptools.setup(
             "mike",
             "mkdocs",
             "mkdocs-awesome-pages-plugin",
+            "mkdocs-charts-plugin",
             "mkdocs-material",
             "nbconvert",
             "python-slugify",
@@ -92,6 +92,19 @@ setuptools.setup(
         ],
         "extra": ["river_extra"],
         "deep": ["deep-river"],
+        "torch": ["river_torch"],
+        "benchmark": base_packages
+        + [
+            "scikit-learn==1.1.2",
+            "scipy==1.9.3",
+            "torch==1.13.0",
+            "vowpalwabbit==9.6.0",
+            "torch==1.13.0",
+            "dominate==2.7.0",
+            "slugify==0.0.1",
+            "watermark==2.3.1",
+            "river-torch==0.1.2",
+        ],
         ":python_version == '3.6'": ["dataclasses"],
     },
     include_package_data=True,
