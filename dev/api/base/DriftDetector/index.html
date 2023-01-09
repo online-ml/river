@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://riverml.xyz/dev/api/base/DriftDetector/">
       
       
-        <link rel="prev" href="../Clusterer/">
+        <link rel="prev" href="../DriftAndWarningDetector/">
       
       
         <link rel="next" href="../Ensemble/">
@@ -1570,6 +1570,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_4_4">
@@ -1620,6 +1622,20 @@
     <li class="md-nav__item">
       <a href="../Clusterer/" class="md-nav__link">
         Clusterer
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DriftAndWarningDetector/" class="md-nav__link">
+        DriftAndWarningDetector
       </a>
     </li>
   
@@ -10875,13 +10891,13 @@
 <ul>
 <li>
 <p><strong>drift_detected</strong></p>
-<p>Concept drift alarm.  True if concept drift is detected.</p>
+<p>Whether or not a drift is detected following the last update.</p>
 </li>
 </ul>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <details class="- note">
 <summary>update</summary>
-<p>Update the change detector with a single data point.</p>
+<p>Update the detector with a single data point.</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>x</strong>     (<em>numbers.Number</em>)    </li>

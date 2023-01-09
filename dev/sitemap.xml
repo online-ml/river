@@ -91,6 +91,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://riverml.xyz/dev/api/base/DriftAndWarningDetector/</loc>
+         <lastmod>2023-01-09</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://riverml.xyz/dev/api/base/DriftDetector/</loc>
          <lastmod>2023-01-09</lastmod>
          <changefreq>daily</changefreq>
