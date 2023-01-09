@@ -7,7 +7,7 @@ aggregate predictions from different kinds of models.
 
 """
 from .adaptive_random_forest import AdaptiveRandomForestClassifier, AdaptiveRandomForestRegressor
-from .aggregated_mondrian_forest import AMFClassifier
+from .aggregated_mondrian_forest import AMFClassifier, AMFRegressor
 from .bagging import (
     ADWINBaggingClassifier,
     BaggingClassifier,
@@ -27,6 +27,7 @@ __all__ = [
     "ADWINBaggingClassifier",
     "ADWINBoostingClassifier",
     "AMFClassifier",
+    "AMFRegressor",
     "BaggingClassifier",
     "BaggingRegressor",
     "BOLEClassifier",

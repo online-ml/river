@@ -402,11 +402,119 @@ class MondrianTreeBranch(Branch, abc.ABC):
         raise NotImplementedError
 
 
+class MondrianLeafRegressor(MondrianLeaf):
+
+    def __init__(self, parent, n_features, time: float):
+        super().__init__(parent, n_features, time)
+        self.mean = 0.0
+
+    def _init_node(self, node):
+        """
+        Get the child node and initialize if none exists.
+        Parameters
+        ----------
+        node: MondrianTreeLeafRegressor
+        Returns
+        -------
+        """
+        node = MondrianLeafRegressor(self, self.n_features, 0)
+        node.is_leaf = True
+        node.depth = self.depth + 1
+        return node
+
+    def predict(self):
+        """Returns the prediction of the node.
+        Parameters
+        ----------
+        Returns
+        -------
+        Notes
+        -----
+        This uses Jeffreys prior with dirichlet parameter for smoothing
+        """
+        return self.mean
+
+    def loss(self, sample_class):
+        r = self.predict() - sample_class
+        return r * r / 2
+
+    def update_weight(self, sample_class, use_aggregation, step):
+        loss_t = self.loss(sample_class)
+        if use_aggregation:
+            self.weight -= step * loss_t
+        return loss_t
+
+    def update_downwards(self, x_t, y_t, use_aggregation, step, do_update_weight):
+        if self.n_samples == 0:
+            for j in range(self.n_features):
+                x_tj = x_t[j]
+                self.memory_range_min[j] = x_tj
+                self.memory_range_max[j] = x_tj
+        else:
+            for j in range(self.n_features):
+                x_tj = x_t[j]
+                if x_tj < self.memory_range_min[j]:
+                    self.memory_range_min[j] = x_tj
+                if x_tj > self.memory_range_max[j]:
+                    self.memory_range_max[j] = x_tj
+
+        self.n_samples += 1
+
+        if do_update_weight:
+            self.update_weight(y_t, use_aggregation, step)
+
+        # Update the mean of the labels in the node online
+        self.mean = (self.n_samples * self.mean + y_t) / (self.n_samples + 1)
+
+    def range(self, j):
+        return (
+            self.memory_range_min[j],
+            self.memory_range_max[j],
+        )
+
+    def range_extension(self, x_t, extensions):
+        extensions_sum = 0
+        for j in range(self.n_features):
+            x_tj = x_t[j]
+            feature_min_j, feature_max_j = self.range(j)
+            if x_tj < feature_min_j:
+                diff = feature_min_j - x_tj
+            elif x_tj > feature_max_j:
+                diff = x_tj - feature_max_j
+            else:
+                diff = 0
+            extensions[j] = diff
+            extensions_sum += diff
+        return extensions_sum
+
+
 # TODO: not sure this class is needed
 class MondrianTreeBranchClassifier(MondrianTreeBranch):
     """A generic Mondrian Tree Branch for Classifiers.
     The specificity resides in the nature of the nodes which are all MondrianLeafClassifier instances.
 
+    Parameters
+    ----------
+    parent
+        Origin node of the tree
+    """
+
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.parent = parent
+
+    def most_common_path(self):
+        raise NotImplementedError
+
+    @property
+    def repr_split(self):
+        raise NotImplementedError
+
+
+class MondrianTreeBranchRegressor(MondrianTreeBranch):
+    """
+    A generic Mondrian Tree Branch for Regressors.
+    The specificity resides in the nature of the nodes which are all MondrianLeafRegressor instances.
     Parameters
     ----------
     parent
