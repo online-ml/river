@@ -1,7 +1,6 @@
 from abc import ABC
 
 from river import base
-import typing
 from river.base.classifier import Classifier
 from river.base.regressor import Regressor
 from river.tree.mondrian.mondrian_tree_classifier import MondrianTree, MondrianTreeClassifier
@@ -45,7 +44,7 @@ class AMFLearner(ABC):
     ):
 
         # This is yet to be defined by the dataset since we need to know about the amount of features namely
-        self._forest: typing.List[MondrianTree] = []
+        self._forest: list[MondrianTree] = []
         self._n_features: int = 0
 
         self.n_estimators = n_estimators
@@ -172,7 +171,7 @@ class AMFClassifier(AMFLearner, Classifier):
             self.dirichlet = dirichlet
 
         # memory of the classes (converts label into positive integers)
-        self._classes: typing.Dict[base.typing.ClfTarget, int] = {}
+        self._classes: dict[base.typing.ClfTarget, int] = {}
 
     def _initialize_trees(self):
         """

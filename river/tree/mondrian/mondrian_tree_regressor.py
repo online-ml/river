@@ -1,6 +1,6 @@
 import math
 import sys
-import typing
+
 from river.tree.mondrian.mondrian_tree import MondrianTree
 from river.tree.mondrian.mondrian_tree_nodes import (
     MondrianLeafRegressor,
@@ -57,7 +57,7 @@ class MondrianTreeRegressor(MondrianTree):
         )
 
         # The current sample being proceeded
-        self._x: typing.List[float] = []
+        self._x: list[float] = []
         # The current label index being proceeded
         self._y: float = 0.0
 
