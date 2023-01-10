@@ -1,7 +1,6 @@
 import math
 import sys
 
-from river import base
 from river.tree.mondrian.mondrian_tree import MondrianTree
 from river.tree.mondrian.mondrian_tree_nodes import (
     MondrianLeafRegressor,
@@ -64,9 +63,7 @@ class MondrianTreeRegressor(MondrianTree):
 
         # Initialization of the root of the tree
         # It's the root so it doesn't have any parent (hence None)
-        self.tree = MondrianTreeBranchRegressor(
-            MondrianLeafRegressor(None, n_features, 0.0)
-        )
+        self.tree = MondrianTreeBranchRegressor(MondrianLeafRegressor(None, n_features, 0.0))
 
     def _predict(self, node):
         """
@@ -154,64 +151,64 @@ class MondrianTreeRegressor(MondrianTree):
         return 0
 
     def _split(
-            self,
-            node: MondrianLeafRegressor,
-            split_time: float,
-            threshold: float,
-            feature: int,
-            is_right_extension: bool,
-        ):
-            """
-            Splits the given node and attributes the split time, threshold, etc... to the node
+        self,
+        node: MondrianLeafRegressor,
+        split_time: float,
+        threshold: float,
+        feature: int,
+        is_right_extension: bool,
+    ):
+        """
+        Splits the given node and attributes the split time, threshold, etc... to the node
 
-            Parameters
-            ----------
-            node
-                Target node
-            split_time
-                Split time of the node in the Mondrian process
-            threshold
-                Threshold of acceptance of the node
-            feature
-                Feature index of the node
-            is_right_extension
-                Should we extend the tree in the right or left direction
-            """
+        Parameters
+        ----------
+        node
+            Target node
+        split_time
+            Split time of the node in the Mondrian process
+        threshold
+            Threshold of acceptance of the node
+        feature
+            Feature index of the node
+        is_right_extension
+            Should we extend the tree in the right or left direction
+        """
 
-            # Let's build a function to handle splitting depending on what side we go into
-            def extend_child(parent, main_child, other):
-                # Expending the node towards the main child chosen
-                main_child.copy(parent)
-                main_child.parent = parent
-                main_child.time = split_time
+        # Let's build a function to handle splitting depending on what side we go into
+        def extend_child(parent, main_child, other):
+            # Expending the node towards the main child chosen
+            main_child.copy(parent)
+            main_child.parent = parent
+            main_child.time = split_time
 
-                # other must have node has parent
-                other.is_leaf = True
+            # other must have node has parent
+            other.is_leaf = True
 
-                # If the node previously had children, we have to update it
-                if not parent.is_leaf:
-                    old_left = parent.left
-                    old_right = parent.right
-                    old_right.parent = main_child
-                    old_left.parent = main_child
+            # If the node previously had children, we have to update it
+            if not parent.is_leaf:
+                old_left = parent.left
+                old_right = parent.right
+                old_right.parent = main_child
+                old_left.parent = main_child
 
-            # Create the two splits
-            if is_right_extension:
-                left = MondrianLeafRegressor(node, self.n_features, split_time)
-                right = MondrianLeafRegressor(node, self.n_features, split_time)
-                extend_child(node, left, right)
+        # Create the two splits
+        if is_right_extension:
+            left = MondrianLeafRegressor(node, self.n_features, split_time)
+            right = MondrianLeafRegressor(node, self.n_features, split_time)
+            extend_child(node, left, right)
 
-            else:
-                right = MondrianLeafRegressor(node, self.n_features, split_time)
-                left = MondrianLeafRegressor(node, self.n_features, split_time)
-                extend_child(node, right, left)
+        else:
+            right = MondrianLeafRegressor(node, self.n_features, split_time)
+            left = MondrianLeafRegressor(node, self.n_features, split_time)
+            extend_child(node, right, left)
 
-            # Updating current node parameters
-            node.left = left
-            node.right = right
-            node.feature = feature
-            node.threshold = threshold
-            node.is_leaf = False
+        # Updating current node parameters
+        node.left = left
+        node.right = right
+        node.feature = feature
+        node.threshold = threshold
+        node.is_leaf = False
 
     def _go_downwards(self):
         """
@@ -262,7 +259,11 @@ class MondrianTreeRegressor(MondrianTree):
 
                     # We split the current node
                     self._split(
-                        current_node, split_time, threshold, feature, is_right_extension,
+                        current_node,
+                        split_time,
+                        threshold,
+                        feature,
+                        is_right_extension,
                     )
 
                     # Update the current node

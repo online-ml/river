@@ -403,7 +403,6 @@ class MondrianTreeBranch(Branch, abc.ABC):
 
 
 class MondrianLeafRegressor(MondrianLeaf):
-
     def __init__(self, parent, n_features, time: float):
         super().__init__(parent, n_features, time)
         self.mean = 0.0
