@@ -57,7 +57,7 @@ class MondrianTreeRegressor(MondrianTree):
         )
 
         # The current sample being proceeded
-        self._x: list[float] = []
+        self._x: typing.List[float] = []
         # The current label index being proceeded
         self._y: float = 0.0
 
