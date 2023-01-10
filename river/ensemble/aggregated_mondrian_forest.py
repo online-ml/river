@@ -1,6 +1,7 @@
 from abc import ABC
 
 from river import base
+import typing
 from river.base.classifier import Classifier
 from river.base.regressor import Regressor
 from river.tree.mondrian.mondrian_tree_classifier import MondrianTree, MondrianTreeClassifier

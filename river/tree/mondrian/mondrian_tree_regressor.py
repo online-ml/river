@@ -1,6 +1,6 @@
 import math
 import sys
-
+import typing
 from river.tree.mondrian.mondrian_tree import MondrianTree
 from river.tree.mondrian.mondrian_tree_nodes import (
     MondrianLeafRegressor,
