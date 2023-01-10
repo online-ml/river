@@ -370,38 +370,6 @@ class MondrianLeafClassifier(MondrianLeaf):
         return extensions_sum
 
 
-# TODO: a leaf should be "promoted" to a branch. Right now, the branch acts simply
-# as a wrapper.
-class MondrianTreeBranch(Branch, abc.ABC):
-    """A generic branch implementation for a Mondrian Tree.
-
-    Parent and children are MondrianLeaf objects.
-
-    Parameters
-    ----------
-    parent
-        Origin node of the branch.
-    """
-
-    def __init__(self, parent):
-        super().__init__((parent.left, parent.right))
-        self.parent = parent
-
-    def next(self, x):
-        child = self.parent.get_child(x)
-        if child.is_leaf:
-            return child
-        else:
-            return MondrianTreeBranch(child)
-
-    def most_common_path(self):
-        raise NotImplementedError
-
-    @property
-    def repr_split(self):
-        raise NotImplementedError
-
-
 class MondrianLeafRegressor(MondrianLeaf):
     def __init__(self, parent, n_features, time: float):
         super().__init__(parent, n_features, time)
@@ -433,17 +401,17 @@ class MondrianLeafRegressor(MondrianLeaf):
         """
         return self.mean
 
-    def loss(self, sample_class):
-        r = self.predict() - sample_class
+    def loss(self, sample_label):
+        r = self.predict() - sample_label
         return r * r / 2
 
-    def update_weight(self, sample_class, use_aggregation, step):
-        loss_t = self.loss(sample_class)
+    def update_weight(self, sample_label, use_aggregation, step):
+        loss_t = self.loss(sample_label)
         if use_aggregation:
             self.weight -= step * loss_t
         return loss_t
 
-    def update_downwards(self, x_t, y_t, use_aggregation, step, do_update_weight):
+    def update_downwards(self, x_t, sample_label, use_aggregation, step, do_update_weight):
         if self.n_samples == 0:
             for j in range(self.n_features):
                 x_tj = x_t[j]
@@ -460,10 +428,10 @@ class MondrianLeafRegressor(MondrianLeaf):
         self.n_samples += 1
 
         if do_update_weight:
-            self.update_weight(y_t, use_aggregation, step)
+            self.update_weight(sample_label, use_aggregation, step)
 
         # Update the mean of the labels in the node online
-        self.mean = (self.n_samples * self.mean + y_t) / (self.n_samples + 1)
+        self.mean = (self.n_samples * self.mean + sample_label) / (self.n_samples + 1)
 
     def range(self, j):
         return (
@@ -486,6 +454,38 @@ class MondrianLeafRegressor(MondrianLeaf):
             extensions_sum += diff
         return extensions_sum
 
+# TODO: a leaf should be "promoted" to a branch. Right now, the branch acts simply
+# as a wrapper.
+
+
+class MondrianTreeBranch(Branch, abc.ABC):
+    """A generic branch implementation for a Mondrian Tree.
+
+    Parent and children are MondrianLeaf objects.
+
+    Parameters
+    ----------
+    parent
+        Origin node of the branch.
+    """
+
+    def __init__(self, parent):
+        super().__init__((parent.left, parent.right))
+        self.parent = parent
+
+    def next(self, x):
+        child = self.parent.get_child(x)
+        if child.is_leaf:
+            return child
+        else:
+            return MondrianTreeBranch(child)
+
+    def most_common_path(self):
+        raise NotImplementedError
+
+    @property
+    def repr_split(self):
+        raise NotImplementedError
 
 # TODO: not sure this class is needed
 class MondrianTreeBranchClassifier(MondrianTreeBranch):
