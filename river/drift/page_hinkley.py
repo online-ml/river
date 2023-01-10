@@ -104,7 +104,7 @@ class PageHinkley(DriftDetector):
         return test_increase > self.threshold or test_decrease > self.threshold
 
     def update(self, x):
-        if self._drift_detected:
+        if self.drift_detected:
             self._reset()
 
         self._x_mean.update(x)

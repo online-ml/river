@@ -39,7 +39,7 @@ class DriftRetrainingClassifier(base.Wrapper, base.Classifier):
 
     """
 
-    def __init__(self, model: base.Classifier, drift_detector: base.DriftDetector = None):
+    def __init__(self, model: base.Classifier, drift_detector: base.DriftAndWarningDetector = None):
         self.model = model
         self.bkg_model = model.clone()
         self.drift_detector = drift_detector if drift_detector is not None else drift.DDM()
