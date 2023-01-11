@@ -48,7 +48,6 @@ class DriftRetrainingClassifier(base.Wrapper, base.Classifier):
         train_in_background: bool = True,
     ):
         self.model = model
-        self.bkg_model = model.clone()
         self.train_in_background = train_in_background
         self.drift_detector = drift_detector if drift_detector is not None else drift.DDM()
         if self.train_in_background:
