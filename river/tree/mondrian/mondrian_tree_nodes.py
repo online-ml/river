@@ -380,9 +380,8 @@ class MondrianLeafRegressor(MondrianLeaf):
         Get the child node and initialize if none exists.
         Parameters
         ----------
-        node: MondrianTreeLeafRegressor
-        Returns
-        -------
+        node
+            target node
         """
         node = MondrianLeafRegressor(self, self.n_features, 0)
         node.is_leaf = True
@@ -488,6 +487,8 @@ class MondrianTreeBranch(Branch, abc.ABC):
         raise NotImplementedError
 
 # TODO: not sure this class is needed
+
+
 class MondrianTreeBranchClassifier(MondrianTreeBranch):
     """A generic Mondrian Tree Branch for Classifiers.
     The specificity resides in the nature of the nodes which are all MondrianLeafClassifier instances.
