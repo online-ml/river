@@ -127,7 +127,7 @@ class KSWIN(DriftDetector):
 
         """
 
-        if self._drift_detected:
+        if self.drift_detected:
             self._reset()
 
         self.n += 1
