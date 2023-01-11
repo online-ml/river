@@ -1,10 +1,10 @@
 import math
 
 from river import stats
-from river.base import DriftDetector
+from river.base import DriftAndWarningDetector
 
 
-class HDDM_A(DriftDetector):
+class HDDM_A(DriftAndWarningDetector):
     """Drift Detection Method based on Hoeffding's bounds with moving average-test.
 
     HDDM_A is a drift detection method based on the Hoeffding's inequality which uses
@@ -77,7 +77,6 @@ class HDDM_A(DriftDetector):
 
     def _reset(self):
         super()._reset()
-        self._warning_detected = False
 
         # To check if the global mean increased
         self._x_mn = stats.Mean()
@@ -85,10 +84,6 @@ class HDDM_A(DriftDetector):
         self._x_mx = stats.Mean()
         # Global mean
         self._z = stats.Mean()
-
-    @property
-    def warning_detected(self) -> bool:
-        return self._warning_detected
 
     def _hoeffding_bound(self, n):
         return math.sqrt(1.0 / (2 * n) * math.log(1.0 / self.drift_confidence))
@@ -108,7 +103,7 @@ class HDDM_A(DriftDetector):
 
         """
 
-        if self._drift_detected:
+        if self.drift_detected:
             self._reset()
 
         self._z.update(x)

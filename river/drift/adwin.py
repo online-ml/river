@@ -121,7 +121,7 @@ class ADWIN(DriftDetector):
         self
 
         """
-        if self._drift_detected:
+        if self.drift_detected:
             self._reset()
 
         self._drift_detected = self._helper.update(x)

@@ -23,11 +23,11 @@ repos:
         types: [python]
         entry: isort
 
-      - id: flake8
-        name: flake8
+      - id: ruff
+        name: ruff
         language: python
         types: [python]
-        entry: flake8
+        entry: ruff
 
       - id: mypy
         name: mypy
@@ -38,6 +38,5 @@ repos:
       - id: pyupgrade
         name: pyupgrade
         language: python
-        types: [ python ]
+        types: [python]
         entry: pyupgrade --py38-plus
-        

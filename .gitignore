@@ -91,6 +91,9 @@ venv.bak/
 .dmypy.json
 dmypy.json
 
+# ruff
+.ruff_cache
+
 # Pyre type checker
 .pyre/
 
@@ -121,5 +124,3 @@ benchmarks/.asv
 
 # Cargo file
 Cargo.lock
-/0.15
-/river/example_usage_AMF.py

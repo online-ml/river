@@ -219,13 +219,15 @@ class AMFClassifier(AMFLearner, base.Classifier):
 
     def predict_proba_one(self, x):
         # Checking that the model has been trained once at least
+        # Otherwise return the default empty dict
         if not self.is_trained():
-            raise RuntimeError(
-                "No sample has been learnt yet. You need to train your model before making predictions."
-            )
+            return {}
 
         # We turn the indexes into the labels names
         classes_name = list(self._classes.keys())
+        # We compute the number of registered classes
+        # which maybe different of self.n_classes
+        n_registered_classes = len(classes_name)
 
         # initialize the scores
         scores = {classes_name[j]: 0 for j in range(self.n_classes)}
@@ -234,7 +236,7 @@ class AMFClassifier(AMFLearner, base.Classifier):
         for tree in self:
             tree.use_aggregation = self.use_aggregation
             predictions = tree.predict_proba_one(x)
-            for j in range(self.n_classes):
+            for j in range(n_registered_classes):
                 scores[classes_name[j]] += predictions[classes_name[j]] / self.n_estimators
 
         return scores
