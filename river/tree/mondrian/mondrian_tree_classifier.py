@@ -87,6 +87,9 @@ class MondrianTreeClassifier(MondrianTree):
             MondrianLeafClassifier(None, n_features, 0.0, n_classes)
         )
 
+    def is_trained(self):
+        return len(self._classes) != 0
+
     def _score(self, node) -> float:
         """
         Computes the score of the node regarding the current sample being proceeded
@@ -309,7 +312,11 @@ class MondrianTreeClassifier(MondrianTree):
 
                     # We split the current node
                     self._split(
-                        current_node, split_time, threshold, feature, is_right_extension,
+                        current_node,
+                        split_time,
+                        threshold,
+                        feature,
+                        is_right_extension,
                     )
 
                     # Update the current node
@@ -437,12 +444,19 @@ class MondrianTreeClassifier(MondrianTree):
             Feature vector
         """
 
+        # If the tree hasn't seen any sample, then it should return
+        # the default empty dict
+        if not self.is_trained():
+            return {}
+
         # We turn the indexes into the labels names
         classes_name = list(self._classes.keys())
+        # We compute the number of registered classes
+        n_registered_classes = len(classes_name)
 
         def set_scores(values: list[float]):
             """Turns the list of score values into the dictionary of scores output"""
-            for k in range(self.n_classes):
+            for k in range(n_registered_classes):
                 scores[classes_name[k]] = values[k]
 
         # Initialization of the scores to output to 0
@@ -469,7 +483,7 @@ class MondrianTreeClassifier(MondrianTree):
                 w = math.exp(weight - log_weight_tree)
                 # Get the predictions of the current node
                 pred_new = self._predict(current)
-                for i in range(self.n_classes):
+                for i in range(n_registered_classes):
                     label = classes_name[i]
                     scores[label] = 0.5 * w * pred_new[i] + (1 - 0.5 * w) * scores[label]
 

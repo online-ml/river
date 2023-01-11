@@ -171,7 +171,11 @@ class MondrianLeafClassifier(MondrianLeaf):
     """
 
     def __init__(
-        self, parent, n_features, time, n_classes,
+        self,
+        parent,
+        n_features,
+        time,
+        n_classes,
     ):
         super().__init__(parent, n_features, time)
         self.n_classes = n_classes
@@ -291,7 +295,13 @@ class MondrianLeafClassifier(MondrianLeaf):
         return self.n_samples == self.counts[sample_class]
 
     def update_downwards(
-        self, x_t, sample_class, dirichlet, use_aggregation, step, do_update_weight,
+        self,
+        x_t,
+        sample_class,
+        dirichlet,
+        use_aggregation,
+        step,
+        do_update_weight,
     ):
         """
         Updates the node when running a downward procedure updating the tree

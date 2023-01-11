@@ -123,3 +123,4 @@ benchmarks/.asv
 Cargo.lock
 /0.15
 /river/example_usage_AMF.py
+/river/example_functional_AMF.py
