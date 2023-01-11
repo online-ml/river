@@ -1,7 +1,5 @@
 from river import datasets, evaluate, metrics
 
-from .gen import Friedman7k, FriedmanGSG10k, FriedmanLEA10k
-
 
 class Track:
     """A track evaluate a model's performance.
@@ -44,15 +42,41 @@ class Track:
 
 
 class BinaryClassificationTrack(Track):
+    """This track evaluates a model's performance on binary classification tasks.
+    These do not include synthetic datasets.
+
+    Parameter
+    ---------
+    n_samples
+        The number of samples to use for each dataset.
+
+    """
+
     def __init__(self):
+
         super().__init__(
             name="Binary classification",
-            datasets=[datasets.Phishing(), datasets.Bananas()],
+            datasets=[
+                datasets.Bananas(),
+                datasets.Elec2(),
+                datasets.Phishing(),
+                datasets.SMTP(),
+            ],
             metric=metrics.Accuracy() + metrics.F1(),
         )
 
 
 class MultiClassClassificationTrack(Track):
+    """This track evaluates a model's performance on multi-class classification tasks.
+    These do not include synthetic datasets.
+
+    Parameter
+    ---------
+    n_samples
+        The number of samples to use for each dataset.
+
+    """
+
     def __init__(self):
         super().__init__(
             name="Multiclass classification",
@@ -66,14 +90,22 @@ class MultiClassClassificationTrack(Track):
 
 
 class RegressionTrack(Track):
+    """This track evaluates a model's performance on regression tasks.
+    These do not include synthetic datasets.
+
+    Parameter
+    ---------
+    n_samples
+        The number of samples to use for each dataset.
+
+    """
+
     def __init__(self):
         super().__init__(
             "Regression",
             datasets=[
+                datasets.ChickWeights(),
                 datasets.TrumpApproval(),
-                Friedman7k(),
-                FriedmanLEA10k(),
-                FriedmanGSG10k(),
             ],
             metric=metrics.MAE() + metrics.RMSE() + metrics.R2(),
         )

@@ -3,6 +3,7 @@
 ## base
 
 - Fixed an issue where an estimator that has attribute a pipeline could not be cloned.
+- Added a `base.DriftAndWarningDetector` to clarify the difference between drift detectors that have a `warning_detected` property and those that don't.
 
 ## conf
 

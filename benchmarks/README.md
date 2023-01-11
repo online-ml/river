@@ -1,30 +1,17 @@
 # Benchmarks
 
-Navigate to the root of this repo and create a `conda` virtual environment, as so:
-
+## Installation
 ```sh
-conda env create -f environment.yml
-conda activate river-benchmarks
+pip install ".[benchmarks]"
 ```
 
-Also install whichever River version you want.
-
-Then run the benchmarks:
-
+## Usage
+The `run.py` executes the benchmarks and creates the necessary .csv files for rendering the plots.
 ```sh
+cd benchmarks
 python run.py
 ```
-
-This creates a `results.json` file. To generate the page that gets displayed in the docs, do this:
-
+The `render.py` renders the plots from the .csv files and moves them to the `docs/benchmarks` folder.
 ```sh
 python render.py
-```
-
-This `render.py` script gets run anyway when the docs are built. See the [Makefile](../Makefile).
-
-Update the environment.yml file if additional dependencies are installed:
-
-```sh
-conda env export --no-builds | grep -v "^prefix: " > environment.yml
 ```
