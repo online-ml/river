@@ -1,10 +1,12 @@
 from river import datasets
 from river import metrics
-from river import time_series
+from .conf.gaussian import Gaussian
+from .evaluate import evaluate
+from .holt_winters import HoltWinters
 
 dataset = datasets.AirlinePassengers()
 
-model = time_series.HoltWinters(
+model = HoltWinters(
         alpha=0.3,
         beta=0.1,
         gamma=0.6,
@@ -12,11 +14,15 @@ model = time_series.HoltWinters(
         multiplicative=True
         )
 
+calib_period = 100
 metric = metrics.MAE()
+interval = Gaussian(window_size=calib_period)
 
-time_series.evaluate(
+evaluate(
         dataset,
         model,
         metric,
-        horizon=12
+        interval,
+        horizon=12,
+        residual_calibration_period = calib_period
     )

@@ -5,9 +5,11 @@ from .holt_winters import HoltWinters
 from .metrics import ForecastingMetric, HorizonAggMetric, HorizonMetric
 from .snarimax import SNARIMAX
 from .intervals import ForecastingInterval, HorizonInterval
+from .conf.gaussian import Gaussian
 
 __all__ = [
     "base",
+    "Gaussian"
     "evaluate",
     "iter_evaluate",
     "ForecastingInterval",

@@ -1,22 +1,11 @@
 from river import base, stats
-
+from collections import deque
 from .base import Interval
+from scipy import norm
+from numbers import Number
 
-
-class RegressionJackknife(base.Wrapper, base.Regressor):
-    """Jackknife method for regression.
-
-    This is a conformal prediction method for regression. It is based on the jackknife method. The
-    idea is to compute the quantiles of the residuals of the regressor. The prediction interval is
-    then computed as the prediction of the regressor plus the quantiles of the residuals.
-
-    This works naturally online, as the quantiles of the residuals are updated at each iteration.
-    Each residual is produced before the regressor is updated, which ensures the predicted intervals
-    are not optimistic.
-
-    Note that the produced intervals are marginal and not conditional. This means that the intervals
-    are not adjusted for the features `x`. This is a limitation of the jackknife method. However,
-    the jackknife method is very simple and efficient. It is also very robust to outliers.
+class Gaussian(Interval):
+    """Gaussian method to define intervals
 
     Parameters
     ----------
@@ -41,7 +30,7 @@ class RegressionJackknife(base.Wrapper, base.Regressor):
 
     >>> dataset = datasets.TrumpApproval()
 
-    >>> model = conf.RegressionJackknife(
+    >>> model = conf.Gaussian(
     ...     (
     ...         preprocessing.StandardScaler() |
     ...         linear_model.LinearRegression(intercept_lr=.1)
@@ -78,21 +67,34 @@ class RegressionJackknife(base.Wrapper, base.Regressor):
     """
 
     def __init__(
-        self, regressor: base.Regressor, confidence_level: float = 0.95, window_size: int = None
+        self, confidence_level: float = 0.95, window_size: int = None
     ):
-        self.regressor = regressor
         self.confidence_level = confidence_level
         self.window_size = window_size
+        self.residuals = deque()
+        self.alpha = (1 - confidence_level) / 2 
 
-        alpha = (1 - confidence_level) / 2
-        self._lower = (
-            stats.RollingQuantile(alpha, window_size) if window_size else stats.Quantile(alpha)
-        )
-        self._upper = (
-            stats.RollingQuantile(1 - alpha, window_size)
-            if window_size
-            else stats.Quantile(1 - alpha)
-        )
+
+    def update(self, y_true: float, y_pred: float) -> "Interval":
+        """Update the Interval."""
+        
+        if len(self.residuals)==self.window_size:
+            # Remove the oldest residuals 
+            self.residuals.popleft()
+            # Add the new one
+            self.residuals.append(y_true - y_pred)
+            # Compute the interval
+            half_inter = norm.ppf(self.alpha)*stats.var().update(self.residuals)**0.5
+            # And set the borne
+            self.lower, self.upper = y_pred-half_inter, y_pred+half_inter
+        else:
+            # Fill the residuals until it reaches window size
+            self.residuals.append(y_true - y_pred)
+
+
+    def get(self) -> tuple(float):
+        """Return the current value of the Interval."""
+        return (self.lower, self.upper)
 
     @property
     def _wrapped_model(self):
@@ -104,38 +106,4 @@ class RegressionJackknife(base.Wrapper, base.Regressor):
 
         yield {"regressor": (preprocessing.StandardScaler() | linear_model.LinearRegression())}
 
-    def learn_one(self, x, y):
 
-        # Update the quantiles
-        error = y - self.regressor.predict_one(x)
-        self._lower.update(error)
-        self._upper.update(error)
-
-        self.regressor.learn_one(x, y)
-
-        return self
-
-    def predict_one(self, x, with_interval=False):
-        """Predict the output of features `x`.
-
-        Parameters
-        ----------
-        x
-            A dictionary of features.
-        with_interval
-            Whether to return a predictive distribution, or instead just the most likely value.
-
-        Returns
-        -------
-        The prediction.
-
-        """
-        y_pred = self.regressor.predict_one(x)
-
-        if not with_interval:
-            return y_pred
-
-        return Interval(
-            lower=y_pred + (self._lower.get() or 0), 
-            upper=y_pred + (self._upper.get() or 0)
-        )

@@ -78,10 +78,11 @@ def iter_evaluate(
     dataset: base.typing.Dataset,
     model: time_series.base.Forecaster,
     metric: metrics.base.RegressionMetric,
-    interval: conf.base.RegressionInterval,
+    interval: conf.base.Interval,
     horizon: int,
     agg_func: typing.Callable[[list[float]], float] = None,
     grace_period: int = None,
+    residual_calibration_period: int = None,
 ):
     """Evaluates the performance of a forecaster on a time series dataset and yields results.
 
@@ -116,36 +117,67 @@ def iter_evaluate(
     # Defining the interval for a certain horizon
     horizon_interval = (time_series.HorizonInterval(interval))
 
+    ##############################################################################
+    # Pre-train the model
+    ##############################################################################
+
+    # Initialize the dataset from the beginning to get the grace period
     steps = _iter_with_horizon(dataset, horizon)
 
-    # Pre train the model on a defined quantities of sample
+    # Pre train the model on a defined quantities of sample "grace_periode"
     grace_period = horizon if grace_period is None else grace_period
+    # Set the grace period as the max between it and the residual_calibration_period
+    grace_period = max(grace_period, residual_calibration_period)
+
+    # Go over the grace_period to fit the model
     for _ in range(grace_period):
         x, y, x_horizon, y_horizon = next(steps)
         model.learn_one(y=y, x=x)  # type: ignore
 
-    # Get the residual that will be used for calibration
-    # calibration predictions (subset of training points)
-    y_pred_cal = model.predict(x_train[idx_cal,:])
 
-    # compute the calibrated residuals
-    res_cal = y_train[idx_cal]-y_pred_cal
+    ##############################################################################
+    # Get first residuals series with the pre-trained model
+    ##############################################################################
 
-
-    # Once done, we can use the resulting model to calibrate 
-    
-    for x, y, x_horizon, y_horizon in steps:
+    # Reinitialize the dataset from the beginning to get the grace period
+    # And initialize the interval window
+    # TODO : being able to predict_many. Would be easier
+    steps = _iter_with_horizon(dataset, horizon)
+    res_cal = [collections.deque() for _ in range(horizon)]
+    for _ in range(grace_period):
+        x, y, x_horizon, y_horizon = next(steps)
+        # Get the residual that will be used for calibration
+        # calibration predictions (subset of training points)
         y_pred = model.forecast(horizon, xs=x_horizon)
+        # Initializing the interval for each horizon
+        horizon_interval.update(y_horizon, y_pred)
+
+
+    ##############################################################################
+    # Forecast with intervals and learn
+    ##############################################################################
+    # Set the collections of residuals horizons
+    # Using collection will allow to maintain a structure of len = grace_period
+    # for each horizon
+    residuals = res_cal
+    for x, y, x_horizon, y_horizon in steps:
+        # Predicting future values until a certain horizon
+        y_pred = model.forecast(horizon, xs=x_horizon)
+        # Updating the metric
         horizon_metric.update(y_horizon, y_pred)
+        # Updating the interval for each horizon
+        horizon_interval.update(y_horizon, y_pred)
+        # Train the model
         model.learn_one(y=y, x=x)  # type: ignore
         yield x, y, y_pred, horizon_metric, horizon_interval
+
 
 
 def evaluate(
     dataset: base.typing.Dataset,
     model: time_series.base.Forecaster,
     metric: metrics.base.RegressionMetric,
-    interval: conf.base.RegressionInterval,
+    interval: conf.base.Interval,
     horizon: int,
     agg_func: typing.Callable[[list[float]], float] = None,
     grace_period: int = None,
@@ -180,8 +212,9 @@ def evaluate(
     """
 
     horizon_metric = None
-    steps = iter_evaluate(dataset, model, metric, horizon, agg_func, grace_period)
-    for *_, horizon_metric in steps:
+    horizon_interval = None
+    steps = iter_evaluate(dataset, model, metric, interval, horizon, agg_func, grace_period)
+    for *_, horizon_metric, horizon_interval in steps:
         pass
 
-    return horizon_metric
+    return horizon_metric, horizon_interval
