@@ -138,6 +138,45 @@ class MondrianLeaf(Leaf, abc.ABC):
         else:
             return self.right
 
+    def range(self, feature_index) -> typing.Tuple[float, float]:
+        """Output the known range of the node regarding the j-th feature.
+
+        Parameters
+        ----------
+        feature_index
+            Feature index for which you want to know the range.
+
+        """
+        return (
+            self.memory_range_min[feature_index],
+            self.memory_range_max[feature_index],
+        )
+
+    def range_extension(self, x_t, extensions):
+        """Compute the range extension of the node for the given sample.
+
+        Parameters
+        ----------
+        x_t
+            Sample to deal with.
+        extensions
+            List of range extension per feature to update.
+        """
+
+        extensions_sum = 0.0
+        for j in range(self.n_features):
+            x_tj = x_t[j]
+            feature_min_j, feature_max_j = self.range(j)
+            if x_tj < feature_min_j:
+                diff = feature_min_j - x_tj
+            elif x_tj > feature_max_j:
+                diff = x_tj - feature_max_j
+            else:
+                diff = 0
+            extensions[j] = diff
+            extensions_sum += diff
+        return extensions_sum
+
     @property
     def __repr__(self):
         return f"Node : {self.parent}, {self.time}"
@@ -330,96 +369,5 @@ class MondrianLeafClassifier(MondrianLeaf):
 
         self.update_count(sample_class)
 
-    def range(self, feature_index) -> typing.Tuple[float, float]:
-        """Output the known range of the node regarding the j-th feature.
 
-        Parameters
-        ----------
-        feature_index
-            Feature index for which you want to know the range.
-
-        """
-        return (
-            self.memory_range_min[feature_index],
-            self.memory_range_max[feature_index],
-        )
-
-    def range_extension(self, x_t, extensions):
-        """Compute the range extension of the node for the given sample.
-
-        Parameters
-        ----------
-        x_t
-            Sample to deal with.
-        extensions
-            List of range extension per feature to update.
-        """
-
-        extensions_sum = 0.0
-        for j in range(self.n_features):
-            x_tj = x_t[j]
-            feature_min_j, feature_max_j = self.range(j)
-            if x_tj < feature_min_j:
-                diff = feature_min_j - x_tj
-            elif x_tj > feature_max_j:
-                diff = x_tj - feature_max_j
-            else:
-                diff = 0
-            extensions[j] = diff
-            extensions_sum += diff
-        return extensions_sum
-
-
-# TODO: a leaf should be "promoted" to a branch. Right now, the branch acts simply
-# as a wrapper.
-class MondrianTreeBranch(Branch, abc.ABC):
-    """A generic branch implementation for a Mondrian Tree.
-
-    Parent and children are MondrianLeaf objects.
-
-    Parameters
-    ----------
-    parent
-        Origin node of the branch.
-    """
-
-    def __init__(self, parent):
-        super().__init__((parent.left, parent.right))
-        self.parent = parent
-
-    def next(self, x):
-        child = self.parent.get_child(x)
-        if child.is_leaf:
-            return child
-        else:
-            return MondrianTreeBranch(child)
-
-    def most_common_path(self):
-        raise NotImplementedError
-
-    @property
-    def repr_split(self):
-        raise NotImplementedError
-
-
-# TODO: not sure this class is needed
-class MondrianTreeBranchClassifier(MondrianTreeBranch):
-    """A generic Mondrian Tree Branch for Classifiers.
-    The specificity resides in the nature of the nodes which are all MondrianLeafClassifier instances.
-
-    Parameters
-    ----------
-    parent
-        Origin node of the tree
-    """
-
-    def __init__(self, parent):
-        super().__init__(parent)
-        self.parent = parent
-
-    def most_common_path(self):
-        raise NotImplementedError
-
-    @property
-    def repr_split(self):
-        raise NotImplementedError
+# TODO: a leaf should be "promoted" to a branch. Right now, the branch acts simply as a wrapper.

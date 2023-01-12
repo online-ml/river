@@ -3,10 +3,7 @@ import sys
 
 from river import base
 from river.tree.mondrian.mondrian_tree import MondrianTree
-from river.tree.mondrian.mondrian_tree_nodes import (
-    MondrianLeafClassifier,
-    MondrianTreeBranchClassifier,
-)
+from river.tree.mondrian.mondrian_tree_nodes import MondrianLeafClassifier
 
 
 class MondrianTreeClassifier(MondrianTree):
@@ -82,9 +79,7 @@ class MondrianTreeClassifier(MondrianTree):
 
         # Initialization of the root of the tree
         # It's the root so it doesn't have any parent (hence None)
-        self.tree = MondrianTreeBranchClassifier(
-            MondrianLeafClassifier(None, n_features, 0.0, n_classes)
-        )  # TODO this should be private
+        self._root = MondrianLeafClassifier(None, n_features, 0.0, n_classes)
 
     def is_trained(self):
         return len(self._classes) != 0
@@ -265,7 +260,7 @@ class MondrianTreeClassifier(MondrianTree):
         # following the Mondrian process definition.
 
         # We start at the root
-        current_node = self.tree.parent
+        current_node = self._root
 
         if self.iteration == 0:
             # If it's the first iteration, we just put the current sample in the range of root
@@ -288,7 +283,7 @@ class MondrianTreeClassifier(MondrianTree):
 
                     # Sample the feature at random with a probability
                     # proportional to the range extensions
-                    feature = self.random_generator.choices(
+                    feature = self._rng.choices(
                         list(range(self.n_features)), self.intensities, k=1
                     )[0]
                     x_tf = self._x[feature]
@@ -297,9 +292,9 @@ class MondrianTreeClassifier(MondrianTree):
                     range_min, range_max = current_node.range(feature)
                     is_right_extension = x_tf > range_max
                     if is_right_extension:
-                        threshold = self.random_generator.uniform(range_max, x_tf)
+                        threshold = self._rng.uniform(range_max, x_tf)
                     else:
-                        threshold = self.random_generator.uniform(x_tf, range_min)
+                        threshold = self._rng.uniform(x_tf, range_min)
 
                     # We split the current node
                     self._split(
@@ -372,7 +367,7 @@ class MondrianTreeClassifier(MondrianTree):
         """
 
         # We start at the root
-        node = self.tree.parent
+        node = self._root
 
         is_leaf = False
         features = list(x.keys())

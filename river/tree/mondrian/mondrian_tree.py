@@ -47,7 +47,6 @@ class MondrianTree(abc.ABC):
         self.iteration = iteration
         self.intensities = [0.0 for _ in range(n_features)]
 
-        # TODO the standard in River is to use _rng for the generator
-        self.random_generator = random.Random(seed)
+        self._rng = random.Random(seed)
 
         # One should initialize the tree in the child class as well
