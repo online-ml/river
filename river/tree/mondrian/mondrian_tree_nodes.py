@@ -371,51 +371,103 @@ class MondrianLeafClassifier(MondrianLeaf):
 
 
 class MondrianLeafRegressor(MondrianLeaf):
-    def __init__(self, parent, n_features, time: float):
+    """Mondrian Tree Regressor leaf.
+
+        Parameters
+        ----------
+        parent
+            Parent node.
+        n_features
+            Number of features of the problem.
+        time
+            Split time of the node.
+        """
+    def __init__(
+            self,
+            parent,
+            n_features,
+            time,
+    ):
         super().__init__(parent, n_features, time)
         self.mean = 0.0
 
     def _init_node(self, node):
-        """
-        Get the child node and initialize if none exists.
+        """Initialize a child node of the current one with the default values.
+
         Parameters
         ----------
         node
-            target node
+            Child node.
         """
+
         node = MondrianLeafRegressor(self, self.n_features, 0)
-        node.is_leaf = True
         node.depth = self.depth + 1
+
         return node
 
     def predict(self):
         """Returns the prediction of the node.
-        Parameters
-        ----------
-        Returns
-        -------
-        Notes
-        -----
-        This uses Jeffreys prior with dirichlet parameter for smoothing
         """
         return self.mean
 
-    def loss(self, sample_label):
-        r = self.predict() - sample_label
-        return r * r / 2
+    def loss(self, sample_value):
+        """Compute the loss of the node.
+        Parameters
+        ----------
+        sample_value
+            A given value.
+         """
 
-    def update_weight(self, sample_label, use_aggregation, step):
-        loss_t = self.loss(sample_label)
+        r = self.predict() - sample_value
+        return (r * r) / 2
+
+    def update_weight(self, sample_value, use_aggregation, step):
+        """Update the weight of the node given a class and the method used.
+        Parameters
+        ----------
+        sample_value
+            Label of a given sample.
+        use_aggregation
+            Whether to use aggregation or not during computation (given by the tree).
+        step
+            Step parameter of the tree.
+        """
+
+        loss_t = self.loss(sample_value)
         if use_aggregation:
             self.weight -= step * loss_t
         return loss_t
 
-    def update_downwards(self, x_t, sample_label, use_aggregation, step, do_update_weight):
+    def update_downwards(
+            self,
+            x_t,
+            sample_value,
+            use_aggregation,
+            step,
+            do_update_weight,
+    ):
+        """Update the node when running a downward procedure updating the tree.
+        Parameters
+        ----------
+        x_t
+            Sample to proceed (as a list).
+        sample_value
+            Class of the sample x_t.
+        use_aggregation
+            Should it use the aggregation or not
+        step
+            Step of the tree.
+        do_update_weight
+            Should we update the weights of the node as well.
+        """
+        # Updating the range of the feature values known by the node
+        # If it is the first sample, we copy the features vector into the min and max range
         if self.n_samples == 0:
             for j in range(self.n_features):
                 x_tj = x_t[j]
                 self.memory_range_min[j] = x_tj
                 self.memory_range_max[j] = x_tj
+        # Otherwise, we update the range
         else:
             for j in range(self.n_features):
                 x_tj = x_t[j]
@@ -424,21 +476,37 @@ class MondrianLeafRegressor(MondrianLeaf):
                 if x_tj > self.memory_range_max[j]:
                     self.memory_range_max[j] = x_tj
 
+        # One more sample in the node
         self.n_samples += 1
 
         if do_update_weight:
-            self.update_weight(sample_label, use_aggregation, step)
+            self.update_weight(sample_value, use_aggregation, step)
 
         # Update the mean of the labels in the node online
-        self.mean = (self.n_samples * self.mean + sample_label) / (self.n_samples + 1)
+        self.mean = (self.n_samples * self.mean + sample_value) / (self.n_samples + 1)
 
-    def range(self, j):
+    def range(self, feature_index):
+        """Output the known range of the node regarding the j-th feature.
+        Parameters
+        ----------
+        feature_index
+            Feature index for which you want to know the range.
+        """
         return (
-            self.memory_range_min[j],
-            self.memory_range_max[j],
+            self.memory_range_min[feature_index],
+            self.memory_range_max[feature_index],
         )
 
     def range_extension(self, x_t, extensions):
+        """Compute the range extension of the node for the given sample.
+        Parameters
+        ----------
+        x_t
+            Sample to deal with.
+        extensions
+            List of range extension per feature to update.
+        """
+
         extensions_sum = 0
         for j in range(self.n_features):
             x_tj = x_t[j]
@@ -452,9 +520,6 @@ class MondrianLeafRegressor(MondrianLeaf):
             extensions[j] = diff
             extensions_sum += diff
         return extensions_sum
-
-# TODO: a leaf should be "promoted" to a branch. Right now, the branch acts simply
-# as a wrapper.
 
 
 class MondrianTreeBranch(Branch, abc.ABC):
@@ -512,9 +577,9 @@ class MondrianTreeBranchClassifier(MondrianTreeBranch):
 
 
 class MondrianTreeBranchRegressor(MondrianTreeBranch):
-    """
-    A generic Mondrian Tree Branch for Regressors.
+    """A generic Mondrian Tree Branch for Regressors.
     The specificity resides in the nature of the nodes which are all MondrianLeafRegressor instances.
+
     Parameters
     ----------
     parent

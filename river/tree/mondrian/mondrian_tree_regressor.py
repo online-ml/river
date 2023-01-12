@@ -9,26 +9,22 @@ from river.tree.mondrian.mondrian_tree_nodes import (
 
 
 class MondrianTreeRegressor(MondrianTree):
-    """
-    Mondrian Tree Regressor.
+    """Mondrian Tree Regressor.
 
     Parameters
     ----------
     n_features
-        Number of features of the data in entry
+        Number of features of the data in entry.
     step
-        Step of the tree
+        Step of the tree.
     use_aggregation
         Whether to use aggregation weighting techniques or not.
     split_pure
-        Whether the tree should split pure leafs during training or not
+        Whether the tree should split pure leafs during training or not.
     iteration
-        Number iterations to do during training
+        Number iterations to do during training.
     seed
-        Random seed for reproducibility
-
-    Notes
-    -----
+        Random seed for reproducibility.
 
     References
     ----------
@@ -63,71 +59,70 @@ class MondrianTreeRegressor(MondrianTree):
 
         # Initialization of the root of the tree
         # It's the root so it doesn't have any parent (hence None)
-        self.tree = MondrianTreeBranchRegressor(MondrianLeafRegressor(None, n_features, 0.0))
+        self.tree = MondrianTreeBranchRegressor(
+            MondrianLeafRegressor(None, n_features, 0.0)
+        )
 
     def _predict(self, node):
-        """
-        Computes the predictions scores of the node regarding all the classes scores.
+        """Compute the prediction.
 
         Parameters
         ----------
         node
-            Node to make predictions with
-
+            Node to make predictions.
         """
+
         return node.predict()
 
     def _loss(self, node):
-        """
-        Computes the loss for the given node regarding the current label
+        """Compute the loss for the given node regarding the current label.
 
         Parameters
         ----------
         node
-            Node to evaluate the loss for
+            Node to evaluate the loss.
         """
+
         return node.loss(self._y)
 
     def _update_weight(self, node):
-        """
-        Updates the weight of the node regarding the current label with the tree parameters
+        """Update the weight of the node regarding the current label with the tree parameters.
 
         Parameters
         ----------
         node
-            Node to update the weight of
-
+            Node to update the weight.
         """
+
         return node.update_weight(self._y, self.use_aggregation, self.step)
 
     def _update_downwards(self, node, do_update_weight):
-        """
-        Updates the node when running a downward procedure updating the tree
+        """Update the node when running a downward procedure updating the tree.
 
         Parameters
         ----------
         node
-            Target node
+            Target node.
         do_update_weight
-            Whether we should update the weights or not
-
+            Whether we should update the weights or not.
         """
+
         return node.update_downwards(
             self._x, self._y, self.use_aggregation, self.step, do_update_weight
         )
 
     def _compute_split_time(self, node):
-        """
-        Computes the spit time of the given node
+        """Computes the split time of the given node.
 
         Parameters
         ----------
         node
-            Target node
-
+            Target node.
         """
+
         extensions_sum = node.range_extension(self._x, self.intensities)
-        # If x_t extends the current range of the node
+        #  Don't split if the node is pure: all labels are equal to the one of y_t
+        # TODO: what do we do here ? Zero variance ?
         if extensions_sum > 0:
             # Sample an exponential with intensity = extensions_sum
             try:
@@ -158,21 +153,20 @@ class MondrianTreeRegressor(MondrianTree):
         feature: int,
         is_right_extension: bool,
     ):
-        """
-        Splits the given node and attributes the split time, threshold, etc... to the node
+        """Split the given node and attributes the split time, threshold, etc... to the node.
 
         Parameters
         ----------
         node
-            Target node
+            Target node.
         split_time
-            Split time of the node in the Mondrian process
+            Split time of the node in the Mondrian process.
         threshold
-            Threshold of acceptance of the node
+            Threshold of acceptance of the node.
         feature
-            Feature index of the node
+            Feature index of the node.
         is_right_extension
-            Should we extend the tree in the right or left direction
+            Should we extend the tree in the right or left direction.
         """
 
         # Let's build a function to handle splitting depending on what side we go into
@@ -211,10 +205,7 @@ class MondrianTreeRegressor(MondrianTree):
         node.is_leaf = False
 
     def _go_downwards(self):
-        """
-        Updates the tree (downward procedure)
-
-        """
+        """Update the tree (downward procedure)."""
 
         # We update the nodes along the path which leads to the leaf containing the current sample.
         # For each node on the path, we consider the possibility of
@@ -297,13 +288,12 @@ class MondrianTreeRegressor(MondrianTree):
                         current_node = current_node.get_child(self._x)
 
     def _go_upwards(self, leaf):
-        """
-        Updates the tree (upwards procedure)
+        """Update the tree (upwards procedure).
 
         Parameters
         ----------
         leaf
-            Leaf to start from when going upward
+            Leaf to start from when going upward.
 
         """
 
@@ -320,8 +310,7 @@ class MondrianTreeRegressor(MondrianTree):
                 current_node = current_node.parent
 
     def _find_leaf(self, x):
-        """
-        Finds the leaf that contains the sample, starting from the root
+        """Find the leaf that contains the sample, starting from the root.
 
         Parameters
         ----------
@@ -347,21 +336,20 @@ class MondrianTreeRegressor(MondrianTree):
         return node
 
     def learn_one(self, x, y):
-        """
-        Learns the sample (x, y)
+        """Learn the sample (x, y).
 
         Parameters
         ----------
         x
-            Feature vector of the sample
+            Feature vector of the sample.
         y
-
+²           Label of the sample.
         """
 
         # Setting current sample
         # We change x in a list here to make computations easier afterwards
         self._x = list(x.values())
-        # Current sample label index
+        # Current sample label
         self._y = y
 
         # Learning step
@@ -374,8 +362,7 @@ class MondrianTreeRegressor(MondrianTree):
         return self
 
     def predict_one(self, x):
-        """
-        Predict the probability of the samples
+        """Predict the label of the samples.
 
         Parameters
         ----------

@@ -51,3 +51,5 @@ class MondrianTree(abc.ABC):
         self.random_generator = random.Random(seed)
 
         # One should initialize the tree in the child class as well
+
+

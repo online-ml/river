@@ -100,7 +100,7 @@ class MondrianTreeClassifier(MondrianTree):
 
         return node.score(self._y, self.dirichlet)
 
-    def _predict(self, node: MondrianLeafClassifier) -> dict[int, float]:
+    def _predict(self, node: MondrianLeafClassifier):
         """Compute the predictions scores of the node regarding all the classes scores.
 
         Parameters
@@ -111,7 +111,7 @@ class MondrianTreeClassifier(MondrianTree):
 
         return node.predict(self.dirichlet)
 
-    def _loss(self, node: MondrianLeafClassifier) -> float:
+    def _loss(self, node: MondrianLeafClassifier):
         """Compute the loss for the given node regarding the current label
 
         Parameters
@@ -122,7 +122,7 @@ class MondrianTreeClassifier(MondrianTree):
 
         return node.loss(self._y, self.dirichlet)
 
-    def _update_weight(self, node: MondrianLeafClassifier) -> float:
+    def _update_weight(self, node: MondrianLeafClassifier):
         """Update the weight of the node regarding the current label with the tree parameters.
 
         Parameters

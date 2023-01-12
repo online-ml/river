@@ -274,31 +274,54 @@ class AMFClassifier(AMFLearner, Classifier):
 
 
 class AMFRegressor(AMFLearner, Regressor):
-    """Aggregated Mondrian Forest regressor for online learning. This algorithm
+    """A
+    ggregated Mondrian Forest regressor for online learning. This algorithm
     is truly online, in the sense that a single pass is performed, and that predictions
     can be produced anytime.
+
     Each node in a tree predicts according to the average of the labels
     it contains. The prediction for a sample is computed as the aggregated predictions
     of all the subtrees along the path leading to the leaf node containing the sample.
     The aggregation weights are exponential weights with learning rate ``step`` and loss
     ``loss`` when ``use_aggregation`` is ``True``.
+
     This computation is performed exactly thanks to a context tree weighting algorithm.
     More details can be found in the paper cited in references below.
+
     The final predictions are the average of the predictions of each of the
     ``n_estimators`` trees in the forest.
+
+    Parameters
+    ----------
+    n_estimators
+        The number of trees in the forest.
+    step
+        Step-size for the aggregation weights.
+    use_aggregation
+        Controls if aggregation is used in the trees. It is highly recommended to
+        leave it as `True`.
+    split_pure
+        Controls if nodes that contains only sample of the same class should be
+        split ("pure" nodes). Default is `False`, namely pure nodes are not split,
+        but `True` can be sometimes better.
+    seed
+        Random seed for reproducibility.
+
     Note
     ----
     All the parameters of ``AMFRegressor`` become **read-only** after the first call
-    to ``partial_fit``
+    to ``partial_fit``.
+
     References
     ----------
     J. Mourtada, S. Gaiffas and E. Scornet, *AMF: Aggregated Mondrian Forests for Online Learning*, arXiv:1906.10529, 2019
+
     """
 
     def __init__(
         self,
         n_estimators: int = 10,
-        step: float = 0.1,
+        step: float = 1.0,
         use_aggregation: bool = True,
         split_pure: bool = False,
         seed: int = None,
@@ -314,9 +337,7 @@ class AMFRegressor(AMFLearner, Regressor):
         )
 
     def _initialize_trees(self):
-        """
-        Initialize the forest
-        """
+        """Initialize the forest."""
 
         # If the number of features is 0, it means we don't know the number of features
         if self._n_features == 0:
@@ -344,17 +365,14 @@ class AMFRegressor(AMFLearner, Regressor):
             self._forest.append(tree)
 
     def learn_one(self, x, y):
-        """
-        Learns the sample (x, y)
+        """Learns the sample (x, y).
+
         Parameters
         ----------
         x
             Feature vector of the sample.
         y
             Label of the sample.
-        Returns
-        -------
-        AMFRegressor
         """
 
         # Checking the features consistency
@@ -370,8 +388,8 @@ class AMFRegressor(AMFLearner, Regressor):
         return self
 
     def predict_one(self, x):
-        """
-        Predicts the probability of each class for the sample x
+        """Predict the label for the given features vectors.
+
         Parameters
         ----------
         x
