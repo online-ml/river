@@ -1,6 +1,6 @@
 from river import datasets
 from river import metrics
-from .conf.gaussian import Gaussian
+import conf
 from .evaluate import evaluate
 from .holt_winters import HoltWinters
 
@@ -16,7 +16,7 @@ model = HoltWinters(
 
 calib_period = 100
 metric = metrics.MAE()
-interval = Gaussian(window_size=calib_period)
+interval = conf.Gaussian(window_size=calib_period)
 
 evaluate(
         dataset,

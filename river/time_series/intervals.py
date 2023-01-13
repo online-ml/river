@@ -4,7 +4,8 @@ import abc
 import typing
 from numbers import Number
 
-from river import base, conf
+from river import base
+import conf
 
 # Using the metrics.py framework
 class ForecastingInterval(base.Base, abc.ABC):

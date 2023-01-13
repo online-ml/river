@@ -1,8 +1,8 @@
 from river import base, stats
 from collections import deque
-from .base import Interval
-from scipy import norm
-from numbers import Number
+from typing import Tuple
+from conf.base import Interval
+from scipy.stats import norm
 
 class Gaussian(Interval):
     """Gaussian method to define intervals
@@ -75,7 +75,7 @@ class Gaussian(Interval):
         self.alpha = (1 - confidence_level) / 2 
 
 
-    def update(self, y_true: float, y_pred: float) -> "Interval":
+    def update(self, y_true: float, y_pred: float) -> "conf.base.Interval":
         """Update the Interval."""
         
         if len(self.residuals)==self.window_size:
@@ -92,7 +92,7 @@ class Gaussian(Interval):
             self.residuals.append(y_true - y_pred)
 
 
-    def get(self) -> tuple(float):
+    def get(self) -> Tuple[float, ...]:
         """Return the current value of the Interval."""
         return (self.lower, self.upper)
 

@@ -1,11 +1,10 @@
 """Conformal predictions. This modules contains wrappers to enable conformal predictions on any
 regressor or classifier."""
-from .base import Interval
-from .jackknife import RegressionJackknife
-from .gaussian import Gaussian
+from conf.base import Interval
+from conf.jackknife import RegressionJackknife
+from conf.gaussian import Gaussian
 
 __all__ = [
-    "base",
     "Interval",
     "Gaussian",
     "RegressionJackknife",

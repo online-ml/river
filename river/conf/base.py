@@ -1,11 +1,8 @@
 import abc
-import numbers
 import operator
 import dataclasses
-
-from river import base, stats, utils
-from collections import deque
-
+from typing import Tuple
+from river import base
 __all__=[
     "Interval",
     "Gaussian",
@@ -14,7 +11,7 @@ __all__=[
 
 
 # from river/metrics/base.py
-@dataclasses.dataclass
+#@dataclasses.dataclass
 class Interval(base.Base, abc.ABC):
     """Mother class for all intervals
     
@@ -56,22 +53,9 @@ class Interval(base.Base, abc.ABC):
         """Update the Interval."""
         
     @abc.abstractmethod
-    def get(self) -> tuple(float):
+    def get(self) ->  Tuple[float, ...]:
         """Return the current value of the Interval."""
 
-    @property
-    @abc.abstractmethod
-    def bigger_is_better(self) -> bool:
-        """Indicate if a high value is better than a low one or not."""
-
-    @abc.abstractmethod
-    def works_with(self, model: base.Estimator) -> bool:
-        """Indicates whether or not a Interval can work with a given model."""
-
-    @property
-    def works_with_weights(self) -> bool:
-        """Indicate whether the model takes into consideration the effect of sample weights"""
-        return True
 
     def is_better_than(self, other) -> bool:
         op = operator.gt if self.bigger_is_better else operator.lt
