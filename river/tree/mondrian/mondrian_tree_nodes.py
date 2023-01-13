@@ -419,7 +419,7 @@ class MondrianLeafRegressor(MondrianLeaf):
          """
 
         r = self.predict() - sample_value
-        return (r * r) / 2
+        return r * r / 2
 
     def update_weight(self, sample_value, use_aggregation, step):
         """Update the weight of the node given a class and the method used.

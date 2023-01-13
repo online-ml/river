@@ -173,11 +173,14 @@ class MondrianTreeRegressor(MondrianTree):
         def extend_child(parent, main_child, other):
             # Expending the node towards the main child chosen
             main_child.copy(parent)
+            main_child.mean = parent.mean
             main_child.parent = parent
             main_child.time = split_time
 
             # other must have node has parent
-            other.is_leaf = True
+            #other.is_leaf = True
+            #other.parent = parent
+            other.time = split_time
 
             # If the node previously had children, we have to update it
             if not parent.is_leaf:
