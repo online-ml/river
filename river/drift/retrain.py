@@ -14,7 +14,9 @@ class DriftRetrainingClassifier(base.Wrapper, base.Classifier):
     model
         The classifier and background classifier class.
     drift_detector
-        Algorithm to track warnings and concept drifts. Attention! The drift_detector must have a warning tracker.
+        Algorithm to track warnings and concept drifts. Attention! If the parameter train_in_background is True, the drift_detector must have a warning tracker.
+    train_in_background
+        Parameter to determine if a background model will be used.
 
     Examples
     --------
@@ -39,10 +41,17 @@ class DriftRetrainingClassifier(base.Wrapper, base.Classifier):
 
     """
 
-    def __init__(self, model: base.Classifier, drift_detector: base.DriftDetector = None):
+    def __init__(
+        self,
+        model: base.Classifier,
+        drift_detector: base.DriftAndWarningDetector = None,
+        train_in_background: bool = True,
+    ):
         self.model = model
-        self.bkg_model = model.clone()
+        self.train_in_background = train_in_background
         self.drift_detector = drift_detector if drift_detector is not None else drift.DDM()
+        if self.train_in_background:
+            self.bkg_model = model.clone()
 
     @property
     def _wrapped_model(self):
@@ -64,13 +73,18 @@ class DriftRetrainingClassifier(base.Wrapper, base.Classifier):
         incorrectly_classifies = int(y_pred != y)
         self.drift_detector.update(incorrectly_classifies)
 
-        if self.drift_detector.warning_detected:
-            # If there's a warning, we train the background model
-            self.bkg_model.learn_one(x, y)
-        elif self.drift_detector.drift_detected:
-            # If there's a drift, we replace the model with the background model
-            self.model = self.bkg_model
-            self.bkg_model = self.model.clone()
+        if self.train_in_background:
+            if self.drift_detector.warning_detected:
+                # If there's a warning, we train the background model
+                self.bkg_model.learn_one(x, y)
+            elif self.drift_detector.drift_detected:
+                # If there's a drift, we replace the model with the background model
+                self.model = self.bkg_model
+                self.bkg_model = self.model.clone()
+        else:
+            if self.drift_detector.drift_detected:
+                # If there's a drift, we reset the model
+                self.model = self.model.clone()
 
     @classmethod
     def _unit_test_params(cls):

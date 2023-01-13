@@ -15,9 +15,9 @@ jobs:
         run: sudo apt-get install graphviz pandoc
 
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
-          python-version: 3.9
+          python-version: 3.11
 
       - run: curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain=nightly --profile=minimal -y && rustup show
         if: matrix.os == 'ubuntu-latest'
