@@ -71,9 +71,9 @@ class HorizonInterval(ForecastingInterval):
 
     """
 
-    def __init__(self, interval: conf.base.Interval):
+    def __init__(self, interval: conf.Interval):
         self.interval = interval
-        self.intervals: list[conf.base.Interval] = []
+        self.intervals: list[conf.Interval] = []
 
     def update(self, y_true, y_pred):
         for t, (yt, yp) in enumerate(zip(y_true, y_pred)):
