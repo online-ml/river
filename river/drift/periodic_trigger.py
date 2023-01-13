@@ -166,7 +166,7 @@ class PeriodicTrigger(base.DriftDetector):
         threshold = 1 / (1 + math.exp(-4 * (t - t_0) / self.w))
         self._drift_detected = self._rng.random() < threshold
 
-        if self._drift_detected:
+        if self.drift_detected:
             self._n = 0
 
     def update(self, x):

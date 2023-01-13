@@ -9,14 +9,13 @@ import sys
 import setuptools  # type: ignore
 from setuptools_rust import Binding, RustExtension  # type: ignore
 
-
 try:
-    from numpy import get_include
     from numpy import __version__ as numpy_version
+    from numpy import get_include
 except ImportError:
     subprocess.check_call([sys.executable, "-m", "pip", "install", "numpy"])
-    from numpy import get_include
     from numpy import __version__ as numpy_version
+    from numpy import get_include
 
 try:
     from Cython.Build import cythonize
@@ -33,7 +32,7 @@ AUTHOR = "Max Halford"
 REQUIRES_PYTHON = ">=3.8.0"
 
 here = os.path.abspath(os.path.dirname(__file__))
-with io.open(os.path.join(here, "README.md"), encoding="utf-8") as f:
+with open(os.path.join(here, "README.md"), encoding="utf-8") as f:
     long_description = "\n" + f.read()
 
 about: dict = {}
@@ -53,9 +52,9 @@ setuptools.setup(
     packages=setuptools.find_packages(exclude=("tests",)),
     install_requires=(base_packages := [f"numpy>={numpy_version}", "scipy>=1.5", "pandas>=1.3"]),
     extras_require={
-        "dev": base_packages + [
+        "dev": base_packages
+        + [
             "black>=22.1.0",
-            "flake8>=4.0.1",
             "graphviz>=0.10.1",
             "gym>=0.26.1",
             "isort>=5.9.3",
@@ -64,9 +63,10 @@ setuptools.setup(
             "pre-commit>=2.9.2",
             "pytest>=4.5.0",
             "pyupgrade>=3.2.0",
+            "ruff>=0.0.213",
             "scikit-learn>=1.0.1",
             "sqlalchemy>=1.4",
-            "sympy>=1.10.1"
+            "sympy>=1.10.1",
         ],
         "compat": base_packages
         + [
@@ -83,6 +83,7 @@ setuptools.setup(
             "mike",
             "mkdocs",
             "mkdocs-awesome-pages-plugin",
+            "mkdocs-charts-plugin",
             "mkdocs-material",
             "nbconvert",
             "python-slugify",
@@ -90,7 +91,20 @@ setuptools.setup(
             "watermark",
         ],
         "extra": ["river_extra"],
+        "deep": ["deep-river"],
         "torch": ["river_torch"],
+        "benchmark": base_packages
+        + [
+            "scikit-learn==1.1.2",
+            "scipy==1.9.3",
+            "torch==1.13.0",
+            "vowpalwabbit==9.6.0",
+            "torch==1.13.0",
+            "dominate==2.7.0",
+            "slugify==0.0.1",
+            "watermark==2.3.1",
+            "river-torch==0.1.2",
+        ],
         ":python_version == '3.6'": ["dataclasses"],
     },
     include_package_data=True,
