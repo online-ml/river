@@ -6,8 +6,6 @@ from river import anomaly
 from river.transform.projection.streamhash_projector import StreamhashProjector
 from river.utils.math import dict_zeros, get_minmax, merge
 
-random.seed(14)
-
 
 class xStream(anomaly.base.AnomalyDetector):
     """The xStream model for row-streaming data :cite:`xstream`. It first projects the data via streamhash projection. It then fits half space chains by reference windowing. It scores the instances using the window fitted to the reference window.
