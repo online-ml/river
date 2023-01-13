@@ -53,16 +53,8 @@ class Interval(base.Base, abc.ABC):
         """Update the Interval."""
         
     @abc.abstractmethod
-    def get(self) ->  Tuple[float, ...]:
+    def get(self) ->  Tuple[float,float]:
         """Return the current value of the Interval."""
-
-
-    def is_better_than(self, other) -> bool:
-        op = operator.gt if self.bigger_is_better else operator.lt
-        return op(self.get(), other.get())
-
-    def __gt__(self, other):
-        return self.is_better_than(other)
 
     def __repr__(self) -> str:
         """Return the class name along with the current value of the Interval."""

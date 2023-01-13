@@ -179,10 +179,11 @@ def evaluate(
     dataset: base.typing.Dataset,
     model: time_series.base.Forecaster,
     metric: metrics.base.RegressionMetric,
-    interval: conf.base.Interval,
+    interval: conf.Interval,
     horizon: int,
     agg_func: typing.Callable[[list[float]], float] = None,
     grace_period: int = None,
+    residual_calibration_period: int = None,
 ) -> time_series.HorizonMetric:
     """Evaluates the performance of a forecaster on a time series dataset.
 
@@ -215,7 +216,9 @@ def evaluate(
 
     horizon_metric = None
     horizon_interval = None
-    steps = iter_evaluate(dataset, model, metric, interval, horizon, agg_func, grace_period)
+    steps = iter_evaluate(dataset, model, metric, 
+                          interval, horizon, agg_func, 
+                          grace_period, residual_calibration_period)
     for *_, horizon_metric, horizon_interval in steps:
         pass
 
