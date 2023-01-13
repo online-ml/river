@@ -158,9 +158,9 @@ def iter_evaluate(
     ##############################################################################
     # Forecast with intervals and learn
     ##############################################################################
-    # Set the collections of residuals horizons
-    # Using collection will allow to maintain a structure of len = grace_period
-    # for each horizon
+
+    # No reinitialisation of the dataset since we begin from where we stopped 
+    # at the pre-train stage
     for x, y, x_horizon, y_horizon in steps:
         # Predicting future values until a certain horizon
         y_pred = model.forecast(horizon, xs=x_horizon)
@@ -183,7 +183,7 @@ def evaluate(
     agg_func: typing.Callable[[list[float]], float] = None,
     grace_period: int = None,
     residual_calibration_period: int = None,
-) -> time_series.HorizonMetric:
+) -> Tuple(time_series.HorizonMetric, time_series.HorizonInterval):
     """Evaluates the performance of a forecaster on a time series dataset.
 
     To understand why this method is useful, it's important to understand the difference between
