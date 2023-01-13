@@ -146,7 +146,6 @@ def iter_evaluate(
     # And initialize the interval window
     # TODO : being able to predict_many. Would be easier
     steps = _iter_with_horizon(dataset, horizon)
-    res_cal = [collections.deque() for _ in range(horizon)]
     for _ in range(grace_period):
         x, y, x_horizon, y_horizon = next(steps)
         # Get the residual that will be used for calibration
@@ -162,7 +161,6 @@ def iter_evaluate(
     # Set the collections of residuals horizons
     # Using collection will allow to maintain a structure of len = grace_period
     # for each horizon
-    residuals = res_cal
     for x, y, x_horizon, y_horizon in steps:
         # Predicting future values until a certain horizon
         y_pred = model.forecast(horizon, xs=x_horizon)
