@@ -45,7 +45,6 @@ class AMFLearner(ABC):
 
         # This is yet to be defined by the dataset since we need to know about the amount of features namely
         self._forest: list[MondrianTree] = []
-        self._n_features: int = 0
 
         self.n_estimators = n_estimators
         self.step = step
@@ -62,26 +61,6 @@ class AMFLearner(ABC):
         trained: bool
         """
         return len(self._forest) != 0
-
-    def _check_features_consistency(self, x):
-        """
-        Makes sure that the features are consistent and set it to the first encountered value is no standard is set.
-        Parameters
-        ----------
-        x
-            Feature vector
-
-        Returns
-        -------
-
-        """
-        n_features = len(list(x.keys()))
-        # First case corresponds to a situation for which the number of features has never been set (0)
-        if self._n_features == 0:
-            self._n_features = n_features
-        # The features have already been set, we make sure they keep being consistent
-        elif self._n_features != n_features:
-            raise Exception("Number of features must be consistent during learning")
 
 
 class AMFClassifier(AMFLearner, Classifier):
@@ -170,20 +149,13 @@ class AMFClassifier(AMFLearner, Classifier):
         else:
             self.dirichlet = dirichlet
 
-        # memory of the classes (converts label into positive integers)
-        self._classes: dict[base.typing.ClfTarget, int] = {}
+        # memory of the classes
+        self._classes: set[base.typing.ClfTarget] = set()
 
     def _initialize_trees(self):
         """
         Initialize the forest
         """
-
-        # If the number of features is 0, it means we don't know the number of features
-        if self._n_features == 0:
-            raise Exception(
-                "You can't initialize the forest without knowning the number of features of the problem. "
-                "Please learn a data point first."
-            )
 
         self.iteration = 0
         self._forest: list[MondrianTreeClassifier] = []
@@ -195,7 +167,6 @@ class AMFClassifier(AMFLearner, Classifier):
                 seed += i
             tree = MondrianTreeClassifier(
                 self.n_classes,
-                self._n_features,
                 self.step,
                 self.use_aggregation,
                 self.dirichlet,
@@ -222,11 +193,7 @@ class AMFClassifier(AMFLearner, Classifier):
         """
 
         # Updating the previously seen classes with the new sample
-        if y not in self._classes:
-            self._classes[y] = len(self._classes)
-
-        # Checking the features consistency
-        self._check_features_consistency(x)
+        self._classes.add(y)
 
         # Checking if the forest has been created
         if not self.is_trained():
@@ -252,23 +219,17 @@ class AMFClassifier(AMFLearner, Classifier):
         if not self.is_trained():
             return {}
 
-        # We turn the indexes into the labels names
-        classes_name = list(self._classes.keys())
-        # We compute the number of registered classes
-        # which maybe different of self.n_classes
-        n_registered_classes = len(classes_name)
-
         # initialize the scores
         scores = {}
-        for j in range(n_registered_classes):
-            scores[classes_name[j]] = 0
+        for c in self._classes:
+            scores[c] = 0.0
 
         # Simply computes the prediction for each tree and average it
         for tree in self._forest:
             tree.use_aggregation = self.use_aggregation
             predictions = tree.predict_proba_one(x)
-            for j in range(n_registered_classes):
-                scores[classes_name[j]] += predictions[classes_name[j]] / self.n_estimators
+            for c in self._classes:
+                scores[c] += predictions[c] / self.n_estimators
 
         return scores
 
@@ -339,13 +300,6 @@ class AMFRegressor(AMFLearner, Regressor):
     def _initialize_trees(self):
         """Initialize the forest."""
 
-        # If the number of features is 0, it means we don't know the number of features
-        if self._n_features == 0:
-            raise Exception(
-                "You can't initialize the forest without knowning the number of features of the problem. "
-                "Please learn a data point first."
-            )
-
         self.iteration = 0
         self._forest: list[MondrianTreeRegressor] = []
         for i in range(self.n_estimators):
@@ -355,7 +309,6 @@ class AMFRegressor(AMFLearner, Regressor):
             if seed is not None:
                 seed += i
             tree = MondrianTreeRegressor(
-                self._n_features,
                 self.step,
                 self.use_aggregation,
                 self.split_pure,
@@ -374,9 +327,6 @@ class AMFRegressor(AMFLearner, Regressor):
         y
             Label of the sample.
         """
-
-        # Checking the features consistency
-        self._check_features_consistency(x)
 
         # Checking if the forest has been created
         if not self.is_trained():
