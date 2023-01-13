@@ -74,7 +74,7 @@ class Gaussian(Interval):
         self.window_size = window_size
         self.residuals = deque()
         self.alpha = (1 - confidence_level) / 2 
-
+        self.var = stats.Var()
 
     def update(self, y_true: float, y_pred: float) -> "Interval":
         """Update the Interval."""
@@ -84,14 +84,17 @@ class Gaussian(Interval):
             self.residuals.popleft()
             # Add the new one
             self.residuals.append(y_true - y_pred)
+            # Update the variance
+            self.var.update(self.residuals[-1])          
             # Compute the interval
-            half_inter = norm.ppf(self.alpha)*stats.var().update(self.residuals)**0.5
+            half_inter = norm.ppf(self.alpha)*self.var.get()**0.5
             # And set the borne
             self.lower, self.upper = y_pred-half_inter, y_pred+half_inter
         else:
             # Fill the residuals until it reaches window size
             self.residuals.append(y_true - y_pred)
-
+            # Update the variance
+            self.var.update(self.residuals[-1])
 
     def get(self) -> Tuple[float, float]:
         """Return the current value of the Interval."""

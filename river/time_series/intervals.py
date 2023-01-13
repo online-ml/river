@@ -1,14 +1,12 @@
 from __future__ import annotations
 
 import abc
-import typing
 from numbers import Number
 
-from river import base
 import conf
 
 # Using the metrics.py framework
-class ForecastingInterval(base.Base, abc.ABC):
+class ForecastingInterval(abc.ABC):
     @abc.abstractmethod
     def update(self, y_true: list[Number], y_pred: list[Number]) -> ForecastingInterval:
         """Update the prediction interval along the horizon.

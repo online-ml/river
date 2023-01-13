@@ -8,6 +8,7 @@ from typing import Iterator, List, Optional, Tuple
 from river import base, metrics, time_series
 
 import conf
+import time_series
 
 TimeSeries = Iterator[
     Tuple[
@@ -118,7 +119,7 @@ def iter_evaluate(
 
     # Defining the interval for a certain horizon
     horizon_interval = (time_series.HorizonInterval(interval))
-
+    
     ##############################################################################
     # Pre-train the model
     ##############################################################################
