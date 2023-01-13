@@ -2,9 +2,9 @@ import abc
 import math
 import typing
 
+import river.base as base
 from river.tree.base import Leaf
 from river.utils.math import log_sum_2_exp
-import river.base as base
 
 
 class MondrianLeaf(Leaf, abc.ABC):

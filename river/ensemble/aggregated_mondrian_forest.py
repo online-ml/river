@@ -148,7 +148,7 @@ class AMFClassifier(AMFLearner, Classifier):
             self.dirichlet = dirichlet
 
         # memory of the classes
-        self._classes = set()
+        self._classes: set[base.typing.ClfTarget] = set()
 
     def _initialize_trees(self):
         """

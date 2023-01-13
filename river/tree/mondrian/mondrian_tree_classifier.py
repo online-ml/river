@@ -37,14 +37,14 @@ class MondrianTreeClassifier(MondrianTree):
     """
 
     def __init__(
-            self,
-            n_classes: int = 2,
-            step: float = 0.1,
-            use_aggregation: bool = True,
-            dirichlet: float = None,
-            split_pure: bool = False,
-            iteration: int = 0,
-            seed: int = None,
+        self,
+        n_classes: int = 2,
+        step: float = 0.1,
+        use_aggregation: bool = True,
+        dirichlet: float = None,
+        split_pure: bool = False,
+        iteration: int = 0,
+        seed: int = None,
     ):
 
         super().__init__(
@@ -66,10 +66,10 @@ class MondrianTreeClassifier(MondrianTree):
 
         # Training attributes
         # The previously observed classes set
-        self._classes = set()
+        self._classes: set[base.typing.ClfTarget] = set()
 
         # The current sample being proceeded
-        self._x = {}
+        self._x = None
         # The current label index being proceeded
         self._y = None
 
@@ -190,12 +190,12 @@ class MondrianTreeClassifier(MondrianTree):
         return 0
 
     def _split(
-            self,
-            node: MondrianLeafClassifier,
-            split_time: float,
-            threshold: float,
-            feature,
-            is_right_extension: bool,
+        self,
+        node: MondrianLeafClassifier,
+        split_time: float,
+        threshold: float,
+        feature,
+        is_right_extension: bool,
     ):
         """Split the given node and set the split time, threshold, etc., to the node.
 
