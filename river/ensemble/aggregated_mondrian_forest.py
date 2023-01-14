@@ -346,7 +346,7 @@ class AMFRegressor(AMFLearner, Regressor):
             Feature vector
         """
 
-        # Checking that the model has been trained once at least
+        # Checking that the model has been trained once at leasst
         if not self.is_trained():
             return None
 

@@ -175,8 +175,6 @@ class MondrianTreeRegressor(MondrianTree):
 
             # other must have node has parent
             other.is_leaf = True
-            #other.parent = parent
-            #other.time = split_time
 
             # If the node previously had children, we have to update it
             if not parent.is_leaf:
@@ -228,7 +226,7 @@ class MondrianTreeRegressor(MondrianTree):
                     # leaf, or because we add a new node along the path
 
                     # We normalize the range extensions to get probabilities
-                    intensities_sum = math.fsum(self.intensities)
+                    intensities_sum = math.fsum(list(self.intensities.values()))
                     for key in self.intensities.keys():
                         self.intensities[key] /= intensities_sum
 
@@ -373,7 +371,7 @@ class MondrianTreeRegressor(MondrianTree):
             return self._predict(leaf)
 
         current = leaf
-
+        prediction = 0.0
         while True:
             # This test is useless ?
             if current.is_leaf:
