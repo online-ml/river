@@ -39,7 +39,7 @@ class AMFLearner(base.Ensemble):
         split_pure: bool = False,
         seed: int = None,
     ):
-        super().__init__([])  # type: ignore # TODO: The introduces a critical error because the ensemble is empty
+        super().__init__([])  # type: ignore
 
         self.n_estimators = n_estimators
         self.step = step
@@ -52,6 +52,7 @@ class AMFLearner(base.Ensemble):
 
     def is_trained(self) -> bool:
         """Indicate whether the model has been trained at least once before."""
+        return len(self) > 0
 
 
 class AMFClassifier(AMFLearner, base.Classifier):
