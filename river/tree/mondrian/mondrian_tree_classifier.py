@@ -332,17 +332,12 @@ class MondrianTreeClassifier(MondrianTree):
                     self._update_downwards(current_node, True)
 
                     left, right = current_node.children
-                    # depth = current_node.depth + 1
 
                     # Now, get the next node
                     if is_right_extension:
                         current_node = right
                     else:
                         current_node = left
-
-                    # We update the depth of each child
-                    # left.update_depth(depth)
-                    # right.update_depth(depth)
 
                     # This is the leaf containing the sample point (we've just
                     # splitted the current node with the data point)

@@ -204,3 +204,7 @@ class AMFClassifier(AMFLearner, base.Classifier):
                 scores[c] += predictions[c] / self.n_estimators
 
         return scores
+
+    @property
+    def _multiclass(self):
+        return True

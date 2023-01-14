@@ -159,9 +159,6 @@ class MondrianNodeClassifier(MondrianNode):
         """Transfer information from a leaf to a new branch."""
         self.weight = leaf.weight  # type: ignore
         self.log_weight_tree = leaf.log_weight_tree  # type: ignore
-        self.memory_range_min = leaf.memory_range_min
-        self.memory_range_max = leaf.memory_range_max
-        self.n_samples = leaf.n_samples
         self.counts = leaf.counts
 
     def score(self, sample_class: base.typing.ClfTarget, dirichlet: float, n_classes: int) -> float:
