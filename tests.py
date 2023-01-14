@@ -52,3 +52,6 @@ plt.scatter(X,y)
 
 plt.scatter(X_test_list,y_pred, color = 'r')
 plt.show()
+
+print((y_pred[-1]-y_pred[0])/(X_test_list[-1]-X_test_list[0]))
+print((y[-1]-y[0])/(X_test_list[-1]-X_test_list[0]))
