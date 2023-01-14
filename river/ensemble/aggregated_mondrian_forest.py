@@ -39,8 +39,7 @@ class AMFLearner(base.Ensemble):
         split_pure: bool = False,
         seed: int = None,
     ):
-        super().__init__([])  # type: ignore
-        self._n_features: int = 0
+        super().__init__([])  # type: ignore # TODO: The introduces a critical error because the ensemble is empty
 
         self.n_estimators = n_estimators
         self.step = step
@@ -53,31 +52,6 @@ class AMFLearner(base.Ensemble):
 
     def is_trained(self) -> bool:
         """Indicate whether the model has been trained at least once before."""
-
-        return len(self) != 0
-
-    def _check_features_consistency(self, x: dict):
-        """Make sure that the features are consistent and set it to the first encountered
-        value there is no standard is set.
-
-        Parameters
-        ----------
-        x
-            Feature dictionary.
-
-        """
-        n_features = len(x)
-
-        # First case corresponds to a situation for which the number of features has never been set (0)
-        if self._n_features == 0:
-            self._n_features = n_features
-
-        # TODO: ideally we want to get rid of this restriction. Features should be allowed to
-        # change in number during learning (at least some might be missing)
-
-        # The features have already been set, we make sure they keep being consistent
-        elif self._n_features != n_features:
-            raise Exception("Number of features must be consistent during learning")
 
 
 class AMFClassifier(AMFLearner, base.Classifier):
@@ -165,18 +139,11 @@ class AMFClassifier(AMFLearner, base.Classifier):
         else:
             self.dirichlet = dirichlet
 
-        # memory of the classes (converts label into positive integers)
-        self._classes: dict[base.typing.ClfTarget, int] = {}
+        # memory of the classes
+        self._classes: set[base.typing.ClfTarget] = set()
 
     def _initialize_trees(self):
         """Initialize the forest."""
-
-        # If the number of features is 0, it means we don't know the number of features
-        if self._n_features == 0:
-            raise RuntimeError(
-                "You can't initialize the forest without knowning the number of features of the problem. "
-                "Please learn a data point first."
-            )
 
         self.iteration = 0
         self.data: list[MondrianTreeClassifier] = []
@@ -187,7 +154,6 @@ class AMFClassifier(AMFLearner, base.Classifier):
 
             tree = MondrianTreeClassifier(
                 self.n_classes,
-                self._n_features,
                 self.step,
                 self.use_aggregation,
                 self.dirichlet,
@@ -199,11 +165,7 @@ class AMFClassifier(AMFLearner, base.Classifier):
 
     def learn_one(self, x, y):
         # Updating the previously seen classes with the new sample
-        if y not in self._classes:
-            self._classes[y] = len(self._classes)
-
-        # Checking the features consistency
-        self._check_features_consistency(x)
+        self._classes.add(y)
 
         # Checking if the forest has been created
         if not self.is_trained():
@@ -223,20 +185,14 @@ class AMFClassifier(AMFLearner, base.Classifier):
         if not self.is_trained():
             return {}
 
-        # We turn the indexes into the labels names
-        classes_name = list(self._classes.keys())
-        # We compute the number of registered classes
-        # which maybe different of self.n_classes
-        n_registered_classes = len(classes_name)
-
         # initialize the scores
-        scores = {classes_name[j]: 0 for j in range(self.n_classes)}
+        scores = {c: 0 for c in self._classes}
 
         # Simply computes the prediction for each tree and average it
         for tree in self:
             tree.use_aggregation = self.use_aggregation
             predictions = tree.predict_proba_one(x)
-            for j in range(n_registered_classes):
-                scores[classes_name[j]] += predictions[classes_name[j]] / self.n_estimators
+            for c in self._classes:
+                scores[c] += predictions[c] / self.n_estimators
 
         return scores

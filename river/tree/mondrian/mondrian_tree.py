@@ -1,6 +1,8 @@
 import abc
 import random
 
+from river import base
+
 
 class MondrianTree(abc.ABC):
     """Base class for Mondrian Trees.
@@ -30,7 +32,6 @@ class MondrianTree(abc.ABC):
 
     def __init__(
         self,
-        n_features: int,
         step: float = 0.1,
         loss: str = "log",
         use_aggregation: bool = True,
@@ -39,15 +40,13 @@ class MondrianTree(abc.ABC):
         seed: int = None,
     ):
         # Properties common to all the Mondrian Trees
-        self.n_features = n_features
         self.step = step
         self.loss = loss
         self.use_aggregation = use_aggregation
         self.split_pure = split_pure
         self.iteration = iteration
-        self.intensities = [0.0 for _ in range(n_features)]
+        self.intensities: dict[base.typing.ClfTarget, float] = {}
 
-        # TODO the standard in River is to use _rng for the generator
-        self.random_generator = random.Random(seed)
+        self._rng = random.Random(seed)
 
         # One should initialize the tree in the child class as well
