@@ -235,11 +235,12 @@ class MondrianTreeClassifier(MondrianTree):
             # TODO check whether the logic is inverted in the following if statement
             if is_right_extension:
                 branch = MondrianBranchClassifier(
-                    node.parent, split_time, node.depth, feature, threshold
+                    node.parent, node.time, node.depth, feature, threshold
                 )
                 right = MondrianLeafClassifier(branch, split_time, new_depth)
-
+                branch.replant(node)
                 node.parent = branch
+                node.time = split_time
                 node.update_depth(new_depth)
                 branch.children = (node, right)
 
@@ -247,9 +248,11 @@ class MondrianTreeClassifier(MondrianTree):
             else:
                 left = MondrianLeafClassifier(node, split_time, new_depth)
                 branch = MondrianBranchClassifier(
-                    node.parent, split_time, node.depth, feature, threshold
+                    node.parent, node.time, node.depth, feature, threshold
                 )
+                branch.replant(node)
                 node.parent = branch
+                node.time = split_time
                 node.update_depth(new_depth)
                 branch.children = (left, node)
 
@@ -258,7 +261,7 @@ class MondrianTreeClassifier(MondrianTree):
         else:
             # Create a new branch
             branch = MondrianBranchClassifier(
-                node.parent, node.time, node.depth, feature, threshold, branch, right
+                node.parent, node.time, node.depth, feature, threshold
             )
             left = MondrianLeafClassifier(branch, split_time, new_depth)
             right = MondrianLeafClassifier(branch, split_time, new_depth)
@@ -267,7 +270,7 @@ class MondrianTreeClassifier(MondrianTree):
             # Copy properties from the previous leaf
             branch.replant(node)
             # To avoid leaving garbage behind
-            node.parent = None
+            del node
 
             return branch
 
@@ -297,13 +300,8 @@ class MondrianTreeClassifier(MondrianTree):
 
                     # We normalize the range extensions to get probabilities
                     intensities_sum = math.fsum(list(self.intensities.values()))
-<<<<<<< HEAD
-                    for key in self.intensities:
-                        self.intensities[key] /= intensities_sum
-=======
                     for k in self.intensities:
                         self.intensities[k] /= intensities_sum
->>>>>>> 5d969f4c (refactoring)
 
                     # Sample the feature at random with a probability
                     # proportional to the range extensions
@@ -334,7 +332,7 @@ class MondrianTreeClassifier(MondrianTree):
                     self._update_downwards(current_node, True)
 
                     left, right = current_node.children
-                    depth = current_node.depth + 1
+                    # depth = current_node.depth + 1
 
                     # Now, get the next node
                     if is_right_extension:
@@ -343,8 +341,8 @@ class MondrianTreeClassifier(MondrianTree):
                         current_node = left
 
                     # We update the depth of each child
-                    left.update_depth(depth)
-                    right.update_depth(depth)
+                    # left.update_depth(depth)
+                    # right.update_depth(depth)
 
                     # This is the leaf containing the sample point (we've just
                     # splitted the current node with the data point)
@@ -416,13 +414,9 @@ class MondrianTreeClassifier(MondrianTree):
             return {}
 
         # Initialization of the scores to output to 0
-<<<<<<< HEAD
-        scores: dict[base.typing.ClfTarget, float] = {}
-=======
         scores = {c: 0.0 for c in self._classes}
->>>>>>> 5d969f4c (refactoring)
 
-        if isinstance(MondrianBranchClassifier):
+        if isinstance(self._root, MondrianBranchClassifier):
             leaf = self._root.traverse(x, until_leaf=True)
         else:
             leaf = self._root

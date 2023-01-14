@@ -1,10 +1,11 @@
+import abc
 import random
 
 from river import base
 from river.tree.mondrian import MondrianTreeClassifier
 
 
-class AMFLearner(base.Ensemble):
+class AMFLearner(base.Ensemble, abc.ABC):
     """Base class for Aggregated Mondrian Forest classifier and regressors for online learning.
 
     Parameters
@@ -53,6 +54,14 @@ class AMFLearner(base.Ensemble):
     def is_trained(self) -> bool:
         """Indicate whether the model has been trained at least once before."""
         return len(self) > 0
+
+    @abc.abstractmethod
+    def _initialize_trees(self):
+        """Initialize the forest members."""
+
+    @property
+    def _min_number_of_models(self):
+        return 0
 
 
 class AMFClassifier(AMFLearner, base.Classifier):
@@ -142,13 +151,11 @@ class AMFClassifier(AMFLearner, base.Classifier):
 
         # memory of the classes
         self._classes: set[base.typing.ClfTarget] = set()
+        self.iteration = 0
 
     def _initialize_trees(self):
-        """Initialize the forest."""
-
-        self.iteration = 0
         self.data: list[MondrianTreeClassifier] = []
-        for i in range(self.n_estimators):
+        for _ in range(self.n_estimators):
             # We don't want to have the same stochastic scheme for each tree, or it'll break the randomness
             # Hence we introduce a new seed for each, that is derived of the given seed by a deterministic process
             seed = self._rng.randint(0, 9999999)
