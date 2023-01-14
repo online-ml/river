@@ -1,9 +1,14 @@
 import math
 import sys
+import typing
 
 from river import base
 from river.tree.mondrian.mondrian_tree import MondrianTree
-from river.tree.mondrian.mondrian_tree_nodes import MondrianLeafClassifier
+from river.tree.mondrian.mondrian_tree_nodes import (
+    MondrianBranchClassifier,
+    MondrianLeafClassifier,
+    MondrianNodeClassifier,
+)
 
 
 class MondrianTreeClassifier(MondrianTree):
@@ -69,9 +74,9 @@ class MondrianTreeClassifier(MondrianTree):
         self._classes: set[base.typing.ClfTarget] = set()
 
         # The current sample being proceeded
-        self._x = None
+        self._x: typing.Dict[base.typing.FeatureName, int | float]
         # The current label index being proceeded
-        self._y = None
+        self._y: base.typing.ClfTarget
 
         # Initialization of the root of the tree
         # It's the root so it doesn't have any parent (hence None)
@@ -80,7 +85,7 @@ class MondrianTreeClassifier(MondrianTree):
     def is_trained(self):
         return len(self._classes) != 0
 
-    def _score(self, node) -> float:
+    def _score(self, node: MondrianNodeClassifier) -> float:
         """Computes the score of the node regarding the current sample being proceeded
 
         Parameters
@@ -89,9 +94,9 @@ class MondrianTreeClassifier(MondrianTree):
             Node to evaluate the score.
         """
 
-        return node.score(self._y, self.dirichlet)
+        return node.score(self._y, self.dirichlet, self.n_classes)
 
-    def _predict(self, node: MondrianLeafClassifier) -> dict[base.typing.ClfTarget, float]:
+    def _predict(self, node: MondrianNodeClassifier) -> dict[base.typing.ClfTarget, float]:
         """Compute the predictions scores of the node regarding all the classes scores.
 
         Parameters
@@ -100,9 +105,9 @@ class MondrianTreeClassifier(MondrianTree):
             Node to make predictions.
         """
 
-        return node.predict(self.dirichlet)
+        return node.predict(self.dirichlet, self._classes, self.n_classes)
 
-    def _loss(self, node: MondrianLeafClassifier) -> float:
+    def _loss(self, node: MondrianNodeClassifier) -> float:
         """Compute the loss for the given node regarding the current label
 
         Parameters
@@ -111,9 +116,9 @@ class MondrianTreeClassifier(MondrianTree):
             Node to evaluate the loss.
         """
 
-        return node.loss(self._y, self.dirichlet)
+        return node.loss(self._y, self.dirichlet, self.n_classes)
 
-    def _update_weight(self, node: MondrianLeafClassifier) -> float:
+    def _update_weight(self, node: MondrianNodeClassifier) -> float:
         """Update the weight of the node regarding the current label with the tree parameters.
 
         Parameters
@@ -122,9 +127,11 @@ class MondrianTreeClassifier(MondrianTree):
             Node to update the weight.
         """
 
-        return node.update_weight(self._y, self.dirichlet, self.use_aggregation, self.step)
+        return node.update_weight(
+            self._y, self.dirichlet, self.use_aggregation, self.step, self.n_classes
+        )
 
-    def _update_count(self, node: MondrianLeafClassifier):
+    def _update_count(self, node: MondrianNodeClassifier):
         """Update the count of labels with the current class `_y` being
         treated (not to use twice for one sample added).
 
@@ -136,7 +143,7 @@ class MondrianTreeClassifier(MondrianTree):
 
         node.update_count(self._y)
 
-    def _update_downwards(self, node, do_update_weight):
+    def _update_downwards(self, node: MondrianNodeClassifier, do_weight_update: bool):
         """Update the node when running a downward procedure updating the tree.
 
         Parameters
@@ -148,10 +155,16 @@ class MondrianTreeClassifier(MondrianTree):
         """
 
         return node.update_downwards(
-            self._x, self._y, self.dirichlet, self.use_aggregation, self.step, do_update_weight
+            self._x,
+            self._y,
+            self.dirichlet,
+            self.use_aggregation,
+            self.step,
+            do_weight_update,
+            self.n_classes,
         )
 
-    def _compute_split_time(self, node):
+    def _compute_split_time(self, node: MondrianLeafClassifier | MondrianBranchClassifier) -> float:
         """Compute the spit time of the given node.
 
         Parameters
@@ -173,28 +186,29 @@ class MondrianTreeClassifier(MondrianTree):
                 T = math.exp(1 / extensions_sum)
             except OverflowError:
                 T = sys.float_info.max  # we get the largest possible output instead
+
             time = node.time
             # Splitting time of the node (if splitting occurs)
             split_time = time + T
             # If the node is a leaf we must split it
-            if node.is_leaf:
+            if isinstance(node, MondrianLeafClassifier):
                 return split_time
             # Otherwise we apply Mondrian process dark magic :)
             # 1. We get the creation time of the childs (left and right is the same)
-            left = node.left
+            left, _ = node.children
             child_time = left.time
             # 2. We check if splitting time occurs before child creation time
             if split_time < child_time:
                 return split_time
 
-        return 0
+        return 0.0
 
     def _split(
         self,
-        node: MondrianLeafClassifier,
+        node: MondrianLeafClassifier | MondrianBranchClassifier,
         split_time: float,
         threshold: float,
-        feature,
+        feature: base.typing.FeatureName,
         is_right_extension: bool,
     ):
         """Split the given node and set the split time, threshold, etc., to the node.
@@ -213,40 +227,49 @@ class MondrianTreeClassifier(MondrianTree):
             Should we extend the tree in the right or left direction.
         """
 
-        # Let's build a function to handle splitting depending on what side we go into
-        def extend_child(parent, main_child, other):
-            # Expending the node towards the main child chosen
-            main_child.copy(parent)
-            main_child.parent = parent
-            main_child.time = split_time
+        new_depth = node.depth + 1
 
-            # other must have node has parent
-            other.is_leaf = True
+        # The node is already a branch: we create a new branch above it and move the existing
+        # node one level down the tree
+        if isinstance(node, MondrianBranchClassifier):
+            # TODO check whether the logic is inverted in the following if statement
+            if is_right_extension:
+                branch = MondrianBranchClassifier(
+                    node.parent, split_time, node.depth, feature, threshold
+                )
+                right = MondrianLeafClassifier(branch, split_time, new_depth)
 
-            # If the node previously had children, we have to update it
-            if not parent.is_leaf:
-                old_left = parent.left
-                old_right = parent.right
-                old_right.parent = main_child
-                old_left.parent = main_child
+                node.parent = branch
+                node.update_depth(new_depth)
+                branch.children = (node, right)
 
-        # Create the two splits
-        if is_right_extension:
-            left = MondrianLeafClassifier(node, split_time, self.n_classes)
-            right = MondrianLeafClassifier(node, split_time, self.n_classes)
-            extend_child(node, left, right)
+                return branch
+            else:
+                left = MondrianLeafClassifier(node, split_time, new_depth)
+                branch = MondrianBranchClassifier(
+                    node.parent, split_time, node.depth, feature, threshold
+                )
+                node.parent = branch
+                node.update_depth(new_depth)
+                branch.children = (left, node)
 
+                return branch
+        # We promote the leaf to a branch
         else:
-            right = MondrianLeafClassifier(node, split_time, self.n_classes)
-            left = MondrianLeafClassifier(node, split_time, self.n_classes)
-            extend_child(node, right, left)
+            # Create a new branch
+            branch = MondrianBranchClassifier(
+                node.parent, node.time, node.depth, feature, threshold, branch, right
+            )
+            left = MondrianLeafClassifier(branch, split_time, new_depth)
+            right = MondrianLeafClassifier(branch, split_time, new_depth)
+            branch.children = (left, right)
 
-        # Updating current node parameters
-        node.left = left
-        node.right = right
-        node.feature = feature
-        node.threshold = threshold
-        node.is_leaf = False
+            # Copy properties from the previous leaf
+            branch.replant(node)
+            # To avoid leaving garbage behind
+            node.parent = None
+
+            return branch
 
     def _go_downwards(self):
         """Update the tree (downward procedure)."""
@@ -274,8 +297,13 @@ class MondrianTreeClassifier(MondrianTree):
 
                     # We normalize the range extensions to get probabilities
                     intensities_sum = math.fsum(list(self.intensities.values()))
+<<<<<<< HEAD
                     for key in self.intensities:
                         self.intensities[key] /= intensities_sum
+=======
+                    for k in self.intensities:
+                        self.intensities[k] /= intensities_sum
+>>>>>>> 5d969f4c (refactoring)
 
                     # Sample the feature at random with a probability
                     # proportional to the range extensions
@@ -283,18 +311,18 @@ class MondrianTreeClassifier(MondrianTree):
                         list(self._x.keys()), self.intensities.values(), k=1
                     )[0]
 
-                    x_tf = self._x[feature]
+                    x_f = self._x[feature]
 
                     # Is it a right extension of the node ?
                     range_min, range_max = current_node.range(feature)
-                    is_right_extension = x_tf > range_max
+                    is_right_extension = x_f > range_max
                     if is_right_extension:
-                        threshold = self._rng.uniform(range_max, x_tf)
+                        threshold = self._rng.uniform(range_max, x_f)
                     else:
-                        threshold = self._rng.uniform(x_tf, range_min)
+                        threshold = self._rng.uniform(x_f, range_min)
 
                     # We split the current node
-                    self._split(
+                    current_node = self._split(
                         current_node,
                         split_time,
                         threshold,
@@ -305,9 +333,8 @@ class MondrianTreeClassifier(MondrianTree):
                     # Update the current node
                     self._update_downwards(current_node, True)
 
-                    left = current_node.left
-                    right = current_node.right
-                    depth = current_node.depth
+                    left, right = current_node.children
+                    depth = current_node.depth + 1
 
                     # Now, get the next node
                     if is_right_extension:
@@ -327,19 +354,18 @@ class MondrianTreeClassifier(MondrianTree):
                 else:
                     # There is no split, so we just update the node and go to the next one
                     self._update_downwards(current_node, True)
-                    if current_node.is_leaf:
+                    if isinstance(current_node, MondrianLeafClassifier):
                         return current_node
                     else:
-                        current_node = current_node.get_child(self._x)
+                        current_node = current_node.next(self._x)
 
-    def _go_upwards(self, leaf):
+    def _go_upwards(self, leaf: MondrianLeafClassifier):
         """Update the tree (upwards procedure).
 
         Parameters
         ----------
         leaf
             Leaf to start from when going upward.
-
         """
 
         current_node = leaf
@@ -354,30 +380,6 @@ class MondrianTreeClassifier(MondrianTree):
                 # We go up to the root in the tree
                 current_node = current_node.parent
 
-    def _find_leaf(self, x):
-        """Find the leaf that contains the sample, starting from the root.
-
-        Parameters
-        ----------
-        x
-            Feature vector
-        """
-
-        # We start at the root
-        node = self._root
-
-        is_leaf = False
-        while not is_leaf:
-            is_leaf = node.is_leaf
-            if not is_leaf:
-                feature_node = node.feature
-                threshold = node.threshold
-                if x[feature_node] <= threshold:
-                    node = node.left
-                else:
-                    node = node.right
-        return node
-
     @property
     def _multiclass(self):
         return True
@@ -387,9 +389,7 @@ class MondrianTreeClassifier(MondrianTree):
         self._classes.add(y)
 
         # Setting current sample
-        # We change x in a list here to make computations easier afterwards
         self._x = x
-        # Current sample label index
         self._y = y
 
         # Learning step
@@ -416,9 +416,16 @@ class MondrianTreeClassifier(MondrianTree):
             return {}
 
         # Initialization of the scores to output to 0
+<<<<<<< HEAD
         scores: dict[base.typing.ClfTarget, float] = {}
+=======
+        scores = {c: 0.0 for c in self._classes}
+>>>>>>> 5d969f4c (refactoring)
 
-        leaf = self._find_leaf(x)
+        if isinstance(MondrianBranchClassifier):
+            leaf = self._root.traverse(x, until_leaf=True)
+        else:
+            leaf = self._root
 
         if not self.use_aggregation:
             return self._predict(leaf)
@@ -427,7 +434,7 @@ class MondrianTreeClassifier(MondrianTree):
 
         while True:
             # This test is useless ?
-            if current.is_leaf:
+            if isinstance(current, MondrianLeafClassifier):
                 scores = self._predict(current)
             else:
                 weight = current.weight
@@ -436,10 +443,6 @@ class MondrianTreeClassifier(MondrianTree):
                 # Get the predictions of the current node
                 pred_new = self._predict(current)
                 for c in self._classes:
-                    if c not in scores:
-                        scores[c] = 0.0
-                    if c not in pred_new:
-                        pred_new[c] = 0.0
                     scores[c] = 0.5 * w * pred_new[c] + (1 - 0.5 * w) * scores[c]
 
             # Root must be updated as well
