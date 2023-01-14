@@ -249,7 +249,7 @@ class MondrianNodeClassifier(MondrianNode):
 
         loss_t = self.loss(sample_class, dirichlet, n_classes)
         if use_aggregation:
-            self.weight -= step * loss_t  # type: ignore
+            self.weight -= step * loss_t
         return loss_t
 
     def update_count(self, sample_class):
