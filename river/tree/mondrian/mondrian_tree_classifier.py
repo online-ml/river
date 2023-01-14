@@ -274,7 +274,7 @@ class MondrianTreeClassifier(MondrianTree):
 
                     # We normalize the range extensions to get probabilities
                     intensities_sum = math.fsum(list(self.intensities.values()))
-                    for key in self.intensities.keys():
+                    for key in self.intensities:
                         self.intensities[key] /= intensities_sum
 
                     # Sample the feature at random with a probability
@@ -417,8 +417,6 @@ class MondrianTreeClassifier(MondrianTree):
 
         # Initialization of the scores to output to 0
         scores: dict[base.typing.ClfTarget, float] = {}
-        for c in self._classes:
-            scores[c] = 0.0
 
         leaf = self._find_leaf(x)
 
