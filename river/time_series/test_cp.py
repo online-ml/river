@@ -1,7 +1,7 @@
 from river import datasets
 from river import metrics
 import conf
-from .evaluate import evaluate
+from .evaluates import evaluate
 from .holt_winters import HoltWinters
 
 dataset = datasets.AirlinePassengers()
