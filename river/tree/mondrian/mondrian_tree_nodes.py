@@ -368,5 +368,6 @@ class MondrianBranchClassifier(MondrianNodeClassifier, MondrianBranch):
     *children
         Children nodes of the branch.
     """
+
     def __init__(self, parent, time, depth, feature, threshold, *children):
         super().__init__(parent, time, depth, feature, threshold, *children)

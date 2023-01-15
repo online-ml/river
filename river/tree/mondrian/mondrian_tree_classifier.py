@@ -164,7 +164,9 @@ class MondrianTreeClassifier(MondrianTree):
             self.n_classes,
         )
 
-    def _compute_split_time(self, node: typing.Union[MondrianLeafClassifier, MondrianBranchClassifier]) -> float:
+    def _compute_split_time(
+        self, node: typing.Union[MondrianLeafClassifier, MondrianBranchClassifier]
+    ) -> float:
         """Compute the spit time of the given node.
 
         Parameters
