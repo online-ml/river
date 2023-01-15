@@ -128,7 +128,7 @@ class MondrianNode(base.Base):
 
         Parameters
         ----------
-        x_t
+        x
             Sample to deal with.
         extensions
             List of range extension per feature to update.
@@ -156,12 +156,10 @@ class MondrianNodeClassifier(MondrianNode):
         self.n_samples = 0
         self.counts = collections.defaultdict(int)
 
-    # TODO check if there is something missing here
     def replant(self, leaf: "MondrianNodeClassifier", copy_all: bool = False):
         """Transfer information from a leaf to a new branch."""
         self.weight = leaf.weight  # type: ignore
         self.log_weight_tree = leaf.log_weight_tree  # type: ignore
-        self.counts = leaf.counts
 
         if copy_all:
             self.memory_range_min = leaf.memory_range_min
@@ -294,7 +292,7 @@ class MondrianNodeClassifier(MondrianNode):
 
         Parameters
         ----------
-        x_t
+        x
             Sample to proceed (as a list).
         sample_class
             Class of the sample x_t.
@@ -352,9 +350,23 @@ class MondrianLeafClassifier(MondrianNodeClassifier, MondrianLeaf):
         super().__init__(parent, time, depth)
 
 
-# TODO add documentation
 class MondrianBranchClassifier(MondrianNodeClassifier, MondrianBranch):
-    """Mondrian Tree Classifier branch node."""
+    """Mondrian Tree Classifier branch node.
 
+    Parameters
+    ----------
+    parent
+        Parent node of the branch.
+    time
+        Split time characterizing the branch.
+    depth
+        Depth of the branch in the tree.
+    feature
+        Feature of the branch.
+    threshold
+        Acceptation threshold of the branch.
+    *children
+        Children nodes of the branch.
+    """
     def __init__(self, parent, time, depth, feature, threshold, *children):
         super().__init__(parent, time, depth, feature, threshold, *children)

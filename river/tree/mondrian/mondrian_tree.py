@@ -13,8 +13,6 @@ class MondrianTree(abc.ABC):
 
     Parameters
     ----------
-    n_features
-        Number of features.
     step
         Step parameter of the tree.
     loss
