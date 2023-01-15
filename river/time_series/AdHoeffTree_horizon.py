@@ -1,14 +1,13 @@
 
-from collections import deque
-import operator
-
 from river import time_series
 from river import tree
+from river.tree.splitter import Splitter
+from river import base
 
 __all__ = ["Hoeffding_horizon"]
 
 
-class AdaptHoeffdingHorizon(time_series.base.Forecaster):
+class AdaptHoeffdingHorizon(tree.HoeffdingTreeRegressor, time_series.base.Forecaster):
     """
 
     Parameters
@@ -18,30 +17,54 @@ class AdaptHoeffdingHorizon(time_series.base.Forecaster):
     """
     def __init__(
         self,
-        tree:tree.HoeffdingAdaptiveTreeRegressor
+        grace_period: int = 200,
+        max_depth: int = None,
+        delta: float = 1e-7,
+        tau: float = 0.05,
+        leaf_prediction: str = "adaptive",
+        leaf_model: base.Regressor = None,
+        model_selector_decay: float = 0.95,
+        nominal_attributes: list = None,
+        splitter: Splitter = None,
+        min_samples_split: int = 5,
+        bootstrap_sampling: bool = True,
+        drift_window_threshold: int = 300,
+        switch_significance: float = 0.05,
+        binary_split: bool = False,
+        max_size: float = 500.0,
+        memory_estimate_period: int = 1000000,
+        stop_mem_management: bool = False,
+        remove_poor_attrs: bool = False,
+        merit_preprune: bool = True,
+        seed: int = None,
     ):
-    
-        self.tree = tree
-        self._first_values = []
-        self._initialized = False
-
-    def learn_one(self, y, x=None):
-        self.tree.learn_one(x,y)
-        return self
-
-    def predict_one(self, x):
-        return
+        super(tree.HoeffdingTreeRegressor, self).__init__(
+            grace_period=grace_period,
+            max_depth=max_depth,
+            delta=delta,
+            tau=tau,
+            leaf_prediction=leaf_prediction,
+            leaf_model=leaf_model,
+            model_selector_decay=model_selector_decay,
+            nominal_attributes=nominal_attributes,
+            splitter=splitter,
+            min_samples_split=min_samples_split,
+            bootstrap_sampling=bootstrap_sampling,
+            drift_window_threshold=drift_window_threshold,
+            switch_significance=switch_significance,
+            binary_split=binary_split,
+            max_size=max_size,
+            memory_estimate_period=memory_estimate_period,
+            stop_mem_management=stop_mem_management,
+            remove_poor_attrs=remove_poor_attrs,
+            merit_preprune=merit_preprune,
+            seed=seed
+        )
         
     def forecast(self, horizon, xs=None):
-        op = operator.add
-        return [
-            op(
-                self.level[-1] + ((h + 1) * self.trend[-1] if self.trend else 0),
-                (
-                    self.season[-self.seasonality + h % self.seasonality]
-                    if self.season
-                    else (1 if self.multiplicative else 0)
-                ),
-            )
-            for h in range(horizon)
-        ]
+        last_pred = xs
+        forecasted_horizon = []
+        for h in range(horizon):
+            forecasted_horizon.append(self.predict_one(last_pred))
+            last_pred = forecasted_horizon[-1]
+        return forecasted_horizon

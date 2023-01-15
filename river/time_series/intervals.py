@@ -25,7 +25,7 @@ class ForecastingInterval(abc.ABC):
         """
 
     @abc.abstractmethod
-    def get(self) -> list[float]:
+    def get(self) -> list[list[float]]:
         """Return the current prediction interval along the horizon.
 
         Returns

@@ -6,6 +6,7 @@ from .holt_winters import HoltWinters
 from .metrics import ForecastingMetric, HorizonAggMetric, HorizonMetric
 from .snarimax import SNARIMAX
 from .intervals import ForecastingInterval, HorizonInterval
+from .AdHoeffTree_horizon import AdaptHoeffdingHorizon
 
 __all__ = [
     "base",
@@ -18,6 +19,7 @@ __all__ = [
     "ForecastingMetric",
     "HorizonAggMetric",
     "HorizonMetric",
+    "AdaptHoeffdingHorizon",
     "HoltWinters",
     "SNARIMAX",
 ]

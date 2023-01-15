@@ -3,8 +3,12 @@ import operator
 import dataclasses
 from typing import Tuple
 from river import base
+
+
 __all__=[
     "Interval",
+    "ConformalPrediction",
+    "AdaptativeConformalPrediction",
     "Gaussian",
     "RegressionInterval"
 ]

@@ -1,13 +1,12 @@
 from river import stats
-from river import optim
+from collections import deque
+from typing import Tuple
+import math
 
 from conf.base import Interval
 
-from collections import deque
-from typing import Tuple
-
-class Gaussian(Interval):
-    """Gaussian method to define intervals
+class ConformalPrediction(Interval):
+    """Adapatative Conformal Prediction method
 
     Parameters
     ----------
@@ -32,12 +31,13 @@ class Gaussian(Interval):
 
     >>> dataset = datasets.TrumpApproval()
 
-    >>> model = conf.Gaussian(
+    >>> model = conf.ConformalPrediction(
     ...     (
     ...         preprocessing.StandardScaler() |
     ...         linear_model.LinearRegression(intercept_lr=.1)
     ...     ),
-    ...     confidence_level=0.9
+    ...     confidence_level=0.9,
+            gamma=.05
     ... )
 
     >>> validity = stats.Mean()
@@ -60,11 +60,12 @@ class Gaussian(Interval):
     >>> efficiency
     Mean: 3.430883
 
-    Lowering the confidence will mechanically improve the efficiency.
+    Lowering the confidence lowering will mechanically improve the efficiency.
 
     References
     ----------
-    [^1]: [Barber, Rina Foygel, Emmanuel J. Candes, Aaditya Ramdas, and Ryan J. Tibshirani. "Predictive inference with the jackknife+." The Annals of Statistics 49, no. 1 (2021): 486-507.](https://www.stat.cmu.edu/~ryantibs/papers/jackknife.pdf)
+    [^1]: [Margaux Zaffran, Olivier Féron, Yannig Goude, Julie Josse, Aymeric Dieuleveut. 
+    "Adaptive Conformal Predictions for Time Series](https://arxiv.org/abs/2202.07282)
 
     """
 
@@ -74,19 +75,6 @@ class Gaussian(Interval):
         self.alpha = alpha
         self.window_size = window_size
         self.residuals = deque()
-        self.var = stats.Var()
-
-        # define the ppf on the normal distribution : 
-        # Get a normal distribution sampler
-        normal_sampler = optim.initializers.Normal(mu=0, sigma=1, seed=42)
-        # And sample enough samples : 5 millions give the result of scipy
-        normal_samples = normal_sampler(shape=500000)
-        # Initialize a quantile computer in River
-        rolling_quantile = stats.Quantile((1 - alpha) / 2)
-        for x in normal_samples:
-            _ = rolling_quantile.update(x)
-        # set the result
-        self.norm_ppf = rolling_quantile.get()
 
     def update(self, y_true: float, y_pred: float) -> "Interval":
         """Update the Interval."""
@@ -95,23 +83,23 @@ class Gaussian(Interval):
             # Remove the oldest residuals 
             self.residuals.popleft()
             # Add the new one
-            self.residuals.append(y_true - y_pred)
+            self.residuals.append(abs(y_true - y_pred))
 
-            # Update the variance with the latest residual
-            self.var.update(self.residuals[-1])      
+            # Compute the quantile
+            rolling_quantile = stats.Quantile((1-self.alpha)*(1+1/self.window_size))     
+            for x in self.residuals:
+                _ = rolling_quantile.update(x)
 
             # Compute the interval
-            # First get 
-            half_inter = self.norm_ppf*self.var.get()**0.5
+            half_inter = rolling_quantile.get()
+
             # And set the borne
             self.lower, self.upper = y_pred-half_inter, y_pred+half_inter
         else:
             # Fill the residuals until it reaches window size
-            self.residuals.append(y_true - y_pred)
-            # Update the variance
-            self.var.update(self.residuals[-1])
+            self.residuals.append(abs(y_true - y_pred))
+            
 
     def get(self) -> Tuple[float, float]:
         """Return the current value of the Interval."""
         return (self.lower, self.upper)
-
