@@ -261,6 +261,7 @@ class MondrianTreeClassifier(MondrianTree):
                 right.children = (old_left, old_right)
 
             # Update the level of the modified nodes
+            new_depth += 1
             old_left.update_depth(new_depth)
             old_right.update_depth(new_depth)
 
