@@ -118,17 +118,16 @@ class MondrianNode(base.Base):
             self.memory_range_max[feature],
         )
 
-    def range_extension(self, x, extensions) -> float:
+    def range_extension(self, x) -> tuple[float, dict[base.typing.ClfTarget, float]]:
         """Compute the range extension of the node for the given sample.
 
         Parameters
         ----------
         x
             Sample to deal with.
-        extensions
-            List of range extension per feature to update.
         """
 
+        extensions: dict[base.typing.ClfTarget, float] = {}
         extensions_sum = 0.0
         for feature in x:
             x_f = x[feature]
@@ -141,7 +140,7 @@ class MondrianNode(base.Base):
                 diff = 0
             extensions[feature] = diff
             extensions_sum += diff
-        return extensions_sum
+        return extensions_sum, extensions
 
 
 class MondrianNodeClassifier(MondrianNode):
