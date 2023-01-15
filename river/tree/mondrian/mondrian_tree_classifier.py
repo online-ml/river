@@ -2,7 +2,7 @@ import math
 import sys
 import typing
 
-from river import base
+from river import base, utils
 from river.tree.mondrian.mondrian_tree import MondrianTree
 from river.tree.mondrian.mondrian_tree_nodes import (
     MondrianBranchClassifier,
@@ -327,7 +327,7 @@ class MondrianTreeClassifier(MondrianTree):
                     # Sample the feature at random with a probability
                     # proportional to the range extensions
                     feature = self._rng.choices(
-                        list(self._x.keys()), self.intensities.values(), k=1
+                        list(self._x.keys()), [self.intensities[i] for i in self._x], k=1
                     )[0]
 
                     x_f = self._x[feature]
@@ -385,8 +385,11 @@ class MondrianTreeClassifier(MondrianTree):
                         return current_node
                     else:
                         # Save the path direction to keep the tree consistent
-                        branch_no = current_node.branch_no(self._x)
-                        current_node = current_node.children[branch_no]
+                        try:
+                            branch_no = current_node.branch_no(self._x)
+                            current_node = current_node.children[branch_no]
+                        except KeyError:  # Missing split feature
+                            branch_no, current_node = current_node.most_common_path()
 
     def _go_upwards(self, leaf: MondrianLeafClassifier):
         """Update the tree (upwards procedure).
@@ -477,4 +480,5 @@ class MondrianTreeClassifier(MondrianTree):
             # And now we go up
             current = current.parent
 
-        return scores
+        # Normalize scores to mimic a probability distribution
+        return utils.norm.normalize_values_in_dict(scores, inplace=False)

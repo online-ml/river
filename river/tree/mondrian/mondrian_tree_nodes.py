@@ -66,8 +66,8 @@ class MondrianBranch(Branch):
 class MondrianNode(base.Base):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.memory_range_min = {}
-        self.memory_range_max = {}
+        self.memory_range_min = collections.defaultdict(int)
+        self.memory_range_max = collections.defaultdict(int)
 
         self.weight = 0.0
         self.log_weight_tree = 0.0
@@ -112,11 +112,6 @@ class MondrianNode(base.Base):
             Feature for which you want to know the range.
 
         """
-
-        # Should we initialize a default value for the given feature
-        if feature not in self.memory_range_min:
-            self.memory_range_min[feature] = 0.0
-            self.memory_range_max[feature] = 0.0
 
         return (
             self.memory_range_min[feature],
