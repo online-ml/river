@@ -43,11 +43,13 @@ class MondrianBranch(Branch):
         self.feature = feature
         self.threshold = threshold
 
-    def next(self, x):
-        left, right = self.children
+    def branch_no(self, x) -> int:
         if x[self.feature] <= self.threshold:
-            return left
-        return right
+            return 0
+        return 1
+
+    def next(self, x):
+        return self.children[self.branch_no(x)]
 
     def most_common_path(self):
         left, right = self.children
@@ -155,11 +157,16 @@ class MondrianNodeClassifier(MondrianNode):
         self.counts = collections.defaultdict(int)
 
     # TODO check if there is something missing here
-    def replant(self, leaf: "MondrianNodeClassifier"):
+    def replant(self, leaf: "MondrianNodeClassifier", copy_all: bool = False):
         """Transfer information from a leaf to a new branch."""
         self.weight = leaf.weight  # type: ignore
         self.log_weight_tree = leaf.log_weight_tree  # type: ignore
         self.counts = leaf.counts
+
+        if copy_all:
+            self.memory_range_min = leaf.memory_range_min
+            self.memory_range_max = leaf.memory_range_max
+            self.n_samples = leaf.n_samples
 
     def score(self, sample_class: base.typing.ClfTarget, dirichlet: float, n_classes: int) -> float:
         """Compute the score of the node.
