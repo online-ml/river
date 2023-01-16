@@ -11,7 +11,7 @@ from river.tree.mondrian.mondrian_tree_nodes import (
 )
 
 
-class MondrianTreeClassifier(MondrianTree):
+class MondrianTreeClassifier(MondrianTree, base.Classifier):
     """Mondrian Tree classifier.
 
     Parameters
@@ -39,6 +39,22 @@ class MondrianTreeClassifier(MondrianTree):
     ----------
     [^1] Balaji Lakshminarayanan, Daniel M. Roy, Yee Whye Teh. Mondrian Forests: Efficient Online Random Forests.
         arXiv:1406.2673, pages 2-4
+
+    Examples
+    --------
+    >>> from river import tree
+    >>> from river import evaluate
+    >>> from river import metrics
+    >>> from river.datasets import Bananas
+
+    >>> dataset = Bananas().take(500)
+
+    >>> model = tree.MondrianTreeClassifier(n_classes=2, step=0.1, use_aggregation=True, dirichlet=0.2, seed=1)
+
+    >>> metric = metrics.Accuracy()
+
+    >>> evaluate.progressive_val_score(dataset, model, metric)
+    Accuracy: 57.52%
     """
 
     def __init__(
@@ -69,6 +85,9 @@ class MondrianTreeClassifier(MondrianTree):
         else:
             self.dirichlet = dirichlet
 
+        # Controls the randomness in the tree
+        self.seed = seed
+
         # Training attributes
         # The previously observed classes set
         self._classes: set[base.typing.ClfTarget] = set()
@@ -83,6 +102,7 @@ class MondrianTreeClassifier(MondrianTree):
         self._root = MondrianLeafClassifier(None, 0.0, 0)
 
     def is_trained(self):
+        """Check if the tree has learnt at least one sample"""
         return len(self._classes) != 0
 
     def _score(self, node: MondrianNodeClassifier) -> float:

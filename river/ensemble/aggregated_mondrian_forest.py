@@ -119,6 +119,21 @@ class AMFClassifier(AMFLearner, base.Classifier):
     ----------
     J. Mourtada, S. Gaiffas and E. Scornet, *AMF: Aggregated Mondrian Forests for Online Learning*, arXiv:1906.10529, 2019.
 
+    Examples
+    --------
+    >>> from river import ensemble
+    >>> from river import evaluate
+    >>> from river import metrics
+    >>> from river.datasets import Bananas
+
+    >>> dataset = Bananas().take(500)
+
+    >>> model = ensemble.AMFClassifier(n_classes=2, n_estimators=10, use_aggregation=True, dirichlet=0.2, seed=1)
+
+    >>> metric = metrics.Accuracy()
+
+    >>> evaluate.progressive_val_score(dataset, model, metric)
+    Accuracy: 84.77%
     """
 
     def __init__(

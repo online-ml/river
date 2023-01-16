@@ -30,7 +30,7 @@ class MondrianLeaf(Leaf):
 
     @property
     def __repr__(self):
-        return f"Node : {self.parent}, {self.time}"
+        return f"MondrianLeaf : {self.parent}, {self.time}, {self.depth}"
 
 
 class MondrianBranch(Branch):
@@ -58,12 +58,13 @@ class MondrianBranch(Branch):
             return 1, right
         return 0, left
 
-    # TODO implement this for real
     def repr_split(self):
-        return ""
+        return f"{self.feature} ≤ {self.threshold}"
 
 
 class MondrianNode(base.Base):
+    """Representation of a node within a Mondrian tree"""
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.memory_range_min = collections.defaultdict(int)
@@ -110,7 +111,6 @@ class MondrianNode(base.Base):
         ----------
         feature
             Feature for which you want to know the range.
-
         """
 
         return (

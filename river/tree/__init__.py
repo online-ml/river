@@ -71,7 +71,7 @@ __all__ = [
     "HoeffdingAdaptiveTreeRegressor",
     "iSOUPTreeRegressor",
     "LabelCombinationHoeffdingTreeClassifier",
+    "MondrianTreeClassifier",
     "SGTClassifier",
     "SGTRegressor",
-    "MondrianTreeClassifier",
 ]

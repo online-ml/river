@@ -42,6 +42,5 @@ class MondrianTree(abc.ABC):
         self.split_pure = split_pure
         self.iteration = iteration
 
+        # Controls the randomness in the tree
         self._rng = random.Random(seed)
-
-        # One should initialize the tree in the child class as well
