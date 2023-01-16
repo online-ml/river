@@ -49,7 +49,13 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
 
     >>> dataset = Bananas().take(500)
 
-    >>> model = tree.MondrianTreeClassifier(n_classes=2, step=0.1, use_aggregation=True, dirichlet=0.2, seed=1)
+    >>> model = tree.mondrian.MondrianTreeClassifier(
+    ...     n_classes=2,
+    ...     step=0.1,
+    ...     use_aggregation=True,
+    ...     dirichlet=0.2,
+    ...     seed=1
+    ... )
 
     >>> metric = metrics.Accuracy()
 
