@@ -165,7 +165,9 @@ class MondrianTreeClassifier(MondrianTree):
         )
 
     def _compute_split_time(
-        self, node: typing.Union[MondrianLeafClassifier, MondrianBranchClassifier]
+        self,
+        node: typing.Union[MondrianLeafClassifier, MondrianBranchClassifier],
+        extensions_sum: float,
     ) -> float:
         """Compute the spit time of the given node.
 
@@ -179,7 +181,6 @@ class MondrianTreeClassifier(MondrianTree):
         if not self.split_pure and node.is_dirac(self._y):
             return 0.0
 
-        extensions_sum, extensions = node.range_extension(self._x)
         # If x_t extends the current range of the node
         if extensions_sum > 0:
             # Sample an exponential with intensity = extensions_sum
@@ -311,23 +312,26 @@ class MondrianTreeClassifier(MondrianTree):
             # Path from the parent to the current node
             branch_no = None
             while True:
+                # Computing the extensions to get the intensities
+                extensions_sum, extensions = current_node.range_extension(self._x)
+
                 # If it's not the first iteration (otherwise the current node
                 # is root with no range), we consider the possibility of a split
-                split_time = self._compute_split_time(current_node)
+                split_time = self._compute_split_time(current_node, extensions_sum)
 
                 if split_time > 0:
                     # We split the current node: because the current node is a
                     # leaf, or because we add a new node along the path
 
-                    # Computing the extensions to get the intensities
-                    extensions_sum, extensions = current_node.range_extension(self._x)
                     # We normalize the range extensions to get probabilities
-                    intensities = utils.norm.normalize_values_in_dict(extensions, inplace=True)
+                    intensities = utils.norm.normalize_values_in_dict(extensions, inplace=False)
 
                     # Sample the feature at random with a probability
                     # proportional to the range extensions
+
+                    candidates = sorted(list(self._x.keys()))
                     feature = self._rng.choices(
-                        list(self._x.keys()), [intensities[i] for i in self._x], k=1
+                        candidates, [intensities[c] for c in candidates], k=1
                     )[0]
 
                     x_f = self._x[feature]
