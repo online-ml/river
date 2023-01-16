@@ -60,11 +60,12 @@ class AdaptHoeffdingHorizon(tree.HoeffdingTreeRegressor, time_series.base.Foreca
             merit_preprune=merit_preprune,
             seed=seed
         )
-        
+
     def forecast(self, horizon, xs=None):
         last_pred = xs
         forecasted_horizon = []
         for h in range(horizon):
             forecasted_horizon.append(self.predict_one(last_pred))
             last_pred = forecasted_horizon[-1]
+
         return forecasted_horizon

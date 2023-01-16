@@ -5,6 +5,7 @@ from numbers import Number
 
 import conf
 
+
 # Using the metrics.py framework
 class ForecastingInterval(abc.ABC):
     @abc.abstractmethod

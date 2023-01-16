@@ -5,6 +5,7 @@ import math
 
 from conf.base import Interval
 
+
 class AdaptativeConformalPrediction(Interval):
     """Adapatative Conformal Prediction method
 
@@ -64,7 +65,7 @@ class AdaptativeConformalPrediction(Interval):
 
     References
     ----------
-    [^1]: [Margaux Zaffran, Olivier Féron, Yannig Goude, Julie Josse, Aymeric Dieuleveut. 
+    [^1]: [Margaux Zaffran, Olivier Féron, Yannig Goude, Julie Josse, Aymeric Dieuleveut.
     "Adaptive Conformal Predictions for Time Series](https://arxiv.org/abs/2202.07282)
 
     """
@@ -81,9 +82,9 @@ class AdaptativeConformalPrediction(Interval):
 
     def update(self, y_true: float, y_pred: float) -> "Interval":
         """Update the Interval."""
-        
+
         if len(self.residuals)==self.window_size:
-            # Remove the oldest residuals 
+            # Remove the oldest residuals
             self.residuals.popleft()
             # Add the new one
             self.residuals.append(abs(y_true - y_pred))
@@ -98,8 +99,8 @@ class AdaptativeConformalPrediction(Interval):
 
             else: # => 1-alpha_t in ]0,1[ => compute the quantiles
                 # Update the updated quantile
-                _ = self.rolling_quantile .update(x)
-                
+                _ = self.rolling_quantile.update(self.residuals[-1])
+
                 # Get the window
                 half_inter = self.rolling_quantile .get()
 
@@ -117,4 +118,5 @@ class AdaptativeConformalPrediction(Interval):
 
     def get(self) -> Tuple[float, float]:
         """Return the current value of the Interval."""
+
         return (self.lower, self.upper)

@@ -118,7 +118,7 @@ def iter_evaluate(
 
     # Defining the interval for a certain horizon
     horizon_interval = (time_series.HorizonInterval(interval))
-    
+
     ##############################################################################
     # Pre-train the model
     ##############################################################################
@@ -136,7 +136,6 @@ def iter_evaluate(
         x, y, x_horizon, y_horizon = next(steps)
         model.learn_one(y=y, x=x)  # type: ignore
 
-
     ##############################################################################
     # Get first residuals series with the pre-trained model
     ##############################################################################
@@ -153,12 +152,11 @@ def iter_evaluate(
         # Initializing the interval for each horizon
         horizon_interval.update(y_horizon, y_pred)
 
-
     ##############################################################################
     # Forecast with intervals and learn
     ##############################################################################
 
-    # No reinitialisation of the dataset since we begin from where we stopped 
+    # No reinitialisation of the dataset since we begin from where we stopped
     # at the pre-train stage
     for x, y, x_horizon, y_horizon in steps:
         # Predicting future values until a certain horizon
@@ -246,8 +244,8 @@ def evaluate(
 
     horizon_metric = None
     horizon_interval = None
-    steps = iter_evaluate(dataset, model, metric, 
-                          interval, horizon, agg_func, 
+    steps = iter_evaluate(dataset, model, metric,
+                          interval, horizon, agg_func,
                           grace_period, residual_calibration_period)
     for *_, horizon_metric, horizon_interval in steps:
         pass
