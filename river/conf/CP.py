@@ -6,7 +6,7 @@ import math
 from conf.base import Interval
 
 class ConformalPrediction(Interval):
-    """Adapatative Conformal Prediction method
+    """Conformal Prediction method
 
     Parameters
     ----------
