@@ -4,10 +4,10 @@ from river import tree
 from river.tree.splitter import Splitter
 from river import base
 
-__all__ = ["Hoeffding_horizon"]
+__all__ = ["HoeffdingTreeHorizon"]
 
 
-class AdaptHoeffdingHorizon(tree.HoeffdingTreeRegressor, time_series.base.Forecaster):
+class HoeffdingTreeHorizon(time_series.base.Forecaster, tree.HoeffdingTreeRegressor):
     """
 
     Parameters
@@ -27,18 +27,14 @@ class AdaptHoeffdingHorizon(tree.HoeffdingTreeRegressor, time_series.base.Foreca
         nominal_attributes: list = None,
         splitter: Splitter = None,
         min_samples_split: int = 5,
-        bootstrap_sampling: bool = True,
-        drift_window_threshold: int = 300,
-        switch_significance: float = 0.05,
         binary_split: bool = False,
         max_size: float = 500.0,
         memory_estimate_period: int = 1000000,
         stop_mem_management: bool = False,
         remove_poor_attrs: bool = False,
-        merit_preprune: bool = True,
-        seed: int = None,
+        merit_preprune: bool = True
     ):
-        super(tree.HoeffdingTreeRegressor, self).__init__(
+        super().__init__(
             grace_period=grace_period,
             max_depth=max_depth,
             delta=delta,
@@ -49,22 +45,21 @@ class AdaptHoeffdingHorizon(tree.HoeffdingTreeRegressor, time_series.base.Foreca
             nominal_attributes=nominal_attributes,
             splitter=splitter,
             min_samples_split=min_samples_split,
-            bootstrap_sampling=bootstrap_sampling,
-            drift_window_threshold=drift_window_threshold,
-            switch_significance=switch_significance,
             binary_split=binary_split,
             max_size=max_size,
             memory_estimate_period=memory_estimate_period,
             stop_mem_management=stop_mem_management,
             remove_poor_attrs=remove_poor_attrs,
-            merit_preprune=merit_preprune,
-            seed=seed
+            merit_preprune=merit_preprune
         )
         
+    def learn_one(self, y: float, x: dict):
+        return super().learn_one(y, x)
+
     def forecast(self, horizon, xs=None):
         last_pred = xs
         forecasted_horizon = []
         for h in range(horizon):
-            forecasted_horizon.append(self.predict_one(last_pred))
+            forecasted_horizon.append(super().predict_one(last_pred))
             last_pred = forecasted_horizon[-1]
         return forecasted_horizon

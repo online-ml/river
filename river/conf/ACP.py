@@ -98,7 +98,7 @@ class AdaptativeConformalPrediction(Interval):
 
             else: # => 1-alpha_t in ]0,1[ => compute the quantiles
                 # Update the updated quantile
-                _ = self.rolling_quantile .update(x)
+                _ = self.rolling_quantile .update(self.residuals[-1])
                 
                 # Get the window
                 half_inter = self.rolling_quantile .get()
