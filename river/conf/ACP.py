@@ -77,7 +77,8 @@ class AdaptativeConformalPrediction(Interval):
         self.alpha_t = alpha
         self.window_size = window_size
         self.residuals = deque()
-        
+        self.rolling_quantile = stats.Quantile(1-self.alpha_t)
+
     def update(self, y_true: float, y_pred: float) -> "Interval":
         """Update the Interval."""
         
@@ -96,13 +97,11 @@ class AdaptativeConformalPrediction(Interval):
                 err = 0
 
             else: # => 1-alpha_t in ]0,1[ => compute the quantiles
-                # compute the updated quantile
-                rolling_quantile = stats.Quantile(1-self.alpha_t)
-                for x in self.residuals:
-                    _ = rolling_quantile.update(x)
+                # Update the updated quantile
+                _ = self.rolling_quantile .update(x)
                 
                 # Get the window
-                half_inter = rolling_quantile.get()
+                half_inter = self.rolling_quantile .get()
 
                 # create the bounds for the ACP interval, centered around y_pred
                 self.lower, self.upper = y_pred-half_inter, y_pred+half_inter

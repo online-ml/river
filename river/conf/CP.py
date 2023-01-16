@@ -75,6 +75,7 @@ class ConformalPrediction(Interval):
         self.alpha = alpha
         self.window_size = window_size
         self.residuals = deque()
+        self.rolling_quantile = stats.Quantile((1-self.alpha)*(1+1/self.window_size))   
 
     def update(self, y_true: float, y_pred: float) -> "Interval":
         """Update the Interval."""
@@ -85,13 +86,11 @@ class ConformalPrediction(Interval):
             # Add the new one
             self.residuals.append(abs(y_true - y_pred))
 
-            # Compute the quantile
-            rolling_quantile = stats.Quantile((1-self.alpha)*(1+1/self.window_size))     
-            for x in self.residuals:
-                _ = rolling_quantile.update(x)
+            # Update the quantile
+            _ = self.rolling_quantile.update(self.residuals[-1])
 
             # Compute the interval
-            half_inter = rolling_quantile.get()
+            half_inter = self.rolling_quantile.get()
 
             # And set the borne
             self.lower, self.upper = y_pred-half_inter, y_pred+half_inter
