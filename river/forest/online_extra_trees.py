@@ -491,6 +491,10 @@ class OXTRegressor(ExtraTrees, base.Regressor):
     speedups to the ensemble), and might also randomize the maximum depth of the forest members,
     as well as the size of the feature subspace processed by each of its trees' leaves.
 
+    On the other hand, OXT suffers from a cold-start problem. As the splits are random, the
+    predictive performance in small samples is usually worse than using a deterministic
+    split approach, such as the one used by ARF.
+
     Parameters
     ----------
     n_models
