@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 import abc
 import collections
 import math
@@ -48,9 +49,9 @@ class ExtraTrees(base.Ensemble, metaclass=abc.ABCMeta):
     def __init__(
         self,
         n_models: int,
-        max_features: typing.Union[bool, str, int],
-        resampling_strategy: typing.Optional[str],
-        resampling_rate: typing.Union[int, float],
+        max_features: bool | str | int,
+        resampling_strategy: str | None,
+        resampling_rate: int | float,
         detection_mode: str,
         warning_detector: base.DriftDetector | None,
         drift_detector: base.DriftDetector | None,
@@ -110,7 +111,7 @@ class ExtraTrees(base.Ensemble, metaclass=abc.ABCMeta):
         self.seed = seed
 
         # The predictive performance of each tree
-        self._perfs: typing.List = []
+        self._perfs: list = []
         # Keep a running estimate of the sum of performances
         self._perf_sum: float = 0
 
@@ -149,11 +150,11 @@ class ExtraTrees(base.Ensemble, metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def _new_member(
         self, max_features, max_depth, seed
-    ) -> typing.Union[base.Classifier, base.Regressor]:
+    ) -> base.Classifier | base.Regressor:
         pass
 
     @abc.abstractmethod
-    def _drift_input(self, y, y_hat) -> typing.Union[int, float]:
+    def _drift_input(self, y, y_hat) -> int | float:
         pass
 
     def _calculate_tree_depth(self) -> int | float:
@@ -224,7 +225,7 @@ class ExtraTrees(base.Ensemble, metaclass=abc.ABCMeta):
         drift_detector: base.DriftDetector,
         warning_detector: base.DriftDetector,
         detector_input: numbers.Number,
-    ) -> typing.Tuple[bool, bool]:
+    ) -> tuple[bool, bool]:
         in_warning = warning_detector.update(detector_input).drift_detected
         in_drift = drift_detector.update(detector_input).drift_detected
 
@@ -235,7 +236,7 @@ class ExtraTrees(base.Ensemble, metaclass=abc.ABCMeta):
         drift_detector: base.DriftDetector,
         warning_detector: base.DriftDetector,
         detector_input: numbers.Number,
-    ) -> typing.Tuple[bool, bool]:
+    ) -> tuple[bool, bool]:
         in_drift = drift_detector.update(detector_input).drift_detected
 
         return in_drift, False
@@ -245,7 +246,7 @@ class ExtraTrees(base.Ensemble, metaclass=abc.ABCMeta):
         drift_detector: base.DriftDetector,
         warning_detector: base.DriftDetector,
         detector_input: numbers.Number,
-    ) -> typing.Tuple[bool, bool]:
+    ) -> tuple[bool, bool]:
         return False, False
 
     def __detection_mode_factory(self):
@@ -631,9 +632,9 @@ class OXTRegressor(ExtraTrees, base.Regressor):
     def __init__(
         self,
         n_models: int = 10,
-        max_features: typing.Union[bool, str, int] = "sqrt",
-        resampling_strategy: typing.Optional[str] = "subbagging",
-        resampling_rate: typing.Union[int, float] = 0.5,
+        max_features: bool | str | int = "sqrt",
+        resampling_strategy: str | None = "subbagging",
+        resampling_rate: int | float = 0.5,
         detection_mode: str = "all",
         warning_detector: base.DriftDetector | None = None,
         drift_detector: base.DriftDetector | None = None,
@@ -712,7 +713,7 @@ class OXTRegressor(ExtraTrees, base.Regressor):
             seed=seed,
         )
 
-    def _drift_input(self, y, y_hat) -> typing.Union[int, float]:
+    def _drift_input(self, y, y_hat) -> int | float:
         return abs(y - y_hat)
 
     def predict_one(self, x: dict) -> base.typing.RegTarget:
