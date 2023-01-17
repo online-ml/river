@@ -28,9 +28,10 @@
 ## forest
 
 - Created this new module to host all models based on an ensemble of decision trees.
-- Moved `AdaptiveRandomForestClassifier` from the `ensemble` module to the `tree` module.
-- Moved `AdaptiveRandomForestRegressor` from the `ensemble` module to the `tree` module.
+- Moved `AdaptiveRandomForestClassifier` from the `ensemble` module to the `forest` module.
+- Moved `AdaptiveRandomForestRegressor` from the `ensemble` module to the `forest` module.
 - Added `forest.AMFClassifier`.
+- Added `forest.OXTRegressor`.
 
 ## linear_model
 
