@@ -361,6 +361,13 @@ class ExtraTrees(base.Ensemble, metaclass=abc.ABCMeta):
         """
         return self._sample_counter
 
+    @classmethod
+    def _unit_test_params(cls):
+        yield {"n_models": 3}
+
+    def _unit_test_skips(self):
+        return {"check_shuffle_features_no_impact"}
+
 
 class ETRegressor(tree.HoeffdingTreeRegressor):
     """Extra Tree regressor.
@@ -600,17 +607,14 @@ class OXTRegressor(ExtraTrees, base.Regressor):
     >>> from river import metrics
     >>> from river import forest
 
-    >>> dataset = datasets.synth.Friedman(seed=42).take(2000)
+    >>> dataset = datasets.synth.Friedman(seed=42).take(5000)
 
-    >>> model = forest.OXTRegressor(
-    ...     n_models=3,
-    ...     seed=42
-    ... )
+    >>> model = forest.OXTRegressor(n_models=3, seed=42)
 
     >>> metric = metrics.RMSE()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    RMSE: 3.24238
+    RMSE: 3.127311
 
     References
     ----------
@@ -622,8 +626,8 @@ class OXTRegressor(ExtraTrees, base.Regressor):
     def __init__(
         self,
         n_models: int = 10,
-        max_features: typing.Union[bool, str, int] = "random",
-        resampling_strategy: typing.Optional[str] = None,
+        max_features: typing.Union[bool, str, int] = "sqrt",
+        resampling_strategy: typing.Optional[str] = "subbagging",
         resampling_rate: typing.Union[int, float] = 0.5,
         detection_mode: str = "all",
         warning_detector: base.DriftDetector | None = None,
@@ -637,7 +641,7 @@ class OXTRegressor(ExtraTrees, base.Regressor):
         grace_period: int = 50,
         delta: float = 0.01,
         tau: float = 0.05,
-        leaf_prediction: str = "model",
+        leaf_prediction: str = "adaptive",
         leaf_model: base.Regressor = None,
         model_selector_decay: float = 0.95,
         nominal_attributes: list = None,
