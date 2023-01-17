@@ -1,5 +1,4 @@
 import abc
-import copy
 import numbers
 import typing
 
@@ -102,7 +101,7 @@ class HTLeaf(Leaf, abc.ABC):
                 ) or not isinstance(att_val, numbers.Number):
                     splitter = self.new_nominal_splitter()
                 else:
-                    splitter = copy.deepcopy(self.splitter)
+                    splitter = self.splitter.clone()
 
                 self.splitters[att_id] = splitter
             splitter.update(att_val, y, sample_weight)

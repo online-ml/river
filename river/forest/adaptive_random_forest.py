@@ -342,7 +342,7 @@ class BaseTreeRegressor(HoeffdingTreeRegressor):
         return new_instance
 
 
-class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
+class ARFClassifier(BaseForest, base.Classifier):
     """Adaptive Random Forest classifier.
 
     The 3 most important aspects of Adaptive Random Forest [^1] are:
@@ -449,7 +449,7 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
     ...     width=40
     ... ).take(1000)
 
-    >>> model = forest.AdaptiveRandomForestClassifier(seed=8, leaf_prediction="mc")
+    >>> model = forest.ARFClassifier(seed=8, leaf_prediction="mc")
 
     >>> metric = metrics.Accuracy()
 
@@ -579,7 +579,7 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
         )
 
 
-class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
+class ARFRegressor(BaseForest, base.Regressor):
     r"""Adaptive Random Forest regressor.
 
     The 3 most important aspects of Adaptive Random Forest [^1] are:
@@ -713,7 +713,7 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
 
     >>> model = (
     ...     preprocessing.StandardScaler() |
-    ...     forest.AdaptiveRandomForestRegressor(seed=42)
+    ...     forest.ARFRegressor(seed=42)
     ... )
 
     >>> metric = metrics.MAE()
