@@ -78,6 +78,7 @@ class iSOUPTreeRegressor(tree.HoeffdingTreeRegressor, base.MultiOutputMixin):
 
     Examples
     --------
+
     >>> import numbers
     >>> from river import compose
     >>> from river import datasets

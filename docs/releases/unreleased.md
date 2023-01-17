@@ -25,6 +25,13 @@
 - Added `ensemble.ADWINBoostingClassifier`.
 - Added `ensemble.BOLEClassifier`.
 
+## forest
+
+- Created this new module to host all models based on an ensemble of decision trees.
+- Moved `AdaptiveRandomForestClassifier` from the `ensemble` module to the `tree` module.
+- Moved `AdaptiveRandomForestRegressor` from the `ensemble` module to the `tree` module.
+- Added `forest.AMFClassifier`.
+
 ## linear_model
 
 - Renamed `use_dist` to `with_dist` in `linear_model.BayesianLinearRegression`'s `predict_one` method.

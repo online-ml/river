@@ -7,8 +7,10 @@ import typing
 
 import numpy as np
 
-from river import base, metrics, stats, tree
+from river import base, metrics, stats
 from river.drift import ADWIN
+from river.tree.hoeffding_tree_classifier import HoeffdingTreeClassifier
+from river.tree.hoeffding_tree_regressor import HoeffdingTreeRegressor
 from river.tree.nodes.arf_htc_nodes import (
     RandomLeafMajorityClass,
     RandomLeafNaiveBayes,
@@ -135,7 +137,7 @@ class BaseForest(base.Ensemble):
             self.max_features = n_features
 
 
-class BaseTreeClassifier(tree.HoeffdingTreeClassifier):
+class BaseTreeClassifier(HoeffdingTreeClassifier):
     """Adaptive Random Forest Hoeffding Tree Classifier.
 
     This is the base-estimator of the Adaptive Random Forest classifier.
@@ -227,7 +229,7 @@ class BaseTreeClassifier(tree.HoeffdingTreeClassifier):
         return new_instance
 
 
-class BaseTreeRegressor(tree.HoeffdingTreeRegressor):
+class BaseTreeRegressor(HoeffdingTreeRegressor):
     """ARF Hoeffding Tree regressor.
 
     This is the base-estimator of the Adaptive Random Forest regressor.
@@ -373,12 +375,15 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
         The lambda value for bagging (lambda=6 corresponds to Leveraging Bagging).
     metric
         Metric used to track trees performance within the ensemble.
+        Defaults to `metrics.Accuracy()`.
     disable_weighted_vote
         If `True`, disables the weighted vote prediction.
     drift_detector
         Drift Detection method. Set to None to disable Drift detection.
+        Defaults to `drift.ADWIN(delta=0.001)`.
     warning_detector
         Warning Detection method. Set to None to disable warning detection.
+        Defaults to `drift.ADWIN(delta=0.01)`.
     grace_period
         [*Tree parameter*] Number of instances a leaf should observe between
         split attempts.
@@ -432,15 +437,19 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
 
     Examples
     --------
-    >>> from river import ensemble
+
     >>> from river import evaluate
+    >>> from river import forest
     >>> from river import metrics
     >>> from river.datasets import synth
 
-    >>> dataset = synth.ConceptDriftStream(seed=42, position=500,
-    ...                                    width=40).take(1000)
+    >>> dataset = synth.ConceptDriftStream(
+    ...     seed=42,
+    ...     position=500,
+    ...     width=40
+    ... ).take(1000)
 
-    >>> model = ensemble.AdaptiveRandomForestClassifier(seed=8, leaf_prediction="mc")
+    >>> model = forest.AdaptiveRandomForestClassifier(seed=8, leaf_prediction="mc")
 
     >>> metric = metrics.Accuracy()
 
@@ -461,10 +470,10 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
         n_models: int = 10,
         max_features: typing.Union[bool, str, int] = "sqrt",
         lambda_value: int = 6,
-        metric: metrics.base.MultiClassMetric = metrics.Accuracy(),
+        metric: metrics.base.MultiClassMetric = None,
         disable_weighted_vote=False,
-        drift_detector: typing.Union[base.DriftDetector, None] = ADWIN(delta=0.001),
-        warning_detector: typing.Union[base.DriftDetector, None] = ADWIN(delta=0.01),
+        drift_detector: typing.Union[base.DriftDetector, None] = None,
+        warning_detector: typing.Union[base.DriftDetector, None] = None,
         # Tree parameters
         grace_period: int = 50,
         max_depth: int = None,
@@ -487,10 +496,10 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
             n_models=n_models,
             max_features=max_features,
             lambda_value=lambda_value,
-            metric=metric,
+            metric=metric or metrics.Accuracy(),
             disable_weighted_vote=disable_weighted_vote,
-            drift_detector=drift_detector,
-            warning_detector=warning_detector,
+            drift_detector=drift_detector or ADWIN(delta=0.001),
+            warning_detector=warning_detector or ADWIN(delta=0.01),
             seed=seed,
         )
 
@@ -518,13 +527,13 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
     def _mutable_attributes(self):
         return {
             "max_features",
-            "aggregation_method",
             "lambda_value",
             "grace_period",
             "delta",
             "tau",
         }
 
+    @property
     def _multiclass(self):
         return True
 
@@ -608,7 +617,7 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
     metric
         Metric used to track trees performance within the ensemble. Depending,
         on the configuration, this metric is also used to weight predictions
-        from the members of the ensemble.
+        from the members of the ensemble. Defaults to `metrics.MSE()`.
     aggregation_method
         The method to use to aggregate predictions in the ensemble.<br/>
         - 'mean'<br/>
@@ -619,8 +628,10 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
         instead. Otherwise will use the `metric` value to weight predictions.
     drift_detector
         Drift Detection method. Set to None to disable Drift detection.
+        Defaults to `drift.ADWIN(0.001)`.
     warning_detector
         Warning Detection method. Set to None to disable warning detection.
+        Defaults to `drift.ADWIN(0.01)`.
     grace_period
         [*Tree parameter*] Number of instances a leaf should observe between
         split attempts.
@@ -691,17 +702,18 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
 
     Examples
     --------
+
     >>> from river import datasets
     >>> from river import evaluate
+    >>> from river import forest
     >>> from river import metrics
-    >>> from river import ensemble
     >>> from river import preprocessing
 
     >>> dataset = datasets.TrumpApproval()
 
     >>> model = (
     ...     preprocessing.StandardScaler() |
-    ...     ensemble.AdaptiveRandomForestRegressor(seed=42)
+    ...     forest.AdaptiveRandomForestRegressor(seed=42)
     ... )
 
     >>> metric = metrics.MAE()
@@ -722,10 +734,10 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
         max_features="sqrt",
         aggregation_method: str = "median",
         lambda_value: int = 6,
-        metric: metrics.base.RegressionMetric = metrics.MSE(),
+        metric: metrics.base.RegressionMetric = None,
         disable_weighted_vote=True,
-        drift_detector: base.DriftDetector = ADWIN(0.001),
-        warning_detector: base.DriftDetector = ADWIN(0.01),
+        drift_detector: base.DriftDetector = None,
+        warning_detector: base.DriftDetector = None,
         # Tree parameters
         grace_period: int = 50,
         max_depth: int = None,
@@ -749,10 +761,10 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
             n_models=n_models,
             max_features=max_features,
             lambda_value=lambda_value,
-            metric=metric,
+            metric=metric or metrics.MSE(),
             disable_weighted_vote=disable_weighted_vote,
-            drift_detector=drift_detector,
-            warning_detector=warning_detector,
+            drift_detector=drift_detector or ADWIN(0.001),
+            warning_detector=warning_detector or ADWIN(0.01),
             seed=seed,
         )
 

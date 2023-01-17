@@ -63,8 +63,8 @@ from .stochastic_gradient_tree import SGTClassifier, SGTRegressor
 __all__ = [
     "base",
     "splitter",
-    "HoeffdingTreeClassifier",
     "ExtremelyFastDecisionTreeClassifier",
+    "HoeffdingTreeClassifier",
     "HoeffdingAdaptiveTreeClassifier",
     "HoeffdingTreeRegressor",
     "HoeffdingAdaptiveTreeRegressor",

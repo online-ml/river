@@ -83,6 +83,7 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
 
     Examples
     --------
+
     >>> from river.datasets import synth
     >>> from river import evaluate
     >>> from river import metrics
