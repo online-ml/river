@@ -122,13 +122,13 @@ class AMFClassifier(AMFLearner, base.Classifier):
     --------
 
     >>> from river import evaluate
+    >>> from river import forest
     >>> from river import metrics
-    >>> from river import tree
     >>> from river.datasets import Bananas
 
     >>> dataset = Bananas().take(500)
 
-    >>> model = tree.AMFClassifier(
+    >>> model = forest.AMFClassifier(
     ...     n_classes=2,
     ...     n_estimators=10,
     ...     use_aggregation=True,

@@ -439,8 +439,8 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
     --------
 
     >>> from river import evaluate
+    >>> from river import forest
     >>> from river import metrics
-    >>> from river import tree
     >>> from river.datasets import synth
 
     >>> dataset = synth.ConceptDriftStream(
@@ -449,7 +449,7 @@ class AdaptiveRandomForestClassifier(BaseForest, base.Classifier):
     ...     width=40
     ... ).take(1000)
 
-    >>> model = tree.AdaptiveRandomForestClassifier(seed=8, leaf_prediction="mc")
+    >>> model = forest.AdaptiveRandomForestClassifier(seed=8, leaf_prediction="mc")
 
     >>> metric = metrics.Accuracy()
 
@@ -705,15 +705,15 @@ class AdaptiveRandomForestRegressor(BaseForest, base.Regressor):
 
     >>> from river import datasets
     >>> from river import evaluate
+    >>> from river import forest
     >>> from river import metrics
     >>> from river import preprocessing
-    >>> from river import tree
 
     >>> dataset = datasets.TrumpApproval()
 
     >>> model = (
     ...     preprocessing.StandardScaler() |
-    ...     tree.AdaptiveRandomForestRegressor(seed=42)
+    ...     forest.AdaptiveRandomForestRegressor(seed=42)
     ... )
 
     >>> metric = metrics.MAE()
