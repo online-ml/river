@@ -6,7 +6,6 @@ import math
 import numbers
 import random
 import sys
-import typing
 
 from river import base, drift, metrics, tree, utils
 from river.tree.nodes.et_nodes import ETLeafAdaptive, ETLeafMean, ETLeafModel
@@ -148,9 +147,7 @@ class ExtraTrees(base.Ensemble, metaclass=abc.ABCMeta):
         self._rng = random.Random(seed)
 
     @abc.abstractmethod
-    def _new_member(
-        self, max_features, max_depth, seed
-    ) -> base.Classifier | base.Regressor:
+    def _new_member(self, max_features, max_depth, seed) -> base.Classifier | base.Regressor:
         pass
 
     @abc.abstractmethod
