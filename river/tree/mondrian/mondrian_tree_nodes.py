@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 import collections
 import math
 import typing
@@ -105,7 +106,7 @@ class MondrianNode(base.Base):
                 self.weight, left.log_weight_tree + right.log_weight_tree
             )
 
-    def range(self, feature) -> typing.Tuple[float, float]:
+    def range(self, feature) -> tuple[float, float]:
         """Output the known range of the node regarding the j-th feature.
 
         Parameters
@@ -151,7 +152,7 @@ class MondrianNodeClassifier(MondrianNode):
         self.n_samples = 0
         self.counts = collections.defaultdict(int)
 
-    def replant(self, leaf: "MondrianNodeClassifier", copy_all: bool = False):
+    def replant(self, leaf: MondrianNodeClassifier, copy_all: bool = False):
         """Transfer information from a leaf to a new branch."""
         self.weight = leaf.weight  # type: ignore
         self.log_weight_tree = leaf.log_weight_tree  # type: ignore
@@ -185,7 +186,7 @@ class MondrianNodeClassifier(MondrianNode):
 
     def predict(
         self, dirichlet: float, classes: set, n_classes: int
-    ) -> typing.Dict[base.typing.ClfTarget, float]:
+    ) -> dict[base.typing.ClfTarget, float]:
         """Predict the scores of all classes and output a `scores` dictionary
         with the new values.
 
