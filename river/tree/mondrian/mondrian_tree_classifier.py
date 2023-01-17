@@ -483,14 +483,14 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
         # Initialization of the scores to output to 0
         scores = {c: 0.0 for c in self._classes}
 
-        if not self.use_aggregation:
-            return self._predict(leaf)
-
         leaf = (
             self._root.traverse(x, until_leaf=True)
             if isinstance(self._root, MondrianBranchClassifier)
             else self._root
         )
+
+        if not self.use_aggregation:
+            return self._predict(leaf)
 
         current = leaf
 

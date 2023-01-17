@@ -7,16 +7,16 @@ import typing
 
 import numpy as np
 
-from river import base, metrics, stats, tree
+from river import base, metrics, stats
 from river.drift import ADWIN
+from river.tree.hoeffding_tree_classifier import HoeffdingTreeClassifier
+from river.tree.hoeffding_tree_regressor import HoeffdingTreeRegressor
 from river.tree.nodes.arf_htc_nodes import (
     RandomLeafMajorityClass,
     RandomLeafNaiveBayes,
     RandomLeafNaiveBayesAdaptive,
 )
 from river.tree.nodes.arf_htr_nodes import RandomLeafAdaptive, RandomLeafMean, RandomLeafModel
-from river.tree.hoeffding_tree_classifier import HoeffdingTreeClassifier
-from river.tree.hoeffding_tree_regressor import HoeffdingTreeRegressor
 from river.tree.splitter import Splitter
 from river.utils.random import poisson
 
