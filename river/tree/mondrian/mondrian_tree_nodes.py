@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import collections
 import math
-import typing
 
 from river import base
 from river.tree.base import Branch, Leaf
