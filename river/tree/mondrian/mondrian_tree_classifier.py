@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import math
 import sys
-import typing
 
 from river import base, utils
 from river.tree.mondrian.mondrian_tree import MondrianTree
