@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 import math
 import sys
 import typing
@@ -102,7 +103,7 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
         self._classes: set[base.typing.ClfTarget] = set()
 
         # The current sample being proceeded
-        self._x: typing.Dict[base.typing.FeatureName, typing.Union[int, float]]
+        self._x: dict[base.typing.FeatureName, int | float]
         # The current label index being proceeded
         self._y: base.typing.ClfTarget
 
@@ -196,7 +197,7 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
 
     def _compute_split_time(
         self,
-        node: typing.Union[MondrianLeafClassifier, MondrianBranchClassifier],
+        node: MondrianLeafClassifier | MondrianBranchClassifier,
         extensions_sum: float,
     ) -> float:
         """Compute the spit time of the given node.
@@ -238,7 +239,7 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
 
     def _split(
         self,
-        node: typing.Union[MondrianLeafClassifier, MondrianBranchClassifier],
+        node: MondrianLeafClassifier | MondrianBranchClassifier,
         split_time: float,
         threshold: float,
         feature: base.typing.FeatureName,
@@ -263,8 +264,8 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
         new_depth = node.depth + 1
 
         # To calm down mypy
-        left: typing.Union[MondrianLeafClassifier, MondrianBranchClassifier]
-        right: typing.Union[MondrianLeafClassifier, MondrianBranchClassifier]
+        left: MondrianLeafClassifier | MondrianBranchClassifier
+        right: MondrianLeafClassifier | MondrianBranchClassifier
 
         # The node is already a branch: we create a new branch above it and move the existing
         # node one level down the tree
