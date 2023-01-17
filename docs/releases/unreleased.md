@@ -24,6 +24,7 @@
 
 - Added `ensemble.ADWINBoostingClassifier`.
 - Added `ensemble.BOLEClassifier`.
+- Added `ensemble.AMFClassifier`.
 
 ## linear_model
 
@@ -50,6 +51,11 @@
 - Renamed `alpha` to `fading_factor` in `stats.Entropy`.
 - Renamed `alpha` to `fading_factor` in `stats.EWMean`.
 - Renamed `alpha` to `fading_factor` in `stats.EWVar`.
+
+## tree
+
+- Moved `AdaptiveRandomForestClassifier` from the `ensemble` module to the `tree` module.
+- Moved `AdaptiveRandomForestRegressor` from the `ensemble` module to the `tree` module.
 
 ## utils
 

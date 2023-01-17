@@ -51,6 +51,9 @@ dynamic and static feature quantizers to deal with numerical inputs.
 """
 
 from . import base, splitter
+
+from .adaptive_random_forest import AdaptiveRandomForestClassifier, AdaptiveRandomForestRegressor
+from .mondrian.aggregated_mondrian_forest import AMFClassifier
 from .extremely_fast_decision_tree import ExtremelyFastDecisionTreeClassifier
 from .hoeffding_adaptive_tree_classifier import HoeffdingAdaptiveTreeClassifier
 from .hoeffding_adaptive_tree_regressor import HoeffdingAdaptiveTreeRegressor
@@ -63,8 +66,11 @@ from .stochastic_gradient_tree import SGTClassifier, SGTRegressor
 __all__ = [
     "base",
     "splitter",
-    "HoeffdingTreeClassifier",
+    "AdaptiveRandomForestClassifier",
+    "AdaptiveRandomForestRegressor",
+    "AMFClassifier",
     "ExtremelyFastDecisionTreeClassifier",
+    "HoeffdingTreeClassifier",
     "HoeffdingAdaptiveTreeClassifier",
     "HoeffdingTreeRegressor",
     "HoeffdingAdaptiveTreeRegressor",

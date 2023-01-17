@@ -33,12 +33,8 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
 
     Notes
     -----
-    The Mondrian Tree Classifier is a type of decision tree that bases splitting decisions over a Mondrian process.
-
-    References
-    ----------
-    [^1] Balaji Lakshminarayanan, Daniel M. Roy, Yee Whye Teh. Mondrian Forests: Efficient Online Random Forests.
-        arXiv:1406.2673, pages 2-4
+    The Mondrian Tree Classifier is a type of decision tree that bases splitting decisions over a
+    Mondrian process.
 
     Examples
     --------
@@ -61,6 +57,12 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
     Accuracy: 57.52%
+
+    References
+    ----------
+    [^1]: Balaji Lakshminarayanan, Daniel M. Roy, Yee Whye Teh. Mondrian Forests: Efficient Online Random Forests.
+        arXiv:1406.2673, pages 2-4
+
     """
 
     def __init__(
@@ -107,7 +109,8 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
         # It's the root so it doesn't have any parent (hence None)
         self._root = MondrianLeafClassifier(None, 0.0, 0)
 
-    def is_trained(self):
+    @property
+    def _is_initialized(self):
         """Check if the tree has learnt at least one sample"""
         return len(self._classes) != 0
 
@@ -474,19 +477,20 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
 
         # If the tree hasn't seen any sample, then it should return
         # the default empty dict
-        if not self.is_trained():
+        if not self._is_initialized:
             return {}
 
         # Initialization of the scores to output to 0
         scores = {c: 0.0 for c in self._classes}
 
-        if isinstance(self._root, MondrianBranchClassifier):
-            leaf = self._root.traverse(x, until_leaf=True)
-        else:
-            leaf = self._root
-
         if not self.use_aggregation:
             return self._predict(leaf)
+
+        leaf = (
+            self._root.traverse(x, until_leaf=True)
+            if isinstance(self._root, MondrianBranchClassifier)
+            else self._root
+        )
 
         current = leaf
 
