@@ -175,6 +175,8 @@ class MondrianTreeRegressor(MondrianTree):
 
             # other must have node has parent
             other.is_leaf = True
+            other.parent = parent
+            other.time = split_time
 
             # If the node previously had children, we have to update it
             if not parent.is_leaf:
@@ -227,7 +229,7 @@ class MondrianTreeRegressor(MondrianTree):
 
                     # We normalize the range extensions to get probabilities
                     intensities_sum = math.fsum(list(self.intensities.values()))
-                    for key in self.intensities.keys():
+                    for key in self.intensities:
                         self.intensities[key] /= intensities_sum
 
                     # Sample the feature at random with a probability
@@ -331,16 +333,6 @@ class MondrianTreeRegressor(MondrianTree):
         return node
 
     def learn_one(self, x, y):
-        """Learn the sample (x, y).
-
-        Parameters
-        ----------
-        x
-            Feature vector of the sample.
-        y
-²           Label of the sample.
-        """
-
         # Setting current sample
         # We change x in a list here to make computations easier afterwards
         self._x = x

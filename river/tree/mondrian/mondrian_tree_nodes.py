@@ -168,7 +168,7 @@ class MondrianLeaf(Leaf, abc.ABC):
         """
 
         extensions_sum = 0.0
-        for feature in x_t.keys():
+        for feature in x_t:
             x_tj = x_t[feature]
             feature_min_j, feature_max_j = self.range(feature)
             if x_tj < feature_min_j:
@@ -372,13 +372,13 @@ class MondrianLeafClassifier(MondrianLeaf):
         # Updating the range of the feature values known by the node
         # If it is the first sample, we copy the features vector into the min and max range
         if self.n_samples == 0:
-            for feature in x_t.keys():
+            for feature in x_t:
                 x_tj = x_t[feature]
                 self.memory_range_min[feature] = x_tj
                 self.memory_range_max[feature] = x_tj
         # Otherwise, we update the range
         else:
-            for feature in x_t.keys():
+            for feature in x_t:
                 x_tj = x_t[feature]
                 if x_tj < self.memory_range_min[feature]:
                     self.memory_range_min[feature] = x_tj
@@ -483,16 +483,17 @@ class MondrianLeafRegressor(MondrianLeaf):
         do_update_weight
             Should we update the weights of the node as well.
         """
+
         # Updating the range of the feature values known by the node
         # If it is the first sample, we copy the features vector into the min and max range
         if self.n_samples == 0:
-            for feature in x_t.keys():
+            for feature in x_t:
                 x_tj = x_t[feature]
                 self.memory_range_min[feature] = x_tj
                 self.memory_range_max[feature] = x_tj
         # Otherwise, we update the range
         else:
-            for feature in x_t.keys():
+            for feature in x_t:
                 x_tj = x_t[feature]
                 if x_tj < self.memory_range_min[feature]:
                     self.memory_range_min[feature] = x_tj
