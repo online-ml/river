@@ -1,17 +1,21 @@
 import math
 import sys
+import typing
 
+from river import base, utils
 from river.tree.mondrian.mondrian_tree import MondrianTree
-from river.tree.mondrian.mondrian_tree_nodes import MondrianLeafRegressor
+from river.tree.mondrian.mondrian_tree_nodes import (
+    MondrianBranchRegressor,
+    MondrianLeafRegressor,
+    MondrianNodeRegressor,
+)
 
 
-class MondrianTreeRegressor(MondrianTree):
+class MondrianTreeRegressor(MondrianTree, base.Regressor):
     """Mondrian Tree Regressor.
 
     Parameters
     ----------
-    n_features
-        Number of features of the data in entry.
     step
         Step of the tree.
     use_aggregation
@@ -46,20 +50,23 @@ class MondrianTreeRegressor(MondrianTree):
             iteration=iteration,
             seed=seed,
         )
+        # Controls the randomness in the tree
+        self.seed = seed
 
         # The current sample being proceeded
-        self._x: None
+        self._x: typing.Dict[base.typing.FeatureName, typing.Union[int, float]]
         # The current label index being proceeded
-        self._y: None
+        self._y: base.typing.ClfTarget
 
         # Initialization of the root of the tree
         # It's the root so it doesn't have any parent (hence None)
-        self._root = MondrianLeafRegressor(None, 0.0)
+        self._root = MondrianLeafRegressor(None, 0.0, 0)
 
     def is_trained(self):
-        return len(self._classes) != 0
+        """Check if the tree has learnt at least one sample"""
+        return self.iteration != 0
 
-    def _predict(self, node):
+    def _predict(self, node: MondrianNodeRegressor):
         """Compute the prediction.
 
         Parameters
@@ -81,7 +88,7 @@ class MondrianTreeRegressor(MondrianTree):
 
         return node.loss(self._y)
 
-    def _update_weight(self, node):
+    def _update_weight(self, node: MondrianNodeRegressor):
         """Update the weight of the node regarding the current label with the tree parameters.
 
         Parameters
@@ -104,10 +111,18 @@ class MondrianTreeRegressor(MondrianTree):
         """
 
         return node.update_downwards(
-            self._x, self._y, self.use_aggregation, self.step, do_update_weight
+            self._x,
+            self._y,
+            self.use_aggregation,
+            self.step,
+            do_update_weight
         )
 
-    def _compute_split_time(self, node):
+    def _compute_split_time(
+        self,
+        node: typing.Union[MondrianLeafRegressor, MondrianBranchRegressor],
+        extensions_sum: float,
+    ):
         """Computes the split time of the given node.
 
         Parameters
@@ -116,37 +131,38 @@ class MondrianTreeRegressor(MondrianTree):
             Target node.
         """
 
-        extensions_sum = node.range_extension(self._x, self.intensities)
         #  Don't split if the node is pure: all labels are equal to the one of y_t
         # TODO: what do we do here ? Zero variance ?
         if extensions_sum > 0:
             # Sample an exponential with intensity = extensions_sum
+            # try catch to handle the Overflow situation in the exponential
             try:
                 T = math.exp(1 / extensions_sum)
             except OverflowError:
-                T = sys.float_info.max
+                T = sys.float_info.max # we get the largest possible output instead
+
             time = node.time
             # Splitting time of the node (if splitting occurs)
             split_time = time + T
             # If the node is a leaf we must split it
-            if node.is_leaf:
+            if isinstance(node, MondrianLeafRegressor):
                 return split_time
             # Otherwise we apply Mondrian process dark magic :)
             # 1. We get the creation time of the childs (left and right is the same)
-            left = node.left
+            left, _ = node.children
             child_time = left.time
             # 2. We check if splitting time occurs before child creation time
             if split_time < child_time:
                 return split_time
 
-        return 0
+        return 0.0
 
     def _split(
         self,
-        node: MondrianLeafRegressor,
+        node: typing.Union[MondrianLeafRegressor, MondrianBranchRegressor],
         split_time: float,
         threshold: float,
-        feature: int,
+        feature: base.typing.FeatureName,
         is_right_extension: bool,
     ):
         """Split the given node and attributes the split time, threshold, etc... to the node.
@@ -166,49 +182,76 @@ class MondrianTreeRegressor(MondrianTree):
         """
 
         # Let's build a function to handle splitting depending on what side we go into
-        def extend_child(parent, main_child, other):
-            # Expending the node towards the main child chosen
-            main_child.copy(parent)
-            main_child.mean = parent.mean
-            main_child.parent = parent
-            main_child.time = split_time
+        new_depth = node.depth + 1
 
-            # other must have node has parent
-            other.is_leaf = True
-            other.parent = parent
-            other.time = split_time
+        # To calm down mypy
+        left: typing.Union[MondrianLeafRegressor, MondrianBranchRegressor]
+        right: typing.Union[MondrianLeafRegressor, MondrianBranchRegressor]
 
-            # If the node previously had children, we have to update it
-            if not parent.is_leaf:
-                old_left = parent.left
-                old_right = parent.right
-                old_right.parent = main_child
-                old_left.parent = main_child
+        # The node is already a branch: we create a new branch above it and move the existing
+        # node one level down the tree
+        if isinstance(node, MondrianBranchRegressor):
+            old_left, old_right = node.children
+            if is_right_extension:
+                left = MondrianBranchRegressor(
+                    node, split_time, new_depth, node.feature, node.threshold
+                )
+                right = MondrianLeafRegressor(node, split_time, new_depth)
+                left.replant(node)
 
-        # Create the two splits
+                old_left.parent = left
+                old_right.parent = left
+
+                left.children = (old_left, old_right)
+            else:
+                right = MondrianBranchRegressor(
+                    node, split_time, new_depth, node.feature, node.threshold
+                )
+                left = MondrianLeafRegressor(node, split_time, new_depth)
+                right.replant(node)
+
+                old_left.parent = right
+                old_right.parent = right
+
+                right.children = (old_left, old_right)
+
+            # Update the level of the modified nodes
+            new_depth += 1
+            old_left.update_depth(new_depth)
+            old_right.update_depth(new_depth)
+
+            # Update split info
+            node.feature = feature
+            node.threshold = threshold
+            node.children = (left, right)
+
+            return node
+
+        # We promote the leaf to a branch
+        branch = MondrianBranchRegressor(node.parent, node.time, node.depth, feature, threshold)
+        left = MondrianLeafRegressor(branch, split_time, new_depth)
+        right = MondrianLeafRegressor(branch, split_time, new_depth)
+        branch.children = (left, right)
+
+        # Copy properties from the previous leaf
+        branch.replant(node, True)
+
         if is_right_extension:
-            left = MondrianLeafRegressor(node, split_time)
-            right = MondrianLeafRegressor(node, split_time)
-            extend_child(node, left, right)
-
+            left.replant(node)
         else:
-            right = MondrianLeafRegressor(node, split_time)
-            left = MondrianLeafRegressor(node, split_time)
-            extend_child(node, right, left)
+            right.replant(node)
 
-        # Updating current node parameters
-        node.left = left
-        node.right = right
-        node.feature = feature
-        node.threshold = threshold
-        node.is_leaf = False
+        # To avoid leaving garbage behind
+        del node
+
+        return branch
 
     def _go_downwards(self):
         """Update the tree (downward procedure)."""
 
-        # We update the nodes along the path which leads to the leaf containing the current sample.
-        # For each node on the path, we consider the possibility of
-        # splitting it, following the Mondrian process definition.
+        # We update the nodes along the path which leads to the leaf containing the current
+        # sample. For each node on the path, we consider the possibility of splitting it,
+        # following the Mondrian process definition.
 
         # We start at the root
         current_node = self._root
@@ -218,37 +261,45 @@ class MondrianTreeRegressor(MondrianTree):
             self._update_downwards(current_node, False)
             return current_node
         else:
+            # Path from the parent to the current node
+            branch_no = None
             while True:
+                # Computing the extensions to get the intensities
+                extensions_sum, extensions = current_node.range_extension(self._x)
+
                 # If it's not the first iteration (otherwise the current node
                 # is root with no range), we consider the possibility of a split
-                split_time = self._compute_split_time(current_node)
+                split_time = self._compute_split_time(current_node, extensions_sum)
 
                 if split_time > 0:
                     # We split the current node: because the current node is a
                     # leaf, or because we add a new node along the path
 
                     # We normalize the range extensions to get probabilities
-                    intensities_sum = math.fsum(list(self.intensities.values()))
-                    for key in self.intensities:
-                        self.intensities[key] /= intensities_sum
+                    intensities = utils.norm.normalize_values_in_dict(extensions, inplace=False)
 
                     # Sample the feature at random with a probability
                     # proportional to the range extensions
+
+                    candidates = sorted(list(self._x.keys()))
                     feature = self._rng.choices(
-                        list(self._x.keys()), self.intensities.values(), k=1
+                        candidates, [intensities[c] for c in candidates], k=1
                     )[0]
-                    x_tf = self._x[feature]
+
+                    x_f = self._x[feature]
 
                     # Is it a right extension of the node ?
                     range_min, range_max = current_node.range(feature)
-                    is_right_extension = x_tf > range_max
+                    is_right_extension = x_f > range_max
                     if is_right_extension:
-                        threshold = self._rng.uniform(range_max, x_tf)
+                        threshold = self._rng.uniform(range_max, x_f)
                     else:
-                        threshold = self._rng.uniform(x_tf, range_min)
+                        threshold = self._rng.uniform(x_f, range_min)
+
+                    was_leaf = isinstance(current_node, MondrianLeafRegressor)
 
                     # We split the current node
-                    self._split(
+                    current_node = self._split(
                         current_node,
                         split_time,
                         threshold,
@@ -256,22 +307,27 @@ class MondrianTreeRegressor(MondrianTree):
                         is_right_extension,
                     )
 
+                    # The root node has become a branch
+                    if current_node.parent is None:
+                        self._root = current_node
+                    # Update path from the previous parent to the recently updated node
+                    elif was_leaf:
+                        parent = current_node.parent
+                        if branch_no == 0:
+                            parent.children = (current_node, parent.children[1])
+                        else:
+                            parent.children = (parent.children[0], current_node)
+
                     # Update the current node
                     self._update_downwards(current_node, True)
 
-                    left = current_node.left
-                    right = current_node.right
-                    depth = current_node.depth
+                    left, right = current_node.children
 
                     # Now, get the next node
                     if is_right_extension:
                         current_node = right
                     else:
                         current_node = left
-
-                    # We update the depth of each child
-                    left.update_depth(depth)
-                    right.update_depth(depth)
 
                     # This is the leaf containing the sample point (we've just
                     # splitted the current node with the data point)
@@ -281,12 +337,17 @@ class MondrianTreeRegressor(MondrianTree):
                 else:
                     # There is no split, so we just update the node and go to the next one
                     self._update_downwards(current_node, True)
-                    if current_node.is_leaf:
+                    if isinstance(current_node, MondrianLeafRegressor):
                         return current_node
                     else:
-                        current_node = current_node.get_child(self._x)
+                        # Save the path direction to keep the tree consistent
+                        try:
+                            branch_no = current_node.branch_no(self._x)
+                            current_node = current_node.children[branch_no]
+                        except KeyError:  # Missing split feature
+                            branch_no, current_node = current_node.most_common_path()
 
-    def _go_upwards(self, leaf):
+    def _go_upwards(self, leaf: MondrianLeafRegressor):
         """Update the tree (upwards procedure).
 
         Parameters
@@ -308,35 +369,9 @@ class MondrianTreeRegressor(MondrianTree):
                 # We go up to the root in the tree
                 current_node = current_node.parent
 
-    def _find_leaf(self, x):
-        """Find the leaf that contains the sample, starting from the root.
-
-        Parameters
-        ----------
-        x
-            Feature vector
-        """
-
-        # We start at the root
-        node = self._root
-
-        is_leaf = False
-        while not is_leaf:
-            is_leaf = node.is_leaf
-            if not is_leaf:
-                feature_node = node.feature
-                threshold = node.threshold
-                if x[feature_node] <= threshold:
-                    node = node.left
-                else:
-                    node = node.right
-        return node
-
     def learn_one(self, x, y):
         # Setting current sample
-        # We change x in a list here to make computations easier afterwards
         self._x = x
-        # Current sample label
         self._y = y
 
         # Learning step
@@ -357,16 +392,25 @@ class MondrianTreeRegressor(MondrianTree):
             Feature vector
         """
 
-        leaf = self._find_leaf(x)
+        # If the tree hasn't seen any sample, then it should return
+        # the default empty dict
+        if not self.is_trained():
+            return
+
+        if isinstance(self._root, MondrianBranchRegressor):
+            leaf = self._root.traverse(x, until_leaf=True)
+        else:
+            leaf = self._root
 
         if not self.use_aggregation:
             return self._predict(leaf)
 
         current = leaf
         prediction = 0.0
+
         while True:
             # This test is useless ?
-            if current.is_leaf:
+            if isinstance(current, MondrianLeafRegressor):
                 prediction = self._predict(current)
             else:
                 weight = current.weight

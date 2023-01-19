@@ -1,3 +1,4 @@
+import abc
 import random
 
 from river import base
@@ -6,7 +7,7 @@ from river.tree.mondrian import MondrianTreeClassifier
 from river.tree.mondrian import MondrianTreeRegressor
 
 
-class AMFLearner(base.Ensemble):
+class AMFLearner(base.Ensemble, abc.ABC):
     """Base class for Aggregated Mondrian Forest classifier and regressors for online learning.
 
     Parameters
@@ -41,9 +42,7 @@ class AMFLearner(base.Ensemble):
         split_pure: bool = False,
         seed: int = None,
     ):
-        #super().__init__([])  # type: ignore
-
-        self._forest: list[MondrianTree] = []
+        super().__init__([])  # type: ignore
 
         self.n_estimators = n_estimators
         self.step = step
@@ -56,7 +55,15 @@ class AMFLearner(base.Ensemble):
 
     def is_trained(self) -> bool:
         """Indicate whether the model has been trained at least once before."""
-        return len(self._forest) != 0
+        return len(self) > 0
+
+    @abc.abstractmethod
+    def _initialize_trees(self):
+        """Initialize the forest members."""
+
+    @property
+    def _min_number_of_models(self):
+        return 0
 
 
 class AMFClassifier(AMFLearner, base.Classifier):
@@ -114,6 +121,21 @@ class AMFClassifier(AMFLearner, base.Classifier):
     ----------
     J. Mourtada, S. Gaiffas and E. Scornet, *AMF: Aggregated Mondrian Forests for Online Learning*, arXiv:1906.10529, 2019.
 
+    Examples
+    --------
+    >>> from river import ensemble
+    >>> from river import evaluate
+    >>> from river import metrics
+    >>> from river.datasets import Bananas
+
+    >>> dataset = Bananas().take(500)
+
+    >>> model = ensemble.AMFClassifier(n_classes=2, n_estimators=10, use_aggregation=True, dirichlet=0.2, seed=1)
+
+    >>> metric = metrics.Accuracy()
+
+    >>> evaluate.progressive_val_score(dataset, model, metric)
+    Accuracy: 84.77%
     """
 
     def __init__(
@@ -146,13 +168,11 @@ class AMFClassifier(AMFLearner, base.Classifier):
 
         # memory of the classes
         self._classes: set[base.typing.ClfTarget] = set()
+        self.iteration = 0
 
     def _initialize_trees(self):
-        """Initialize the forest."""
-
-        self.iteration = 0
-        self._forest: list[MondrianTreeClassifier] = []
-        for i in range(self.n_estimators):
+        self.data: list[MondrianTreeClassifier] = []
+        for _ in range(self.n_estimators):
             # We don't want to have the same stochastic scheme for each tree, or it'll break the randomness
             # Hence we introduce a new seed for each, that is derived of the given seed by a deterministic process
             seed = self._rng.randint(0, 9999999)
@@ -201,6 +221,10 @@ class AMFClassifier(AMFLearner, base.Classifier):
                 scores[c] += predictions[c] / self.n_estimators
 
         return scores
+
+    @property
+    def _multiclass(self):
+        return True
 
 
 class AMFRegressor(AMFLearner, base.Regressor):
@@ -265,12 +289,13 @@ class AMFRegressor(AMFLearner, base.Regressor):
             seed=seed,
         )
 
+        self.iteration = 0
+
     def _initialize_trees(self):
         """Initialize the forest."""
 
-        self.iteration = 0
-        self._forest: list[MondrianTreeRegressor] = []
-        for i in range(self.n_estimators):
+        self.data: list[MondrianTreeRegressor] = []
+        for _ in range(self.n_estimators):
             # We don't want to have the same stochastic scheme for each tree, or it'll break the randomness
             # Hence we introduce a new seed for each, that is derived of the given seed by a deterministic process
             seed = self._rng.randint(0, 9999999)
@@ -282,7 +307,7 @@ class AMFRegressor(AMFLearner, base.Regressor):
                 self.iteration,
                 seed,
             )
-            self._forest.append(tree)
+            self.data.append(tree)
 
     def learn_one(self, x, y):
         # Checking if the forest has been created
@@ -290,7 +315,7 @@ class AMFRegressor(AMFLearner, base.Regressor):
             self._initialize_trees()
 
         # we fit all the trees using the new sample
-        for tree in self._forest:
+        for tree in self:
             tree.learn_one(x, y)
 
         self.iteration += 1
@@ -304,7 +329,7 @@ class AMFRegressor(AMFLearner, base.Regressor):
             return None
 
         prediction = 0
-        for tree in self._forest:
+        for tree in self:
             tree.use_aggregation = self.use_aggregation
             prediction += tree.predict_one(x)
         prediction = prediction / self.n_estimators

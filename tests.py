@@ -45,7 +45,6 @@ for x_t, y_t in stream.iter_array(X, y):
 X_test_list = []
 for i in X_test :
     X_test_list.append(list(i.values()))
-
 X, y = np.array(X), np.array(y)
 X_test_list, y_pred = np.array(X_test_list), np.array(y_pred)
 plt.scatter(X,y)

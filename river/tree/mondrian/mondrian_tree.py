@@ -1,8 +1,6 @@
 import abc
 import random
 
-from river import base
-
 
 class MondrianTree(abc.ABC):
     """Base class for Mondrian Trees.
@@ -13,8 +11,6 @@ class MondrianTree(abc.ABC):
 
     Parameters
     ----------
-    n_features
-        Number of features.
     step
         Step parameter of the tree.
     loss
@@ -45,10 +41,6 @@ class MondrianTree(abc.ABC):
         self.use_aggregation = use_aggregation
         self.split_pure = split_pure
         self.iteration = iteration
-        self.intensities: dict[base.typing.ClfTarget, float] = {}
 
+        # Controls the randomness in the tree
         self._rng = random.Random(seed)
-
-        # One should initialize the tree in the child class as well
-
-

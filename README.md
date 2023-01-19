@@ -164,7 +164,7 @@ Feel free to contribute in any way you like, we're always open to new ideas and 
 
 - [Open a discussion](https://github.com/online-ml/river/discussions/new) if you have any question or enquiry whatsoever. It's more useful to ask your question in public rather than sending us a private email. It's also encouraged to open a discussion before contributing, so that everyone is aligned and unnecessary work is avoided.
 - Feel welcome to [open an issue](https://github.com/online-ml/river/issues/new/choose) if you think you've spotted a bug or a performance issue.
-- Our [roadmap](https://www.notion.so/d1e86fcdf21e4deda16eedab2b3361fb?v=503f44740b8b44a99a961aa96e9e46e1) is public. Feel free to work on anything that catches your eye, or to make suggestions. Simpler tasks are listed [here](https://www.notion.so/maxhalford/d1e86fcdf21e4deda16eedab2b3361fb?v=e74f58d5a1104e0ab1b29ba0761a7610).
+- Our [roadmap](https://github.com/orgs/online-ml/projects/3?query=is%3Aopen+sort%3Aupdated-desc) is public. Feel free to work on anything that catches your eye, or to make suggestions.
 
 Please check out the [contribution guidelines](https://github.com/online-ml/river/blob/main/CONTRIBUTING.md) if you want to bring modifications to the code base.
 
