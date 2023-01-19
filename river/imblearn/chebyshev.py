@@ -83,8 +83,8 @@ class ChebyshevUnderSampler(base.Wrapper, base.Regressor):
     def _wrapped_model(self):
         return self.regressor
 
-    def predict_one(self, x):
-        return self.regressor.predict_one(x)
+    def predict_one(self, x, **kwargs):
+        return self.regressor.predict_one(x, **kwargs)
 
     def learn_one(self, x, y, **kwargs):
         self._var.update(y)
@@ -183,8 +183,8 @@ class ChebyshevOverSampler(base.Wrapper, base.Regressor):
     def _wrapped_model(self):
         return self.regressor
 
-    def predict_one(self, x):
-        return self.regressor.predict_one(x)
+    def predict_one(self, x, **kwargs):
+        return self.regressor.predict_one(x, **kwargs)
 
     def learn_one(self, x, y, **kwargs):
         self._var.update(y)

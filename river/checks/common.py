@@ -215,5 +215,26 @@ def check_seeding_is_idempotent(model, dataset):
 
 def check_mutable_attributes_exist(model):
     for attr in model._mutable_attributes:
-        if not hasattr(model, attr):
-            raise ValueError(f"Attribute '{attr}' doesn't exist")
+        assert hasattr(model, attr)
+
+
+def check_wrapper_accepts_kwargs(wrapper):
+    """Check that the wrapper accepts keyword arguments in its methods."""
+    for method_name in [
+        "score_one",
+        "predict_one",
+        "predict_proba_one",
+        "forecast",
+        "learn_one",
+        "learn_many",
+        "predict_many",
+        "predict_proba_many",
+    ]:
+        if method := getattr(wrapper, method_name, None):
+            try:
+                method(None)
+            except NotImplementedError:
+                continue
+            except Exception:
+                pass
+            assert inspect.getfullargspec(method).varkw is not None

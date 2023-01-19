@@ -125,7 +125,7 @@ class AnomalyFilter(base.Wrapper, base.Estimator):
 
         """
 
-    def score_one(self, *args):
+    def score_one(self, *args, **kwargs):
         """Return an outlier score.
 
         A high score is indicative of an anomaly. A low score corresponds to a normal observation.
@@ -141,9 +141,9 @@ class AnomalyFilter(base.Wrapper, base.Estimator):
         normal observation.
 
         """
-        return self.anomaly_detector.score_one(*args)
+        return self.anomaly_detector.score_one(*args, **kwargs)
 
-    def learn_one(self, *args):
+    def learn_one(self, *args, **learn_kwargs):
         """Update the anomaly filter and the underlying anomaly detector.
 
         Parameters
@@ -157,5 +157,5 @@ class AnomalyFilter(base.Wrapper, base.Estimator):
 
         """
         if self.protect_anomaly_detector and not self.classify(self.score_one(*args)):
-            self.anomaly_detector.learn_one(*args)
+            self.anomaly_detector.learn_one(*args, **learn_kwargs)
         return self

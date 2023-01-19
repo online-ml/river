@@ -71,17 +71,17 @@ class OneVsOneClassifier(base.Wrapper, base.Classifier):
     def _unit_test_params(cls):
         yield {"classifier": linear_model.LogisticRegression()}
 
-    def learn_one(self, x, y):
+    def learn_one(self, x, y, **kwargs):
 
         self.classes.add(y)
 
         for c in self.classes - {y}:
             pair = (c, y) if c < y else (y, c)
-            self.classifiers[pair].learn_one(x, y=c < y)
+            self.classifiers[pair].learn_one(x, y=c < y, **kwargs)
 
         return self
 
-    def predict_one(self, x):
+    def predict_one(self, x, **kwargs):
 
         if not self.classifiers:  # is empty
             return None
@@ -89,7 +89,7 @@ class OneVsOneClassifier(base.Wrapper, base.Classifier):
         votes = collections.defaultdict(int)
 
         for pair, clf in self.classifiers.items():
-            if clf.predict_one(x):
+            if clf.predict_one(x, **kwargs):
                 votes[pair[1]] += 1
             else:
                 votes[pair[0]] += 1

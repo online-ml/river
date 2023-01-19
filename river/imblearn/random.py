@@ -15,11 +15,11 @@ class ClassificationSampler(base.Wrapper, base.Classifier):
     def _wrapped_model(self):
         return self.classifier
 
-    def predict_proba_one(self, x):
-        return self.classifier.predict_proba_one(x)
+    def predict_proba_one(self, x, **kwargs):
+        return self.classifier.predict_proba_one(x, **kwargs)
 
-    def predict_one(self, x):
-        return self.classifier.predict_one(x)
+    def predict_one(self, x, **kwargs):
+        return self.classifier.predict_one(x, **kwargs)
 
 
 class RandomUnderSampler(ClassificationSampler):
@@ -79,7 +79,7 @@ class RandomUnderSampler(ClassificationSampler):
         self._actual_dist: typing.Counter = collections.Counter()
         self._pivot = None
 
-    def learn_one(self, x, y):
+    def learn_one(self, x, y, **kwargs):
 
         self._actual_dist[y] += 1
         f = self.desired_dist
@@ -89,7 +89,7 @@ class RandomUnderSampler(ClassificationSampler):
         if y != self._pivot:
             self._pivot = max(g.keys(), key=lambda y: f[y] / g[y])
         else:
-            self.classifier.learn_one(x, y)
+            self.classifier.learn_one(x, y, **kwargs)
             return self
 
         # Determine the sampling ratio if the class is not the pivot
@@ -97,7 +97,7 @@ class RandomUnderSampler(ClassificationSampler):
         ratio = f[y] / (M * g[y])
 
         if ratio < 1 and self._rng.random() < ratio:
-            self.classifier.learn_one(x, y)
+            self.classifier.learn_one(x, y, **kwargs)
 
         return self
 
@@ -155,7 +155,7 @@ class RandomOverSampler(ClassificationSampler):
         self._actual_dist: typing.Counter = collections.Counter()
         self._pivot = None
 
-    def learn_one(self, x, y):
+    def learn_one(self, x, y, **kwargs):
 
         self._actual_dist[y] += 1
         f = self.desired_dist
@@ -165,14 +165,14 @@ class RandomOverSampler(ClassificationSampler):
         if y != self._pivot:
             self._pivot = max(g.keys(), key=lambda y: g[y] / f[y])
         else:
-            self.classifier.learn_one(x, y)
+            self.classifier.learn_one(x, y, **kwargs)
             return self
 
         M = g[self._pivot] / f[self._pivot]
         rate = M * f[y] / g[y]
 
         for _ in range(utils.random.poisson(rate, rng=self._rng)):
-            self.classifier.learn_one(x, y)
+            self.classifier.learn_one(x, y, **kwargs)
 
         return self
 
@@ -243,7 +243,7 @@ class RandomSampler(ClassificationSampler):
         self.desired_dist = desired_dist
         self._n = 0
 
-    def learn_one(self, x, y):
+    def learn_one(self, x, y, **kwargs):
 
         self._actual_dist[y] += 1
         self._n += 1
@@ -253,6 +253,6 @@ class RandomSampler(ClassificationSampler):
         rate = self.sampling_rate * f[y] / (g[y] / self._n)
 
         for _ in range(utils.random.poisson(rate, rng=self._rng)):
-            self.classifier.learn_one(x, y)
+            self.classifier.learn_one(x, y, **kwargs)
 
         return self

@@ -104,18 +104,18 @@ class RegressionJackknife(base.Wrapper, base.Regressor):
 
         yield {"regressor": (preprocessing.StandardScaler() | linear_model.LinearRegression())}
 
-    def learn_one(self, x, y):
+    def learn_one(self, x, y, **kwargs):
 
         # Update the quantiles
         error = y - self.regressor.predict_one(x)
         self._lower.update(error)
         self._upper.update(error)
 
-        self.regressor.learn_one(x, y)
+        self.regressor.learn_one(x, y, **kwargs)
 
         return self
 
-    def predict_one(self, x, with_interval=False):
+    def predict_one(self, x, with_interval=False, **kwargs):
         """Predict the output of features `x`.
 
         Parameters
@@ -130,7 +130,7 @@ class RegressionJackknife(base.Wrapper, base.Regressor):
         The prediction.
 
         """
-        y_pred = self.regressor.predict_one(x)
+        y_pred = self.regressor.predict_one(x, **kwargs)
 
         if not with_interval:
             return y_pred

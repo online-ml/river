@@ -12,11 +12,11 @@ __all__ = [
 
 
 class BaseBagging(base.WrapperEnsemble):
-    def learn_one(self, x, y):
+    def learn_one(self, x, y, **kwargs):
 
         for model in self:
             for _ in range(utils.random.poisson(1, self._rng)):
-                model.learn_one(x, y)
+                model.learn_one(x, y, **kwargs)
 
         return self
 
@@ -85,12 +85,12 @@ class BaggingClassifier(BaseBagging, base.Classifier):
     def _unit_test_params(cls):
         yield {"model": linear_model.LogisticRegression()}
 
-    def predict_proba_one(self, x):
+    def predict_proba_one(self, x, **kwargs):
         """Averages the predictions of each classifier."""
 
         y_pred = collections.Counter()
         for classifier in self:
-            y_pred.update(classifier.predict_proba_one(x))
+            y_pred.update(classifier.predict_proba_one(x, **kwargs))
 
         total = sum(y_pred.values())
         if total > 0:
@@ -157,9 +157,9 @@ class BaggingRegressor(BaseBagging, base.Regressor):
     def _unit_test_params(cls):
         yield {"model": linear_model.LinearRegression()}
 
-    def predict_one(self, x):
+    def predict_one(self, x, **kwargs):
         """Averages the predictions of each regressor."""
-        return statistics.mean(regressor.predict_one(x) for regressor in self)
+        return statistics.mean(regressor.predict_one(x, **kwargs) for regressor in self)
 
 
 class ADWINBaggingClassifier(BaggingClassifier):
@@ -222,12 +222,12 @@ class ADWINBaggingClassifier(BaggingClassifier):
         super().__init__(model=model, n_models=n_models, seed=seed)
         self._drift_detectors = [drift.ADWIN() for _ in range(self.n_models)]
 
-    def learn_one(self, x, y):
+    def learn_one(self, x, y, **kwargs):
 
         change_detected = False
         for i, model in enumerate(self):
             for _ in range(utils.random.poisson(1, self._rng)):
-                model.learn_one(x, y)
+                model.learn_one(x, y, **kwargs)
 
             y_pred = model.predict_one(x)
             error_estimation = self._drift_detectors[i].estimation
@@ -381,13 +381,13 @@ class LeveragingBaggingClassifier(BaggingClassifier):
         # Subagging using resampling without replacement
         return int(utils.random.poisson(1, self._rng) > 0)
 
-    def learn_one(self, x, y):
+    def learn_one(self, x, y, **kwargs):
         change_detected = False
         for i, model in enumerate(self):
             k = self._bagging_fct(x=x, y=y, model_idx=i)
 
             for _ in range(k):
-                model.learn_one(x, y)
+                model.learn_one(x, y, **kwargs)
 
             y_pred = self[i].predict_one(x)
             if y_pred is not None:

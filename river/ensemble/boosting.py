@@ -79,12 +79,12 @@ class AdaBoostClassifier(base.WrapperEnsemble, base.Classifier):
     def _unit_test_params(cls):
         yield {"model": linear_model.LogisticRegression()}
 
-    def learn_one(self, x, y):
+    def learn_one(self, x, y, **kwargs):
         lambda_poisson = 1
 
         for i, model in enumerate(self):
             for _ in range(utils.random.poisson(lambda_poisson, self._rng)):
-                model.learn_one(x, y)
+                model.learn_one(x, y, **kwargs)
 
             if model.predict_one(x) == y:
                 self.correct_weight[i] += lambda_poisson
@@ -99,7 +99,7 @@ class AdaBoostClassifier(base.WrapperEnsemble, base.Classifier):
                 )
         return self
 
-    def predict_proba_one(self, x):
+    def predict_proba_one(self, x, **kwargs):
         y_proba = collections.Counter()
 
         for i, model in enumerate(self):
@@ -110,7 +110,7 @@ class AdaBoostClassifier(base.WrapperEnsemble, base.Classifier):
             else:
                 beta_inv = (1 - epsilon) / epsilon
                 model_weight = math.log(beta_inv) if beta_inv != 0 else 0
-            predictions = model.predict_proba_one(x)
+            predictions = model.predict_proba_one(x, **kwargs)
             utils.norm.scale_values_in_dict(predictions, model_weight, inplace=True)
             y_proba.update(predictions)
 
@@ -175,13 +175,13 @@ class ADWINBoostingClassifier(AdaBoostClassifier):
         super().__init__(model, n_models, seed)
         self._drift_detectors = [drift.ADWIN() for _ in range(self.n_models)]
 
-    def learn_one(self, x, y):
+    def learn_one(self, x, y, **kwargs):
 
         change_detected = False
         lambda_poisson = 1.0
         for i, model in enumerate(self):
             for _ in range(utils.random.poisson(1, self._rng)):
-                model.learn_one(x, y)
+                model.learn_one(x, y, **kwargs)
 
             if model.predict_one(x) == y:
                 self.correct_weight[i] += lambda_poisson
@@ -283,7 +283,7 @@ class BOLEClassifier(AdaBoostClassifier):
         self.order_position = [i for i in range(n_models)]
         self.instances_seen = 0
 
-    def learn_one(self, x, y):
+    def learn_one(self, x, y, **kwargs):
         self.instances_seen += 1
 
         correct_rate = [0] * self.n_models
@@ -329,7 +329,7 @@ class BOLEClassifier(AdaBoostClassifier):
                 min_correct_rate -= 1
 
             for _ in range(utils.random.poisson(lambda_poisson, self._rng)):
-                self.models[pos].learn_one(x, y)
+                self.models[pos].learn_one(x, y, **kwargs)
 
             if self.models[pos].predict_one(x) == y:
                 self.correct_weight[pos] += lambda_poisson
@@ -341,7 +341,7 @@ class BOLEClassifier(AdaBoostClassifier):
                 correct = False
         return self
 
-    def predict_proba_one(self, x):
+    def predict_proba_one(self, x, **kwargs):
         y_proba = collections.Counter()
         y_proba_all = (
             collections.Counter()
@@ -355,7 +355,7 @@ class BOLEClassifier(AdaBoostClassifier):
                 if epsilon <= self.error_bound:
                     beta_inv = (1 - epsilon) / epsilon
                     model_weight = math.log(beta_inv)
-            predictions = model.predict_proba_one(x)
+            predictions = model.predict_proba_one(x, **kwargs)
             if model_weight:
                 utils.norm.scale_values_in_dict(predictions, model_weight, inplace=True)
                 y_proba.update(predictions)

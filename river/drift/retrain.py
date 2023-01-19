@@ -57,12 +57,12 @@ class DriftRetrainingClassifier(base.Wrapper, base.Classifier):
     def _wrapped_model(self):
         return self.model
 
-    def predict_proba_one(self, x):
-        return self.model.predict_proba_one(x)
+    def predict_proba_one(self, x, **kwargs):
+        return self.model.predict_proba_one(x, **kwargs)
 
-    def learn_one(self, x, y):
+    def learn_one(self, x, y, **kwargs):
         self._update_ddm(x, y)
-        self.model.learn_one(x, y)
+        self.model.learn_one(x, y, **kwargs)
         return self
 
     def _update_ddm(self, x, y):
