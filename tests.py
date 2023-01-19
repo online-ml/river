@@ -5,7 +5,7 @@ from river import stream
 from sklearn import datasets
 from river.linear_model import LinearRegression
 from river.ensemble.adaptive_random_forest import AdaptiveRandomForestRegressor
-X, y = datasets.make_regression(n_samples=500, n_features=1, noise = 0.3)
+X, y = datasets.make_regression(n_samples=500, n_features=1)
 
 #X = np.random.randn(500)
 #X = list(map(lambda el:[el], X))
@@ -53,5 +53,3 @@ plt.scatter(X,y)
 plt.scatter(X_test_list,y_pred, color = 'r')
 plt.show()
 
-print((y_pred[-1]-y_pred[0])/(X_test_list[-1]-X_test_list[0]))
-print((y[-1]-y[0])/(X_test_list[-1]-X_test_list[0]))
