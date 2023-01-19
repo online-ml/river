@@ -7,6 +7,7 @@ nav:
     - hyperparameter-tuning.md
     - mini-batching.md
     - on-hoeffding-trees.md
+    - active-learning.md
+    - bandits-101.md
     - cloning-and-mutating.md
     - rolling-computations.md
-    - bandits-101.md
