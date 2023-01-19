@@ -220,14 +220,21 @@ def check_mutable_attributes_exist(model):
 
 def check_wrapper_accepts_kwargs(wrapper):
     """Check that the wrapper accepts keyword arguments in its methods."""
-    from river import base, utils
-
-    model = wrapper._wrapped_model
-    assert inspect.getfullargspec(model.learn_one).varkw is not None
-
-    if utils.inspect.isanomalydetector(model):
-        assert inspect.getfullargspec(model.score_one).varkw is not None
-    else:
-        assert inspect.getfullargspec(model.predict_one).varkw is not None
-    if isinstance(model, base.Classifier):
-        assert inspect.getfullargspec(model.predict_proba_one).varkw is not None
+    for method_name in [
+        "score_one",
+        "predict_one",
+        "predict_proba_one",
+        "forecast",
+        "learn_one",
+        "learn_many",
+        "predict_many",
+        "predict_proba_many",
+    ]:
+        if method := getattr(wrapper, method_name, None):
+            try:
+                method(None)
+            except NotImplementedError:
+                continue
+            except Exception:
+                pass
+            assert inspect.getfullargspec(method).varkw is not None

@@ -135,7 +135,7 @@ def yield_checks(model: Estimator) -> typing.Iterator[typing.Callable]:
     if model._mutable_attributes:
         yield common.check_mutable_attributes_exist
 
-    if isinstance(utils.inspect.extract_relevant(model), base.Wrapper):
+    if isinstance(model, base.Wrapper):
         yield common.check_wrapper_accepts_kwargs
 
     # Checks that make use of datasets

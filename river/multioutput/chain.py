@@ -106,7 +106,7 @@ class ClassifierChain(BaseChain, base.Classifier, base.MultiOutputMixin):
     def _multiclass(self):
         return self.model._multiclass
 
-    def learn_one(self, x, y):
+    def learn_one(self, x, y, **kwargs):
 
         x = copy.copy(x)
         n_seen = 0
@@ -121,7 +121,7 @@ class ClassifierChain(BaseChain, base.Classifier, base.MultiOutputMixin):
             try:
                 y_o = y[o]
                 n_seen += 1
-                clf.learn_one(x, y_o)
+                clf.learn_one(x, y_o, **kwargs)
             except KeyError:
                 pass
 
@@ -141,7 +141,7 @@ class ClassifierChain(BaseChain, base.Classifier, base.MultiOutputMixin):
 
         return self
 
-    def predict_proba_one(self, x):
+    def predict_proba_one(self, x, **kwargs):
 
         x = copy.copy(x)
         y_pred = {}
@@ -149,7 +149,7 @@ class ClassifierChain(BaseChain, base.Classifier, base.MultiOutputMixin):
         for o in self.order:
             clf = self[o]
 
-            y_pred[o] = clf.predict_proba_one(x)
+            y_pred[o] = clf.predict_proba_one(x, **kwargs)
 
             # The predictions are stored as features for the next label
             if clf._multiclass:
@@ -160,8 +160,8 @@ class ClassifierChain(BaseChain, base.Classifier, base.MultiOutputMixin):
 
         return y_pred
 
-    def predict_one(self, x):
-        y_pred = self.predict_proba_one(x)
+    def predict_one(self, x, **kwargs):
+        y_pred = self.predict_proba_one(x, **kwargs)
         return {c: max(y_pred[c], key=y_pred[c].get) for c in y_pred if y_pred[c]}
 
 
@@ -219,7 +219,7 @@ class RegressorChain(BaseChain, base.Regressor, base.MultiOutputMixin):
     def _unit_test_params(cls):
         yield {"model": linear_model.LinearRegression()}
 
-    def learn_one(self, x, y):
+    def learn_one(self, x, y, **kwargs):
 
         x = copy.copy(x)
         n_seen = 0
@@ -234,7 +234,7 @@ class RegressorChain(BaseChain, base.Regressor, base.MultiOutputMixin):
             try:
                 y_o = y[o]
                 n_seen += 1
-                reg.learn_one(x, y_o)
+                reg.learn_one(x, y_o, **kwargs)
             except KeyError:
                 pass
 
@@ -250,7 +250,7 @@ class RegressorChain(BaseChain, base.Regressor, base.MultiOutputMixin):
 
         return self
 
-    def predict_one(self, x):
+    def predict_one(self, x, **kwargs):
 
         x = copy.copy(x)
         y_pred = {}
@@ -259,7 +259,7 @@ class RegressorChain(BaseChain, base.Regressor, base.MultiOutputMixin):
             return y_pred
 
         for o, clf in self.items():
-            y_pred[o] = clf.predict_one(x)
+            y_pred[o] = clf.predict_one(x, **kwargs)
             x[o] = y_pred[o]
 
         return y_pred
@@ -285,6 +285,7 @@ class ProbabilisticClassifierChain(ClassifierChain):
 
     Examples
     --------
+
     >>> from river import feature_selection
     >>> from river import linear_model
     >>> from river import metrics
@@ -320,7 +321,7 @@ class ProbabilisticClassifierChain(ClassifierChain):
     def __init__(self, model: base.Classifier):
         super().__init__(model)
 
-    def predict_one(self, x):
+    def predict_one(self, x, **kwargs):
         y_pred = {}
 
         if not isinstance(self.order, list):
@@ -333,14 +334,14 @@ class ProbabilisticClassifierChain(ClassifierChain):
             # put together a binary label vector
             y_gen = {i: int(v) for i, v in zip(self.order, list(bin(label)[2:].zfill(n_labels)))}
             # ... and gauge a probability for it (given x)
-            payoff = self._payoff(x=x, y=y_gen)
+            payoff = self._payoff(x=x, y=y_gen, **kwargs)
             # if it performs well, keep it, and record the max
             if payoff > max_payoff:
                 y_pred = copy.copy(y_gen)
                 max_payoff = payoff
         return y_pred
 
-    def _payoff(self, x, y):
+    def _payoff(self, x, y, **kwargs):
         # Calculate payoff for predicting y | x, under the chains model.
         p = {}
 
@@ -349,7 +350,7 @@ class ProbabilisticClassifierChain(ClassifierChain):
         for label in self.order:
             clf = self[label]
 
-            y_pred = clf.predict_proba_one(x)
+            y_pred = clf.predict_proba_one(x, **kwargs)
             # Extend features
             x[label] = y.get(label, 0)
             p[label] = y_pred.get(y[label], 0) if label in y else 0
@@ -437,13 +438,13 @@ class MonteCarloClassifierChain(ProbabilisticClassifierChain):
 
         return y, p
 
-    def predict_one(self, x):
+    def predict_one(self, x, **kwargs):
         y_pred = {}
 
         if not isinstance(self.order, list):
             return y_pred
 
-        y_pred = ClassifierChain.predict_one(self, x)
+        y_pred = ClassifierChain.predict_one(self, x, **kwargs)
         max_payoff = self._payoff(x=x, y=y_pred)
         # for M times
         for m in range(self.m):
