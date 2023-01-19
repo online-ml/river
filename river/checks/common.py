@@ -215,5 +215,19 @@ def check_seeding_is_idempotent(model, dataset):
 
 def check_mutable_attributes_exist(model):
     for attr in model._mutable_attributes:
-        if not hasattr(model, attr):
-            raise ValueError(f"Attribute '{attr}' doesn't exist")
+        assert hasattr(model, attr)
+
+
+def check_wrapper_accepts_kwargs(wrapper):
+    """Check that the wrapper accepts keyword arguments in its methods."""
+    from river import base, utils
+
+    model = wrapper._wrapped_model
+    assert inspect.getfullargspec(model.learn_one).varkw is not None
+
+    if utils.inspect.isanomalydetector(model):
+        assert inspect.getfullargspec(model.score_one).varkw is not None
+    else:
+        assert inspect.getfullargspec(model.predict_one).varkw is not None
+    if isinstance(model, base.Classifier):
+        assert inspect.getfullargspec(model.predict_proba_one).varkw is not None
