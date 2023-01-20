@@ -21,7 +21,6 @@ class ChebyshevUnderSampler(base.Wrapper, base.Regressor):
     likely to be discarded. Still, frequent cases have a small chance of being selected (controlled via
     the `sp` parameter) in case few rare instances were observed.
 
-
     Parameters
     ----------
     regressor
@@ -59,6 +58,7 @@ class ChebyshevUnderSampler(base.Wrapper, base.Regressor):
     ... )
     [500] MAE: 1.787162
     [1,000] MAE: 1.515711
+    [1,001] MAE: 1.515236
     MAE: 1.515236
 
     References
@@ -133,7 +133,6 @@ class ChebyshevOverSampler(base.Wrapper, base.Regressor):
     used $\\kappa$ times to update the underlying regressor. Frequent target values contribute only once
     to the underlying regressor, whereas rares cases are used multiple times for training.
 
-
     Parameters
     ----------
     regressor
@@ -165,6 +164,7 @@ class ChebyshevOverSampler(base.Wrapper, base.Regressor):
     ... )
     [500] MAE: 1.682627
     [1,000] MAE: 1.761306
+    [1,001] MAE: 1.759576
     MAE: 1.759576
 
     References

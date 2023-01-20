@@ -1,6 +1,7 @@
 """River API module."""
 
 from . import (
+    active,
     anomaly,
     bandit,
     base,
@@ -42,6 +43,7 @@ from . import (
 )
 
 __all__ = [
+    "active",
     "anomaly",
     "base",
     "bandit",

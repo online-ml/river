@@ -5,6 +5,8 @@ import math
 def check_predict_proba_one(classifier, dataset):
     """predict_proba_one should return a valid probability distribution and be pure."""
 
+    from river import utils
+
     if not hasattr(classifier, "predict_proba_one"):
         return
 
@@ -14,6 +16,9 @@ def check_predict_proba_one(classifier, dataset):
 
         classifier = classifier.learn_one(x, y)
         y_pred = classifier.predict_proba_one(x)
+
+        if utils.inspect.isactivelearner(classifier):
+            y_pred, _ = y_pred
 
         # Check the probabilities are coherent
         assert isinstance(y_pred, dict)

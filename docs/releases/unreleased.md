@@ -1,5 +1,10 @@
 # Unreleased
 
+## active
+
+- Created this module dedicated to online active learning.
+- Added `active.EntropySampler`.
+
 ## base
 
 - Fixed an issue where an estimator that has attribute a pipeline could not be cloned.
@@ -24,6 +29,10 @@
 
 - Added `ensemble.ADWINBoostingClassifier`.
 - Added `ensemble.BOLEClassifier`.
+
+## evaluate
+
+- `evaluate.progressive_val_score` and `evaluate.iter_progressive_val_score` will now also produce a report once the last sample has been processed, in addition to every `print_every` steps.
 
 ## forest
 
