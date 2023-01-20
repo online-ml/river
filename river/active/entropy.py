@@ -1,5 +1,7 @@
 import math
+
 from river import base
+
 from .base import ActiveLearningClassifier
 
 
