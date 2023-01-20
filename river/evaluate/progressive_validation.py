@@ -96,7 +96,6 @@ def _progressive_validation(
     else:
         # If the dataset was exhausted, we need to make sure that we yield the final results
         if prev_checkpoint and n_total_answers != prev_checkpoint:
-            state = report()
             yield report()
 
 
