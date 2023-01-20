@@ -123,6 +123,7 @@ class HardSamplingRegressor(HardSampling, base.Regressor):
     ... )
     [500] MAE: 2.292501
     [1,000] MAE: 1.395797
+    [1,001] MAE: 1.394693
     MAE: 1.394693
 
     """
@@ -203,6 +204,7 @@ class HardSamplingClassifier(HardSampling, base.Classifier):
     ... )
     [500] ROCAUC: 92.71%
     [1,000] ROCAUC: 94.75%
+    [1,250] ROCAUC: 95.05%
     ROCAUC: 95.05%
 
     """

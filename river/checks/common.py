@@ -60,6 +60,10 @@ def check_shuffle_features_no_impact(model, dataset):
             y_pred = model.predict_one(x)
             y_pred_shuffled = shuffled.predict_one(x_shuffled)
 
+        if utils.inspect.isactivelearner(model):
+            y_pred, _ = y_pred
+            y_pred_shuffled, _ = y_pred_shuffled
+
         assert_predictions_are_close(y_pred, y_pred_shuffled)
 
         if utils.inspect.isanomalydetector(model):

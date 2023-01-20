@@ -31,7 +31,6 @@ class EntropySampler(ActiveLearningClassifier):
     >>> from river import feature_extraction
     >>> from river import linear_model
     >>> from river import metrics
-    >>> from river import preprocessing
 
     >>> dataset = datasets.SMSSpam()
     >>> metric = metrics.Accuracy()
@@ -75,7 +74,8 @@ class EntropySampler(ActiveLearningClassifier):
         1.0
 
         """
-        entropy = -sum(p * math.log2(p) for p in y_pred.values() if p > 0)
+        if not (entropy := -sum(p * math.log2(p) for p in y_pred.values() if p > 0)):
+            return 0.0
         # Normalize entropy to [0, 1]. We only consider non-zero probabilities in order to avoid
         # cases where two classes are at 50%, and the rest of the classes are at 0%. In such a
         # case, the entropy would be close to 0, which is not desirable.
@@ -84,3 +84,9 @@ class EntropySampler(ActiveLearningClassifier):
 
     def _ask_for_label(self, x, y_pred) -> bool:
         return self._rng.random() < self._p(y_pred)
+
+    @classmethod
+    def _unit_test_params(cls):
+        from river import tree
+
+        yield {"classifier": tree.HoeffdingTreeClassifier()}

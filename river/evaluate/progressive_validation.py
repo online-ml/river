@@ -33,10 +33,31 @@ def _progressive_validation(
 
     preds = {}
 
+    # If we are dealing with an active learner, we need to check whether or not a label should be
+    # used for training or not. We'll also record how many times labels were used.
+    active_learning = utils.inspect.isactivelearner(model)
+    n_samples_learned = 0
+
+    prev_checkpoint = None
     next_checkpoint = next(checkpoints, None)
     n_total_answers = 0
     if measure_time:
         start = time.perf_counter()
+
+    def report():
+        if isinstance(metric, metrics.base.Metrics):
+            state = {m.__class__.__name__: m for m in metric}
+        else:
+            state = {metric.__class__.__name__: metric}
+        state["Step"] = n_total_answers
+        if active_learning:
+            state["Samples used"] = n_samples_learned
+        if measure_time:
+            now = time.perf_counter()
+            state["Time"] = dt.timedelta(seconds=now - start)
+        if measure_memory:
+            state["Memory"] = model._raw_memory_usage
+        return state
 
     for i, x, y, *kwargs in stream.simulate_qa(dataset, moment, delay, copy=True):
 
@@ -44,39 +65,39 @@ def _progressive_validation(
 
         # Case 1: no ground truth, just make a prediction
         if y is None:
-            preds[i] = pred_func(x, **kwargs)
+            y_pred = pred_func(x, **kwargs)
+            y_pred, ask_for_label = y_pred if active_learning else (y_pred, True)
             if utils.inspect.isanomalyfilter(model):
-                preds[i] = model.classify(preds[i])
+                y_pred = model.classify(y_pred)
+            preds[i] = y_pred, ask_for_label
             continue
 
         # Case 2: there's a ground truth, model and metric can be updated
-        y_pred = preds.pop(i)
+        y_pred, use_label = preds.pop(i)
 
         # Update the metric
         if y_pred != {} and y_pred is not None:
             metric.update(y_true=y, y_pred=y_pred)
 
         # Update the model
-        if model._supervised:
-            model.learn_one(x, y, **kwargs)
-        else:
-            model.learn_one(x, **kwargs)
+        if use_label:
+            n_samples_learned += 1
+            if model._supervised:
+                model.learn_one(x, y, **kwargs)
+            else:
+                model.learn_one(x, **kwargs)
 
         # Yield current results
         n_total_answers += 1
         if n_total_answers == next_checkpoint:
-            if isinstance(metric, metrics.base.Metrics):
-                results = {m.__class__.__name__: m for m in metric}
-            else:
-                results = {metric.__class__.__name__: metric}
-            results["Step"] = n_total_answers
-            if measure_time:
-                now = time.perf_counter()
-                results["Time"] = dt.timedelta(seconds=now - start)
-            if measure_memory:
-                results["Memory"] = model._raw_memory_usage
-            yield results
+            yield report()
+            prev_checkpoint = next_checkpoint
             next_checkpoint = next(checkpoints, None)
+    else:
+        # If the dataset was exhausted, we need to make sure that we yield the final results
+        if prev_checkpoint and n_total_answers != prev_checkpoint:
+            state = report()
+            yield report()
 
 
 def iter_progressive_val_score(
@@ -158,6 +179,7 @@ def iter_progressive_val_score(
     {'ROCAUC': ROCAUC: 93.99%, 'Step': 800}
     {'ROCAUC': ROCAUC: 94.74%, 'Step': 1000}
     {'ROCAUC': ROCAUC: 95.03%, 'Step': 1200}
+    {'ROCAUC': ROCAUC: 95.04%, 'Step': 1250}
 
     References
     ----------
@@ -272,6 +294,7 @@ def progressive_val_score(
     [800] ROCAUC: 93.99%
     [1,000] ROCAUC: 94.74%
     [1,200] ROCAUC: 95.03%
+    [1,250] ROCAUC: 95.04%
     ROCAUC: 95.04%
 
     We haven't specified a delay, therefore this is strictly equivalent to the following piece
@@ -315,6 +338,7 @@ def progressive_val_score(
     [800] ROCAUC: 95.42%
     [1,000] ROCAUC: 95.82%
     [1,200] ROCAUC: 96.00%
+    [1,250] ROCAUC: 96.04%
 
     Note that the performance is slightly better than above because we haven't used a fresh
     copy of the model. Instead, we've reused the existing model which has already done a full
@@ -340,9 +364,13 @@ def progressive_val_score(
         measure_memory=show_memory,
     )
 
+    active_learning = utils.inspect.isactivelearner(model)
+
     for checkpoint in checkpoints:
 
         msg = f"[{checkpoint['Step']:,d}] {metric}"
+        if active_learning:
+            msg += f" – {checkpoint['Samples used']:,d} samples used"
         if show_time:
             H, rem = divmod(checkpoint["Time"].seconds, 3600)
             M, S = divmod(rem, 60)
