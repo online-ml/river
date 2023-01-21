@@ -3,6 +3,8 @@ import random
 
 from river import base
 
+__all__ = ["ActiveLearningClassifier"]
+
 
 class ActiveLearningClassifier(base.Wrapper, base.Classifier):
     """Base class for active learning classifiers.
