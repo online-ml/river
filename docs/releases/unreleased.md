@@ -9,6 +9,8 @@
 
 - Fixed an issue where an estimator that has attribute a pipeline could not be cloned.
 - Added a `base.DriftAndWarningDetector` to clarify the difference between drift detectors that have a `warning_detected` property and those that don't.
+- Added `MultiLabelClassifier`.
+- Added `MultiTargetRegressor`.
 
 ## conf
 
@@ -50,6 +52,10 @@
 
 - Added a `coding_method` method to `multiclass.OCC` to control how the codes are randomly generated.
 
+## multioutput
+
+- Added `MulticlassEncoder` to convert multi-label tasks into multi-class problems.
+
 ## preprocessing
 
 - Renamed `alpha` to `fading_factor` in `preprocessing.AdaptiveStandardScaler`.
@@ -67,6 +73,10 @@
 - Renamed `alpha` to `fading_factor` in `stats.Entropy`.
 - Renamed `alpha` to `fading_factor` in `stats.EWMean`.
 - Renamed `alpha` to `fading_factor` in `stats.EWVar`.
+
+## tree
+
+- Remove `LabelCombinationHoeffdingTreeClassifier`. New code should use `multioutput.MulticlassEncoder` instead.
 
 ## utils
 

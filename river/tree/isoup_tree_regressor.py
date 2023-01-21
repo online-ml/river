@@ -9,7 +9,7 @@ from .split_criterion import IntraClusterVarianceReductionSplitCriterion
 from .splitter import Splitter
 
 
-class iSOUPTreeRegressor(tree.HoeffdingTreeRegressor, base.MultiOutputMixin):
+class iSOUPTreeRegressor(tree.HoeffdingTreeRegressor, base.MultiTargetRegressor):
     """Incremental Structured Output Prediction Tree (iSOUP-Tree) for multi-target regression.
 
     This is an implementation of the iSOUP-Tree proposed by A. Osojnik, P. Panov, and
@@ -206,13 +206,7 @@ class iSOUPTreeRegressor(tree.HoeffdingTreeRegressor, base.MultiOutputMixin):
 
             return new_adaptive
 
-    def learn_one(  # type: ignore
-        self,
-        x: dict,
-        y: typing.Dict[typing.Hashable, base.typing.RegTarget],
-        *,
-        sample_weight: float = 1.0,
-    ) -> "iSOUPTreeRegressor":
+    def learn_one(self, x, y, *, sample_weight: float = 1.0) -> "iSOUPTreeRegressor":  # type: ignore
         """Incrementally train the model with one sample.
 
         Training tasks:
@@ -236,25 +230,11 @@ class iSOUPTreeRegressor(tree.HoeffdingTreeRegressor, base.MultiOutputMixin):
         # Update target set
         self.targets.update(y.keys())
 
-        super().learn_one(x, y, sample_weight=sample_weight)  # noqa
+        super().learn_one(x, y, sample_weight=sample_weight)  # type: ignore
 
         return self
 
-    def predict_one(  # type: ignore
-        self, x: dict
-    ) -> typing.Dict[typing.Hashable, base.typing.RegTarget]:
-        """Predict the target values for a given instance.
-
-        Parameters
-        ----------
-        x
-            Sample for which we want to predict the labels.
-
-        Returns
-        -------
-        dict
-            Predicted target values.
-        """
+    def predict_one(self, x):
         pred = {}
         if self._root is not None:
             if isinstance(self._root, DTBranch):

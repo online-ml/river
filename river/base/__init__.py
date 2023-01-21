@@ -18,7 +18,7 @@ from .clusterer import Clusterer
 from .drift_detector import DriftAndWarningDetector, DriftDetector
 from .ensemble import Ensemble, WrapperEnsemble
 from .estimator import Estimator
-from .multi_output import MultiOutputMixin
+from .multi_output import MultiLabelClassifier, MultiTargetRegressor
 from .regressor import MiniBatchRegressor, Regressor
 from .transformer import (
     MiniBatchSupervisedTransformer,
@@ -40,7 +40,8 @@ __all__ = [
     "MiniBatchSupervisedTransformer",
     "MiniBatchTransformer",
     "MiniBatchRegressor",
-    "MultiOutputMixin",
+    "MultiLabelClassifier",
+    "MultiTargetRegressor",
     "Regressor",
     "SupervisedTransformer",
     "tags",
