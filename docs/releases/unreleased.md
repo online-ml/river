@@ -36,6 +36,10 @@
 
 - `evaluate.progressive_val_score` and `evaluate.iter_progressive_val_score` will now also produce a report once the last sample has been processed, in addition to every `print_every` steps.
 
+## feature_extraction
+
+- `feature_extraction.BagOfWords` now outputs a dictionary, and not a `collections.Counter`.
+
 ## forest
 
 - Created this new module to host all models based on an ensemble of decision trees.
