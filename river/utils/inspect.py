@@ -74,7 +74,7 @@ def isclusterer(model):
 
 
 def ismoclassifier(model):
-    return isclassifier(model) and isinstance(extract_relevant(model), base.MultiOutputMixin)
+    return isinstance(extract_relevant(model), base.MultiLabelClassifier)
 
 
 def isregressor(model):
@@ -86,7 +86,7 @@ def istransformer(model):
 
 
 def ismoregressor(model):
-    return isregressor(model) and isinstance(extract_relevant(model), base.MultiOutputMixin)
+    return isinstance(extract_relevant(model), base.MultiTargetRegressor)
 
 
 def isdriftdetector(model):

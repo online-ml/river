@@ -31,7 +31,7 @@ class BaseChain(base.Wrapper, collections.UserDict):
             return self[key]
 
 
-class ClassifierChain(BaseChain, base.Classifier, base.MultiOutputMixin):
+class ClassifierChain(BaseChain, base.MultiLabelClassifier):
     """A multi-output model that arranges classifiers into a chain.
 
     This will create one model per output. The prediction of the first output will be used as a
@@ -42,6 +42,7 @@ class ClassifierChain(BaseChain, base.Classifier, base.MultiOutputMixin):
     Parameters
     ----------
     model
+        A classifier model used for each label.
     order
         A list with the targets order in which to construct the chain. If `None` then the order
         will be inferred from the order of the keys in the target.
@@ -115,7 +116,7 @@ class ClassifierChain(BaseChain, base.Classifier, base.MultiOutputMixin):
             clf = self[o]
 
             # Make predictions before the model is updated to avoid leakage
-            y_pred = clf.predict_proba_one(x)
+            y_pred = clf.predict_proba_one(x, **kwargs)
 
             # We handle the case where an output has been seen in the past but is missing now
             try:
@@ -160,13 +161,9 @@ class ClassifierChain(BaseChain, base.Classifier, base.MultiOutputMixin):
 
         return y_pred
 
-    def predict_one(self, x, **kwargs):
-        y_pred = self.predict_proba_one(x, **kwargs)
-        return {c: max(y_pred[c], key=y_pred[c].get) for c in y_pred if y_pred[c]}
 
-
-class RegressorChain(BaseChain, base.Regressor, base.MultiOutputMixin):
-    """A multi-output model that arranges regressor into a chain.
+class RegressorChain(BaseChain, base.MultiTargetRegressor):
+    """A multi-output model that arranges regressors into a chain.
 
     This will create one model per output. The prediction of the first output will be used as a
     feature in the second output. The prediction for the second output will be used as a feature
@@ -176,6 +173,7 @@ class RegressorChain(BaseChain, base.Regressor, base.MultiOutputMixin):
     Parameters
     ----------
     model
+        The regression model used to make predictions for each target.
     order
         A list with the targets order in which to construct the chain. If `None` then the order
         will be inferred from the order of the keys in the target.
@@ -189,6 +187,7 @@ class RegressorChain(BaseChain, base.Regressor, base.MultiOutputMixin):
     >>> from river import multioutput
     >>> from river import preprocessing
     >>> from river import stream
+
     >>> from sklearn import datasets
 
     >>> dataset = stream.iter_sklearn_dataset(
@@ -286,11 +285,10 @@ class ProbabilisticClassifierChain(ClassifierChain):
     Examples
     --------
 
-    >>> from river import feature_selection
+
     >>> from river import linear_model
     >>> from river import metrics
     >>> from river import multioutput
-    >>> from river import preprocessing
     >>> from river.datasets import synth
 
     >>> dataset = synth.Logical(seed=42, n_tiles=100)
