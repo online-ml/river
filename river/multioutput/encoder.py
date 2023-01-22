@@ -51,7 +51,7 @@ class MultiClassEncoder(base.MultiLabelClassifier):
         super().__init__()
         self.model = model
 
-        self._label_map: typing.DefaultDict[tuple, int] = {}
+        self._label_map: dict[tuple, int] = {}
         self._r_label_map: dict[int, tuple] = {}
         self._labels: set[typing.Hashable] = set()
 
