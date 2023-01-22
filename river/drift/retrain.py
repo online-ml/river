@@ -46,7 +46,9 @@ class DriftRetrainingClassifier(base.Wrapper, base.Classifier):
     def __init__(
         self,
         model: base.Classifier,
-        drift_detector: base.DriftAndWarningDetector | base.BinaryDriftAndWarningDetector = None,
+        drift_detector: base.DriftAndWarningDetector
+        | base.BinaryDriftAndWarningDetector
+        | None = None,
         train_in_background: bool = True,
     ):
         self.model = model
