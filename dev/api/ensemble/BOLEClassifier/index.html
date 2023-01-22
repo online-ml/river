@@ -1710,6 +1710,10 @@
         
           
         
+          
+        
+          
+        
       
       
         <label class="md-nav__link" for="__nav_4_5" tabindex="0" aria-expanded="false">
@@ -1732,6 +1736,34 @@
     <li class="md-nav__item">
       <a href="../../base/Base/" class="md-nav__link">
         Base
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../base/BinaryDriftAndWarningDetector/" class="md-nav__link">
+        BinaryDriftAndWarningDetector
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../base/BinaryDriftDetector/" class="md-nav__link">
+        BinaryDriftDetector
       </a>
     </li>
   
@@ -3550,12 +3582,6 @@
         
           
         
-          
-        
-          
-        
-          
-        
       
       
         <label class="md-nav__link" for="__nav_4_12" tabindex="0" aria-expanded="false">
@@ -3590,20 +3616,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../../drift/DDM/" class="md-nav__link">
-        DDM
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../../drift/DriftRetrainingClassifier/" class="md-nav__link">
         DriftRetrainingClassifier
       </a>
@@ -3618,36 +3630,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../../drift/EDDM/" class="md-nav__link">
-        EDDM
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../drift/HDDM-A/" class="md-nav__link">
-        HDDM_A
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../drift/HDDM-W/" class="md-nav__link">
-        HDDM_W
+      <a href="../../drift/DummyDriftDetector/" class="md-nav__link">
+        DummyDriftDetector
       </a>
     </li>
   
@@ -3687,10 +3671,96 @@
   
   
   
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " data-md-toggle="__nav_4_12_6" type="checkbox" id="__nav_4_12_6" >
+      
+      
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      
+      
+        <label class="md-nav__link" for="__nav_4_12_6" tabindex="0" aria-expanded="false">
+          binary
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="binary" data-md-level="3">
+        <label class="md-nav__title" for="__nav_4_12_6">
+          <span class="md-nav__icon md-icon"></span>
+          binary
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
     <li class="md-nav__item">
-      <a href="../../drift/PeriodicTrigger/" class="md-nav__link">
-        PeriodicTrigger
+      <a href="../../drift/binary/DDM/" class="md-nav__link">
+        DDM
       </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../drift/binary/EDDM/" class="md-nav__link">
+        EDDM
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../drift/binary/HDDM-A/" class="md-nav__link">
+        HDDM_A
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../drift/binary/HDDM-W/" class="md-nav__link">
+        HDDM_W
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
     </li>
   
 
@@ -11226,7 +11296,7 @@
 
 <h1 id="boleclassifier">BOLEClassifier<a class="headerlink" href="#boleclassifier" title="Permanent link">&para;</a></h1>
 <p>Boosting Online Learning Ensemble (BOLE).</p>
-<p>A modified version of Oza Online Boosting Algorithm <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>. For each incoming observation, each model's <code>learn_one</code> method is called <code>k</code> times where <code>k</code> is sampled from a Poisson distribution of parameter lambda. The first model to be trained will be the one with worst correct_weight / (correct_weight + wrong_weight). The worst model's not yet trained will receive lambda values for training from the model's that incorrectly classified an instance, and the best model's not yet trained will receive lambda values for training from the model's that correctly classified an instance. For more details, see <sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup>.</p>
+<p>A modified version of Oza Online Boosting Algorithm <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>. For each incoming observation, each model's <code>learn_one</code> method is called <code>k</code> times where <code>k</code> is sampled from a Poisson distribution of parameter lambda. The first model to be trained will be the one with worst <code>correct_weight / (correct_weight + wrong_weight)</code>. The worst model not yet trained will receive lambda values for training from the models that incorrectly classified an instance, and the best model's not yet trained will receive lambda values for training from the models that correctly classified an instance. For more details, see <sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup>.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
@@ -11257,11 +11327,11 @@
 <p>Number of times a model has predicted the right label when making predictions.</p>
 </li>
 <li>
-<p><strong>order_position</strong></p>
+<p><strong>order_position</strong> (<em>list</em>)</p>
 <p>Array with the index of the models with best (correct_weight / correct_weight + wrong_weight) in descending order.</p>
 </li>
 <li>
-<p><strong>instances_seen</strong></p>
+<p><strong>instances_seen</strong> (<em>int</em>)</p>
 <p>Number of instances that the ensemble trained with.</p>
 </li>
 </ul>
@@ -11278,7 +11348,7 @@
 <span class="o">&gt;&gt;&gt;</span> <span class="n">model</span> <span class="o">=</span> <span class="n">ensemble</span><span class="o">.</span><span class="n">BOLEClassifier</span><span class="p">(</span>
 <span class="o">...</span>     <span class="n">model</span><span class="o">=</span><span class="n">drift</span><span class="o">.</span><span class="n">DriftRetrainingClassifier</span><span class="p">(</span>
 <span class="o">...</span>         <span class="n">model</span><span class="o">=</span><span class="n">tree</span><span class="o">.</span><span class="n">HoeffdingTreeClassifier</span><span class="p">(),</span>
-<span class="o">...</span>         <span class="n">drift_detector</span><span class="o">=</span><span class="n">drift</span><span class="o">.</span><span class="n">DDM</span><span class="p">()</span>
+<span class="o">...</span>         <span class="n">drift_detector</span><span class="o">=</span><span class="n">drift</span><span class="o">.</span><span class="n">binary</span><span class="o">.</span><span class="n">DDM</span><span class="p">()</span>
 <span class="o">...</span>     <span class="p">),</span>
 <span class="o">...</span>     <span class="n">n_models</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
 <span class="o">...</span>     <span class="n">seed</span><span class="o">=</span><span class="mi">42</span>

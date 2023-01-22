@@ -91,6 +91,16 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://riverml.xyz/dev/api/base/BinaryDriftAndWarningDetector/</loc>
+         <lastmod>2023-01-22</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://riverml.xyz/dev/api/base/BinaryDriftDetector/</loc>
+         <lastmod>2023-01-22</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://riverml.xyz/dev/api/base/Classifier/</loc>
          <lastmod>2023-01-22</lastmod>
          <changefreq>daily</changefreq>
@@ -571,27 +581,12 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://riverml.xyz/dev/api/drift/DDM/</loc>
-         <lastmod>2023-01-22</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
          <loc>https://riverml.xyz/dev/api/drift/DriftRetrainingClassifier/</loc>
          <lastmod>2023-01-22</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://riverml.xyz/dev/api/drift/EDDM/</loc>
-         <lastmod>2023-01-22</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/dev/api/drift/HDDM-A/</loc>
-         <lastmod>2023-01-22</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://riverml.xyz/dev/api/drift/HDDM-W/</loc>
+         <loc>https://riverml.xyz/dev/api/drift/DummyDriftDetector/</loc>
          <lastmod>2023-01-22</lastmod>
          <changefreq>daily</changefreq>
     </url>
@@ -606,7 +601,22 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://riverml.xyz/dev/api/drift/PeriodicTrigger/</loc>
+         <loc>https://riverml.xyz/dev/api/drift/binary/DDM/</loc>
+         <lastmod>2023-01-22</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://riverml.xyz/dev/api/drift/binary/EDDM/</loc>
+         <lastmod>2023-01-22</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://riverml.xyz/dev/api/drift/binary/HDDM-A/</loc>
+         <lastmod>2023-01-22</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://riverml.xyz/dev/api/drift/binary/HDDM-W/</loc>
          <lastmod>2023-01-22</lastmod>
          <changefreq>daily</changefreq>
     </url>

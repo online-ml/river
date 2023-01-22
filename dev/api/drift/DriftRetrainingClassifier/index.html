@@ -15,10 +15,10 @@
         <link rel="canonical" href="https://riverml.xyz/dev/api/drift/DriftRetrainingClassifier/">
       
       
-        <link rel="prev" href="../DDM/">
+        <link rel="prev" href="../ADWIN/">
       
       
-        <link rel="next" href="../EDDM/">
+        <link rel="next" href="../DummyDriftDetector/">
       
       <link rel="icon" href="../../../img/favicon.ico">
       <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.0.6">
@@ -1710,6 +1710,10 @@
         
           
         
+          
+        
+          
+        
       
       
         <label class="md-nav__link" for="__nav_4_5" tabindex="0" aria-expanded="false">
@@ -1732,6 +1736,34 @@
     <li class="md-nav__item">
       <a href="../../base/Base/" class="md-nav__link">
         Base
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../base/BinaryDriftAndWarningDetector/" class="md-nav__link">
+        BinaryDriftAndWarningDetector
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../base/BinaryDriftDetector/" class="md-nav__link">
+        BinaryDriftDetector
       </a>
     </li>
   
@@ -3552,12 +3584,6 @@
         
           
         
-          
-        
-          
-        
-          
-        
       
       
         <label class="md-nav__link" for="__nav_4_12" tabindex="0" aria-expanded="true">
@@ -3580,20 +3606,6 @@
     <li class="md-nav__item">
       <a href="../ADWIN/" class="md-nav__link">
         ADWIN
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../DDM/" class="md-nav__link">
-        DDM
       </a>
     </li>
   
@@ -3675,36 +3687,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../EDDM/" class="md-nav__link">
-        EDDM
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../HDDM-A/" class="md-nav__link">
-        HDDM_A
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../HDDM-W/" class="md-nav__link">
-        HDDM_W
+      <a href="../DummyDriftDetector/" class="md-nav__link">
+        DummyDriftDetector
       </a>
     </li>
   
@@ -3744,10 +3728,96 @@
   
   
   
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " data-md-toggle="__nav_4_12_6" type="checkbox" id="__nav_4_12_6" >
+      
+      
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      
+      
+        <label class="md-nav__link" for="__nav_4_12_6" tabindex="0" aria-expanded="false">
+          binary
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="binary" data-md-level="3">
+        <label class="md-nav__title" for="__nav_4_12_6">
+          <span class="md-nav__icon md-icon"></span>
+          binary
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
     <li class="md-nav__item">
-      <a href="../PeriodicTrigger/" class="md-nav__link">
-        PeriodicTrigger
+      <a href="../binary/DDM/" class="md-nav__link">
+        DDM
       </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../binary/EDDM/" class="md-nav__link">
+        EDDM
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../binary/HDDM-A/" class="md-nav__link">
+        HDDM_A
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../binary/HDDM-W/" class="md-nav__link">
+        HDDM_W
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
     </li>
   
 
@@ -11202,15 +11272,15 @@
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
-<p><strong>model</strong> (<em><a href="../../base/Classifier">base.Classifier</a></em>)</p>
+<p><strong>model</strong> (<em>'<a href="../../base/Classifier">base.Classifier</a>'</em>)</p>
 <p>The classifier and background classifier class.</p>
 </li>
 <li>
-<p><strong>drift_detector</strong> (<em><a href="../../base/DriftAndWarningDetector">base.DriftAndWarningDetector</a></em>) – defaults to <code>None</code></p>
+<p><strong>drift_detector</strong> (<em>'<a href="../../base/DriftAndWarningDetector">base.DriftAndWarningDetector</a> | <a href="../../base/BinaryDriftAndWarningDetector">base.BinaryDriftAndWarningDetector</a> | None'</em>) – defaults to <code>None</code></p>
 <p>Algorithm to track warnings and concept drifts. Attention! If the parameter train_in_background is True, the drift_detector must have a warning tracker.</p>
 </li>
 <li>
-<p><strong>train_in_background</strong> (<em>bool</em>) – defaults to <code>True</code></p>
+<p><strong>train_in_background</strong> (<em>'bool'</em>) – defaults to <code>True</code></p>
 <p>Parameter to determine if a background model will be used.</p>
 </li>
 </ul>
@@ -11225,7 +11295,7 @@
 
 <span class="o">&gt;&gt;&gt;</span> <span class="n">model</span> <span class="o">=</span> <span class="n">drift</span><span class="o">.</span><span class="n">DriftRetrainingClassifier</span><span class="p">(</span>
 <span class="o">...</span>     <span class="n">model</span><span class="o">=</span><span class="n">tree</span><span class="o">.</span><span class="n">HoeffdingTreeClassifier</span><span class="p">(),</span>
-<span class="o">...</span>     <span class="n">drift_detector</span><span class="o">=</span> <span class="n">drift</span><span class="o">.</span><span class="n">DDM</span><span class="p">()</span>
+<span class="o">...</span>     <span class="n">drift_detector</span><span class="o">=</span><span class="n">drift</span><span class="o">.</span><span class="n">binary</span><span class="o">.</span><span class="n">DDM</span><span class="p">()</span>
 <span class="o">...</span> <span class="p">)</span>
 
 <span class="o">&gt;&gt;&gt;</span> <span class="n">metric</span> <span class="o">=</span> <span class="n">metrics</span><span class="o">.</span><span class="n">Accuracy</span><span class="p">()</span>
