@@ -217,10 +217,13 @@ class ADWINBoostingClassifier(AdaBoostClassifier):
 class BOLEClassifier(AdaBoostClassifier):
     """Boosting Online Learning Ensemble (BOLE).
 
-    A modified version of Oza Online Boosting Algorithm [^1]. For each incoming observation, each model's `learn_one` method is called `k` times where
-    `k` is sampled from a Poisson distribution of parameter lambda. The first model to be trained will be the one with worst correct_weight / (correct_weight + wrong_weight).
-    The worst model's not yet trained will receive lambda values for training from the model's that incorrectly classified an instance, and the best model's not yet trained
-    will receive lambda values for training from the model's that correctly classified an instance. For more details, see [^2].
+    A modified version of Oza Online Boosting Algorithm [^1]. For each incoming observation, each
+    model's `learn_one` method is called `k` times where `k` is sampled from a Poisson distribution
+    of parameter lambda. The first model to be trained will be the one with worst
+    `correct_weight / (correct_weight + wrong_weight)`. The worst model not yet trained will
+    receive lambda values for training from the models that incorrectly classified an instance, and
+    the best model's not yet trained will receive lambda values for training from the models that
+    correctly classified an instance. For more details, see [^2].
 
     Parameters
     ----------
@@ -239,9 +242,9 @@ class BOLEClassifier(AdaBoostClassifier):
         Number of times a model has made a mistake when making predictions.
     correct_weight : collections.defaultdict
         Number of times a model has predicted the right label when making predictions.
-    order_position :
+    order_position : list
         Array with the index of the models with best (correct_weight / correct_weight + wrong_weight) in descending order.
-    instances_seen :
+    instances_seen : int
         Number of instances that the ensemble trained with.
 
     Examples
@@ -259,7 +262,7 @@ class BOLEClassifier(AdaBoostClassifier):
     >>> model = ensemble.BOLEClassifier(
     ...     model=drift.DriftRetrainingClassifier(
     ...         model=tree.HoeffdingTreeClassifier(),
-    ...         drift_detector=drift.DDM()
+    ...         drift_detector=drift.binary.DDM()
     ...     ),
     ...     n_models=10,
     ...     seed=42

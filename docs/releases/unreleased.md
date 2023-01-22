@@ -11,6 +11,8 @@
 - Added a `base.DriftAndWarningDetector` to clarify the difference between drift detectors that have a `warning_detected` property and those that don't.
 - Added `MultiLabelClassifier`.
 - Added `MultiTargetRegressor`.
+- Added `drift.BinaryDriftDetector`.
+- Added `drift.BinaryDriftAndWarningDetector`.
 
 ## conf
 
@@ -26,6 +28,8 @@
 ## drift
 
 - Added `drift.DriftRetrainingClassifier`.
+- Renamed `drift.PeriodicTrigger` to `drift.DummyDriftDetector` to clarify it is a naive baseline.
+- Created a `binary` submodule to organize all drift detectors which only apply to binary inputs.
 
 ## ensemble
 
