@@ -56,6 +56,6 @@ This is what makes online machine learning powerful. By replaying datasets in th
 
 ## Concept drift
 
-The main reason why an online model might not perform as expected in production is because of concept drift. But this is true for all machine learning models, be they offline or online.
+The main reason why an offline model might not perform as expected in production is because of concept drift. But this is true for all machine learning models, be they offline or online.
 
 The advantage of online models over offline models is that they can cope with drift. Indeed, because they can keep learning, they usually adapt to concept drift in a seemless manner. As opposed to batch models which have to be retrained from scratch.
