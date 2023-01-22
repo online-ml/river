@@ -1,7 +1,8 @@
 from __future__ import annotations
+
 import typing
 
-from river import base, utils
+from river import base
 
 
 class MultiClassEncoder(base.MultiLabelClassifier):
@@ -50,9 +51,9 @@ class MultiClassEncoder(base.MultiLabelClassifier):
         super().__init__()
         self.model = model
 
-        self._label_map: typing.DefaultDict[typing.Tuple, int] = {}
-        self._r_label_map: typing.Dict[int, typing.Tuple] = {}
-        self._labels: typing.Set[typing.Hashable] = set()
+        self._label_map: typing.DefaultDict[tuple, int] = {}
+        self._r_label_map: dict[int, tuple] = {}
+        self._labels: set[typing.Hashable] = set()
 
     def learn_one(self, x, y):
         self._labels.update(y.keys())
