@@ -18,7 +18,7 @@ class MultiClassEncoder(base.MultiLabelClassifier):
 
     Parameters
     ----------
-    classifier
+    model
         The classifier used for learning.
 
     Examples
