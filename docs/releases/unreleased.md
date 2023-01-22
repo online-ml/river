@@ -58,7 +58,7 @@
 
 ## multioutput
 
-- Added `MulticlassEncoder` to convert multi-label tasks into multi-class problems.
+- Added `MultiClassEncoder` to convert multi-label tasks into multi-class problems.
 
 ## preprocessing
 

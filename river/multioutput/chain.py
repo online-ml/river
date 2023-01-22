@@ -47,7 +47,6 @@ class ClassifierChain(BaseChain, base.MultiLabelClassifier):
         A list with the targets order in which to construct the chain. If `None` then the order
         will be inferred from the order of the keys in the target.
 
-
     Examples
     --------
 
@@ -284,7 +283,6 @@ class ProbabilisticClassifierChain(ClassifierChain):
 
     Examples
     --------
-
 
     >>> from river import linear_model
     >>> from river import metrics
