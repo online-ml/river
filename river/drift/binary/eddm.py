@@ -1,8 +1,7 @@
-from river import stats
-from river.base import DriftAndWarningDetector
+from river import base, stats
 
 
-class EDDM(DriftAndWarningDetector):
+class EDDM(base.BinaryDriftAndWarningDetector):
     r"""Early Drift Detection Method.
 
     EDDM (Early Drift Detection Method) aims to improve the detection rate of gradual
@@ -57,7 +56,7 @@ class EDDM(DriftAndWarningDetector):
     >>> rng = random.Random(42)
     >>> # Change the default hyperparameters to avoid too many false positives
     >>> # in this example
-    >>> eddm = drift.EDDM(alpha=0.8, beta=0.75)
+    >>> eddm = drift.binary.EDDM(alpha=0.8, beta=0.75)
 
     >>> # Simulate a data stream where the first 1000 instances come from a uniform distribution
     >>> # of 1's and 0's

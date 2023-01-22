@@ -7,23 +7,18 @@ the true positives while keeping the number of false positives to a minimum.
 
 """
 
+from . import binary
 from .adwin import ADWIN
-from .ddm import DDM
-from .eddm import EDDM
-from .hddm_a import HDDM_A
-from .hddm_w import HDDM_W
+from .dummy import DummyDriftDetector
 from .kswin import KSWIN
 from .page_hinkley import PageHinkley
-from .periodic_trigger import PeriodicTrigger
 from .retrain import DriftRetrainingClassifier
 
 __all__ = [
+    "binary",
     "ADWIN",
-    "DDM",
     "DriftRetrainingClassifier",
-    "EDDM",
-    "HDDM_A",
-    "HDDM_W",
+    "DummyDriftDetector",
     "KSWIN",
     "PageHinkley",
     "PeriodicTrigger",

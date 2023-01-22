@@ -4,8 +4,8 @@ import random
 from river import base
 
 
-class PeriodicTrigger(base.DriftDetector):
-    """Generate pseudo drift detection signals.
+class DummyDriftDetector(base.DriftDetector):
+    """Baseline drift detector that generates pseudo drift detection signals.
 
     There are two approaches[^1]:
 
@@ -47,7 +47,7 @@ class PeriodicTrigger(base.DriftDetector):
 
     Let's start with the fixed drift signals:
 
-    >>> ptrigger = PeriodicTrigger(t_0=500, seed=42)
+    >>> ptrigger = DummyDriftDetector(t_0=500, seed=42)
     >>> for i, v in enumerate(data):
     ...     _ = ptrigger.update(v)
     ...     if ptrigger.drift_detected:
@@ -57,7 +57,7 @@ class PeriodicTrigger(base.DriftDetector):
 
     Now, the random drift signals:
 
-    >>> rtrigger = PeriodicTrigger(
+    >>> rtrigger = DummyDriftDetector(
     ...     trigger_method="random",
     ...     t_0=500,
     ...     w=100,
@@ -74,7 +74,7 @@ class PeriodicTrigger(base.DriftDetector):
     Remember to set a w > 0 value if random triggers are used:
 
     >>> try:
-    ...     PeriodicTrigger(trigger_method="random")
+    ...     DummyDriftDetector(trigger_method="random")
     ... except ValueError as ve:
     ...     print(ve)
     The 'w' value must be greater than zero when 'trigger_method' is 'random'.
