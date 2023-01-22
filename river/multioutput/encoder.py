@@ -1,27 +1,28 @@
+from __future__ import annotations
 import typing
 
 from river import base, utils
 
 
-class MulticlassEncoder(base.MultiLabelClassifier):
+class MultiClassEncoder(base.MultiLabelClassifier):
     """Convert a multi-label task into multiclass.
 
-    For each unique combination of labels, assigns a class and proceeds
-    with training the supplied model.
+    Assigns a class to each unique combination of labels, and proceeds
+    with training the supplied multi-class classifier.
 
-    The transformation is done by changing the label set which could be seen
-    as a binary number to an int which will represent the class, and after
-    the prediction the int is converted back to a binary number which is the
-    predicted label-set.
+    The transformation is done by converting the label set, which could be seen
+    as a binary number, into an integer representing a class. At prediction time,
+    the predicted integer is converted back to a binary number which is the
+    predicted label set.
 
     Parameters
     ----------
-    model
+    classifier
         The classifier used for learning.
-
 
     Examples
     --------
+
     >>> from river import forest
     >>> from river import metrics
     >>> from river import multioutput
@@ -29,7 +30,7 @@ class MulticlassEncoder(base.MultiLabelClassifier):
 
     >>> dataset = synth.Logical(seed=42, n_tiles=100)
 
-    >>> model = multioutput.MulticlassEncoder(
+    >>> model = multioutput.MultiClassEncoder(
     ...     model=forest.ARFClassifier(seed=7)
     ... )
 
@@ -49,8 +50,7 @@ class MulticlassEncoder(base.MultiLabelClassifier):
         super().__init__()
         self.model = model
 
-        self._next_code: int = 0
-        self._label_map: typing.Dict[typing.Tuple, int] = {}
+        self._label_map: typing.DefaultDict[typing.Tuple, int] = {}
         self._r_label_map: typing.Dict[int, typing.Tuple] = {}
         self._labels: typing.Set[typing.Hashable] = set()
 
@@ -59,16 +59,14 @@ class MulticlassEncoder(base.MultiLabelClassifier):
 
         aux = tuple(sorted(y.items()))
         if aux not in self._label_map:
-            # Direct and reverse mapping
-            self._label_map[aux] = self._next_code
-            self._r_label_map[self._next_code] = aux
-            # Update code
-            self._next_code += 1
+            code = len(self._label_map)
+            self._label_map[aux] = code
+            self._r_label_map[code] = aux
 
         # Encode
         y_encoded = self._label_map[aux]
 
-        # Update the model
+        # Update the classifier
         self.model.learn_one(x, y_encoded)
 
         return self
@@ -81,13 +79,13 @@ class MulticlassEncoder(base.MultiLabelClassifier):
 
         enc_class = max(enc_probas, key=enc_probas.get)
 
-        result = {label: {False: 0.0, True: 0.0} for label in self._labels}
-
-        for label_id, label_val in self._r_label_map[enc_class]:
-            result[label_id][label_val] = enc_probas[enc_class]
-            result[label_id] = utils.norm.normalize_values_in_dict(result[label_id])
-
-        return result
+        return {
+            label_id: {
+                bool(label_val): enc_probas[enc_class],
+                not bool(label_val): 1 - enc_probas[enc_class],
+            }
+            for label_id, label_val in self._r_label_map[enc_class]
+        }
 
     @classmethod
     def _unit_test_params(cls):

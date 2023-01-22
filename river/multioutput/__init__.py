@@ -5,12 +5,12 @@ from .chain import (
     ProbabilisticClassifierChain,
     RegressorChain,
 )
-from .encoder import MulticlassEncoder
+from .encoder import MultiClassEncoder
 
 __all__ = [
     "ClassifierChain",
     "MonteCarloClassifierChain",
-    "MulticlassEncoder",
+    "MultiClassEncoder",
     "ProbabilisticClassifierChain",
     "RegressorChain",
 ]
