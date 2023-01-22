@@ -16,10 +16,10 @@ from .base import Base
 from .classifier import Classifier, MiniBatchClassifier
 from .clusterer import Clusterer
 from .drift_detector import (
+    BinaryDriftAndWarningDetector,
+    BinaryDriftDetector,
     DriftAndWarningDetector,
     DriftDetector,
-    BinaryDriftDetector,
-    BinaryDriftAndWarningDetector,
 )
 from .ensemble import Ensemble, WrapperEnsemble
 from .estimator import Estimator

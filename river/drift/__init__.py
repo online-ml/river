@@ -9,9 +9,9 @@ the true positives while keeping the number of false positives to a minimum.
 
 from . import binary
 from .adwin import ADWIN
+from .dummy import DummyDriftDetector
 from .kswin import KSWIN
 from .page_hinkley import PageHinkley
-from .dummy import DummyDriftDetector
 from .retrain import DriftRetrainingClassifier
 
 __all__ = [
