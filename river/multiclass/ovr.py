@@ -78,7 +78,7 @@ class OneVsRestClassifier(base.Wrapper, base.Classifier):
     def _unit_test_params(cls):
         yield {"classifier": linear_model.LogisticRegression()}
 
-    def learn_one(self, x, y):
+    def learn_one(self, x, y, **kwargs):
 
         # Instantiate a new binary classifier if the class is new
         if y not in self.classifiers:
@@ -86,17 +86,17 @@ class OneVsRestClassifier(base.Wrapper, base.Classifier):
 
         # Train each label's associated classifier
         for label, model in self.classifiers.items():
-            model.learn_one(x, bool(y == label))
+            model.learn_one(x, y == label, **kwargs)
 
         return self
 
-    def predict_proba_one(self, x):
+    def predict_proba_one(self, x, **kwargs):
 
         y_pred = {}
         total = 0.0
 
         for label, model in self.classifiers.items():
-            yp = model.predict_proba_one(x)[True]
+            yp = model.predict_proba_one(x, **kwargs)[True]
             y_pred[label] = yp
             total += yp
 
@@ -104,7 +104,7 @@ class OneVsRestClassifier(base.Wrapper, base.Classifier):
             return {label: votes / total for label, votes in y_pred.items()}
         return {label: 1 / len(y_pred) for label in y_pred}
 
-    def learn_many(self, X, y, **params):
+    def learn_many(self, X, y, **kwargs):
 
         self._y_name = y.name
 
@@ -115,20 +115,20 @@ class OneVsRestClassifier(base.Wrapper, base.Classifier):
 
         # Train each label's associated classifier
         for label, model in self.classifiers.items():
-            model.learn_many(X, y == label, **params)
+            model.learn_many(X, y == label, **kwargs)
 
         return self
 
-    def predict_proba_many(self, X):
+    def predict_proba_many(self, X, **kwargs):
 
         y_pred = pd.DataFrame(columns=self.classifiers.keys(), index=X.index)
 
         for label, clf in self.classifiers.items():
-            y_pred[label] = clf.predict_proba_many(X)[True]
+            y_pred[label] = clf.predict_proba_many(X, **kwargs)[True]
 
         return y_pred.div(y_pred.sum(axis="columns"), axis="rows")
 
-    def predict_many(self, X):
+    def predict_many(self, X, **kwargs):
         if not self.classifiers:
             return pd.Series([None] * len(X), index=X.index, dtype="object")
-        return self.predict_proba_many(X).idxmax(axis="columns").rename(self._y_name)
+        return self.predict_proba_many(X, **kwargs).idxmax(axis="columns").rename(self._y_name)

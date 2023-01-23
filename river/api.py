@@ -1,6 +1,7 @@
 """River API module."""
 
 from . import (
+    active,
     anomaly,
     bandit,
     base,
@@ -17,6 +18,7 @@ from . import (
     facto,
     feature_extraction,
     feature_selection,
+    forest,
     imblearn,
     linear_model,
     metrics,
@@ -41,6 +43,7 @@ from . import (
 )
 
 __all__ = [
+    "active",
     "anomaly",
     "base",
     "bandit",
@@ -57,6 +60,7 @@ __all__ = [
     "facto",
     "feature_extraction",
     "feature_selection",
+    "forest",
     "imblearn",
     "linear_model",
     "metrics",

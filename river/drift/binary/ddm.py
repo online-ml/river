@@ -1,10 +1,9 @@
 import math
 
-from river import stats
-from river.base import DriftAndWarningDetector
+from river import base, stats
 
 
-class DDM(DriftAndWarningDetector):
+class DDM(base.BinaryDriftAndWarningDetector):
     """Drift Detection Method.
 
     DDM (Drift Detection Method) is a concept change detection method
@@ -67,7 +66,7 @@ class DDM(DriftAndWarningDetector):
     >>> from river import drift
 
     >>> rng = random.Random(42)
-    >>> ddm = drift.DDM()
+    >>> ddm = drift.binary.DDM()
 
     >>> # Simulate a data stream where the first 1000 instances come from a uniform distribution
     >>> # of 1's and 0's

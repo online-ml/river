@@ -281,10 +281,10 @@ class BagOfWords(base.Transformer, VectorizerMixin):
 
     >>> for sentence in corpus:
     ...     print(bow.transform_one(sentence))
-    Counter({'this': 1, 'is': 1, 'the': 1, 'first': 1, 'document': 1})
-    Counter({'document': 2, 'this': 1, 'is': 1, 'the': 1, 'second': 1})
-    Counter({'and': 1, 'this': 1, 'is': 1, 'the': 1, 'third': 1, 'one': 1})
-    Counter({'is': 1, 'this': 1, 'the': 1, 'first': 1, 'document': 1})
+    {'this': 1, 'is': 1, 'the': 1, 'first': 1, 'document': 1}
+    {'this': 1, 'document': 2, 'is': 1, 'the': 1, 'second': 1}
+    {'and': 1, 'this': 1, 'is': 1, 'the': 1, 'third': 1, 'one': 1}
+    {'is': 1, 'this': 1, 'the': 1, 'first': 1, 'document': 1}
 
     Note that `learn_one` does not have to be called because `BagOfWords` is stateless. You can
     call it but it won't do anything.
@@ -297,10 +297,10 @@ class BagOfWords(base.Transformer, VectorizerMixin):
     >>> for sentence in corpus:
     ...     x = {'sentence': sentence}
     ...     print(bow.transform_one(x))
-    Counter({'this': 1, 'is': 1, 'the': 1, 'first': 1, 'document': 1})
-    Counter({'document': 2, 'this': 1, 'is': 1, 'the': 1, 'second': 1})
-    Counter({'and': 1, 'this': 1, 'is': 1, 'the': 1, 'third': 1, 'one': 1})
-    Counter({'is': 1, 'this': 1, 'the': 1, 'first': 1, 'document': 1})
+    {'this': 1, 'is': 1, 'the': 1, 'first': 1, 'document': 1}
+    {'this': 1, 'document': 2, 'is': 1, 'the': 1, 'second': 1}
+    {'and': 1, 'this': 1, 'is': 1, 'the': 1, 'third': 1, 'one': 1}
+    {'is': 1, 'this': 1, 'the': 1, 'first': 1, 'document': 1}
 
     The `ngram_range` parameter can be used to extract n-grams (including unigrams):
 
@@ -337,7 +337,7 @@ class BagOfWords(base.Transformer, VectorizerMixin):
     """
 
     def transform_one(self, x):
-        return collections.Counter(self.process_text(x))
+        return dict(collections.Counter(self.process_text(x)))
 
     def transform_many(self, X: pd.Series) -> pd.DataFrame:
         """Transform pandas series of string into term-frequency pandas sparse dataframe."""

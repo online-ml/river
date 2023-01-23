@@ -1,11 +1,10 @@
 import copy
 import math
 
-from river import stats
-from river.base import DriftAndWarningDetector
+from river import base, stats
 
 
-class HDDM_W(DriftAndWarningDetector):
+class HDDM_W(base.BinaryDriftAndWarningDetector):
     """Drift Detection Method based on Hoeffding's bounds with moving weighted average-test.
 
     HDDM_W is an online drift detection method based on McDiarmid's bounds. HDDM_W uses the
@@ -41,7 +40,7 @@ class HDDM_W(DriftAndWarningDetector):
     >>> from river import drift
 
     >>> rng = random.Random(42)
-    >>> hddm_w = drift.HDDM_W()
+    >>> hddm_w = drift.binary.HDDM_W()
 
     >>> # Simulate a data stream where the first 1000 instances come from a uniform distribution
     >>> # of 1's and 0's

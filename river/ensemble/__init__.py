@@ -6,7 +6,6 @@ boosting. Then there are those that are composed of an arbitrary list of models,
 aggregate predictions from different kinds of models.
 
 """
-from .adaptive_random_forest import AdaptiveRandomForestClassifier, AdaptiveRandomForestRegressor
 from .bagging import (
     ADWINBaggingClassifier,
     BaggingClassifier,
@@ -20,8 +19,6 @@ from .streaming_random_patches import SRPClassifier, SRPRegressor
 from .voting import VotingClassifier
 
 __all__ = [
-    "AdaptiveRandomForestClassifier",
-    "AdaptiveRandomForestRegressor",
     "AdaBoostClassifier",
     "ADWINBaggingClassifier",
     "ADWINBoostingClassifier",

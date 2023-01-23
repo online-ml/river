@@ -2,7 +2,7 @@ import random
 
 import pytest
 
-from river import datasets, drift, tree
+from river import drift, tree
 from river.datasets import synth
 
 
@@ -78,21 +78,6 @@ def test_memory_usage_reg(dataset, model):
         model.learn_one(x, y)
 
     assert model._raw_memory_usage / (2**20) < 0.5
-
-
-def test_memory_usage_multilabel():
-    dataset = datasets.Music().take(500)
-
-    model = tree.LabelCombinationHoeffdingTreeClassifier(
-        leaf_prediction="mc",
-        splitter=tree.splitter.ExhaustiveSplitter(),
-        max_size=1,
-        memory_estimate_period=100,
-    )
-    for x, y in dataset:
-        model.learn_one(x, y)
-
-    assert model._raw_memory_usage / (2**20) < 1
 
 
 def test_memory_usage_multitarget():

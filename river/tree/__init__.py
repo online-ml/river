@@ -57,19 +57,17 @@ from .hoeffding_adaptive_tree_regressor import HoeffdingAdaptiveTreeRegressor
 from .hoeffding_tree_classifier import HoeffdingTreeClassifier
 from .hoeffding_tree_regressor import HoeffdingTreeRegressor
 from .isoup_tree_regressor import iSOUPTreeRegressor
-from .label_combination_hoeffding_tree import LabelCombinationHoeffdingTreeClassifier
 from .stochastic_gradient_tree import SGTClassifier, SGTRegressor
 
 __all__ = [
     "base",
     "splitter",
-    "HoeffdingTreeClassifier",
     "ExtremelyFastDecisionTreeClassifier",
+    "HoeffdingTreeClassifier",
     "HoeffdingAdaptiveTreeClassifier",
     "HoeffdingTreeRegressor",
     "HoeffdingAdaptiveTreeRegressor",
     "iSOUPTreeRegressor",
-    "LabelCombinationHoeffdingTreeClassifier",
     "SGTClassifier",
     "SGTRegressor",
 ]

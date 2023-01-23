@@ -70,6 +70,7 @@ class OneClassSVM(linear_model.base.GLM, anomaly.base.AnomalyDetector):
     ... )
     [1,000] ROCAUC: 74.40%
     [2,000] ROCAUC: 74.60%
+    [2,500] ROCAUC: 74.68%
     ROCAUC: 74.68%
 
     """

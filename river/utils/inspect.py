@@ -13,17 +13,6 @@ from river import base
 # TODO: maybe all of this could be done by monkeypatching isintance for pipelines?
 
 
-__all__ = [
-    "extract_relevant",
-    "isanomalydetector",
-    "isclassifier",
-    "isregressor",
-    "ismoclassifier",
-    "ismoregressor",
-    "isdriftdetector",
-]
-
-
 def extract_relevant(model: base.Estimator):
     """Extracts the relevant part of a model.
 
@@ -85,7 +74,7 @@ def isclusterer(model):
 
 
 def ismoclassifier(model):
-    return isclassifier(model) and isinstance(extract_relevant(model), base.MultiOutputMixin)
+    return isinstance(extract_relevant(model), base.MultiLabelClassifier)
 
 
 def isregressor(model):
@@ -97,8 +86,14 @@ def istransformer(model):
 
 
 def ismoregressor(model):
-    return isregressor(model) and isinstance(extract_relevant(model), base.MultiOutputMixin)
+    return isinstance(extract_relevant(model), base.MultiTargetRegressor)
 
 
 def isdriftdetector(model):
     return isinstance(extract_relevant(model), base.DriftDetector)
+
+
+def isactivelearner(model):
+    from river import active
+
+    return isinstance(extract_relevant(model), active.base.ActiveLearningClassifier)

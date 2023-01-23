@@ -60,6 +60,10 @@ def check_shuffle_features_no_impact(model, dataset):
             y_pred = model.predict_one(x)
             y_pred_shuffled = shuffled.predict_one(x_shuffled)
 
+        if utils.inspect.isactivelearner(model):
+            y_pred, _ = y_pred
+            y_pred_shuffled, _ = y_pred_shuffled
+
         assert_predictions_are_close(y_pred, y_pred_shuffled)
 
         if utils.inspect.isanomalydetector(model):
@@ -215,5 +219,26 @@ def check_seeding_is_idempotent(model, dataset):
 
 def check_mutable_attributes_exist(model):
     for attr in model._mutable_attributes:
-        if not hasattr(model, attr):
-            raise ValueError(f"Attribute '{attr}' doesn't exist")
+        assert hasattr(model, attr)
+
+
+def check_wrapper_accepts_kwargs(wrapper):
+    """Check that the wrapper accepts keyword arguments in its methods."""
+    for method_name in [
+        "score_one",
+        "predict_one",
+        "predict_proba_one",
+        "forecast",
+        "learn_one",
+        "learn_many",
+        "predict_many",
+        "predict_proba_many",
+    ]:
+        if method := getattr(wrapper, method_name, None):
+            try:
+                method(None)
+            except NotImplementedError:
+                continue
+            except Exception:
+                pass
+            assert inspect.getfullargspec(method).varkw is not None
