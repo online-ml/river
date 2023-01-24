@@ -397,16 +397,16 @@ class MondrianNodeRegressor(MondrianNode):
         ----------
         sample_value
             A given value.
-         """
+        """
 
         r = self.predict() - sample_value
         return r * r / 2
 
     def update_weight(
-            self,
-            sample_value: base.typing.RegTarget,
-            use_aggregation: bool,
-            step: float,
+        self,
+        sample_value: base.typing.RegTarget,
+        use_aggregation: bool,
+        step: float,
     ) -> float:
         """Update the weight of the node given a class and the method used.
 
@@ -426,12 +426,12 @@ class MondrianNodeRegressor(MondrianNode):
         return loss_t
 
     def update_downwards(
-            self,
-            x,
-            sample_value: base.typing.RegTarget,
-            use_aggregation: bool,
-            step: float,
-            do_update_weight: bool,
+        self,
+        x,
+        sample_value: base.typing.RegTarget,
+        use_aggregation: bool,
+        step: float,
+        do_update_weight: bool,
     ):
         """Update the node when running a downward procedure updating the tree.
 

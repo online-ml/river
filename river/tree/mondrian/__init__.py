@@ -13,4 +13,4 @@ from .mondrian_tree import MondrianTree
 from .mondrian_tree_classifier import MondrianTreeClassifier
 from .mondrian_tree_regressor import MondrianTreeRegressor
 
-__all__ = ["MondrianTree", "MondrianTreeClassifier",  "MondrianTreeRegressor"]
+__all__ = ["MondrianTree", "MondrianTreeClassifier", "MondrianTreeRegressor"]

@@ -117,11 +117,7 @@ class MondrianTreeRegressor(MondrianTree, base.Regressor):
         """
 
         return node.update_downwards(
-            self._x,
-            self._y,
-            self.use_aggregation,
-            self.step,
-            do_update_weight
+            self._x, self._y, self.use_aggregation, self.step, do_update_weight
         )
 
     def _compute_split_time(
@@ -145,7 +141,7 @@ class MondrianTreeRegressor(MondrianTree, base.Regressor):
             try:
                 T = math.exp(1 / extensions_sum)
             except OverflowError:
-                T = sys.float_info.max # we get the largest possible output instead
+                T = sys.float_info.max  # we get the largest possible output instead
 
             time = node.time
             # Splitting time of the node (if splitting occurs)

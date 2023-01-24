@@ -59,7 +59,6 @@ from .hoeffding_tree_regressor import HoeffdingTreeRegressor
 from .isoup_tree_regressor import iSOUPTreeRegressor
 from .stochastic_gradient_tree import SGTClassifier, SGTRegressor
 
-
 __all__ = [
     "base",
     "splitter",

@@ -2,9 +2,7 @@ import abc
 import random
 
 from river import base
-
-from river.tree.mondrian import MondrianTreeClassifier
-from river.tree.mondrian import MondrianTreeRegressor
+from river.tree.mondrian import MondrianTreeClassifier, MondrianTreeRegressor
 
 
 class AMFLearner(base.Ensemble, abc.ABC):
