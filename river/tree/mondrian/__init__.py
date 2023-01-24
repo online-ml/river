@@ -1,8 +1,6 @@
 """
 The `river.tree.mondrian` module includes learning and split node
 implementations for the Mondrian trees.
-<<<<<<< HEAD
-=======
 
 Note that this module is not exposed in the tree module, and is instead used by the
 AMFClassifier and AMFRegressor classes in the ensemble module.
