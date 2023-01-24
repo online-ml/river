@@ -2,7 +2,6 @@ import abc
 import random
 
 from river import base
-
 from river.tree.mondrian import MondrianTreeClassifier
 from river.tree.mondrian import MondrianTreeRegressor
 
@@ -31,6 +30,7 @@ class AMFLearner(base.Ensemble, abc.ABC):
     Note
     ----
     This class is not intended for end users but for development only.
+
     """
 
     def __init__(
@@ -53,7 +53,8 @@ class AMFLearner(base.Ensemble, abc.ABC):
 
         self._rng = random.Random(self.seed)
 
-    def is_trained(self) -> bool:
+    @property
+    def _is_initialized(self) -> bool:
         """Indicate whether the model has been trained at least once before."""
         return len(self) > 0
 
@@ -67,9 +68,10 @@ class AMFLearner(base.Ensemble, abc.ABC):
 
 
 class AMFClassifier(AMFLearner, base.Classifier):
-    """Aggregated Mondrian Forest classifier for online learning. This algorithm
-    is truly online, in the sense that a single pass is performed, and that predictions
-    can be produced anytime.
+    """Aggregated Mondrian Forest classifier for online learning.
+
+    This implementation is truly online, in the sense that a single pass is performed, and that
+    predictions can be produced anytime.
 
     Each node in a tree predicts according to the distribution of the labels
     it contains. This distribution is regularized using a "Jeffreys" prior
@@ -117,25 +119,33 @@ class AMFClassifier(AMFLearner, base.Classifier):
     Only log_loss used for the computation of the aggregation weights is supported for now, namely the log-loss
     for multi-class classification.
 
-    References
-    ----------
-    J. Mourtada, S. Gaiffas and E. Scornet, *AMF: Aggregated Mondrian Forests for Online Learning*, arXiv:1906.10529, 2019.
-
     Examples
     --------
-    >>> from river import ensemble
+
     >>> from river import evaluate
+    >>> from river import forest
     >>> from river import metrics
     >>> from river.datasets import Bananas
 
     >>> dataset = Bananas().take(500)
 
-    >>> model = ensemble.AMFClassifier(n_classes=2, n_estimators=10, use_aggregation=True, dirichlet=0.2, seed=1)
+    >>> model = forest.AMFClassifier(
+    ...     n_classes=2,
+    ...     n_estimators=10,
+    ...     use_aggregation=True,
+    ...     dirichlet=0.2,
+    ...     seed=1
+    ... )
 
     >>> metric = metrics.Accuracy()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
     Accuracy: 84.77%
+
+    References
+    ----------
+    J. Mourtada, S. Gaiffas and E. Scornet, *AMF: Aggregated Mondrian Forests for Online Learning*, arXiv:1906.10529, 2019.
+
     """
 
     def __init__(
@@ -168,54 +178,48 @@ class AMFClassifier(AMFLearner, base.Classifier):
 
         # memory of the classes
         self._classes: set[base.typing.ClfTarget] = set()
-        self.iteration = 0
 
     def _initialize_trees(self):
         self.data: list[MondrianTreeClassifier] = []
         for _ in range(self.n_estimators):
-            # We don't want to have the same stochastic scheme for each tree, or it'll break the randomness
-            # Hence we introduce a new seed for each, that is derived of the given seed by a deterministic process
-            seed = self._rng.randint(0, 9999999)
-
             tree = MondrianTreeClassifier(
                 self.n_classes,
                 self.step,
                 self.use_aggregation,
                 self.dirichlet,
                 self.split_pure,
-                self.iteration,
-                seed,
+                iteration=0,
+                # We don't want to have the same stochastic scheme for each tree, or it'll break the randomness
+                # Hence we introduce a new seed for each, that is derived of the given seed by a deterministic process
+                seed=self._rng.randint(0, 9999999),
             )
-            self._forest.append(tree)
+            self.data.append(tree)
 
     def learn_one(self, x, y):
         # Updating the previously seen classes with the new sample
         self._classes.add(y)
 
         # Checking if the forest has been created
-        if not self.is_trained():
+        if not self._is_initialized:
             self._initialize_trees()
 
         # we fit all the trees using the new sample
-        for tree in self._forest:
+        for tree in self:
             tree.learn_one(x, y)
-
-        self.iteration += 1
 
         return self
 
     def predict_proba_one(self, x):
         # Checking that the model has been trained once at least
         # Otherwise return the default empty dict
-        if not self.is_trained():
+        if not self._is_initialized:
             return {}
 
         # initialize the scores
         scores = {c: 0 for c in self._classes}
 
         # Simply computes the prediction for each tree and average it
-        for tree in self._forest:
-            tree.use_aggregation = self.use_aggregation
+        for tree in self:
             predictions = tree.predict_proba_one(x)
             for c in self._classes:
                 scores[c] += predictions[c] / self.n_estimators

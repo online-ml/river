@@ -483,7 +483,7 @@ class SRPClassifier(BaseSRPEnsemble, base.Classifier):
 
         self._base_learner_class = BaseSRPClassifier  # type: ignore
 
-    def predict_proba_one(self, x):
+    def predict_proba_one(self, x, **kwargs):
         y_pred = collections.Counter()
 
         if not self.models:
@@ -491,7 +491,7 @@ class SRPClassifier(BaseSRPEnsemble, base.Classifier):
             return y_pred
 
         for model in self.models:
-            y_proba_temp = model.predict_proba_one(x)
+            y_proba_temp = model.predict_proba_one(x, **kwargs)
             metric_value = model.metric.get()
             if not self.disable_weighted_vote and metric_value > 0.0:
                 y_proba_temp = {k: val * metric_value for k, val in y_proba_temp.items()}
@@ -538,6 +538,7 @@ class BaseSRPClassifier(BaseSRPEstimator):
         *,
         sample_weight: int,
         n_samples_seen: int,
+        **kwargs,
     ):
         if self.features is not None:
             # Select the subset of features to use
@@ -548,7 +549,7 @@ class BaseSRPClassifier(BaseSRPEstimator):
 
         # TODO Find a way to verify if the model natively supports sample_weight
         for _ in range(int(sample_weight)):
-            self.model.learn_one(x=x_subset, y=y)
+            self.model.learn_one(x=x_subset, y=y, **kwargs)
 
         if self._background_learner:
             # Train the background learner
@@ -580,14 +581,14 @@ class BaseSRPClassifier(BaseSRPEstimator):
                 # There was a change, reset the model
                 self.reset(all_features=all_features, n_samples_seen=n_samples_seen)
 
-    def predict_proba_one(self, x):
+    def predict_proba_one(self, x, **kwargs):
         # Select the features to use
         x_subset = {k: x[k] for k in self.features if k in x} if self.features is not None else x
 
-        return self.model.predict_proba_one(x_subset)
+        return self.model.predict_proba_one(x_subset, **kwargs)
 
-    def predict_one(self, x: dict) -> base.typing.ClfTarget:
-        y_pred = self.predict_proba_one(x)
+    def predict_one(self, x: dict, **kwargs) -> base.typing.ClfTarget:
+        y_pred = self.predict_proba_one(x, **kwargs)
         if y_pred:
             return max(y_pred, key=y_pred.get)
         return None  # type: ignore
@@ -777,12 +778,12 @@ class SRPRegressor(BaseSRPEnsemble, base.Regressor):
 
         self._base_learner_class = BaseSRPRegressor  # type: ignore
 
-    def predict_one(self, x):
+    def predict_one(self, x, **kwargs):
         y_pred = np.zeros(self.n_models)
         weights = np.ones(self.n_models)
 
         for i, model in enumerate(self.models):
-            y_pred[i] = model.predict_one(x)
+            y_pred[i] = model.predict_one(x, **kwargs)
             if not self.disable_weighted_vote:
                 metric_value = model.metric.get()
                 weights[i] = metric_value if metric_value >= 0 else 0.0
@@ -836,6 +837,7 @@ class BaseSRPRegressor(BaseSRPEstimator):
         *,
         sample_weight: int,
         n_samples_seen: int,
+        **kwargs,
     ):
         all_features = list(x.keys())
         if self.features is not None:
@@ -847,7 +849,7 @@ class BaseSRPRegressor(BaseSRPEstimator):
 
         # TODO Find a way to verify if the model natively supports sample_weight
         for _ in range(int(sample_weight)):
-            self.model.learn_one(x=x_subset, y=y)
+            self.model.learn_one(x=x_subset, y=y, **kwargs)
 
         # Drift detection input
         y_pred = self.model.predict_one(x_subset)
@@ -885,8 +887,8 @@ class BaseSRPRegressor(BaseSRPEstimator):
                 # There was a change, reset the model
                 self.reset(all_features=all_features, n_samples_seen=n_samples_seen)
 
-    def predict_one(self, x):
+    def predict_one(self, x, **kwargs):
         # Select the features to use
         x_subset = {k: x[k] for k in self.features if k in x} if self.features is not None else x
 
-        return self.model.predict_one(x_subset)
+        return self.model.predict_one(x_subset, **kwargs)

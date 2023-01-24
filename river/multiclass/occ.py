@@ -138,16 +138,16 @@ class OutputCodeClassifier(base.Wrapper, base.Classifier):
             "coding_method": "random",
         }
 
-    def learn_one(self, x, y):
+    def learn_one(self, x, y, **kwargs):
 
         code = self.code_book[y]
 
         for i, c in enumerate(code):
-            self.classifiers[i].learn_one(x, c)
+            self.classifiers[i].learn_one(x, c, **kwargs)
 
         return self
 
-    def predict_one(self, x):
+    def predict_one(self, x, **kwargs):
 
         if not self.code_book:  # it's empty
             return None
@@ -155,6 +155,6 @@ class OutputCodeClassifier(base.Wrapper, base.Classifier):
         output = [None for _ in range(self.code_size)]
 
         for i, clf in self.classifiers.items():
-            output[i] = clf.predict_proba_one(x).get(True, 0.0)
+            output[i] = clf.predict_proba_one(x, **kwargs).get(True, 0.0)
 
         return min(self.code_book, key=lambda c: l1_dist(self.code_book[c], output))

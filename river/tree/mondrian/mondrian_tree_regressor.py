@@ -1,6 +1,7 @@
+from __future__ import annotations
+
 import math
 import sys
-import typing
 
 from river import base, utils
 from river.tree.mondrian.mondrian_tree import MondrianTree
@@ -26,6 +27,11 @@ class MondrianTreeRegressor(MondrianTree, base.Regressor):
         Number iterations to do during training.
     seed
         Random seed for reproducibility.
+
+    Notes
+    -----
+    The Mondrian Tree Regressor is a type of decision tree that bases splitting decisions over a
+    Mondrian process.
 
     References
     ----------
@@ -54,19 +60,19 @@ class MondrianTreeRegressor(MondrianTree, base.Regressor):
         self.seed = seed
 
         # The current sample being proceeded
-        self._x: typing.Dict[base.typing.FeatureName, typing.Union[int, float]]
+        self._x: dict[base.typing.FeatureName, int | float]
         # The current label index being proceeded
-        self._y: base.typing.ClfTarget
+        self._y: base.typing.RegTarget
 
         # Initialization of the root of the tree
         # It's the root so it doesn't have any parent (hence None)
         self._root = MondrianLeafRegressor(None, 0.0, 0)
 
-    def is_trained(self):
+    def _is_initialized(self):
         """Check if the tree has learnt at least one sample"""
         return self.iteration != 0
 
-    def _predict(self, node: MondrianNodeRegressor):
+    def _predict(self, node: MondrianNodeRegressor) -> base.typing.RegTarget:
         """Compute the prediction.
 
         Parameters
@@ -77,7 +83,7 @@ class MondrianTreeRegressor(MondrianTree, base.Regressor):
 
         return node.predict()
 
-    def _loss(self, node):
+    def _loss(self, node: MondrianNodeRegressor) -> float:
         """Compute the loss for the given node regarding the current label.
 
         Parameters
@@ -88,7 +94,7 @@ class MondrianTreeRegressor(MondrianTree, base.Regressor):
 
         return node.loss(self._y)
 
-    def _update_weight(self, node: MondrianNodeRegressor):
+    def _update_weight(self, node: MondrianNodeRegressor) -> float:
         """Update the weight of the node regarding the current label with the tree parameters.
 
         Parameters
@@ -99,7 +105,7 @@ class MondrianTreeRegressor(MondrianTree, base.Regressor):
 
         return node.update_weight(self._y, self.use_aggregation, self.step)
 
-    def _update_downwards(self, node, do_update_weight):
+    def _update_downwards(self, node: MondrianNodeRegressor, do_update_weight):
         """Update the node when running a downward procedure updating the tree.
 
         Parameters
@@ -120,9 +126,9 @@ class MondrianTreeRegressor(MondrianTree, base.Regressor):
 
     def _compute_split_time(
         self,
-        node: typing.Union[MondrianLeafRegressor, MondrianBranchRegressor],
+        node: MondrianLeafRegressor | MondrianBranchRegressor,
         extensions_sum: float,
-    ):
+    ) -> float:
         """Computes the split time of the given node.
 
         Parameters
@@ -159,12 +165,12 @@ class MondrianTreeRegressor(MondrianTree, base.Regressor):
 
     def _split(
         self,
-        node: typing.Union[MondrianLeafRegressor, MondrianBranchRegressor],
+        node: MondrianLeafRegressor | MondrianBranchRegressor,
         split_time: float,
         threshold: float,
         feature: base.typing.FeatureName,
         is_right_extension: bool,
-    ):
+    ) -> MondrianBranchRegressor:
         """Split the given node and attributes the split time, threshold, etc... to the node.
 
         Parameters
@@ -185,8 +191,8 @@ class MondrianTreeRegressor(MondrianTree, base.Regressor):
         new_depth = node.depth + 1
 
         # To calm down mypy
-        left: typing.Union[MondrianLeafRegressor, MondrianBranchRegressor]
-        right: typing.Union[MondrianLeafRegressor, MondrianBranchRegressor]
+        left: MondrianLeafRegressor | MondrianBranchRegressor
+        right: MondrianLeafRegressor | MondrianBranchRegressor
 
         # The node is already a branch: we create a new branch above it and move the existing
         # node one level down the tree
@@ -394,13 +400,14 @@ class MondrianTreeRegressor(MondrianTree, base.Regressor):
 
         # If the tree hasn't seen any sample, then it should return
         # the default empty dict
-        if not self.is_trained():
+        if not self._is_initialized:
             return
 
-        if isinstance(self._root, MondrianBranchRegressor):
-            leaf = self._root.traverse(x, until_leaf=True)
-        else:
-            leaf = self._root
+        leaf = (
+            self._root.traverse(x, until_leaf=True)
+            if isinstance(self._root, MondrianBranchRegressor)
+            else self._root
+        )
 
         if not self.use_aggregation:
             return self._predict(leaf)

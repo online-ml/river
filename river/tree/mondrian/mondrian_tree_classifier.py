@@ -1,6 +1,8 @@
+
+from __future__ import annotations
+
 import math
 import sys
-import typing
 
 from river import base, utils
 from river.tree.mondrian.mondrian_tree import MondrianTree
@@ -33,12 +35,8 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
 
     Notes
     -----
-    The Mondrian Tree Classifier is a type of decision tree that bases splitting decisions over a Mondrian process.
-
-    References
-    ----------
-    [^1] Balaji Lakshminarayanan, Daniel M. Roy, Yee Whye Teh. Mondrian Forests: Efficient Online Random Forests.
-        arXiv:1406.2673, pages 2-4
+    The Mondrian Tree Classifier is a type of decision tree that bases splitting decisions over a
+    Mondrian process.
 
     Examples
     --------
@@ -61,6 +59,12 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
     Accuracy: 57.52%
+
+    References
+    ----------
+    [^1]: Balaji Lakshminarayanan, Daniel M. Roy, Yee Whye Teh. Mondrian Forests: Efficient Online Random Forests.
+        arXiv:1406.2673, pages 2-4
+
     """
 
     def __init__(
@@ -99,7 +103,7 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
         self._classes: set[base.typing.ClfTarget] = set()
 
         # The current sample being proceeded
-        self._x: typing.Dict[base.typing.FeatureName, typing.Union[int, float]]
+        self._x: dict[base.typing.FeatureName, int | float]
         # The current label index being proceeded
         self._y: base.typing.ClfTarget
 
@@ -107,11 +111,12 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
         # It's the root so it doesn't have any parent (hence None)
         self._root = MondrianLeafClassifier(None, 0.0, 0)
 
-    def is_trained(self):
+    @property
+    def _is_initialized(self):
         """Check if the tree has learnt at least one sample"""
         return len(self._classes) != 0
 
-    def _score(self, node: MondrianNodeClassifier):
+    def _score(self, node: MondrianNodeClassifier) -> float:
         """Computes the score of the node regarding the current sample being proceeded
 
         Parameters
@@ -122,7 +127,7 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
 
         return node.score(self._y, self.dirichlet, self.n_classes)
 
-    def _predict(self, node: MondrianNodeClassifier):
+    def _predict(self, node: MondrianNodeClassifier) -> dict[base.typing.ClfTarget, float]:
         """Compute the predictions scores of the node regarding all the classes scores.
 
         Parameters
@@ -133,7 +138,7 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
 
         return node.predict(self.dirichlet, self._classes, self.n_classes)
 
-    def _loss(self, node: MondrianNodeClassifier):
+    def _loss(self, node: MondrianNodeClassifier) -> float:
         """Compute the loss for the given node regarding the current label
 
         Parameters
@@ -144,7 +149,7 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
 
         return node.loss(self._y, self.dirichlet, self.n_classes)
 
-    def _update_weight(self, node: MondrianNodeClassifier):
+    def _update_weight(self, node: MondrianNodeClassifier) -> float:
         """Update the weight of the node regarding the current label with the tree parameters.
 
         Parameters
@@ -192,9 +197,9 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
 
     def _compute_split_time(
         self,
-        node: typing.Union[MondrianLeafClassifier, MondrianBranchClassifier],
+        node: MondrianLeafClassifier | MondrianBranchClassifier,
         extensions_sum: float,
-    ):
+    ) -> float:
         """Compute the spit time of the given node.
 
         Parameters
@@ -234,12 +239,12 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
 
     def _split(
         self,
-        node: typing.Union[MondrianLeafClassifier, MondrianBranchClassifier],
+        node: MondrianLeafClassifier | MondrianBranchClassifier,
         split_time: float,
         threshold: float,
         feature: base.typing.FeatureName,
         is_right_extension: bool,
-    ):
+    ) -> MondrianBranchClassifier:
         """Split the given node and set the split time, threshold, etc., to the node.
 
         Parameters
@@ -259,8 +264,8 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
         new_depth = node.depth + 1
 
         # To calm down mypy
-        left: typing.Union[MondrianLeafClassifier, MondrianBranchClassifier]
-        right: typing.Union[MondrianLeafClassifier, MondrianBranchClassifier]
+        left: MondrianLeafClassifier | MondrianBranchClassifier
+        right: MondrianLeafClassifier | MondrianBranchClassifier
 
         # The node is already a branch: we create a new branch above it and move the existing
         # node one level down the tree
@@ -474,16 +479,18 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
 
         # If the tree hasn't seen any sample, then it should return
         # the default empty dict
-        if not self.is_trained():
+
+        if not self._is_initialized:
             return {}
 
         # Initialization of the scores to output to 0
         scores = {c: 0.0 for c in self._classes}
 
-        if isinstance(self._root, MondrianBranchClassifier):
-            leaf = self._root.traverse(x, until_leaf=True)
-        else:
-            leaf = self._root
+        leaf = (
+            self._root.traverse(x, until_leaf=True)
+            if isinstance(self._root, MondrianBranchClassifier)
+            else self._root
+        )
 
         if not self.use_aggregation:
             return self._predict(leaf)

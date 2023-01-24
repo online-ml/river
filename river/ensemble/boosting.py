@@ -79,12 +79,12 @@ class AdaBoostClassifier(base.WrapperEnsemble, base.Classifier):
     def _unit_test_params(cls):
         yield {"model": linear_model.LogisticRegression()}
 
-    def learn_one(self, x, y):
+    def learn_one(self, x, y, **kwargs):
         lambda_poisson = 1
 
         for i, model in enumerate(self):
             for _ in range(utils.random.poisson(lambda_poisson, self._rng)):
-                model.learn_one(x, y)
+                model.learn_one(x, y, **kwargs)
 
             if model.predict_one(x) == y:
                 self.correct_weight[i] += lambda_poisson
@@ -99,7 +99,7 @@ class AdaBoostClassifier(base.WrapperEnsemble, base.Classifier):
                 )
         return self
 
-    def predict_proba_one(self, x):
+    def predict_proba_one(self, x, **kwargs):
         y_proba = collections.Counter()
 
         for i, model in enumerate(self):
@@ -110,7 +110,7 @@ class AdaBoostClassifier(base.WrapperEnsemble, base.Classifier):
             else:
                 beta_inv = (1 - epsilon) / epsilon
                 model_weight = math.log(beta_inv) if beta_inv != 0 else 0
-            predictions = model.predict_proba_one(x)
+            predictions = model.predict_proba_one(x, **kwargs)
             utils.norm.scale_values_in_dict(predictions, model_weight, inplace=True)
             y_proba.update(predictions)
 
@@ -175,13 +175,13 @@ class ADWINBoostingClassifier(AdaBoostClassifier):
         super().__init__(model, n_models, seed)
         self._drift_detectors = [drift.ADWIN() for _ in range(self.n_models)]
 
-    def learn_one(self, x, y):
+    def learn_one(self, x, y, **kwargs):
 
         change_detected = False
         lambda_poisson = 1.0
         for i, model in enumerate(self):
             for _ in range(utils.random.poisson(1, self._rng)):
-                model.learn_one(x, y)
+                model.learn_one(x, y, **kwargs)
 
             if model.predict_one(x) == y:
                 self.correct_weight[i] += lambda_poisson
@@ -217,10 +217,13 @@ class ADWINBoostingClassifier(AdaBoostClassifier):
 class BOLEClassifier(AdaBoostClassifier):
     """Boosting Online Learning Ensemble (BOLE).
 
-    A modified version of Oza Online Boosting Algorithm [^1]. For each incoming observation, each model's `learn_one` method is called `k` times where
-    `k` is sampled from a Poisson distribution of parameter lambda. The first model to be trained will be the one with worst correct_weight / (correct_weight + wrong_weight).
-    The worst model's not yet trained will receive lambda values for training from the model's that incorrectly classified an instance, and the best model's not yet trained
-    will receive lambda values for training from the model's that correctly classified an instance. For more details, see [^2].
+    A modified version of Oza Online Boosting Algorithm [^1]. For each incoming observation, each
+    model's `learn_one` method is called `k` times where `k` is sampled from a Poisson distribution
+    of parameter lambda. The first model to be trained will be the one with worst
+    `correct_weight / (correct_weight + wrong_weight)`. The worst model not yet trained will
+    receive lambda values for training from the models that incorrectly classified an instance, and
+    the best model's not yet trained will receive lambda values for training from the models that
+    correctly classified an instance. For more details, see [^2].
 
     Parameters
     ----------
@@ -239,9 +242,9 @@ class BOLEClassifier(AdaBoostClassifier):
         Number of times a model has made a mistake when making predictions.
     correct_weight : collections.defaultdict
         Number of times a model has predicted the right label when making predictions.
-    order_position :
+    order_position : list
         Array with the index of the models with best (correct_weight / correct_weight + wrong_weight) in descending order.
-    instances_seen :
+    instances_seen : int
         Number of instances that the ensemble trained with.
 
     Examples
@@ -259,7 +262,7 @@ class BOLEClassifier(AdaBoostClassifier):
     >>> model = ensemble.BOLEClassifier(
     ...     model=drift.DriftRetrainingClassifier(
     ...         model=tree.HoeffdingTreeClassifier(),
-    ...         drift_detector=drift.DDM()
+    ...         drift_detector=drift.binary.DDM()
     ...     ),
     ...     n_models=10,
     ...     seed=42
@@ -283,7 +286,7 @@ class BOLEClassifier(AdaBoostClassifier):
         self.order_position = [i for i in range(n_models)]
         self.instances_seen = 0
 
-    def learn_one(self, x, y):
+    def learn_one(self, x, y, **kwargs):
         self.instances_seen += 1
 
         correct_rate = [0] * self.n_models
@@ -329,7 +332,7 @@ class BOLEClassifier(AdaBoostClassifier):
                 min_correct_rate -= 1
 
             for _ in range(utils.random.poisson(lambda_poisson, self._rng)):
-                self.models[pos].learn_one(x, y)
+                self.models[pos].learn_one(x, y, **kwargs)
 
             if self.models[pos].predict_one(x) == y:
                 self.correct_weight[pos] += lambda_poisson
@@ -341,7 +344,7 @@ class BOLEClassifier(AdaBoostClassifier):
                 correct = False
         return self
 
-    def predict_proba_one(self, x):
+    def predict_proba_one(self, x, **kwargs):
         y_proba = collections.Counter()
         y_proba_all = (
             collections.Counter()
@@ -355,7 +358,7 @@ class BOLEClassifier(AdaBoostClassifier):
                 if epsilon <= self.error_bound:
                     beta_inv = (1 - epsilon) / epsilon
                     model_weight = math.log(beta_inv)
-            predictions = model.predict_proba_one(x)
+            predictions = model.predict_proba_one(x, **kwargs)
             if model_weight:
                 utils.norm.scale_values_in_dict(predictions, model_weight, inplace=True)
                 y_proba.update(predictions)

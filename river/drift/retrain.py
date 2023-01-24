@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from river import base, drift
 
 
@@ -31,7 +33,7 @@ class DriftRetrainingClassifier(base.Wrapper, base.Classifier):
 
     >>> model = drift.DriftRetrainingClassifier(
     ...     model=tree.HoeffdingTreeClassifier(),
-    ...     drift_detector= drift.DDM()
+    ...     drift_detector=drift.binary.DDM()
     ... )
 
     >>> metric = metrics.Accuracy()
@@ -44,12 +46,14 @@ class DriftRetrainingClassifier(base.Wrapper, base.Classifier):
     def __init__(
         self,
         model: base.Classifier,
-        drift_detector: base.DriftAndWarningDetector = None,
+        drift_detector: base.DriftAndWarningDetector
+        | base.BinaryDriftAndWarningDetector
+        | None = None,
         train_in_background: bool = True,
     ):
         self.model = model
         self.train_in_background = train_in_background
-        self.drift_detector = drift_detector if drift_detector is not None else drift.DDM()
+        self.drift_detector = drift_detector if drift_detector is not None else drift.binary.DDM()
         if self.train_in_background:
             self.bkg_model = model.clone()
 
@@ -57,12 +61,12 @@ class DriftRetrainingClassifier(base.Wrapper, base.Classifier):
     def _wrapped_model(self):
         return self.model
 
-    def predict_proba_one(self, x):
-        return self.model.predict_proba_one(x)
+    def predict_proba_one(self, x, **kwargs):
+        return self.model.predict_proba_one(x, **kwargs)
 
-    def learn_one(self, x, y):
+    def learn_one(self, x, y, **kwargs):
         self._update_ddm(x, y)
-        self.model.learn_one(x, y)
+        self.model.learn_one(x, y, **kwargs)
         return self
 
     def _update_ddm(self, x, y):
@@ -92,6 +96,6 @@ class DriftRetrainingClassifier(base.Wrapper, base.Classifier):
 
         yield {
             "model": preprocessing.StandardScaler() | linear_model.LogisticRegression(),
-            "drift_detector": drift.DDM(),
+            "drift_detector": drift.binary.DDM(),
         }
-        yield {"model": naive_bayes.GaussianNB(), "drift_detector": drift.DDM()}
+        yield {"model": naive_bayes.GaussianNB(), "drift_detector": drift.binary.DDM()}

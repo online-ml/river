@@ -120,7 +120,7 @@ def yield_checks(model: Estimator) -> typing.Iterator[typing.Callable]:
 
     """
 
-    from river import utils
+    from river import base, utils
 
     # General checks
     yield common.check_repr
@@ -135,8 +135,8 @@ def yield_checks(model: Estimator) -> typing.Iterator[typing.Callable]:
     if model._mutable_attributes:
         yield common.check_mutable_attributes_exist
 
-    if utils.inspect.isclassifier(model):
-        yield clf.check_multiclass_is_bool
+    if isinstance(model, base.Wrapper):
+        yield common.check_wrapper_accepts_kwargs
 
     # Checks that make use of datasets
     dataset_checks = [

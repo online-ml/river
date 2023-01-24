@@ -15,10 +15,15 @@ from . import tags, typing
 from .base import Base
 from .classifier import Classifier, MiniBatchClassifier
 from .clusterer import Clusterer
-from .drift_detector import DriftAndWarningDetector, DriftDetector
+from .drift_detector import (
+    BinaryDriftAndWarningDetector,
+    BinaryDriftDetector,
+    DriftAndWarningDetector,
+    DriftDetector,
+)
 from .ensemble import Ensemble, WrapperEnsemble
 from .estimator import Estimator
-from .multi_output import MultiOutputMixin
+from .multi_output import MultiLabelClassifier, MultiTargetRegressor
 from .regressor import MiniBatchRegressor, Regressor
 from .transformer import (
     MiniBatchSupervisedTransformer,
@@ -30,6 +35,8 @@ from .wrapper import Wrapper
 
 __all__ = [
     "Base",
+    "BinaryDriftDetector",
+    "BinaryDriftAndWarningDetector",
     "Classifier",
     "Clusterer",
     "DriftDetector",
@@ -40,7 +47,8 @@ __all__ = [
     "MiniBatchSupervisedTransformer",
     "MiniBatchTransformer",
     "MiniBatchRegressor",
-    "MultiOutputMixin",
+    "MultiLabelClassifier",
+    "MultiTargetRegressor",
     "Regressor",
     "SupervisedTransformer",
     "tags",

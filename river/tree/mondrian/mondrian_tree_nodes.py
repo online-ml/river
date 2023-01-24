@@ -1,6 +1,7 @@
+from __future__ import annotations
+
 import collections
 import math
-import typing
 
 from river import base
 from river.tree.base import Branch, Leaf
@@ -43,7 +44,7 @@ class MondrianBranch(Branch):
         self.feature = feature
         self.threshold = threshold
 
-    def branch_no(self, x) :
+    def branch_no(self, x) -> int:
         if x[self.feature] <= self.threshold:
             return 0
         return 1
@@ -104,7 +105,7 @@ class MondrianNode(base.Base):
                 self.weight, left.log_weight_tree + right.log_weight_tree
             )
 
-    def range(self, feature) :
+    def range(self, feature) -> tuple[float, float]:
         """Output the known range of the node regarding the j-th feature.
 
         Parameters
@@ -118,7 +119,7 @@ class MondrianNode(base.Base):
             self.memory_range_max[feature],
         )
 
-    def range_extension(self, x) :
+    def range_extension(self, x) -> tuple[float, dict[base.typing.ClfTarget, float]]:
         """Compute the range extension of the node for the given sample.
 
         Parameters
@@ -150,7 +151,7 @@ class MondrianNodeClassifier(MondrianNode):
         self.n_samples = 0
         self.counts = collections.defaultdict(int)
 
-    def replant(self, leaf: "MondrianNodeClassifier", copy_all: bool = False):
+    def replant(self, leaf: MondrianNodeClassifier, copy_all: bool = False):
         """Transfer information from a leaf to a new branch."""
         self.weight = leaf.weight  # type: ignore
         self.log_weight_tree = leaf.log_weight_tree  # type: ignore
@@ -160,7 +161,7 @@ class MondrianNodeClassifier(MondrianNode):
             self.memory_range_max = leaf.memory_range_max
             self.n_samples = leaf.n_samples
 
-    def score(self, sample_class: base.typing.ClfTarget, dirichlet: float, n_classes: int) :
+    def score(self, sample_class: base.typing.ClfTarget, dirichlet: float, n_classes: int) -> float:
         """Compute the score of the node.
 
         Parameters
@@ -184,7 +185,7 @@ class MondrianNodeClassifier(MondrianNode):
 
     def predict(
         self, dirichlet: float, classes: set, n_classes: int
-    ):
+    ) -> dict[base.typing.ClfTarget, float]:
         """Predict the scores of all classes and output a `scores` dictionary
         with the new values.
 
@@ -203,7 +204,7 @@ class MondrianNodeClassifier(MondrianNode):
             scores[c] = self.score(c, dirichlet, n_classes)
         return scores
 
-    def loss(self, sample_class: base.typing.ClfTarget, dirichlet: float, n_classes: int):
+    def loss(self, sample_class: base.typing.ClfTarget, dirichlet: float, n_classes: int) -> float:
         """Compute the loss of the node.
 
         Parameters
@@ -226,7 +227,7 @@ class MondrianNodeClassifier(MondrianNode):
         use_aggregation: bool,
         step: float,
         n_classes: int,
-    ):
+    ) -> float:
         """Update the weight of the node given a class and the method used.
 
         Parameters
@@ -260,7 +261,7 @@ class MondrianNodeClassifier(MondrianNode):
 
         self.counts[sample_class] += 1
 
-    def is_dirac(self, sample_class: base.typing.ClfTarget):
+    def is_dirac(self, sample_class: base.typing.ClfTarget) -> bool:
         """Check whether the node follows a dirac distribution regarding the given
         class, i.e., if the node is pure regarding the given class.
 
@@ -374,7 +375,7 @@ class MondrianNodeRegressor(MondrianNode):
         self.n_samples = 0
         self.mean = 0.0
 
-    def replant(self, leaf: "MondrianNodeRegressor", copy_all: bool = False):
+    def replant(self, leaf: MondrianNodeRegressor, copy_all: bool = False):
         """Transfer information from a leaf to a new branch."""
         self.weight = leaf.weight  # type: ignore
         self.log_weight_tree = leaf.log_weight_tree  # type: ignore
@@ -385,11 +386,11 @@ class MondrianNodeRegressor(MondrianNode):
             self.memory_range_max = leaf.memory_range_max
             self.n_samples = leaf.n_samples
 
-    def predict(self):
+    def predict(self) -> base.typing.RegTarget:
         """Return the prediction of the node."""
         return self.mean
 
-    def loss(self, sample_value: base.typing.RegTarget):
+    def loss(self, sample_value: base.typing.RegTarget) -> float:
         """Compute the loss of the node.
 
         Parameters
@@ -406,7 +407,7 @@ class MondrianNodeRegressor(MondrianNode):
             sample_value: base.typing.RegTarget,
             use_aggregation: bool,
             step: float,
-    ):
+    ) -> float:
         """Update the weight of the node given a class and the method used.
 
         Parameters

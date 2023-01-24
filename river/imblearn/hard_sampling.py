@@ -26,8 +26,8 @@ class HardSampling(base.Wrapper):
     def _wrapped_model(self):
         return self.model
 
-    def predict_one(self, x):
-        return self.model.predict_one(x)
+    def predict_one(self, x, **kwargs):
+        return self.model.predict_one(x, **kwargs)
 
     @property
     def _model_pred_func(self) -> typing.Callable:
@@ -37,7 +37,7 @@ class HardSampling(base.Wrapper):
             return self.model.predict_proba_one
         return self.model.predict_one
 
-    def learn_one(self, x, y):
+    def learn_one(self, x, y, **kwargs):
 
         loss = self.loss(y_true=y, y_pred=self._model_pred_func(x))
 
@@ -55,7 +55,7 @@ class HardSampling(base.Wrapper):
 
             triplet = self.buffer.pop(i)
 
-            self.model.learn_one(triplet.x, triplet.y)
+            self.model.learn_one(triplet.x, triplet.y, **kwargs)
 
             loss = self.loss(y_true=triplet.y, y_pred=self._model_pred_func(triplet.x))
 
@@ -123,6 +123,7 @@ class HardSamplingRegressor(HardSampling, base.Regressor):
     ... )
     [500] MAE: 2.292501
     [1,000] MAE: 1.395797
+    [1,001] MAE: 1.394693
     MAE: 1.394693
 
     """
@@ -203,6 +204,7 @@ class HardSamplingClassifier(HardSampling, base.Classifier):
     ... )
     [500] ROCAUC: 92.71%
     [1,000] ROCAUC: 94.75%
+    [1,250] ROCAUC: 95.05%
     ROCAUC: 95.05%
 
     """
@@ -227,8 +229,8 @@ class HardSamplingClassifier(HardSampling, base.Classifier):
     def _multiclass(self):
         return self.model._multiclass
 
-    def predict_proba_one(self, x):
-        return self.model.predict_proba_one(x)
+    def predict_proba_one(self, x, **kwargs):
+        return self.model.predict_proba_one(x, **kwargs)
 
     @classmethod
     def _unit_test_params(cls):

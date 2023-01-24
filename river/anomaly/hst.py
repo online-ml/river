@@ -191,6 +191,7 @@ class HalfSpaceTrees(anomaly.base.AnomalyDetector):
     ... )
     [1,000] ROCAUC: 88.43%
     [2,000] ROCAUC: 89.28%
+    [2,500] ROCAUC: 91.15%
     ROCAUC: 91.15%
 
     References
