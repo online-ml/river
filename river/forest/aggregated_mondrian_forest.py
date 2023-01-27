@@ -94,7 +94,7 @@ class AMFClassifier(AMFLearner, base.Classifier):
     ----------
     n_classes
         Number of expected classes in the labels. This is required since we
-        don't know the number of classes in advance in a online setting.
+        don't know the number of classes in advance in an online setting.
     n_estimators
         The number of trees in the forest.
     step

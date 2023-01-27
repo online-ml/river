@@ -161,7 +161,13 @@ class MondrianNodeClassifier(MondrianNode):
             self.memory_range_max = leaf.memory_range_max
             self.n_samples = leaf.n_samples
 
-    def score(self, sample_class: base.typing.ClfTarget, dirichlet: float, n_classes: int) -> float:
+    def score(
+        self,
+        sample_class: base.typing.ClfTarget,
+        dirichlet: float,
+        n_classes: int,
+        estimated_n_classes: int,
+    ) -> float:
         """Compute the score of the node.
 
         Parameters
@@ -172,19 +178,32 @@ class MondrianNodeClassifier(MondrianNode):
             Dirichlet parameter of the tree.
         n_classes
             The total number of classes seen so far.
+        estimated_n_classes
+            A rough estimate of the total number of classes of the problem.
 
         Notes
         -----
         This uses Jeffreys prior with Dirichlet parameter for smoothing.
         """
 
+        # J.Mourtada rule of thumb approximation: if the class was not observed before, we set the probability to
+        # 1/N where N denotes a rough estimate of the final total number of classes
+        if sample_class not in self.counts:
+            # Register the new class
+            self.counts[sample_class] = 1
+
+            # Output the 1/N estimated probability that will result in a log(N) loss at this round
+            # Next rounds will be using the dynamic number of classes instead
+            return 1 / estimated_n_classes
+
         count = self.counts[sample_class]
 
         # We use the Jeffreys prior with dirichlet parameter
+        # We also use the dynamic number of classes thanks to the previous trick
         return (count + dirichlet) / (self.n_samples + dirichlet * n_classes)
 
     def predict(
-        self, dirichlet: float, classes: set, n_classes: int
+        self, dirichlet: float, classes: set, n_classes: int, estimated_n_classes: int
     ) -> dict[base.typing.ClfTarget, float]:
         """Predict the scores of all classes and output a `scores` dictionary
         with the new values.
@@ -196,15 +215,24 @@ class MondrianNodeClassifier(MondrianNode):
         classes
             The set of classes seen so far
         n_classes
-            The total number of classes of the problem.
+            The total number of classes seen so far.
+        estimated_n_classes
+            A rough estimate of the total number of classes of the problem.
+
         """
 
         scores = {}
         for c in classes:
-            scores[c] = self.score(c, dirichlet, n_classes)
+            scores[c] = self.score(c, dirichlet, n_classes, estimated_n_classes)
         return scores
 
-    def loss(self, sample_class: base.typing.ClfTarget, dirichlet: float, n_classes: int) -> float:
+    def loss(
+        self,
+        sample_class: base.typing.ClfTarget,
+        dirichlet: float,
+        n_classes: int,
+        estimated_n_classes: int,
+    ) -> float:
         """Compute the loss of the node.
 
         Parameters
@@ -214,10 +242,12 @@ class MondrianNodeClassifier(MondrianNode):
         dirichlet
             Dirichlet parameter of the problem.
         n_classes
-            The total number of classes of the problem.
+            The total number of classes seen so far.
+        estimated_n_classes
+            A rough estimate of the total number of classes of the problem.
         """
 
-        sc = self.score(sample_class, dirichlet, n_classes)
+        sc = self.score(sample_class, dirichlet, n_classes, estimated_n_classes)
         return -math.log(sc)
 
     def update_weight(
@@ -227,6 +257,7 @@ class MondrianNodeClassifier(MondrianNode):
         use_aggregation: bool,
         step: float,
         n_classes: int,
+        estimated_n_classes: int,
     ) -> float:
         """Update the weight of the node given a class and the method used.
 
@@ -241,10 +272,12 @@ class MondrianNodeClassifier(MondrianNode):
         step
             Step parameter of the tree.
         n_classes
-            The total number of classes of the problem.
+            The total number of classes seen so far.
+        estimated_n_classes
+            A rough estimate of the total number of classes of the problem
         """
 
-        loss_t = self.loss(sample_class, dirichlet, n_classes)
+        loss_t = self.loss(sample_class, dirichlet, n_classes, estimated_n_classes)
         if use_aggregation:
             self.weight -= step * loss_t
         return loss_t
@@ -282,6 +315,7 @@ class MondrianNodeClassifier(MondrianNode):
         step: float,
         do_update_weight: bool,
         n_classes: int,
+        estimated_n_classes: int,
     ):
         """Update the node when running a downward procedure updating the tree.
 
@@ -300,7 +334,9 @@ class MondrianNodeClassifier(MondrianNode):
         do_update_weight
             Should we update the weights of the node as well.
         n_classes
-            The total number of classes of the problem.
+            The total number of classes seen so far.
+        estimated_n_classes
+            A rough estimate of the total number of classes of the problem.
         """
 
         # Updating the range of the feature values known by the node
@@ -323,7 +359,9 @@ class MondrianNodeClassifier(MondrianNode):
         self.n_samples += 1
 
         if do_update_weight:
-            self.update_weight(sample_class, dirichlet, use_aggregation, step, n_classes)
+            self.update_weight(
+                sample_class, dirichlet, use_aggregation, step, n_classes, estimated_n_classes
+            )
 
         self.update_count(sample_class)
 

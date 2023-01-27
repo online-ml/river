@@ -18,7 +18,7 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
     Parameters
     ----------
     n_classes
-        Number of classes of the problem.
+        Number of expected classes of the problem.
     step
         Step of the tree.
     use_aggregation
@@ -124,7 +124,7 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
             Node to evaluate the score.
         """
 
-        return node.score(self._y, self.dirichlet, self.n_classes)
+        return node.score(self._y, self.dirichlet, len(self._classes), self.n_classes)
 
     def _predict(self, node: MondrianNodeClassifier) -> dict[base.typing.ClfTarget, float]:
         """Compute the predictions scores of the node regarding all the classes scores.
@@ -135,7 +135,7 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
             Node to make predictions.
         """
 
-        return node.predict(self.dirichlet, self._classes, self.n_classes)
+        return node.predict(self.dirichlet, self._classes, len(self._classes), self.n_classes)
 
     def _loss(self, node: MondrianNodeClassifier) -> float:
         """Compute the loss for the given node regarding the current label
@@ -146,7 +146,7 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
             Node to evaluate the loss.
         """
 
-        return node.loss(self._y, self.dirichlet, self.n_classes)
+        return node.loss(self._y, self.dirichlet, len(self._classes), self.n_classes)
 
     def _update_weight(self, node: MondrianNodeClassifier) -> float:
         """Update the weight of the node regarding the current label with the tree parameters.
@@ -158,7 +158,12 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
         """
 
         return node.update_weight(
-            self._y, self.dirichlet, self.use_aggregation, self.step, self.n_classes
+            self._y,
+            self.dirichlet,
+            self.use_aggregation,
+            self.step,
+            len(self._classes),
+            self.n_classes,
         )
 
     def _update_count(self, node: MondrianNodeClassifier):
@@ -191,6 +196,7 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
             self.use_aggregation,
             self.step,
             do_weight_update,
+            len(self._classes),
             self.n_classes,
         )
 
