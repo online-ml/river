@@ -10,7 +10,7 @@ Conformal prediction is a general term for identifying confidence interval defin
 
 The aim of our work is to allow users to benefit from these method when using regression and prediction models with River. So we increased the **conf** module first. This one is present on the River git repo, but is not deployed on the downloadable Python version. It contains the parent class **interval** that is used as base for the different methods: **Gaussian**, **ConformalPrediction**, **AdaptativeConformalPrediction**. Next, we augment the **time_series** module, in which we update the evaluation method to allow for intervals at different horizons. Indeed the logic of this module is to predict not only at horizon 1, but further. The calculation of intervals must therefore be integrated into this way, hence the base definition in conf. 
 
-To ensure the integration of all these methods, the **\_\_init\_\_** and **base** files have been updated. This allows to have an almost functional environment as described below. A notebook is also provided in our Git repo : https://github.com/mverontarabeux/river/tree/ConformalPrediction
+To ensure the integration of all these methods, the **\_\_init\_\_** and **base** files have been updated. This allows to have an almost functional environment as described below. A notebook is also provided in our Git repo : https://github.com/mverontarabeux/river/tree/ConformalPrediction/river
 
 
 ## Installation
