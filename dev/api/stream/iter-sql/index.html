@@ -11258,15 +11258,15 @@
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
-<p><strong>query</strong> (<em>Union[str, sqlalchemy.sql.selectable.Selectable]</em>)</p>
+<p><strong>query</strong> (<em>'str | sqlalchemy.TextClause | sqlalchemy.Select'</em>)</p>
 <p>SQL query to be executed.</p>
 </li>
 <li>
-<p><strong>conn</strong> (<em>sqlalchemy.engine.interfaces.Connectable</em>)</p>
+<p><strong>conn</strong> (<em>'sqlalchemy.Connection'</em>)</p>
 <p>An SQLAlchemy construct which has an <code>execute</code> method. In other words you can pass an engine, a connection, or a session.</p>
 </li>
 <li>
-<p><strong>target_name</strong> (<em>str</em>) – defaults to <code>None</code></p>
+<p><strong>target_name</strong> (<em>'str'</em>) – defaults to <code>None</code></p>
 <p>The name of the target field. If this is <code>None</code>, then <code>y</code> will also be <code>None</code>.</p>
 </li>
 </ul>
@@ -11298,21 +11298,32 @@
 
 <span class="o">&gt;&gt;&gt;</span> <span class="k">with</span> <span class="n">engine</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
 <span class="o">...</span>     <span class="n">_</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">t_sales</span><span class="o">.</span><span class="n">insert</span><span class="p">(),</span> <span class="n">sales</span><span class="p">)</span>
+<span class="o">...</span>     <span class="n">conn</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
 </code></pre></div>
 <p>We can now query the database. We will set <code>amount</code> to be the target field.</p>
 <div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">stream</span>
 
 <span class="o">&gt;&gt;&gt;</span> <span class="k">with</span> <span class="n">engine</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
-<span class="o">...</span>     <span class="n">query</span> <span class="o">=</span> <span class="s1">&#39;SELECT * FROM sales;&#39;</span>
+<span class="o">...</span>     <span class="n">query</span> <span class="o">=</span> <span class="n">sqlalchemy</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">t_sales</span><span class="p">)</span>
+<span class="o">...</span>     <span class="n">dataset</span> <span class="o">=</span> <span class="n">stream</span><span class="o">.</span><span class="n">iter_sql</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">conn</span><span class="p">,</span> <span class="n">target_name</span><span class="o">=</span><span class="s1">&#39;amount&#39;</span><span class="p">)</span>
+<span class="o">...</span>     <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">dataset</span><span class="p">:</span>
+<span class="o">...</span>         <span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="p">{</span><span class="s1">&#39;shop&#39;</span><span class="p">:</span> <span class="s1">&#39;Hema&#39;</span><span class="p">,</span> <span class="s1">&#39;date&#39;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="mi">2016</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">2</span><span class="p">)}</span> <span class="mi">20</span>
+<span class="p">{</span><span class="s1">&#39;shop&#39;</span><span class="p">:</span> <span class="s1">&#39;Ikea&#39;</span><span class="p">,</span> <span class="s1">&#39;date&#39;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="mi">2016</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">2</span><span class="p">)}</span> <span class="mi">18</span>
+<span class="p">{</span><span class="s1">&#39;shop&#39;</span><span class="p">:</span> <span class="s1">&#39;Hema&#39;</span><span class="p">,</span> <span class="s1">&#39;date&#39;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="mi">2016</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">3</span><span class="p">)}</span> <span class="mi">22</span>
+<span class="p">{</span><span class="s1">&#39;shop&#39;</span><span class="p">:</span> <span class="s1">&#39;Ikea&#39;</span><span class="p">,</span> <span class="s1">&#39;date&#39;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="mi">2016</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">3</span><span class="p">)}</span> <span class="mi">14</span>
+<span class="p">{</span><span class="s1">&#39;shop&#39;</span><span class="p">:</span> <span class="s1">&#39;Hema&#39;</span><span class="p">,</span> <span class="s1">&#39;date&#39;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="mi">2016</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">)}</span> <span class="mi">12</span>
+<span class="p">{</span><span class="s1">&#39;shop&#39;</span><span class="p">:</span> <span class="s1">&#39;Ikea&#39;</span><span class="p">,</span> <span class="s1">&#39;date&#39;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="mi">2016</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">)}</span> <span class="mi">16</span>
+</code></pre></div>
+<p>This also with raw SQL queries.</p>
+<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="k">with</span> <span class="n">engine</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+<span class="o">...</span>     <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;SELECT * FROM sales WHERE shop = &#39;Hema&#39;&quot;</span>
 <span class="o">...</span>     <span class="n">dataset</span> <span class="o">=</span> <span class="n">stream</span><span class="o">.</span><span class="n">iter_sql</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">conn</span><span class="p">,</span> <span class="n">target_name</span><span class="o">=</span><span class="s1">&#39;amount&#39;</span><span class="p">)</span>
 <span class="o">...</span>     <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">dataset</span><span class="p">:</span>
 <span class="o">...</span>         <span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 <span class="p">{</span><span class="s1">&#39;shop&#39;</span><span class="p">:</span> <span class="s1">&#39;Hema&#39;</span><span class="p">,</span> <span class="s1">&#39;date&#39;</span><span class="p">:</span> <span class="s1">&#39;2016-08-02&#39;</span><span class="p">}</span> <span class="mi">20</span>
-<span class="p">{</span><span class="s1">&#39;shop&#39;</span><span class="p">:</span> <span class="s1">&#39;Ikea&#39;</span><span class="p">,</span> <span class="s1">&#39;date&#39;</span><span class="p">:</span> <span class="s1">&#39;2016-08-02&#39;</span><span class="p">}</span> <span class="mi">18</span>
 <span class="p">{</span><span class="s1">&#39;shop&#39;</span><span class="p">:</span> <span class="s1">&#39;Hema&#39;</span><span class="p">,</span> <span class="s1">&#39;date&#39;</span><span class="p">:</span> <span class="s1">&#39;2016-08-03&#39;</span><span class="p">}</span> <span class="mi">22</span>
-<span class="p">{</span><span class="s1">&#39;shop&#39;</span><span class="p">:</span> <span class="s1">&#39;Ikea&#39;</span><span class="p">,</span> <span class="s1">&#39;date&#39;</span><span class="p">:</span> <span class="s1">&#39;2016-08-03&#39;</span><span class="p">}</span> <span class="mi">14</span>
 <span class="p">{</span><span class="s1">&#39;shop&#39;</span><span class="p">:</span> <span class="s1">&#39;Hema&#39;</span><span class="p">,</span> <span class="s1">&#39;date&#39;</span><span class="p">:</span> <span class="s1">&#39;2016-08-04&#39;</span><span class="p">}</span> <span class="mi">12</span>
-<span class="p">{</span><span class="s1">&#39;shop&#39;</span><span class="p">:</span> <span class="s1">&#39;Ikea&#39;</span><span class="p">,</span> <span class="s1">&#39;date&#39;</span><span class="p">:</span> <span class="s1">&#39;2016-08-04&#39;</span><span class="p">}</span> <span class="mi">16</span>
 </code></pre></div>
 
 
