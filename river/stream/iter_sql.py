@@ -1,3 +1,4 @@
+from __future__ import annotations
 import typing
 
 import sqlalchemy
@@ -8,8 +9,8 @@ __all__ = ["iter_sql"]
 
 
 def iter_sql(
-    query: typing.Union[str, sqlalchemy.sql.expression.Selectable],
-    conn: sqlalchemy.engine.Connectable,
+    query: str | sqlalchemy.TextClause | sqlalchemy.Select,
+    conn: sqlalchemy.Connection,
     target_name: str = None,
 ) -> base.typing.Stream:
     """Iterates over the results from an SQL query.
@@ -61,26 +62,38 @@ def iter_sql(
 
     >>> with engine.connect() as conn:
     ...     _ = conn.execute(t_sales.insert(), sales)
+    ...     conn.commit()
 
     We can now query the database. We will set `amount` to be the target field.
 
     >>> from river import stream
 
     >>> with engine.connect() as conn:
-    ...     query = 'SELECT * FROM sales;'
+    ...     query = sqlalchemy.sql.select(t_sales)
+    ...     dataset = stream.iter_sql(query, conn, target_name='amount')
+    ...     for x, y in dataset:
+    ...         print(x, y)
+    {'shop': 'Hema', 'date': datetime.date(2016, 8, 2)} 20
+    {'shop': 'Ikea', 'date': datetime.date(2016, 8, 2)} 18
+    {'shop': 'Hema', 'date': datetime.date(2016, 8, 3)} 22
+    {'shop': 'Ikea', 'date': datetime.date(2016, 8, 3)} 14
+    {'shop': 'Hema', 'date': datetime.date(2016, 8, 4)} 12
+    {'shop': 'Ikea', 'date': datetime.date(2016, 8, 4)} 16
+
+    This also with raw SQL queries.
+
+    >>> with engine.connect() as conn:
+    ...     query = "SELECT * FROM sales WHERE shop = 'Hema'"
     ...     dataset = stream.iter_sql(query, conn, target_name='amount')
     ...     for x, y in dataset:
     ...         print(x, y)
     {'shop': 'Hema', 'date': '2016-08-02'} 20
-    {'shop': 'Ikea', 'date': '2016-08-02'} 18
     {'shop': 'Hema', 'date': '2016-08-03'} 22
-    {'shop': 'Ikea', 'date': '2016-08-03'} 14
     {'shop': 'Hema', 'date': '2016-08-04'} 12
-    {'shop': 'Ikea', 'date': '2016-08-04'} 16
 
     """
 
-    result_proxy = conn.execute(query)
+    result_proxy = conn.execute(sqlalchemy.sql.text(query) if isinstance(query, str) else query)
 
     if target_name is None:
         for row in result_proxy:

@@ -82,6 +82,10 @@
 - Renamed `alpha` to `fading_factor` in `stats.EWMean`.
 - Renamed `alpha` to `fading_factor` in `stats.EWVar`.
 
+## stream
+
+- Upgraded `stream.iter_sql` to SQLAlchemy 2.0.
+
 ## tree
 
 - Remove `LabelCombinationHoeffdingTreeClassifier`. New code should use `multioutput.MulticlassEncoder` instead.
