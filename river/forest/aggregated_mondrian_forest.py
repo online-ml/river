@@ -92,9 +92,6 @@ class AMFClassifier(AMFLearner, base.Classifier):
 
     Parameters
     ----------
-    n_classes
-        Number of expected classes in the labels. This is required since we
-        don't know the number of classes in advance in a online setting.
     n_estimators
         The number of trees in the forest.
     step
@@ -104,8 +101,10 @@ class AMFClassifier(AMFLearner, base.Classifier):
         Controls if aggregation is used in the trees. It is highly recommended to
         leave it as `True`.
     dirichlet
-        Regularization level of the class frequencies used for predictions in each
-        node. Default is dirichlet=0.5 for binary problems and dirichlet=0.01 otherwise.
+        Regularization level of the class frequencies used for predictions in each node. A rule of
+        thumb is to set this to `1 / n_classes`, where `n_classes` is the expected number of
+        classes which might appear. Default is `dirichlet = 0.5`, which works well for binary
+        classification problems.
     split_pure
         Controls if nodes that contains only sample of the same class should be
         split ("pure" nodes). Default is `False`, namely pure nodes are not split,
@@ -115,31 +114,30 @@ class AMFClassifier(AMFLearner, base.Classifier):
 
     Notes
     -----
-    Only log_loss used for the computation of the aggregation weights is supported for now, namely the log-loss
-    for multi-class classification.
+    Only log_loss used for the computation of the aggregation weights is supported for now, namely
+    the log-loss for multi-class classification.
 
     Examples
     --------
 
+    >>> from river import datasets
     >>> from river import evaluate
     >>> from river import forest
     >>> from river import metrics
-    >>> from river.datasets import Bananas
 
-    >>> dataset = Bananas().take(500)
+    >>> dataset = datasets.Bananas().take(500)
 
     >>> model = forest.AMFClassifier(
-    ...     n_classes=2,
     ...     n_estimators=10,
     ...     use_aggregation=True,
-    ...     dirichlet=0.2,
+    ...     dirichlet=0.5,
     ...     seed=1
     ... )
 
     >>> metric = metrics.Accuracy()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    Accuracy: 84.77%
+    Accuracy: 84.97%
 
     References
     ----------
@@ -149,11 +147,10 @@ class AMFClassifier(AMFLearner, base.Classifier):
 
     def __init__(
         self,
-        n_classes: int = 2,
         n_estimators: int = 10,
         step: float = 1.0,
         use_aggregation: bool = True,
-        dirichlet: float = None,
+        dirichlet: float = 0.5,
         split_pure: bool = False,
         seed: int = None,
     ):
@@ -165,16 +162,7 @@ class AMFClassifier(AMFLearner, base.Classifier):
             split_pure=split_pure,
             seed=seed,
         )
-
-        self.n_classes = n_classes
-        if dirichlet is None:
-            if self.n_classes == 2:
-                self.dirichlet = 0.5
-            else:
-                self.dirichlet = 0.01
-        else:
-            self.dirichlet = dirichlet
-
+        self.dirichlet = dirichlet
         # memory of the classes
         self._classes: set[base.typing.ClfTarget] = set()
 
@@ -182,7 +170,6 @@ class AMFClassifier(AMFLearner, base.Classifier):
         self.data: list[MondrianTreeClassifier] = []
         for _ in range(self.n_estimators):
             tree = MondrianTreeClassifier(
-                self.n_classes,
                 self.step,
                 self.use_aggregation,
                 self.dirichlet,

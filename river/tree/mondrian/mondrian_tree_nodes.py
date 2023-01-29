@@ -161,12 +161,12 @@ class MondrianNodeClassifier(MondrianNode):
             self.memory_range_max = leaf.memory_range_max
             self.n_samples = leaf.n_samples
 
-    def score(self, sample_class: base.typing.ClfTarget, dirichlet: float, n_classes: int) -> float:
+    def score(self, y: base.typing.ClfTarget, dirichlet: float, n_classes: int) -> float:
         """Compute the score of the node.
 
         Parameters
         ----------
-        sample_class
+        y
             Class for which we want the score.
         dirichlet
             Dirichlet parameter of the tree.
@@ -178,7 +178,7 @@ class MondrianNodeClassifier(MondrianNode):
         This uses Jeffreys prior with Dirichlet parameter for smoothing.
         """
 
-        count = self.counts[sample_class]
+        count = self.counts[y]
 
         # We use the Jeffreys prior with dirichlet parameter
         return (count + dirichlet) / (self.n_samples + dirichlet * n_classes)
@@ -204,12 +204,12 @@ class MondrianNodeClassifier(MondrianNode):
             scores[c] = self.score(c, dirichlet, n_classes)
         return scores
 
-    def loss(self, sample_class: base.typing.ClfTarget, dirichlet: float, n_classes: int) -> float:
+    def loss(self, y: base.typing.ClfTarget, dirichlet: float, n_classes: int) -> float:
         """Compute the loss of the node.
 
         Parameters
         ----------
-        sample_class
+        y
             A given class of the problem.
         dirichlet
             Dirichlet parameter of the problem.
@@ -217,12 +217,12 @@ class MondrianNodeClassifier(MondrianNode):
             The total number of classes of the problem.
         """
 
-        sc = self.score(sample_class, dirichlet, n_classes)
+        sc = self.score(y, dirichlet, n_classes)
         return -math.log(sc)
 
     def update_weight(
         self,
-        sample_class: base.typing.ClfTarget,
+        y: base.typing.ClfTarget,
         dirichlet: float,
         use_aggregation: bool,
         step: float,
@@ -232,7 +232,7 @@ class MondrianNodeClassifier(MondrianNode):
 
         Parameters
         ----------
-        sample_class
+        y
             Class of a given sample.
         dirichlet
             Dirichlet parameter of the tree.
@@ -244,39 +244,39 @@ class MondrianNodeClassifier(MondrianNode):
             The total number of classes of the problem.
         """
 
-        loss_t = self.loss(sample_class, dirichlet, n_classes)
+        loss_t = self.loss(y, dirichlet, n_classes)
         if use_aggregation:
             self.weight -= step * loss_t
         return loss_t
 
-    def update_count(self, sample_class):
+    def update_count(self, y):
         """Update the amount of samples that belong to a class in the node
         (not to use twice if you add one sample).
 
         Parameters
         ----------
-        sample_class
+        y
             Class of a given sample.
         """
 
-        self.counts[sample_class] += 1
+        self.counts[y] += 1
 
-    def is_dirac(self, sample_class: base.typing.ClfTarget) -> bool:
+    def is_dirac(self, y: base.typing.ClfTarget) -> bool:
         """Check whether the node follows a dirac distribution regarding the given
         class, i.e., if the node is pure regarding the given class.
 
         Parameters
         ----------
-        sample_class
+        y
             Class of a given sample.
         """
 
-        return self.n_samples == self.counts[sample_class]
+        return self.n_samples == self.counts[y]
 
     def update_downwards(
         self,
         x,
-        sample_class: base.typing.ClfTarget,
+        y: base.typing.ClfTarget,
         dirichlet: float,
         use_aggregation: bool,
         step: float,
@@ -289,7 +289,7 @@ class MondrianNodeClassifier(MondrianNode):
         ----------
         x
             Sample to proceed (as a list).
-        sample_class
+        y
             Class of the sample x_t.
         dirichlet
             Dirichlet parameter of the tree.
@@ -323,9 +323,9 @@ class MondrianNodeClassifier(MondrianNode):
         self.n_samples += 1
 
         if do_update_weight:
-            self.update_weight(sample_class, dirichlet, use_aggregation, step, n_classes)
+            self.update_weight(y, dirichlet, use_aggregation, step, n_classes)
 
-        self.update_count(sample_class)
+        self.update_count(y)
 
 
 class MondrianLeafClassifier(MondrianNodeClassifier, MondrianLeaf):
