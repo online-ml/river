@@ -11319,10 +11319,6 @@
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
-<p><strong>n_classes</strong> (<em>int</em>) – defaults to <code>2</code></p>
-<p>Number of expected classes in the labels. This is required since we don't know the number of classes in advance in a online setting.</p>
-</li>
-<li>
 <p><strong>n_estimators</strong> (<em>int</em>) – defaults to <code>10</code></p>
 <p>The number of trees in the forest.</p>
 </li>
@@ -11335,8 +11331,8 @@
 <p>Controls if aggregation is used in the trees. It is highly recommended to leave it as <code>True</code>.</p>
 </li>
 <li>
-<p><strong>dirichlet</strong> (<em>float</em>) – defaults to <code>None</code></p>
-<p>Regularization level of the class frequencies used for predictions in each node. Default is dirichlet=0.5 for binary problems and dirichlet=0.01 otherwise.</p>
+<p><strong>dirichlet</strong> (<em>float</em>) – defaults to <code>0.5</code></p>
+<p>Regularization level of the class frequencies used for predictions in each node. A rule of thumb is to set this to <code>1 / n_classes</code>, where <code>n_classes</code> is the expected number of classes which might appear. Default is <code>dirichlet = 0.5</code>, which works well for binary classification problems.</p>
 </li>
 <li>
 <p><strong>split_pure</strong> (<em>bool</em>) – defaults to <code>False</code></p>
@@ -11352,25 +11348,24 @@
 <li><strong>models</strong></li>
 </ul>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">evaluate</span>
+<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">datasets</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">evaluate</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">forest</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">metrics</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river.datasets</span> <span class="kn">import</span> <span class="n">Bananas</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="n">dataset</span> <span class="o">=</span> <span class="n">Bananas</span><span class="p">()</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="mi">500</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">dataset</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">Bananas</span><span class="p">()</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="mi">500</span><span class="p">)</span>
 
 <span class="o">&gt;&gt;&gt;</span> <span class="n">model</span> <span class="o">=</span> <span class="n">forest</span><span class="o">.</span><span class="n">AMFClassifier</span><span class="p">(</span>
-<span class="o">...</span>     <span class="n">n_classes</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
 <span class="o">...</span>     <span class="n">n_estimators</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
 <span class="o">...</span>     <span class="n">use_aggregation</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-<span class="o">...</span>     <span class="n">dirichlet</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span>
+<span class="o">...</span>     <span class="n">dirichlet</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
 <span class="o">...</span>     <span class="n">seed</span><span class="o">=</span><span class="mi">1</span>
 <span class="o">...</span> <span class="p">)</span>
 
 <span class="o">&gt;&gt;&gt;</span> <span class="n">metric</span> <span class="o">=</span> <span class="n">metrics</span><span class="o">.</span><span class="n">Accuracy</span><span class="p">()</span>
 
 <span class="o">&gt;&gt;&gt;</span> <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">metric</span><span class="p">)</span>
-<span class="n">Accuracy</span><span class="p">:</span> <span class="mf">84.77</span><span class="o">%</span>
+<span class="n">Accuracy</span><span class="p">:</span> <span class="mf">84.97</span><span class="o">%</span>
 </code></pre></div>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <details class="- note">
@@ -11479,8 +11474,8 @@
 <summary>sort</summary>
 </details>
 <h2 id="notes">Notes<a class="headerlink" href="#notes" title="Permanent link">&para;</a></h2>
-<p>Only log_loss used for the computation of the aggregation weights is supported for now, namely the log-loss
-for multi-class classification.</p>
+<p>Only log_loss used for the computation of the aggregation weights is supported for now, namely
+the log-loss for multi-class classification.</p>
 <h2 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h2>
 <p>J. Mourtada, S. Gaiffas and E. Scornet, <em>AMF: Aggregated Mondrian Forests for Online Learning</em>, arXiv:1906.10529, 2019.</p>
 
