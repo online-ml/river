@@ -37,15 +37,14 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
 
     Examples
     --------
-    >>> from river import tree
+    >>> from river import datasets
     >>> from river import evaluate
     >>> from river import metrics
-    >>> from river.datasets import Bananas
+    >>> from river import tree
 
-    >>> dataset = Bananas().take(500)
+    >>> dataset = datasets.Bananas().take(500)
 
     >>> model = tree.mondrian.MondrianTreeClassifier(
-    ...     n_classes=2,
     ...     step=0.1,
     ...     use_aggregation=True,
     ...     dirichlet=0.2,
@@ -160,7 +159,9 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
 
         node.update_count(self._y)
 
-    def _update_downwards(self, node: MondrianNodeClassifier, do_weight_update: bool):
+    def _update_downwards(
+        self, x, y: base.typing.ClfTarget, node: MondrianNodeClassifier, do_weight_update: bool
+    ):
         """Update the node when running a downward procedure updating the tree.
 
         Parameters
@@ -172,8 +173,8 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
         """
 
         return node.update_downwards(
-            self._x,
-            self._y,
+            x,
+            y,
             self.dirichlet,
             self.use_aggregation,
             self.step,
@@ -183,6 +184,7 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
 
     def _compute_split_time(
         self,
+        y: base.typing.ClfTarget,
         node: MondrianLeafClassifier | MondrianBranchClassifier,
         extensions_sum: float,
     ) -> float:
@@ -195,7 +197,7 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
         """
 
         #  Don't split if the node is pure: all labels are equal to the one of y_t
-        if not self.split_pure and node.is_dirac(self._y):
+        if not self.split_pure and node.is_dirac(y):
             return 0.0
 
         # If x_t extends the current range of the node
@@ -311,7 +313,7 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
 
         return branch
 
-    def _go_downwards(self):
+    def _go_downwards(self, x, y):
         """Update the tree (downward procedure)."""
 
         # We update the nodes along the path which leads to the leaf containing the current
@@ -323,18 +325,18 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
 
         if self.iteration == 0:
             # If it's the first iteration, we just put the current sample in the range of root
-            self._update_downwards(current_node, False)
+            self._update_downwards(x, y, current_node, False)
             return current_node
         else:
             # Path from the parent to the current node
             branch_no = None
             while True:
                 # Computing the extensions to get the intensities
-                extensions_sum, extensions = current_node.range_extension(self._x)
+                extensions_sum, extensions = current_node.range_extension(x)
 
                 # If it's not the first iteration (otherwise the current node
                 # is root with no range), we consider the possibility of a split
-                split_time = self._compute_split_time(current_node, extensions_sum)
+                split_time = self._compute_split_time(y, current_node, extensions_sum)
 
                 if split_time > 0:
                     # We split the current node: because the current node is a
@@ -346,12 +348,12 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
                     # Sample the feature at random with a probability
                     # proportional to the range extensions
 
-                    candidates = sorted(list(self._x.keys()))
+                    candidates = sorted(list(x.keys()))
                     feature = self._rng.choices(
                         candidates, [intensities[c] for c in candidates], k=1
                     )[0]
 
-                    x_f = self._x[feature]
+                    x_f = x[feature]
 
                     # Is it a right extension of the node ?
                     range_min, range_max = current_node.range(feature)
@@ -384,7 +386,7 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
                             parent.children = (parent.children[0], current_node)
 
                     # Update the current node
-                    self._update_downwards(current_node, True)
+                    self._update_downwards(x, y, current_node, True)
 
                     left, right = current_node.children
 
@@ -397,17 +399,17 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
                     # This is the leaf containing the sample point (we've just
                     # splitted the current node with the data point)
                     leaf = current_node
-                    self._update_downwards(leaf, False)
+                    self._update_downwards(x, y, leaf, False)
                     return leaf
                 else:
                     # There is no split, so we just update the node and go to the next one
-                    self._update_downwards(current_node, True)
+                    self._update_downwards(x, y, current_node, True)
                     if isinstance(current_node, MondrianLeafClassifier):
                         return current_node
                     else:
                         # Save the path direction to keep the tree consistent
                         try:
-                            branch_no = current_node.branch_no(self._x)
+                            branch_no = current_node.branch_no(x)
                             current_node = current_node.children[branch_no]
                         except KeyError:  # Missing split feature
                             branch_no, current_node = current_node.most_common_path()
@@ -442,11 +444,9 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
         self._classes.add(y)
 
         # Setting current sample
-        self._x = x
-        self._y = y
 
         # Learning step
-        leaf = self._go_downwards()
+        leaf = self._go_downwards(x, y)
         if self.use_aggregation:
             self._go_upwards(leaf)
 

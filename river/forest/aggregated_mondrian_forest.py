@@ -101,8 +101,10 @@ class AMFClassifier(AMFLearner, base.Classifier):
         Controls if aggregation is used in the trees. It is highly recommended to
         leave it as `True`.
     dirichlet
-        Regularization level of the class frequencies used for predictions in each
-        node. Default is dirichlet=0.5 for binary problems and dirichlet=0.01 otherwise.
+        Regularization level of the class frequencies used for predictions in each node. A rule of
+        thumb is to set this to `1 / n_classes`, where `n_classes` is the expected number of
+        classes which might appear. Default is `dirichlet = 0.5`, which works well for binary
+        classification problems.
     split_pure
         Controls if nodes that contains only sample of the same class should be
         split ("pure" nodes). Default is `False`, namely pure nodes are not split,
@@ -112,18 +114,18 @@ class AMFClassifier(AMFLearner, base.Classifier):
 
     Notes
     -----
-    Only log_loss used for the computation of the aggregation weights is supported for now, namely the log-loss
-    for multi-class classification.
+    Only log_loss used for the computation of the aggregation weights is supported for now, namely
+    the log-loss for multi-class classification.
 
     Examples
     --------
 
+    >>> from river import datasets
     >>> from river import evaluate
     >>> from river import forest
     >>> from river import metrics
-    >>> from river.datasets import Bananas
 
-    >>> dataset = Bananas().take(500)
+    >>> dataset = datasets.Bananas().take(500)
 
     >>> model = forest.AMFClassifier(
     ...     n_estimators=10,
