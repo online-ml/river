@@ -17,8 +17,6 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
 
     Parameters
     ----------
-    n_classes
-        Number of classes of the problem.
     step
         Step of the tree.
     use_aggregation
@@ -68,10 +66,9 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
 
     def __init__(
         self,
-        n_classes: int = 2,
         step: float = 0.1,
         use_aggregation: bool = True,
-        dirichlet: float = None,
+        dirichlet: float = 0.5,
         split_pure: bool = False,
         iteration: int = 0,
         seed: int = None,
@@ -85,17 +82,7 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
             iteration=iteration,
             seed=seed,
         )
-        self.n_classes = n_classes
-        if dirichlet is None:
-            if self.n_classes == 2:
-                self.dirichlet = 0.5
-            else:
-                self.dirichlet = 0.01
-        else:
-            self.dirichlet = dirichlet
-
-        # Controls the randomness in the tree
-        self.seed = seed
+        self.dirichlet = dirichlet
 
         # Training attributes
         # The previously observed classes set
@@ -124,7 +111,7 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
             Node to evaluate the score.
         """
 
-        return node.score(self._y, self.dirichlet, self.n_classes)
+        return node.score(self._y, self.dirichlet, len(self._classes))
 
     def _predict(self, node: MondrianNodeClassifier) -> dict[base.typing.ClfTarget, float]:
         """Compute the predictions scores of the node regarding all the classes scores.
@@ -135,7 +122,7 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
             Node to make predictions.
         """
 
-        return node.predict(self.dirichlet, self._classes, self.n_classes)
+        return node.predict(self.dirichlet, self._classes, len(self._classes))
 
     def _loss(self, node: MondrianNodeClassifier) -> float:
         """Compute the loss for the given node regarding the current label
@@ -146,7 +133,7 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
             Node to evaluate the loss.
         """
 
-        return node.loss(self._y, self.dirichlet, self.n_classes)
+        return node.loss(self._y, self.dirichlet, len(self._classes))
 
     def _update_weight(self, node: MondrianNodeClassifier) -> float:
         """Update the weight of the node regarding the current label with the tree parameters.
@@ -158,7 +145,7 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
         """
 
         return node.update_weight(
-            self._y, self.dirichlet, self.use_aggregation, self.step, self.n_classes
+            self._y, self.dirichlet, self.use_aggregation, self.step, len(self._classes)
         )
 
     def _update_count(self, node: MondrianNodeClassifier):
@@ -191,7 +178,7 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
             self.use_aggregation,
             self.step,
             do_weight_update,
-            self.n_classes,
+            len(self._classes),
         )
 
     def _compute_split_time(

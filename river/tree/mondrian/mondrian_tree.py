@@ -43,4 +43,5 @@ class MondrianTree(abc.ABC):
         self.iteration = iteration
 
         # Controls the randomness in the tree
+        self.seed = seed
         self._rng = random.Random(seed)
