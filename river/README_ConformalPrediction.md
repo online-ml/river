@@ -15,7 +15,7 @@ To ensure the integration of all these methods, the **\_\_init\_\_** and **base*
 
 ## Installation
 
-Use the package manager [pip](https://pip.pypa.io/en/stable/) to install foobar.
+Use the package manager [pip](https://pip.pypa.io/en/stable/) to install river.
 
 ```bash
 pip install river
@@ -24,12 +24,12 @@ pip install river
 ## Usage
 
 ```python
-import foobar
-
 # import the relevant River modules
-from river import datasets, metrics, stream
+from river import datasets, metrics
+from time_series.holt_winters import HoltWinters
 
 # import the interval methods from the custom conf module (defined as a folder)
+import time_series
 import conf.ACP
 import conf.CP
 import conf.gaussian
