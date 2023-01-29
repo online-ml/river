@@ -183,7 +183,6 @@ class MondrianTreeRegressor(MondrianTree, base.Regressor):
             Should we extend the tree in the right or left direction.
         """
 
-        # Let's build a function to handle splitting depending on what side we go into
         new_depth = node.depth + 1
 
         # To calm down mypy

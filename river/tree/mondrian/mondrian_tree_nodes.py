@@ -290,7 +290,7 @@ class MondrianNodeClassifier(MondrianNode):
         x
             Sample to proceed (as a list).
         sample_class
-            Class of the sample x_t.
+            Class of the sample x.
         dirichlet
             Dirichlet parameter of the tree.
         use_aggregation
@@ -408,7 +408,7 @@ class MondrianNodeRegressor(MondrianNode):
         use_aggregation: bool,
         step: float,
     ) -> float:
-        """Update the weight of the node given a class and the method used.
+        """Update the weight of the node given a label and the method used.
 
         Parameters
         ----------
@@ -440,7 +440,7 @@ class MondrianNodeRegressor(MondrianNode):
         x
             Sample to proceed (as a list).
         sample_value
-            Class of the sample x_t.
+            Label of the sample x.
         use_aggregation
             Should it use the aggregation or not
         step

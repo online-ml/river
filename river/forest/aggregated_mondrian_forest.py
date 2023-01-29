@@ -231,9 +231,10 @@ class AMFClassifier(AMFLearner, base.Classifier):
 
 
 class AMFRegressor(AMFLearner, base.Regressor):
-    """Aggregated Mondrian Forest regressor for online learning. This algorithm
-    is truly online, in the sense that a single pass is performed, and that predictions
-    can be produced anytime.
+    """Aggregated Mondrian Forest regressor for online learning.
+
+    This algorithm is truly online, in the sense that a single pass is performed, and that
+    predictions can be produced anytime.
 
     Each node in a tree predicts according to the average of the labels
     it contains. The prediction for a sample is computed as the aggregated predictions
@@ -270,7 +271,7 @@ class AMFRegressor(AMFLearner, base.Regressor):
 
     References
     ----------
-    J. Mourtada, S. Gaiffas and E. Scornet, *AMF: Aggregated Mondrian Forests for Online Learning*, arXiv:1906.10529, 2019
+    [^1]: J. Mourtada, S. Gaiffas and E. Scornet, *AMF: Aggregated Mondrian Forests for Online Learning*, arXiv:1906.10529, 2019
 
     """
 
