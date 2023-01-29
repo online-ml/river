@@ -283,7 +283,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../releases/unreleased/" class="md-tabs__link">
+      <a href="../../releases/0.9.0/" class="md-tabs__link">
         Releases 🏗️
       </a>
     </li>
@@ -10747,20 +10747,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../../releases/unreleased/" class="md-nav__link">
-        Unreleased
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../../releases/0.9.0/" class="md-nav__link">
         0.9.0 - 2021-11-30
       </a>
@@ -10945,6 +10931,20 @@
     <li class="md-nav__item">
       <a href="../../releases/0.2.0/" class="md-nav__link">
         0.2.0 - 2019-05-27
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../releases/0.15.0/" class="md-nav__link">
+        0.15.0 - 2022-01-29
       </a>
     </li>
   
@@ -11242,24 +11242,13 @@
         <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="mi">30000</span> <span class="ow">and</span> <span class="n">i</span> <span class="o">%</span> <span class="mi">30000</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">metric</span><span class="p">)</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #008080; text-decoration-color: #008080; font-weight: bold">30000</span> MAE: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">2.220942</span>
-</pre>
-
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #008080; text-decoration-color: #008080; font-weight: bold">60000</span> MAE: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">2.270271</span>
-</pre>
-
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #008080; text-decoration-color: #008080; font-weight: bold">90000</span> MAE: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">2.301302</span>
-</pre>
-
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #008080; text-decoration-color: #008080; font-weight: bold">120000</span> MAE: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">2.275876</span>
-</pre>
-
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #008080; text-decoration-color: #008080; font-weight: bold">150000</span> MAE: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">2.275224</span>
-</pre>
-
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #008080; text-decoration-color: #008080; font-weight: bold">180000</span> MAE: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">2.289347</span>
-</pre>
-
+<div class="highlight"><pre><span></span><code>30000 MAE: 2.220942
+60000 MAE: 2.270271
+90000 MAE: 2.301302
+120000 MAE: 2.275876
+150000 MAE: 2.275224
+180000 MAE: 2.289347
+</code></pre></div>
 <p>Let's start by looking at the pipeline. You can click each cell to display the current state for each step of the pipeline.</p>
 <div class="highlight"><pre><span></span><code><span class="n">model</span>
 </code></pre></div>
@@ -11288,7 +11277,7 @@ def add_time_features(x):
 </code></details><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">y_ewm_0.5_by_station</pre></summary><code class="river-estimator-params">(
   by=['station']
   how=EWMean (
-    alpha=0.5
+    fading_factor=0.5
   )
   target_name="y"
 )
@@ -11408,81 +11397,80 @@ def add_time_features(x):
 <p>As mentioned above the <code>Pipeline</code> class has a <code>debug_one</code> method. You can use this at any point you want to visualize what happen to an input <code>x</code>. For example, let's see what happens to the last seen <code>x</code>.</p>
 <div class="highlight"><pre><span></span><code><span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">debug_one</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0</span>. Input
+<div class="highlight"><pre><span></span><code>0. Input
 --------
-clouds: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">88</span> <span style="font-weight: bold">(</span>int<span style="font-weight: bold">)</span>
-description: overcast clouds <span style="font-weight: bold">(</span>str<span style="font-weight: bold">)</span>
-humidity: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">84</span> <span style="font-weight: bold">(</span>int<span style="font-weight: bold">)</span>
-moment: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">2016</span>-<span style="color: #008080; text-decoration-color: #008080; font-weight: bold">10</span>-<span style="color: #008080; text-decoration-color: #008080; font-weight: bold">05</span> <span style="color: #00ff00; text-decoration-color: #00ff00; font-weight: bold">09:57:18</span> <span style="font-weight: bold">(</span>datetime<span style="font-weight: bold">)</span>
-pressure: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1</span>,<span style="color: #008080; text-decoration-color: #008080; font-weight: bold">017.34000</span> <span style="font-weight: bold">(</span>float<span style="font-weight: bold">)</span>
-station: pomme <span style="font-weight: bold">(</span>str<span style="font-weight: bold">)</span>
-temperature: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">17.45000</span> <span style="font-weight: bold">(</span>float<span style="font-weight: bold">)</span>
-wind: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1.95000</span> <span style="font-weight: bold">(</span>float<span style="font-weight: bold">)</span>
+clouds: 88 (int)
+description: overcast clouds (str)
+humidity: 84 (int)
+moment: 2016-10-05 09:57:18 (datetime)
+pressure: 1,017.34000 (float)
+station: pomme (str)
+temperature: 17.45000 (float)
+wind: 1.95000 (float)
 
-<span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1</span>. add_time_features
+1. add_time_features
 --------------------
-clouds: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">88</span> <span style="font-weight: bold">(</span>int<span style="font-weight: bold">)</span>
-day: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">2</span> <span style="font-weight: bold">(</span>int<span style="font-weight: bold">)</span>
-description: overcast clouds <span style="font-weight: bold">(</span>str<span style="font-weight: bold">)</span>
-hour: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">9</span> <span style="font-weight: bold">(</span>int<span style="font-weight: bold">)</span>
-humidity: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">84</span> <span style="font-weight: bold">(</span>int<span style="font-weight: bold">)</span>
-moment: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">2016</span>-<span style="color: #008080; text-decoration-color: #008080; font-weight: bold">10</span>-<span style="color: #008080; text-decoration-color: #008080; font-weight: bold">05</span> <span style="color: #00ff00; text-decoration-color: #00ff00; font-weight: bold">09:57:18</span> <span style="font-weight: bold">(</span>datetime<span style="font-weight: bold">)</span>
-pressure: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1</span>,<span style="color: #008080; text-decoration-color: #008080; font-weight: bold">017.34000</span> <span style="font-weight: bold">(</span>float<span style="font-weight: bold">)</span>
-station: pomme <span style="font-weight: bold">(</span>str<span style="font-weight: bold">)</span>
-temperature: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">17.45000</span> <span style="font-weight: bold">(</span>float<span style="font-weight: bold">)</span>
-wind: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1.95000</span> <span style="font-weight: bold">(</span>float<span style="font-weight: bold">)</span>
+clouds: 88 (int)
+day: 2 (int)
+description: overcast clouds (str)
+hour: 9 (int)
+humidity: 84 (int)
+moment: 2016-10-05 09:57:18 (datetime)
+pressure: 1,017.34000 (float)
+station: pomme (str)
+temperature: 17.45000 (float)
+wind: 1.95000 (float)
 
-<span style="color: #008080; text-decoration-color: #008080; font-weight: bold">2</span>. Transformer union
+2. Transformer union
 --------------------
-    <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">2.0</span> Select
+    2.0 Select
     ----------
-    clouds: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">88</span> <span style="font-weight: bold">(</span>int<span style="font-weight: bold">)</span>
-    humidity: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">84</span> <span style="font-weight: bold">(</span>int<span style="font-weight: bold">)</span>
-    pressure: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1</span>,<span style="color: #008080; text-decoration-color: #008080; font-weight: bold">017.34000</span> <span style="font-weight: bold">(</span>float<span style="font-weight: bold">)</span>
-    temperature: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">17.45000</span> <span style="font-weight: bold">(</span>float<span style="font-weight: bold">)</span>
-    wind: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1.95000</span> <span style="font-weight: bold">(</span>float<span style="font-weight: bold">)</span>
+    clouds: 88 (int)
+    humidity: 84 (int)
+    pressure: 1,017.34000 (float)
+    temperature: 17.45000 (float)
+    wind: 1.95000 (float)
 
-    <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">2.1</span> TargetAgg
+    2.1 TargetAgg
     -------------
-    y_mean_by_station_and_hour: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">7.89396</span> <span style="font-weight: bold">(</span>float<span style="font-weight: bold">)</span>
+    y_mean_by_station_and_hour: 7.89396 (float)
 
-    <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">2.2</span> TargetAgg1
+    2.2 TargetAgg1
     --------------
-    y_ewm_0.5_by_station: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">11.80372</span> <span style="font-weight: bold">(</span>float<span style="font-weight: bold">)</span>
+    y_ewm_0.5_by_station: 11.80372 (float)
 
-clouds: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">88</span> <span style="font-weight: bold">(</span>int<span style="font-weight: bold">)</span>
-humidity: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">84</span> <span style="font-weight: bold">(</span>int<span style="font-weight: bold">)</span>
-pressure: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1</span>,<span style="color: #008080; text-decoration-color: #008080; font-weight: bold">017.34000</span> <span style="font-weight: bold">(</span>float<span style="font-weight: bold">)</span>
-temperature: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">17.45000</span> <span style="font-weight: bold">(</span>float<span style="font-weight: bold">)</span>
-wind: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1.95000</span> <span style="font-weight: bold">(</span>float<span style="font-weight: bold">)</span>
-y_ewm_0.5_by_station: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">11.80372</span> <span style="font-weight: bold">(</span>float<span style="font-weight: bold">)</span>
-y_mean_by_station_and_hour: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">7.89396</span> <span style="font-weight: bold">(</span>float<span style="font-weight: bold">)</span>
+clouds: 88 (int)
+humidity: 84 (int)
+pressure: 1,017.34000 (float)
+temperature: 17.45000 (float)
+wind: 1.95000 (float)
+y_ewm_0.5_by_station: 11.80372 (float)
+y_mean_by_station_and_hour: 7.89396 (float)
 
-<span style="color: #008080; text-decoration-color: #008080; font-weight: bold">3</span>. StandardScaler
+3. StandardScaler
 -----------------
-clouds: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1.54778</span> <span style="font-weight: bold">(</span>float<span style="font-weight: bold">)</span>
-humidity: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1.16366</span> <span style="font-weight: bold">(</span>float<span style="font-weight: bold">)</span>
-pressure: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.04916</span> <span style="font-weight: bold">(</span>float<span style="font-weight: bold">)</span>
-temperature: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">-0.51938</span> <span style="font-weight: bold">(</span>float<span style="font-weight: bold">)</span>
-wind: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">-0.69426</span> <span style="font-weight: bold">(</span>float<span style="font-weight: bold">)</span>
-y_ewm_0.5_by_station: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.19214</span> <span style="font-weight: bold">(</span>float<span style="font-weight: bold">)</span>
-y_mean_by_station_and_hour: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">-0.26013</span> <span style="font-weight: bold">(</span>float<span style="font-weight: bold">)</span>
+clouds: 1.54778 (float)
+humidity: 1.16366 (float)
+pressure: 0.04916 (float)
+temperature: -0.51938 (float)
+wind: -0.69426 (float)
+y_ewm_0.5_by_station: 0.19214 (float)
+y_mean_by_station_and_hour: -0.26013 (float)
 
-<span style="color: #008080; text-decoration-color: #008080; font-weight: bold">4</span>. LinearRegression
+4. LinearRegression
 -------------------
 Name                         Value      Weight     Contribution  
-                 Intercept    <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1.00000</span>    <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">9.22316</span>        <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">9.22316</span>  
-      y_ewm_0.5_by_station    <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.19214</span>    <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">9.26418</span>        <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1.78000</span>  
-                  humidity    <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1.16366</span>    <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1.01252</span>        <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1.17823</span>  
-               temperature   <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">-0.51938</span>   <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">-0.42112</span>        <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.21872</span>  
-                      wind   <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">-0.69426</span>   <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">-0.04088</span>        <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.02838</span>  
-                  pressure    <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.04916</span>    <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.18137</span>        <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.00892</span>  
-y_mean_by_station_and_hour   <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">-0.26013</span>    <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.19801</span>       <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">-0.05151</span>  
-                    clouds    <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1.54778</span>   <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">-0.32697</span>       <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">-0.50608</span>  
+                 Intercept    1.00000    9.22316        9.22316  
+      y_ewm_0.5_by_station    0.19214    9.26418        1.78000  
+                  humidity    1.16366    1.01252        1.17823  
+               temperature   -0.51938   -0.42112        0.21872  
+                      wind   -0.69426   -0.04088        0.02838  
+                  pressure    0.04916    0.18137        0.00892  
+y_mean_by_station_and_hour   -0.26013    0.19801       -0.05151  
+                    clouds    1.54778   -0.32697       -0.50608
 
-Prediction: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">11.87982</span>
-</pre>
-
+Prediction: 11.87982
+</code></pre></div>
 <p>The pipeline does quite a few things, but using <code>debug_one</code> shows what happens step by step. This is really useful for checking that the pipeline is behaving as you're expecting it too. Remember that you can <code>debug_one</code> whenever you wish, be it before, during, or after training a model.</p>
 
 

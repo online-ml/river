@@ -283,7 +283,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../releases/unreleased/" class="md-tabs__link">
+      <a href="../../releases/0.9.0/" class="md-tabs__link">
         Releases 🏗️
       </a>
     </li>
@@ -10792,20 +10792,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../../releases/unreleased/" class="md-nav__link">
-        Unreleased
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../../releases/0.9.0/" class="md-nav__link">
         0.9.0 - 2021-11-30
       </a>
@@ -10990,6 +10976,20 @@
     <li class="md-nav__item">
       <a href="../../releases/0.2.0/" class="md-nav__link">
         0.2.0 - 2019-05-27
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../releases/0.15.0/" class="md-nav__link">
+        0.15.0 - 2022-01-29
       </a>
     </li>
   
@@ -11297,9 +11297,8 @@
 <span class="c1"># Display the average score and it&#39;s standard deviation</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;ROC AUC: </span><span class="si">{</span><span class="n">scores</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1"> (± </span><span class="si">{</span><span class="n">scores</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">)</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">ROC AUC: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.975</span> <span style="font-weight: bold">(</span>± <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.011</span><span style="font-weight: bold">)</span>
-</pre>
-
+<div class="highlight"><pre><span></span><code>ROC AUC: 0.975 (± 0.011)
+</code></pre></div>
 <p>This might be a lot to take in if you're not accustomed to scikit-learn, but it probably isn't if you are. Batch learning basically boils down to:</p>
 <ol>
 <li>Loading (and preprocessing) the data</li>
@@ -11404,12 +11403,9 @@ s_{t+1} = s_t + (x - \mu_t) \times (x - \mu_{t+1}) \\
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Running mean: </span><span class="si">{</span><span class="n">mean</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Running variance: </span><span class="si">{</span><span class="n">variance</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">Running mean: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">654.889</span>
-</pre>
-
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">Running variance: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">123625.903</span>
-</pre>
-
+<div class="highlight"><pre><span></span><code>Running mean: 654.889
+Running variance: 123625.903
+</code></pre></div>
 <p>Let's compare this with <code>numpy</code>. But remember, <code>numpy</code> requires access to "all" the data.</p>
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
@@ -11417,12 +11413,9 @@ s_{t+1} = s_t + (x - \mu_t) \times (x - \mu_{t+1}) \\
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;True mean: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span><span class="w"> </span><span class="n">i</span><span class="p">])</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;True variance: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span><span class="w"> </span><span class="n">i</span><span class="p">])</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #00ff00; text-decoration-color: #00ff00; font-style: italic">True</span> mean: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">654.889</span>
-</pre>
-
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #00ff00; text-decoration-color: #00ff00; font-style: italic">True</span> variance: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">123625.903</span>
-</pre>
-
+<div class="highlight"><pre><span></span><code>True mean: 654.889
+True variance: 123625.903
+</code></pre></div>
 <p>The results seem to be exactly the same! The twist is that the running statistics won't be very accurate for the first few observations. In general though this doesn't matter too much. Some would even go as far as to say that this descrepancy is beneficial and acts as some sort of regularization...</p>
 <p>Now the idea is that we can compute the running statistics of each feature and scale them as they come along. The way to do this with <code>river</code> is to use the <code>StandardScaler</code> class from the <code>preprocessing</code> module, as so:</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">preprocessing</span>
@@ -11459,9 +11452,8 @@ s_{t+1} = s_t + (x - \mu_t) \times (x - \mu_{t+1}) \\
 
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;ROC AUC: </span><span class="si">{</span><span class="n">metrics</span><span class="o">.</span><span class="n">roc_auc_score</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span><span class="w"> </span><span class="n">y_pred</span><span class="p">)</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">ROC AUC: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.990</span>
-</pre>
-
+<div class="highlight"><pre><span></span><code>ROC AUC: 0.990
+</code></pre></div>
 <p>The ROC AUC is significantly better than the one obtained from the cross-validation of scikit-learn's logisitic regression. However to make things really comparable it would be nice to compare with the same cross-validation procedure. <code>river</code> has a <code>compat</code> module that contains utilities for making <code>river</code> compatible with other Python libraries. Because we're doing regression we'll be using the <code>SKLRegressorWrapper</code>. We'll also be using <code>Pipeline</code> to encapsulate the logic of the <code>StandardScaler</code> and the <code>LogisticRegression</code> in one single object.</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">compat</span>
 <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">compose</span>
@@ -11481,9 +11473,8 @@ s_{t+1} = s_t + (x - \mu_t) \times (x - \mu_{t+1}) \\
 <span class="c1"># Display the average score and it&#39;s standard deviation</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;ROC AUC: </span><span class="si">{</span><span class="n">scores</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1"> (± </span><span class="si">{</span><span class="n">scores</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">)</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">ROC AUC: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.964</span> <span style="font-weight: bold">(</span>± <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.016</span><span style="font-weight: bold">)</span>
-</pre>
-
+<div class="highlight"><pre><span></span><code>ROC AUC: 0.964 (± 0.016)
+</code></pre></div>
 <p>This time the ROC AUC score is lower, which is what we would expect. Indeed online learning isn't as accurate as batch learning. However it all depends in what you're interested in. If you're only interested in predicting the next observation then the online learning regime would be better. That's why it's a bit hard to compare both approaches: they're both suited to different scenarios.</p>
 <h2 id="going-further">Going further<a class="headerlink" href="#going-further" title="Permanent link">&para;</a></h2>
 <p>Here a few resources if you want to do some reading:</p>
