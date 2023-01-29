@@ -6,6 +6,7 @@ from conf.base import Interval
 from collections import deque
 from typing import Tuple
 
+
 class Gaussian(Interval):
     """Gaussian method to define intervals
 
@@ -76,7 +77,7 @@ class Gaussian(Interval):
         self.residuals = deque()
         self.var = stats.Var()
 
-        # define the ppf on the normal distribution : 
+        # define the ppf on the normal distribution :
         # Get a normal distribution sampler
         normal_sampler = optim.initializers.Normal(mu=0, sigma=1, seed=42)
         # And sample enough samples : 5 millions give the result of scipy
@@ -90,18 +91,18 @@ class Gaussian(Interval):
 
     def update(self, y_true: float, y_pred: float) -> "Interval":
         """Update the Interval."""
-        
+
         if len(self.residuals)==self.window_size:
-            # Remove the oldest residuals 
+            # Remove the oldest residuals
             self.residuals.popleft()
             # Add the new one
             self.residuals.append(y_true - y_pred)
 
             # Update the variance with the latest residual
-            self.var.update(self.residuals[-1])      
+            self.var.update(self.residuals[-1])
 
             # Compute the interval
-            # First get 
+            # First get
             half_inter = self.norm_ppf*self.var.get()**0.5
             # And set the borne
             self.lower, self.upper = y_pred-half_inter, y_pred+half_inter
@@ -114,4 +115,3 @@ class Gaussian(Interval):
     def get(self) -> Tuple[float, float]:
         """Return the current value of the Interval."""
         return (self.lower, self.upper)
-

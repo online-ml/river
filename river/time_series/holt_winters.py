@@ -211,7 +211,7 @@ class HoltWinters(time_series.base.Forecaster):
 
     def predict_one(self, x):
         return
-        
+
     def forecast(self, horizon, xs=None):
         op = operator.mul if self.multiplicative else operator.add
         return [

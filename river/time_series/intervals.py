@@ -5,7 +5,7 @@ from numbers import Number
 
 import conf
 
-# Using the metrics.py framework
+
 class ForecastingInterval(abc.ABC):
     @abc.abstractmethod
     def update(self, y_true: list[Number], y_pred: list[Number]) -> ForecastingInterval:

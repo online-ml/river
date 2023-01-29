@@ -1,16 +1,13 @@
 import abc
-import operator
-import dataclasses
 from typing import Tuple
 from river import base
-
+from conf import ConformalPrediction, Gaussian, AdaptativeConformalPrediction
 
 __all__=[
     "Interval",
     "ConformalPrediction",
     "AdaptativeConformalPrediction",
-    "Gaussian",
-    "RegressionInterval"
+    "Gaussian"
 ]
 
 
@@ -18,7 +15,7 @@ __all__=[
 #@dataclasses.dataclass
 class Interval(base.Base, abc.ABC):
     """Mother class for all intervals
-    
+
     An object to represent a (prediction) interval.
 
     Users are not expected to use this class as-is. Instead, they should use the `with_interval`
@@ -37,7 +34,7 @@ class Interval(base.Base, abc.ABC):
     lower: float
     upper: float
 
-    # Begin : From initial interval.py in conf 
+    # Begin : From initial interval.py in conf
     @property
     def center(self):
         """The center of the interval."""
@@ -50,12 +47,12 @@ class Interval(base.Base, abc.ABC):
 
     def __contains__(self, x):
         return self.lower <= x <= self.upper
-    # End : From initial interval.py in conf 
+    # End : From initial interval.py in conf
 
     @abc.abstractmethod
     def update(self, y_true, y_pred) -> "Interval":
         """Update the Interval."""
-        
+
     @abc.abstractmethod
     def get(self) ->  Tuple[float,float]:
         """Return the current value of the Interval."""

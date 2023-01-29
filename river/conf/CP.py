@@ -1,9 +1,9 @@
 from river import stats
 from collections import deque
 from typing import Tuple
-import math
 
 from conf.base import Interval
+
 
 class ConformalPrediction(Interval):
     """Adapatative Conformal Prediction method
@@ -64,7 +64,7 @@ class ConformalPrediction(Interval):
 
     References
     ----------
-    [^1]: [Margaux Zaffran, Olivier Féron, Yannig Goude, Julie Josse, Aymeric Dieuleveut. 
+    [^1]: [Margaux Zaffran, Olivier Féron, Yannig Goude, Julie Josse, Aymeric Dieuleveut.
     "Adaptive Conformal Predictions for Time Series](https://arxiv.org/abs/2202.07282)
 
     """
@@ -75,13 +75,13 @@ class ConformalPrediction(Interval):
         self.alpha = alpha
         self.window_size = window_size
         self.residuals = deque()
-        self.rolling_quantile = stats.Quantile((1-self.alpha)*(1+1/self.window_size))   
+        self.rolling_quantile = stats.Quantile((1-self.alpha)*(1+1/self.window_size))
 
     def update(self, y_true: float, y_pred: float) -> "Interval":
         """Update the Interval."""
-        
+
         if len(self.residuals)==self.window_size:
-            # Remove the oldest residuals 
+            # Remove the oldest residuals
             self.residuals.popleft()
             # Add the new one
             self.residuals.append(abs(y_true - y_pred))
@@ -97,7 +97,6 @@ class ConformalPrediction(Interval):
         else:
             # Fill the residuals until it reaches window size
             self.residuals.append(abs(y_true - y_pred))
-            
 
     def get(self) -> Tuple[float, float]:
         """Return the current value of the Interval."""

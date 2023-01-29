@@ -136,6 +136,6 @@ class RegressionJackknife(base.Wrapper, base.Regressor):
             return y_pred
 
         return Interval(
-            lower=y_pred + (self._lower.get() or 0), 
+            lower=y_pred + (self._lower.get() or 0),
             upper=y_pred + (self._upper.get() or 0)
         )

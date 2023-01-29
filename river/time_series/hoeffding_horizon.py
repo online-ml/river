@@ -52,7 +52,7 @@ class HoeffdingTreeHorizon(time_series.base.Forecaster, tree.HoeffdingTreeRegres
             remove_poor_attrs=remove_poor_attrs,
             merit_preprune=merit_preprune
         )
-        
+
     def learn_one(self, y: float, x: dict):
         return super().learn_one(y, x)
 

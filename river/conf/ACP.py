@@ -5,6 +5,7 @@ import math
 
 from conf.base import Interval
 
+
 class AdaptativeConformalPrediction(Interval):
     """Adapatative Conformal Prediction method
 
@@ -64,7 +65,7 @@ class AdaptativeConformalPrediction(Interval):
 
     References
     ----------
-    [^1]: [Margaux Zaffran, Olivier Féron, Yannig Goude, Julie Josse, Aymeric Dieuleveut. 
+    [^1]: [Margaux Zaffran, Olivier Féron, Yannig Goude, Julie Josse, Aymeric Dieuleveut.
     "Adaptive Conformal Predictions for Time Series](https://arxiv.org/abs/2202.07282)
 
     """
@@ -77,19 +78,17 @@ class AdaptativeConformalPrediction(Interval):
         self.alpha_t = alpha
         self.window_size = window_size
         self.residuals = deque()
-        self.rolling_quantile = stats.Quantile(1-self.alpha_t)
 
     def update(self, y_true: float, y_pred: float) -> "Interval":
         """Update the Interval."""
-        
+
         if len(self.residuals)==self.window_size:
-            # Remove the oldest residuals 
+            # Remove the oldest residuals
             self.residuals.popleft()
             # Add the new one
             self.residuals.append(abs(y_true - y_pred))
 
             if(self.alpha_t >= 1): # => 1-alpha_t <= 0 => predict empty set
-                y_lower_i, y_upper_i = 0, 0
                 err = 1 # err = 1 if the point is not included, 0 otherwise
 
             elif(self.alpha_t <= 0): # => 1-alpha_t >= 1 => predict the whole real line
@@ -98,10 +97,12 @@ class AdaptativeConformalPrediction(Interval):
 
             else: # => 1-alpha_t in ]0,1[ => compute the quantiles
                 # Update the updated quantile
-                _ = self.rolling_quantile .update(self.residuals[-1])
-                
+                rolling_quantile = stats.Quantile(1-self.alpha_t)
+                for x in self.residuals:
+                    _ = rolling_quantile .update(x)
+
                 # Get the window
-                half_inter = self.rolling_quantile .get()
+                half_inter = rolling_quantile .get()
 
                 # create the bounds for the ACP interval, centered around y_pred
                 self.lower, self.upper = y_pred-half_inter, y_pred+half_inter
