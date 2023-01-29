@@ -62,6 +62,7 @@ time_series.evaluate(dataset,
 ```
 ## Contribution
 
-A pull requests has been sent with the latest updates
+A pull requests has been sent with the latest updates. 
+The code is flake8 compliant.
 
 Please also check the Notebook_ConformalPrediction.ipynb for more insight.
