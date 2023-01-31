@@ -58,6 +58,7 @@ def pokedb():
         conn.execute(t_pokemons.insert(), pokemons)
         conn.execute(t_types.insert(), types)
         conn.execute(t_pokemon_types.insert(), pokemon_types)
+        conn.commit()
 
     return engine
 
