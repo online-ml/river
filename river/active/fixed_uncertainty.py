@@ -18,35 +18,52 @@ class FixedUncertainty(ActiveLearningClassifier):
     ----------
     classifier
         The classifier to wrap.
-    maximum_posteriori
-        The maximum posterior probability of a classifier. 
-        More information in the paper of reference.
     theta
         Threshold of uncertainty. If posteriori is less to theta. So, the instance is selected for labeling.
         Default value: 0.95.
         More information in the paper of reference.
-    discount_factor
-        The discount factor to apply to the entropy measure. A value of 1 won't affect the entropy.
-        The higher the discount factor, the more the entropy will be discounted, and the less
-        likely samples will be selected for labeling. A value of 0 will select all samples for
-        labeling. The discount factor is thus a way to control how many samples are selected for
-        labeling.
     seed
         Random number generator seed for reproducibility.
 
-    Examples (TO DO)
+    >>> from river import active
+    >>> from river import datasets
+    >>> from river import feature_extraction
+    >>> from river import linear_model
+    
+    >>> dataset = datasets.SMSSpam()
+
+    >>> model = (
+            feature_extraction.TFIDF(on='body') |
+            linear_model.LogisticRegression()
+         )
+    >>> model = active.FixedUncertainty(model, seed=42)
+
+    >>> for x, y in dataset:
+    
+            ## IF ask = True
+            ##    Selected instance.
+            ## IF ask = False
+            ##    Instance not selected
+            ## The FixedUncertainty use the maximium 
+            ## posterior probability. So use the predict_proba_one(X).
+            ## Do not use predict_one(x).
+            >>> y_pred, ask = model.predict_proba_one(x)
+        
+    
     --------
 
 
     """
-    def __init__(self, classifier: base.Classifier, maximum_posteriori: float, theta: float = 0.95, seed=None):
+    def __init__(self, classifier: base.Classifier, theta: float = 0.95, seed=None):
         super().__init__(classifier, seed=seed)
-        self.maximum_posteriori = maximum_posteriori
+        #self.maximum_posteriori = maximum_posteriori
         self.theta = theta
     
-    def _ask_for_label(self) -> bool:
+
+    def _ask_for_label(self, x, y_pred) -> bool:
         '''Version 1.0'''
+        maximum_posteriori = max(y_pred.values())
         selected = False
-        if self.maximum_posteriori < self.theta:
+        if maximum_posteriori < self.theta:
             selected = True
         return selected
