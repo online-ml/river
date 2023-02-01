@@ -5,9 +5,9 @@ from river import base
 from .base import ActiveLearningClassifier
 
 
-class FixedUncertainty(ActiveLearningClassifier):
+class VariableUncertainty(ActiveLearningClassifier):
 
-    """Strategy of Active Learning to select instances more significative based on uncertainty.
+    """Strategy of Active Learning to select instances more significative based on variable uncertainty.
     
     Version 1.0
     
@@ -22,6 +22,11 @@ class FixedUncertainty(ActiveLearningClassifier):
         Threshold of uncertainty. If posteriori is less to theta. So, the instance is selected for labeling.
         Default value: 0.95.
         More information in the paper of reference.
+    s
+        Threshold adjustment step.
+         $$ s \in (0,1] $$
+        Default value: 0.5
+        More information in te paper of reference.
     seed
         Random number generator seed for reproducibility.
 
@@ -36,7 +41,7 @@ class FixedUncertainty(ActiveLearningClassifier):
             feature_extraction.TFIDF(on='body') |
             linear_model.LogisticRegression()
          )
-    >>> model = active.FixedUncertainty(model, seed=42)
+    >>> model = active.VariableUncertainty(model, seed=42)
 
     >>> for x, y in dataset:
     
@@ -44,7 +49,7 @@ class FixedUncertainty(ActiveLearningClassifier):
             ##    Selected instance.
             ## IF ask = False
             ##    Instance not selected
-            ## The FixedUncertainty use the maximium 
+            ## The VariableUncertainty use the maximium 
             ## posterior probability. So use only the predict_proba_one(X).
             ## Do not use predict_one(x).
             >>> y_pred, ask = model.predict_proba_one(x)
@@ -54,10 +59,11 @@ class FixedUncertainty(ActiveLearningClassifier):
 
 
     """
-    def __init__(self, classifier: base.Classifier, theta: float = 0.95, seed=None):
+    def __init__(self, classifier: base.Classifier, theta: float = 0.95, s: float = 0.5, seed=None):
         super().__init__(classifier, seed=seed)
         #self.maximum_posteriori = maximum_posteriori
         self.theta = theta
+        self.s = s
     
 
     def _ask_for_label(self, x, y_pred) -> bool:
@@ -65,5 +71,9 @@ class FixedUncertainty(ActiveLearningClassifier):
         maximum_posteriori = max(y_pred.values())
         selected = False
         if maximum_posteriori < self.theta:
+            self.theta = self.theta*(1-self.s)
             selected = True
+        else:
+            self.theta = self.theta*(1+self.s)
+            selected = False
         return selected
