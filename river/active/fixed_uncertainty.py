@@ -45,7 +45,7 @@ class FixedUncertainty(ActiveLearningClassifier):
             ## IF ask = False
             ##    Instance not selected
             ## The FixedUncertainty use the maximium 
-            ## posterior probability. So use the predict_proba_one(X).
+            ## posterior probability. So use only the predict_proba_one(X).
             ## Do not use predict_one(x).
             >>> y_pred, ask = model.predict_proba_one(x)
         
