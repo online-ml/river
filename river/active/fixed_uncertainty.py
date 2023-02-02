@@ -7,7 +7,7 @@ class FixedUncertainty(ActiveLearningClassifier):
 
     """Strategy of Active Learning to select instances more significative based on uncertainty.
 
-    Version 1.0
+    Version 1.0.
 
     Reference
     I. Zliobaite, A. Bifet, B.Pfahringer, G. Holmes. “Active Learning with Drifting Streaming Data”, IEEE Transactions on Neural Netowrks and Learning Systems, Vol.25 (1), pp.27-39, 2014.
@@ -52,15 +52,14 @@ class FixedUncertainty(ActiveLearningClassifier):
 
 
     """
-    def __init__(self, classifier: base.Classifier, theta: float = 0.95, seed=None):
 
+    def __init__(self, classifier: base.Classifier, theta: float = 0.95, seed=None):
         super().__init__(classifier, seed=seed)
-        #self.maximum_posteriori = maximum_posteriori
+        # self.maximum_posteriori = maximum_posteriori
         self.theta = theta
 
-
     def _ask_for_label(self, x, y_pred) -> bool:
-        '''Version 1.0'''
+        """Version 1.0"""
         maximum_posteriori = max(y_pred.values())
         selected = False
         if maximum_posteriori < self.theta:
