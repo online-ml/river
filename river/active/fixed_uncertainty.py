@@ -53,8 +53,9 @@ class FixedUncertainty(ActiveLearningClassifier):
     --------
 
 
-    """
+    """                 
     def __init__(self, classifier: base.Classifier, theta: float = 0.95, seed=None):
+        
         super().__init__(classifier, seed=seed)
         #self.maximum_posteriori = maximum_posteriori
         self.theta = theta
