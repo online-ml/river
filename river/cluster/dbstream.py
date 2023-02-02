@@ -246,7 +246,6 @@ class DBSTREAM(base.Clusterer):
 
         micro_clusters = copy.deepcopy(self.micro_clusters)
         for i, micro_cluster_i in self.micro_clusters.items():
-
             try:
                 value = 2 ** (self.fading_factor * (self.time_stamp - micro_cluster_i.last_update))
             except OverflowError:
@@ -291,7 +290,6 @@ class DBSTREAM(base.Clusterer):
         return weighted_adjacency_matrix
 
     def _generate_labels(self, weighted_adjacency_list):
-
         # This function handles the weighted adjacency list created above and
         # generate a cluster label for all micro clusters, using a variant of
         # the DBSCAN algorithm proposed by Ester et al. for alpha-connected micro clusters
@@ -377,7 +375,6 @@ class DBSTREAM(base.Clusterer):
         return self
 
     def predict_one(self, x, sample_weight=None):
-
         self._recluster()
 
         min_distance = math.inf
@@ -398,7 +395,6 @@ class DBSTREAMMicroCluster(metaclass=ABCMeta):
     """DBStream Micro-cluster class"""
 
     def __init__(self, x=None, last_update=None, weight=None):
-
         self.center = x
         self.last_update = last_update
         self.weight = weight

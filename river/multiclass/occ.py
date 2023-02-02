@@ -139,7 +139,6 @@ class OutputCodeClassifier(base.Wrapper, base.Classifier):
         }
 
     def learn_one(self, x, y, **kwargs):
-
         code = self.code_book[y]
 
         for i, c in enumerate(code):
@@ -148,7 +147,6 @@ class OutputCodeClassifier(base.Wrapper, base.Classifier):
         return self
 
     def predict_one(self, x, **kwargs):
-
         if not self.code_book:  # it's empty
             return None
 

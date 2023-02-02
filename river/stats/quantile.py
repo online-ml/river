@@ -128,7 +128,6 @@ class RollingQuantile(stats.base.RollingUnivariate):
     # Note for devs, if you want look the pure python implementation here:
     # https://github.com/online-ml/river/blob/40c3190c9d05671ae4c2dc8b76c163ea53a45fb0/river/stats/quantile.py
     def __init__(self, q: float, window_size: int):
-
         super().__init__()
         if not 0 <= q <= 1:
             raise ValueError("q is not comprised between 0 and 1")

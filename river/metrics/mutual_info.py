@@ -83,7 +83,6 @@ class MutualInfo(metrics.base.MultiClassMetric):
         return False
 
     def get(self):
-
         mutual_info_score = 0.0
 
         for i in self.cm.classes:
@@ -195,7 +194,6 @@ class NormalizedMutualInfo(metrics.base.MultiClassMetric):
         return False
 
     def get(self):
-
         n_classes = len([i for i in self.cm.sum_row.values() if i != 0])
         n_clusters = len([i for i in self.cm.sum_col.values() if i != 0])
 
@@ -310,7 +308,6 @@ class AdjustedMutualInfo(metrics.base.MultiClassMetric):
         return False
 
     def get(self):
-
         n_classes = len([i for i in self.cm.sum_row.values() if i != 0])
         n_clusters = len([i for i in self.cm.sum_col.values() if i != 0])
 

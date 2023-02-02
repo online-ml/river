@@ -277,7 +277,6 @@ class SGTClassifier(StochasticGradientTree, base.Classifier):
         nominal_attributes: typing.Optional[typing.List] = None,
         feature_quantizer: tree.splitter.Quantizer = None,
     ):
-
         super().__init__(
             loss_func=BinaryCrossEntropyLoss(),
             delta=delta,
@@ -393,7 +392,6 @@ class SGTRegressor(StochasticGradientTree, base.Regressor):
         nominal_attributes: typing.Optional[typing.List] = None,
         feature_quantizer: tree.splitter.Quantizer = None,
     ):
-
         super().__init__(
             loss_func=SquaredErrorLoss(),
             delta=delta,

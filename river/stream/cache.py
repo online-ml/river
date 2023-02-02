@@ -76,7 +76,6 @@ class Cache:
     """
 
     def __init__(self, directory=None):
-
         # Guess the directory from the system
         system = platform.system()
         if directory is None:
@@ -100,7 +99,6 @@ class Cache:
         return os.path.join(self.directory, f"{key}.river_cache.pkl")
 
     def __call__(self, stream, key=None):
-
         # Try to guess a key from the stream object
         if key is None:
             if inspect.isfunction(stream):

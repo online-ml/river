@@ -58,7 +58,6 @@ class Adam(optim.base.Optimizer):
         self.v = None
 
     def _step_with_dict(self, w, g):
-
         if self.m is None:
             self.m = collections.defaultdict(float)
             self.v = collections.defaultdict(float)
@@ -76,7 +75,6 @@ class Adam(optim.base.Optimizer):
         return w
 
     def _step_with_vector(self, w, g):
-
         if self.m is None:
             if isinstance(w, np.ndarray):
                 self.m = np.zeros_like(w)

@@ -43,7 +43,6 @@ def iter_vaex(
             )
 
     else:
-
         for i in range(len(X)):
             yield (
                 {key: X.evaluate(key, i, i + 1)[0] for key in feature_names},

@@ -84,7 +84,6 @@ class ConfusionMatrix:
         )
 
     def __repr__(self):
-
         classes = sorted(self.classes)
         if not classes:
             return ""

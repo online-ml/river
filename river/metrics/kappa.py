@@ -47,7 +47,6 @@ class CohenKappa(metrics.base.MultiClassMetric):
     """
 
     def get(self):
-
         try:
             p0 = self.cm.total_true_positives / self.cm.n_samples  # same as accuracy
         except ZeroDivisionError:

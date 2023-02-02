@@ -25,7 +25,6 @@ def losses() -> typing.Iterable[optim.losses.Loss]:
     [pytest.param(loss, id=loss.__class__.__name__) for loss in losses()],
 )
 def test_loss_batch_online_equivalence(loss):
-
     y_true = np.random.randint(2, size=30)
     y_pred = np.random.uniform(-10, 10, size=30)
 
@@ -49,7 +48,6 @@ def optimizers() -> typing.Iterable[optim.base.Optimizer]:
     [pytest.param(optimizer, id=optimizer.__class__.__name__) for optimizer in optimizers()],
 )
 def test_optimizer_step_with_dict_same_as_step_with_vector_dict(optimizer):
-
     w_dict = {i: random.uniform(-5, 5) for i in range(10)}
     w_vector = utils.VectorDict(w_dict)
 
@@ -71,7 +69,6 @@ def test_optimizer_step_with_dict_same_as_step_with_vector_dict(optimizer):
     [pytest.param(optimizer, id=optimizer.__class__.__name__) for optimizer in optimizers()],
 )
 def test_optimizer_step_with_dict_same_as_step_with_numpy_array(optimizer):
-
     w_dict = {i: random.uniform(-5, 5) for i in range(10)}
     w_vector = np.asarray(list(w_dict.values()))
 

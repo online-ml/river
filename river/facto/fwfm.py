@@ -83,7 +83,6 @@ class FwFM(BaseFM):
         )
 
     def _calculate_weights_gradients(self, x, g_loss):
-
         # For notational convenience
         w, l1, l2, sign = self.weights, self.l1_weight, self.l2_weight, utils.math.sign
 
@@ -92,7 +91,6 @@ class FwFM(BaseFM):
     def _update_latents(
         self, x, g_loss
     ):  # also updates interaction weights as both updates depends of each other
-
         # For notational convenience
         v, w_int, field = self.latents, self.interaction_weights, self._field
         l1, l2, sign = self.l1_latent, self.l2_latent, utils.math.sign
@@ -255,7 +253,6 @@ class FwFMRegressor(FwFM, base.Regressor):
         clip_gradient=1e12,
         seed: int = None,
     ):
-
         super().__init__(
             n_factors=n_factors,
             weight_optimizer=weight_optimizer,
@@ -395,7 +392,6 @@ class FwFMClassifier(FwFM, base.Classifier):
         clip_gradient=1e12,
         seed: int = None,
     ):
-
         super().__init__(
             n_factors=n_factors,
             weight_optimizer=weight_optimizer,

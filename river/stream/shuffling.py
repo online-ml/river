@@ -66,7 +66,6 @@ def shuffle(stream: typing.Iterator, buffer_size: int, seed: int = None):
 
     # Deplete the stream until it is empty
     for element in stream:
-
         # Pick a random element from the buffer and yield it
         i = rng.randint(0, len(buffer) - 1)
         yield buffer[i]

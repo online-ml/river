@@ -6,7 +6,6 @@ from river import metrics
 
 
 def test_log_loss():
-
     metric = metrics.LogLoss()
 
     y_true = [True, False, False, True]

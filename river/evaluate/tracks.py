@@ -53,7 +53,6 @@ class BinaryClassificationTrack(Track):
     """
 
     def __init__(self):
-
         super().__init__(
             name="Binary classification",
             datasets=[

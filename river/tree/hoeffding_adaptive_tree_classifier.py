@@ -145,7 +145,6 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
         merit_preprune: bool = True,
         seed: int = None,
     ):
-
         super().__init__(
             grace_period=grace_period,
             max_depth=max_depth,

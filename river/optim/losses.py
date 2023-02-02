@@ -91,7 +91,6 @@ class Absolute(RegressionLoss):
         return abs(y_pred - y_true)
 
     def gradient(self, y_true, y_pred):
-
         if isinstance(y_true, np.ndarray):
             return np.where(y_pred > y_true, 1, -1)
 
@@ -314,7 +313,6 @@ class Log(BinaryLoss):
         self.weight_neg = weight_neg
 
     def __call__(self, y_true, y_pred):
-
         if isinstance(y_true, np.ndarray):
             weights = np.where(y_true == 0, self.weight_neg, self.weight_pos)
             y_true = 2 * y_true - 1  # map {0, 1} to {-1, 1}
@@ -336,7 +334,6 @@ class Log(BinaryLoss):
         return weight * math.log(1.0 + math.exp(-z))
 
     def gradient(self, y_true, y_pred):
-
         if isinstance(y_true, np.ndarray):
             weights = np.where(y_true == 0, self.weight_neg, self.weight_pos)
             y_true = 2 * y_true - 1  # map {0, 1} to {-1, 1}
@@ -508,7 +505,6 @@ class BinaryFocalLoss(BinaryLoss):
         self.beta = beta
 
     def __call__(self, y_true, y_pred):
-
         y_true = y_true * 2 - 1  # [0, 1] -> [-1, 1]
 
         xt = y_true * y_pred
@@ -521,7 +517,6 @@ class BinaryFocalLoss(BinaryLoss):
         return -math.log(pt) / self.gamma
 
     def gradient(self, y_true, y_pred):
-
         y_true = y_true * 2 - 1  # [0, 1] -> [-1, 1]
 
         xt = y_true * y_pred

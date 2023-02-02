@@ -126,7 +126,6 @@ class LDA(base.Transformer):
         maximum_size_vocabulary=4000,
         seed: int = None,
     ):
-
         self.n_components = n_components
         self.number_of_documents = number_of_documents
         self.alpha_theta = alpha_theta
@@ -199,7 +198,6 @@ class LDA(base.Transformer):
         return self
 
     def transform_one(self, x):
-
         # Extracts words of the document as a list of words:
         word_list = x.keys()
 
@@ -257,7 +255,6 @@ class LDA(base.Transformer):
         exp_oov_weights = {}
 
         for topic in range(n_components):
-
             psi_nu_1 = special.psi(nu_1[topic])
             psi_nu_2 = special.psi(nu_2[topic])
 
@@ -287,7 +284,6 @@ class LDA(base.Transformer):
         reverse_cumulated_phi = {}
 
         for k in range(self.n_components):
-
             reverse_cumulated_phi[k] = ndimage.shift(input=statistics[k], shift=-1, cval=0)
 
             reverse_cumulated_phi[k] = np.flip(reverse_cumulated_phi[k])
@@ -299,9 +295,7 @@ class LDA(base.Transformer):
         self.epsilon = (self.tau + self.counter) ** -self.kappa
 
         for k in range(self.n_components):
-
             if self.truncation_size < self.truncation_size_prime:
-
                 difference_truncation = self.truncation_size_prime - self.truncation_size
 
                 self.nu_1[k] = np.append(self.nu_1[k], np.ones(difference_truncation))
@@ -348,17 +342,13 @@ class LDA(base.Transformer):
         phi_sum = np.sum(phi, axis=1)
 
         for sample_index in range(self.number_of_samples):
-
             for word_index in range(size_vocab):
-
                 phi_sum -= phi[:, word_index]
                 phi_sum = phi_sum.clip(min=0)
                 temp_phi = phi_sum + self.alpha_theta
 
                 for k in range(self.n_components):
-
                     if words_indexes_list[word_index] >= self.truncation_size:
-
                         temp_phi[k] *= exp_oov_weights[k]
                     else:
                         temp_phi[k] *= exp_weights[k][words_indexes_list[word_index]]
@@ -374,9 +364,7 @@ class LDA(base.Transformer):
                 phi_sum += temp_phi
 
                 if sample_index >= self.burn_in_sweeps:
-
                     for k in range(self.n_components):
-
                         index = words_indexes_list[word_index]
 
                         statistics[k][index] += temp_phi[k]
@@ -384,7 +372,6 @@ class LDA(base.Transformer):
         document_topic_distribution = self.alpha_theta + phi_sum
 
         for k in range(self.n_components):
-
             statistics[k] /= self.number_of_samples - self.burn_in_sweeps
 
         return statistics, document_topic_distribution
@@ -392,7 +379,6 @@ class LDA(base.Transformer):
     def _prune_vocabulary(self):
         """Reduce the size of the index exceeds the maximum size."""
         if self.nu_1[0].shape[0] > self.maximum_size_vocabulary:
-
             for topic in range(self.n_components):
                 # Updates words latent variables
                 self.nu_1[topic] = self.nu_1[topic][: self.maximum_size_vocabulary]

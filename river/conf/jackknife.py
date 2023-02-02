@@ -105,7 +105,6 @@ class RegressionJackknife(base.Wrapper, base.Regressor):
         yield {"regressor": (preprocessing.StandardScaler() | linear_model.LinearRegression())}
 
     def learn_one(self, x, y, **kwargs):
-
         # Update the quantiles
         error = y - self.regressor.predict_one(x)
         self._lower.update(error)

@@ -3,7 +3,6 @@ import math
 
 
 def assert_predictions_are_close(y1, y2):
-
     if isinstance(y1, dict):
         for k in y1:
             assert_predictions_are_close(y1[k], y2[k])

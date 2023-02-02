@@ -70,7 +70,6 @@ class FowlkesMallows(metrics.base.MultiClassMetric):
         return False
 
     def get(self):
-
         n = self.cm.n_samples
         tk = sum(c * c for row in self.cm.data.values() for c in row.values()) - n
         pk = sum(sc * sc for sc in self.cm.sum_col.values()) - n

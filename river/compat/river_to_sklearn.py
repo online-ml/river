@@ -97,7 +97,6 @@ class River2SKLRegressor(River2SKLBase, sklearn_base.RegressorMixin):
     """
 
     def __init__(self, river_estimator: base.Regressor):
-
         # Check the estimator is a Regressor
         if not isinstance(river_estimator, base.Regressor):
             raise ValueError("river_estimator is not a Regressor")
@@ -105,7 +104,6 @@ class River2SKLRegressor(River2SKLBase, sklearn_base.RegressorMixin):
         self.river_estimator = river_estimator
 
     def _partial_fit(self, X, y):
-
         # Check the inputs
         X, y = utils.check_X_y(X, y, **SKLEARN_INPUT_X_PARAMS, **SKLEARN_INPUT_Y_PARAMS)
 
@@ -208,7 +206,6 @@ class River2SKLClassifier(River2SKLBase, sklearn_base.ClassifierMixin):
     """
 
     def __init__(self, river_estimator: base.Classifier):
-
         # Check the estimator is Classifier
         if not isinstance(river_estimator, base.Classifier):
             raise ValueError("estimator is not a Classifier")
@@ -219,7 +216,6 @@ class River2SKLClassifier(River2SKLBase, sklearn_base.ClassifierMixin):
         return {"binary_only": not self.river_estimator._multiclass}
 
     def _partial_fit(self, X, y, classes):
-
         # If first _partial_fit call, set the classes, else check consistency
         if not hasattr(self, "classes_"):
             self.classes_ = classes
@@ -393,7 +389,6 @@ class River2SKLTransformer(River2SKLBase, sklearn_base.TransformerMixin):
     """
 
     def __init__(self, river_estimator: base.Transformer):
-
         # Check the estimator is a Transformer
         if not isinstance(river_estimator, base.Transformer):
             raise ValueError("estimator is not a Transformer")
@@ -401,7 +396,6 @@ class River2SKLTransformer(River2SKLBase, sklearn_base.TransformerMixin):
         self.river_estimator = river_estimator
 
     def _partial_fit(self, X, y):
-
         # Check the inputs
         if y is None:
             X = utils.check_array(X, **SKLEARN_INPUT_X_PARAMS)
@@ -511,7 +505,6 @@ class River2SKLClusterer(River2SKLBase, sklearn_base.ClusterMixin):
     """
 
     def __init__(self, river_estimator: base.Clusterer):
-
         # Check the estimator is a Clusterer
         if not isinstance(river_estimator, base.Clusterer):
             raise ValueError("estimator is not a Clusterer")
@@ -519,7 +512,6 @@ class River2SKLClusterer(River2SKLBase, sklearn_base.ClusterMixin):
         self.river_estimator = river_estimator
 
     def _partial_fit(self, X, y):
-
         # Check the inputs
         X = utils.check_array(X, **SKLEARN_INPUT_X_PARAMS)
 

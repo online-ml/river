@@ -51,7 +51,6 @@ class SDFT(base.Base):
         return self.coefficients.maxlen
 
     def update(self, x):
-
         # Simply append the new value if the window isn't full yet
         if len(self.window) < self.window.maxlen - 1:
             self.window.append(x)

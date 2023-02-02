@@ -87,7 +87,6 @@ class ConceptDriftStream(datasets.base.SyntheticDataset):
         seed: int = None,
         alpha: float = None,
     ):
-
         if stream is None:
             stream = synth.Agrawal(seed=seed)
 

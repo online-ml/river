@@ -51,7 +51,6 @@ class SEA(datasets.base.SyntheticDataset):
     """
 
     def __init__(self, variant=0, noise=0.0, seed: int = None):
-
         super().__init__(n_features=3, task=datasets.base.BINARY_CLF)
 
         if variant not in (0, 1, 2, 3):
@@ -63,11 +62,9 @@ class SEA(datasets.base.SyntheticDataset):
         self._threshold = {0: 8, 1: 9, 2: 7, 3: 9.5}[variant]
 
     def __iter__(self):
-
         rng = random.Random(self.seed)
 
         while True:
-
             x = {i: rng.uniform(0, 10) for i in range(3)}
             y = x[0] + x[1] > self._threshold
 

@@ -2,7 +2,6 @@ from river import compose, preprocessing
 
 
 def test_left_is_pipeline():
-
     group_1 = compose.Select("a", "b")
     group_2 = compose.Select("x", "y") | preprocessing.OneHotEncoder(sparse=True)
 
@@ -20,7 +19,6 @@ def test_left_is_pipeline():
 
 
 def test_right_is_pipeline():
-
     group_1 = compose.Select("a", "b") | preprocessing.OneHotEncoder(sparse=True)
     group_2 = compose.Select("x", "y")
 
@@ -38,7 +36,6 @@ def test_right_is_pipeline():
 
 
 def test_both_are_pipelines():
-
     group_1 = compose.Select("a", "b") | preprocessing.OneHotEncoder(sparse=True)
     group_2 = compose.Select("x", "y") | preprocessing.OneHotEncoder(sparse=True)
 
@@ -56,18 +53,15 @@ def test_both_are_pipelines():
 
 
 def test_renaming():
-
     renamer = compose.Renamer(dict(a="z", b="y", c="x"))
     assert renamer.transform_one(dict(a=1, b=2, d=3)) == dict(z=1, y=2, d=3)
 
 
 def test_prefixing():
-
     prefixer = compose.Prefixer("x_")
     assert prefixer.transform_one(dict(a=1, b=2, d=3)) == dict(x_a=1, x_b=2, x_d=3)
 
 
 def test_suffixing():
-
     suffixer = compose.Suffixer("_x")
     assert suffixer.transform_one(dict(a=1, b=2, d=3)) == dict(a_x=1, b_x=2, d_x=3)

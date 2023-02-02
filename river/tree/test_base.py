@@ -21,7 +21,6 @@ class BinaryBranch(Branch):
 
 
 def test_size():
-
     tree = BinaryBranch(
         BinaryBranch(
             BinaryBranch(BinaryBranch(Leaf(), Leaf()), Leaf()),
@@ -45,7 +44,6 @@ def test_size():
 
 
 def test_height():
-
     tree = BinaryBranch(
         BinaryBranch(
             BinaryBranch(
@@ -64,7 +62,6 @@ def test_height():
 
 
 def test_iter_dfs():
-
     tree = BinaryBranch(BinaryBranch(Leaf(no=3), Leaf(no=4), no=2), Leaf(no=5), no=1)
 
     for i, node in enumerate(tree.iter_dfs(), start=1):
@@ -72,7 +69,6 @@ def test_iter_dfs():
 
 
 def test_iter_bfs():
-
     tree = BinaryBranch(BinaryBranch(Leaf(no=4), Leaf(no=5), no=2), Leaf(no=3), no=1)
 
     for i, node in enumerate(tree.iter_bfs(), start=1):
@@ -80,7 +76,6 @@ def test_iter_bfs():
 
 
 def test_iter_leaves():
-
     tree = BinaryBranch(BinaryBranch(Leaf(no=1), Leaf(no=2)), Leaf(no=3))
 
     for i, leaf in enumerate(tree.iter_leaves(), start=1):
@@ -88,7 +83,6 @@ def test_iter_leaves():
 
 
 def test_iter_branches():
-
     tree = BinaryBranch(
         BinaryBranch(BinaryBranch(Leaf(), Leaf(), no=3), Leaf(), no=2),
         BinaryBranch(Leaf(), Leaf(), no=4),
@@ -100,7 +94,6 @@ def test_iter_branches():
 
 
 def test_iter_edges():
-
     tree = BinaryBranch(BinaryBranch(Leaf(no=3), Leaf(no=4), no=2), Leaf(no=5), no=1)
 
     order = [(1, 2), (2, 3), (2, 4), (1, 5)]

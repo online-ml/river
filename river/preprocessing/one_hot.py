@@ -228,14 +228,12 @@ class OneHotEncoder(base.MiniBatchTransformer):
         return dummy_mat, columns
 
     def learn_many(self, X):
-
         for col in X.columns:
             self.values[col].update(set(X.loc[:, col]))
 
         return self
 
     def transform_many(self, X):
-
         Xt = list()
         Xt_columns = list()
 

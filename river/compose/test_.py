@@ -112,7 +112,6 @@ def test_list_of_funcs():
 
 
 def test_get():
-
     model = preprocessing.StandardScaler() | linear_model.LinearRegression()
 
     assert isinstance(model["StandardScaler"], preprocessing.StandardScaler)

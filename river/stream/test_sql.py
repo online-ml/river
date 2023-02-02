@@ -64,7 +64,6 @@ def pokedb():
 
 
 def test_iter_sql(pokedb):
-
     with pokedb.connect() as conn:
         dataset = stream.iter_sql(query="SELECT * FROM pokemons;", conn=conn)
         x, y = next(dataset)
@@ -88,7 +87,6 @@ def test_iter_sql(pokedb):
 
 
 def test_iter_sql_join(pokedb):
-
     query = """
         SELECT
             p.name,

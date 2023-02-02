@@ -117,7 +117,6 @@ class DummyDriftDetector(base.DriftDetector):
         dynamic_cloning: bool = False,
         seed: int = None,
     ):
-
         super().__init__()
         if trigger_method not in {self._FIXED_TRIGGER, self._RANDOM_TRIGGER}:
             raise ValueError(
@@ -177,7 +176,6 @@ class DummyDriftDetector(base.DriftDetector):
         return self
 
     def clone(self):
-
         new = (
             super().clone(
                 {

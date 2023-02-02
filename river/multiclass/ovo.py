@@ -72,7 +72,6 @@ class OneVsOneClassifier(base.Wrapper, base.Classifier):
         yield {"classifier": linear_model.LogisticRegression()}
 
     def learn_one(self, x, y, **kwargs):
-
         self.classes.add(y)
 
         for c in self.classes - {y}:
@@ -82,7 +81,6 @@ class OneVsOneClassifier(base.Wrapper, base.Classifier):
         return self
 
     def predict_one(self, x, **kwargs):
-
         if not self.classifiers:  # is empty
             return None
 

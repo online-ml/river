@@ -72,7 +72,6 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
         iteration: int = 0,
         seed: int = None,
     ):
-
         super().__init__(
             step=step,
             loss="log",

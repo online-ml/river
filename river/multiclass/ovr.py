@@ -79,7 +79,6 @@ class OneVsRestClassifier(base.Wrapper, base.Classifier):
         yield {"classifier": linear_model.LogisticRegression()}
 
     def learn_one(self, x, y, **kwargs):
-
         # Instantiate a new binary classifier if the class is new
         if y not in self.classifiers:
             self.classifiers[y] = self.classifier.clone()
@@ -91,7 +90,6 @@ class OneVsRestClassifier(base.Wrapper, base.Classifier):
         return self
 
     def predict_proba_one(self, x, **kwargs):
-
         y_pred = {}
         total = 0.0
 
@@ -105,7 +103,6 @@ class OneVsRestClassifier(base.Wrapper, base.Classifier):
         return {label: 1 / len(y_pred) for label in y_pred}
 
     def learn_many(self, X, y, **kwargs):
-
         self._y_name = y.name
 
         # Instantiate a new binary classifier for the classes that have not yet been seen
@@ -120,7 +117,6 @@ class OneVsRestClassifier(base.Wrapper, base.Classifier):
         return self
 
     def predict_proba_many(self, X, **kwargs):
-
         y_pred = pd.DataFrame(columns=self.classifiers.keys(), index=X.index)
 
         for label, clf in self.classifiers.items():

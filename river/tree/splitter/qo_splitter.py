@@ -99,7 +99,7 @@ class QOSplitter(Splitter):
         # The previously evaluated x value
         prev_x = None
 
-        for (x, left_dist) in self._quantizer:
+        for x, left_dist in self._quantizer:
             # First hash element
             if prev_x is None:
                 prev_x = x

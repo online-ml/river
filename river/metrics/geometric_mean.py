@@ -49,7 +49,6 @@ class GeometricMean(metrics.base.MultiClassMetric):
     """
 
     def get(self):
-
         if len(self.cm.classes) > 0:
             sensitivity_per_class = np.zeros(len(self.cm.classes), float)
             for i, c in enumerate(self.cm.classes):

@@ -50,7 +50,6 @@ class RMSProp(optim.base.Optimizer):
         self.g2 = None
 
     def _step_with_dict(self, w, g):
-
         if self.g2 is None:
             self.g2 = collections.defaultdict(float)
 
@@ -61,7 +60,6 @@ class RMSProp(optim.base.Optimizer):
         return w
 
     def _step_with_vector(self, w, g):
-
         if self.g2 is None:
             if isinstance(w, np.ndarray):
                 self.g2 = np.zeros_like(w)

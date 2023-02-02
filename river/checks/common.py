@@ -12,7 +12,6 @@ def check_learn_one(model, dataset):
     klass = model.__class__
 
     for x, y in dataset:
-
         xx, yy = copy.deepcopy(x), copy.deepcopy(y)
 
         if model._supervised:
@@ -38,7 +37,6 @@ def check_shuffle_features_no_impact(model, dataset):
     shuffled = copy.deepcopy(model)
 
     for x, y in dataset:
-
         # Shuffle the features
         features = list(x.keys())
         random.shuffle(features)

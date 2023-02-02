@@ -27,7 +27,6 @@ class MaliciousURL(base.RemoteDataset):
         )
 
     def _iter(self):
-
         files = list(self.path.glob("Day*.svm"))
         files.sort(key=lambda x: int(os.path.basename(x).split(".")[0][3:]))
 

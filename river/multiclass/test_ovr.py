@@ -4,7 +4,6 @@ from river import datasets, linear_model, metrics, multiclass, preprocessing, st
 
 
 def test_online_batch_consistent():
-
     # Batch
 
     batch = preprocessing.StandardScaler() | multiclass.OneVsRestClassifier(

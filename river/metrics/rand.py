@@ -6,7 +6,6 @@ __all__ = ["AdjustedRand", "Rand"]
 
 
 def _pair_confusion(cm):
-
     pair_confusion_matrix = {i: collections.defaultdict(int) for i in range(2)}
 
     sum_squares = 0
@@ -100,7 +99,6 @@ class Rand(metrics.base.MultiClassMetric):
         return False
 
     def get(self):
-
         pair_confusion_matrix = _pair_confusion(self.cm)
 
         true_positives = pair_confusion_matrix[1][1]
@@ -176,7 +174,6 @@ class AdjustedRand(metrics.base.MultiClassMetric):
         return False
 
     def get(self):
-
         pair_confusion_matrix = _pair_confusion(self.cm)
 
         true_negatives, false_positives = pair_confusion_matrix[0].values()

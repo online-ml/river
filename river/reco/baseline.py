@@ -113,7 +113,6 @@ class Baseline(reco.base.Ranker):
         return self.global_mean.get() + self.u_biases[user] + self.i_biases[item]
 
     def learn_one(self, user, item, y, x=None):
-
         # Update the global mean
         self.global_mean.update(y)
 

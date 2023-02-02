@@ -114,7 +114,6 @@ def test_extraction_words_ids():
     word_indexes_list = []
 
     for doc in DOC_SET:
-
         words = doc.split(" ")
 
         lda._update_indexes(word_list=words)
@@ -135,7 +134,6 @@ def test_statistics_two_components():
     statistics_list = []
 
     for doc in DOC_SET:
-
         word_list = doc.split(" ")
 
         lda._update_indexes(word_list=word_list)
@@ -175,7 +173,6 @@ def test_statistics_five_components():
     statistics_list = []
 
     for doc in DOC_SET:
-
         word_list = doc.split(" ")
 
         lda._update_indexes(word_list=word_list)

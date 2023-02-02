@@ -69,14 +69,12 @@ class FM(BaseFM):
         return np.dot(self.latents[j1], self.latents[j2])
 
     def _calculate_weights_gradients(self, x, g_loss):
-
         # For notational convenience
         w, l1, l2, sign = self.weights, self.l1_weight, self.l2_weight, utils.math.sign
 
         return {j: g_loss * xj + l1 * sign(w[j]) + l2 * w[j] for j, xj in x.items()}
 
     def _update_latents(self, x, g_loss):
-
         # For notational convenience
         v, l1, l2, sign = self.latents, self.l1_latent, self.l2_latent, utils.math.sign
 
@@ -219,7 +217,6 @@ class FMRegressor(FM, base.Regressor):
         clip_gradient=1e12,
         seed: int = None,
     ):
-
         super().__init__(
             n_factors=n_factors,
             weight_optimizer=weight_optimizer,
@@ -352,7 +349,6 @@ class FMClassifier(FM, base.Classifier):
         clip_gradient=1e12,
         seed: int = None,
     ):
-
         super().__init__(
             n_factors=n_factors,
             weight_optimizer=weight_optimizer,

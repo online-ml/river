@@ -18,7 +18,6 @@ class DictReader(csv.DictReader):
         self.rng = rng
 
     def __next__(self):
-
         if self.line_num == 0:
             self.fieldnames
 
@@ -152,7 +151,6 @@ def iter_csv(
         buffer = utils.open_filepath(buffer, compression)
 
     for x in DictReader(fraction=fraction, rng=random.Random(seed), f=buffer, **kwargs):
-
         if drop:
             for i in drop:
                 del x[i]

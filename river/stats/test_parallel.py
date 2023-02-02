@@ -104,7 +104,6 @@ def test_sub(stat):
     ],
 )
 def test_sub_back_to_zero(stat):
-
     A = copy.deepcopy(stat)
     B = copy.deepcopy(stat)
     C = copy.deepcopy(stat)
@@ -122,7 +121,6 @@ def test_sub_back_to_zero(stat):
     [pytest.param(ddof, id=f"{ddof=}") for ddof in [0, 1]],
 )
 def test_add_cov(ddof):
-
     c1 = stats.Cov(ddof=ddof)
     c2 = stats.Cov(ddof=ddof)
 
@@ -161,7 +159,6 @@ def test_add_cov(ddof):
     [pytest.param(ddof, id=f"{ddof=}") for ddof in [0, 1]],
 )
 def test_sub_cov(ddof):
-
     c1 = stats.Cov(ddof=ddof)
     c2 = stats.Cov(ddof=ddof)
 

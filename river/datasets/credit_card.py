@@ -44,7 +44,6 @@ class CreditCard(base.RemoteDataset):
         )
 
     def _iter(self):
-
         converters = {f"V{i}": float for i in range(1, 29)}
         converters["Class"] = int
         converters["Time"] = float

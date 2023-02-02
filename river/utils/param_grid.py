@@ -107,7 +107,6 @@ def expand_param_grid(model: base.Estimator, grid: dict) -> typing.List[base.Est
 
 def _expand_param_grid(grid: dict) -> typing.Iterator[dict]:
     def expand_tuple(t):
-
         klass, params = t
 
         if not isinstance(klass, type):
@@ -119,7 +118,6 @@ def _expand_param_grid(grid: dict) -> typing.Iterator[dict]:
         return (klass(**combo) for combo in _expand_param_grid(params))
 
     def expand(k, v):
-
         if isinstance(v, tuple):
             return ((k, el) for el in expand_tuple(v))
 
@@ -127,7 +125,6 @@ def _expand_param_grid(grid: dict) -> typing.Iterator[dict]:
         # k = 'lr'
         # v = [0.001, 0.01, 0.1]
         if isinstance(v, (list, set, np.ndarray)):
-
             combos = []
 
             for el in v:
@@ -140,7 +137,6 @@ def _expand_param_grid(grid: dict) -> typing.Iterator[dict]:
             return combos
 
         if isinstance(v, dict):
-
             # Example:
             # k = 'LinearRegression'
             # v = {

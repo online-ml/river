@@ -45,7 +45,6 @@ class SortedWindow(collections.UserList):
         return self.unsorted_window.maxlen
 
     def append(self, x):
-
         if len(self) >= self.size:
             # The window is sorted, and a binary search is more optimized than linear search
             start_deque = bisect.bisect_left(self, self.unsorted_window[0])

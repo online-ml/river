@@ -186,7 +186,6 @@ class BiasedMF(Ranker):
         }
 
     def predict_one(self, user, item, x=None):
-
         # Initialize the prediction to the mean
         y_pred = self.global_mean.get()
 
@@ -202,7 +201,6 @@ class BiasedMF(Ranker):
         return y_pred
 
     def learn_one(self, user, item, y, x=None):
-
         # Update the global mean
         self.global_mean.update(y)
 

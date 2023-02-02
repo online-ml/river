@@ -4,7 +4,6 @@ from river import stream
 
 
 def test_iter_csv_custom_converter():
-
     example = io.StringIO("col1,col2,col3\n,1,2\n5,,4\n3,1,")
 
     def int_or_none(s):
@@ -23,7 +22,6 @@ def test_iter_csv_custom_converter():
 
 
 def test_iter_csv_drop_nones():
-
     example = io.StringIO("col1,col2,col3\n,1,2\n5,,4\n3,1,")
 
     def int_or_none(s):

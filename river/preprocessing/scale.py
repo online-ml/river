@@ -156,7 +156,6 @@ class StandardScaler(base.MiniBatchTransformer):
         self.vars = collections.defaultdict(float)
 
     def learn_one(self, x):
-
         for i, xi in x.items():
             self.counts[i] += 1
             old_mean = self.means[i]
@@ -205,7 +204,6 @@ class StandardScaler(base.MiniBatchTransformer):
         for col, new_mean, new_var, new_count in itertools.zip_longest(
             columns, new_means, new_vars, new_counts
         ):
-
             old_mean = self.means[col]
             old_var = self.vars[col]
             old_count = self.counts[col]
@@ -286,7 +284,6 @@ class MinMaxScaler(base.Transformer):
         self.max = collections.defaultdict(stats.Max)
 
     def learn_one(self, x):
-
         for i, xi in x.items():
             self.min[i].update(xi)
             self.max[i].update(xi)
@@ -344,7 +341,6 @@ class MaxAbsScaler(base.Transformer):
         self.abs_max = collections.defaultdict(stats.AbsMax)
 
     def learn_one(self, x):
-
         for i, xi in x.items():
             self.abs_max[i].update(xi)
 
@@ -415,7 +411,6 @@ class RobustScaler(base.Transformer):
         self.iqr = collections.defaultdict(functools.partial(stats.IQR, self.q_inf, self.q_sup))
 
     def learn_one(self, x):
-
         for i, xi in x.items():
             if self.with_centering:
                 self.median[i].update(xi)

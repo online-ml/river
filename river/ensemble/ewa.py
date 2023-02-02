@@ -101,7 +101,6 @@ class EWARegressor(base.Ensemble, base.Regressor):
         }
 
     def learn_predict_one(self, x, y):
-
         y_pred_mean = 0.0
 
         # Make a prediction and update the weights accordingly for each model

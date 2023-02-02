@@ -58,7 +58,6 @@ class AutoCorr(stats.base.Univariate):
         return f"autocorr_{self.lag}"
 
     def update(self, x):
-
         # The correlation can be update once enough elements have been seen
         if len(self.window) == self.lag:
             self.pearson.update(x, self.window[0])

@@ -18,7 +18,6 @@ def _progressive_validation(
     measure_time=False,
     measure_memory=False,
 ):
-
     # Check that the model and the metric are in accordance
     if not metric.works_with(model):
         raise ValueError(f"{metric.__class__.__name__} metric is not compatible with {model}")
@@ -60,7 +59,6 @@ def _progressive_validation(
         return state
 
     for i, x, y, *kwargs in stream.simulate_qa(dataset, moment, delay, copy=True):
-
         kwargs = kwargs[0] if kwargs else {}
 
         # Case 1: no ground truth, just make a prediction
@@ -366,7 +364,6 @@ def progressive_val_score(
     active_learning = utils.inspect.isactivelearner(model)
 
     for checkpoint in checkpoints:
-
         msg = f"[{checkpoint['Step']:,d}] {metric}"
         if active_learning:
             msg += f" – {checkpoint['Samples used']:,d} samples used"

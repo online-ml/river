@@ -80,7 +80,6 @@ class RandomUnderSampler(ClassificationSampler):
         self._pivot = None
 
     def learn_one(self, x, y, **kwargs):
-
         self._actual_dist[y] += 1
         f = self.desired_dist
         g = self._actual_dist
@@ -156,7 +155,6 @@ class RandomOverSampler(ClassificationSampler):
         self._pivot = None
 
     def learn_one(self, x, y, **kwargs):
-
         self._actual_dist[y] += 1
         f = self.desired_dist
         g = self._actual_dist
@@ -244,7 +242,6 @@ class RandomSampler(ClassificationSampler):
         self._n = 0
 
     def learn_one(self, x, y, **kwargs):
-
         self._actual_dist[y] += 1
         self._n += 1
         f = self.desired_dist

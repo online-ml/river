@@ -56,9 +56,7 @@ class AdaDelta(optim.base.Optimizer):
         return (x + self.eps) ** 0.5
 
     def _step_with_dict(self, w, g):
-
         for i, gi in g.items():
-
             # Accumulate the gradient
             self.g2[i] = self.rho * self.g2[i] + (1 - self.rho) * gi**2
 

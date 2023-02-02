@@ -6,7 +6,6 @@ from river.tree.base import Branch, Leaf
 
 def tree_to_html(tree: Branch) -> ET.Element:
     def add_node(node: Union[Branch, Leaf], parent: ET.Element):
-
         # We're building this:
         #
         # <li>

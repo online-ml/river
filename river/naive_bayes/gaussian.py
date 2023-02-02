@@ -45,7 +45,6 @@ class GaussianNB(base.Classifier):
         )
 
     def learn_one(self, x, y):
-
         self.class_counts.update((y,))
 
         for i, xi in x.items():

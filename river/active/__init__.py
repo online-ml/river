@@ -3,4 +3,4 @@
 from . import base
 from .entropy import EntropySampler
 
-__all__ = ["base", "EntropySampler"]
+__all__ = ["base", "EntropySampler", "FixedUncertainty"]

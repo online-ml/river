@@ -42,7 +42,6 @@ class Momentum(optim.base.Optimizer):
         self.s = collections.defaultdict(float)
 
     def _step_with_dict(self, w, g):
-
         for i, gi in g.items():
             self.s[i] = self.rho * self.s[i] + self.learning_rate * gi
             w[i] -= self.s[i]

@@ -46,7 +46,6 @@ class VarianceThreshold(base.Transformer):
         self.variances = collections.defaultdict(stats.Var)
 
     def learn_one(self, x):
-
         for i, xi in x.items():
             self.variances[i].update(xi)
 

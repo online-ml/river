@@ -518,7 +518,6 @@ class BaseSRPClassifier(BaseSRPEstimator):
         rng: random.Random,
         features=None,
     ):
-
         super().__init__(
             idx_original=idx_original,
             model=model,
@@ -721,7 +720,6 @@ class SRPRegressor(BaseSRPEnsemble, base.Regressor):
         seed=None,
         metric: typing.Optional[RegressionMetric] = None,
     ):
-
         # Check arguments for parent class
         if model is None:
             model = HoeffdingTreeRegressor(grace_period=50, delta=0.01)

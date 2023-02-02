@@ -66,14 +66,12 @@ class ALMAClassifier(base.Classifier):
         return {False: 1 - yp, True: yp}
 
     def learn_one(self, x, y):
-
         # Convert 0 to -1
         y = int(y or -1)
 
         gamma = self.B * math.sqrt(self.p - 1) / math.sqrt(self.k)
 
         if y * self._raw_dot(x) < (1 - self.alpha) * gamma:
-
             eta = self.C / (math.sqrt(self.p - 1) * math.sqrt(self.k))
 
             for i, xi in x.items():

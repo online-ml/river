@@ -78,7 +78,6 @@ def test_finite_differences(lm, dataset):
     eps = 1e-6
 
     for x, y in dataset:
-
         x = scaler.learn_one(x).transform_one(x)
 
         # Store the current gradient and weights
@@ -87,7 +86,6 @@ def test_finite_differences(lm, dataset):
 
         # d is a set of weight perturbations
         for d in iter_perturbations(weights.keys()):
-
             # Pertubate the weights and obtain the loss with the new weights
             lm._weights = utils.VectorDict({i: weights[i] + eps * di for i, di in d.items()})
             forward = lm.loss(y_true=y, y_pred=lm._raw_dot_one(x))
@@ -404,7 +402,6 @@ def test_lin_reg_sklearn_l1_non_regression():
     )
 
     for xi, yi in stream.iter_pandas(X, y):
-
         xi_tr = ss.learn_one(xi).transform_one(xi)
         rv.learn_one(xi_tr, yi)
         sk.partial_fit([list(xi_tr.values())], [yi])
@@ -422,7 +419,10 @@ def test_lin_reg_sklearn_l1_non_regression():
 def test_log_reg_sklearn_l1_non_regression():
     """Checks that the river L1 implementation results are no worse than sklearn L1."""
 
-    X, y, = make_classification(
+    (
+        X,
+        y,
+    ) = make_classification(
         n_samples=1000,
         n_features=20,
         n_informative=4,
@@ -454,7 +454,6 @@ def test_log_reg_sklearn_l1_non_regression():
     rv_pred = list()
     sk_pred = list()
     for xi, yi in stream.iter_pandas(X, y):
-
         xi_tr = ss.learn_one(xi).transform_one(xi)
         rv.learn_one(xi_tr, yi)
         sk.partial_fit([list(xi_tr.values())], [yi], classes=[False, True])

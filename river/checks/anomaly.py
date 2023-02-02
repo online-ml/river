@@ -7,7 +7,6 @@ def check_roc_auc(anomaly_detector, dataset):
     labels = []
 
     for x, y in dataset:
-
         anomaly_detector.learn_one(x)
         y_pred = anomaly_detector.score_one(x)
 

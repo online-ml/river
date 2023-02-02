@@ -61,7 +61,6 @@ class Averager(optim.base.Optimizer):
         return self.optimizer.look_ahead(w)
 
     def _step_with_dict(self, w, g):
-
         w = self.optimizer.step(w, g)
 
         # No averaging occurs during the first start iterations

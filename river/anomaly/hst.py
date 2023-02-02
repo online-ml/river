@@ -56,7 +56,6 @@ class HSTLeaf(tree.base.Leaf):
 
 
 def make_padded_tree(limits, height, padding, rng=random, **node_params):
-
     if height == 0:
         return HSTLeaf(**node_params)
 
@@ -208,7 +207,6 @@ class HalfSpaceTrees(anomaly.base.AnomalyDetector):
         limits: typing.Dict[base.typing.FeatureName, typing.Tuple[float, float]] = None,
         seed: int = None,
     ):
-
         self.n_trees = n_trees
         self.window_size = window_size
         self.height = height
@@ -239,7 +237,6 @@ class HalfSpaceTrees(anomaly.base.AnomalyDetector):
         return self.n_trees * self.window_size * (2 ** (self.height + 1) - 1)
 
     def learn_one(self, x):
-
         # The trees are built when the first observation comes in
         if not self.trees:
             self.trees = [
@@ -273,7 +270,6 @@ class HalfSpaceTrees(anomaly.base.AnomalyDetector):
         return self
 
     def score_one(self, x):
-
         if self._first_window:
             return 0
 

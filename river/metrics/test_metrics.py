@@ -18,7 +18,6 @@ def load_metrics():
     """Yields all the metrics."""
 
     for name, obj in inspect.getmembers(importlib.import_module("river.metrics"), inspect.isclass):
-
         if name == "Metrics":
             continue
 
@@ -213,12 +212,9 @@ if platform.system() != "Linux":
 @pytest.mark.filterwarnings("ignore::RuntimeWarning")
 @pytest.mark.filterwarnings("ignore::sklearn.exceptions.UndefinedMetricWarning")
 def test_metric(metric, sk_metric):
-
     for y_true, y_pred, sample_weights in generate_test_cases(metric=metric, n=30):
-
         m = copy.deepcopy(metric)
         for i, (yt, yp, w) in enumerate(zip(y_true, y_pred, sample_weights)):
-
             if metric.works_with_weights:
                 m.update(y_true=yt, y_pred=yp, sample_weight=w)
             else:
@@ -247,14 +243,12 @@ def test_rolling_metric(metric, sk_metric):
 
     for n in (1, 2, 5, 10):
         for y_true, y_pred, _ in generate_test_cases(metric=metric, n=30):
-
             m = utils.Rolling(copy.deepcopy(metric), window_size=n)
 
             # Check str works
             str(m)
 
             for i, (yt, yp) in enumerate(zip(y_true, y_pred)):
-
                 m.update(y_true=yt, y_pred=yp)
 
                 if i >= 1:
@@ -271,7 +265,6 @@ def test_rolling_metric(metric, sk_metric):
 
 
 def test_compose():
-
     metrics.MAE() + metrics.MSE()
     metrics.Accuracy() + metrics.LogLoss()
 

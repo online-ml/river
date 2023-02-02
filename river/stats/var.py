@@ -126,7 +126,6 @@ class Var(stats.base.Univariate):
         return result
 
     def __isub__(self, other):
-
         self.mean -= other.mean
 
         S = (

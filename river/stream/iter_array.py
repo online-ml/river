@@ -95,11 +95,9 @@ def iter_array(
         y = y if y is None else y[order]
 
     if multioutput:
-
         for xi, yi in itertools.zip_longest(X, y if hasattr(y, "__iter__") else []):  # type: ignore
             yield handle_features(xi), dict(zip(target_names, yi))  # type: ignore
 
     else:
-
         for xi, yi in itertools.zip_longest(X, y if hasattr(y, "__iter__") else []):  # type: ignore
             yield handle_features(xi), yi

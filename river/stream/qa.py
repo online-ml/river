@@ -143,14 +143,12 @@ def simulate_qa(
     kwargs: list
 
     for i, (x, y, *kwargs) in enumerate(dataset):
-
         kwargs = kwargs[0] if kwargs else None
 
         t = get_moment(i, x)
         d = get_delay(x, y)  # type: ignore
 
         while mementos:
-
             # Get the oldest answer
             i_old, x_old, y_old, kwargs_old, t_expire = mementos[0]
 
