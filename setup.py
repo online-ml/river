@@ -65,13 +65,13 @@ setuptools.setup(
             "pyupgrade>=3.2.0",
             "ruff>=0.0.213",
             "scikit-learn>=1.0.1",
-            "sqlalchemy>=1.4",
+            "sqlalchemy>=2.0.0",
             "sympy>=1.10.1",
         ],
         "compat": base_packages
         + [
             "scikit-learn",
-            "sqlalchemy>=1.4",
+            "sqlalchemy>=2.0.0",
             "vaex",
         ],
         "docs": base_packages
