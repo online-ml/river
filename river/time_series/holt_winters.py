@@ -158,7 +158,6 @@ class HoltWinters(time_series.base.Forecaster):
         seasonality=0,
         multiplicative=False,
     ):
-
         if seasonality and gamma is None:
             raise ValueError("gamma must be set if seasonality is set")
 

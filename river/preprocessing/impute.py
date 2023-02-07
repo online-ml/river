@@ -28,7 +28,6 @@ class PreviousImputer(base.Transformer):
         self._latest = {}
 
     def learn_one(self, x):
-
         for i, v in x.items():
             if v is not None:
                 self._latest[i] = v
@@ -36,7 +35,6 @@ class PreviousImputer(base.Transformer):
         return self
 
     def transform_one(self, x):
-
         for i, v in x.items():
             if v is None:
                 x[i] = self._latest.get(i)
@@ -212,7 +210,6 @@ class StatImputer(base.Transformer):
         }
 
     def learn_one(self, x):
-
         for i in self.stats:
             if x[i] is not None:
                 self.stats[i].update(x[i])
@@ -220,7 +217,6 @@ class StatImputer(base.Transformer):
         return self
 
     def transform_one(self, x):
-
         # Transformers are supposed to be pure, therefore we make a copy of the features
         x = x.copy()
 

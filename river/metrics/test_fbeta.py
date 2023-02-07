@@ -7,14 +7,12 @@ from river import metrics, utils
 
 
 def test_multi_fbeta():
-
     fbeta = metrics.MultiFBeta(betas={0: 0.25, 1: 1, 2: 4}, weights={0: 1, 1: 1, 2: 2})
     sk_fbeta = sk_metrics.fbeta_score
     y_true = [0, 1, 2, 2, 2]
     y_pred = [0, 1, 0, 2, 1]
 
     for i, (yt, yp) in enumerate(zip(y_true, y_pred)):
-
         fbeta.update(yt, yp)
 
         if i >= 2:
@@ -42,7 +40,6 @@ def test_rolling_multi_fbeta():
     y_pred = [0, 1, 0, 2, 1]
 
     for i, (yt, yp) in enumerate(zip(y_true, y_pred)):
-
         fbeta.update(yt, yp)
 
         if i >= 2:

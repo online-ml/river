@@ -77,7 +77,6 @@ class BaseFM:
         return dict((f"{j}_{xj}", 1) if isinstance(xj, str) else (j, xj) for j, xj in x.items())
 
     def _learn_one(self, x, y, sample_weight=1.0):
-
         # Calculate the gradient of the loss with respect to the raw output
         g_loss = self.loss.gradient(y_true=y, y_pred=self._raw_dot(x))
 
@@ -101,7 +100,6 @@ class BaseFM:
         return self
 
     def _raw_dot(self, x):
-
         # Start with the intercept
         y_pred = self.intercept
 

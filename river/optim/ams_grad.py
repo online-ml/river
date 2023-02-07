@@ -70,7 +70,6 @@ class AMSGrad(optim.base.Optimizer):
         self.v_hat: dict[str, float] = collections.defaultdict(float)
 
     def _step_with_dict(self, w, g):
-
         lr = self.learning_rate
 
         if self.correct_bias:

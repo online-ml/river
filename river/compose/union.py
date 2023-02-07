@@ -183,7 +183,6 @@ class TransformerUnion(base.MiniBatchTransformer):
         return {name: transformer._get_params() for name, transformer in self.transformers.items()}
 
     def clone(self, new_params: dict = None, include_attributes=False):
-
         if new_params is None:
             new_params = {}
 

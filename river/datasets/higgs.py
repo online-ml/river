@@ -28,7 +28,6 @@ class Higgs(base.RemoteDataset):
         )
 
     def _iter(self):
-
         features = [
             "lepton pT",
             "lepton eta",

@@ -124,7 +124,6 @@ class Histogram(collections.UserList, base.Base):
         self.n = 0
 
     def update(self, x):
-
         self.n += 1
         b = Bin(x, x, 1)
 
@@ -166,7 +165,6 @@ class Histogram(collections.UserList, base.Base):
         """Shrinks the histogram by merging the two closest bins."""
 
         if k == 1:
-
             # Find the closest pair of bins
             min_diff = math.inf
             min_idx = None
@@ -227,7 +225,6 @@ class Histogram(collections.UserList, base.Base):
         cdf = 0
 
         for x in X:
-
             while x >= b.right:
                 cdf += b.count
                 b = next(bins, INF)
@@ -314,7 +311,6 @@ class Histogram(collections.UserList, base.Base):
         hist = Histogram(max_bins=max(self.max_bins, other.max_bins))
 
         while True:
-
             b.count += coverage_ratio(b, x) * x.count
             b.count += coverage_ratio(b, y) * y.count
 

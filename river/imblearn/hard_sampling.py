@@ -38,7 +38,6 @@ class HardSampling(base.Wrapper):
         return self.model.predict_one
 
     def learn_one(self, x, y, **kwargs):
-
         loss = self.loss(y_true=y, y_pred=self._model_pred_func(x))
 
         if len(self.buffer) < self.size:

@@ -200,7 +200,6 @@ class CluStream(base.Clusterer):
         return utils.math.minkowski_distance(point_a, point_b, 2)
 
     def learn_one(self, x, w=1.0):
-
         self._timestamp += 1
 
         if not self._initialized:
@@ -260,7 +259,6 @@ class CluStream(base.Clusterer):
         return self
 
     def predict_one(self, x):
-
         index, _ = self._get_closest_mc(x)
         try:
             return self._kmeans_mc.predict_one(self._mc_centers[index])

@@ -10,7 +10,6 @@ def test_standard_scaler_one_many_consistent():
     """Checks that using learn_one or learn_many produces the same result."""
 
     for with_std in (False, True):
-
         X = pd.read_csv(datasets.TrumpApproval().path)
 
         one = preprocessing.StandardScaler(with_std=with_std)

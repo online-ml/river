@@ -216,7 +216,6 @@ class MultinomialNB(base.BaseNB):
         # Update feature counts by slicing the sparse matrix per column.
         # Each column correspond to a class.
         for c, i in zip(classes, range(fc.shape[0])):
-
             counts = {c: {columns[f]: count for f, count in zip(fc[i].indices, fc[i].data)}}
 
             # Transform {classe_i: {token_1: f_1, ... token_n: f_n}} into:
@@ -225,7 +224,6 @@ class MultinomialNB(base.BaseNB):
                 {token: {c: f} for token, f in frequencies.items()}
                 for c, frequencies in counts.items()
             ]:
-
                 for f, count in dict_count.items():
                     self.feature_counts[f].update(count)
 

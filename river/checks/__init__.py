@@ -70,7 +70,6 @@ def _yield_datasets(model: Estimator):
 
     # Multi-output regression
     elif utils.inspect.ismoregressor(model):
-
         # 1
         yield stream.iter_sklearn_dataset(sk_datasets.load_linnerud())
 
@@ -97,7 +96,6 @@ def _yield_datasets(model: Estimator):
 
     # Classification
     elif utils.inspect.isclassifier(model):
-
         yield datasets.Phishing().take(200)
         yield ((x, np.bool_(y)) for x, y in datasets.Phishing().take(200))
 
@@ -107,7 +105,6 @@ def _yield_datasets(model: Estimator):
 
     # Anomaly detection
     elif utils.inspect.isanomalydetector(model):
-
         yield datasets.CreditCard().take(1000)
 
 

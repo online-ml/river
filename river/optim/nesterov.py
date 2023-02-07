@@ -42,14 +42,12 @@ class NesterovMomentum(optim.base.Optimizer):
         self.s = collections.defaultdict(float)
 
     def look_ahead(self, w):
-
         for i in w:
             w[i] -= self.rho * self.s[i]
 
         return w
 
     def _step_with_dict(self, w, g):
-
         # Move w back to it's initial position
         for i in w:
             w[i] += self.rho * self.s[i]

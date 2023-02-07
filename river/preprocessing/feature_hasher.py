@@ -56,11 +56,9 @@ class FeatureHasher(base.Transformer):
         return int(hexa, 16)
 
     def transform_one(self, x):
-
         x_hashed = collections.Counter()
 
         for feature, value in x.items():
-
             if isinstance(value, str):
                 feature = f"{feature}={value}"
                 value = 1

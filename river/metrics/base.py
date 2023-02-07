@@ -223,7 +223,6 @@ class Metrics(Metric, collections.UserList):
         self.str_sep = str_sep
 
     def update(self, y_true, y_pred, sample_weight=1.0):
-
         # If the metrics are classification metrics, then we have to handle the case where some
         # of the metrics require labels, whilst others need to be fed probabilities
         if hasattr(self, "requires_labels") and not self.requires_labels:
@@ -239,7 +238,6 @@ class Metrics(Metric, collections.UserList):
         return self
 
     def revert(self, y_true, y_pred, sample_weight=1.0):
-
         # If the metrics are classification metrics, then we have to handle the case where some
         # of the metrics require labels, whilst others need to be fed probabilities
         if hasattr(self, "requires_labels") and not self.requires_labels:

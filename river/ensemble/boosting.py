@@ -176,7 +176,6 @@ class ADWINBoostingClassifier(AdaBoostClassifier):
         self._drift_detectors = [drift.ADWIN() for _ in range(self.n_models)]
 
     def learn_one(self, x, y, **kwargs):
-
         change_detected = False
         lambda_poisson = 1.0
         for i, model in enumerate(self):

@@ -22,7 +22,6 @@ from river.utils.random import poisson
 
 
 class BaseForest(base.Ensemble):
-
     _FEATURES_SQRT = "sqrt"
     _FEATURES_LOG2 = "log2"
 
@@ -538,7 +537,6 @@ class ARFClassifier(BaseForest, base.Classifier):
         return True
 
     def predict_proba_one(self, x: dict) -> typing.Dict[base.typing.ClfTarget, float]:
-
         y_pred: typing.Counter = collections.Counter()
 
         if len(self) == 0:
@@ -810,7 +808,6 @@ class ARFRegressor(BaseForest, base.Regressor):
         }
 
     def predict_one(self, x: dict) -> base.typing.RegTarget:
-
         if len(self) == 0:
             self._init_ensemble(sorted(x.keys()))
             return 0.0  # type: ignore
@@ -955,7 +952,6 @@ class BaseForestMember:
             self.drift_detector = self.drift_detector.clone()
 
     def learn_one(self, x: dict, y: base.typing.Target, *, sample_weight: int, n_samples_seen: int):
-
         self.model.learn_one(x, y, sample_weight=sample_weight)
 
         if self.background_learner:

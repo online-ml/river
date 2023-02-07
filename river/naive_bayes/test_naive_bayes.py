@@ -124,7 +124,6 @@ def test_learn_many_vs_learn_one(model, batch_model):
 
     # Assert batch and incremental models give same results
     for x, x_batch in zip(yield_unseen_data(), yield_batch_unseen_data()):
-
         assert model.predict_proba_one(x)["yes"] == pytest.approx(
             batch_model.predict_proba_many(x_batch)["yes"][0]
         )
@@ -142,7 +141,6 @@ def test_learn_many_vs_learn_one(model, batch_model):
     if isinstance(model["model"], naive_bayes.BernoulliNB) or isinstance(
         model["model"], naive_bayes.MultinomialNB
     ):
-
         inc_cp = model["model"].p_feature_given_class
         batch_cp = batch_model["model"].p_feature_given_class
 

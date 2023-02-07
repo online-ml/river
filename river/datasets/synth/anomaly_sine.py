@@ -136,7 +136,6 @@ class AnomalySine(datasets.base.SyntheticDataset):
         self.y[anomalies_idx] = 1
 
     def __iter__(self):
-
         self._generate_data()
 
         for xi, yi in itertools.zip_longest(self.X, self.y if hasattr(self.y, "__iter__") else []):

@@ -387,7 +387,6 @@ class Pipeline(base.Estimator):
         return {name: step._get_params() for name, step in self.steps.items()}
 
     def clone(self, new_params: dict = None, include_attributes=False):
-
         if new_params is None:
             new_params = {}
 
@@ -490,7 +489,6 @@ class Pipeline(base.Estimator):
 
         # Loop over the first n - 1 steps, which should all be transformers
         for t in itertools.islice(steps, len(self) - 1):
-
             # There might be an anomaly filter in the pipeline. Its purpose is to prevent anomalous
             # data from being learned by the subsequent parts of the pipeline.
             if utils.inspect.ischildobject(obj=t, class_name="AnomalyFilter"):
@@ -546,13 +544,11 @@ class Pipeline(base.Estimator):
         steps = iter(self.steps.values())
 
         for t in itertools.islice(steps, len(self) - 1):
-
             # An anomaly filter is a no-op during inference
             if utils.inspect.ischildobject(obj=t, class_name="AnomalyFilter"):
                 continue
 
             if not self._STATELESS:
-
                 if isinstance(t, union.TransformerUnion):
                     for sub_t in t.transformers.values():
                         if not sub_t._supervised:
@@ -662,7 +658,6 @@ class Pipeline(base.Estimator):
             return x
 
         def print_dict(x, show_types, indent=False, space_after=True):
-
             # Some transformers accept strings as input instead of dicts
             if isinstance(x, str):
                 _print(x)
@@ -684,7 +679,6 @@ class Pipeline(base.Estimator):
         # Print the state of x at each step
         steps = iter(self.steps.values())
         for i, t in enumerate(itertools.islice(steps, len(self) - 1)):
-
             if isinstance(t, union.TransformerUnion):
                 print_title(f"{i+1}. Transformer union")
                 for j, (name, sub_t) in enumerate(t.transformers.items()):
@@ -738,7 +732,6 @@ class Pipeline(base.Estimator):
 
         # Loop over the first n - 1 steps, which should all be transformers
         for t in itertools.islice(steps, len(self) - 1):
-
             if self._WARM_UP:
                 if isinstance(t, union.TransformerUnion):
                     for sub_t in t.transformers.values():
@@ -778,7 +771,6 @@ class Pipeline(base.Estimator):
         steps = iter(self.steps.values())
 
         for t in itertools.islice(steps, len(self) - 1):
-
             if isinstance(t, union.TransformerUnion):
                 for sub_t in t.transformers.values():
                     if not sub_t._supervised:

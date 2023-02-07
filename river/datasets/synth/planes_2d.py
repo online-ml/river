@@ -53,7 +53,6 @@ class Planes2D(datasets.base.SyntheticDataset):
         self.seed = seed
 
     def __iter__(self):
-
         rng = random.Random(self.seed)
 
         while True:

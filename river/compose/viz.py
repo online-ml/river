@@ -15,7 +15,6 @@ def to_html(obj) -> ET.Element:
 
 
 def estimator_to_html(estimator) -> ET.Element:
-
     details = ET.Element("details", attrib={"class": "river-component river-estimator"})
 
     summary = ET.Element("summary", attrib={"class": "river-summary"})
@@ -39,7 +38,6 @@ def estimator_to_html(estimator) -> ET.Element:
 
 
 def pipeline_to_html(pipeline) -> ET.Element:
-
     div = ET.Element("div", attrib={"class": "river-component river-pipeline"})
 
     for step in pipeline.steps.values():
@@ -49,7 +47,6 @@ def pipeline_to_html(pipeline) -> ET.Element:
 
 
 def union_to_html(union) -> ET.Element:
-
     div = ET.Element("div", attrib={"class": "river-component river-union"})
 
     for transformer in union.transformers.values():
@@ -59,7 +56,6 @@ def union_to_html(union) -> ET.Element:
 
 
 def wrapper_to_html(wrapper) -> ET.Element:
-
     div = ET.Element("div", attrib={"class": "river-component river-wrapper"})
 
     details = ET.Element("details", attrib={"class": "river-details"})

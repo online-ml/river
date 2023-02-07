@@ -75,7 +75,6 @@ class HistogramSplitter(Splitter):
 
         total_weight = sum(pre_split_dist.values())
         for at in thresholds:
-
             l_dist = {}
             r_dist = {}
 

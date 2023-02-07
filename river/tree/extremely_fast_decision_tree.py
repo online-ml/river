@@ -128,7 +128,6 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
         remove_poor_attrs: bool = False,
         merit_preprune: bool = True,
     ):
-
         super().__init__(
             grace_period=grace_period,
             max_depth=max_depth,

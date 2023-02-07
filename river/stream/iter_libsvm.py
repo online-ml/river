@@ -59,7 +59,6 @@ def iter_libsvm(
         return name, value
 
     for line in buffer:
-
         # Remove carriage return and whitespace
         line = line.rstrip()
         # Remove potential end of line comments

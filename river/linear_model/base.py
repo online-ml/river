@@ -71,7 +71,6 @@ class GLM:
         self._y_name = None
 
         if l1 != 0:
-
             if l2 != 0:
                 raise NotImplementedError(
                     "The joint use of L1 and L2 penalties is currently not explicitly supported!"
@@ -103,7 +102,6 @@ class GLM:
         return self.intercept_lr.get(self.optimizer.n_iterations) * loss_gradient
 
     def _fit(self, x, y, w, get_grad):
-
         # Some optimizers need to do something before a prediction is made
         self.optimizer.look_ahead(w=self._weights)
 
@@ -148,7 +146,6 @@ class GLM:
         return self._weights @ utils.VectorDict(x) + self.intercept
 
     def _eval_gradient_one(self, x: dict, y: float, w: float) -> typing.Tuple[dict, float]:
-
         loss_gradient = self.loss.gradient(y_true=y, y_pred=self._raw_dot_one(x))
         loss_gradient *= w
         loss_gradient = float(
@@ -175,7 +172,6 @@ class GLM:
     def _eval_gradient_many(
         self, X: pd.DataFrame, y: pd.Series, w: typing.Union[float, pd.Series]
     ) -> typing.Tuple[dict, float]:
-
         loss_gradient = self.loss.gradient(y_true=y.values, y_pred=self._raw_dot_many(X))
         loss_gradient *= w
         loss_gradient = np.clip(loss_gradient, -self.clip_gradient, self.clip_gradient)

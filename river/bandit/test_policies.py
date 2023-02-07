@@ -102,7 +102,6 @@ def test_better_than_random_policy(policy: bandit.base.Policy, env: gym.Env):
     arm_ids = list(range(env.action_space.n))  # type: ignore
 
     while not terminated and not truncated:
-
         arm_id = next(policy.pull(arm_ids))  # type: ignore
         observation, reward, terminated, truncated, info = env.step(arm_id)
         policy.update(arm_id, reward)

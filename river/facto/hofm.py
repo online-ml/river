@@ -81,14 +81,12 @@ class HOFM(BaseFM):
         )
 
     def _calculate_weights_gradients(self, x, g_loss):
-
         # For notational convenience
         w, l1, l2, sign = self.weights, self.l1_weight, self.l2_weight, utils.math.sign
 
         return {j: g_loss * xj + l1 * sign(w[j]) + l2 * w[j] for j, xj in x.items()}
 
     def _update_latents(self, x, g_loss):
-
         # For notational convenience
         v, l1, l2, sign = self.latents, self.l1_latent, self.l2_latent, utils.math.sign
 
@@ -98,7 +96,6 @@ class HOFM(BaseFM):
         )
 
         for d in range(2, self.degree + 1):
-
             for combination in itertools.combinations(x.keys(), d):
                 feature_product = functools.reduce(lambda x, y: x * y, (x[j] for j in combination))
 
@@ -248,7 +245,6 @@ class HOFMRegressor(HOFM, base.Regressor):
         clip_gradient=1e12,
         seed: int = None,
     ):
-
         super().__init__(
             degree=degree,
             n_factors=n_factors,
@@ -386,7 +382,6 @@ class HOFMClassifier(HOFM, base.Classifier):
         clip_gradient=1e12,
         seed: int = None,
     ):
-
         super().__init__(
             degree=degree,
             n_factors=n_factors,

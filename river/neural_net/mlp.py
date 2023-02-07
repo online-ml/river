@@ -53,7 +53,6 @@ class MLP:
         optimizer: optim.base.Optimizer,
         seed: int = None,
     ):
-
         self.activations = activations
         self.hidden_dims = hidden_dims
         self.loss = loss
@@ -310,7 +309,6 @@ class MLPRegressor(base.Regressor, MLP):
         return self(X)
 
     def learn_one(self, x, y):
-
         # Multi-output
         if isinstance(y, dict):
             return self.learn_many(X=pd.DataFrame([x]), y=pd.DataFrame([y]))

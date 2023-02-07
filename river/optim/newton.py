@@ -74,7 +74,6 @@ class Newton(optim.base.Optimizer):
         self.H_inv = {}
 
     def _step_with_dict(self, w, g):
-
         for i in g:
             if (i, i) not in self.H_inv:
                 self.H_inv[i, i] = self.eps

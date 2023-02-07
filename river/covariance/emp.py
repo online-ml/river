@@ -8,7 +8,6 @@ from river import stats, utils
 
 
 class SymmetricMatrix(abc.ABC):
-
     _fmt = ",.3f"
 
     @property
@@ -29,7 +28,6 @@ class SymmetricMatrix(abc.ABC):
             return self.matrix[j, i]
 
     def __repr__(self):
-
         names = sorted({i for i, _ in self.matrix})
 
         headers = [""] + list(map(str, names))

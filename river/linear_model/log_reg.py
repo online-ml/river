@@ -78,7 +78,6 @@ class LogisticRegression(linear_model.base.GLM, base.MiniBatchClassifier):
         clip_gradient=1e12,
         initializer: optim.base.Initializer = None,
     ):
-
         super().__init__(
             optimizer=optim.SGD(0.01) if optimizer is None else optimizer,
             loss=optim.losses.Log() if loss is None else loss,

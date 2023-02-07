@@ -60,7 +60,6 @@ def dotvecmat(x, A):
     C = {}
 
     for (i, xi), ((j, k), ai) in itertools.product(x.items(), A.items()):
-
         if i != j:
             continue
 

@@ -50,11 +50,9 @@ class Friedman(datasets.base.SyntheticDataset):
         self.seed = seed
 
     def __iter__(self):
-
         rng = random.Random(self.seed)
 
         while True:
-
             x = {i: rng.uniform(a=0, b=1) for i in range(10)}
             y = (
                 10 * math.sin(math.pi * x[0] * x[1])

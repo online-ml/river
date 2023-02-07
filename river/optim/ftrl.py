@@ -60,7 +60,6 @@ class FTRLProximal(optim.base.Optimizer):
         self.n_iterations = 0
 
     def _step_with_dict(self, w, g):
-
         alpha = self.alpha
         beta = self.beta
         l1 = self.l1

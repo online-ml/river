@@ -153,7 +153,6 @@ class BayesianMean(stats.base.Univariate):
         return self
 
     def get(self):
-
         # Uses the notation from https://www.wikiwand.com/en/Bayes_estimator#/Practical_example_of_Bayes_estimators
         R = self._mean.get()
         v = self._mean.n

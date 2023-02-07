@@ -15,7 +15,6 @@ class Rollable(typing.Protocol):
 
 class BaseRolling:
     def __init__(self, obj: Rollable):
-
         if not isinstance(obj, Rollable):
             raise ValueError(f"{obj} does not satisfy the necessary protocol")
 

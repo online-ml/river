@@ -67,7 +67,6 @@ class StackingClassifier(base.Ensemble, base.Classifier):
         return self.meta_classifier._multiclass
 
     def learn_one(self, x, y):
-
         # Ask each model to make a prediction and then update it
         oof = {}
         for i, clf in enumerate(self):
@@ -85,7 +84,6 @@ class StackingClassifier(base.Ensemble, base.Classifier):
         return self
 
     def predict_proba_one(self, x):
-
         oof = {
             f"oof_{i}_{k}": p
             for i, clf in enumerate(self)

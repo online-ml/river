@@ -30,7 +30,6 @@ class Grouper(base.Transformer):
         transformer: base.Transformer,
         by: typing.Union[base.typing.FeatureName, typing.List[base.typing.FeatureName]],
     ):
-
         self.transformer = transformer
         self.by = by if isinstance(by, list) else [by]
         self.transformers: typing.DefaultDict = collections.defaultdict(

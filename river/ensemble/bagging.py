@@ -13,7 +13,6 @@ __all__ = [
 
 class BaseBagging(base.WrapperEnsemble):
     def learn_one(self, x, y, **kwargs):
-
         for model in self:
             for _ in range(utils.random.poisson(1, self._rng)):
                 model.learn_one(x, y, **kwargs)
@@ -223,7 +222,6 @@ class ADWINBaggingClassifier(BaggingClassifier):
         self._drift_detectors = [drift.ADWIN() for _ in range(self.n_models)]
 
     def learn_one(self, x, y, **kwargs):
-
         change_detected = False
         for i, model in enumerate(self):
             for _ in range(utils.random.poisson(1, self._rng)):

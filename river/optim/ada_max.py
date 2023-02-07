@@ -57,7 +57,6 @@ class AdaMax(optim.base.Optimizer):
         self.u = collections.defaultdict(float)
 
     def _step_with_dict(self, w, g):
-
         # Correct bias for `m`
         learning_rate = self.learning_rate / (1 - self.beta_1 ** (self.n_iterations + 1))
 

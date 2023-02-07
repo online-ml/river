@@ -504,7 +504,6 @@ def _color_brew(n: int) -> typing.List[typing.Tuple[int, int, int]]:
     m = v - c
 
     for h in [i for i in range(25, 385, int(360 / n))]:
-
         # Calculate some intermediate values
         h_bar = h / 60.0
         x = c * (1 - abs((h_bar % 2) - 1))

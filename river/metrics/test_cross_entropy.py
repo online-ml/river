@@ -6,7 +6,6 @@ from river import metrics
 
 
 def test_cross_entropy():
-
     metric = metrics.CrossEntropy()
 
     y_true = [0, 1, 2, 2]

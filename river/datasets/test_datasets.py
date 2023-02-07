@@ -63,7 +63,6 @@ def test_repr(dataset):
 
 
 def _iter_synth_datasets():
-
     for variant in range(10):
         dataset = functools.partial(datasets.synth.Agrawal, classification_function=variant)
         functools.update_wrapper(dataset, datasets.synth.Agrawal)

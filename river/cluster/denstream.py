@@ -352,7 +352,6 @@ class DenStream(base.Clusterer):
         return self
 
     def predict_one(self, x, sample_weight=None):
-
         # This function handles the case when a clustering request arrives.
         # implementation of the DBSCAN algorithm proposed by Ester et al.
         if not self.initialized:
@@ -397,7 +396,6 @@ class DenStreamMicroCluster(metaclass=ABCMeta):
     """DenStream Micro-cluster class"""
 
     def __init__(self, x, timestamp, decaying_factor):
-
         self.x = x
         self.last_edit_time = timestamp
         self.creation_time = timestamp

@@ -119,7 +119,6 @@ class TextClust(base.Clusterer):
         auto_merge=True,
         sigma=1,
     ):
-
         self.radius = radius
         self.fading_factor = fading_factor
         self.tgap = tgap
@@ -153,7 +152,6 @@ class TextClust(base.Clusterer):
         self.macro_distance = self.distances(self.macro_distance)
 
     def learn_one(self, x, t=None, sample_weight=None):
-
         localdict = {}
         for key in x.keys():
             new_key = key
@@ -177,7 +175,6 @@ class TextClust(base.Clusterer):
 
         # if there is something to process
         if len(ngrams) > 0:
-
             # create artificial micro cluster with one observation
             mc = self.microcluster(ngrams, self.t, 1, self.realtime, self._clusterId)
 
@@ -188,7 +185,6 @@ class TextClust(base.Clusterer):
 
             # if we found a cluster that is close enough we merge our incoming data into it
             if clusterId is not None:
-
                 self._num_merged_obs += 1
                 ## add number of observations
                 self.micro_clusters[clusterId].n += 1
@@ -216,10 +212,8 @@ class TextClust(base.Clusterer):
     ## predicts the cluster number. The type specifies whether this should happen on micro-cluster
     ## or macro-cluster level
     def predict_one(self, x, sample_weight=None, type="micro"):
-
         localdict = {}
         for key in x.keys():
-
             new_key = key
             localdict[new_key] = {}
             localdict[new_key]["tf"] = x[key]
@@ -243,7 +237,6 @@ class TextClust(base.Clusterer):
 
         # calculate distances and choose the smallest one
         for key in self.micro_clusters.keys():
-
             dist = distance.dist(mc, self.micro_clusters[key], idf)
 
             counter = counter + 1
@@ -259,7 +252,6 @@ class TextClust(base.Clusterer):
         if self.auto_r:
             ## if we at least have two close micro clusters
             if counter > 1:
-
                 ## our threshold
                 mu = (sumdist - min_dist) / (counter - 1)
                 threshold = mu - self.sigma * math.sqrt(squaresum / (counter - 1) - mu**2)
@@ -300,7 +292,6 @@ class TextClust(base.Clusterer):
 
     # cleanup procedure
     def _cleanup(self):
-
         # set last cleanup to now
         self.last_cleanup = self.t
 
@@ -309,7 +300,6 @@ class TextClust(base.Clusterer):
 
         # set deltaweights
         for micro in self.micro_clusters.values():
-
             # here we compute delta weights
             micro.deltaweight = micro.weight - micro.oldweight
             micro.oldweight = micro.weight
@@ -363,7 +353,6 @@ class TextClust(base.Clusterer):
 
     # calculate a distance matrix from all provided micro clusters
     def _get_distance_matrix(self, clusters):
-
         # if we need IDF for our distance calculation, we calculate it from the micro clusters
         idf = self._calculateIDF(clusters.values())
 
@@ -399,14 +388,12 @@ class TextClust(base.Clusterer):
 
         ## repeat until the number of clusters k are formed
         while len(clusters) != k:
-
             min_dist = math.inf
             min_pair = ()
 
             ## iterate over all current sets
             for i in range(0, len(clusters) - 1):
                 for j in range(i + 1, len(clusters)):
-
                     ## iterate over all clusters in sets
                     for c_i in clusters[i]:
                         for c_j in clusters[j]:
@@ -423,7 +410,6 @@ class TextClust(base.Clusterer):
     def updateMacroClusters(self):
         # check if something changed since last reclustering
         if not self._up_to_date:
-
             # first update the weights
             self._updateweights()
 
@@ -451,7 +437,6 @@ class TextClust(base.Clusterer):
 
     # here we get macro cluster representatives by merging according to microToMacro assignments
     def get_macroclusters(self):
-
         self.updateMacroClusters()
         numClusters = min([self.num_macro, len(self.micro_clusters)])
 
@@ -474,7 +459,6 @@ class TextClust(base.Clusterer):
 
     # show top micro/macro clusters (according to weight)
     def showclusters(self, topn, num, type="micro"):
-
         # first clusters are sorted according to their respective weights
         if type == "micro":
             sortedmicro = sorted(self.micro_clusters.values(), key=lambda x: x.weight, reverse=True)
@@ -513,7 +497,6 @@ class TextClust(base.Clusterer):
 
     # for a new observation(s) get the assignment to micro or macro clusters
     def get_assignment(self, x, type):
-
         self._updateweights()
 
         # assignment is an empty list
@@ -558,7 +541,6 @@ class TextClust(base.Clusterer):
 
     ## micro cluster class
     class microcluster:
-
         ## Initializer / Instance Attributes
         def __init__(self, tf, time, weight, realtime, clusterid):
             self.id = clusterid
@@ -586,7 +568,6 @@ class TextClust(base.Clusterer):
 
         ## merging two microclusters into one
         def merge(self, microcluster, t, omega, fading_factor, term_fading, realtime):
-
             self.realtime = realtime
 
             self.weight = self.weight + microcluster.weight
@@ -605,7 +586,6 @@ class TextClust(base.Clusterer):
 
     ## distance class to implement different micro/macro distance metrics
     class distances:
-
         ## constructor
         def __init__(self, type):
             self.type = type

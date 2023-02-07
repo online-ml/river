@@ -133,7 +133,6 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
         remove_poor_attrs: bool = False,
         merit_preprune: bool = True,
     ):
-
         super().__init__(
             max_depth=max_depth,
             binary_split=binary_split,

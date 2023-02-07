@@ -299,7 +299,6 @@ class SNARIMAX(time_series.base.Forecaster):
         self.errors: typing.Deque[float] = collections.deque(maxlen=max(q, m * sq))
 
     def _add_lag_features(self, x, Y, errors):
-
         if x is None:
             x = {}
 
@@ -334,10 +333,8 @@ class SNARIMAX(time_series.base.Forecaster):
         return x
 
     def learn_one(self, y, x=None):
-
         # It isn't possible to difference the time series if enough values have not been seen
         if len(self.y_hist) >= self.differencer.n_required_past_values:
-
             x = self._add_lag_features(x=x, Y=self.y_diff, errors=self.errors)
 
             # The regressor learns on the differenced version of the time series
@@ -354,7 +351,6 @@ class SNARIMAX(time_series.base.Forecaster):
         return self
 
     def forecast(self, horizon, xs=None):
-
         if xs is None:
             xs = [{}] * horizon
 

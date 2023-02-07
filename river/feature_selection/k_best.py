@@ -76,18 +76,15 @@ class SelectKBest(base.SupervisedTransformer):
         yield {"similarity": stats.PearsonCorr()}
 
     def learn_one(self, x, y):
-
         for i, xi in x.items():
             self.leaderboard[i] = self.similarities[i].update(xi, y).get()
 
         return self
 
     def transform_one(self, x):
-
         best_features = {pair[0] for pair in self.leaderboard.most_common(self.k)}
 
         if self.leaderboard:
-
             return {i: xi for i, xi in x.items() if i in best_features}
 
         return copy.deepcopy(x)

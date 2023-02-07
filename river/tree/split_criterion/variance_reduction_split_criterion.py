@@ -27,7 +27,6 @@ class VarianceReductionSplitCriterion(SplitCriterion):
             if n_i >= self.min_samples_split:
                 count += 1
         if count == len(post_split_dist):
-
             vr = self.compute_var(pre_split_dist)
             for i in range(len(post_split_dist)):
                 n_i = post_split_dist[i].mean.n

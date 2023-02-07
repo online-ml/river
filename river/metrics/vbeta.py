@@ -78,7 +78,6 @@ class Homogeneity(metrics.base.MultiClassMetric):
         max_reduction_entropy = 0.0
 
         for i in self.cm.classes:
-
             for j in self.cm.classes:
                 try:
                     raw_conditional_entropy -= (
@@ -174,7 +173,6 @@ class Completeness(metrics.base.MultiClassMetric):
         max_reduction_entropy = 0
 
         for i in self.cm.classes:
-
             for j in self.cm.classes:
                 try:
                     raw_conditional_entropy -= (

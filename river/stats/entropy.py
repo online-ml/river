@@ -61,7 +61,6 @@ class Entropy(stats.base.Univariate):
     """
 
     def __init__(self, fading_factor=1, eps=1e-8):
-
         if 0 < fading_factor <= 1:
             self.fading_factor = fading_factor
         else:
@@ -76,7 +75,6 @@ class Entropy(stats.base.Univariate):
         return "entropy"
 
     def update(self, x):
-
         cx = self.counter.get(x, 0)
         n = self.n
         eps = self.eps

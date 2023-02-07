@@ -14,7 +14,6 @@ class MeanForecaster(time_series.base.Forecaster):
 
 
 def test_forecasts_at_each_step():
-
     dataset = datasets.AirlinePassengers()
     model = MeanForecaster()
     metric = metrics.MAE()

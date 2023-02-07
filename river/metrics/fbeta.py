@@ -116,7 +116,6 @@ class MacroFBeta(metrics.base.MultiClassMetric):
         b2 = self.beta**2
 
         for c in self.cm.classes:
-
             try:
                 p = self.cm[c][c] / self.cm.sum_col[c]
             except ZeroDivisionError:
@@ -234,7 +233,6 @@ class WeightedFBeta(metrics.base.MultiClassMetric):
         b2 = self.beta**2
 
         for c in self.cm.classes:
-
             try:
                 p = self.cm.sum_row[c] * self.cm[c][c] / self.cm.sum_col[c]
             except ZeroDivisionError:
@@ -307,7 +305,6 @@ class MultiFBeta(metrics.base.MultiClassMetric):
         total = 0
 
         for c in self.cm.classes:
-
             b2 = self.betas[c] ** 2
 
             try:

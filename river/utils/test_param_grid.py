@@ -59,7 +59,6 @@ def test_expand_param_grid_count(model, param_grid, count):
 
 
 def test_decision_tree_max_depth():
-
     model = tree.HoeffdingTreeClassifier()
 
     max_depths = [1, 2, 3, 4, 5, 6]

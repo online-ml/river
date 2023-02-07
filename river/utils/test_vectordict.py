@@ -5,7 +5,6 @@ from river.utils import VectorDict
 
 
 def test_vectordict():
-
     # test empty init
     x = dict()
     vx = VectorDict()

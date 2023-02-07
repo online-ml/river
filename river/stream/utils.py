@@ -6,14 +6,12 @@ import zipfile
 
 
 def open_filepath(filepath_or_buffer, compression):
-
     # Determine the compression from the file extension if "infer" has been specified
     if compression == "infer":
         _, ext = os.path.splitext(filepath_or_buffer)
         compression = {".gz": "gzip", ".zip": "zip"}.get(ext)
 
     def open_zipfile(path):
-
         with zipfile.ZipFile(path, "r") as zf:
             f = zf.open(zf.namelist()[0], "r")
             f = io.TextIOWrapper(f)

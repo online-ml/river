@@ -17,7 +17,6 @@ class SuccessiveHalving(abc.ABC):
         verbose=False,
         **print_kwargs,
     ):
-
         super().__init__(models=models, metric=metric)  # type: ignore
         self.budget = budget
         self.eta = eta
@@ -44,7 +43,6 @@ class SuccessiveHalving(abc.ABC):
         return self.models[self._best_model_idx]
 
     def learn_one(self, x, y):
-
         for i in self._rankings[: self._s]:
             model = self.models[i]
             metric = self._metrics[i]
@@ -59,7 +57,6 @@ class SuccessiveHalving(abc.ABC):
         self._n_iterations += 1
 
         if self._s > 1 and self._n_iterations == self._r:
-
             self._n_rungs += 1
             self._budget_used += self._s * self._r
 

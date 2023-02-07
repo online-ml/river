@@ -58,7 +58,6 @@ class PoissonInclusion(base.Transformer):
         self.included: typing.Set[base.typing.FeatureName] = set()
 
     def transform_one(self, x):
-
         xt = {}
 
         for i, xi in x.items():

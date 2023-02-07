@@ -52,7 +52,6 @@ class Insects(base.RemoteDataset):
     variants = list(variant_sizes.keys())
 
     def __init__(self, variant="abrupt_balanced"):
-
         try:
             n_samples, size = self.variant_sizes[variant]
         except KeyError:

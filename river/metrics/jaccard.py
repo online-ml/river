@@ -123,7 +123,6 @@ class MicroJaccard(metrics.base.MultiClassMetric):
     """
 
     def get(self):
-
         tp = self.cm.total_true_positives
         fp = self.cm.total_false_positives
         fn = self.cm.total_false_negatives

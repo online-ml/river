@@ -131,7 +131,6 @@ class Skyline(collections.UserList, base.Base):
     """
 
     def __init__(self, minimize: list = None, maximize: list = None):
-
         super().__init__()
 
         self.minimize = [] if minimize is None else minimize
@@ -155,7 +154,6 @@ class Skyline(collections.UserList, base.Base):
         return n_better, n_worse
 
     def update(self, x):
-
         # If the skyline is empty then the first element is part of the skyline
         if not self:
             self.append(x)
@@ -165,7 +163,6 @@ class Skyline(collections.UserList, base.Base):
         is_dominated = False
 
         for i, _ in enumerate(self):
-
             n_better, n_worse = self._count_diffs(x, self[i])
 
             # x is dominated by one element in the skyline

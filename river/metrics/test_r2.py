@@ -7,7 +7,6 @@ from river import metrics, utils
 
 
 def test_r2():
-
     r2 = metrics.R2()
     sk_r2 = sk_metrics.r2_score
     y_true = [
@@ -48,7 +47,6 @@ def test_r2():
     ]
 
     for i, (yt, yp, w) in enumerate(zip(y_true, y_pred, weights)):
-
         r2.update(yt, yp, w)
 
         if i >= 1:
@@ -81,7 +79,6 @@ def test_rolling_r2():
     ]
 
     for i, (yt, yp) in enumerate(zip(y_true, y_pred)):
-
         r2.update(yt, yp)
 
         if i >= 2:

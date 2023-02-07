@@ -40,7 +40,6 @@ def issue_1178():
 
 
 def test_ge():
-
     low = stats.Quantile(0.01)
     high = stats.Quantile(0.99)
 

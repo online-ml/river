@@ -157,7 +157,6 @@ def test_diff_example():
     ],
 )
 def test_undiff(differencer):
-
     Y = [random.random() for _ in range(max(differencer.coeffs))]
     p = random.random()
 

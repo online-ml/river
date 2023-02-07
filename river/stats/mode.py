@@ -119,7 +119,6 @@ class RollingMode(stats.base.RollingUnivariate):
 
     def update(self, x):
         if len(self.window) >= self.window_size:
-
             # Subtract the counter of the last element
             first_in = self.window[0]
             self.counts[first_in] -= 1

@@ -18,7 +18,6 @@ from river import stats, utils
 def load_stats():
     for _, obj in inspect.getmembers(importlib.import_module("river.stats"), inspect.isclass):
         try:
-
             if inspect.isabstract(obj):
                 continue
 
@@ -51,7 +50,6 @@ def test_pickling(stat):
 
 @pytest.mark.parametrize("stat", load_stats(), ids=lambda stat: stat.__class__.__name__)
 def test_pickling_value(stat):
-
     for i in range(10):
         if isinstance(stat, stats.base.Bivariate):
             stat.update(i, i)
@@ -83,7 +81,6 @@ def test_repr_with_no_updates(stat):
     ],
 )
 def test_univariate(stat, func):
-
     X = [random.random() for _ in range(30)]
 
     for i, x in enumerate(X):
@@ -233,7 +230,6 @@ def test_rolling_univariate_reliability_weights(stat, func):
     ],
 )
 def test_bivariate(stat, func):
-
     X = [random.random() for _ in range(30)]
     Y = [random.random() * x for x in X]
 
@@ -253,7 +249,6 @@ def test_bivariate(stat, func):
     ],
 )
 def test_rolling_bivariate(stat, func):
-
     # Enough alread
 
     def tail(iterable, n):
@@ -281,7 +276,6 @@ def test_rolling_bivariate(stat, func):
     ids=lambda stat: stat.__class__.__name__,
 )
 def test_update_many_univariate(stat):
-
     batch_stat = stat.clone()
 
     for _ in range(5):
@@ -303,7 +297,6 @@ def test_update_many_univariate(stat):
     ids=lambda stat: stat.__class__.__name__,
 )
 def test_update_many_bivariate(stat):
-
     batch_stat = stat.clone()
 
     for _ in range(5):

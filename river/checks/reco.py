@@ -2,7 +2,6 @@ import random
 
 
 def check_reco_routine(ranker):
-
     users = ["Tom", "Anna"]
     items = {"politics", "sports", "music", "food", "finance", "health", "camping"}
 
@@ -12,7 +11,6 @@ def check_reco_routine(ranker):
         return item in {"politics", "sports"}
 
     for i in range(100):
-
         user = random.choice(users)
         item = ranker.rank(user, items)[0]
 

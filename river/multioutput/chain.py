@@ -107,7 +107,6 @@ class ClassifierChain(BaseChain, base.MultiLabelClassifier):
         return self.model._multiclass
 
     def learn_one(self, x, y, **kwargs):
-
         x = copy.copy(x)
         n_seen = 0
 
@@ -142,7 +141,6 @@ class ClassifierChain(BaseChain, base.MultiLabelClassifier):
         return self
 
     def predict_proba_one(self, x, **kwargs):
-
         x = copy.copy(x)
         y_pred = {}
 
@@ -218,7 +216,6 @@ class RegressorChain(BaseChain, base.MultiTargetRegressor):
         yield {"model": linear_model.LinearRegression()}
 
     def learn_one(self, x, y, **kwargs):
-
         x = copy.copy(x)
         n_seen = 0
 
@@ -249,7 +246,6 @@ class RegressorChain(BaseChain, base.MultiTargetRegressor):
         return self
 
     def predict_one(self, x, **kwargs):
-
         x = copy.copy(x)
         y_pred = {}
 

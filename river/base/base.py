@@ -45,7 +45,6 @@ class Base:
         params = {}
 
         for name, param in inspect.signature(self.__init__).parameters.items():  # type: ignore
-
             # *args
             if param.kind == param.VAR_POSITIONAL:
                 if positional_args := getattr(self, name, []):
@@ -300,7 +299,6 @@ class Base:
                 return hasattr(getattr(obj, name), "mutate") and isinstance(attr, dict)
 
             for name, attr in new_attrs.items():
-
                 if not hasattr(obj, name):
                     raise ValueError(f"'{name}' is not an attribute of {obj.__class__.__name__}")
 
@@ -493,7 +491,6 @@ def _repr_obj(obj, show_modules: bool = False, depth: int = 0) -> str:
     n_params = 0
 
     for name, val in params.items():
-
         n_params += 1
 
         # Prettify the attribute when applicable

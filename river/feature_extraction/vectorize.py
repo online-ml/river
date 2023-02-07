@@ -467,7 +467,6 @@ class TFIDF(BagOfWords):
         self.n = 0
 
     def learn_one(self, x):
-
         # Update the document counts
         terms = self.process_text(x)
         self.dfs.update(set(terms))
@@ -478,7 +477,6 @@ class TFIDF(BagOfWords):
         return self
 
     def transform_one(self, x):
-
         term_counts = super().transform_one(x)
         n_terms = sum(term_counts.values())
 

@@ -72,7 +72,6 @@ class STREAMKMeans(base.Clusterer):
     """
 
     def __init__(self, chunk_size=10, n_clusters=2, **kwargs):
-
         super().__init__()
         self.time_stamp = 0
         self.n_clusters = n_clusters
@@ -84,7 +83,6 @@ class STREAMKMeans(base.Clusterer):
         self.centers = {}
 
     def learn_one(self, x, sample_weight=None):
-
         self.time_stamp += 1
 
         index = self.time_stamp % self.chunk_size

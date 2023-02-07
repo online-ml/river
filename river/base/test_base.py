@@ -2,7 +2,6 @@ from river import compose, datasets, linear_model, optim, preprocessing, stats, 
 
 
 def test_clone_estimator():
-
     obj = linear_model.LinearRegression(l2=42)
     obj.learn_one({"x": 3}, 6)
 
@@ -14,7 +13,6 @@ def test_clone_estimator():
 
 
 def test_clone_include_attributes():
-
     var = stats.Var()
     var.update(1)
     var.update(2)
@@ -26,7 +24,6 @@ def test_clone_include_attributes():
 
 
 def test_clone_pipeline():
-
     obj = preprocessing.StandardScaler() | linear_model.LinearRegression(l2=42)
     obj.learn_one({"x": 3}, 6)
 
@@ -39,7 +36,6 @@ def test_clone_pipeline():
 
 
 def test_clone_idempotent():
-
     model = preprocessing.StandardScaler() | linear_model.LogisticRegression(
         optimizer=optim.Adam(), l2=0.1
     )
@@ -56,7 +52,6 @@ def test_clone_idempotent():
 
 
 def test_memory_usage():
-
     model = preprocessing.StandardScaler() | linear_model.LogisticRegression()
 
     # We can't test the exact value because it depends on the platform and the Python version

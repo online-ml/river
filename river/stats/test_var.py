@@ -33,9 +33,7 @@ def test_weighted_variance_with_close_numbers():
 
 
 def test_revert():
-
     for _ in range(5):
-
         X = [random.random() for _ in range(20)]
 
         v1 = stats.Var()

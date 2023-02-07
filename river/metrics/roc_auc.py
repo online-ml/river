@@ -82,7 +82,6 @@ class ROCAUC(metrics.base.BinaryMetric):
         return False
 
     def get(self):
-
         tprs = [0] * self.n_thresholds
         fprs = [0] * self.n_thresholds
 

@@ -11,7 +11,6 @@ def check_predict_proba_one(classifier, dataset):
         return
 
     for x, y in dataset:
-
         xx, yy = copy.deepcopy(x), copy.deepcopy(y)
 
         classifier = classifier.learn_one(x, y)
