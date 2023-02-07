@@ -29,7 +29,7 @@ markers = [
 
 [tool.black]
 line-length = 100
-target-version = ['py311']
+target-version = ['py310']
 
 [tool.isort]
 profile = "black"
@@ -37,7 +37,7 @@ line_length = 100
 
 [tool.ruff]
 line-length = 100
-target-version = 'py311'
+target-version = 'py310'
 ignore = ["E501"]
 
 [tool.mypy]
