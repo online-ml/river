@@ -1,15 +1,15 @@
-from river import base
-
 import numpy as np
+
+from river import base
 
 from .base import ActiveLearningClassifier
 
 
 class RandomVariableUncertainty (ActiveLearningClassifier):
-    
-    
 
-    """Strategy of Active Learning to select instances more significative based on uncertainty.
+
+
+    r"""Strategy of Active Learning to select instances more significative based on uncertainty.
 
     Version 1.0.
 
@@ -28,13 +28,13 @@ class RandomVariableUncertainty (ActiveLearningClassifier):
         Threshold adjustment step $$s \in (0,1].$$
         Default value: 0.5.
         More information in the paper of reference.
-                                           
-                                           
+
+
     delta
         Variance of the threshold randomization.
         Default value: 1.00.
         More information in the paper of reference.
-        
+
     seed
         Random number generator seed for reproducibility.
 
@@ -67,39 +67,39 @@ class RandomVariableUncertainty (ActiveLearningClassifier):
 
 
     """
-    
-    
+
+
 
     def __init__(self, classifier: base.Classifier, theta: float = 0.95, s=0.5, delta=1.0, seed=None):
         super().__init__(classifier, seed=seed)
-      
+
         self.theta = theta
         self.s = s
         self.delta = delta
-        
-        
+
+
     @property
     def s(self):
         return self.s
-    
+
     @s.setter
     def s(self,value):
         self._s = value
-        
-        
+
+
     @property
     def delta(self):
         return self.delta
-    
+
     @delta.setter
     def s(self,value):
         self._delta = value
-    
-    
+
+
     @property
     def theta(self):
         return self.theta
-    
+
     @theta.setter
     def s(self,value):
         self._theta = value
@@ -108,7 +108,7 @@ class RandomVariableUncertainty (ActiveLearningClassifier):
         """Version 1.0"""
         maximum_posteriori = max(y_pred.values())
         selected = False
-        
+
         thetaRand = self.theta * np.random.normal(1,self.delta)
 
         if maximum_posteriori < thetaRand:
@@ -117,5 +117,5 @@ class RandomVariableUncertainty (ActiveLearningClassifier):
         else:
             self.theta = self.theta*(1+self.s)
             selected = False
-            
+
         return selected
