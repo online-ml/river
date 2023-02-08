@@ -22,11 +22,11 @@ class MAD(quantile.Quantile):
     >>> for x in X:
     ...     print(mad.update(x).get())
     0.0
-    0.0
-    0.0
-    3.0
-    3.0
     2.0
+    1.0
+    1.0
+    1.0
+    1.0
 
     Attributes
     ----------

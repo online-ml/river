@@ -25,6 +25,9 @@ class Statistic(abc.ABC, base.Base):
         fmt_value = None if value is None else f"{value:{self._fmt}}".rstrip("0")
         return f"{self.__class__.__name__}: {fmt_value}"
 
+    def __str__(self):
+        return repr(self)
+
     def __gt__(self, other):
         return self.get() > other.get()
 
