@@ -4,6 +4,7 @@ from .efficient_preqrocauc import EfficientPreqROCAUC
 
 __all__ = ["PreqROCAUC"]
 
+
 class PreqROCAUC(metrics.base.BinaryMetric):
     """Prequential version of the Receiving Operating Characteristic Area Under the Curve.
 
@@ -34,7 +35,7 @@ class PreqROCAUC(metrics.base.BinaryMetric):
     ...     metric = metric.update(yt, yp)
 
     >>> metric
-    ROCAUC: 75.00%
+    PreqROCAUC: 75.00%
 
     """
 

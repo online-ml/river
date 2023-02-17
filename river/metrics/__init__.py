@@ -21,7 +21,7 @@ Accuracy: 66.67%
 Accuracy: 100.00%
 
 """
-from . import base, multioutput, efficient_preqrocauc
+from . import base, efficient_preqrocauc, multioutput
 from .accuracy import Accuracy
 from .balanced_accuracy import BalancedAccuracy
 from .confusion import ConfusionMatrix
@@ -47,12 +47,12 @@ from .mcc import MCC
 from .mse import MSE, RMSE, RMSLE
 from .mutual_info import AdjustedMutualInfo, MutualInfo, NormalizedMutualInfo
 from .precision import MacroPrecision, MicroPrecision, Precision, WeightedPrecision
+from .preq_roc_auc import PreqROCAUC
 from .r2 import R2
 from .rand import AdjustedRand, Rand
 from .recall import MacroRecall, MicroRecall, Recall, WeightedRecall
 from .report import ClassificationReport
 from .roc_auc import ROCAUC
-from .preq_roc_auc import PreqROCAUC
 from .silhouette import Silhouette
 from .smape import SMAPE
 from .vbeta import Completeness, Homogeneity, VBeta
