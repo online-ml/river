@@ -21,7 +21,7 @@ Accuracy: 66.67%
 Accuracy: 100.00%
 
 """
-from . import base, multioutput
+from . import base, multioutput, efficient_preqrocauc
 from .accuracy import Accuracy
 from .balanced_accuracy import BalancedAccuracy
 from .confusion import ConfusionMatrix
@@ -52,6 +52,7 @@ from .rand import AdjustedRand, Rand
 from .recall import MacroRecall, MicroRecall, Recall, WeightedRecall
 from .report import ClassificationReport
 from .roc_auc import ROCAUC
+from .preq_roc_auc import PreqROCAUC
 from .silhouette import Silhouette
 from .smape import SMAPE
 from .vbeta import Completeness, Homogeneity, VBeta
@@ -88,6 +89,7 @@ __all__ = [
     "MicroRecall",
     "MultiFBeta",
     "multioutput",
+    "efficient_preqrocauc",
     "MSE",
     "MutualInfo",
     "NormalizedMutualInfo",
@@ -98,6 +100,7 @@ __all__ = [
     "FowlkesMallows",
     "RMSLE",
     "ROCAUC",
+    "PreqROCAUC",
     "R2",
     "Precision",
     "Silhouette",
