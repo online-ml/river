@@ -1,6 +1,6 @@
 from river import metrics
 
-__all__ = ["SMAPE"]
+__all__ = ["MAPE"]
 
 
 class MAPE(metrics.base.MeanMetric, metrics.base.RegressionMetric):
