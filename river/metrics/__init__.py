@@ -43,6 +43,7 @@ from .jaccard import Jaccard, MacroJaccard, MicroJaccard, WeightedJaccard
 from .kappa import CohenKappa
 from .log_loss import LogLoss
 from .mae import MAE
+from .mape import MAPE
 from .mcc import MCC
 from .mse import MSE, RMSE, RMSLE
 from .mutual_info import AdjustedMutualInfo, MutualInfo, NormalizedMutualInfo
@@ -77,6 +78,7 @@ __all__ = [
     "Homogeneity",
     "LogLoss",
     "MAE",
+    "MAPE",
     "MacroF1",
     "MacroFBeta",
     "MacroPrecision",
