@@ -1,9 +1,8 @@
-
-
 ## metrics
 
+- Added `metrics.MAPE`.
 - Added `metrics.RollingROCAUC`.
 
 ## stats
 
-- Fixed values returned by `stats.Quantile` behave inconsistently with the set quantile q for the first five values.
+- Fixed randomness issue with the first few outputs of `stats.Quantile`.
