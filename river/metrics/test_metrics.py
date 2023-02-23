@@ -13,6 +13,8 @@ from sklearn import metrics as sk_metrics
 
 from river import metrics, utils
 
+from .test_wrappers import roc_auc_score as wrapper_roc_auc_score
+
 
 def load_metrics():
     """Yields all the metrics."""
@@ -190,6 +192,7 @@ TEST_CASES = [
     (metrics.MacroJaccard(), partial(sk_metrics.jaccard_score, average="macro")),
     (metrics.MicroJaccard(), partial(sk_metrics.jaccard_score, average="micro")),
     (metrics.WeightedJaccard(), partial(sk_metrics.jaccard_score, average="weighted")),
+    (metrics.RollingROCAUC(), wrapper_roc_auc_score),
 ]
 
 # HACK: not sure why this is needed, see this CI run https://github.com/online-ml/river/runs/7992357532?check_suite_focus=true
