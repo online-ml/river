@@ -1,6 +1,7 @@
 ## metrics
 
 - Added `metrics.MAPE`.
+- Added `metrics.RollingROCAUC`.
 
 ## stats
 

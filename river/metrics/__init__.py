@@ -53,6 +53,7 @@ from .rand import AdjustedRand, Rand
 from .recall import MacroRecall, MicroRecall, Recall, WeightedRecall
 from .report import ClassificationReport
 from .roc_auc import ROCAUC
+from .rolling_roc_auc import RollingROCAUC
 from .silhouette import Silhouette
 from .smape import SMAPE
 from .vbeta import Completeness, Homogeneity, VBeta
@@ -100,6 +101,7 @@ __all__ = [
     "FowlkesMallows",
     "RMSLE",
     "ROCAUC",
+    "RollingROCAUC",
     "R2",
     "Precision",
     "Silhouette",
