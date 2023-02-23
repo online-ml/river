@@ -26,9 +26,9 @@ class RollingROCAUC(metrics.base.BinaryMetric):
     Parameters
     ----------
     window_size
-        The max length of the window
+        The max length of the window.
     pos_val
-        Value to treat as "positive"
+        Value to treat as "positive".
 
     Examples
     --------

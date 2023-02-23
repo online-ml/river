@@ -13,8 +13,6 @@ from sklearn import metrics as sk_metrics
 
 from river import metrics, utils
 
-from .test_wrappers import roc_auc_score as wrapper_roc_auc_score
-
 
 def load_metrics():
     """Yields all the metrics."""
@@ -97,6 +95,23 @@ def generate_test_cases(metric, n):
 
 def partial(f, **kwargs):
     return functools.update_wrapper(functools.partial(f, **kwargs), f)
+
+
+def roc_auc_score(y_true, y_score):
+    """
+    This functions is a wrapper to the scikit-learn roc_auc_score function.
+    It was created because the scikit version utilizes array of scores and
+    may raise a ValueError if there is only one class present in y_true.
+    This wrapper returns 0 if y_true has only one class and
+    deals with the scores.
+    """
+    nonzero = np.count_nonzero(y_true)
+    if nonzero == 0 or nonzero == len(y_true):
+        return 0
+
+    scores = [s[True] for s in y_score]
+
+    return sk_metrics.roc_auc_score(y_true, scores)
 
 
 TEST_CASES = [
@@ -192,7 +207,7 @@ TEST_CASES = [
     (metrics.MacroJaccard(), partial(sk_metrics.jaccard_score, average="macro")),
     (metrics.MicroJaccard(), partial(sk_metrics.jaccard_score, average="micro")),
     (metrics.WeightedJaccard(), partial(sk_metrics.jaccard_score, average="weighted")),
-    (metrics.RollingROCAUC(), wrapper_roc_auc_score),
+    (metrics.RollingROCAUC(), roc_auc_score),
 ]
 
 # HACK: not sure why this is needed, see this CI run https://github.com/online-ml/river/runs/7992357532?check_suite_focus=true
