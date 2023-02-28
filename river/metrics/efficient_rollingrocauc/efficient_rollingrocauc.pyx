@@ -1,4 +1,6 @@
 # distutils: language = c++
+# distutils: extra_compile_args = "-std=c++11"
+
 import cython
 
 from .efficient_rollingrocauc cimport RollingROCAUC as CppRollingROCAUC
