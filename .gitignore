@@ -13,9 +13,10 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-# C extensions
+# C(++) extensions
 *.so
 *.c
+*.cpp
 
 # Rust compilation folder
 /target
