@@ -84,7 +84,7 @@ setuptools.setup(
             "mkdocs",
             "mkdocs-awesome-pages-plugin",
             "mkdocs-charts-plugin",
-            "mkdocs-material==8.5.10",
+            "mkdocs-material",
             "nbconvert",
             "python-slugify",
             "spacy",
