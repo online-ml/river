@@ -129,7 +129,6 @@ setuptools.setup(
                 include_dirs=[get_include()],
                 libraries=[] if platform.system() == "Windows" else ["m"],
                 define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
-                extra_compile_args=["-std=c++11"],
             )
         ],
         compiler_directives={
