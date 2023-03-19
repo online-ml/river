@@ -11,6 +11,7 @@ from .impute import PreviousImputer, StatImputer
 from .lda import LDA
 from .one_hot import OneHotEncoder
 from .pred_clipper import PredClipper
+from .random_projection import GaussianRandomProjector
 from .scale import (
     AdaptiveStandardScaler,
     Binarizer,
@@ -26,6 +27,7 @@ __all__ = [
     "AdaptiveStandardScaler",
     "Binarizer",
     "FeatureHasher",
+    "GaussianRandomProjector",
     "LDA",
     "MaxAbsScaler",
     "MinMaxScaler",
