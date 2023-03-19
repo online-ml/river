@@ -1,4 +1,4 @@
-name: unit-tests
+name: docs
 
 on:
   workflow_call:
@@ -13,7 +13,7 @@ jobs:
       - name: Retrieve the environment and the River build
         uses: ./.github/actions/retrieve-env
         with:
-          python: "3.9"
+          python: "3.11"
 
       - name: Install Ubuntu dependencies
         run: sudo apt-get install graphviz pandoc
