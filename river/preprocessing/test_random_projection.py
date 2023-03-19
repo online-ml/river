@@ -19,7 +19,7 @@ def test_gaussian_random_projector_dot_product():
 
 def test_sparse_random_projector_dot_product():
     dataset = datasets.TrumpApproval()
-    projector = preprocessing.SparseRandomProjector(n_components=3, sparsity=0.5)
+    projector = preprocessing.SparseRandomProjector(n_components=3, density=0.5)
 
     for x, y in dataset:
         y = projector.transform_one(x)
@@ -36,7 +36,7 @@ def test_sparse_random_projector_dot_product():
 
 def test_sparse_random_projector_size():
     dataset = datasets.TrumpApproval()
-    projector = preprocessing.SparseRandomProjector(n_components=3, sparsity=0.5)
+    projector = preprocessing.SparseRandomProjector(n_components=3, density=0.5)
 
     for x, y in dataset:
         projector.transform_one(x)

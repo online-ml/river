@@ -82,8 +82,18 @@ class SparseRandomProjector(base.Transformer):
     This transformer reduces the dimensionality of inputs by projecting them onto a sparse random
     projection matrix.
 
-    Ping Li et al. recommend using a minimum sparsity of `1 / sqrt(n_features)`. The transformer
-    is not aware of how many features will be seen, so the user must specify the sparsity manually.
+    Ping Li et al. recommend using a minimum density of `1 / sqrt(n_features)`. The transformer
+    is not aware of how many features will be seen, so the user must specify the density manually.
+
+    Parameters
+    ----------
+    n_components
+        Number of components to project the data onto.
+    density
+        Density of the random projection matrix. The density is defined as the ratio of non-zero
+        components in the matrix. It is equal to `1 - sparsity`.
+    seed
+        Random seed for reproducibility.
 
     Examples
     --------
@@ -124,9 +134,9 @@ class SparseRandomProjector(base.Transformer):
 
     """
 
-    def __init__(self, n_components=10, sparsity=0.1, seed: int = None):
+    def __init__(self, n_components=10, density=0.1, seed: int = None):
         self.n_components = n_components
-        self.sparsity = sparsity
+        self.density = density
         self.seed = seed
         self._rng = random.Random(seed)
         self._projection_matrix: typing.DefaultDict[
@@ -136,8 +146,8 @@ class SparseRandomProjector(base.Transformer):
     def _rand_weights_for_feature(self):
         weights = {}
         for j in range(self.n_components):
-            if self._rng.random() < self.sparsity:
-                w = (1 / (self.sparsity * self.n_components)) ** 0.5
+            if self._rng.random() < self.density:
+                w = (1 / (self.density * self.n_components)) ** 0.5
                 # Flip a coin to decide the sign
                 weights[j] = w if self._rng.random() < 0.5 else -w
         return weights
