@@ -1,6 +1,6 @@
 import numpy as np
-from river import datasets
-from river import preprocessing
+
+from river import datasets, preprocessing
 
 
 def test_gaussian_random_projector_dot_product():
