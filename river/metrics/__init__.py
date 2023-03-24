@@ -43,6 +43,7 @@ from .jaccard import Jaccard, MacroJaccard, MicroJaccard, WeightedJaccard
 from .kappa import CohenKappa
 from .log_loss import LogLoss
 from .mae import MAE
+from .mape import MAPE
 from .mcc import MCC
 from .mse import MSE, RMSE, RMSLE
 from .mutual_info import AdjustedMutualInfo, MutualInfo, NormalizedMutualInfo
@@ -52,6 +53,7 @@ from .rand import AdjustedRand, Rand
 from .recall import MacroRecall, MicroRecall, Recall, WeightedRecall
 from .report import ClassificationReport
 from .roc_auc import ROCAUC
+from .rolling_roc_auc import RollingROCAUC
 from .silhouette import Silhouette
 from .smape import SMAPE
 from .vbeta import Completeness, Homogeneity, VBeta
@@ -77,6 +79,7 @@ __all__ = [
     "Homogeneity",
     "LogLoss",
     "MAE",
+    "MAPE",
     "MacroF1",
     "MacroFBeta",
     "MacroPrecision",
@@ -98,6 +101,7 @@ __all__ = [
     "FowlkesMallows",
     "RMSLE",
     "ROCAUC",
+    "RollingROCAUC",
     "R2",
     "Precision",
     "Silhouette",

@@ -1,5 +1,13 @@
+## metrics
 
+- Added `metrics.MAPE`.
+- Added `metrics.RollingROCAUC`.
+
+## preprocessing
+
+- Added `preprocessing.GaussianRandomProjector`.
+- Added `preprocessing.SparseRandomProjector`.
 
 ## stats
 
-- Fixed values returned by `stats.Quantile` behave inconsistently with the set quantile q for the first five values.
+- Fixed randomness issue with the first few outputs of `stats.Quantile`.
