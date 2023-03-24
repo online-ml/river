@@ -276,6 +276,9 @@ class CluStreamMicroCluster(base.Base):
         timestamp: int = None,
     ):
         # Initialize with sample x
+        self.x = x
+        self.w = w
+        self.timestamp = timestamp
         self.var_x = {k: stats.Var().update(x[k], w) for k in x}
         self.var_time = stats.Var().update(timestamp, w)
 

@@ -2,7 +2,7 @@ import abc
 
 from river import base
 
-__all__ = ["AnomalyDetector"]
+__all__ = ["AnomalyDetector", "SupervisedAnomalyDetector", "AnomalyFilter"]
 
 
 class AnomalyDetector(base.Estimator):
