@@ -37,7 +37,7 @@ class FixedUncertainty(ActiveLearningClassifier):
 
     >>> model = (
     ...       feature_extraction.TFIDF(on='body') |
-    ...        linear_model.LogisticRegression()
+    ...       linear_model.LogisticRegression()
     ...     )
     >>> model = active.FixedUncertainty(model, seed=42)
 
