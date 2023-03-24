@@ -1,5 +1,3 @@
-import numpy as np
-
 from river import base
 
 from .base import ActiveLearningClassifier
@@ -9,13 +7,13 @@ class VariableUncertainty (ActiveLearningClassifier):
 
 
 
-    """Strategy of Active Learning to select instances more significative based on uncertainty.
-    
+    r"""Strategy of Active Learning to select instances more significative based on uncertainty.
+
     The variable uncertainty sampler selects samples for labeling based on the uncertainty of the prediction.
     The higher the uncertainty, the more likely the sample will be selected for labeling. The uncertainty
     measure is compared with a random variable uncertainty limit.
-    
-    
+
+
     The VariableUncertainty use the maximium posterior probability.
     So use only the predict_proba_one(X).
     Do not use predict_one(x).
@@ -90,11 +88,11 @@ class VariableUncertainty (ActiveLearningClassifier):
         ----------
         x
             Instance
-            
+
         y_pred
-        
+
            Arrays of predicted labels
-        
+
 
         Returns
         -------
@@ -120,18 +118,18 @@ class VariableUncertainty (ActiveLearningClassifier):
 
 
 
-''' 
+'''
 
 function [ selected, theta ] = variableUncertainty(maximumPosteriori, s, theta )
  if maximumPosteriori < theta
-     theta = theta*(1-s); 
+     theta = theta*(1-s);
      selected = true;
  else
      theta = theta*(1+s);
      selected = false;
  end
- 
-end 
+
+end
 
 
 '''

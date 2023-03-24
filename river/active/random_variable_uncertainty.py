@@ -9,13 +9,13 @@ class RandomVariableUncertainty (ActiveLearningClassifier):
 
 
 
-    """Strategy of Active Learning to select instances more significative based on uncertainty.
-    
+    r"""Strategy of Active Learning to select instances more significative based on uncertainty.
+
     The random variable uncertainty sampler selects samples for labeling based on the uncertainty of the prediction.
     The higher the uncertainty, the more likely the sample will be selected for labeling. The uncertainty
     measure is compared with a random variable uncertainty limit.
-    
-    
+
+
     The RandomVariableUncertainty use the maximium posterior probability.
     So use only the predict_proba_one(X).
     Do not use predict_one(x).
@@ -95,11 +95,11 @@ class RandomVariableUncertainty (ActiveLearningClassifier):
         ----------
         x
             Instance
-            
+
         y_pred
-        
+
            Arrays of predicted labels
-        
+
 
         Returns
         -------

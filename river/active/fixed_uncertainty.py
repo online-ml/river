@@ -6,11 +6,11 @@ from .base import ActiveLearningClassifier
 class FixedUncertainty(ActiveLearningClassifier):
 
     """Strategy of Active Learning to select instances more significative based on uncertainty.
-    
+
     The fixed uncertainty sampler selects samples for labeling based on the uncertainty of the prediction.
     The higher the uncertainty, the more likely the sample will be selected for labeling. The uncertainty
     measure is compared with a fixed uncertainty limit.
-    
+
     The FixedUncertainty use the maximium posterior probability.
     So use only the predict_proba_one(X).
     Do not use predict_one(x).
@@ -73,11 +73,11 @@ class FixedUncertainty(ActiveLearningClassifier):
         ----------
         x
             Instance
-            
+
         y_pred
-        
+
             Arrays of predicted labels
-        
+
 
         Returns
         -------
