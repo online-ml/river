@@ -9,12 +9,19 @@ class RandomVariableUncertainty (ActiveLearningClassifier):
 
 
 
-    r"""Strategy of Active Learning to select instances more significative based on uncertainty.
+    """Strategy of Active Learning to select instances more significative based on uncertainty.
+    
+    The random variable uncertainty sampler selects samples for labeling based on the uncertainty of the prediction.
+    The higher the uncertainty, the more likely the sample will be selected for labeling. The uncertainty
+    measure is compared with a random variable uncertainty limit.
+    
+    
+    The RandomVariableUncertainty use the maximium posterior probability.
+    So use only the predict_proba_one(X).
+    Do not use predict_one(x).
+
 
     Version 1.0.
-
-    Reference
-    I. Zliobaite, A. Bifet, B.Pfahringer, G. Holmes. “Active Learning with Drifting Streaming Data”, IEEE Transactions on Neural Netowrks and Learning Systems, Vol.25 (1), pp.27-39, 2014.
 
     Parameters
     ----------
@@ -28,13 +35,10 @@ class RandomVariableUncertainty (ActiveLearningClassifier):
         Threshold adjustment step $$s \in (0,1].$$
         Default value: 0.5.
         More information in the paper of reference.
-
-
     delta
         Variance of the threshold randomization.
         Default value: 1.00.
         More information in the paper of reference.
-
     seed
         Random number generator seed for reproducibility.
 
@@ -63,7 +67,10 @@ class RandomVariableUncertainty (ActiveLearningClassifier):
             >>> y_pred, ask = model.predict_proba_one(x)
 
 
-    --------
+    References
+    ----------
+    [^1]: I. Zliobaite, A. Bifet, B.Pfahringer, G. Holmes. “Active Learning with Drifting Streaming Data”, IEEE Transactions on Neural Netowrks and Learning Systems, Vol.25 (1), pp.27-39, 2014.
+
 
 
     """
@@ -78,34 +85,31 @@ class RandomVariableUncertainty (ActiveLearningClassifier):
         self.delta = delta
 
 
-    @property
-    def s(self):
-        return self.s
-
-    @s.setter
-    def s(self,value):
-        self._s = value
-
-
-    @property
-    def delta(self):
-        return self.delta
-
-    @delta.setter
-    def s(self,value):
-        self._delta = value
-
-
-    @property
-    def theta(self):
-        return self.theta
-
-    @theta.setter
-    def s(self,value):
-        self._theta = value
 
     def _ask_for_label(self, x, y_pred) -> bool:
-        """Version 1.0"""
+        """Ask for the label of a current instance.
+
+        Based on the uncertainty of the base classifier, it checks whether the current instance should be labeled.
+
+        Parameters
+        ----------
+        x
+            Instance
+            
+        y_pred
+        
+           Arrays of predicted labels
+        
+
+        Returns
+        -------
+        selected
+            A boolean indicating whether a label is needed.
+            True for selected instance.
+            False for not selecte instance.
+
+
+        """
         maximum_posteriori = max(y_pred.values())
         selected = False
 
