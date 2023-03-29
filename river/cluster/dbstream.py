@@ -191,7 +191,8 @@ class DBSTREAM(base.Clusterer):
                     self._micro_clusters[i].weight
                     * 2
                     ** (
-                            -self.fading_factor * (self._time_stamp - self._micro_clusters[i].last_update)
+                        -self.fading_factor
+                        * (self._time_stamp - self._micro_clusters[i].last_update)
                     )
                     + 1
                 )
@@ -281,7 +282,7 @@ class DBSTREAM(base.Clusterer):
                     and self._micro_clusters[j].weight >= self.minimum_weight
                 ):
                     value = self.s[i][j] / (
-                            (self._micro_clusters[i].weight + self._micro_clusters[j].weight) / 2
+                        (self._micro_clusters[i].weight + self._micro_clusters[j].weight) / 2
                     )
                     if value > self.intersection_factor:
                         try:
