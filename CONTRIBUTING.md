@@ -8,7 +8,7 @@ Of course, you're welcome to propose and contribute new ideas. We encourage you 
 
 ## Fork/clone/pull
 
-The typical workflow for contributing to `river` is:
+The typical workflow for contributing to River is:
 
 1. Fork the `main` branch from the [GitHub repository](https://github.com/online-ml/river/).
 2. Clone your fork locally.
@@ -18,7 +18,7 @@ The typical workflow for contributing to `river` is:
 
 ## Local setup
 
-We encourage you to use a virtual environment. You'll want to activate it every time you want to work on `river`.
+We encourage you to use a virtual environment. You'll want to activate it every time you want to work on River.
 
 ```sh
 python -m venv .venv
@@ -32,9 +32,16 @@ conda create -n river -y python=3.9
 conda activate river
 ```
 
+Yet another option is to use `pyenv`:
+
+```sh
+pyenv virtualenv 3.10 river310
+pyenv activate river310
+```
+
 You need a `Rust` compiler you can install it by following this [link](https://www.rust-lang.org/fr/tools/install)
 
-Then, navigate to your cloned fork and install `river` and the required dependencies in [development mode](https://stackoverflow.com/questions/19048732/python-setup-py-develop-vs-install):
+Then, navigate to your cloned fork and install River and the required dependencies in [development mode](https://stackoverflow.com/questions/19048732/python-setup-py-develop-vs-install):
 
 
 ```sh
@@ -55,7 +62,7 @@ pre-commit run --all-files
 
 ## Making changes
 
-You're now ready to make some changes. We strongly recommend that you to check out `river`'s source code for inspiration before getting into the thick of it. How you make the changes is up to you of course. However we can give you some pointers as to how to test your changes. Here is an example workflow that works for most cases:
+You're now ready to make some changes. We strongly recommend that you to check out River's source code for inspiration before getting into the thick of it. How you make the changes is up to you of course. However we can give you some pointers as to how to test your changes. Here is an example workflow that works for most cases:
 
 - Create and open a Jupyter notebook at the root of the directory.
 - Add the following in the code cell:
@@ -63,7 +70,7 @@ You're now ready to make some changes. We strongly recommend that you to check o
 %load_ext autoreload
 %autoreload 2
 ```
-- The previous code will automatically reimport `river` for you whenever you make changes.
+- The previous code will automatically reimport River for you whenever you make changes.
 - For instance, if a change is made to `linear_model.LinearRegression`, then rerunning the following code doesn't require rebooting the notebook:
 ```py
 from river import linear_model
