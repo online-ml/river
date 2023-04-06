@@ -172,7 +172,7 @@ class TextClust(base.Clusterer):
         # realtime is only the current time non decoded to store for the plotter
         if self.realtime is not None:
             self.realtime = self.realtime
-
+        clusterId = None
         # if there is something to process
         if len(ngrams) > 0:
             # create artificial micro cluster with one observation
