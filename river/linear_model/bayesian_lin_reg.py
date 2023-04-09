@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 
 from river import base, proba, utils
 
@@ -131,8 +132,12 @@ class BayesianLinearRegression(base.Regressor):
             return y_pred_mean
 
         x_arr = np.array(list(x.values()))
-        _, _, ss_inv_arr = self._get_arrays(x.keys(), m=False, ss=False)
+        *_, ss_inv_arr = self._get_arrays(x.keys(), m=False, ss=False)
         # Bishop equation 3.59
         y_pred_var = 1 / self.beta + x_arr @ ss_inv_arr @ x_arr.T
 
         return proba.Gaussian._from_state(n=1, m=y_pred_mean, sig=y_pred_var**0.5, ddof=0)
+
+    def predict_many(self, X):
+        m, *_ = self._get_arrays(X.columns, m=True, ss=False, ss_inv=False)
+        return pd.Series(X.values @ m, index=X.index)
