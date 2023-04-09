@@ -9,7 +9,7 @@ from river import base, metrics, time_series
 TimeSeries = typing.Iterator[
     typing.Tuple[  # noqa: UP006
         typing.Union[dict, None],  # noqa: UP007
-        numbers.Number,  # y
+        numbers.Number,
         typing.Union[typing.List[dict], None],  # noqa: UP006, UP007
         typing.List[numbers.Number],  # noqa: UP006
     ]

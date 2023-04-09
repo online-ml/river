@@ -72,9 +72,10 @@ class Policy(base.Base, abc.ABC):
         """Pull arm(s).
 
         This method is a generator that yields the arm(s) that should be pulled. During the burn-in
-        phase, all the arms that have not been pulled enough are yielded. Once the burn-in phase is
-        over, the policy is allowed to choose the arm(s) that should be pulled. If you only want to
-        pull one arm at a time during the burn-in phase, simply call `next(policy.pull(arms))`.
+        phase, all the arms that have not been pulled enough times are yielded. Once the burn-in
+        phase is over, the policy is allowed to choose the arm(s) that should be pulled. If you
+        only want to pull one arm at a time during the burn-in phase, simply call
+        `next(policy.pull(arms))`.
 
         Parameters
         ----------
@@ -98,8 +99,6 @@ class Policy(base.Base, abc.ABC):
         ----------
         arm_id
             The arm to update.
-        reward_args
-            Positional arguments to pass to the reward object.
         reward_kwargs
             Keyword arguments to pass to the reward object.
 

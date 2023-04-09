@@ -3,6 +3,7 @@
 ## bandit
 
 - Added `bandit.BayesUCB`.
+- Added `bandit.evaluate_offline`, for evaluating bandits on historical (logged) data.
 
 ## compat
 
