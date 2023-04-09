@@ -158,14 +158,14 @@ History = typing.Iterator[
         list[ArmID],  # arms available to pull from
         ArmID,  # arm that was pulled
         float | None,  # probability of pulling the arm
-        tuple,  # reward
+        float,  # reward
     ]
 ]
 
 
 def evaluate_offline(
     policy: bandit.base.Policy, history: History, reward_stat: stats.base.Univariate = None
-) -> float:
+) -> tuple[stats.base.Univariate, int]:
     """Evaluate a policy on historical logs using replay.
 
     This is a high-level utility function for evaluating a policy using the replay methodology.
@@ -242,7 +242,7 @@ def evaluate_offline(
             continue
 
         policy.update(arm, reward)
-        reward_stat.update(reward / probability)
+        reward_stat.update(reward / probability)  # type: ignore
 
     # Normalize the reward statistic by the number of times the policy pulled the same arm as what
     # was pulled in the historical data
