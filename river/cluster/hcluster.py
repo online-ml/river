@@ -1,10 +1,13 @@
-from river import base, utils
-import numpy as np
 from typing import Callable
+
+import numpy as np
+
+from river import base, utils
+
 
 # Node of a binary tree for Hierarchical Clustering
 class BinaryTreeNode:
-    def __init__(self, key : int, data : np.ndarray = None):
+    def __init__(self, key: int, data: np.ndarray = None):
         # If it's a leaf : x data, else : None
         self.data = data
         # Key of the node
@@ -16,8 +19,9 @@ class BinaryTreeNode:
 
 
 def euclidean_distance(w_i, w_j):
-        # Euclidean distance between two nodes
-        return np.sqrt(np.sum(np.square(w_i.data - w_j.data)))
+    # Euclidean distance between two nodes
+    return np.sqrt(np.sum(np.square(w_i.data - w_j.data)))
+
 
 class HierarchicalClustering(base.Clusterer):
     """Hierarchical Clustering.
@@ -78,7 +82,7 @@ class HierarchicalClustering(base.Clusterer):
 
     >>> HC.n
     9
-    
+
     >>> print(HC)
             -> 6
         -> 7
@@ -143,15 +147,20 @@ class HierarchicalClustering(base.Clusterer):
     -> 3
         -> 1
     """
-    def __init__(self, window_size : int = 100, distance : Callable[[BinaryTreeNode, BinaryTreeNode], float] = None):
+
+    def __init__(
+        self,
+        window_size: int = 100,
+        distance: Callable[[BinaryTreeNode, BinaryTreeNode], float] = None,
+    ):
         # Number of nodes
         self.n = 0
         # Max number of leaves
         self.window_size = window_size
         # Dict : x data (str(array of size m)) -> key of the node
-        self.X : dict[np.ndarray, int] = {}
+        self.X: dict[np.ndarray, int] = {}
         # Dict : key -> node
-        self.nodes : dict[int, BinaryTreeNode] = {}
+        self.nodes: dict[int, BinaryTreeNode] = {}
         # First node of the tree
         self.root = None
         # Distance function
@@ -175,10 +184,14 @@ class HierarchicalClustering(base.Clusterer):
             # If there is no node at the right of the intermediate node, we add it there
             T.right = self.nodes[self.X[np.array2string(x)]]
             self.nodes[self.X[np.array2string(x)]].parent = T
-        elif self.intra_subtree_similarity(T) < self.inter_subtree_similarity(T, self.nodes[self.X[np.array2string(x)]]):
+        elif self.intra_subtree_similarity(T) < self.inter_subtree_similarity(
+            T, self.nodes[self.X[np.array2string(x)]]
+        ):
             # If the nodes in T are closer between them than with the new node, we merge T and the new node
             self.merge_nodes(T, self.nodes[self.X[np.array2string(x)]])
-        elif self.inter_subtree_similarity(T.left, self.nodes[self.X[np.array2string(x)]]) > self.inter_subtree_similarity(T.right, self.nodes[self.X[np.array2string(x)]]):
+        elif self.inter_subtree_similarity(
+            T.left, self.nodes[self.X[np.array2string(x)]]
+        ) > self.inter_subtree_similarity(T.right, self.nodes[self.X[np.array2string(x)]]):
             # If the right part of the tree T is closer to the new node than the left part, we continue to search where to merge the new node in the right part of T
             self.OTD(T.right, x)
         else:
@@ -188,7 +201,7 @@ class HierarchicalClustering(base.Clusterer):
     def merge_nodes(self, T, added_node):
         # Merge a new node (added node) to the tree T
         # We create the node that will be the parent of T and the added node
-        self.n +=1
+        self.n += 1
         new_node = BinaryTreeNode(self.n)
         # We add T and the added node as its children
         new_node.left = T
@@ -224,12 +237,12 @@ class HierarchicalClustering(base.Clusterer):
             del self.nodes[oldest_key]
             del self.X[list(self.X.keys())[0]]
             self.X[np.array2string(x)] = oldest_key
-            self.nodes[oldest_key] = BinaryTreeNode(oldest_key,x)
+            self.nodes[oldest_key] = BinaryTreeNode(oldest_key, x)
         else:
             # Else we just add a node
-            self.n +=1
+            self.n += 1
             self.X[np.array2string(x)] = self.n
-            self.nodes[self.n] = BinaryTreeNode(self.n,x)
+            self.nodes[self.n] = BinaryTreeNode(self.n, x)
         # We add it to the tree
         self.OTD(self.root, x)
         return self
@@ -241,16 +254,20 @@ class HierarchicalClustering(base.Clusterer):
             return [1], -1
         if node.data is not None:
             # If we compare x to a leaf, then we add itself (n+1) and the key of the node that would merge x and node (n+2)
-            clusters.extend([self.n+2, self.n+1])
+            clusters.extend([self.n + 2, self.n + 1])
             return clusters, node.key
-        if self.intra_subtree_similarity(node) < self.inter_subtree_similarity(node, BinaryTreeNode(self.n+1,x)):
+        if self.intra_subtree_similarity(node) < self.inter_subtree_similarity(
+            node, BinaryTreeNode(self.n + 1, x)
+        ):
             # If the nodes in the tree 'node' are closer betweem them than with x, then we add itself (n+1) and the key of the node that would merge x and node (n+2)
-            clusters.extend([self.n+2, self.n+1])
+            clusters.extend([self.n + 2, self.n + 1])
             return clusters, node.key
         else:
             # Else, x wouls be added in the tree, we add the key of node
             clusters.extend([node.key])
-            if self.inter_subtree_similarity(node.left,BinaryTreeNode(self.n+1,x)) > self.inter_subtree_similarity(node.right, BinaryTreeNode(self.n+1,x)):
+            if self.inter_subtree_similarity(
+                node.left, BinaryTreeNode(self.n + 1, x)
+            ) > self.inter_subtree_similarity(node.right, BinaryTreeNode(self.n + 1, x)):
                 # If  the right part of the tree is closer to x than the left part, we continue in the right part
                 return self.predict_OTD(x, node.right, clusters)
             else:
@@ -271,10 +288,10 @@ class HierarchicalClustering(base.Clusterer):
         """
         x = utils.dict2numpy(x)
         # We predict to which cluster x would be if we added it in the tree
-        r, merged = self.predict_OTD( x, self.root, [])
+        r, merged = self.predict_OTD(x, self.root, [])
         r.reverse()
         return r, merged
-    
+
     def find_path(self, root, path, k):
         # find the path from root to k, from https://www.geeksforgeeks.org/lowest-common-ancestor-binary-tree-set-1/
 
@@ -287,8 +304,9 @@ class HierarchicalClustering(base.Clusterer):
         if root.key == k:
             return True
 
-        if ((root.left is not None and self.find_path(root.left, path, k)) or
-                (root.right is not None and self.find_path(root.right, path, k))):
+        if (root.left is not None and self.find_path(root.left, path, k)) or (
+            root.right is not None and self.find_path(root.right, path, k)
+        ):
             return True
 
         path.pop()
@@ -302,15 +320,15 @@ class HierarchicalClustering(base.Clusterer):
         path_i = []
         path_j = []
 
-        if (not self.find_path(self.root, path_i, i) or not self.find_path(self.root, path_j, j)):
+        if not self.find_path(self.root, path_i, i) or not self.find_path(self.root, path_j, j):
             return -1
 
         k = 0
-        while(k < len(path_i) and k < len(path_j)):
+        while k < len(path_i) and k < len(path_j):
             if path_i[k] != path_j[k]:
                 break
             k += 1
-        return path_i[k-1]
+        return path_i[k - 1]
 
     def leaves(self, v):
         # find all the leaves from node v
@@ -334,9 +352,9 @@ class HierarchicalClustering(base.Clusterer):
         nb = 0
         for i, w_i in enumerate(leavesA):
             for j, w_j in enumerate(leavesB):
-                nb +=1
+                nb += 1
                 r += self.distance(w_i, w_j)
-        return r/nb
+        return r / nb
 
     def intra_subtree_similarity(self, A):
         # compute mean of distances between the node from tree A
@@ -348,9 +366,9 @@ class HierarchicalClustering(base.Clusterer):
         for i, w_i in enumerate(leaves):
             for j, w_j in enumerate(leaves):
                 if i < j:
-                    nb +=1
+                    nb += 1
                     r += self.distance(w_i, w_j)
-        return r/nb
+        return r / nb
 
     def __str__(self):
         self.printTree(self.root)
@@ -360,10 +378,10 @@ class HierarchicalClustering(base.Clusterer):
         # print node and its children, from https://stackoverflow.com/questions/34012886/print-binary-tree-level-by-level-in-python
         if node is not None:
             self.printTree(node.right, level + 1)
-            print(' ' * 4 * level + '-> ' + str(node.key))
+            print(" " * 4 * level + "-> " + str(node.key))
             self.printTree(node.left, level + 1)
 
-    def get_parents(self,node):
+    def get_parents(self, node):
         # Get all the parents of the node (the clusters it belongs to)
         clusters = [node.key]
         if node.parent is None:
@@ -395,9 +413,9 @@ class HierarchicalClustering(base.Clusterer):
         """
         # Get the data of each cluster
         clusters = {}
-        for i in range(1,self.n+1):
+        for i in range(1, self.n + 1):
             if self.nodes[i].data is not None:
                 clusters[i] = [self.nodes[i].data]
             else:
                 clusters[i] = [self.nodes[i].left.key, self.nodes[i].right.key]
-        return sorted(clusters.items(), key = lambda x : len(x[1]))
+        return sorted(clusters.items(), key=lambda x: len(x[1]))
