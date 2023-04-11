@@ -1,10 +1,11 @@
 from river import base, utils
 import numpy as np
+import numpy.typing as npt
 from typing import Callable
 
 # Node of a binary tree for Hierarchical Clustering
 class BinaryTreeNode:
-    def __init__(self, key : int, data : np.typing.NDArray = None):
+    def __init__(self, key : int, data : np.ndarray = None):
         # If it's a leaf : x data, else : None
         self.data = data
         # Key of the node
@@ -47,7 +48,7 @@ class HierarchicalClustering(base.Clusterer):
     ----------
     n : int
         number of nodes
-    X : dict (data point (str(ndarray)) : key (int))
+    X : dict (data point (str(np.ndarray)) : key (int))
         data points used by the algorithm with the key of the node representing them
 
     References
@@ -150,7 +151,7 @@ class HierarchicalClustering(base.Clusterer):
         # Max number of leaves
         self.w_size = window_size
         # Dict : x data (str(array of size m)) -> key of the node
-        self.X : dict[np.typing.NDArray, int] = {}
+        self.X : dict[np.ndarray, int] = {}
         # Dict : key -> node
         self.nodes : dict[int, BinaryTreeNode] = {}
         # First node of the tree
