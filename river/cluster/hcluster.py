@@ -1,6 +1,5 @@
 from river import base, utils
 import numpy as np
-import numpy.typing as npt
 from typing import Callable
 
 # Node of a binary tree for Hierarchical Clustering
@@ -110,22 +109,22 @@ class HierarchicalClustering(base.Clusterer):
     '[0 1 1]': [8, 9, 5]}
 
     >>> HC.predict_one({0 : 20.1, 1 : 20, 2 : 20 })
-    ([10, 11, 5], 9)
+    ([10, 11, 5], 7)
 
     >>> HC = HC.learn_one({0 : 20.1, 1 : 20, 2 : 20 })
 
     >>> print(HC)
-            -> 6
-        -> 7
-            -> 4
-    -> 5
             -> 10
         -> 11
-                -> 8
-            -> 9
-                    -> 2
-                -> 3
-                    -> 1
+                -> 6
+            -> 7
+                -> 4
+    -> 5
+            -> 8
+        -> 9
+                -> 2
+            -> 3
+                -> 1
 
 
     >>> HC = cluster.HierarchicalClustering(window_size=2)
@@ -149,7 +148,7 @@ class HierarchicalClustering(base.Clusterer):
         # Number of nodes
         self.n = 0
         # Max number of leaves
-        self.w_size = window_size
+        self.window_size = window_size
         # Dict : x data (str(array of size m)) -> key of the node
         self.X : dict[np.ndarray, int] = {}
         # Dict : key -> node
@@ -213,7 +212,7 @@ class HierarchicalClustering(base.Clusterer):
     def learn_one(self, x):
         x = utils.dict2numpy(x)
         # We create the node for x and add it to the tree
-        if self.w_size > 0 and len(self.X.keys()) >= self.w_size:
+        if self.window_size > 0 and len(self.X.keys()) >= self.window_size:
             # If we have reached the maximum of data points, we delete the oldest one and add a node with the same key as the one we deleted
             oldest_key = self.X[list(self.X.keys())[0]]
             oldest = self.nodes[oldest_key]
