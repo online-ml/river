@@ -1,10 +1,10 @@
-from river import base, utils, datasets
+from river import base, utils
 import numpy as np
 from typing import Callable
 
 # Node of a binary tree for Hierarchical Clustering
 class BinaryTreeNode:
-    def __init__(self, key : int, data : np.array = None):
+    def __init__(self, key : int, data : np.typing.NDArray = None):
         # If it's a leaf : x data, else : None
         self.data = data
         # Key of the node
@@ -47,7 +47,7 @@ class HierarchicalClustering(base.Clusterer):
     ----------
     n : int
         number of nodes
-    X : dict (data point (str(data array)) : key (int))
+    X : dict (data point (str(ndarray)) : key (int))
         data points used by the algorithm with the key of the node representing them
 
     References
@@ -144,15 +144,15 @@ class HierarchicalClustering(base.Clusterer):
         -> 1
     
     """
-    def __init__(self, window_size : int = 100, distance : Callable = euclidean_distance):
+    def __init__(self, window_size : int = 100, distance : Callable[[BinaryTreeNode, BinaryTreeNode], float] = euclidean_distance):
         # Number of nodes
         self.n = 0
         # Max number of leaves
         self.w_size = window_size
         # Dict : x data (str(array of size m)) -> key of the node
-        self.X = {}
+        self.X : dict[np.typing.NDArray, int] = {}
         # Dict : key -> node
-        self.nodes = {}
+        self.nodes : dict[int, BinaryTreeNode] = {}
         # First node of the tree
         self.root = None
         # Distance function
@@ -278,7 +278,7 @@ class HierarchicalClustering(base.Clusterer):
     def find_path(self, root, path, k):
         # find the path from root to k, from https://www.geeksforgeeks.org/lowest-common-ancestor-binary-tree-set-1/
 
-        if root == None:
+        if root is None:
             # No path
             return False
     
@@ -287,8 +287,8 @@ class HierarchicalClustering(base.Clusterer):
         if root.key == k:
             return True
     
-        if ((root.left != None and self.find_path(root.left, path, k)) or
-                (root.right != None and self.find_path(root.right, path, k))):
+        if ((root.left is not None and self.find_path(root.left, path, k)) or
+                (root.right is not None and self.find_path(root.right, path, k))):
             return True
     
         path.pop()
@@ -296,7 +296,7 @@ class HierarchicalClustering(base.Clusterer):
 
     def lca(self, i, j):
         # find the least common ancestor, from https://www.geeksforgeeks.org/lowest-common-ancestor-binary-tree-set-1/
-        if self.root == None:
+        if self.root is None:
             return -1
         
         path_i = []
@@ -314,7 +314,7 @@ class HierarchicalClustering(base.Clusterer):
     
     def leaves(self, v):
         # find all the leaves from node v
-        if v == None:
+        if v is None:
             # No leaves
             return -1
         if v.data is not None:
@@ -358,7 +358,7 @@ class HierarchicalClustering(base.Clusterer):
     
     def printTree(self, node, level=0):
         # print node and its children, from https://stackoverflow.com/questions/34012886/print-binary-tree-level-by-level-in-python
-        if node != None:
+        if node is not None:
             self.printTree(node.right, level + 1)
             print(' ' * 4 * level + '-> ' + str(node.key))
             self.printTree(node.left, level + 1)
