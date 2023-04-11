@@ -144,7 +144,7 @@ class HierarchicalClustering(base.Clusterer):
         -> 1
     
     """
-    def __init__(self, window_size : int = 100, distance : Callable[[BinaryTreeNode, BinaryTreeNode], float] = euclidean_distance):
+    def __init__(self, window_size : int = 100, distance : Callable[[BinaryTreeNode, BinaryTreeNode], float] = None):
         # Number of nodes
         self.n = 0
         # Max number of leaves
@@ -157,6 +157,8 @@ class HierarchicalClustering(base.Clusterer):
         self.root = None
         # Distance function
         self.distance = distance
+        if self.distance is None:
+            self.distance = euclidean_distance
     
     def OTD(self, T, x):
         # OTD algorithm from 
