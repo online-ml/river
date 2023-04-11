@@ -26,12 +26,12 @@ class HierarchicalClustering(base.Clusterer):
     The algorithm [^1] inserts new nodes near the nodes it is similar to, but without breaking clusters of very similar nodes.
     It will (begining with the whole tree T) :
 
-    * Compare the new node to the tree T : 
+    * Compare the new node to the tree T :
         * if T is just a leaf : merge
         * else if the nodes of T are more similar between them than with the new node : merge
         * else if the new node is more similar to the left subtree than to the right subtree : redo from the first point with T = left subtree
         * else (the new node is more similar to the right subtree than to the left subtree) redo from the first point with T = right subtree
-    
+
     You can choose a window size to use only the recent points and not overload the tree. (default : 100)
 
     You can also choose a distance function to compare the nodes. (default : euclidean distance)
@@ -39,16 +39,16 @@ class HierarchicalClustering(base.Clusterer):
     Parameters
     ----------
     window_size
-        number of data points to use
+        number of data points to use.
     distance
-        distance function to use to compare the nodes
-    
+        distance function to use to compare the nodes.
+
     Attributes
     ----------
     n : int
-        number of nodes
+        number of nodes.
     X : dict (data point (str(np.ndarray)) : key (int))
-        data points used by the algorithm with the key of the node representing them
+        data points used by the algorithm with the key of the node representing them.
 
     References
     ----------
@@ -68,7 +68,7 @@ class HierarchicalClustering(base.Clusterer):
 
     >>> for x, _ in stream.iter_array(X):
     ...     HC = HC.learn_one(x)
-    
+
     >>> HC.X
     {'[1 1 1]': 1,
     '[1 1 0]': 2,
@@ -131,7 +131,7 @@ class HierarchicalClustering(base.Clusterer):
 
     >>> for x, _ in stream.iter_array(X):
     ...     HC = HC.learn_one(x)
-    
+
     >>> HC.X
     {'[20.  20.  20.1]': 2, '[0 1 1]': 1}
 
@@ -142,7 +142,6 @@ class HierarchicalClustering(base.Clusterer):
         -> 2
     -> 3
         -> 1
-    
     """
     def __init__(self, window_size : int = 100, distance : Callable[[BinaryTreeNode, BinaryTreeNode], float] = None):
         # Number of nodes
@@ -159,9 +158,9 @@ class HierarchicalClustering(base.Clusterer):
         self.distance = distance
         if self.distance is None:
             self.distance = euclidean_distance
-    
+
     def OTD(self, T, x):
-        # OTD algorithm from 
+        # OTD algorithm from https://arxiv.org/pdf/1909.09667.pdf
         if self.n == 1:
             # First node in the tree
             self.root = self.nodes[1]
@@ -185,7 +184,7 @@ class HierarchicalClustering(base.Clusterer):
         else:
             # Else the left part of the tree T is closer to the new node than the right part, we continue to search where to merge the new node in the left part of T
             self.OTD(T.left, x)
-    
+
     def merge_nodes(self, T, added_node):
         # Merge a new node (added node) to the tree T
         # We create the node that will be the parent of T and the added node
@@ -210,7 +209,7 @@ class HierarchicalClustering(base.Clusterer):
         # If T was the root, the new node become the root
         if self.root.key == T.key:
             self.root = self.nodes[self.n]
-    
+
     def learn_one(self, x):
         x = utils.dict2numpy(x)
         # We create the node for x and add it to the tree
@@ -234,7 +233,7 @@ class HierarchicalClustering(base.Clusterer):
         # We add it to the tree
         self.OTD(self.root, x)
         return self
-    
+
     def predict_OTD(self, x, node, clusters):
         # get the list of predicted clusters for x
         if node is None:
@@ -269,7 +268,6 @@ class HierarchicalClustering(base.Clusterer):
         -------
         (list, int)
             A list of clusters (from node `x` to root) and the node to which it would have been merged.
-        
         """
         x = utils.dict2numpy(x)
         # We predict to which cluster x would be if we added it in the tree
@@ -283,16 +281,16 @@ class HierarchicalClustering(base.Clusterer):
         if root is None:
             # No path
             return False
-    
+
         path.append(root)
-    
+
         if root.key == k:
             return True
-    
+
         if ((root.left is not None and self.find_path(root.left, path, k)) or
                 (root.right is not None and self.find_path(root.right, path, k))):
             return True
-    
+
         path.pop()
         return False
 
@@ -300,10 +298,10 @@ class HierarchicalClustering(base.Clusterer):
         # find the least common ancestor, from https://www.geeksforgeeks.org/lowest-common-ancestor-binary-tree-set-1/
         if self.root is None:
             return -1
-        
+
         path_i = []
         path_j = []
-    
+
         if (not self.find_path(self.root, path_i, i) or not self.find_path(self.root, path_j, j)):
             return -1
 
@@ -313,7 +311,7 @@ class HierarchicalClustering(base.Clusterer):
                 break
             k += 1
         return path_i[k-1]
-    
+
     def leaves(self, v):
         # find all the leaves from node v
         if v is None:
@@ -353,18 +351,18 @@ class HierarchicalClustering(base.Clusterer):
                     nb +=1
                     r += self.distance(w_i, w_j)
         return r/nb
-    
+
     def __str__(self):
         self.printTree(self.root)
         return ""
-    
+
     def printTree(self, node, level=0):
         # print node and its children, from https://stackoverflow.com/questions/34012886/print-binary-tree-level-by-level-in-python
         if node is not None:
             self.printTree(node.right, level + 1)
             print(' ' * 4 * level + '-> ' + str(node.key))
             self.printTree(node.left, level + 1)
-    
+
     def get_parents(self,node):
         # Get all the parents of the node (the clusters it belongs to)
         clusters = [node.key]
@@ -372,7 +370,7 @@ class HierarchicalClustering(base.Clusterer):
             return clusters
         clusters.extend(self.get_parents(node.parent))
         return clusters
-    
+
     def get_clusters_by_point(self):
         """Returns the list of clusters (from the data point node to the root) for all of the data points.
 
@@ -386,7 +384,7 @@ class HierarchicalClustering(base.Clusterer):
         for x in self.X.keys():
             clusters[x] = self.get_parents(self.nodes[self.X[x]])
         return clusters
-    
+
     def get_all_clusters(self):
         """Returns all the clusters of the tree.
 
