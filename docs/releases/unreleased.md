@@ -1,3 +1,6 @@
+## cluster
+- Added `cluster.HierarchicalClustering`.
+
 ## metrics
 
 - Added `metrics.MAPE`.
