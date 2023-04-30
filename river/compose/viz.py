@@ -1,4 +1,5 @@
 import inspect
+import textwrap
 from xml.etree import ElementTree as ET
 
 from river import base, compose
@@ -21,7 +22,13 @@ def estimator_to_html(estimator) -> ET.Element:
     details.append(summary)
 
     pre = ET.Element("pre", attrib={"class": "river-estimator-name"})
-    pre.text = str(estimator)
+    str_estimator = str(estimator)
+    parts = str_estimator.split(" ")
+    pre.text = (
+        textwrap.shorten(str_estimator, width=20)
+        if len(parts[0]) < 20
+        else (parts[0] + (" [...]" if len(parts) > 1 else ""))
+    )
     summary.append(pre)
 
     code = ET.Element("code", attrib={"class": "river-estimator-params"})
@@ -30,8 +37,7 @@ def estimator_to_html(estimator) -> ET.Element:
     else:
         # Use __repr__, but remove leading class name
         text = repr(estimator)
-        text = text.replace(f"{estimator.__class__.__name__} ", "")
-        code.text = f"{text}\n\n"
+        code.text = f"{text}\n"
     details.append(code)
 
     return details
@@ -128,6 +134,10 @@ CSS = """
     margin-top: 0;
 }
 
+.river-union > .river-component {
+    margin-top: 0;
+}
+
 .river-union > .pipeline {
     margin-top: 0;
 }
@@ -143,8 +153,8 @@ CSS = """
 .river-estimator-params {
     display: block;
     white-space: pre-wrap;
-    font-size: 120%;
-    margin-bottom: -1em;
+    font-size: 110%;
+    margin-top: 1em;
 }
 
 .river-estimator > .river-estimator-params,
@@ -155,7 +165,7 @@ CSS = """
 .river-estimator-name {
     display: inline;
     margin: 0;
-    font-size: 130%;
+    font-size: 110%;
 }
 
 /* Toggle */
