@@ -4,7 +4,9 @@ format:
 	pre-commit run --all-files
 
 execute-notebooks:
-	jupyter nbconvert --execute --to notebook --inplace docs/*/*.ipynb --ExecutePreprocessor.timeout=-1
+	jupyter nbconvert --execute --to notebook --inplace docs/introduction/**.ipynb --ExecutePreprocessor.timeout=-1
+	jupyter nbconvert --execute --to notebook --inplace docs/recipes/**.ipynb --ExecutePreprocessor.timeout=-1
+	jupyter nbconvert --execute --to notebook --inplace docs/examples/**.ipynb --ExecutePreprocessor.timeout=-1
 
 render-notebooks:
 	jupyter nbconvert --to markdown docs/introduction/*/*.ipynb
