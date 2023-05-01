@@ -34,7 +34,7 @@ $$
 
 Higher-order FM will be covered in a following section, just note that factorization models express their power in sparse settings, which is also where higher-order interactions are hard to estimate.
 
-Strong emphasis must be placed on feature engineering as it allows FM to mimic most factorization models and significantly impact its performance. High cardinality categorical variables one hot encoding is the most frequent step before feeding the model with data. For more efficiency, `river` FM implementation considers string values as categorical variables and automatically one hot encode them. FM models have their own module [river.facto](/api/overview/#facto).
+Strong emphasis must be placed on feature engineering as it allows FM to mimic most factorization models and significantly impact its performance. High cardinality categorical variables one hot encoding is the most frequent step before feeding the model with data. For more efficiency, River FM implementation considers string values as categorical variables and automatically one hot encode them. FM models have their own module [river.facto](/api/overview/#facto).
 
  ## Mimic Biased Matrix Factorization (BiasedMF)
 

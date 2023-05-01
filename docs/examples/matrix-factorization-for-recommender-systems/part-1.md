@@ -14,7 +14,7 @@ A [recommender system](https://en.wikipedia.org/wiki/Recommender_system) is a so
 - Facebook (suggesting posts in users' news feeds)
 - Spotify (suggesting music)
 
-Social recommendation from graph (mostly used by social networks) are not covered in `river`. We focus on the general case, item recommendation. This problem can be represented with the user-item matrix:
+Social recommendation from graph (mostly used by social networks) are not covered in River. We focus on the general case, item recommendation. This problem can be represented with the user-item matrix:
 
 $$
 \normalsize
@@ -44,7 +44,7 @@ $$
 \langle \mathbf{v}_u, \mathbf{v}_i \rangle = \sum_{f=1}^{k} \mathbf{v}_{u, f} \cdot \mathbf{v}_{i, f}
 $$
 
-MF models weights are learnt in an online fashion, often with stochastic gradient descent as it provides relatively fast running time and good accuracy. There is a great and widely popular library named [surprise](http://surpriselib.com/) that implements MF models (and others) but in contrast with `river` doesn't follow a pure online philosophy (all the data have to be loaded in memory and the API doesn't allow you to update your model with new data).
+MF models weights are learnt in an online fashion, often with stochastic gradient descent as it provides relatively fast running time and good accuracy. There is a great and widely popular library named [surprise](http://surpriselib.com/) that implements MF models (and others) but in contrast with River doesn't follow a pure online philosophy (all the data have to be loaded in memory and the API doesn't allow you to update your model with new data).
 
 **Notes:**
 
@@ -53,7 +53,7 @@ MF models weights are learnt in an online fashion, often with stochastic gradien
 
 ## Let's start
 
-In this tutorial, we are going to explore MF algorithms available in `river` and test them on a movie recommendation problem with the MovieLens 100K dataset. This latter is a collection of movie ratings (from 1 to 5) that includes various information about both the items and the users. We can access it from the [river.datasets](/api/overview/#datasets) module:
+In this tutorial, we are going to explore MF algorithms available in River and test them on a movie recommendation problem with the MovieLens 100K dataset. This latter is a collection of movie ratings (from 1 to 5) that includes various information about both the items and the users. We can access it from the [river.datasets](/api/overview/#datasets) module:
 
 
 ```python
@@ -125,7 +125,7 @@ $$
 
 This baseline model can be viewed as a linear regression where the intercept is replaced by the target running mean with the users and the items one hot encoded.
 
-All machine learning models in `river` expect dicts as input with feature names as keys and feature values as values. Specifically, models from `river.reco` expect a `'user'` and an `'item'` entries without any type constraint on their values (i.e. can be strings or numbers), e.g.:
+All machine learning models in River expect dicts as input with feature names as keys and feature values as values. Specifically, models from `river.reco` expect a `'user'` and an `'item'` entries without any type constraint on their values (i.e. can be strings or numbers), e.g.:
 
 ```python
 x = {
