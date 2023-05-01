@@ -174,7 +174,7 @@ def yield_checks(model: Estimator) -> typing.Iterator[typing.Callable]:
 
 
 def check_estimator(model: Estimator):
-    """Check if a model adheres to `river`'s conventions.
+    """Check if a model adheres to River's conventions.
 
     This will run a series of unit tests. The nature of the unit tests depends on the type of
     model.

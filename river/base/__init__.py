@@ -1,7 +1,7 @@
 """Base interfaces.
 
-Every estimator in `river` is a class, and as such inherits from at least one base interface.
-These are used to categorize, organize, and standardize the many estimators that `river`
+Every estimator in River is a class, and as such inherits from at least one base interface.
+These are used to categorize, organize, and standardize the many estimators that River
 contains.
 
 This module contains mixin classes, which are all suffixed by `Mixin`. Their purpose is to

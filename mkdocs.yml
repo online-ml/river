@@ -10,22 +10,35 @@ repo_url: https://github.com/online-ml/river
 edit_uri: ""
 
 # Copyright
-copyright: Copyright &copy; 2019 - 2022
+copyright: Copyright &copy; 2019 - 2023
 
 # Configuration
 theme:
   name: material
   custom_dir: docs/overrides
   language: en
+
   palette:
-    primary: indigo
-    accent: indigo
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
   font:
-    text: Rubik
-    code: Roboto Mono
+    text: Fira Sans
+    code: Fira Code
   logo: img/icon.png
   favicon: img/favicon.ico
   features:
+    - content.code.copy
     - navigation.tabs
     - navigation.instant
     - navigation.indexes
@@ -70,7 +83,6 @@ extra_javascript:
   - https://cdn.jsdelivr.net/npm/vega@5
   - https://cdn.jsdelivr.net/npm/vega-lite@5
   - https://cdn.jsdelivr.net/npm/vega-embed@6
-
 
 extra_css:
   - stylesheets/extra.css

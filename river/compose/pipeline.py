@@ -173,7 +173,7 @@ class Pipeline(base.Estimator):
 
     Pipelines allow you to chain different steps into a sequence. Typically, when doing supervised
     learning, a pipeline contains one ore more transformation steps, whilst it's is a regressor or
-    a classifier. It is highly recommended to use pipelines with `river`. Indeed, in an online
+    a classifier. It is highly recommended to use pipelines with River. Indeed, in an online
     learning setting, it is very practical to have a model defined as a single object. Take a look
     at the [user guide](/recipes/pipelines) for further information and
     practical examples.
@@ -800,9 +800,11 @@ class Pipeline(base.Estimator):
         return X
 
     def predict_many(self, X: pd.DataFrame):
+        """Call transform_many, and then predict_many on the final step."""
         X, last_step = self._transform_many(X=X)
         return last_step.predict_many(X=X)
 
     def predict_proba_many(self, X: pd.DataFrame):
+        """Call transform_many, and then predict_proba_many on the final step."""
         X, last_step = self._transform_many(X=X)
         return last_step.predict_proba_many(X=X)

@@ -13,11 +13,12 @@ def render_df(df_path: Path) -> dict:
 
     unique_datasets = list(df["dataset"].unique())
     measures = list(df.columns)[4:]
+
     res = {
         "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
         "data": {
-            # "values": df.to_dict(orient="records")
-            "url": f"benchmarks/{df_path.name}"
+            "values": df.to_dict(orient="records")
+            # "url": f"benchmarks/{df_path.name}"
         },
         "params": [
             {"name": "models", "select": {"type": "point", "fields": ["model"]}, "bind": "legend"},
@@ -68,7 +69,6 @@ def render_df(df_path: Path) -> dict:
 
 
 if __name__ == "__main__":
-
     if Path("details.json").exists():
         if Path("../docs/benchmarks/details.json").exists():
             Path("../docs/benchmarks/details.json").unlink()

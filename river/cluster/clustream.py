@@ -30,7 +30,7 @@ class CluStream(base.Clusterer):
     of calculating the traditional cluster feature vector of the number of observations,
     linear sum and sum of squares of data points and time stamps, this implementation adopts
     the use of Welford's algorithm [^2] to calculate the incremental variance, facilitated
-    through `stats.Var()` available within `River`.
+    through `stats.Var()` available within River.
 
     Since River does not support an actual "off-line" phase of the clustering algorithm (as data points
     are assumed to arrive continuously, one at a time), a `time_gap` parameter is introduced. After each

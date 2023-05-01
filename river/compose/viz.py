@@ -35,9 +35,7 @@ def estimator_to_html(estimator) -> ET.Element:
     if isinstance(estimator, compose.FuncTransformer):
         code.text = f"\n{inspect.getsource(estimator.func)}\n"
     else:
-        # Use __repr__, but remove leading class name
-        text = repr(estimator)
-        code.text = f"{text}\n"
+        code.text = f"{repr(estimator)}\n"
     details.append(code)
 
     return details
@@ -75,10 +73,7 @@ def wrapper_to_html(wrapper) -> ET.Element:
     summary.append(pre)
 
     code = ET.Element("code", attrib={"class": "river-estimator-params"})
-    # Use __repr__, but remove leading class name
-    text = repr(wrapper)
-    text = text.replace(f"{wrapper.__class__.__name__} ", "")
-    code.text = f"{text}\n\n"
+    code.text = f"{repr(wrapper)}\n"
     details.append(code)
 
     div.append(to_html(wrapper._wrapped_model))
