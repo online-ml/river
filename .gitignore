@@ -7,7 +7,7 @@ docs/examples/*.md
 docs/examples/*_files/
 docs/api/
 site
-_*.md
+docs/linkified
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

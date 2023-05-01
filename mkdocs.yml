@@ -3,6 +3,7 @@ site_name: River
 site_description: Machine learning for data streams in Python
 site_author: The river developers
 site_url: https://riverml.xyz
+docs_dir: docs/linkified
 
 # Repository
 repo_name: online-ml/river
