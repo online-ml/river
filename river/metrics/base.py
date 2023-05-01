@@ -49,6 +49,7 @@ class Metric(base.Base, abc.ABC):
         return True
 
     def is_better_than(self, other) -> bool:
+        """Indicate if the current metric is better than another one."""
         op = operator.gt if self.bigger_is_better else operator.lt
         return op(self.get(), other.get())
 
