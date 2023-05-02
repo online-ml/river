@@ -16,8 +16,8 @@ def render_df(df_path: Path) -> dict:
     res = {
         "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
         "data": {
-            # "values": df.to_dict(orient="records")
-            "url": f"benchmarks/{df_path.name}"
+            "values": df.to_dict(orient="records")
+            # "url": f"benchmarks/{df_path.name}"
         },
         "params": [
             {"name": "models", "select": {"type": "point", "fields": ["model"]}, "bind": "legend"},
