@@ -3897,21 +3897,21 @@ Features  6
 # Environment
 
 <pre>Python implementation: CPython
-Python version       : 3.9.16
-IPython version      : 8.7.0
+Python version       : 3.9.12
+IPython version      : 8.2.0
 
-river       : 0.14.0
-numpy       : 1.23.5
+river       : not installed
+numpy       : 1.24.1
 scikit-learn: 1.0.2
-pandas      : 1.3.5
-scipy       : 1.9.3
+pandas      : 1.4.2
+scipy       : 1.10.0
 
-Compiler    : Clang 14.0.0 (clang-1400.0.29.202)
-OS          : Darwin
-Release     : 22.2.0
+Compiler    : GCC 7.5.0
+OS          : Linux
+Release     : 5.15.0-58-generic
 Machine     : x86_64
-Processor   : i386
-CPU cores   : 16
+Processor   : x86_64
+CPU cores   : 6
 Architecture: 64bit
 </pre>
 
