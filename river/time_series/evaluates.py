@@ -6,6 +6,8 @@ import typing
 from typing import Iterator, List, Optional, Tuple
 
 from river import base, metrics, time_series
+import conf
+import time_series
 
 TimeSeries = Iterator[
     Tuple[
@@ -78,9 +80,11 @@ def iter_evaluate(
     dataset: base.typing.Dataset,
     model: time_series.base.Forecaster,
     metric: metrics.base.RegressionMetric,
+    interval: conf.Interval,
     horizon: int,
     agg_func: typing.Callable[[list[float]], float] = None,
     grace_period: int = None,
+    residual_calibration_period: int = None,
 ):
     """Evaluates the performance of a forecaster on a time series dataset and yields results.
 
@@ -95,6 +99,8 @@ def iter_evaluate(
         A sequential time series.
     model
         A forecaster.
+    interval
+        An interval method
     metric
         A regression metric.
     horizon
@@ -105,34 +111,110 @@ def iter_evaluate(
         parameter is equal to the horizon by default.
 
     """
-
+    # Defining the metric for a certain horizon
     horizon_metric = (
         time_series.HorizonAggMetric(metric, agg_func)
         if agg_func
         else time_series.HorizonMetric(metric)
     )
+
+    # Defining the interval for a certain horizon
+    horizon_interval = (time_series.HorizonInterval(interval))
+
+    ##############################################################################
+    # Pre-train the model
+    ##############################################################################
+
+    # Initialize the dataset from the beginning to get the grace period
     steps = _iter_with_horizon(dataset, horizon)
 
+    # Pre train the model on a defined quantities of sample "grace_periode"
     grace_period = horizon if grace_period is None else grace_period
+    # Set the grace period as the max between it and the residual_calibration_period
+    grace_period = max(grace_period, residual_calibration_period)
+
+    # Go over the grace_period to fit the model
     for _ in range(grace_period):
         x, y, x_horizon, y_horizon = next(steps)
         model.learn_one(y=y, x=x)  # type: ignore
 
-    for x, y, x_horizon, y_horizon in steps:
+    ##############################################################################
+    # Get first residuals series with the pre-trained model
+    ##############################################################################
+
+    # Reinitialize the dataset from the beginning to get the grace period
+    # And initialize the interval window
+    # TODO : being able to predict_many. Would be easier
+    steps = _iter_with_horizon(dataset, horizon)
+    for _ in range(grace_period):
+        x, y, x_horizon, y_horizon = next(steps)
+        # Get the residual that will be used for calibration
+        # calibration predictions (subset of training points)
         y_pred = model.forecast(horizon, xs=x_horizon)
+        # Initializing the interval for each horizon
+        horizon_interval.update(y_horizon, y_pred)
+
+    ##############################################################################
+    # Forecast with intervals and learn
+    ##############################################################################
+
+    # No reinitialisation of the dataset since we begin from where we stopped
+    # at the pre-train stage
+    for x, y, x_horizon, y_horizon in steps:
+        # Predicting future values until a certain horizon
+        y_pred = model.forecast(horizon, xs=x_horizon)
+        # Updating the metric
         horizon_metric.update(y_horizon, y_pred)
+        # Updating the interval for each horizon
+        horizon_interval.update(y_horizon, y_pred)
+        # Train the model
         model.learn_one(y=y, x=x)  # type: ignore
-        yield x, y, y_pred, horizon_metric
+        yield x, y, y_pred, horizon_metric, horizon_interval
+
+
+def get_iter_evaluate(
+    dataset: base.typing.Dataset,
+    model: time_series.base.Forecaster,
+    metric: metrics.base.RegressionMetric,
+    interval: conf.Interval,
+    horizon: int,
+    agg_func: typing.Callable[[list[float]], float] = None,
+    grace_period: int = None,
+    residual_calibration_period: int = None,
+) -> Tuple(list, list, list, list, list):
+
+    steps = iter_evaluate(
+                dataset, model, metric, interval,
+                horizon, agg_func, grace_period,
+                residual_calibration_period,
+            )
+
+    list_x = []
+    list_y = []
+    list_y_pred = []
+    list_metrics = []
+    list_interval = []
+
+    for x, y, y_pred, horizon_metric, horizon_interval in steps:
+        list_x.append(x)
+        list_y.append(y)
+        list_y_pred.append(y_pred)
+        list_metrics.append(horizon_metric)
+        list_interval.append(horizon_interval)
+
+    return list_x, list_y, list_y_pred, list_metrics, list_interval
 
 
 def evaluate(
     dataset: base.typing.Dataset,
     model: time_series.base.Forecaster,
     metric: metrics.base.RegressionMetric,
+    interval: conf.Interval,
     horizon: int,
     agg_func: typing.Callable[[list[float]], float] = None,
     grace_period: int = None,
-) -> time_series.HorizonMetric:
+    residual_calibration_period: int = None,
+) -> Tuple(time_series.HorizonMetric, time_series.HorizonInterval):
     """Evaluates the performance of a forecaster on a time series dataset.
 
     To understand why this method is useful, it's important to understand the difference between
@@ -151,6 +233,8 @@ def evaluate(
         A sequential time series.
     model
         A forecaster.
+    interval
+        An interval method
     metric
         A regression metric.
     horizon
@@ -163,8 +247,11 @@ def evaluate(
     """
 
     horizon_metric = None
-    steps = iter_evaluate(dataset, model, metric, horizon, agg_func, grace_period)
-    for *_, horizon_metric in steps:
+    horizon_interval = None
+    steps = iter_evaluate(dataset, model, metric,
+                          interval, horizon, agg_func,
+                          grace_period, residual_calibration_period)
+    for *_, horizon_metric, horizon_interval in steps:
         pass
 
-    return horizon_metric
+    return horizon_metric, horizon_interval

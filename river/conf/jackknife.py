@@ -1,6 +1,6 @@
 from river import base, stats
 
-from . import interval
+from .base import Interval
 
 
 class RegressionJackknife(base.Wrapper, base.Regressor):
@@ -134,6 +134,7 @@ class RegressionJackknife(base.Wrapper, base.Regressor):
         if not with_interval:
             return y_pred
 
-        return interval.Interval(
-            lower=y_pred + (self._lower.get() or 0), upper=y_pred + (self._upper.get() or 0)
+        return Interval(
+            lower=y_pred + (self._lower.get() or 0),
+            upper=y_pred + (self._upper.get() or 0)
         )
