@@ -22,6 +22,7 @@ class Keystroke(base.RemoteDataset):
         super().__init__(
             n_samples=20_400,
             n_features=31,
+            n_classes=51,
             task=base.MULTI_CLF,
             url="http://www.cs.cmu.edu/~keystroke/DSL-StrongPasswordData.csv",
             size=4_669_935,
