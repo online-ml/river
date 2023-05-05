@@ -2,10 +2,10 @@ import inspect
 import textwrap
 from xml.etree import ElementTree as ET
 
-from river import base, compose
-
 
 def to_html(obj) -> ET.Element:
+    from river import base, compose
+
     if isinstance(obj, compose.Pipeline):
         return pipeline_to_html(obj)
     if isinstance(obj, compose.TransformerUnion):
@@ -16,6 +16,8 @@ def to_html(obj) -> ET.Element:
 
 
 def estimator_to_html(estimator) -> ET.Element:
+    from river import compose
+
     details = ET.Element("details", attrib={"class": "river-component river-estimator"})
 
     summary = ET.Element("summary", attrib={"class": "river-summary"})
@@ -92,7 +94,7 @@ CSS = """
     display: flex;
     flex-direction: column;
     align-items: center;
-    background: linear-gradient(#000, #000) no-repeat center / 3px 100%;
+    background: linear-gradient(#000, #000) no-repeat center / 1.5px 100%;
 }
 
 .river-union {
@@ -155,6 +157,10 @@ CSS = """
 .river-estimator > .river-estimator-params,
 .river-wrapper > .river-details > river-estimator-params {
     background-color: white !important;
+}
+
+.river-wrapper > .river-details {
+    margin-bottom: 1em;
 }
 
 .river-estimator-name {

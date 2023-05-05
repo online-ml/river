@@ -34,6 +34,14 @@ class Estimator(base.Base, abc.ABC):
             return other.__or__(self)
         return compose.Pipeline(other, self)
 
+    def _repr_html_(self):
+        from river.base import viz
+        from xml.etree import ElementTree as ET
+
+        div = viz.to_html(self)
+        div_str = ET.tostring(div, encoding="unicode")
+        return f"<div>{div_str}<style scoped>{viz.CSS}</style></div>"
+
     def _more_tags(self):
         return set()
 
