@@ -60,7 +60,7 @@ __all__ = [
 ]
 
 
-def _generate_overview(print):
+def _docs_overview(print):
     """For website documentation purposes."""
 
     import collections
@@ -77,7 +77,7 @@ def _generate_overview(print):
             "Name": dataset.__class__.__name__,
             "Samples": dataset.n_samples,
             "Features": dataset.n_features,
-            "Sparse": "✅" if dataset.sparse else "❌",
+            "Sparse": "✅" if dataset.sparse else "",
         }
 
         if dataset.task == base.REG:
@@ -94,5 +94,10 @@ def _generate_overview(print):
             raise ValueError(f"Unhandled task: {dataset.task}")
 
     for task, details in dataset_details.items():
+        df = pd.DataFrame(details)
+        if df.empty:
+            continue
         print(f"**{task}**", end="\n\n")
-        print(pd.DataFrame(details).to_markdown(index=False), end="\n\n")
+        for int_col in df.select_dtypes(int):
+            df[int_col] = df[int_col] = df[int_col].apply(lambda x: f"{int(x):,d}")
+        print(df.to_markdown(index=False), end="\n\n")
