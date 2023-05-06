@@ -49,7 +49,9 @@ def _docs_overview(print):
     """For website documentation purposes."""
 
     import collections
+
     import pandas as pd
+
     from river import datasets
 
     dataset_details = collections.defaultdict(list)
@@ -58,7 +60,7 @@ def _docs_overview(print):
         dataset = eval(dataset_name)()
 
         details = {
-            "Name": dataset.__class__.__name__,
+            "Name": f"[{dataset_name}](/api/datasets/synth/{dataset_name})",
             "Features": dataset.n_features,
             "Sparse": "✅" if dataset.sparse else "",
         }

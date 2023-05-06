@@ -35,8 +35,9 @@ class Estimator(base.Base, abc.ABC):
         return compose.Pipeline(other, self)
 
     def _repr_html_(self):
-        from river.base import viz
         from xml.etree import ElementTree as ET
+
+        from river.base import viz
 
         div = viz.to_html(self)
         div_str = ET.tostring(div, encoding="unicode")
