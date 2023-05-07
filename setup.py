@@ -88,6 +88,7 @@ setuptools.setup(
             "nbconvert",
             "python-slugify",
             "spacy",
+            "tabulate",
             "watermark",
         ],
         "extra": ["river_extra"],

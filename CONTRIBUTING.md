@@ -186,7 +186,7 @@ make execute-notebooks
 4. Bump the version in `river/__version__.py`
 5. Tag and date the `docs/releases/unreleased.md` file
 6. Commit and push
-7. Wait for CI to [run the unit tests](https://github.com/online-ml/river/actions/workflows/unit-tests.yml)
+7. Wait for CI to [run the unit tests](https://github.com/online-ml/river/actions/workflows/ci.yml)
 8. Push the tag:
 
 ```sh
