@@ -21,6 +21,7 @@ jobs:
       - name: Build docs
         run: |
           source ~/.venv/bin/activate
+          pip install git+https://github.com/MaxHalford/yamp
           make doc
 
       - name: Deploy docs
