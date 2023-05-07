@@ -2,9 +2,12 @@
 docs/introduction/getting-started/*.md
 docs/introduction/*_files/
 docs/recipes/*.md
+docs/recipes/*/*.md
 docs/recipes/*_files/
 docs/examples/*.md
+docs/examples/*/*.md
 docs/examples/*_files/
+docs/benchmarks/*/*.md
 docs/api/
 site
 docs/linkified
