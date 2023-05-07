@@ -62,7 +62,7 @@ def _docs_overview(print):
         details = {
             "Name": f"[{dataset_name}](/api/datasets/synth/{dataset_name})",
             "Features": dataset.n_features,
-            "Sparse": "✅" if dataset.sparse else "",
+            "Sparse": ":material-check:" if dataset.sparse else "",
         }
 
         if dataset.task == datasets.base.REG:
