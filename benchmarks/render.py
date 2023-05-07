@@ -70,11 +70,8 @@ def render_df(df_path: Path) -> dict:
 
 
 if __name__ == "__main__":
-    if Path("details.json").exists():
-        if Path("../docs/benchmarks/details.json").exists():
-            Path("../docs/benchmarks/details.json").unlink()
-        shutil.move("details.json", "../docs/benchmarks/details.json")
-    details = json.load(open("../docs/benchmarks/details.json"))
+    with open("details.json") as f:
+        details = json.load(f)
 
     for track_name, track_details in details.items():
         track_dir = Path(f"../docs/benchmarks/{track_name}")
@@ -83,11 +80,10 @@ if __name__ == "__main__":
             print_ = lambda x: print(x, file=f, end="\n\n")
 
             print_(f"# {track_name}")
+
+            # Move the dataset from the benchmarks folder to the docs folder
             csv_name = track_name.replace(" ", "_").lower()
-            if Path(f"{csv_name}.csv").exists():
-                if Path(f"../docs/benchmarks/{track_name}/{csv_name}.csv").exists():
-                    Path(f"../docs/benchmarks/{track_name}/{csv_name}.csv").unlink()
-                shutil.move(f"{csv_name}.csv", f"../docs/benchmarks/{track_name}")
+            shutil.copy(f"{csv_name}.csv", f"../docs/benchmarks/{track_name}/{csv_name}.csv")
 
             df_path = Path(f"../docs/benchmarks/{track_name}/{csv_name}.csv")
 
