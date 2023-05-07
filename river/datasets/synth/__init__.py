@@ -86,6 +86,8 @@ def _docs_overview(print):
         df = pd.DataFrame(details)
         if df.empty:
             continue
+        if not df["Sparse"].any():
+            df = df.drop(columns=["Sparse"])
         print(f"**{task}**", end="\n\n")
         for int_col in df.select_dtypes(int):
             df[int_col] = df[int_col] = df[int_col].apply(lambda x: f"{int(x):,d}")

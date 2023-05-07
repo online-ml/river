@@ -65,7 +65,9 @@ markdown_extensions:
   - pymdownx.details
   - pymdownx.arithmatex:
       generic: true
-  - pymdownx.highlight
+  - pymdownx.highlight:
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
   - pymdownx.superfences:
       custom_fences:
         - name: vegalite

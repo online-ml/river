@@ -186,9 +186,12 @@ class MLPRegressor(base.Regressor, MLP):
 
     - `learn_one` and `predict_one` just cast the input `dict` to a single row dataframe and then
         call `learn_many` and `predict_many` respectively. This is very inefficient.
+
     - Not all of the optimizers in the `optim` module can be used as they are not all vectorised.
+
     - Emerging and disappearing features are not supported. Each instance/batch has to have the
         same features.
+
     - The gradient haven't been numerically checked.
 
     Parameters
@@ -204,7 +207,7 @@ class MLPRegressor(base.Regressor, MLP):
     loss
         Loss function. Defaults to `optim.losses.Squared`.
     optimizer
-        Optimizer. Defaults to `optim.SGD(.01)`.
+        Optimizer. Defaults to `optim.SGD` with the learning rate set to `0.01`.
     seed
         Random number generation seed. Set this for reproducibility.
 

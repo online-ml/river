@@ -23,13 +23,6 @@ class AdaBoostClassifier(base.WrapperEnsemble, base.Classifier):
     seed
         Random number generator seed for reproducibility.
 
-    Attributes
-    ----------
-    wrong_weight : collections.defaultdict
-        Number of times a model has made a mistake when making predictions.
-    correct_weight : collections.defaultdict
-        Number of times a model has predicted the right label when making predictions.
-
     Examples
     --------
 
@@ -234,17 +227,6 @@ class BOLEClassifier(AdaBoostClassifier):
         Random number generator seed for reproducibility.
     error_bound
         Error bound percentage for allowing models to vote.
-
-    Attributes
-    ----------
-    wrong_weight : collections.defaultdict
-        Number of times a model has made a mistake when making predictions.
-    correct_weight : collections.defaultdict
-        Number of times a model has predicted the right label when making predictions.
-    order_position : list
-        Array with the index of the models with best (correct_weight / correct_weight + wrong_weight) in descending order.
-    instances_seen : int
-        Number of instances that the ensemble trained with.
 
     Examples
     --------
