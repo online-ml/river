@@ -39,12 +39,13 @@ class Dataset(abc.ABC):
     Parameters
     ----------
     task
-        Type of task the dataset is meant for. Should be one of:
-        - "Regression"
-        - "Binary classification"
-        - "Multi-class classification"
-        - "Multi-output binary classification"
-        - "Multi-output regression"
+        Type of task the dataset is meant for. Should be one of the following:
+
+            - "Regression"
+            - "Binary classification"
+            - "Multi-class classification"
+            - "Multi-output binary classification"
+            - "Multi-output regression"
     n_features
         Number of features in the dataset.
     n_samples

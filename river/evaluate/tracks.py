@@ -45,8 +45,8 @@ class BinaryClassificationTrack(Track):
     """This track evaluates a model's performance on binary classification tasks.
     These do not include synthetic datasets.
 
-    Parameter
-    ---------
+    Parameters
+    ----------
     n_samples
         The number of samples to use for each dataset.
 
@@ -69,8 +69,8 @@ class MultiClassClassificationTrack(Track):
     """This track evaluates a model's performance on multi-class classification tasks.
     These do not include synthetic datasets.
 
-    Parameter
-    ---------
+    Parameters
+    ----------
     n_samples
         The number of samples to use for each dataset.
 
@@ -92,8 +92,8 @@ class RegressionTrack(Track):
     """This track evaluates a model's performance on regression tasks.
     These do not include synthetic datasets.
 
-    Parameter
-    ---------
+    Parameters
+    ----------
     n_samples
         The number of samples to use for each dataset.
 

@@ -405,7 +405,7 @@ class Squared(RegressionLoss):
 
     It's gradient w.r.t. to $p_i$ is
 
-    $$\\frac{\\partial L}{\\partial p_i} = 2 \times (p_i - y_i)$$
+    $$\\frac{\\partial L}{\\partial p_i} = 2 (p_i - y_i)$$
 
     One thing to note is that this convention is consistent with Vowpal Wabbit and PyTorch, but
     not with scikit-learn. Indeed, scikit-learn divides the loss by 2, making the 2 disappear in

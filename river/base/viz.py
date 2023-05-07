@@ -1,10 +1,11 @@
 import inspect
+import textwrap
 from xml.etree import ElementTree as ET
-
-from river import base, compose
 
 
 def to_html(obj) -> ET.Element:
+    from river import base, compose
+
     if isinstance(obj, compose.Pipeline):
         return pipeline_to_html(obj)
     if isinstance(obj, compose.TransformerUnion):
@@ -15,23 +16,28 @@ def to_html(obj) -> ET.Element:
 
 
 def estimator_to_html(estimator) -> ET.Element:
+    from river import compose
+
     details = ET.Element("details", attrib={"class": "river-component river-estimator"})
 
     summary = ET.Element("summary", attrib={"class": "river-summary"})
     details.append(summary)
 
     pre = ET.Element("pre", attrib={"class": "river-estimator-name"})
-    pre.text = str(estimator)
+    str_estimator = str(estimator)
+    parts = str_estimator.split(" ")
+    pre.text = (
+        textwrap.shorten(str_estimator, width=20)
+        if len(parts[0]) < 20
+        else (parts[0] + (" [...]" if len(parts) > 1 else ""))
+    )
     summary.append(pre)
 
     code = ET.Element("code", attrib={"class": "river-estimator-params"})
     if isinstance(estimator, compose.FuncTransformer):
         code.text = f"\n{inspect.getsource(estimator.func)}\n"
     else:
-        # Use __repr__, but remove leading class name
-        text = repr(estimator)
-        text = text.replace(f"{estimator.__class__.__name__} ", "")
-        code.text = f"{text}\n\n"
+        code.text = f"{repr(estimator)}\n"
     details.append(code)
 
     return details
@@ -69,10 +75,7 @@ def wrapper_to_html(wrapper) -> ET.Element:
     summary.append(pre)
 
     code = ET.Element("code", attrib={"class": "river-estimator-params"})
-    # Use __repr__, but remove leading class name
-    text = repr(wrapper)
-    text = text.replace(f"{wrapper.__class__.__name__} ", "")
-    code.text = f"{text}\n\n"
+    code.text = f"{repr(wrapper)}\n"
     details.append(code)
 
     div.append(to_html(wrapper._wrapped_model))
@@ -91,7 +94,7 @@ CSS = """
     display: flex;
     flex-direction: column;
     align-items: center;
-    background: linear-gradient(#000, #000) no-repeat center / 3px 100%;
+    background: linear-gradient(#000, #000) no-repeat center / 1.5px 100%;
 }
 
 .river-union {
@@ -128,6 +131,10 @@ CSS = """
     margin-top: 0;
 }
 
+.river-union > .river-component {
+    margin-top: 0;
+}
+
 .river-union > .pipeline {
     margin-top: 0;
 }
@@ -143,8 +150,8 @@ CSS = """
 .river-estimator-params {
     display: block;
     white-space: pre-wrap;
-    font-size: 120%;
-    margin-bottom: -1em;
+    font-size: 110%;
+    margin-top: 1em;
 }
 
 .river-estimator > .river-estimator-params,
@@ -152,10 +159,14 @@ CSS = """
     background-color: white !important;
 }
 
+.river-wrapper > .river-details {
+    margin-bottom: 1em;
+}
+
 .river-estimator-name {
     display: inline;
     margin: 0;
-    font-size: 130%;
+    font-size: 110%;
 }
 
 /* Toggle */

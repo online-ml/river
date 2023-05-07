@@ -1,8 +1,8 @@
 nav:
   - introduction
   - recipes
-  - examples
   - api
+  - examples
   - faq
   - releases
   - benchmarks

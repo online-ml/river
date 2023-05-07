@@ -4,7 +4,7 @@ import typing
 
 from river import base
 
-__all__ = ["BinaryDistribution", "DiscreteDistribution", "ContinuousDistribution"]
+__all__ = ["Distribution", "BinaryDistribution", "DiscreteDistribution", "ContinuousDistribution"]
 
 
 class Distribution(base.Base):

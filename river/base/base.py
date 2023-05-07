@@ -14,9 +14,9 @@ class Base:
 
     This base class allows us to handle the following tasks in a uniform manner:
 
-    - Getting and setting parameters.
-    - Displaying information.
-    - Cloning.
+    - Getting and setting parameters
+    - Displaying information
+    - Mutating/cloning
 
     """
 

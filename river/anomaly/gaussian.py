@@ -7,7 +7,7 @@ class GaussianScorer(anomaly.base.SupervisedAnomalyDetector):
     This is a supervised anomaly detector. It fits a Gaussian distribution to the target values.
     The anomaly score is then computed as so:
 
-    $$score = 2 * \\mid CDF(y) - 0.5 \\mid$$
+    $$score = 2 \\mid CDF(y) - 0.5 \\mid$$
 
     This makes it so that the anomaly score is between 0 and 1.
 

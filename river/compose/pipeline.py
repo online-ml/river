@@ -7,7 +7,6 @@ import io
 import itertools
 import types
 import typing
-from xml.etree import ElementTree as ET
 
 import pandas as pd
 
@@ -173,7 +172,7 @@ class Pipeline(base.Estimator):
 
     Pipelines allow you to chain different steps into a sequence. Typically, when doing supervised
     learning, a pipeline contains one ore more transformation steps, whilst it's is a regressor or
-    a classifier. It is highly recommended to use pipelines with `river`. Indeed, in an online
+    a classifier. It is highly recommended to use pipelines with River. Indeed, in an online
     learning setting, it is very practical to have a model defined as a single object. Take a look
     at the [user guide](/recipes/pipelines) for further information and
     practical examples.
@@ -376,12 +375,6 @@ class Pipeline(base.Estimator):
             + "\t".join(",\n".join(map(repr, self.steps.values())).splitlines(True))
             + "\n)"
         ).expandtabs(2)
-
-    def _repr_html_(self):
-        from river.compose import viz
-
-        div = viz.pipeline_to_html(self)
-        return f"<div>{ET.tostring(div, encoding='unicode')}<style scoped>{viz.CSS}</style></div>"
 
     def _get_params(self):
         return {name: step._get_params() for name, step in self.steps.items()}
@@ -800,9 +793,11 @@ class Pipeline(base.Estimator):
         return X
 
     def predict_many(self, X: pd.DataFrame):
+        """Call transform_many, and then predict_many on the final step."""
         X, last_step = self._transform_many(X=X)
         return last_step.predict_many(X=X)
 
     def predict_proba_many(self, X: pd.DataFrame):
+        """Call transform_many, and then predict_proba_many on the final step."""
         X, last_step = self._transform_many(X=X)
         return last_step.predict_proba_many(X=X)
