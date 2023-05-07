@@ -1,3 +1,7 @@
+# 0.16.0 - 2022-05-07
+
+Added wheels for Python 3.11.
+
 ## metrics
 
 - Added `metrics.MAPE`.
