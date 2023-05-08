@@ -176,7 +176,7 @@ Please check out the [contribution guidelines](https://github.com/online-ml/rive
 
 ## 💬 Citation
 
-If River has been useful to you and you would like to cite it in an scientific publication, please refer to the [paper](https://www.jmlr.org/papers/volume22/20-1380/20-1380.pdf) published at JMLR:
+If River has been useful to you, and you would like to cite it in a scientific publication, please refer to the [paper](https://www.jmlr.org/papers/volume22/20-1380/20-1380.pdf) published at JMLR:
 
 ```bibtex
 @article{montiel2021river,
