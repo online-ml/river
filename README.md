@@ -27,6 +27,10 @@
   <a href="https://pepy.tech/project/river">
     <img src="https://static.pepy.tech/badge/river?style=flat-square" alt="pepy">
   </a>
+  <!-- Black -->
+  <a href="https://github.com/psf/black">
+    <img src="https://img.shields.io/badge/code%20style-black-000000.svg" alt="black">
+  </a>
   <!-- Mypy -->
   <a href="http://mypy-lang.org/">
     <img src="http://www.mypy-lang.org/static/mypy_badge.svg" alt="mypy">
