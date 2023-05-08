@@ -54,7 +54,6 @@ jobs:
           pip install scikit-learn sqlalchemy
           pip install pytest-xdist[psutil]
           pip install numpydoc jupyter
-          pip install git+https://github.com/MaxHalford/yamp
 
       - name: Build River
         run: |

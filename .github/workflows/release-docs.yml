@@ -28,7 +28,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install wheel
           pip install -e ".[compat,dev,docs]"
-          pip install git+https://github.com/MaxHalford/yamp
           pip install rich
           python -m spacy download en_core_web_sm
 

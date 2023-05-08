@@ -15,7 +15,7 @@ render-notebooks:
 
 doc: render-notebooks
 	(cd benchmarks && python render.py)
-	yamp river --out docs --verbose
+	python docs/parse river --out docs --verbose
 	mkdocs build
 
 livedoc: doc
