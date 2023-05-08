@@ -3,8 +3,9 @@
 Each loss function is intended to work with both single values as well as numpy vectors.
 
 """
+from __future__ import annotations
+
 import math
-import typing
 
 import numpy as np
 from scipy import special  # type: ignore
@@ -171,7 +172,7 @@ class CrossEntropy(MultiClassLoss):
 
     """
 
-    def __init__(self, class_weight: typing.Dict[base.typing.ClfTarget, float] = None):
+    def __init__(self, class_weight: dict[base.typing.ClfTarget, float] | None = None):
         if class_weight is None:
             class_weight = {}
         self.class_weight = class_weight

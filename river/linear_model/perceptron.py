@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from river import optim
 
 from .log_reg import LogisticRegression
@@ -49,7 +51,7 @@ class Perceptron(LogisticRegression):
         self,
         l2=0.0,
         clip_gradient=1e12,
-        initializer: optim.initializers.Initializer = None,
+        initializer: optim.initializers.Initializer | None = None,
     ):
         super().__init__(
             optimizer=optim.SGD(1),

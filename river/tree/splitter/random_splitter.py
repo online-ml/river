@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import abc
 import random
 import sys
@@ -19,7 +21,7 @@ class RandomSplitter(Splitter):
         self._rng = random.Random(self.seed)
         self._buffer = []
 
-    def clone(self, new_params: dict = None, include_attributes=False):
+    def clone(self, new_params: dict | None = None, include_attributes=False):
         """Change the behavior of clone to allow copies to have a different rng."""
 
         new_params = new_params or {}
@@ -34,7 +36,7 @@ class RandomSplitter(Splitter):
         """This attribute observer does not support probability density estimation."""
         raise NotImplementedError
 
-    def update(self, att_val, target_val, sample_weight) -> "Splitter":
+    def update(self, att_val, target_val, sample_weight) -> Splitter:
         if self.threshold is None:
             if len(self._buffer) < self.buffer_size:
                 self._buffer.append((att_val, target_val, sample_weight))

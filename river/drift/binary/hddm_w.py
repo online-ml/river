@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import copy
 import math
 
@@ -137,7 +139,7 @@ class HDDM_W(base.BinaryDriftAndWarningDetector):
         return self
 
     def _has_mean_changed(
-        self, sample1: "SampleInfo", sample2: "SampleInfo", confidence: float
+        self, sample1: SampleInfo, sample2: SampleInfo, confidence: float
     ) -> bool:
         if not (sample1._is_init and sample2._is_init):
             return False

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import random
 
 from river import bandit, proba
@@ -69,7 +71,7 @@ class ThompsonSampling(bandit.base.Policy):
 
     """
 
-    def __init__(self, dist: proba.base.Distribution, burn_in=0, seed: int = None):
+    def __init__(self, dist: proba.base.Distribution, burn_in=0, seed: int | None = None):
         super().__init__(dist, burn_in)
         self.seed = seed
         self._rng = random.Random(seed)

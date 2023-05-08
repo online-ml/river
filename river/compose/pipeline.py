@@ -358,7 +358,7 @@ class Pipeline(base.Estimator):
     def __mul__(self, other):
         from river import compose
 
-        if isinstance(other, (base.Transformer, Pipeline)):
+        if isinstance(other, base.Transformer | Pipeline):
             return compose.TransformerProduct(self, other)
 
         return compose.Grouper(transformer=self, by=other)
@@ -379,7 +379,7 @@ class Pipeline(base.Estimator):
     def _get_params(self):
         return {name: step._get_params() for name, step in self.steps.items()}
 
-    def clone(self, new_params: dict = None, include_attributes=False):
+    def clone(self, new_params: dict | None = None, include_attributes=False):
         if new_params is None:
             new_params = {}
 
@@ -424,7 +424,7 @@ class Pipeline(base.Estimator):
             name, obj = obj
 
         def _coerce_to_estimator(obj: typing.Any) -> base.Estimator:
-            if isinstance(obj, (types.FunctionType, types.LambdaType)):
+            if isinstance(obj, types.FunctionType | types.LambdaType):
                 return func.FuncTransformer(obj)
             if isinstance(obj, list):
                 return union.TransformerUnion(*[_coerce_to_estimator(part) for part in obj])
@@ -435,7 +435,7 @@ class Pipeline(base.Estimator):
         def infer_name(estimator: base.Estimator | typing.Callable) -> str:
             if isinstance(estimator, func.FuncTransformer):
                 return infer_name(estimator.func)
-            if isinstance(estimator, (types.FunctionType, types.LambdaType)):
+            if isinstance(estimator, types.FunctionType | types.LambdaType):
                 return estimator.__name__
             if hasattr(estimator, "__class__"):
                 return estimator.__class__.__name__
@@ -606,7 +606,7 @@ class Pipeline(base.Estimator):
         x, last_step = self._transform_one(x)
         return last_step.score_one(x, **params)
 
-    def forecast(self, horizon: int, xs: list[dict] = None):
+    def forecast(self, horizon: int, xs: list[dict] | None = None):
         """Return a forecast.
 
         Only works if each estimator has a `transform_one` method and the final estimator has a
@@ -709,7 +709,7 @@ class Pipeline(base.Estimator):
 
     # Mini-batch methods
 
-    def learn_many(self, X: pd.DataFrame, y: pd.Series = None, **params):
+    def learn_many(self, X: pd.DataFrame, y: pd.Series | None = None, **params):
         """Fit to a mini-batch.
 
         Parameters

@@ -6,6 +6,8 @@ some models the model's type is only known at runtime. For instance, we can't do
 thus provides utilities for determining an arbitrary model's type.
 
 """
+from __future__ import annotations
+
 import inspect
 
 from river import base

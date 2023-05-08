@@ -1,4 +1,6 @@
 """Weight initializers."""
+from __future__ import annotations
+
 import numpy as np
 
 from river.optim.base import Initializer
@@ -84,7 +86,7 @@ class Normal(Initializer):
 
     """
 
-    def __init__(self, mu=0.0, sigma=1.0, seed: int = None):
+    def __init__(self, mu=0.0, sigma=1.0, seed: int | None = None):
         self.mu = mu
         self.sigma = sigma
         self.seed = seed

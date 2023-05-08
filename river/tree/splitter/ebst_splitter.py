@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 import functools
-import typing
 
 from river.stats import Var
 
@@ -118,7 +119,7 @@ class EBSTSplitter(Splitter):
         last_check_ratio: float,
         last_check_vr: float,
         last_check_e: float,
-        pre_split_dist: typing.Union[typing.List, typing.Dict],
+        pre_split_dist: list | dict,
     ):
         """Remove bad splits.
 

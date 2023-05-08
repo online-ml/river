@@ -1,8 +1,9 @@
+from __future__ import annotations
+
 import collections
 import itertools
 import math
 import random
-import typing
 
 import numpy as np
 
@@ -32,17 +33,17 @@ class BaseSRPEnsemble(base.Wrapper, base.Ensemble):
 
     def __init__(
         self,
-        model: base.Estimator = None,
+        model: base.Estimator | None = None,
         n_models: int = 100,
-        subspace_size: typing.Union[int, float, str] = 0.6,
+        subspace_size: int | float | str = 0.6,
         training_method: str = "patches",
         lam: float = 6.0,
-        drift_detector: base.DriftDetector = None,
-        warning_detector: base.DriftDetector = None,
+        drift_detector: base.DriftDetector | None = None,
+        warning_detector: base.DriftDetector | None = None,
         disable_detector: str = "off",
         disable_weighted_vote: bool = False,
-        seed: int = None,
-        metric: Metric = None,
+        seed: int | None = None,
+        metric: Metric | None = None,
     ):
         # List of models is properly initialized later
         super().__init__([])  # type: ignore
@@ -60,12 +61,10 @@ class BaseSRPEnsemble(base.Wrapper, base.Ensemble):
         self._rng = random.Random(self.seed)
 
         self._n_samples_seen = 0
-        self._subspaces: typing.List = []
+        self._subspaces: list = []
 
         # defined by extended classes
-        self._base_learner_class: typing.Optional[
-            typing.Union["BaseSRPClassifier", "BaseSRPRegressor"]
-        ] = None
+        self._base_learner_class: BaseSRPClassifier | BaseSRPRegressor | None = None
 
     @property
     def _min_number_of_models(self):
@@ -269,9 +268,7 @@ class BaseSRPEstimator:
         self.rng = rng
 
         # Background learner
-        self._background_learner: typing.Optional[
-            typing.Union[BaseSRPClassifier, BaseSRPRegressor]
-        ] = None
+        self._background_learner: BaseSRPClassifier | BaseSRPRegressor | None = None
 
     def _trigger_warning(self, all_features, n_samples_seen: int):
         # Randomly generate a new subspace from all the original features
@@ -430,17 +427,17 @@ class SRPClassifier(BaseSRPEnsemble, base.Classifier):
 
     def __init__(
         self,
-        model: base.Estimator = None,
+        model: base.Estimator | None = None,
         n_models: int = 10,
-        subspace_size: typing.Union[int, float, str] = 0.6,
+        subspace_size: int | float | str = 0.6,
         training_method: str = "patches",
         lam: int = 6,
-        drift_detector: base.DriftDetector = None,
-        warning_detector: base.DriftDetector = None,
+        drift_detector: base.DriftDetector | None = None,
+        warning_detector: base.DriftDetector | None = None,
         disable_detector: str = "off",
         disable_weighted_vote: bool = False,
-        seed: int = None,
-        metric: typing.Optional[ClassificationMetric] = None,
+        seed: int | None = None,
+        metric: ClassificationMetric | None = None,
     ):
         if model is None:
             model = HoeffdingTreeClassifier(grace_period=50, delta=0.01)
@@ -706,19 +703,19 @@ class SRPRegressor(BaseSRPEnsemble, base.Regressor):
 
     def __init__(
         self,
-        model: base.Regressor = None,
+        model: base.Regressor | None = None,
         n_models: int = 10,
-        subspace_size: typing.Union[int, float, str] = 0.6,
+        subspace_size: int | float | str = 0.6,
         training_method: str = "patches",
         lam: int = 6,
-        drift_detector: base.DriftDetector = None,
-        warning_detector: base.DriftDetector = None,
+        drift_detector: base.DriftDetector | None = None,
+        warning_detector: base.DriftDetector | None = None,
         disable_detector: str = "off",
         disable_weighted_vote: bool = True,
         drift_detection_criteria: str = "error",
         aggregation_method: str = "mean",
         seed=None,
-        metric: typing.Optional[RegressionMetric] = None,
+        metric: RegressionMetric | None = None,
     ):
         # Check arguments for parent class
         if model is None:
@@ -813,7 +810,7 @@ class BaseSRPRegressor(BaseSRPEstimator):
         is_background_learner,
         rng: random.Random,
         features=None,
-        drift_detection_criteria: str = None,
+        drift_detection_criteria: str | None = None,
     ):
         super().__init__(
             idx_original=idx_original,

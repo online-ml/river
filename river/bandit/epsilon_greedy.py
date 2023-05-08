@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import math
 import random
 
@@ -61,7 +63,9 @@ class EpsilonGreedy(bandit.base.Policy):
 
     """
 
-    def __init__(self, epsilon: float, decay=0.0, reward_obj=None, burn_in=0, seed: int = None):
+    def __init__(
+        self, epsilon: float, decay=0.0, reward_obj=None, burn_in=0, seed: int | None = None
+    ):
         super().__init__(reward_obj, burn_in)
         self.epsilon = epsilon
         self.decay = decay

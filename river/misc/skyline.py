@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import collections
 
 from river import base
@@ -130,7 +132,7 @@ class Skyline(collections.UserList, base.Base):
 
     """
 
-    def __init__(self, minimize: list = None, maximize: list = None):
+    def __init__(self, minimize: list | None = None, maximize: list | None = None):
         super().__init__()
 
         self.minimize = [] if minimize is None else minimize

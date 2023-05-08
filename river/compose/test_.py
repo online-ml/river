@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import pandas as pd
 
 from river import compose, linear_model, preprocessing

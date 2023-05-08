@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import math
 import random
 import typing
@@ -143,7 +145,7 @@ class Counter(base.Base):
 
     """
 
-    def __init__(self, epsilon: float = 0.1, delta: float = 0.05, seed: int = None):
+    def __init__(self, epsilon: float = 0.1, delta: float = 0.05, seed: int | None = None):
         self.epsilon = epsilon
         self.delta = delta
         self.seed = seed
@@ -162,7 +164,7 @@ class Counter(base.Base):
         # Point query
         return min(self._cms[self._hash(x)])
 
-    def __matmul__(self, other: "Counter") -> int:
+    def __matmul__(self, other: Counter) -> int:
         # Dot product
         if self.n_slots != other.n_slots or self.n_tables != other.n_tables:
             unmatched_dims = (

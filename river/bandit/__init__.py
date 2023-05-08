@@ -5,6 +5,7 @@ variety of contexts. Within River, they are used for model selection
 (see `model_selection.BanditRegressor`).
 
 """
+from __future__ import annotations
 
 from . import base, envs
 from .epsilon_greedy import EpsilonGreedy

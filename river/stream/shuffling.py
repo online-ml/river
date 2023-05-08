@@ -1,10 +1,12 @@
+from __future__ import annotations
+
 import itertools
 import random
 import types
 import typing
 
 
-def shuffle(stream: typing.Iterator, buffer_size: int, seed: int = None):
+def shuffle(stream: typing.Iterator, buffer_size: int, seed: int | None = None):
     """Shuffles a stream of data.
 
     This works by maintaining a buffer of elements. The first `buffer_size` elements are stored in

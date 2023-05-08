@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import gym.utils.env_checker
 import pytest
 

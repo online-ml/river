@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import abc
 import inspect
 import itertools
@@ -178,7 +180,7 @@ class SyntheticDataset(Dataset):
 
         return out
 
-    def _get_params(self) -> typing.Dict[str, typing.Any]:
+    def _get_params(self) -> dict[str, typing.Any]:
         """Return the parameters that were used during initialization."""
         return {
             name: getattr(self, name)

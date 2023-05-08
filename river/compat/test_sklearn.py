@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import pytest
 from sklearn import linear_model as sk_linear_model
 from sklearn.utils import estimator_checks

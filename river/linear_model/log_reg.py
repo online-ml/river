@@ -1,4 +1,4 @@
-import typing
+from __future__ import annotations
 
 import pandas as pd
 
@@ -69,14 +69,14 @@ class LogisticRegression(linear_model.base.GLM, base.MiniBatchClassifier):
 
     def __init__(
         self,
-        optimizer: optim.base.Optimizer = None,
-        loss: optim.losses.BinaryLoss = None,
+        optimizer: optim.base.Optimizer | None = None,
+        loss: optim.losses.BinaryLoss | None = None,
         l2=0.0,
         l1=0.0,
         intercept_init=0.0,
-        intercept_lr: typing.Union[float, optim.base.Scheduler] = 0.01,
+        intercept_lr: float | optim.base.Scheduler = 0.01,
         clip_gradient=1e12,
-        initializer: optim.base.Initializer = None,
+        initializer: optim.base.Initializer | None = None,
     ):
         super().__init__(
             optimizer=optim.SGD(0.01) if optimizer is None else optimizer,

@@ -1,4 +1,6 @@
 """Time series forecasting."""
+from __future__ import annotations
+
 from . import base
 from .evaluate import evaluate, iter_evaluate
 from .holt_winters import HoltWinters

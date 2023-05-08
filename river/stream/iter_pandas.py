@@ -1,4 +1,4 @@
-import typing
+from __future__ import annotations
 
 import pandas as pd
 
@@ -6,7 +6,7 @@ from river import base, stream
 
 
 def iter_pandas(
-    X: pd.DataFrame, y: typing.Union[pd.Series, pd.DataFrame] = None, **kwargs
+    X: pd.DataFrame, y: pd.Series | pd.DataFrame | None = None, **kwargs
 ) -> base.typing.Stream:
     """Iterates over the rows of a `pandas.DataFrame`.
 

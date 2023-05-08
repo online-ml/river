@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import collections
 import typing
 
@@ -98,7 +100,7 @@ class Multinomial(base.DiscreteDistribution):
 
     """
 
-    def __init__(self, events: typing.Union[dict, list] = None, seed=None):
+    def __init__(self, events: dict | list | None = None, seed=None):
         super().__init__(seed)
         self.events = events
         self.counts: typing.Counter[typing.Any] = collections.Counter(events)

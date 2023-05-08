@@ -10,7 +10,7 @@ __all__ = ["iter_sql"]
 def iter_sql(
     query: str | sqlalchemy.TextClause | sqlalchemy.Select,
     conn: sqlalchemy.Connection,
-    target_name: str = None,
+    target_name: str | None = None,
 ) -> base.typing.Stream:
     """Iterates over the results from an SQL query.
 

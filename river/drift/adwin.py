@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from river.base import DriftDetector
 
 from .adwin_c import AdaptiveWindowing

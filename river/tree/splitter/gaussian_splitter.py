@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 import math
-import typing
 
 from river.base.typing import ClfTarget
 from river.proba import Gaussian
@@ -24,9 +25,9 @@ class GaussianSplitter(Splitter):
 
     def __init__(self, n_splits: int = 10):
         super().__init__()
-        self._min_per_class: typing.Dict[ClfTarget, float] = {}
-        self._max_per_class: typing.Dict[ClfTarget, float] = {}
-        self._att_dist_per_class: typing.Dict[ClfTarget, Gaussian] = {}
+        self._min_per_class: dict[ClfTarget, float] = {}
+        self._max_per_class: dict[ClfTarget, float] = {}
+        self._att_dist_per_class: dict[ClfTarget, Gaussian] = {}
         self.n_splits = n_splits
 
     def update(self, att_val, target_val, sample_weight):

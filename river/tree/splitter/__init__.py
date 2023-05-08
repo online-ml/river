@@ -13,6 +13,7 @@ Lastly, AOs cannot be used in SGT and FQs cannot be used in Hoeffding Trees. So,
 when choosing the correct feature splitter.
 
 """
+from __future__ import annotations
 
 from .base import Quantizer, Splitter
 from .ebst_splitter import EBSTSplitter

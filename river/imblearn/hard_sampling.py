@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import collections
 import random
 import typing
@@ -13,7 +15,7 @@ class Triplet(collections.namedtuple("Triplet", "x y loss")):
 class HardSampling(base.Wrapper):
     """Hard sampler."""
 
-    def __init__(self, model, loss, size, p, seed: int = None):
+    def __init__(self, model, loss, size, p, seed: int | None = None):
         self.model = model
         self.loss = loss
         self.p = p
@@ -132,8 +134,8 @@ class HardSamplingRegressor(HardSampling, base.Regressor):
         regressor: base.Regressor,
         size: int,
         p: float,
-        loss: optim.losses.RegressionLoss = None,
-        seed: int = None,
+        loss: optim.losses.RegressionLoss | None = None,
+        seed: int | None = None,
     ):
         if loss is None:
             loss = optim.losses.Absolute()
@@ -213,8 +215,8 @@ class HardSamplingClassifier(HardSampling, base.Classifier):
         classifier: base.Classifier,
         size: int,
         p: float,
-        loss: typing.Union[optim.losses.BinaryLoss, optim.losses.MultiClassLoss] = None,
-        seed: int = None,
+        loss: optim.losses.BinaryLoss | optim.losses.MultiClassLoss | None = None,
+        seed: int | None = None,
     ):
         if loss is None:
             loss = optim.losses.CrossEntropy() if classifier._multiclass else optim.losses.Log()

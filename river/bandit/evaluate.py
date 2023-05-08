@@ -1,21 +1,24 @@
+from __future__ import annotations
+
 import copy
 import random
-from typing import Callable, List
+from collections.abc import Callable
 
 try:
     import gym
 except ImportError:
     ...
+
 from river import bandit, stats
 
 
 def evaluate(
-    policies: List[bandit.base.Policy],
-    env: "gym.Env",
-    pull_func: Callable[[bandit.base.Policy, "gym.Env"], bandit.base.ArmID],
-    reward_stat: stats.base.Univariate = None,
+    policies: list[bandit.base.Policy],
+    env: gym.Env,
+    pull_func: Callable[[bandit.base.Policy, gym.Env], bandit.base.ArmID],
+    reward_stat: stats.base.Univariate | None = None,
     n_episodes: int = 20,
-    seed: int = None,
+    seed: int | None = None,
 ):
     """Benchmark a list of policies on a given Gym environment.
 

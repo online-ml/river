@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import math
 import random
 import textwrap
@@ -80,12 +82,12 @@ class ConceptDriftStream(datasets.base.SyntheticDataset):
 
     def __init__(
         self,
-        stream: datasets.base.SyntheticDataset = None,
-        drift_stream: datasets.base.SyntheticDataset = None,
+        stream: datasets.base.SyntheticDataset | None = None,
+        drift_stream: datasets.base.SyntheticDataset | None = None,
         position: int = 5000,
         width: int = 1000,
-        seed: int = None,
-        alpha: float = None,
+        seed: int | None = None,
+        alpha: float | None = None,
     ):
         if stream is None:
             stream = synth.Agrawal(seed=seed)

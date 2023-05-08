@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from river import stream
 
 from . import base

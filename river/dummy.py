@@ -3,6 +3,8 @@
 This module is here for testing purposes, as well as providing baseline performances.
 
 """
+from __future__ import annotations
+
 import collections
 
 from river import base, stats

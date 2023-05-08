@@ -124,7 +124,7 @@ class LDA(base.Transformer):
         ranking_smooth_factor=1e-12,
         burn_in_sweeps=5,
         maximum_size_vocabulary=4000,
-        seed: int = None,
+        seed: int | None = None,
     ):
         self.n_components = n_components
         self.number_of_documents = number_of_documents

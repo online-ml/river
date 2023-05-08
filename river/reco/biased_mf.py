@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import collections
 import copy
 import functools
@@ -114,13 +116,13 @@ class BiasedMF(Ranker):
     def __init__(
         self,
         n_factors=10,
-        bias_optimizer: optim.base.Optimizer = None,
-        latent_optimizer: optim.base.Optimizer = None,
-        loss: optim.losses.Loss = None,
+        bias_optimizer: optim.base.Optimizer | None = None,
+        latent_optimizer: optim.base.Optimizer | None = None,
+        loss: optim.losses.Loss | None = None,
         l2_bias=0.0,
         l2_latent=0.0,
-        weight_initializer: optim.initializers.Initializer = None,
-        latent_initializer: optim.initializers.Initializer = None,
+        weight_initializer: optim.initializers.Initializer | None = None,
+        latent_initializer: optim.initializers.Initializer | None = None,
         clip_gradient=1e12,
         seed=None,
     ):

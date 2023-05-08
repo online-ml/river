@@ -49,6 +49,7 @@ SGTs can deal with binary classification and single-target regression. They also
 dynamic and static feature quantizers to deal with numerical inputs.
 
 """
+from __future__ import annotations
 
 from . import base, splitter
 from .extremely_fast_decision_tree import ExtremelyFastDecisionTreeClassifier

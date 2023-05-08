@@ -6,6 +6,8 @@ the data in a stream fashion. All datasets have fixed size. Please refer to `riv
 are interested in infinite synthetic data generators.
 
 """
+from __future__ import annotations
+
 from . import base, synth
 from .airline_passengers import AirlinePassengers
 from .bananas import Bananas

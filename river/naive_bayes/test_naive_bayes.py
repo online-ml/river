@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import pandas as pd
 import pytest
 from sklearn import naive_bayes as sk_naive_bayes

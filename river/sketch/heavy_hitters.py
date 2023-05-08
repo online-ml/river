@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import math
 import operator
 import typing
@@ -86,7 +88,7 @@ class HeavyHitters(base.Base):
 
         self._bucket_width = math.ceil(1 / self.epsilon)
         self._n: int = 0
-        self._entries: typing.Dict[typing.Hashable, typing.Tuple[float, float]] = {}
+        self._entries: dict[typing.Hashable, tuple[float, float]] = {}
         self._delta: float = self._bucket_width
 
     def __getitem__(self, index) -> float:
@@ -119,7 +121,7 @@ class HeavyHitters(base.Base):
 
         return self
 
-    def most_common(self, n: int = None) -> typing.List[typing.Tuple[typing.Hashable, float]]:
+    def most_common(self, n: int | None = None) -> list[tuple[typing.Hashable, float]]:
         res = []
         for key in self._entries:
             freq, _ = self._entries[key]

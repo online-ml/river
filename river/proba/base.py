@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import abc
 import random
 import typing
@@ -17,7 +19,7 @@ class Distribution(base.Base):
 
     """
 
-    def __init__(self, seed: int = None):
+    def __init__(self, seed: int | None = None):
         self.seed = seed
         self._rng = random.Random(seed)
 

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import random
 
 from river import datasets
@@ -50,7 +52,7 @@ class SEA(datasets.base.SyntheticDataset):
 
     """
 
-    def __init__(self, variant=0, noise=0.0, seed: int = None):
+    def __init__(self, variant=0, noise=0.0, seed: int | None = None):
         super().__init__(n_features=3, task=datasets.base.BINARY_CLF)
 
         if variant not in (0, 1, 2, 3):

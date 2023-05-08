@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from river import optim, utils
 
 __all__ = ["Newton"]

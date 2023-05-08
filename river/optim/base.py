@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import abc
-import typing
 
 import numpy as np
 
@@ -9,7 +8,7 @@ from river import base, optim, utils
 
 __all__ = ["Initializer", "Scheduler", "Optimizer", "Loss"]
 
-VectorLike = typing.Union[utils.VectorDict, np.ndarray]
+VectorLike = utils.VectorDict | np.ndarray
 
 
 class Initializer(base.Base, abc.ABC):
@@ -63,7 +62,7 @@ class Optimizer(base.Base):
     """
 
     def __init__(self, lr: int | float | Scheduler):
-        if isinstance(lr, (int, float)):
+        if isinstance(lr, int | float):
             lr = optim.schedulers.Constant(lr)
         self.lr = lr
         self.n_iterations = 0
@@ -88,13 +87,13 @@ class Optimizer(base.Base):
         """
         return w
 
-    def _step_with_dict(self, w: dict | VectorLike, g: dict | VectorLike) -> dict:
+    def _step_with_dict(self, w: dict | VectorLike, g: dict | VectorLike) -> dict:  # type: ignore
         raise NotImplementedError
 
-    def _step_with_vector(self, w: VectorLike, g: VectorLike) -> VectorLike:
+    def _step_with_vector(self, w: VectorLike, g: VectorLike) -> VectorLike:  # type: ignore
         raise NotImplementedError
 
-    def step(self, w: dict | VectorLike, g: dict | VectorLike) -> dict | VectorLike:
+    def step(self, w: dict | VectorLike, g: dict | VectorLike) -> dict | VectorLike:  # type: ignore
         """Updates a weight vector given a gradient.
 
         Parameters
@@ -110,8 +109,8 @@ class Optimizer(base.Base):
 
         """
 
-        if isinstance(w, (utils.VectorDict, np.ndarray)) and isinstance(
-            g, (utils.VectorDict, np.ndarray)
+        if isinstance(w, utils.VectorDict | np.ndarray) and isinstance(
+            g, utils.VectorDict | np.ndarray
         ):
             try:
                 w = self._step_with_vector(w, g)

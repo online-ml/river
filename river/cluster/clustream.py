@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import math
 import typing
 from collections import defaultdict
@@ -122,7 +124,7 @@ class CluStream(base.Clusterer):
         micro_cluster_r_factor: int = 2,
         time_window: int = 1000,
         time_gap: int = 100,
-        seed: int = None,
+        seed: int | None = None,
         **kwargs,
     ):
         super().__init__()
@@ -135,13 +137,13 @@ class CluStream(base.Clusterer):
 
         self.kwargs = kwargs
 
-        self.centers: typing.Dict[int, typing.DefaultDict] = {}
-        self.micro_clusters: typing.Dict[int, CluStreamMicroCluster] = {}
+        self.centers: dict[int, typing.DefaultDict] = {}
+        self.micro_clusters: dict[int, CluStreamMicroCluster] = {}
 
         self._timestamp = -1
         self._initialized = False
 
-        self._mc_centers: typing.Dict[int, typing.DefaultDict] = {}
+        self._mc_centers: dict[int, typing.DefaultDict] = {}
         self._kmeans_mc = None
 
     def _maintain_micro_clusters(self, x, w):
@@ -272,8 +274,8 @@ class CluStreamMicroCluster(base.Base):
     def __init__(
         self,
         x: dict = defaultdict(float),
-        w: float = None,
-        timestamp: int = None,
+        w: float | None = None,
+        timestamp: int | None = None,
     ):
         # Initialize with sample x
         self.x = x
@@ -343,7 +345,7 @@ class CluStreamMicroCluster(base.Base):
 
         return res
 
-    def __iadd__(self, other: "CluStreamMicroCluster"):
+    def __iadd__(self, other: CluStreamMicroCluster):
         self.var_time += other.var_time
         self.var_x = {k: self.var_x[k] + other.var_x.get(k, stats.Var()) for k in self.var_x}
         return self

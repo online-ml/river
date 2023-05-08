@@ -6,6 +6,8 @@ boosting. Then there are those that are composed of an arbitrary list of models,
 aggregate predictions from different kinds of models.
 
 """
+from __future__ import annotations
+
 from .bagging import (
     ADWINBaggingClassifier,
     BaggingClassifier,

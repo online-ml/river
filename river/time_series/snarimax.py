@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import collections
 import itertools
 import math
@@ -279,7 +281,7 @@ class SNARIMAX(time_series.base.Forecaster):
         sp: int = 0,
         sd: int = 0,
         sq: int = 0,
-        regressor: base.Regressor = None,
+        regressor: base.Regressor | None = None,
     ):
         self.p = p
         self.d = d

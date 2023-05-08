@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import abc
 import collections
 import copy
@@ -28,11 +30,11 @@ class BaseForest(base.Ensemble):
     def __init__(
         self,
         n_models: int,
-        max_features: typing.Union[bool, str, int],
+        max_features: bool | str | int,
         lambda_value: int,
-        drift_detector: typing.Optional[base.DriftDetector],
-        warning_detector: typing.Optional[base.DriftDetector],
-        metric: typing.Union[metrics.base.MultiClassMetric, metrics.base.RegressionMetric],
+        drift_detector: base.DriftDetector | None,
+        warning_detector: base.DriftDetector | None,
+        metric: metrics.base.MultiClassMetric | metrics.base.RegressionMetric,
         disable_weighted_vote,
         seed,
     ):
@@ -49,9 +51,7 @@ class BaseForest(base.Ensemble):
 
         # Internal parameters
         self._n_samples_seen = 0
-        self._base_member_class: typing.Optional[
-            typing.Union["ForestMemberClassifier", "ForestMemberRegressor"]
-        ] = None
+        self._base_member_class: ForestMemberClassifier | ForestMemberRegressor | None = None
 
     @property
     def _min_number_of_models(self):
@@ -150,21 +150,21 @@ class BaseTreeClassifier(HoeffdingTreeClassifier):
         self,
         max_features: int = 2,
         grace_period: int = 200,
-        max_depth: int = None,
+        max_depth: int | None = None,
         split_criterion: str = "info_gain",
         delta: float = 1e-7,
         tau: float = 0.05,
         leaf_prediction: str = "nba",
         nb_threshold: int = 0,
-        nominal_attributes: list = None,
-        splitter: Splitter = None,
+        nominal_attributes: list | None = None,
+        splitter: Splitter | None = None,
         binary_split: bool = False,
         max_size: float = 100.0,
         memory_estimate_period: int = 1000000,
         stop_mem_management: bool = False,
         remove_poor_attrs: bool = False,
         merit_preprune: bool = True,
-        rng: random.Random = None,
+        rng: random.Random | None = None,
     ):
         super().__init__(
             grace_period=grace_period,
@@ -242,14 +242,14 @@ class BaseTreeRegressor(HoeffdingTreeRegressor):
         self,
         max_features: int = 2,
         grace_period: int = 200,
-        max_depth: int = None,
+        max_depth: int | None = None,
         delta: float = 1e-7,
         tau: float = 0.05,
         leaf_prediction: str = "adaptive",
-        leaf_model: base.Regressor = None,
+        leaf_model: base.Regressor | None = None,
         model_selector_decay: float = 0.95,
-        nominal_attributes: list = None,
-        splitter: Splitter = None,
+        nominal_attributes: list | None = None,
+        splitter: Splitter | None = None,
         min_samples_split: int = 5,
         binary_split: bool = False,
         max_size: float = 100.0,
@@ -257,7 +257,7 @@ class BaseTreeRegressor(HoeffdingTreeRegressor):
         stop_mem_management: bool = False,
         remove_poor_attrs: bool = False,
         merit_preprune: bool = True,
-        rng: random.Random = None,
+        rng: random.Random | None = None,
     ):
         super().__init__(
             grace_period=grace_period,
@@ -467,29 +467,29 @@ class ARFClassifier(BaseForest, base.Classifier):
     def __init__(
         self,
         n_models: int = 10,
-        max_features: typing.Union[bool, str, int] = "sqrt",
+        max_features: bool | str | int = "sqrt",
         lambda_value: int = 6,
-        metric: metrics.base.MultiClassMetric = None,
+        metric: metrics.base.MultiClassMetric | None = None,
         disable_weighted_vote=False,
-        drift_detector: typing.Union[base.DriftDetector, None] = None,
-        warning_detector: typing.Union[base.DriftDetector, None] = None,
+        drift_detector: base.DriftDetector | None = None,
+        warning_detector: base.DriftDetector | None = None,
         # Tree parameters
         grace_period: int = 50,
-        max_depth: int = None,
+        max_depth: int | None = None,
         split_criterion: str = "info_gain",
         delta: float = 0.01,
         tau: float = 0.05,
         leaf_prediction: str = "nba",
         nb_threshold: int = 0,
-        nominal_attributes: list = None,
-        splitter: Splitter = None,
+        nominal_attributes: list | None = None,
+        splitter: Splitter | None = None,
         binary_split: bool = False,
         max_size: float = 100.0,
         memory_estimate_period: int = 2_000_000,
         stop_mem_management: bool = False,
         remove_poor_attrs: bool = False,
         merit_preprune: bool = True,
-        seed: int = None,
+        seed: int | None = None,
     ):
         super().__init__(
             n_models=n_models,
@@ -536,7 +536,7 @@ class ARFClassifier(BaseForest, base.Classifier):
     def _multiclass(self):
         return True
 
-    def predict_proba_one(self, x: dict) -> typing.Dict[base.typing.ClfTarget, float]:
+    def predict_proba_one(self, x: dict) -> dict[base.typing.ClfTarget, float]:
         y_pred: typing.Counter = collections.Counter()
 
         if len(self) == 0:
@@ -732,20 +732,20 @@ class ARFRegressor(BaseForest, base.Regressor):
         max_features="sqrt",
         aggregation_method: str = "median",
         lambda_value: int = 6,
-        metric: metrics.base.RegressionMetric = None,
+        metric: metrics.base.RegressionMetric | None = None,
         disable_weighted_vote=True,
-        drift_detector: base.DriftDetector = None,
-        warning_detector: base.DriftDetector = None,
+        drift_detector: base.DriftDetector | None = None,
+        warning_detector: base.DriftDetector | None = None,
         # Tree parameters
         grace_period: int = 50,
-        max_depth: int = None,
+        max_depth: int | None = None,
         delta: float = 0.01,
         tau: float = 0.05,
         leaf_prediction: str = "adaptive",
-        leaf_model: base.Regressor = None,
+        leaf_model: base.Regressor | None = None,
         model_selector_decay: float = 0.95,
-        nominal_attributes: list = None,
-        splitter: Splitter = None,
+        nominal_attributes: list | None = None,
+        splitter: Splitter | None = None,
         min_samples_split: int = 5,
         binary_split: bool = False,
         max_size: float = 500.0,
@@ -753,7 +753,7 @@ class ARFRegressor(BaseForest, base.Regressor):
         stop_mem_management: bool = False,
         remove_poor_attrs: bool = False,
         merit_preprune: bool = True,
-        seed: int = None,
+        seed: int | None = None,
     ):
         super().__init__(
             n_models=n_models,
@@ -900,12 +900,12 @@ class BaseForestMember:
     def __init__(
         self,
         index_original: int,
-        model: typing.Union[BaseTreeClassifier, BaseTreeRegressor],
+        model: BaseTreeClassifier | BaseTreeRegressor,
         created_on: int,
         drift_detector: base.DriftDetector,
         warning_detector: base.DriftDetector,
         is_background_learner,
-        metric: typing.Union[metrics.base.MultiClassMetric, metrics.base.RegressionMetric],
+        metric: metrics.base.MultiClassMetric | metrics.base.RegressionMetric,
     ):
         self.index_original = index_original
         self.model = model
@@ -995,8 +995,8 @@ class BaseForestMember:
     @abc.abstractmethod
     def _drift_detector_input(
         self,
-        y_true: typing.Union[base.typing.ClfTarget, base.typing.RegTarget],
-        y_pred: typing.Union[base.typing.ClfTarget, base.typing.RegTarget],
+        y_true: base.typing.ClfTarget | base.typing.RegTarget,
+        y_pred: base.typing.ClfTarget | base.typing.RegTarget,
     ):
         raise NotImplementedError
 

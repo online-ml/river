@@ -1,7 +1,8 @@
+from __future__ import annotations
+
 import csv
 import datetime as dt
 import random
-import typing
 
 from .. import base
 from . import utils
@@ -32,15 +33,15 @@ class DictReader(csv.DictReader):
 
 def iter_csv(
     filepath_or_buffer,
-    target: typing.Union[str, typing.List[str]] = None,
-    converters: dict = None,
-    parse_dates: dict = None,
-    drop: typing.List[str] = None,
+    target: str | list[str] | None = None,
+    converters: dict | None = None,
+    parse_dates: dict | None = None,
+    drop: list[str] | None = None,
     drop_nones=False,
     fraction=1.0,
     compression="infer",
-    seed: int = None,
-    field_size_limit: int = None,
+    seed: int | None = None,
+    field_size_limit: int | None = None,
     **kwargs,
 ) -> base.typing.Stream:
     """Iterates over rows from a CSV file.

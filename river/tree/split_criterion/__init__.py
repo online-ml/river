@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from .gini_split_criterion import GiniSplitCriterion
 from .hellinger_distance_criterion import HellingerDistanceCriterion
 from .info_gain_split_criterion import InfoGainSplitCriterion
