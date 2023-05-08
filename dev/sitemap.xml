@@ -2086,6 +2086,21 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://riverml.xyz/dev/examples/matrix-factorization-for-recommender-systems/part-1/</loc>
+         <lastmod>2023-05-08</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://riverml.xyz/dev/examples/matrix-factorization-for-recommender-systems/part-2/</loc>
+         <lastmod>2023-05-08</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://riverml.xyz/dev/examples/matrix-factorization-for-recommender-systems/part-3/</loc>
+         <lastmod>2023-05-08</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://riverml.xyz/dev/faq/</loc>
          <lastmod>2023-05-08</lastmod>
          <changefreq>daily</changefreq>

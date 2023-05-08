@@ -9881,6 +9881,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
@@ -10016,6 +10018,90 @@
       <a href="../../../examples/the-art-of-using-pipelines/" class="md-nav__link">
         The art of using pipelines
       </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_10" >
+      
+      
+        
+          
+        
+          
+        
+          
+        
+      
+      
+        <label class="md-nav__link" for="__nav_4_10" id="__nav_4_10_label" tabindex="0">
+          Matrix factorization for recommender systems
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_10_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_4_10">
+          <span class="md-nav__icon md-icon"></span>
+          Matrix factorization for recommender systems
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../examples/matrix-factorization-for-recommender-systems/part-1/" class="md-nav__link">
+        Part 1
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../examples/matrix-factorization-for-recommender-systems/part-2/" class="md-nav__link">
+        Part 2
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../examples/matrix-factorization-for-recommender-systems/part-3/" class="md-nav__link">
+        Part 3
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
     </li>
   
 
@@ -10164,7 +10250,7 @@
   
     <li class="md-nav__item">
       <a href="../../../releases/unreleased/" class="md-nav__link">
-        0.16.0 - 2022-05-07
+        0.16.0 - 2022-05-08
       </a>
     </li>
   
@@ -10799,12 +10885,12 @@
 </li>
 <li>
 <p><strong>by</strong></p>
-<p><em>Type</em> → <em>Union[str, List[str], NoneType]</em></p>
+<p><em>Type</em> → <em>str | list[str] | None</em></p>
 <p>The feature by which to group the data. All the data is included in the aggregate if this is <code>None</code>.</p>
 </li>
 <li>
 <p><strong>how</strong></p>
-<p><em>Type</em> → <em><a href="/api/stats/base/Univariate">stats.base.Univariate</a></em></p>
+<p><em>Type</em> → <em><a href="/api/stats/base/Univariate">stats.base.Univariate</a> | <a href="/api/utils/Rolling">utils.Rolling</a> | <a href="/api/utils/TimeRolling">utils.TimeRolling</a></em></p>
 <p>The statistic to compute.</p>
 </li>
 </ul>
@@ -10926,10 +11012,8 @@ instance, we can calculate the average (how) revenue (on) for each place (by) ov
     <span class="n">how</span><span class="o">=</span><span class="n">utils</span><span class="o">.</span><span class="n">TimeRolling</span><span class="p">(</span><span class="n">stats</span><span class="o">.</span><span class="n">Mean</span><span class="p">(),</span> <span class="n">dt</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">7</span><span class="p">))</span>
 <span class="p">)</span>
 
-<span class="n">rng</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">Random</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
-
 <span class="k">for</span> <span class="n">day</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">366</span><span class="p">):</span>
-    <span class="n">g</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">ascii_lowercase</span><span class="p">)</span>
+    <span class="n">g</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">ascii_lowercase</span><span class="p">)</span>
     <span class="n">x</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s2">&quot;group&quot;</span><span class="p">:</span> <span class="n">g</span><span class="p">,</span>
         <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">string</span><span class="o">.</span><span class="n">ascii_lowercase</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">g</span><span class="p">)</span> <span class="o">+</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(),</span>
