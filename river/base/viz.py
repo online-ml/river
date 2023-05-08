@@ -88,6 +88,7 @@ CSS = """
     padding: 1em;
     border-style: solid;
     background: white;
+    max-width: max-content;
 }
 
 .river-pipeline {
