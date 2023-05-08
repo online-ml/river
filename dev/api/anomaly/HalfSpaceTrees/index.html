@@ -6,10 +6,10 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="Machine learning for data streams in Python">
+        <meta name="description" content="Online machine learning in Python">
       
       
-        <meta name="author" content="The river developers">
+        <meta name="author" content="The Fellowship of Online Machine Learning">
       
       
         <link rel="canonical" href="https://riverml.xyz/dev/api/anomaly/HalfSpaceTrees/">
@@ -43,8 +43,8 @@
         
         
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Rubik:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
-        <style>:root{--md-text-font:"Rubik";--md-code-font:"Roboto Mono"}</style>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Sans:300,300i,400,400i,700,700i%7CFira+Code:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Fira Sans";--md-code-font:"Fira Code"}</style>
       
     
     
@@ -65,12 +65,16 @@
   
     
     
+      
+    
     
     
     
     <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
   
     
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
@@ -121,6 +125,30 @@
       </div>
     </div>
     
+      
+        <form class="md-header__option" data-md-component="palette">
+          
+            
+            
+            
+            <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+            
+              <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+              </label>
+            
+          
+            
+            
+            
+            <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_2">
+            
+              <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+              </label>
+            
+          
+        </form>
       
     
     
@@ -211,7 +239,25 @@
   
     <li class="md-tabs__item">
       <a href="../../../recipes/reading-data/" class="md-tabs__link">
-        Recipes 🍱
+        Recipes 🌮
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../overview/" class="md-tabs__link md-tabs__link--active">
+        API reference 🍱
       </a>
     </li>
   
@@ -236,24 +282,6 @@
         
   
   
-    
-  
-
-
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="../../overview/" class="md-tabs__link md-tabs__link--active">
-        API reference 📚
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
 
 
   
@@ -261,7 +289,7 @@
   
     <li class="md-tabs__item">
       <a href="../../../faq/" class="md-tabs__link">
-        FAQ 🙋
+        FAQ
       </a>
     </li>
   
@@ -277,7 +305,7 @@
   
     <li class="md-tabs__item">
       <a href="../../../releases/unreleased/" class="md-tabs__link">
-        Releases 🏗️
+        Releases
       </a>
     </li>
   
@@ -291,11 +319,18 @@
   
   
   
+    
+
+  
+  
+  
     <li class="md-tabs__item">
-      <a href="../../../benchmarks/" class="md-tabs__link">
-        Benchmarks 📊
+      <a href="../../../benchmarks/Binary%20classification/" class="md-tabs__link">
+        Benchmarks
       </a>
     </li>
+  
+
   
 
       
@@ -603,14 +638,14 @@
       
       
         <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
-          Recipes 🍱
+          Recipes 🌮
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
         <label class="md-nav__title" for="__nav_2">
           <span class="md-nav__icon md-icon"></span>
-          Recipes 🍱
+          Recipes 🌮
         </label>
         <ul class="md-nav__list" data-md-scrollfix>
           
@@ -780,16 +815,78 @@
 
   
   
+    
+  
   
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
       
       
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
         
           
         
@@ -814,343 +911,14 @@
       
       
         <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
-          Examples 🌶️
+          API reference 🍱
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
         <label class="md-nav__title" for="__nav_3">
           <span class="md-nav__icon md-icon"></span>
-          Examples 🌶️
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../examples/batch-to-online/" class="md-nav__link">
-        From batch to online/stream
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../examples/bike-sharing-forecasting/" class="md-nav__link">
-        Bike-sharing forecasting
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../examples/building-a-simple-nowcasting-model/" class="md-nav__link">
-        Building a simple nowcasting model
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../examples/content-personalization/" class="md-nav__link">
-        Content personalization
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../examples/debugging-a-pipeline/" class="md-nav__link">
-        Debugging a pipeline
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../examples/imbalanced-learning/" class="md-nav__link">
-        Working with imbalanced data
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../examples/quantile-regression-uncertainty/" class="md-nav__link">
-        Handling uncertainty with quantile regression
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../examples/sentence-classification/" class="md-nav__link">
-        Sentence classification
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../examples/the-art-of-using-pipelines/" class="md-nav__link">
-        The art of using pipelines
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-      
-      
-      
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_10" >
-      
-      
-        
-          
-        
-          
-        
-          
-        
-      
-      
-        <label class="md-nav__link" for="__nav_3_10" id="__nav_3_10_label" tabindex="0">
-          Matrix factorization for recommender systems
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_10_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_3_10">
-          <span class="md-nav__icon md-icon"></span>
-          Matrix factorization for recommender systems
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../examples/matrix-factorization-for-recommender-systems/part-1/" class="md-nav__link">
-        Part 1
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../examples/matrix-factorization-for-recommender-systems/part-2/" class="md-nav__link">
-        Part 2
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../examples/matrix-factorization-for-recommender-systems/part-3/" class="md-nav__link">
-        Part 3
-      </a>
-    </li>
-  
-
-            
-          
-        </ul>
-      </nav>
-    </li>
-  
-
-            
-          
-        </ul>
-      </nav>
-    </li>
-  
-
-    
-      
-      
-      
-
-  
-  
-    
-  
-  
-    
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
-      
-      
-      
-      
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
-      
-      
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-      
-      
-        <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
-          API reference 📚
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
-        <label class="md-nav__title" for="__nav_4">
-          <span class="md-nav__icon md-icon"></span>
-          API reference 📚
+          API reference 🍱
         </label>
         <ul class="md-nav__list" data-md-scrollfix>
           
@@ -1179,7 +947,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_2" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2" >
       
       
         
@@ -1189,13 +957,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_2" id="__nav_4_2_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3_2" id="__nav_3_2_label" tabindex="0">
           active
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_2_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_4_2">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_2_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_2">
           <span class="md-nav__icon md-icon"></span>
           active
         </label>
@@ -1226,7 +994,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_2_2" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2_2" >
       
       
         
@@ -1234,13 +1002,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_2_2" id="__nav_4_2_2_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3_2_2" id="__nav_3_2_2_label" tabindex="0">
           base
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_2_2_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_4_2_2">
+      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_2_2_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_2_2">
           <span class="md-nav__icon md-icon"></span>
           base
         </label>
@@ -1287,7 +1055,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3" checked>
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_3" checked>
       
       
         
@@ -1305,13 +1073,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_3" id="__nav_4_3_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3_3" id="__nav_3_3_label" tabindex="0">
           anomaly
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_3_label" aria-expanded="true">
-        <label class="md-nav__title" for="__nav_4_3">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_3_label" aria-expanded="true">
+        <label class="md-nav__title" for="__nav_3_3">
           <span class="md-nav__icon md-icon"></span>
           anomaly
         </label>
@@ -1398,13 +1166,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#references" class="md-nav__link">
-    References
-  </a>
-  
-</li>
-      
     </ul>
   
 </nav>
@@ -1467,7 +1228,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3_6" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_3_6" >
       
       
         
@@ -1479,13 +1240,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_3_6" id="__nav_4_3_6_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3_3_6" id="__nav_3_3_6_label" tabindex="0">
           base
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_3_6_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_4_3_6">
+      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_3_6_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_3_6">
           <span class="md-nav__icon md-icon"></span>
           base
         </label>
@@ -1558,7 +1319,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_4" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_4" >
       
       
         
@@ -1576,13 +1337,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_4" id="__nav_4_4_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3_4" id="__nav_3_4_label" tabindex="0">
           bandit
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_4_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_4_4">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_4_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_4">
           <span class="md-nav__icon md-icon"></span>
           bandit
         </label>
@@ -1655,7 +1416,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_4_5" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_4_5" >
       
       
         
@@ -1663,13 +1424,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_4_5" id="__nav_4_4_5_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3_4_5" id="__nav_3_4_5_label" tabindex="0">
           base
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_4_5_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_4_4_5">
+      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_4_5_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_4_5">
           <span class="md-nav__icon md-icon"></span>
           base
         </label>
@@ -1707,7 +1468,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_4_6" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_4_6" >
       
       
         
@@ -1717,13 +1478,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_4_6" id="__nav_4_4_6_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3_4_6" id="__nav_3_4_6_label" tabindex="0">
           envs
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_4_6_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_4_4_6">
+      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_4_6_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_4_6">
           <span class="md-nav__icon md-icon"></span>
           envs
         </label>
@@ -1782,7 +1543,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_5" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_5" >
       
       
         
@@ -1828,13 +1589,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_5" id="__nav_4_5_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3_5" id="__nav_3_5_label" tabindex="0">
           base
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_5_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_4_5">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_5_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_5">
           <span class="md-nav__icon md-icon"></span>
           base
         </label>
@@ -2138,7 +1899,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_6" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_6" >
       
       
         
@@ -2156,13 +1917,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_6" id="__nav_4_6_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3_6" id="__nav_3_6_label" tabindex="0">
           cluster
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_6_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_4_6">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_6_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_6">
           <span class="md-nav__icon md-icon"></span>
           cluster
         </label>
@@ -2270,7 +2031,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_7" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_7" >
       
       
         
@@ -2292,13 +2053,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_7" id="__nav_4_7_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3_7" id="__nav_3_7_label" tabindex="0">
           compat
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_7_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_4_7">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_7_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_7">
           <span class="md-nav__icon md-icon"></span>
           compat
         </label>
@@ -2434,7 +2195,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_8" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_8" >
       
       
         
@@ -2468,13 +2229,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_8" id="__nav_4_8_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3_8" id="__nav_3_8_label" tabindex="0">
           compose
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_8_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_4_8">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_8_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_8">
           <span class="md-nav__icon md-icon"></span>
           compose
         </label>
@@ -2694,7 +2455,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_9" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_9" >
       
       
         
@@ -2704,13 +2465,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_9" id="__nav_4_9_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3_9" id="__nav_3_9_label" tabindex="0">
           conf
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_9_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_4_9">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_9_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_9">
           <span class="md-nav__icon md-icon"></span>
           conf
         </label>
@@ -2762,7 +2523,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_10" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_10" >
       
       
         
@@ -2772,13 +2533,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_10" id="__nav_4_10_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3_10" id="__nav_3_10_label" tabindex="0">
           covariance
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_10_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_4_10">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_10_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_10">
           <span class="md-nav__icon md-icon"></span>
           covariance
         </label>
@@ -2830,395 +2591,25 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_11" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_11" >
       
       
         
           
         
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
       
       
-        <label class="md-nav__link" for="__nav_4_11" id="__nav_4_11_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3_11" id="__nav_3_11_label" tabindex="0">
           datasets
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_11_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_4_11">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_11_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_11">
           <span class="md-nav__icon md-icon"></span>
           datasets
         </label>
         <ul class="md-nav__list" data-md-scrollfix>
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../datasets/AirlinePassengers/" class="md-nav__link">
-        AirlinePassengers
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../datasets/Bananas/" class="md-nav__link">
-        Bananas
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../datasets/Bikes/" class="md-nav__link">
-        Bikes
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../datasets/ChickWeights/" class="md-nav__link">
-        ChickWeights
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../datasets/CreditCard/" class="md-nav__link">
-        CreditCard
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../datasets/Elec2/" class="md-nav__link">
-        Elec2
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../datasets/HTTP/" class="md-nav__link">
-        HTTP
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../datasets/Higgs/" class="md-nav__link">
-        Higgs
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../datasets/ImageSegments/" class="md-nav__link">
-        ImageSegments
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../datasets/Insects/" class="md-nav__link">
-        Insects
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../datasets/Keystroke/" class="md-nav__link">
-        Keystroke
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../datasets/MaliciousURL/" class="md-nav__link">
-        MaliciousURL
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../datasets/MovieLens100K/" class="md-nav__link">
-        MovieLens100K
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../datasets/Music/" class="md-nav__link">
-        Music
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../datasets/Phishing/" class="md-nav__link">
-        Phishing
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../datasets/Restaurants/" class="md-nav__link">
-        Restaurants
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../datasets/SMSSpam/" class="md-nav__link">
-        SMSSpam
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../datasets/SMTP/" class="md-nav__link">
-        SMTP
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../datasets/SolarFlare/" class="md-nav__link">
-        SolarFlare
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../datasets/TREC07/" class="md-nav__link">
-        TREC07
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../datasets/Taxis/" class="md-nav__link">
-        Taxis
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../datasets/TrumpApproval/" class="md-nav__link">
-        TrumpApproval
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../datasets/WaterFlow/" class="md-nav__link">
-        WaterFlow
-      </a>
-    </li>
-  
-
-            
           
             
               
@@ -3231,7 +2622,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_11_24" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_11_1" >
       
       
         
@@ -3245,13 +2636,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_11_24" id="__nav_4_11_24_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3_11_1" id="__nav_3_11_1_label" tabindex="0">
           base
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_11_24_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_4_11_24">
+      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_11_1_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_11_1">
           <span class="md-nav__icon md-icon"></span>
           base
         </label>
@@ -3320,346 +2711,6 @@
 
             
           
-            
-              
-  
-  
-  
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-      
-      
-      
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_11_25" >
-      
-      
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-      
-      
-        <label class="md-nav__link" for="__nav_4_11_25" id="__nav_4_11_25_label" tabindex="0">
-          synth
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_11_25_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_4_11_25">
-          <span class="md-nav__icon md-icon"></span>
-          synth
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../datasets/synth/Agrawal/" class="md-nav__link">
-        Agrawal
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../datasets/synth/AnomalySine/" class="md-nav__link">
-        AnomalySine
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../datasets/synth/ConceptDriftStream/" class="md-nav__link">
-        ConceptDriftStream
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../datasets/synth/Friedman/" class="md-nav__link">
-        Friedman
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../datasets/synth/FriedmanDrift/" class="md-nav__link">
-        FriedmanDrift
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../datasets/synth/Hyperplane/" class="md-nav__link">
-        Hyperplane
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../datasets/synth/LED/" class="md-nav__link">
-        LED
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../datasets/synth/LEDDrift/" class="md-nav__link">
-        LEDDrift
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../datasets/synth/Logical/" class="md-nav__link">
-        Logical
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../datasets/synth/Mixed/" class="md-nav__link">
-        Mixed
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../datasets/synth/Mv/" class="md-nav__link">
-        Mv
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../datasets/synth/Planes2D/" class="md-nav__link">
-        Planes2D
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../datasets/synth/RandomRBF/" class="md-nav__link">
-        RandomRBF
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../datasets/synth/RandomRBFDrift/" class="md-nav__link">
-        RandomRBFDrift
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../datasets/synth/RandomTree/" class="md-nav__link">
-        RandomTree
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../datasets/synth/SEA/" class="md-nav__link">
-        SEA
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../datasets/synth/STAGGER/" class="md-nav__link">
-        STAGGER
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../datasets/synth/Sine/" class="md-nav__link">
-        Sine
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../datasets/synth/Waveform/" class="md-nav__link">
-        Waveform
-      </a>
-    </li>
-  
-
-            
-          
-        </ul>
-      </nav>
-    </li>
-  
-
-            
-          
         </ul>
       </nav>
     </li>
@@ -3678,7 +2729,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_12" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_12" >
       
       
         
@@ -3696,13 +2747,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_12" id="__nav_4_12_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3_12" id="__nav_3_12_label" tabindex="0">
           drift
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_12_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_4_12">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_12_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_12">
           <span class="md-nav__icon md-icon"></span>
           drift
         </label>
@@ -3789,7 +2840,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_12_6" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_12_6" >
       
       
         
@@ -3803,13 +2854,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_12_6" id="__nav_4_12_6_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3_12_6" id="__nav_3_12_6_label" tabindex="0">
           binary
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_12_6_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_4_12_6">
+      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_12_6_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_12_6">
           <span class="md-nav__icon md-icon"></span>
           binary
         </label>
@@ -3896,7 +2947,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_13" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_13" >
       
       
         
@@ -3908,13 +2959,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_13" id="__nav_4_13_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3_13" id="__nav_3_13_label" tabindex="0">
           dummy
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_13_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_4_13">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_13_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_13">
           <span class="md-nav__icon md-icon"></span>
           dummy
         </label>
@@ -3980,7 +3031,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_14" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_14" >
       
       
         
@@ -4010,13 +3061,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_14" id="__nav_4_14_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3_14" id="__nav_3_14_label" tabindex="0">
           ensemble
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_14_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_4_14">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_14_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_14">
           <span class="md-nav__icon md-icon"></span>
           ensemble
         </label>
@@ -4208,7 +3259,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_15" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_15" >
       
       
         
@@ -4226,13 +3277,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_15" id="__nav_4_15_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3_15" id="__nav_3_15_label" tabindex="0">
           evaluate
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_15_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_4_15">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_15_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_15">
           <span class="md-nav__icon md-icon"></span>
           evaluate
         </label>
@@ -4340,7 +3391,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_16" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_16" >
       
       
         
@@ -4362,13 +3413,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_16" id="__nav_4_16_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3_16" id="__nav_3_16_label" tabindex="0">
           facto
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_16_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_4_16">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_16_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_16">
           <span class="md-nav__icon md-icon"></span>
           facto
         </label>
@@ -4504,7 +3555,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_17" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_17" >
       
       
         
@@ -4522,13 +3573,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_17" id="__nav_4_17_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3_17" id="__nav_3_17_label" tabindex="0">
           feature_extraction
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_17_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_4_17">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_17_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_17">
           <span class="md-nav__icon md-icon"></span>
           feature_extraction
         </label>
@@ -4636,7 +3687,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_18" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_18" >
       
       
         
@@ -4648,13 +3699,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_18" id="__nav_4_18_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3_18" id="__nav_3_18_label" tabindex="0">
           feature_selection
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_18_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_4_18">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_18_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_18">
           <span class="md-nav__icon md-icon"></span>
           feature_selection
         </label>
@@ -4720,7 +3771,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_19" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_19" >
       
       
         
@@ -4734,13 +3785,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_19" id="__nav_4_19_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3_19" id="__nav_3_19_label" tabindex="0">
           forest
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_19_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_4_19">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_19_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_19">
           <span class="md-nav__icon md-icon"></span>
           forest
         </label>
@@ -4820,7 +3871,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_20" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_20" >
       
       
         
@@ -4840,13 +3891,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_20" id="__nav_4_20_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3_20" id="__nav_3_20_label" tabindex="0">
           imblearn
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_20_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_4_20">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_20_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_20">
           <span class="md-nav__icon md-icon"></span>
           imblearn
         </label>
@@ -4968,7 +4019,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_21" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_21" >
       
       
         
@@ -4992,13 +4043,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_21" id="__nav_4_21_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3_21" id="__nav_3_21_label" tabindex="0">
           linear_model
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_21_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_4_21">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_21_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_21">
           <span class="md-nav__icon md-icon"></span>
           linear_model
         </label>
@@ -5127,7 +4178,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_21_9" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_21_9" >
       
       
         
@@ -5135,13 +4186,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_21_9" id="__nav_4_21_9_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3_21_9" id="__nav_3_21_9_label" tabindex="0">
           base
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_21_9_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_4_21_9">
+      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_21_9_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_21_9">
           <span class="md-nav__icon md-icon"></span>
           base
         </label>
@@ -5186,7 +4237,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_22" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_22" >
       
       
         
@@ -5294,13 +4345,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_22" id="__nav_4_22_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3_22" id="__nav_3_22_label" tabindex="0">
           metrics
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_22_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_4_22">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_22_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_22">
           <span class="md-nav__icon md-icon"></span>
           metrics
         </label>
@@ -6003,7 +5054,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_22_50" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_22_50" >
       
       
         
@@ -6023,13 +5074,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_22_50" id="__nav_4_22_50_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3_22_50" id="__nav_3_22_50_label" tabindex="0">
           base
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_22_50_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_4_22_50">
+      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_22_50_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_22_50">
           <span class="md-nav__icon md-icon"></span>
           base
         </label>
@@ -6151,7 +5202,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_22_51" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_22_51" >
       
       
         
@@ -6169,13 +5220,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_22_51" id="__nav_4_22_51_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3_22_51" id="__nav_3_22_51_label" tabindex="0">
           multioutput
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_22_51_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_4_22_51">
+      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_22_51_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_22_51">
           <span class="md-nav__icon md-icon"></span>
           multioutput
         </label>
@@ -6262,7 +5313,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_22_51_6" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_22_51_6" >
       
       
         
@@ -6272,13 +5323,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_22_51_6" id="__nav_4_22_51_6_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3_22_51_6" id="__nav_3_22_51_6_label" tabindex="0">
           base
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_4_22_51_6_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_4_22_51_6">
+      <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_3_22_51_6_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_22_51_6">
           <span class="md-nav__icon md-icon"></span>
           base
         </label>
@@ -6344,7 +5395,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_23" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_23" >
       
       
         
@@ -6354,13 +5405,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_23" id="__nav_4_23_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3_23" id="__nav_3_23_label" tabindex="0">
           misc
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_23_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_4_23">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_23_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_23">
           <span class="md-nav__icon md-icon"></span>
           misc
         </label>
@@ -6412,7 +5463,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_24" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_24" >
       
       
         
@@ -6428,13 +5479,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_24" id="__nav_4_24_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3_24" id="__nav_3_24_label" tabindex="0">
           model_selection
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_24_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_4_24">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_24_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_24">
           <span class="md-nav__icon md-icon"></span>
           model_selection
         </label>
@@ -6507,7 +5558,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_24_5" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_24_5" >
       
       
         
@@ -6517,13 +5568,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_24_5" id="__nav_4_24_5_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3_24_5" id="__nav_3_24_5_label" tabindex="0">
           base
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_24_5_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_4_24_5">
+      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_24_5_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_24_5">
           <span class="md-nav__icon md-icon"></span>
           base
         </label>
@@ -6582,7 +5633,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_25" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_25" >
       
       
         
@@ -6594,13 +5645,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_25" id="__nav_4_25_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3_25" id="__nav_3_25_label" tabindex="0">
           multiclass
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_25_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_4_25">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_25_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_25">
           <span class="md-nav__icon md-icon"></span>
           multiclass
         </label>
@@ -6666,7 +5717,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_26" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_26" >
       
       
         
@@ -6682,13 +5733,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_26" id="__nav_4_26_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3_26" id="__nav_3_26_label" tabindex="0">
           multioutput
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_26_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_4_26">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_26_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_26">
           <span class="md-nav__icon md-icon"></span>
           multioutput
         </label>
@@ -6782,7 +5833,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_27" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_27" >
       
       
         
@@ -6796,13 +5847,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_27" id="__nav_4_27_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3_27" id="__nav_3_27_label" tabindex="0">
           naive_bayes
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_27_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_4_27">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_27_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_27">
           <span class="md-nav__icon md-icon"></span>
           naive_bayes
         </label>
@@ -6882,7 +5933,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_28" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_28" >
       
       
         
@@ -6894,13 +5945,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_28" id="__nav_4_28_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3_28" id="__nav_3_28_label" tabindex="0">
           neighbors
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_28_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_4_28">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_28_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_28">
           <span class="md-nav__icon md-icon"></span>
           neighbors
         </label>
@@ -6966,7 +6017,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_29" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_29" >
       
       
         
@@ -6976,13 +6027,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_29" id="__nav_4_29_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3_29" id="__nav_3_29_label" tabindex="0">
           neural_net
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_29_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_4_29">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_29_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_29">
           <span class="md-nav__icon md-icon"></span>
           neural_net
         </label>
@@ -7013,7 +6064,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_29_2" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_29_2" >
       
       
         
@@ -7025,13 +6076,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_29_2" id="__nav_4_29_2_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3_29_2" id="__nav_3_29_2_label" tabindex="0">
           activations
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_29_2_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_4_29_2">
+      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_29_2_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_29_2">
           <span class="md-nav__icon md-icon"></span>
           activations
         </label>
@@ -7104,7 +6155,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_30" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_30" >
       
       
         
@@ -7144,13 +6195,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_30" id="__nav_4_30_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3_30" id="__nav_3_30_label" tabindex="0">
           optim
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_30_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_4_30">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_30_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_30">
           <span class="md-nav__icon md-icon"></span>
           optim
         </label>
@@ -7349,7 +6400,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_30_14" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_30_14" >
       
       
         
@@ -7363,13 +6414,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_30_14" id="__nav_4_30_14_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3_30_14" id="__nav_3_30_14_label" tabindex="0">
           base
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_30_14_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_4_30_14">
+      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_30_14_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_30_14">
           <span class="md-nav__icon md-icon"></span>
           base
         </label>
@@ -7449,7 +6500,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_30_15" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_30_15" >
       
       
         
@@ -7461,13 +6512,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_30_15" id="__nav_4_30_15_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3_30_15" id="__nav_3_30_15_label" tabindex="0">
           initializers
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_30_15_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_4_30_15">
+      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_30_15_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_30_15">
           <span class="md-nav__icon md-icon"></span>
           initializers
         </label>
@@ -7533,7 +6584,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_30_16" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_30_16" >
       
       
         
@@ -7567,13 +6618,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_30_16" id="__nav_4_30_16_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3_30_16" id="__nav_3_30_16_label" tabindex="0">
           losses
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_30_16_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_4_30_16">
+      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_30_16_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_30_16">
           <span class="md-nav__icon md-icon"></span>
           losses
         </label>
@@ -7793,7 +6844,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_30_17" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_30_17" >
       
       
         
@@ -7805,13 +6856,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_30_17" id="__nav_4_30_17_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3_30_17" id="__nav_3_30_17_label" tabindex="0">
           schedulers
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_30_17_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_4_30_17">
+      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_30_17_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_30_17">
           <span class="md-nav__icon md-icon"></span>
           schedulers
         </label>
@@ -7884,7 +6935,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_31" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_31" >
       
       
         
@@ -7922,13 +6973,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_31" id="__nav_4_31_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3_31" id="__nav_3_31_label" tabindex="0">
           preprocessing
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_31_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_4_31">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_31_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_31">
           <span class="md-nav__icon md-icon"></span>
           preprocessing
         </label>
@@ -8176,7 +7227,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_32" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_32" >
       
       
         
@@ -8190,13 +7241,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_32" id="__nav_4_32_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3_32" id="__nav_3_32_label" tabindex="0">
           proba
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_32_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_4_32">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_32_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_32">
           <span class="md-nav__icon md-icon"></span>
           proba
         </label>
@@ -8255,7 +7306,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_32_4" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_32_4" >
       
       
         
@@ -8265,15 +7316,17 @@
         
           
         
+          
+        
       
       
-        <label class="md-nav__link" for="__nav_4_32_4" id="__nav_4_32_4_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3_32_4" id="__nav_3_32_4_label" tabindex="0">
           base
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_32_4_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_4_32_4">
+      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_32_4_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_32_4">
           <span class="md-nav__icon md-icon"></span>
           base
         </label>
@@ -8321,6 +7374,20 @@
 
             
           
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../proba/base/Distribution/" class="md-nav__link">
+        Distribution
+      </a>
+    </li>
+  
+
+            
+          
         </ul>
       </nav>
     </li>
@@ -8346,7 +7413,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_33" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_33" >
       
       
         
@@ -8362,13 +7429,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_33" id="__nav_4_33_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3_33" id="__nav_3_33_label" tabindex="0">
           reco
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_33_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_4_33">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_33_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_33">
           <span class="md-nav__icon md-icon"></span>
           reco
         </label>
@@ -8441,7 +7508,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_33_5" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_33_5" >
       
       
         
@@ -8449,13 +7516,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_33_5" id="__nav_4_33_5_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3_33_5" id="__nav_3_33_5_label" tabindex="0">
           base
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_33_5_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_4_33_5">
+      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_33_5_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_33_5">
           <span class="md-nav__icon md-icon"></span>
           base
         </label>
@@ -8500,7 +7567,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_34" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_34" >
       
       
         
@@ -8508,13 +7575,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_34" id="__nav_4_34_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3_34" id="__nav_3_34_label" tabindex="0">
           rules
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_34_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_4_34">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_34_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_34">
           <span class="md-nav__icon md-icon"></span>
           rules
         </label>
@@ -8552,7 +7619,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_35" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_35" >
       
       
         
@@ -8566,13 +7633,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_35" id="__nav_4_35_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3_35" id="__nav_3_35_label" tabindex="0">
           sketch
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_35_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_4_35">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_35_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_35">
           <span class="md-nav__icon md-icon"></span>
           sketch
         </label>
@@ -8652,7 +7719,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_36" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_36" >
       
       
         
@@ -8724,13 +7791,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_36" id="__nav_4_36_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3_36" id="__nav_3_36_label" tabindex="0">
           stats
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_36_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_4_36">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_36_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_36">
           <span class="md-nav__icon md-icon"></span>
           stats
         </label>
@@ -9195,7 +8262,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_36_33" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_36_33" >
       
       
         
@@ -9205,13 +8272,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_36_33" id="__nav_4_36_33_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3_36_33" id="__nav_3_36_33_label" tabindex="0">
           base
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_36_33_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_4_36_33">
+      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_36_33_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_36_33">
           <span class="md-nav__icon md-icon"></span>
           base
         </label>
@@ -9270,7 +8337,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_37" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_37" >
       
       
         
@@ -9300,13 +8367,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_37" id="__nav_4_37_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3_37" id="__nav_3_37_label" tabindex="0">
           stream
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_37_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_4_37">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_37_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_37">
           <span class="md-nav__icon md-icon"></span>
           stream
         </label>
@@ -9498,7 +8565,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_38" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_38" >
       
       
         
@@ -9520,13 +8587,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_38" id="__nav_4_38_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3_38" id="__nav_3_38_label" tabindex="0">
           time_series
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_38_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_4_38">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_38_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_38">
           <span class="md-nav__icon md-icon"></span>
           time_series
         </label>
@@ -9641,7 +8708,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_38_8" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_38_8" >
       
       
         
@@ -9649,13 +8716,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_38_8" id="__nav_4_38_8_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3_38_8" id="__nav_3_38_8_label" tabindex="0">
           base
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_38_8_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_4_38_8">
+      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_38_8_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_38_8">
           <span class="md-nav__icon md-icon"></span>
           base
         </label>
@@ -9700,7 +8767,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_39" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_39" >
       
       
         
@@ -9726,13 +8793,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_39" id="__nav_4_39_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3_39" id="__nav_3_39_label" tabindex="0">
           tree
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_39_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_4_39">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_39_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_39">
           <span class="md-nav__icon md-icon"></span>
           tree
         </label>
@@ -9861,7 +8928,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_39_9" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_39_9" >
       
       
         
@@ -9871,13 +8938,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_39_9" id="__nav_4_39_9_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3_39_9" id="__nav_3_39_9_label" tabindex="0">
           base
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_39_9_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_4_39_9">
+      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_39_9_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_39_9">
           <span class="md-nav__icon md-icon"></span>
           base
         </label>
@@ -9929,7 +8996,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_39_10" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_39_10" >
       
       
         
@@ -9955,13 +9022,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_39_10" id="__nav_4_39_10_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3_39_10" id="__nav_3_39_10_label" tabindex="0">
           splitter
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_39_10_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_4_39_10">
+      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_39_10_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_39_10">
           <span class="md-nav__icon md-icon"></span>
           splitter
         </label>
@@ -10132,7 +9199,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_40" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_40" >
       
       
         
@@ -10162,13 +9229,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_40" id="__nav_4_40_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3_40" id="__nav_3_40_label" tabindex="0">
           utils
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_40_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_4_40">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_40_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_40">
           <span class="md-nav__icon md-icon"></span>
           utils
         </label>
@@ -10297,7 +9364,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_40_9" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_40_9" >
       
       
         
@@ -10335,13 +9402,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_40_9" id="__nav_4_40_9_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3_40_9" id="__nav_3_40_9_label" tabindex="0">
           math
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_40_9_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_4_40_9">
+      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_40_9_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_40_9">
           <span class="md-nav__icon md-icon"></span>
           math
         </label>
@@ -10589,7 +9656,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_40_10" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_40_10" >
       
       
         
@@ -10599,13 +9666,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_40_10" id="__nav_4_40_10_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3_40_10" id="__nav_3_40_10_label" tabindex="0">
           norm
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_40_10_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_4_40_10">
+      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_40_10_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_40_10">
           <span class="md-nav__icon md-icon"></span>
           norm
         </label>
@@ -10657,7 +9724,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_40_11" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_40_11" >
       
       
         
@@ -10667,13 +9734,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_40_11" id="__nav_4_40_11_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3_40_11" id="__nav_3_40_11_label" tabindex="0">
           pretty
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_40_11_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_4_40_11">
+      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_40_11_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_40_11">
           <span class="md-nav__icon md-icon"></span>
           pretty
         </label>
@@ -10725,7 +9792,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_40_12" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_40_12" >
       
       
         
@@ -10733,13 +9800,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_4_40_12" id="__nav_4_40_12_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3_40_12" id="__nav_3_40_12_label" tabindex="0">
           random
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_40_12_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_4_40_12">
+      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_40_12_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_40_12">
           <span class="md-nav__icon md-icon"></span>
           random
         </label>
@@ -10792,6 +9859,187 @@
       
       
       
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+      
+      
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      
+      
+        <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+          Examples 🌶️
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          Examples 🌶️
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../examples/batch-to-online/" class="md-nav__link">
+        From batch to online/stream
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../examples/bike-sharing-forecasting/" class="md-nav__link">
+        Bike-sharing forecasting
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../examples/building-a-simple-nowcasting-model/" class="md-nav__link">
+        Building a simple nowcasting model
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../examples/content-personalization/" class="md-nav__link">
+        Content personalization
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../examples/debugging-a-pipeline/" class="md-nav__link">
+        Debugging a pipeline
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../examples/imbalanced-learning/" class="md-nav__link">
+        Working with imbalanced data
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../examples/quantile-regression-uncertainty/" class="md-nav__link">
+        Handling uncertainty with quantile regression
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../examples/sentence-classification/" class="md-nav__link">
+        Sentence classification
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../examples/the-art-of-using-pipelines/" class="md-nav__link">
+        The art of using pipelines
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
       <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
       
       
@@ -10805,14 +10053,14 @@
         
         
         <div class="md-nav__link md-nav__link--index ">
-          <a href="../../../faq/">FAQ 🙋</a>
+          <a href="../../../faq/">FAQ</a>
           
         </div>
       
       <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
         <label class="md-nav__title" for="__nav_5">
           <span class="md-nav__icon md-icon"></span>
-          FAQ 🙋
+          FAQ
         </label>
         <ul class="md-nav__list" data-md-scrollfix>
           
@@ -10898,14 +10146,14 @@
       
       
         <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
-          Releases 🏗️
+          Releases
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
         <label class="md-nav__title" for="__nav_6">
           <span class="md-nav__icon md-icon"></span>
-          Releases 🏗️
+          Releases
         </label>
         <ul class="md-nav__list" data-md-scrollfix>
           
@@ -10916,7 +10164,133 @@
   
     <li class="md-nav__item">
       <a href="../../../releases/unreleased/" class="md-nav__link">
-        Unreleased
+        0.16.0 - 2022-05-07
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../releases/0.15.0/" class="md-nav__link">
+        0.15.0 - 2022-01-29
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../releases/0.14.0/" class="md-nav__link">
+        0.14.0 - 2022-10-26
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../releases/0.13.0/" class="md-nav__link">
+        0.13.0 - 2022-09-15
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../releases/0.12.1/" class="md-nav__link">
+        0.12.1 - 2022-09-02
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../releases/0.12.0/" class="md-nav__link">
+        0.12.0 - 2022-09-02
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../releases/0.11.1/" class="md-nav__link">
+        0.11.1 - 2022-06-06
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../releases/0.11.0/" class="md-nav__link">
+        0.11.0 - 2022-05-28
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../releases/0.10.1/" class="md-nav__link">
+        0.10.1 - 2022-02-05
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../releases/0.10.0/" class="md-nav__link">
+        0.10.0 - 2022-02-04
       </a>
     </li>
   
@@ -11125,132 +10499,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../releases/0.15.0/" class="md-nav__link">
-        0.15.0 - 2022-01-29
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../releases/0.14.0/" class="md-nav__link">
-        0.14.0 - 2022-10-26
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../releases/0.13.0/" class="md-nav__link">
-        0.13.0 - 2022-09-15
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../releases/0.12.1/" class="md-nav__link">
-        0.12.1 - 2022-09-02
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../releases/0.12.0/" class="md-nav__link">
-        0.12.0 - 2022-09-02
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../releases/0.11.1/" class="md-nav__link">
-        0.11.1 - 2022-06-06
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../releases/0.11.0/" class="md-nav__link">
-        0.11.0 - 2022-05-28
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../releases/0.10.1/" class="md-nav__link">
-        0.10.1 - 2022-02-05
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../releases/0.10.0/" class="md-nav__link">
-        0.10.0 - 2022-02-04
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../../../releases/0.1.0/" class="md-nav__link">
         0.1.0 - 2019-05-08
       </a>
@@ -11311,6 +10559,41 @@
       
         
           
+        
+          
+        
+          
+        
+      
+      
+        <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+          Benchmarks
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_7">
+          <span class="md-nav__icon md-icon"></span>
+          Benchmarks
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_1" >
+      
+      
+        
+          
             
           
         
@@ -11319,17 +10602,112 @@
         
         
         <div class="md-nav__link md-nav__link--index ">
-          <a href="../../../benchmarks/">Benchmarks 📊</a>
+          <a href="../../../benchmarks/Binary%20classification/">Binary classification</a>
           
         </div>
       
-      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_7">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_1_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_7_1">
           <span class="md-nav__icon md-icon"></span>
-          Benchmarks 📊
+          Binary classification
         </label>
         <ul class="md-nav__list" data-md-scrollfix>
           
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_2" >
+      
+      
+        
+          
+            
+          
+        
+      
+      
+        
+        
+        <div class="md-nav__link md-nav__link--index ">
+          <a href="../../../benchmarks/Multiclass%20classification/">Multiclass classification</a>
+          
+        </div>
+      
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_2_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_7_2">
+          <span class="md-nav__icon md-icon"></span>
+          Multiclass classification
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_3" >
+      
+      
+        
+          
+            
+          
+        
+      
+      
+        
+        
+        <div class="md-nav__link md-nav__link--index ">
+          <a href="../../../benchmarks/Regression/">Regression</a>
+          
+        </div>
+      
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_3_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_7_3">
+          <span class="md-nav__icon md-icon"></span>
+          Regression
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
             
           
         </ul>
@@ -11392,13 +10770,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#references" class="md-nav__link">
-    References
-  </a>
-  
-</li>
-      
     </ul>
   
 </nav>
@@ -11417,29 +10788,36 @@
 <h1 id="halfspacetrees">HalfSpaceTrees<a class="headerlink" href="#halfspacetrees" title="Permanent link">&para;</a></h1>
 <p>Half-Space Trees (HST).</p>
 <p>Half-space trees are an online variant of isolation forests. They work well when anomalies are spread out. However, they do not work well if anomalies are packed together in windows. </p>
-<p>By default, this implementation assumes that each feature has values that are comprised between 0 and 1. If this isn't the case, then you can manually specify the limits via the <code>limits</code> argument. If you do not know the limits in advance, then you can use a <code>preprocessing.MinMaxScaler</code> as an initial preprocessing step. </p>
+<p>By default, this implementation assumes that each feature has values that are comprised between 0 and 1. If this isn't the case, then you can manually specify the limits via the <code>limits</code> argument. If you do not know the limits in advance, then you can use a <a href="/api/preprocessing/MinMaxScaler"><code>preprocessing.MinMaxScaler</code></a> as an initial preprocessing step. </p>
 <p>The current implementation builds the trees the first time the <code>learn_one</code> method is called. Therefore, the first <code>learn_one</code> call might be slow, whereas subsequent calls will be very fast in comparison. In general, the computation time of both <code>learn_one</code> and <code>score_one</code> scales linearly with the number of trees, and exponentially with the height of each tree. </p>
 <p>Note that high scores indicate anomalies, whereas low scores indicate normal observations.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
-<p><strong>n_trees</strong> – defaults to <code>10</code></p>
+<p><strong>n_trees</strong></p>
+<p><em>Default</em> → <code>10</code></p>
 <p>Number of trees to use.</p>
 </li>
 <li>
-<p><strong>height</strong> – defaults to <code>8</code></p>
+<p><strong>height</strong></p>
+<p><em>Default</em> → <code>8</code></p>
 <p>Height of each tree. Note that a tree of height <code>h</code> is made up of <code>h + 1</code> levels and therefore contains <code>2 ** (h + 1) - 1</code> nodes.</p>
 </li>
 <li>
-<p><strong>window_size</strong> – defaults to <code>250</code></p>
+<p><strong>window_size</strong></p>
+<p><em>Default</em> → <code>250</code></p>
 <p>Number of observations to use for calculating the mass at each node in each tree.</p>
 </li>
 <li>
-<p><strong>limits</strong> (<em>Dict[Hashable, Tuple[float, float]]</em>) – defaults to <code>None</code></p>
+<p><strong>limits</strong></p>
+<p><em>Type</em> → <em>Dict[Hashable, Tuple[float, float]]</em></p>
+<p><em>Default</em> → <code>None</code></p>
 <p>Specifies the range of each feature. By default each feature is assumed to be in range <code>[0, 1]</code>.</p>
 </li>
 <li>
-<p><strong>seed</strong> (<em>int</em>) – defaults to <code>None</code></p>
+<p><strong>seed</strong></p>
+<p><em>Type</em> → <em>int</em></p>
+<p><em>Default</em> → <code>None</code></p>
 <p>Random number seed.</p>
 </li>
 </ul>
@@ -11451,94 +10829,98 @@
 </li>
 </ul>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">anomaly</span>
+<p><div class="language-python highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">anomaly</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="n">X</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.45</span><span class="p">,</span> <span class="mf">0.43</span><span class="p">,</span> <span class="mf">0.44</span><span class="p">,</span> <span class="mf">0.445</span><span class="p">,</span> <span class="mf">0.45</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">hst</span> <span class="o">=</span> <span class="n">anomaly</span><span class="o">.</span><span class="n">HalfSpaceTrees</span><span class="p">(</span>
-<span class="o">...</span>     <span class="n">n_trees</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
-<span class="o">...</span>     <span class="n">height</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-<span class="o">...</span>     <span class="n">window_size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-<span class="o">...</span>     <span class="n">seed</span><span class="o">=</span><span class="mi">42</span>
-<span class="o">...</span> <span class="p">)</span>
+<span class="n">X</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.45</span><span class="p">,</span> <span class="mf">0.43</span><span class="p">,</span> <span class="mf">0.44</span><span class="p">,</span> <span class="mf">0.445</span><span class="p">,</span> <span class="mf">0.45</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span>
+<span class="n">hst</span> <span class="o">=</span> <span class="n">anomaly</span><span class="o">.</span><span class="n">HalfSpaceTrees</span><span class="p">(</span>
+    <span class="n">n_trees</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <span class="n">height</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+    <span class="n">window_size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+    <span class="n">seed</span><span class="o">=</span><span class="mi">42</span>
+<span class="p">)</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">X</span><span class="p">[:</span><span class="mi">3</span><span class="p">]:</span>
-<span class="o">...</span>     <span class="n">hst</span> <span class="o">=</span> <span class="n">hst</span><span class="o">.</span><span class="n">learn_one</span><span class="p">({</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="n">x</span><span class="p">})</span>  <span class="c1"># Warming up</span>
+<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">X</span><span class="p">[:</span><span class="mi">3</span><span class="p">]:</span>
+    <span class="n">hst</span> <span class="o">=</span> <span class="n">hst</span><span class="o">.</span><span class="n">learn_one</span><span class="p">({</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="n">x</span><span class="p">})</span>  <span class="c1"># Warming up</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">X</span><span class="p">:</span>
-<span class="o">...</span>     <span class="n">features</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="n">x</span><span class="p">}</span>
-<span class="o">...</span>     <span class="n">hst</span> <span class="o">=</span> <span class="n">hst</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">features</span><span class="p">)</span>
-<span class="o">...</span>     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Anomaly score for x=</span><span class="si">{</span><span class="n">x</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">hst</span><span class="o">.</span><span class="n">score_one</span><span class="p">(</span><span class="n">features</span><span class="p">)</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-<span class="n">Anomaly</span> <span class="n">score</span> <span class="k">for</span> <span class="n">x</span><span class="o">=</span><span class="mf">0.500</span><span class="p">:</span> <span class="mf">0.107</span>
-<span class="n">Anomaly</span> <span class="n">score</span> <span class="k">for</span> <span class="n">x</span><span class="o">=</span><span class="mf">0.450</span><span class="p">:</span> <span class="mf">0.071</span>
-<span class="n">Anomaly</span> <span class="n">score</span> <span class="k">for</span> <span class="n">x</span><span class="o">=</span><span class="mf">0.430</span><span class="p">:</span> <span class="mf">0.107</span>
-<span class="n">Anomaly</span> <span class="n">score</span> <span class="k">for</span> <span class="n">x</span><span class="o">=</span><span class="mf">0.440</span><span class="p">:</span> <span class="mf">0.107</span>
-<span class="n">Anomaly</span> <span class="n">score</span> <span class="k">for</span> <span class="n">x</span><span class="o">=</span><span class="mf">0.445</span><span class="p">:</span> <span class="mf">0.107</span>
-<span class="n">Anomaly</span> <span class="n">score</span> <span class="k">for</span> <span class="n">x</span><span class="o">=</span><span class="mf">0.450</span><span class="p">:</span> <span class="mf">0.071</span>
-<span class="n">Anomaly</span> <span class="n">score</span> <span class="k">for</span> <span class="n">x</span><span class="o">=</span><span class="mf">0.000</span><span class="p">:</span> <span class="mf">0.853</span>
+<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">X</span><span class="p">:</span>
+    <span class="n">features</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="n">x</span><span class="p">}</span>
+    <span class="n">hst</span> <span class="o">=</span> <span class="n">hst</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">features</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Anomaly score for x=</span><span class="si">{</span><span class="n">x</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">hst</span><span class="o">.</span><span class="n">score_one</span><span class="p">(</span><span class="n">features</span><span class="p">)</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 </code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>Anomaly score for x=0.500: 0.107
+Anomaly score for x=0.450: 0.071
+Anomaly score for x=0.430: 0.107
+Anomaly score for x=0.440: 0.107
+Anomaly score for x=0.445: 0.107
+Anomaly score for x=0.450: 0.071
+Anomaly score for x=0.000: 0.853
+</code></pre></div></p>
 <p>The feature values are all comprised between 0 and 1. This is what is assumed by the model
 by default. In the following example, we construct a pipeline that scales the data online
 and ensures that the values of each feature are comprised between 0 and 1.</p>
-<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">compose</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">datasets</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">metrics</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">preprocessing</span>
+<p><div class="language-python highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">compose</span>
+<span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">datasets</span>
+<span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">metrics</span>
+<span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">preprocessing</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span> <span class="o">=</span> <span class="n">compose</span><span class="o">.</span><span class="n">Pipeline</span><span class="p">(</span>
-<span class="o">...</span>     <span class="n">preprocessing</span><span class="o">.</span><span class="n">MinMaxScaler</span><span class="p">(),</span>
-<span class="o">...</span>     <span class="n">anomaly</span><span class="o">.</span><span class="n">HalfSpaceTrees</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
-<span class="o">...</span> <span class="p">)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">compose</span><span class="o">.</span><span class="n">Pipeline</span><span class="p">(</span>
+    <span class="n">preprocessing</span><span class="o">.</span><span class="n">MinMaxScaler</span><span class="p">(),</span>
+    <span class="n">anomaly</span><span class="o">.</span><span class="n">HalfSpaceTrees</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+<span class="p">)</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="n">auc</span> <span class="o">=</span> <span class="n">metrics</span><span class="o">.</span><span class="n">ROCAUC</span><span class="p">()</span>
+<span class="n">auc</span> <span class="o">=</span> <span class="n">metrics</span><span class="o">.</span><span class="n">ROCAUC</span><span class="p">()</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">datasets</span><span class="o">.</span><span class="n">CreditCard</span><span class="p">()</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="mi">2500</span><span class="p">):</span>
-<span class="o">...</span>     <span class="n">score</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">score_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-<span class="o">...</span>     <span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-<span class="o">...</span>     <span class="n">auc</span> <span class="o">=</span> <span class="n">auc</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">score</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">datasets</span><span class="o">.</span><span class="n">CreditCard</span><span class="p">()</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="mi">2500</span><span class="p">):</span>
+    <span class="n">score</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">score_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">auc</span> <span class="o">=</span> <span class="n">auc</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">score</span><span class="p">)</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="n">auc</span>
-<span class="n">ROCAUC</span><span class="p">:</span> <span class="mf">91.15</span><span class="o">%</span>
+<span class="n">auc</span>
 </code></pre></div>
-<p>You can also use the <code>evaluate.progressive_val_score</code> function to evaluate the model on a
+<div class="language-text highlight"><pre><span></span><code>ROCAUC: 91.15%
+</code></pre></div></p>
+<p>You can also use the <a href="/api/evaluate/progressive-val-score"><code>evaluate.progressive_val_score</code></a> function to evaluate the model on a
 data stream.</p>
-<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">evaluate</span>
+<p><div class="language-python highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">evaluate</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span>
-<span class="o">...</span>     <span class="n">dataset</span><span class="o">=</span><span class="n">datasets</span><span class="o">.</span><span class="n">CreditCard</span><span class="p">()</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="mi">2500</span><span class="p">),</span>
-<span class="o">...</span>     <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
-<span class="o">...</span>     <span class="n">metric</span><span class="o">=</span><span class="n">metrics</span><span class="o">.</span><span class="n">ROCAUC</span><span class="p">(),</span>
-<span class="o">...</span>     <span class="n">print_every</span><span class="o">=</span><span class="mi">1000</span>
-<span class="o">...</span> <span class="p">)</span>
-<span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">000</span><span class="p">]</span> <span class="n">ROCAUC</span><span class="p">:</span> <span class="mf">88.43</span><span class="o">%</span>
-<span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">000</span><span class="p">]</span> <span class="n">ROCAUC</span><span class="p">:</span> <span class="mf">89.28</span><span class="o">%</span>
-<span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">500</span><span class="p">]</span> <span class="n">ROCAUC</span><span class="p">:</span> <span class="mf">91.15</span><span class="o">%</span>
-<span class="n">ROCAUC</span><span class="p">:</span> <span class="mf">91.15</span><span class="o">%</span>
+<span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span>
+    <span class="n">dataset</span><span class="o">=</span><span class="n">datasets</span><span class="o">.</span><span class="n">CreditCard</span><span class="p">()</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="mi">2500</span><span class="p">),</span>
+    <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+    <span class="n">metric</span><span class="o">=</span><span class="n">metrics</span><span class="o">.</span><span class="n">ROCAUC</span><span class="p">(),</span>
+    <span class="n">print_every</span><span class="o">=</span><span class="mi">1000</span>
+<span class="p">)</span>
 </code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>[1,000] ROCAUC: 88.43%
+[2,000] ROCAUC: 89.28%
+[2,500] ROCAUC: 91.15%
+ROCAUC: 91.15%
+</code></pre></div></p>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
-<details class="- note">
+<details class="- abstract">
 <summary>learn_one</summary>
 <p>Update the model.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     (<em>dict</em>)    </li>
+<li><strong>x</strong>     — <em>dict</em>    </li>
 </ul>
 <p><strong>Returns</strong></p>
 <p><em>AnomalyDetector</em>:     self</p>
 </details>
-<details class="- note">
+<p><span /></p>
+<details class="- abstract">
 <summary>score_one</summary>
 <p>Return an outlier score.</p>
 <p>A high score is indicative of an anomaly. A low score corresponds to a normal observation.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     (<em>dict</em>)    </li>
+<li><strong>x</strong>     — <em>dict</em>    </li>
 </ul>
 <p><strong>Returns</strong></p>
 <p><em>float</em>:     An anomaly score. A high score is indicative of an anomaly. A low score corresponds a</p>
 </details>
-<h2 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h2>
+<p><span /></p>
 <div class="footnote">
 <hr />
 <ol>
@@ -11576,7 +10958,7 @@ data stream.</p>
       <div class="md-footer-copyright">
         
           <div class="md-footer-copyright__highlight">
-            Copyright &copy; 2019 - 2022
+            Copyright &copy; 2019 - 2023
           </div>
         
         Made with
@@ -11612,7 +10994,7 @@ data stream.</p>
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tabs", "navigation.instant", "navigation.indexes"], "search": "../../../assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["content.code.copy", "navigation.tabs", "navigation.instant", "navigation.indexes"], "search": "../../../assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
       <script src="../../../assets/javascripts/bundle.fac441b0.min.js"></script>
@@ -11630,6 +11012,10 @@ data stream.</p>
         <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+      
+        <script src="https://unpkg.com/tablesort@5.3.0/dist/tablesort.min.js"></script>
+      
+        <script src="../../../javascripts/tablesort.js"></script>
       
     
   </body>

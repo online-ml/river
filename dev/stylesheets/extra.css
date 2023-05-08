@@ -70,3 +70,23 @@ select[name="Dataset"] {
 .vega-bind-name {
     display: None;
 }
+
+/* HACK Unsetting MkDocs Material CSS that impacts pipeline HTML repr */
+
+.river-details {
+    border: .05rem solid black !important;
+}
+
+.river-estimator {
+    border: .05rem solid black !important;
+    border-left-width: none !important;
+    border-left-color: black !important;
+}
+
+.river-union {
+    border: .05rem solid black !important;
+}
+
+.river-wrapper {
+    border: .05rem solid black !important;
+}
