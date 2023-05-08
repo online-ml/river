@@ -131,6 +131,36 @@ class Agg(base.Transformer):
     Taco Bell    Sweden     80
     Name: revenue_max_by_place_and_country, dtype: int64
 
+    This transformer can also be used in conjunction with `utils.TimeRolling`. The latter requires
+    a `t` argument, which is a timestamp that indicates when the current row was observed. For
+    instance, we can calculate the average (how) revenue (on) for each place (by) over the last
+    7 days (t):
+
+    >>> import datetime as dt
+    >>> import random
+    >>> import string
+    >>> from river import utils
+
+    >>> agg = fx.Agg(
+    ...     on="value",
+    ...     by="group",
+    ...     how=utils.TimeRolling(stats.Mean(), dt.timedelta(days=7))
+    ... )
+
+    >>> rng = random.Random(42)
+
+    >>> for day in range(366):
+    ...     g = rng.choice(string.ascii_lowercase)
+    ...     x = {
+    ...         "group": g,
+    ...         "value": string.ascii_lowercase.index(g) + random.random(),
+    ...     }
+    ...     t = dt.datetime(2023, 1, 1) + dt.timedelta(days=day)
+    ...     agg = agg.learn_one(x, t=t)
+
+    >>> len(agg.state)
+    26
+
     References
     ----------
     [^1]: [Streaming groupbys in pandas for big datasets](https://maxhalford.github.io/blog/pandas-streaming-groupby/)
@@ -158,8 +188,12 @@ class Agg(base.Transformer):
             return tuple(x[k] for k in self.by)
         return None
 
-    def learn_one(self, x):
-        self._groups[self._make_key(x)].update(x[self.on])
+    def learn_one(self, x, t=None):
+        key = self._make_key(x)
+        if t is not None:
+            self._groups[key].update(x[self.on], t=t)
+        else:
+            self._groups[key].update(x[self.on])
         return self
 
     def transform_one(self, x):

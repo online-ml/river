@@ -2,6 +2,10 @@
 
 Added wheels for Python 3.11.
 
+## feature_extraction
+
+- `feature_extraction.Agg` can now be passed an optional `t` in its `learn_one` method, which allows it to work with `utils.TimeRolling`.
+
 ## metrics
 
 - Added `metrics.MAPE`.
