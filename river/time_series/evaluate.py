@@ -79,8 +79,8 @@ def iter_evaluate(
     model: time_series.base.Forecaster,
     metric: metrics.base.RegressionMetric,
     horizon: int,
-    agg_func: typing.Callable[[list[float]], float] = None,
-    grace_period: int = None,
+    agg_func: typing.Callable[[list[float]], float] | None = None,
+    grace_period: int | None = None,
 ):
     """Evaluates the performance of a forecaster on a time series dataset and yields results.
 
@@ -130,8 +130,8 @@ def evaluate(
     model: time_series.base.Forecaster,
     metric: metrics.base.RegressionMetric,
     horizon: int,
-    agg_func: typing.Callable[[list[float]], float] = None,
-    grace_period: int = None,
+    agg_func: typing.Callable[[list[float]], float] | None = None,
+    grace_period: int | None = None,
 ) -> time_series.HorizonMetric:
     """Evaluates the performance of a forecaster on a time series dataset.
 

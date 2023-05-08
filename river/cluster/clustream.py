@@ -124,7 +124,7 @@ class CluStream(base.Clusterer):
         micro_cluster_r_factor: int = 2,
         time_window: int = 1000,
         time_gap: int = 100,
-        seed: int = None,
+        seed: int | None = None,
         **kwargs,
     ):
         super().__init__()
@@ -274,8 +274,8 @@ class CluStreamMicroCluster(base.Base):
     def __init__(
         self,
         x: dict = defaultdict(float),
-        w: float = None,
-        timestamp: int = None,
+        w: float | None = None,
+        timestamp: int | None = None,
     ):
         # Initialize with sample x
         self.x = x

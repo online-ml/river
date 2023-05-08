@@ -50,7 +50,7 @@ class Planes2D(datasets.base.SyntheticDataset):
 
     """
 
-    def __init__(self, seed: int = None):
+    def __init__(self, seed: int | None = None):
         super().__init__(task=datasets.base.REG, n_features=10)
         self.seed = seed
 

@@ -8,8 +8,8 @@ from river import base
 
 def iter_vaex(
     X: vaex.dataframe.DataFrame,
-    y: str | vaex.expression.Expression = None,
-    features: list[str] | vaex.expression.Expression = None,
+    y: str | vaex.expression.Expression | None = None,
+    features: list[str] | vaex.expression.Expression | None = None,
 ) -> base.typing.Stream:
     """Yields rows from a ``vaex.DataFrame``.
 

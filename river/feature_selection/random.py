@@ -52,7 +52,7 @@ class PoissonInclusion(base.Transformer):
 
     """
 
-    def __init__(self, p: float, seed: int = None):
+    def __init__(self, p: float, seed: int | None = None):
         self.p = p
         self.seed = seed
         self.rng = random.Random(seed)

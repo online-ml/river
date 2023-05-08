@@ -83,7 +83,7 @@ class EWARegressor(base.Ensemble, base.Regressor):
     def __init__(
         self,
         models: list[base.Regressor],
-        loss: optim.losses.RegressionLoss = None,
+        loss: optim.losses.RegressionLoss | None = None,
         learning_rate=0.5,
     ):
         super().__init__(models)  # type: ignore

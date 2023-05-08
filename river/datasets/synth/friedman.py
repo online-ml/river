@@ -45,7 +45,7 @@ class Friedman(datasets.base.SyntheticDataset):
 
     """
 
-    def __init__(self, seed: int = None):
+    def __init__(self, seed: int | None = None):
         super().__init__(task=datasets.base.REG, n_features=10)
         self.seed = seed
 
@@ -172,7 +172,7 @@ class FriedmanDrift(Friedman):
         drift_type: str = "lea",
         position: tuple[int, ...] = (50_000, 100_000, 150_000),
         transition_window: int = 10_000,
-        seed: int = None,
+        seed: int | None = None,
     ):
         super().__init__(seed=seed)
 

@@ -79,7 +79,7 @@ class ClassificationMetric(Metric):
 
     _fmt = ".2%"  # output a percentage, e.g. 0.427 becomes "42,7%"
 
-    def __init__(self, cm: confusion.ConfusionMatrix = None):
+    def __init__(self, cm: confusion.ConfusionMatrix | None = None):
         if cm is None:
             cm = confusion.ConfusionMatrix()
         self.cm = cm

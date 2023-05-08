@@ -126,14 +126,14 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
     def __init__(
         self,
         grace_period: int = 200,
-        max_depth: int = None,
+        max_depth: int | None = None,
         split_criterion: str = "info_gain",
         delta: float = 1e-7,
         tau: float = 0.05,
         leaf_prediction: str = "nba",
         nb_threshold: int = 0,
-        nominal_attributes: list = None,
-        splitter: Splitter = None,
+        nominal_attributes: list | None = None,
+        splitter: Splitter | None = None,
         bootstrap_sampling: bool = True,
         drift_window_threshold: int = 300,
         drift_detector: base.DriftDetector | None = None,
@@ -144,7 +144,7 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
         stop_mem_management: bool = False,
         remove_poor_attrs: bool = False,
         merit_preprune: bool = True,
-        seed: int = None,
+        seed: int | None = None,
     ):
         super().__init__(
             grace_period=grace_period,

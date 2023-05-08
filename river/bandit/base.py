@@ -27,7 +27,7 @@ class Policy(base.Base, abc.ABC):
 
     """
 
-    def __init__(self, reward_obj: RewardObj = None, burn_in=0):
+    def __init__(self, reward_obj: RewardObj | None = None, burn_in=0):
         self.reward_obj = reward_obj or stats.Mean()
         self.burn_in = burn_in
         self._rewards: collections.defaultdict[ArmID, RewardObj] = collections.defaultdict(

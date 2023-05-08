@@ -172,7 +172,7 @@ class CrossEntropy(MultiClassLoss):
 
     """
 
-    def __init__(self, class_weight: dict[base.typing.ClfTarget, float] = None):
+    def __init__(self, class_weight: dict[base.typing.ClfTarget, float] | None = None):
         if class_weight is None:
             class_weight = {}
         self.class_weight = class_weight

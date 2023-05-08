@@ -78,7 +78,9 @@ class BranchFactory:
 
     merit: float = -math.inf
     feature: FeatureName | None = None
-    split_info: typing.Hashable | list[typing.Hashable] | tuple[typing.Hashable, list[typing.Hashable]] | None = None
+    split_info: typing.Hashable | list[typing.Hashable] | tuple[
+        typing.Hashable, list[typing.Hashable]
+    ] | None = None
     children_stats: list | None = None
     numerical_feature: bool = True
     multiway_split: bool = False

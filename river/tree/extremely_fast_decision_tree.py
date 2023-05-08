@@ -112,15 +112,15 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
     def __init__(
         self,
         grace_period: int = 200,
-        max_depth: int = None,
+        max_depth: int | None = None,
         min_samples_reevaluate: int = 20,
         split_criterion: str = "info_gain",
         delta: float = 1e-7,
         tau: float = 0.05,
         leaf_prediction: str = "nba",
         nb_threshold: int = 0,
-        nominal_attributes: list = None,
-        splitter: Splitter = None,
+        nominal_attributes: list | None = None,
+        splitter: Splitter | None = None,
         binary_split: bool = False,
         max_size: float = 100.0,
         memory_estimate_period: int = 1000000,
@@ -167,9 +167,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
         else:  # NAIVE BAYES ADAPTIVE (default)
             return EFDTLeafNaiveBayesAdaptive(initial_stats, depth, self.splitter)
 
-    def _branch_selector(
-        self, numerical_feature=True, multiway_split=False
-    ) -> type[DTBranch]:
+    def _branch_selector(self, numerical_feature=True, multiway_split=False) -> type[DTBranch]:
         """Create a new split node."""
         if numerical_feature:
             if not multiway_split:

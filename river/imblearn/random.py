@@ -8,7 +8,7 @@ from river import base, utils
 
 
 class ClassificationSampler(base.Wrapper, base.Classifier):
-    def __init__(self, classifier, seed: int = None):
+    def __init__(self, classifier, seed: int | None = None):
         self.classifier = classifier
         self.seed = seed
         self._rng = random.Random(seed)
@@ -75,7 +75,7 @@ class RandomUnderSampler(ClassificationSampler):
 
     """
 
-    def __init__(self, classifier: base.Classifier, desired_dist: dict, seed: int = None):
+    def __init__(self, classifier: base.Classifier, desired_dist: dict, seed: int | None = None):
         super().__init__(classifier=classifier, seed=seed)
         self.desired_dist = desired_dist
         self._actual_dist: typing.Counter = collections.Counter()
@@ -150,7 +150,7 @@ class RandomOverSampler(ClassificationSampler):
 
     """
 
-    def __init__(self, classifier: base.Classifier, desired_dist: dict, seed: int = None):
+    def __init__(self, classifier: base.Classifier, desired_dist: dict, seed: int | None = None):
         super().__init__(classifier=classifier, seed=seed)
         self.desired_dist = desired_dist
         self._actual_dist: typing.Counter = collections.Counter()
@@ -233,7 +233,7 @@ class RandomSampler(ClassificationSampler):
         classifier: base.Classifier,
         desired_dist: dict,
         sampling_rate=1.0,
-        seed: int = None,
+        seed: int | None = None,
     ):
         super().__init__(classifier=classifier, seed=seed)
         self.sampling_rate = sampling_rate

@@ -80,7 +80,7 @@ class RegressionJackknife(base.Wrapper, base.Regressor):
     """
 
     def __init__(
-        self, regressor: base.Regressor, confidence_level: float = 0.95, window_size: int = None
+        self, regressor: base.Regressor, confidence_level: float = 0.95, window_size: int | None = None
     ):
         self.regressor = regressor
         self.confidence_level = confidence_level

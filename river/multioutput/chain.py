@@ -16,7 +16,7 @@ __all__ = [
 
 
 class BaseChain(base.Wrapper, collections.UserDict):
-    def __init__(self, model, order: list = None):
+    def __init__(self, model, order: list | None = None):
         super().__init__()
         self.model = model
         self.order = order or []
@@ -91,7 +91,7 @@ class ClassifierChain(BaseChain, base.MultiLabelClassifier):
 
     """
 
-    def __init__(self, model: base.Classifier, order: list = None):
+    def __init__(self, model: base.Classifier, order: list | None = None):
         super().__init__(model, order)
 
     @classmethod
@@ -210,7 +210,7 @@ class RegressorChain(BaseChain, base.MultiTargetRegressor):
 
     """
 
-    def __init__(self, model: base.Regressor, order: list = None):
+    def __init__(self, model: base.Regressor, order: list | None = None):
         super().__init__(model, order)
 
     @classmethod
@@ -405,7 +405,7 @@ class MonteCarloClassifierChain(ProbabilisticClassifierChain):
 
     """
 
-    def __init__(self, model: base.Classifier, m: int = 10, seed: int = None):
+    def __init__(self, model: base.Classifier, m: int = 10, seed: int | None = None):
         ClassifierChain.__init__(self, model=model, order=None)
         self.seed = seed
         self._rng = random.Random(seed)

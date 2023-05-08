@@ -206,8 +206,8 @@ class HalfSpaceTrees(anomaly.base.AnomalyDetector):
         n_trees=10,
         height=8,
         window_size=250,
-        limits: dict[base.typing.FeatureName, tuple[float, float]] = None,
-        seed: int = None,
+        limits: dict[base.typing.FeatureName, tuple[float, float]] | None = None,
+        seed: int | None = None,
     ):
         self.n_trees = n_trees
         self.window_size = window_size

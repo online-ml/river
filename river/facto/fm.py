@@ -203,9 +203,9 @@ class FMRegressor(FM, base.Regressor):
     def __init__(
         self,
         n_factors=10,
-        weight_optimizer: optim.base.Optimizer = None,
-        latent_optimizer: optim.base.Optimizer = None,
-        loss: optim.losses.RegressionLoss = None,
+        weight_optimizer: optim.base.Optimizer | None = None,
+        latent_optimizer: optim.base.Optimizer | None = None,
+        loss: optim.losses.RegressionLoss | None = None,
         sample_normalization=False,
         l1_weight=0.0,
         l2_weight=0.0,
@@ -213,10 +213,10 @@ class FMRegressor(FM, base.Regressor):
         l2_latent=0.0,
         intercept=0.0,
         intercept_lr: optim.base.Scheduler | float = 0.01,
-        weight_initializer: optim.initializers.Initializer = None,
-        latent_initializer: optim.initializers.Initializer = None,
+        weight_initializer: optim.initializers.Initializer | None = None,
+        latent_initializer: optim.initializers.Initializer | None = None,
         clip_gradient=1e12,
-        seed: int = None,
+        seed: int | None = None,
     ):
         super().__init__(
             n_factors=n_factors,
@@ -335,9 +335,9 @@ class FMClassifier(FM, base.Classifier):
     def __init__(
         self,
         n_factors=10,
-        weight_optimizer: optim.base.Optimizer = None,
-        latent_optimizer: optim.base.Optimizer = None,
-        loss: optim.losses.BinaryLoss = None,
+        weight_optimizer: optim.base.Optimizer | None = None,
+        latent_optimizer: optim.base.Optimizer | None = None,
+        loss: optim.losses.BinaryLoss | None = None,
         sample_normalization=False,
         l1_weight=0.0,
         l2_weight=0.0,
@@ -345,10 +345,10 @@ class FMClassifier(FM, base.Classifier):
         l2_latent=0.0,
         intercept=0.0,
         intercept_lr: optim.base.Scheduler | float = 0.01,
-        weight_initializer: optim.initializers.Initializer = None,
-        latent_initializer: optim.initializers.Initializer = None,
+        weight_initializer: optim.initializers.Initializer | None = None,
+        latent_initializer: optim.initializers.Initializer | None = None,
         clip_gradient=1e12,
-        seed: int = None,
+        seed: int | None = None,
     ):
         super().__init__(
             n_factors=n_factors,

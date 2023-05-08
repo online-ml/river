@@ -145,7 +145,7 @@ class Counter(base.Base):
 
     """
 
-    def __init__(self, epsilon: float = 0.1, delta: float = 0.05, seed: int = None):
+    def __init__(self, epsilon: float = 0.1, delta: float = 0.05, seed: int | None = None):
         self.epsilon = epsilon
         self.delta = delta
         self.seed = seed

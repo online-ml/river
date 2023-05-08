@@ -184,7 +184,7 @@ class TransformerUnion(base.MiniBatchTransformer):
     def _get_params(self):
         return {name: transformer._get_params() for name, transformer in self.transformers.items()}
 
-    def clone(self, new_params: dict = None, include_attributes=False):
+    def clone(self, new_params: dict | None = None, include_attributes=False):
         if new_params is None:
             new_params = {}
 
@@ -271,7 +271,7 @@ class TransformerUnion(base.MiniBatchTransformer):
 
     # Mini-batch methods
 
-    def learn_many(self, X: pd.DataFrame, y: pd.Series = None):
+    def learn_many(self, X: pd.DataFrame, y: pd.Series | None = None):
         """Update each transformer.
 
         Parameters

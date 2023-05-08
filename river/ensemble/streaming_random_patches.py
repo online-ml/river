@@ -33,17 +33,17 @@ class BaseSRPEnsemble(base.Wrapper, base.Ensemble):
 
     def __init__(
         self,
-        model: base.Estimator = None,
+        model: base.Estimator | None = None,
         n_models: int = 100,
         subspace_size: int | float | str = 0.6,
         training_method: str = "patches",
         lam: float = 6.0,
-        drift_detector: base.DriftDetector = None,
-        warning_detector: base.DriftDetector = None,
+        drift_detector: base.DriftDetector | None = None,
+        warning_detector: base.DriftDetector | None = None,
         disable_detector: str = "off",
         disable_weighted_vote: bool = False,
-        seed: int = None,
-        metric: Metric = None,
+        seed: int | None = None,
+        metric: Metric | None = None,
     ):
         # List of models is properly initialized later
         super().__init__([])  # type: ignore
@@ -427,16 +427,16 @@ class SRPClassifier(BaseSRPEnsemble, base.Classifier):
 
     def __init__(
         self,
-        model: base.Estimator = None,
+        model: base.Estimator | None = None,
         n_models: int = 10,
         subspace_size: int | float | str = 0.6,
         training_method: str = "patches",
         lam: int = 6,
-        drift_detector: base.DriftDetector = None,
-        warning_detector: base.DriftDetector = None,
+        drift_detector: base.DriftDetector | None = None,
+        warning_detector: base.DriftDetector | None = None,
         disable_detector: str = "off",
         disable_weighted_vote: bool = False,
-        seed: int = None,
+        seed: int | None = None,
         metric: ClassificationMetric | None = None,
     ):
         if model is None:
@@ -703,13 +703,13 @@ class SRPRegressor(BaseSRPEnsemble, base.Regressor):
 
     def __init__(
         self,
-        model: base.Regressor = None,
+        model: base.Regressor | None = None,
         n_models: int = 10,
         subspace_size: int | float | str = 0.6,
         training_method: str = "patches",
         lam: int = 6,
-        drift_detector: base.DriftDetector = None,
-        warning_detector: base.DriftDetector = None,
+        drift_detector: base.DriftDetector | None = None,
+        warning_detector: base.DriftDetector | None = None,
         disable_detector: str = "off",
         disable_weighted_vote: bool = True,
         drift_detection_criteria: str = "error",
@@ -810,7 +810,7 @@ class BaseSRPRegressor(BaseSRPEstimator):
         is_background_learner,
         rng: random.Random,
         features=None,
-        drift_detection_criteria: str = None,
+        drift_detection_criteria: str | None = None,
     ):
         super().__init__(
             idx_original=idx_original,

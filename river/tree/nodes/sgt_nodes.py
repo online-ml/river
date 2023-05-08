@@ -42,7 +42,9 @@ class SGTLeaf(Leaf):
         )
         self.last_split_attempt_at = 0
 
-        self._split_stats: dict[FeatureName, dict[Hashable, GradHessStats] | DynamicQuantizer | StaticQuantizer] | None = {}
+        self._split_stats: dict[
+            FeatureName, dict[Hashable, GradHessStats] | DynamicQuantizer | StaticQuantizer
+        ] | None = {}
         self._update_stats = GradHessStats()
 
     def reset(self):

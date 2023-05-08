@@ -7,7 +7,7 @@ from river import base
 from . import utils
 
 
-def iter_arff(filepath_or_buffer, target: str = None, compression="infer") -> base.typing.Stream:
+def iter_arff(filepath_or_buffer, target: str | None = None, compression="infer") -> base.typing.Stream:
     """Iterates over rows from an ARFF file.
 
     Parameters

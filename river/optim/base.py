@@ -87,13 +87,13 @@ class Optimizer(base.Base):
         """
         return w
 
-    def _step_with_dict(self, w: dict | VectorLike, g: dict | VectorLike) -> dict:
+    def _step_with_dict(self, w: dict | VectorLike, g: dict | VectorLike) -> dict:  # type: ignore
         raise NotImplementedError
 
-    def _step_with_vector(self, w: VectorLike, g: VectorLike) -> VectorLike:
+    def _step_with_vector(self, w: VectorLike, g: VectorLike) -> VectorLike:  # type: ignore
         raise NotImplementedError
 
-    def step(self, w: dict | VectorLike, g: dict | VectorLike) -> dict | VectorLike:
+    def step(self, w: dict | VectorLike, g: dict | VectorLike) -> dict | VectorLike:  # type: ignore
         """Updates a weight vector given a gradient.
 
         Parameters

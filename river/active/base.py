@@ -20,7 +20,7 @@ class ActiveLearningClassifier(base.Wrapper, base.Classifier):
 
     """
 
-    def __init__(self, classifier: base.Classifier, seed: int = None):
+    def __init__(self, classifier: base.Classifier, seed: int | None = None):
         self.classifier = classifier
         self.seed = seed
         self._rng = random.Random(seed)

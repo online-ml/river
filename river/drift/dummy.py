@@ -117,7 +117,7 @@ class DummyDriftDetector(base.DriftDetector):
         t_0: int = 300,
         w: int = 0,
         dynamic_cloning: bool = False,
-        seed: int = None,
+        seed: int | None = None,
     ):
         super().__init__()
         if trigger_method not in {self._FIXED_TRIGGER, self._RANDOM_TRIGGER}:

@@ -96,7 +96,7 @@ class StaticQuantizer(Quantizer):
 
     """
 
-    def __init__(self, n_bins: int = 64, warm_start: int = 100, *, buckets: list = None):
+    def __init__(self, n_bins: int = 64, warm_start: int = 100, *, buckets: list | None = None):
         super().__init__()
 
         self.n_bins = n_bins

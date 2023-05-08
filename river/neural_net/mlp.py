@@ -13,7 +13,7 @@ from river import base, optim
 __all__ = ["MLPRegressor"]
 
 
-def xavier_init(dims: tuple[int, ...], seed: int = None):
+def xavier_init(dims: tuple[int, ...], seed: int | None = None):
     """Xavier weight initialization.
 
     References
@@ -51,7 +51,7 @@ class MLP:
         activations,
         loss: optim.losses.Loss,
         optimizer: optim.base.Optimizer,
-        seed: int = None,
+        seed: int | None = None,
     ):
         self.activations = activations
         self.hidden_dims = hidden_dims
@@ -285,9 +285,9 @@ class MLPRegressor(base.Regressor, MLP):
         self,
         hidden_dims,
         activations,
-        loss: optim.losses.Loss = None,
-        optimizer: optim.base.Optimizer = None,
-        seed: int = None,
+        loss: optim.losses.Loss | None = None,
+        optimizer: optim.base.Optimizer | None = None,
+        seed: int | None = None,
     ):
         super().__init__(
             hidden_dims=hidden_dims,

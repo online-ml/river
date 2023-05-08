@@ -88,7 +88,7 @@ class KNNClassifier(base.Classifier):
         min_distance_keep: float = 0.0,
         weighted: bool = True,
         cleanup_every: int = 0,
-        distance_func: DistanceFunc = None,
+        distance_func: DistanceFunc | None = None,
         softmax: bool = False,
     ):
         self.n_neighbors = n_neighbors

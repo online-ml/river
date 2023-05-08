@@ -64,7 +64,7 @@ class Beta(base.ContinuousDistribution):
 
     """
 
-    def __init__(self, alpha: int = 1, beta: int = 1, seed: int = None):
+    def __init__(self, alpha: int = 1, beta: int = 1, seed: int | None = None):
         super().__init__(seed)
         self.alpha = alpha
         self.beta = beta

@@ -379,7 +379,7 @@ class Pipeline(base.Estimator):
     def _get_params(self):
         return {name: step._get_params() for name, step in self.steps.items()}
 
-    def clone(self, new_params: dict = None, include_attributes=False):
+    def clone(self, new_params: dict | None = None, include_attributes=False):
         if new_params is None:
             new_params = {}
 
@@ -606,7 +606,7 @@ class Pipeline(base.Estimator):
         x, last_step = self._transform_one(x)
         return last_step.score_one(x, **params)
 
-    def forecast(self, horizon: int, xs: list[dict] = None):
+    def forecast(self, horizon: int, xs: list[dict] | None = None):
         """Return a forecast.
 
         Only works if each estimator has a `transform_one` method and the final estimator has a
@@ -709,7 +709,7 @@ class Pipeline(base.Estimator):
 
     # Mini-batch methods
 
-    def learn_many(self, X: pd.DataFrame, y: pd.Series = None, **params):
+    def learn_many(self, X: pd.DataFrame, y: pd.Series | None = None, **params):
         """Fit to a mini-batch.
 
         Parameters

@@ -21,7 +21,7 @@ class RandomSplitter(Splitter):
         self._rng = random.Random(self.seed)
         self._buffer = []
 
-    def clone(self, new_params: dict = None, include_attributes=False):
+    def clone(self, new_params: dict | None = None, include_attributes=False):
         """Change the behavior of clone to allow copies to have a different rng."""
 
         new_params = new_params or {}

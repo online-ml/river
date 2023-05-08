@@ -13,7 +13,7 @@ class Forecaster(base.Estimator):
         return True
 
     @abc.abstractmethod
-    def learn_one(self, y: float, x: dict = None) -> Forecaster:
+    def learn_one(self, y: float, x: dict | None = None) -> Forecaster:
         """Updates the model.
 
         Parameters

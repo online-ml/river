@@ -67,7 +67,7 @@ class RBFSampler(base.Transformer):
 
     """
 
-    def __init__(self, gamma=1.0, n_components=100, seed: int = None):
+    def __init__(self, gamma=1.0, n_components=100, seed: int | None = None):
         self.gamma = gamma
         self.n_components = n_components
         self.seed = seed

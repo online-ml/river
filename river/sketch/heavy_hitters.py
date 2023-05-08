@@ -121,7 +121,7 @@ class HeavyHitters(base.Base):
 
         return self
 
-    def most_common(self, n: int = None) -> list[tuple[typing.Hashable, float]]:
+    def most_common(self, n: int | None = None) -> list[tuple[typing.Hashable, float]]:
         res = []
         for key in self._entries:
             freq, _ = self._entries[key]

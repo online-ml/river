@@ -89,7 +89,7 @@ class OutputCodeClassifier(base.Wrapper, base.Classifier):
         classifier: base.Classifier,
         code_size: int,
         coding_method: str = "random",
-        seed: int = None,
+        seed: int | None = None,
     ):
         self.classifier = classifier
         self.code_size = code_size

@@ -72,9 +72,7 @@ class MultiTargetRegressor(Estimator, abc.ABC):
     """Multi-target regressor."""
 
     @abc.abstractmethod
-    def learn_one(
-        self, x: dict, y: dict[FeatureName, RegTarget], **kwargs
-    ) -> MultiTargetRegressor:
+    def learn_one(self, x: dict, y: dict[FeatureName, RegTarget], **kwargs) -> MultiTargetRegressor:
         """Fits to a set of features `x` and a real-valued target `y`.
 
         Parameters

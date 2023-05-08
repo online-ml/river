@@ -276,7 +276,7 @@ class SGTClassifier(StochasticGradientTree, base.Classifier):
         lambda_value: float = 0.1,
         gamma: float = 1.0,
         nominal_attributes: list | None = None,
-        feature_quantizer: tree.splitter.Quantizer = None,
+        feature_quantizer: tree.splitter.Quantizer | None = None,
     ):
         super().__init__(
             loss_func=BinaryCrossEntropyLoss(),
@@ -391,7 +391,7 @@ class SGTRegressor(StochasticGradientTree, base.Regressor):
         lambda_value: float = 0.1,
         gamma: float = 1.0,
         nominal_attributes: list | None = None,
-        feature_quantizer: tree.splitter.Quantizer = None,
+        feature_quantizer: tree.splitter.Quantizer | None = None,
     ):
         super().__init__(
             loss_func=SquaredErrorLoss(),

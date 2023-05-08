@@ -49,7 +49,7 @@ class HoeffdingTree(ABC):
 
     def __init__(
         self,
-        max_depth: int = None,
+        max_depth: int | None = None,
         binary_split: bool = False,
         max_size: float = 100.0,
         memory_estimate_period: int = 1000000,
@@ -179,9 +179,7 @@ class HoeffdingTree(ABC):
         if self._root is not None and isinstance(self._root, DTBranch):
             return self._root.to_dataframe()
 
-    def _branch_selector(
-        self, numerical_feature=True, multiway_split=False
-    ) -> type[DTBranch]:
+    def _branch_selector(self, numerical_feature=True, multiway_split=False) -> type[DTBranch]:
         """Create a new split node."""
         if numerical_feature:
             if not multiway_split:
@@ -195,9 +193,7 @@ class HoeffdingTree(ABC):
                 return NominalMultiwayBranch
 
     @abstractmethod
-    def _new_leaf(
-        self, initial_stats: dict = None, parent: HTLeaf | DTBranch = None
-    ) -> HTLeaf:
+    def _new_leaf(self, initial_stats: dict | None = None, parent: HTLeaf | DTBranch | None = None) -> HTLeaf:
         """Create a new learning node.
 
         The characteristics of the learning node depends on the tree algorithm.
@@ -367,7 +363,7 @@ class HoeffdingTree(ABC):
 
         return buffer.getvalue()
 
-    def draw(self, max_depth: int = None):
+    def draw(self, max_depth: int | None = None):
         """Draw the tree using the `graphviz` library.
 
         Since the tree is drawn without passing incoming samples, classification trees
@@ -531,4 +527,6 @@ def _color_brew(n: int) -> list[tuple[int, int, int]]:
 # Utility adapted from the original creme's implementation
 def transparency_hex(color: tuple[int, int, int], alpha: float) -> str:
     """Apply alpha coefficient on hexadecimal color."""
-    return "#{:02x}{:02x}{:02x}".format(*tuple([int(round(alpha * c + (1 - alpha) * 255, 0)) for c in color]))
+    return "#{:02x}{:02x}{:02x}".format(
+        *tuple([int(round(alpha * c + (1 - alpha) * 255, 0)) for c in color])
+    )

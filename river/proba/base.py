@@ -19,7 +19,7 @@ class Distribution(base.Base):
 
     """
 
-    def __init__(self, seed: int = None):
+    def __init__(self, seed: int | None = None):
         self.seed = seed
         self._rng = random.Random(seed)
 

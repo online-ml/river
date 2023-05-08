@@ -70,7 +70,7 @@ class ChebyshevUnderSampler(base.Wrapper, base.Regressor):
 
     """
 
-    def __init__(self, regressor: base.Regressor, sp: float = 0.15, seed: int = None):
+    def __init__(self, regressor: base.Regressor, sp: float = 0.15, seed: int | None = None):
         self.regressor = regressor
         self.sp = sp
         self.seed = seed

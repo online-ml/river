@@ -88,7 +88,7 @@ class KMeans(base.Clusterer):
 
     """
 
-    def __init__(self, n_clusters=5, halflife=0.5, mu=0, sigma=1, p=2, seed: int = None):
+    def __init__(self, n_clusters=5, halflife=0.5, mu=0, sigma=1, p=2, seed: int | None = None):
         self.n_clusters = n_clusters
         self.halflife = halflife
         self.mu = mu

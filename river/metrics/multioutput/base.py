@@ -27,7 +27,7 @@ class MultiOutputClassificationMetric(MultiOutputMetric):
 
     _fmt = ".2%"
 
-    def __init__(self, cm: MultiLabelConfusionMatrix = None):
+    def __init__(self, cm: MultiLabelConfusionMatrix | None = None):
         if cm is None:
             cm = MultiLabelConfusionMatrix()
         self.cm = cm
@@ -35,7 +35,8 @@ class MultiOutputClassificationMetric(MultiOutputMetric):
     def update(
         self,
         y_true: dict[str | int, base.typing.ClfTarget],
-        y_pred: dict[str | int, base.typing.ClfTarget] | dict[str | int, dict[base.typing.ClfTarget, float]],
+        y_pred: dict[str | int, base.typing.ClfTarget]
+        | dict[str | int, dict[base.typing.ClfTarget, float]],
         sample_weight=1.0,
     ) -> MultiOutputClassificationMetric:
         """Update the metric."""
@@ -45,7 +46,8 @@ class MultiOutputClassificationMetric(MultiOutputMetric):
     def revert(
         self,
         y_true: dict[str | int, base.typing.ClfTarget],
-        y_pred: dict[str | int, base.typing.ClfTarget] | dict[str | int, dict[base.typing.ClfTarget, float]],
+        y_pred: dict[str | int, base.typing.ClfTarget]
+        | dict[str | int, dict[base.typing.ClfTarget, float]],
         sample_weight=1.0,
     ) -> MultiOutputClassificationMetric:
         """Revert the metric."""

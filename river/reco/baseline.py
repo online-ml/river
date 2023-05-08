@@ -83,10 +83,10 @@ class Baseline(reco.base.Ranker):
 
     def __init__(
         self,
-        optimizer: optim.base.Optimizer = None,
-        loss: optim.losses.Loss = None,
+        optimizer: optim.base.Optimizer | None = None,
+        loss: optim.losses.Loss | None = None,
         l2=0.0,
-        initializer: optim.initializers.Initializer = None,
+        initializer: optim.initializers.Initializer | None = None,
         clip_gradient=1e12,
         seed=None,
     ):

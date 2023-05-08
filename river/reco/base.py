@@ -23,7 +23,7 @@ class Ranker(base.Estimator):
 
     """
 
-    def __init__(self, seed: int = None):
+    def __init__(self, seed: int | None = None):
         self.seed = seed
         self._rng = random.Random(seed)
 
@@ -32,7 +32,7 @@ class Ranker(base.Estimator):
         return False
 
     @abc.abstractmethod
-    def learn_one(self, user: ID, item: ID, y: Reward, x: dict = None):
+    def learn_one(self, user: ID, item: ID, y: Reward, x: dict | None = None):
         """Fits a `user`-`item` pair and a real-valued target `y`.
 
         Parameters
@@ -49,7 +49,7 @@ class Ranker(base.Estimator):
         """
 
     @abc.abstractmethod
-    def predict_one(self, user: ID, item: ID, x: dict = None) -> Reward:
+    def predict_one(self, user: ID, item: ID, x: dict | None = None) -> Reward:
         """Predicts the target value of a set of features `x`.
 
         Parameters
@@ -67,7 +67,7 @@ class Ranker(base.Estimator):
 
         """
 
-    def rank(self, user: ID, items: set[ID], x: dict = None) -> list[ID]:
+    def rank(self, user: ID, items: set[ID], x: dict | None = None) -> list[ID]:
         """Rank models by decreasing order of preference for a given user.
 
         Parameters

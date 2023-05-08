@@ -125,7 +125,7 @@ class Set(base.Base):
 
     """
 
-    def __init__(self, capacity: int = 2048, fp_rate: float = 0.01, seed: int = None):
+    def __init__(self, capacity: int = 2048, fp_rate: float = 0.01, seed: int | None = None):
         self.capacity = capacity
         self.fp_rate = fp_rate
         self.seed = seed

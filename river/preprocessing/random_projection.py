@@ -60,7 +60,7 @@ class GaussianRandomProjector(base.Transformer):
 
     """
 
-    def __init__(self, n_components=10, seed: int = None):
+    def __init__(self, n_components=10, seed: int | None = None):
         self.n_components = n_components
         self.seed = seed
         self._rng = random.Random(seed)
@@ -136,7 +136,7 @@ class SparseRandomProjector(base.Transformer):
 
     """
 
-    def __init__(self, n_components=10, density=0.1, seed: int = None):
+    def __init__(self, n_components=10, density=0.1, seed: int | None = None):
         self.n_components = n_components
         self.density = density
         self.seed = seed

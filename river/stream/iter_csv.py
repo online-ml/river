@@ -33,15 +33,15 @@ class DictReader(csv.DictReader):
 
 def iter_csv(
     filepath_or_buffer,
-    target: str | list[str] = None,
-    converters: dict = None,
-    parse_dates: dict = None,
-    drop: list[str] = None,
+    target: str | list[str] | None = None,
+    converters: dict | None = None,
+    parse_dates: dict | None = None,
+    drop: list[str] | None = None,
     drop_nones=False,
     fraction=1.0,
     compression="infer",
-    seed: int = None,
-    field_size_limit: int = None,
+    seed: int | None = None,
+    field_size_limit: int | None = None,
     **kwargs,
 ) -> base.typing.Stream:
     """Iterates over rows from a CSV file.
