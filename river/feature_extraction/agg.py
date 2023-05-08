@@ -5,7 +5,7 @@ import typing
 
 import pandas as pd
 
-from river import base, stats
+from river import base, stats, utils
 
 
 class Agg(base.Transformer):
@@ -147,10 +147,8 @@ class Agg(base.Transformer):
     ...     how=utils.TimeRolling(stats.Mean(), dt.timedelta(days=7))
     ... )
 
-    >>> rng = random.Random(42)
-
     >>> for day in range(366):
-    ...     g = rng.choice(string.ascii_lowercase)
+    ...     g = random.choice(string.ascii_lowercase)
     ...     x = {
     ...         "group": g,
     ...         "value": string.ascii_lowercase.index(g) + random.random(),
@@ -170,8 +168,8 @@ class Agg(base.Transformer):
     def __init__(
         self,
         on: str,
-        by: typing.Optional[typing.Union[str, typing.List[str]]],
-        how: stats.base.Univariate,
+        by: str | list[str] | None,
+        how: stats.base.Univariate | utils.Rolling | utils.TimeRolling,
     ):
         self.on = on
         self.by = (by if isinstance(by, list) else [by]) if by is not None else by
@@ -309,6 +307,28 @@ class TargetAgg(base.SupervisedTransformer, Agg):
     Taco Bell    Sweden     47.000000
     Name: y_bayes_mean_by_place_and_country, dtype: float64
 
+    This transformer can also be used in conjunction with `utils.TimeRolling`. The latter requires
+    a `t` argument, which is a timestamp that indicates when the current row was observed. For
+    instance, we can calculate the average (how) revenue (on) for each place (by) over the last
+    7 days (t):
+
+    >>> import datetime as dt
+    >>> import random
+    >>> import string
+    >>> from river import utils
+
+    >>> agg = feature_extraction.TargetAgg(
+    ...     by="group",
+    ...     how=utils.TimeRolling(stats.Mean(), dt.timedelta(days=7))
+    ... )
+
+    >>> for day in range(366):
+    ...     g = random.choice(string.ascii_lowercase)
+    ...     x = {"group": g}
+    ...     y = string.ascii_lowercase.index(g) + random.random()
+    ...     t = dt.datetime(2023, 1, 1) + dt.timedelta(days=day)
+    ...     agg = agg.learn_one(x, y, t=t)
+
     References
     ----------
     1. [Streaming groupbys in pandas for big datasets](https://maxhalford.github.io/blog/streaming-groupbys-in-pandas-for-big-datasets/)
@@ -317,8 +337,8 @@ class TargetAgg(base.SupervisedTransformer, Agg):
 
     def __init__(
         self,
-        by: typing.Optional[typing.Union[str, typing.List[str]]],
-        how: stats.base.Univariate,
+        by: str | list[str] | None,
+        how: stats.base.Univariate | utils.Rolling | utils.TimeRolling,
         target_name="y",
     ):
         super().__init__(on=target_name, by=by, how=how)
@@ -327,6 +347,10 @@ class TargetAgg(base.SupervisedTransformer, Agg):
     def target_name(self):
         return self.on
 
-    def learn_one(self, x, y):
-        self._groups[self._make_key(x)].update(y)
+    def learn_one(self, x, y, t=None):
+        key = self._make_key(x)
+        if t is not None:
+            self._groups[key].update(y, t=t)
+        else:
+            self._groups[key].update(y)
         return self
