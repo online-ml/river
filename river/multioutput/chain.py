@@ -297,11 +297,12 @@ class ProbabilisticClassifierChain(ClassifierChain):
 
     >>> for x, y in dataset:
     ...    y_pred = model.predict_one(x)
+    ...    y_pred = {k: y_pred.get(k, 0) for k in y}
     ...    metric = metric.update(y, y_pred)
     ...    model = model.learn_one(x, y)
 
     >>> metric
-    MicroAverage(Jaccard): 51.97%
+    MicroAverage(Jaccard): 51.84%
 
     References
     ----------
