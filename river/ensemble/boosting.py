@@ -263,7 +263,9 @@ class BOLEClassifier(AdaBoostClassifier):
 
     """
 
-    def __init__(self, model: base.Classifier, n_models=10, seed: int | None = None, error_bound=0.5):
+    def __init__(
+        self, model: base.Classifier, n_models=10, seed: int | None = None, error_bound=0.5
+    ):
         super().__init__(model=model, n_models=n_models, seed=seed)
         self.error_bound = error_bound
         self.order_position = [i for i in range(n_models)]

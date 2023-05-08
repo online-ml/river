@@ -193,7 +193,9 @@ class HoeffdingTree(ABC):
                 return NominalMultiwayBranch
 
     @abstractmethod
-    def _new_leaf(self, initial_stats: dict | None = None, parent: HTLeaf | DTBranch | None = None) -> HTLeaf:
+    def _new_leaf(
+        self, initial_stats: dict | None = None, parent: HTLeaf | DTBranch | None = None
+    ) -> HTLeaf:
         """Create a new learning node.
 
         The characteristics of the learning node depends on the tree algorithm.
