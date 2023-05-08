@@ -137,7 +137,7 @@ pip install git+ssh://git@github.com/online-ml/river.git --upgrade
 - Online statistics and metrics
 - Built-in datasets
 - Progressive model validation
-- Model pipelines as a first-class citizen
+- Model pipelines
 - Check out [the API](https://riverml.xyz/latest/api/overview/) for a comprehensive overview
 
 ## 🤔 Should I be using River?
