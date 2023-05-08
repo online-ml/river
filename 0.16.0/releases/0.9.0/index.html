@@ -21,7 +21,7 @@
         <link rel="next" href="../0.8.0/">
       
       <link rel="icon" href="../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.10">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.11">
     
     
       
@@ -304,7 +304,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../unreleased/" class="md-tabs__link md-tabs__link--active">
+      <a href="../0.16.0/" class="md-tabs__link md-tabs__link--active">
         Releases
       </a>
     </li>
@@ -10201,7 +10201,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../unreleased/" class="md-nav__link">
+      <a href="../0.16.0/" class="md-nav__link">
         0.16.0 - 2022-05-08
       </a>
     </li>
@@ -11060,21 +11060,21 @@
 </ul>
 <h2 id="anomaly">anomaly<a class="headerlink" href="#anomaly" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Moved <a href="/api/api/anomaly/base/AnomalyDetector"><code>api.anomaly.base.AnomalyDetector</code></a> to <code>anomaly.AnomalyDetector</code>.</li>
+<li>Moved <a href="../../api/api/anomaly/base/AnomalyDetector"><code>api.anomaly.base.AnomalyDetector</code></a> to <code>anomaly.AnomalyDetector</code>.</li>
 <li>Implemented <code>anomaly.ConstantThresholder</code>.</li>
 <li>Implemented <code>anomaly.QuantileThresholder</code>.</li>
-<li>Implemented <a href="/api/api/anomaly/OneClassSVM"><code>api.anomaly.OneClassSVM</code></a>.</li>
+<li>Implemented <a href="../../api/api/anomaly/OneClassSVM"><code>api.anomaly.OneClassSVM</code></a>.</li>
 </ul>
 <h2 id="base">base<a class="headerlink" href="#base" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Renamed <code>base.WrapperMixin</code> to <a href="/api/base/Wrapper"><code>base.Wrapper</code></a>.</li>
-<li>Introduced <a href="/api/base/WrapperEnsemble"><code>base.WrapperEnsemble</code></a>.</li>
+<li>Renamed <code>base.WrapperMixin</code> to <a href="../../api/base/Wrapper"><code>base.Wrapper</code></a>.</li>
+<li>Introduced <a href="../../api/base/WrapperEnsemble"><code>base.WrapperEnsemble</code></a>.</li>
 <li>Clarified the difference between a <code>base.typing.Dataset</code> and a <code>base.typing.Stream</code>. A <code>Stream</code> is an instance of a <code>Dataset</code> and is stateful. A <code>Dataset</code> is stateless. It's essentially the same difference between an <code>Iterable</code> and an <code>Iterator</code> in the Python standard library.</li>
 </ul>
 <h2 id="compat">compat<a class="headerlink" href="#compat" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Added <code>compat.PyTorch2RiverClassifier</code></li>
-<li>Implemented median absolute deviation in <a href="/api/stats/MAD"><code>stats.MAD</code></a>.</li>
+<li>Implemented median absolute deviation in <a href="../../api/stats/MAD"><code>stats.MAD</code></a>.</li>
 <li>Refactored <code>compat.PyTorch2RiverRegressor</code></li>
 <li>Fixed an issue where some statistics could not be printed if they had not seen any data yet.</li>
 </ul>
@@ -11084,15 +11084,15 @@
 <li>Fixed a visualization issue when using a pipeline with multiple feature unions.</li>
 <li>The prejudiced terms <code>blacklist</code> and <code>whitelist</code> have both been renamed to <code>keys</code>.</li>
 <li>Removed <code>learn_unsupervised</code> parameter from pipeline methods.</li>
-<li>Implemented <a href="/api/compose/TransformerProduct"><code>compose.TransformerProduct</code></a>.</li>
+<li>Implemented <a href="../../api/compose/TransformerProduct"><code>compose.TransformerProduct</code></a>.</li>
 </ul>
 <h2 id="datasets">datasets<a class="headerlink" href="#datasets" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Added <a href="/api/datasets/Keystroke"><code>datasets.Keystroke</code></a>.</li>
+<li>Added <a href="../../api/datasets/Keystroke"><code>datasets.Keystroke</code></a>.</li>
 </ul>
 <h2 id="ensemble">ensemble<a class="headerlink" href="#ensemble" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Bug fixes in <a href="/api/ensemble/SRPClassifier"><code>ensemble.SRPClassifier</code></a> and <a href="/api/ensemble/SRPRegressor"><code>ensemble.SRPRegressor</code></a>.</li>
+<li>Bug fixes in <a href="../../api/ensemble/SRPClassifier"><code>ensemble.SRPClassifier</code></a> and <a href="../../api/ensemble/SRPRegressor"><code>ensemble.SRPRegressor</code></a>.</li>
 <li>Some estimators have been moved into the <code>ensemble</code> module.</li>
 </ul>
 <h2 id="feature_extraction">feature_extraction<a class="headerlink" href="#feature_extraction" title="Permanent link">&para;</a></h2>
@@ -11105,23 +11105,23 @@
 <ul>
 <li>Move <code>meta.PredClipper</code> to the <code>preprocessing</code> module.</li>
 <li>Removed <code>meta.BoxCoxRegressor</code>.</li>
-<li>Moved <code>meta.TargetTransformRegressor</code> to <a href="/api/compose/TargetTransformRegressor"><code>compose.TargetTransformRegressor</code></a>.</li>
-<li>Moved <code>meta.TargetStandardScaler</code> to <a href="/api/preprocessing/TargetStandardScaler"><code>preprocessing.TargetStandardScaler</code></a>.</li>
+<li>Moved <code>meta.TargetTransformRegressor</code> to <a href="../../api/compose/TargetTransformRegressor"><code>compose.TargetTransformRegressor</code></a>.</li>
+<li>Moved <code>meta.TargetStandardScaler</code> to <a href="../../api/preprocessing/TargetStandardScaler"><code>preprocessing.TargetStandardScaler</code></a>.</li>
 </ul>
 <h2 id="model_selection">model_selection<a class="headerlink" href="#model_selection" title="Permanent link">&para;</a></h2>
 <ul>
 <li>This new module replaces the <code>expert</code> module.</li>
-<li>Implemented <a href="/api/model-selection/GreedyRegressor"><code>model_selection.GreedyRegressor</code></a>.</li>
+<li>Implemented <a href="../../api/model-selection/GreedyRegressor"><code>model_selection.GreedyRegressor</code></a>.</li>
 <li>Added <code>ModelSelector</code> base class.</li>
 </ul>
 <h2 id="optim">optim<a class="headerlink" href="#optim" title="Permanent link">&para;</a></h2>
 <ul>
-<li><a href="/api/optim/Adam"><code>optim.Adam</code></a> and <a href="/api/optim/RMSProp"><code>optim.RMSProp</code></a> now work with <a href="/api/utils/VectorDict"><code>utils.VectorDict</code></a>s as well as <code>numpy.ndarray</code>s.</li>
-<li>Added <a href="/api/optim/losses/Huber"><code>optim.losses.Huber</code></a>.</li>
+<li><a href="../../api/optim/Adam"><code>optim.Adam</code></a> and <a href="../../api/optim/RMSProp"><code>optim.RMSProp</code></a> now work with <a href="../../api/utils/VectorDict"><code>utils.VectorDict</code></a>s as well as <code>numpy.ndarray</code>s.</li>
+<li>Added <a href="../../api/optim/losses/Huber"><code>optim.losses.Huber</code></a>.</li>
 </ul>
 <h2 id="preprocessing">preprocessing<a class="headerlink" href="#preprocessing" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Enabled <a href="/api/preprocessing/OneHotEncoder"><code>preprocessing.OneHotEncoder</code></a> to one-hot encode values that are list or sets.</li>
+<li>Enabled <a href="../../api/preprocessing/OneHotEncoder"><code>preprocessing.OneHotEncoder</code></a> to one-hot encode values that are list or sets.</li>
 </ul>
 <h2 id="reco">reco<a class="headerlink" href="#reco" title="Permanent link">&para;</a></h2>
 <ul>
@@ -11135,21 +11135,21 @@
 <h2 id="stats">stats<a class="headerlink" href="#stats" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Fixed an issue where some statistics could not be printed if they had not seen any data yet.</li>
-<li>Implemented median absolute deviation in <a href="/api/stats/MAD"><code>stats.MAD</code></a>.</li>
-<li>The <a href="/api/stats/Mean"><code>stats.Mean</code></a> and <a href="/api/stats/Var"><code>stats.Var</code></a> implementations have been made more numerically stable.</li>
+<li>Implemented median absolute deviation in <a href="../../api/stats/MAD"><code>stats.MAD</code></a>.</li>
+<li>The <a href="../../api/stats/Mean"><code>stats.Mean</code></a> and <a href="../../api/stats/Var"><code>stats.Var</code></a> implementations have been made more numerically stable.</li>
 </ul>
 <h2 id="time_series">time_series<a class="headerlink" href="#time_series" title="Permanent link">&para;</a></h2>
 <ul>
-<li><code>time_series.Detrender</code> and <code>time_series.GroupDetrender</code> have been removed as they overlap with <a href="/api/preprocessing/TargetStandardScaler"><code>preprocessing.TargetStandardScaler</code></a>.</li>
-<li>Implemented a <a href="/api/time-series/evaluate"><code>time_series.evaluate</code></a> method, which performs progressive validation for time series scenarios.</li>
-<li>Implemented <a href="/api/time-series/HorizonMetric"><code>time_series.HorizonMetric</code></a> class to evaluate the performance of a forecasting model at each time step along a horizon.</li>
-<li>Implemented <a href="/api/time-series/HoltWinters"><code>time_series.HoltWinters</code></a>.</li>
+<li><code>time_series.Detrender</code> and <code>time_series.GroupDetrender</code> have been removed as they overlap with <a href="../../api/preprocessing/TargetStandardScaler"><code>preprocessing.TargetStandardScaler</code></a>.</li>
+<li>Implemented a <a href="../../api/time-series/evaluate"><code>time_series.evaluate</code></a> method, which performs progressive validation for time series scenarios.</li>
+<li>Implemented <a href="../../api/time-series/HorizonMetric"><code>time_series.HorizonMetric</code></a> class to evaluate the performance of a forecasting model at each time step along a horizon.</li>
+<li>Implemented <a href="../../api/time-series/HoltWinters"><code>time_series.HoltWinters</code></a>.</li>
 </ul>
 <h2 id="utils">utils<a class="headerlink" href="#utils" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Moved <code>model_selection.expand_param_grid</code> to <a href="/api/utils/expand-param-grid"><code>utils.expand_param_grid</code></a>.</li>
+<li>Moved <code>model_selection.expand_param_grid</code> to <a href="../../api/utils/expand-param-grid"><code>utils.expand_param_grid</code></a>.</li>
 <li>Added <code>utils.poisson</code>.</li>
-<li>Added the <a href="/api/utils/log-method-calls"><code>utils.log_method_calls</code></a> context manager.</li>
+<li>Added the <a href="../../api/utils/log-method-calls"><code>utils.log_method_calls</code></a> context manager.</li>
 <li>Added the <code>utils.warm_up_mode</code> context manager.</li>
 <li>Added the <code>utils.pure_inference_model</code> context manager.</li>
 </ul>

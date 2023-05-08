@@ -21,7 +21,7 @@
         <link rel="next" href="../../sketch/Counter/">
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.10">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.11">
     
     
       
@@ -304,7 +304,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../../releases/unreleased/" class="md-tabs__link">
+      <a href="../../../releases/0.16.0/" class="md-tabs__link">
         Releases
       </a>
     </li>
@@ -10272,7 +10272,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../releases/unreleased/" class="md-nav__link">
+      <a href="../../../releases/0.16.0/" class="md-nav__link">
         0.16.0 - 2022-05-08
       </a>
     </li>
@@ -10934,7 +10934,7 @@
 </li>
 <li>
 <p><strong>pred_model</strong></p>
-<p><em>Type</em> → <em><a href="/api/base/Regressor">base.Regressor</a> | None</em></p>
+<p><em>Type</em> → <em><a href="../../base/Regressor">base.Regressor</a> | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
 <p>The regression model that will be replicated for every rule when <code>pred_type</code> is either <code>"model"</code> or <code>"adaptive"</code>.</p>
 </li>
@@ -10942,13 +10942,13 @@
 <p><strong>splitter</strong></p>
 <p><em>Type</em> → <em>spl.Splitter | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
-<p>The Splitter or Attribute Observer (AO) used to monitor the class statistics of numeric features and perform splits. Splitters are available in the <a href="/api/tree/splitter"><code>tree.splitter</code></a> module. Different splitters are available for classification and regression tasks. Classification and regression splitters can be distinguished by their property <code>is_target_class</code>. This is an advanced option. Special care must be taken when choosing different splitters. By default, <a href="/api/tree/splitter/TEBSTSplitter"><code>tree.splitter.TEBSTSplitter</code></a> is used if <code>splitter</code> is <code>None</code>.</p>
+<p>The Splitter or Attribute Observer (AO) used to monitor the class statistics of numeric features and perform splits. Splitters are available in the <a href="../../tree/splitter"><code>tree.splitter</code></a> module. Different splitters are available for classification and regression tasks. Classification and regression splitters can be distinguished by their property <code>is_target_class</code>. This is an advanced option. Special care must be taken when choosing different splitters. By default, <a href="../../tree/splitter/TEBSTSplitter"><code>tree.splitter.TEBSTSplitter</code></a> is used if <code>splitter</code> is <code>None</code>.</p>
 </li>
 <li>
 <p><strong>drift_detector</strong></p>
-<p><em>Type</em> → <em><a href="/api/base/DriftDetector">base.DriftDetector</a> | None</em></p>
+<p><em>Type</em> → <em><a href="../../base/DriftDetector">base.DriftDetector</a> | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
-<p>The drift detection model that is used by each rule. Care must be taken to avoid the triggering of too many false alarms or delaying too much the concept drift detection. By default, <a href="/api/drift/ADWIN"><code>drift.ADWIN</code></a> is used if <code>drift_detector</code> is <code>None</code>.</p>
+<p>The drift detection model that is used by each rule. Care must be taken to avoid the triggering of too many false alarms or delaying too much the concept drift detection. By default, <a href="../../drift/ADWIN"><code>drift.ADWIN</code></a> is used if <code>drift_detector</code> is <code>None</code>.</p>
 </li>
 <li>
 <p><strong>fading_factor</strong></p>

@@ -21,7 +21,7 @@
         <link rel="next" href="../Skew/">
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.10">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.11">
     
     
       
@@ -304,7 +304,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../../releases/unreleased/" class="md-tabs__link">
+      <a href="../../../releases/0.16.0/" class="md-tabs__link">
         Releases
       </a>
     </li>
@@ -10265,7 +10265,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../releases/unreleased/" class="md-nav__link">
+      <a href="../../../releases/0.16.0/" class="md-nav__link">
         0.16.0 - 2022-05-08
       </a>
     </li>
@@ -10890,7 +10890,7 @@
 <h1 id="shift">Shift<a class="headerlink" href="#shift" title="Permanent link">&para;</a></h1>
 <p>Shifts a data stream by returning past values.</p>
 <p>This can be used to compute statistics over past data. For instance, if you're computing daily averages, then shifting by 7 will be equivalent to computing averages from a week ago. </p>
-<p>Shifting values is useful when you're calculating an average over a target value. Indeed, in this case it's important to shift the values in order not to introduce leakage. The recommended way to do this is to <a href="/api/feature-extraction/TargetAgg"><code>feature_extraction.TargetAgg</code></a>, which already takes care of shifting the target values once.</p>
+<p>Shifting values is useful when you're calculating an average over a target value. Indeed, in this case it's important to shift the values in order not to introduce leakage. The recommended way to do this is to <a href="../../feature-extraction/TargetAgg"><code>feature_extraction.TargetAgg</code></a>, which already takes care of shifting the target values once.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
@@ -10928,10 +10928,10 @@ other statistics. This can be done via the <code>|</code> operator.</p>
 <p>A common usecase for using <code>Shift</code> is when computing statistics on shifted data. For
 instance, say you have a dataset which records the amount of sales for a set of shops. You
 might then have a <code>shop</code> field and a <code>sales</code> field. Let's say you want to look at the
-average amount of sales per shop. You can do this by using a <a href="/api/feature-extraction/Agg"><code>feature_extraction.Agg</code></a>. When
+average amount of sales per shop. You can do this by using a <a href="../../feature-extraction/Agg"><code>feature_extraction.Agg</code></a>. When
 you call <code>transform_one</code>, you're expecting it to return the average amount of sales,
 <em>without</em> including today's sales. You can do this by prepending an instance of
-<a href="/api/stats/Mean"><code>stats.Mean</code></a> with an instance of <a href="/api/stats/Shift"><code>stats.Shift</code></a>.</p>
+<a href="../../stats/Mean"><code>stats.Mean</code></a> with an instance of <a href="../../stats/Shift"><code>stats.Shift</code></a>.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">feature_extraction</span>
 
 <span class="n">agg</span> <span class="o">=</span> <span class="n">feature_extraction</span><span class="o">.</span><span class="n">Agg</span><span class="p">(</span>
@@ -10951,7 +10951,7 @@ you call <code>transform_one</code>, you're expecting it to return the average a
 <div class="language-python highlight"><pre><span></span><code><span class="n">x</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 <span class="n">agg</span> <span class="o">=</span> <span class="n">agg</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 </code></pre></div>
-<p>At this point, the average defaults to the initial value of <a href="/api/stats/Mean"><code>stats.Mean</code></a>, which is 0.</p>
+<p>At this point, the average defaults to the initial value of <a href="../../stats/Mean"><code>stats.Mean</code></a>, which is 0.</p>
 <p><div class="language-python highlight"><pre><span></span><code><span class="n">agg</span><span class="o">.</span><span class="n">transform_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 </code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>{&#39;sales_mean_of_shift_1_by_shop&#39;: 0.0}

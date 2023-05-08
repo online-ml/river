@@ -21,7 +21,7 @@
         <link rel="next" href="../PAClassifier/">
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.10">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.11">
     
     
       
@@ -304,7 +304,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../../releases/unreleased/" class="md-tabs__link">
+      <a href="../../../releases/0.16.0/" class="md-tabs__link">
         Releases
       </a>
     </li>
@@ -10265,7 +10265,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../releases/unreleased/" class="md-nav__link">
+      <a href="../../../releases/0.16.0/" class="md-nav__link">
         0.16.0 - 2022-05-08
       </a>
     </li>
@@ -10890,20 +10890,20 @@
 <h1 id="logisticregression">LogisticRegression<a class="headerlink" href="#logisticregression" title="Permanent link">&para;</a></h1>
 <p>Logistic regression.</p>
 <p>This estimator supports learning with mini-batches. On top of the single instance methods, it provides the following methods: <code>learn_many</code>, <code>predict_many</code>, <code>predict_proba_many</code>. Each method takes as input a <code>pandas.DataFrame</code> where each column represents a feature. </p>
-<p>It is generally a good idea to scale the data beforehand in order for the optimizer to converge. You can do this online with a <a href="/api/preprocessing/StandardScaler"><code>preprocessing.StandardScaler</code></a>.</p>
+<p>It is generally a good idea to scale the data beforehand in order for the optimizer to converge. You can do this online with a <a href="../../preprocessing/StandardScaler"><code>preprocessing.StandardScaler</code></a>.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
 <p><strong>optimizer</strong></p>
-<p><em>Type</em> → <em><a href="/api/optim/base/Optimizer">optim.base.Optimizer</a> | None</em></p>
+<p><em>Type</em> → <em><a href="../../optim/base/Optimizer">optim.base.Optimizer</a> | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
 <p>The sequential optimizer used for updating the weights. Note that the intercept is handled separately.</p>
 </li>
 <li>
 <p><strong>loss</strong></p>
-<p><em>Type</em> → <em><a href="/api/optim/losses/BinaryLoss">optim.losses.BinaryLoss</a> | None</em></p>
+<p><em>Type</em> → <em><a href="../../optim/losses/BinaryLoss">optim.losses.BinaryLoss</a> | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
-<p>The loss function to optimize for. Defaults to <a href="/api/optim/losses/Log"><code>optim.losses.Log</code></a>.</p>
+<p>The loss function to optimize for. Defaults to <a href="../../optim/losses/Log"><code>optim.losses.Log</code></a>.</p>
 </li>
 <li>
 <p><strong>l2</strong></p>
@@ -10922,9 +10922,9 @@
 </li>
 <li>
 <p><strong>intercept_lr</strong></p>
-<p><em>Type</em> → <em>float | <a href="/api/optim/base/Scheduler">optim.base.Scheduler</a></em></p>
+<p><em>Type</em> → <em>float | <a href="../../optim/base/Scheduler">optim.base.Scheduler</a></em></p>
 <p><em>Default</em> → <code>0.01</code></p>
-<p>Learning rate scheduler used for updating the intercept. A <a href="/api/optim/schedulers/Constant"><code>optim.schedulers.Constant</code></a> is used if a <code>float</code> is provided. The intercept is not updated when this is set to 0.</p>
+<p>Learning rate scheduler used for updating the intercept. A <a href="../../optim/schedulers/Constant"><code>optim.schedulers.Constant</code></a> is used if a <code>float</code> is provided. The intercept is not updated when this is set to 0.</p>
 </li>
 <li>
 <p><strong>clip_gradient</strong></p>
@@ -10933,7 +10933,7 @@
 </li>
 <li>
 <p><strong>initializer</strong></p>
-<p><em>Type</em> → <em><a href="/api/optim/base/Initializer">optim.base.Initializer</a> | None</em></p>
+<p><em>Type</em> → <em><a href="../../optim/base/Initializer">optim.base.Initializer</a> | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
 <p>Weights initialization scheme.</p>
 </li>

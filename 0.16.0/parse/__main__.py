@@ -224,7 +224,7 @@ class Linkifier:
         self.path_index = path_index
         self.rename_index = rename_index
 
-    def linkify(self, text):
+    def linkify(self, text, prefix):
         def replace(x):
             # HACK
             if "collections" in x.group():
@@ -238,7 +238,7 @@ class Linkifier:
                 name = self.rename_index.get(y, y)
                 name = f"`{name}`'" if x.group().startswith("`") else name
                 name = name.strip("'")
-                return f"[{name}](/api/{path})"
+                return f"[{name}]({prefix}{path})"
             return x.group()
 
         return self.PATTERN.sub(replace, text)
@@ -455,7 +455,7 @@ def print_docstring(obj, file):
         printf(md_line("\n".join(doc["References"])))
 
 
-def print_module(mod, path, overview, is_submodule=False, verbose=False):
+def print_module(mod, path, overview, depth=0, verbose=False):
     mod_name = mod.__name__.split(".")[-1]
 
     # Create a directory for the module
@@ -467,10 +467,14 @@ def print_module(mod, path, overview, is_submodule=False, verbose=False):
         f.write(f"title: {mod_name}")
 
     # Add the module to the overview
-    if is_submodule:
-        print(h3(mod_name), file=overview)
-    else:
+    if depth == 0:
         print(h2(mod_name), file=overview)
+    elif depth == 1:
+        print(h3(mod_name), file=overview)
+    elif depth == 2:
+        print(h4(mod_name), file=overview)
+    else:
+        raise ValueError("Module depth must be between 0 and 2, you went too deep!")
     if mod.__doc__:
         print(md_line(mod.__doc__), file=overview)
 
@@ -541,7 +545,7 @@ def print_module(mod, path, overview, is_submodule=False, verbose=False):
             mod=submod,
             path=mod_path,
             overview=overview,
-            is_submodule=True,
+            depth=depth + 1,
             verbose=verbose,
         )
 
@@ -579,11 +583,15 @@ def linkify_docs(library: str, docs_dir: pathlib.Path, verbose=False):
             continue
 
         text = page.read_text()
+        prefix = "../" * (str(page).count("/") - 1)
+
+        if "/api/" not in str(page):
+            prefix = f"../{prefix}api/"
 
         if "benchmarks" not in str(page):
             if verbose:
                 print(f"Adding links to {page}")
-            text = linkifier.linkify(text)
+            text = linkifier.linkify(text, prefix=prefix)
 
         # Write back text to file
         linkified_page = pathlib.Path(str(page).replace("docs/", "docs/linkified/"))

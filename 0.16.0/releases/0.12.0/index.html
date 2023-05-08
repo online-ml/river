@@ -21,7 +21,7 @@
         <link rel="next" href="../0.11.1/">
       
       <link rel="icon" href="../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.10">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.11">
     
     
       
@@ -304,7 +304,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../unreleased/" class="md-tabs__link md-tabs__link--active">
+      <a href="../0.16.0/" class="md-tabs__link md-tabs__link--active">
         Releases
       </a>
     </li>
@@ -10201,7 +10201,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../unreleased/" class="md-nav__link">
+      <a href="../0.16.0/" class="md-nav__link">
         0.16.0 - 2022-05-08
       </a>
     </li>
@@ -11060,7 +11060,7 @@
 </ul>
 <h2 id="base">base<a class="headerlink" href="#base" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Introduced an <code>mutate</code> method to the <a href="/api/base/Base"><code>base.Base</code></a> class. This allows setting attributes in a controlled manner, which paves the way for online AutoML. See <a href="/recipes/cloning-and-mutating">the recipe</a> for more information.</li>
+<li>Introduced an <code>mutate</code> method to the <a href="../../api/base/Base"><code>base.Base</code></a> class. This allows setting attributes in a controlled manner, which paves the way for online AutoML. See <a href="/recipes/cloning-and-mutating">the recipe</a> for more information.</li>
 </ul>
 <h2 id="compat">compat<a class="headerlink" href="#compat" title="Permanent link">&para;</a></h2>
 <ul>
@@ -11069,17 +11069,17 @@
 <h2 id="covariance">covariance<a class="headerlink" href="#covariance" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Created a new <code>covariance</code> module to hold everything related to covariance and inversion covariance matrix estimation.</li>
-<li>Moved <code>misc.CovarianceMatrix</code> to <a href="/api/covariance/EmpiricalCovariance"><code>covariance.EmpiricalCovariance</code></a>.</li>
-<li>Added <a href="/api/covariance/EmpiricalPrecision"><code>covariance.EmpiricalPrecision</code></a> to estimate the inverse covariance matrix.</li>
+<li>Moved <code>misc.CovarianceMatrix</code> to <a href="../../api/covariance/EmpiricalCovariance"><code>covariance.EmpiricalCovariance</code></a>.</li>
+<li>Added <a href="../../api/covariance/EmpiricalPrecision"><code>covariance.EmpiricalPrecision</code></a> to estimate the inverse covariance matrix.</li>
 </ul>
 <h2 id="compose">compose<a class="headerlink" href="#compose" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Moved <code>utils.pure_inference_mode</code> to <a href="/api/compose/pure-inference-mode"><code>compose.pure_inference_mode</code></a> and <code>utils.warm_up_mode</code> to <a href="/api/compose/warm-up-mode"><code>compose.warm_up_mode</code></a>.</li>
+<li>Moved <code>utils.pure_inference_mode</code> to <a href="../../api/compose/pure-inference-mode"><code>compose.pure_inference_mode</code></a> and <code>utils.warm_up_mode</code> to <a href="../../api/compose/warm-up-mode"><code>compose.warm_up_mode</code></a>.</li>
 <li>Pipeline parts can now be accessed by integer positions as well as by name.</li>
 </ul>
 <h2 id="datasets">datasets<a class="headerlink" href="#datasets" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Imports <code>synth</code>, enabling `from river import datasets; <a href="/api/datasets/synth">datasets.synth</a>.</li>
+<li>Imports <code>synth</code>, enabling `from river import datasets; <a href="../../api/datasets/synth">datasets.synth</a>.</li>
 </ul>
 <h2 id="drift">drift<a class="headerlink" href="#drift" title="Permanent link">&para;</a></h2>
 <ul>
@@ -11093,23 +11093,23 @@
 </ul>
 <h2 id="feature_extraction">feature_extraction<a class="headerlink" href="#feature_extraction" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Added a <code>tokenizer_pattern</code> parameter to <a href="/api/feature-extraction/BagOfWords"><code>feature_extraction.BagOfWords</code></a> and <a href="/api/feature-extraction/TFIDF"><code>feature_extraction.TFIDF</code></a> to override the default pattern used for tokenizing text.</li>
-<li>Added a <code>stop_words</code> parameter to <a href="/api/feature-extraction/BagOfWords"><code>feature_extraction.BagOfWords</code></a> and <a href="/api/feature-extraction/TFIDF"><code>feature_extraction.TFIDF</code></a> for removing stop words once the text has been tokenized.</li>
+<li>Added a <code>tokenizer_pattern</code> parameter to <a href="../../api/feature-extraction/BagOfWords"><code>feature_extraction.BagOfWords</code></a> and <a href="../../api/feature-extraction/TFIDF"><code>feature_extraction.TFIDF</code></a> to override the default pattern used for tokenizing text.</li>
+<li>Added a <code>stop_words</code> parameter to <a href="../../api/feature-extraction/BagOfWords"><code>feature_extraction.BagOfWords</code></a> and <a href="../../api/feature-extraction/TFIDF"><code>feature_extraction.TFIDF</code></a> for removing stop words once the text has been tokenized.</li>
 </ul>
 <h2 id="linear_model">linear_model<a class="headerlink" href="#linear_model" title="Permanent link">&para;</a></h2>
 <ul>
-<li>After long ado, we've finally implemented <a href="/api/linear-model/BayesianLinearRegression"><code>linear_model.BayesianLinearRegression</code></a>.</li>
+<li>After long ado, we've finally implemented <a href="../../api/linear-model/BayesianLinearRegression"><code>linear_model.BayesianLinearRegression</code></a>.</li>
 </ul>
 <h2 id="metrics">metrics<a class="headerlink" href="#metrics" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Removed dependency to <code>optim</code>.</li>
-<li>Removed <code>metrics.Rolling</code>, due to the addition of <a href="/api/utils/Rolling"><code>utils.Rolling</code></a>.</li>
-<li>Removed <code>metrics.TimeRolling</code>, due to the addition of <a href="/api/utils/Rolling"><code>utils.Rolling</code></a>.</li>
+<li>Removed <code>metrics.Rolling</code>, due to the addition of <a href="../../api/utils/Rolling"><code>utils.Rolling</code></a>.</li>
+<li>Removed <code>metrics.TimeRolling</code>, due to the addition of <a href="../../api/utils/Rolling"><code>utils.Rolling</code></a>.</li>
 </ul>
 <h2 id="proba">proba<a class="headerlink" href="#proba" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Removed <code>proba.Rolling</code>, due to the addition of <a href="/api/utils/Rolling"><code>utils.Rolling</code></a>.</li>
-<li>Removed <code>proba.TimeRolling</code>, due to the addition of <a href="/api/utils/Rolling"><code>utils.Rolling</code></a>.</li>
+<li>Removed <code>proba.Rolling</code>, due to the addition of <a href="../../api/utils/Rolling"><code>utils.Rolling</code></a>.</li>
+<li>Removed <code>proba.TimeRolling</code>, due to the addition of <a href="../../api/utils/Rolling"><code>utils.Rolling</code></a>.</li>
 </ul>
 <h2 id="rule">rule<a class="headerlink" href="#rule" title="Permanent link">&para;</a></h2>
 <ul>
@@ -11117,21 +11117,21 @@
 </ul>
 <h2 id="stats">stats<a class="headerlink" href="#stats" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Removed <code>stats.RollingMean</code>, due to the addition of <a href="/api/utils/Rolling"><code>utils.Rolling</code></a>.</li>
-<li>Removed <code>stats.RollingVar</code>, due to the addition of <a href="/api/utils/Rolling"><code>utils.Rolling</code></a>.</li>
-<li>Removed <code>stats.RollingCov</code>, due to the addition of <a href="/api/utils/Rolling"><code>utils.Rolling</code></a>.</li>
-<li>Removed <code>stats.RollingPearsonCorr</code>, due to the addition of <a href="/api/utils/Rolling"><code>utils.Rolling</code></a>.</li>
+<li>Removed <code>stats.RollingMean</code>, due to the addition of <a href="../../api/utils/Rolling"><code>utils.Rolling</code></a>.</li>
+<li>Removed <code>stats.RollingVar</code>, due to the addition of <a href="../../api/utils/Rolling"><code>utils.Rolling</code></a>.</li>
+<li>Removed <code>stats.RollingCov</code>, due to the addition of <a href="../../api/utils/Rolling"><code>utils.Rolling</code></a>.</li>
+<li>Removed <code>stats.RollingPearsonCorr</code>, due to the addition of <a href="../../api/utils/Rolling"><code>utils.Rolling</code></a>.</li>
 </ul>
 <h2 id="stream">stream<a class="headerlink" href="#stream" title="Permanent link">&para;</a></h2>
 <ul>
-<li><a href="/api/stream/iter-array"><code>stream.iter_array</code></a> now handles text data.</li>
-<li>Added <a href="/api/stream/TwitterLiveStream"><code>stream.TwitterLiveStream</code></a>, to listen to a filtered live stream of Tweets.</li>
+<li><a href="../../api/stream/iter-array"><code>stream.iter_array</code></a> now handles text data.</li>
+<li>Added <a href="../../api/stream/TwitterLiveStream"><code>stream.TwitterLiveStream</code></a>, to listen to a filtered live stream of Tweets.</li>
 </ul>
 <h2 id="time_series">time_series<a class="headerlink" href="#time_series" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Added <a href="/api/time-series/HorizonAggMetric"><code>time_series.HorizonAggMetric</code></a>.</li>
-<li>Fixed a bug in <a href="/api/time-series/SNARIMAX"><code>time_series.SNARIMAX</code></a> where the number of seasonal components was not correct when <code>sp</code> or <code>sq</code> were specified.</li>
-<li>Fixed the differencing logic in <a href="/api/time-series/SNARIMAX"><code>time_series.SNARIMAX</code></a> when <code>d</code> or <code>sd</code> were specified.</li>
+<li>Added <a href="../../api/time-series/HorizonAggMetric"><code>time_series.HorizonAggMetric</code></a>.</li>
+<li>Fixed a bug in <a href="../../api/time-series/SNARIMAX"><code>time_series.SNARIMAX</code></a> where the number of seasonal components was not correct when <code>sp</code> or <code>sq</code> were specified.</li>
+<li>Fixed the differencing logic in <a href="../../api/time-series/SNARIMAX"><code>time_series.SNARIMAX</code></a> when <code>d</code> or <code>sd</code> were specified.</li>
 </ul>
 <h2 id="tree">tree<a class="headerlink" href="#tree" title="Permanent link">&para;</a></h2>
 <ul>
@@ -11144,8 +11144,8 @@
 <h2 id="utils">utils<a class="headerlink" href="#utils" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Removed dependencies to <code>anomaly</code> and <code>compose</code>.</li>
-<li>Added <a href="/api/utils/Rolling"><code>utils.Rolling</code></a> and <a href="/api/utils/TimeRolling"><code>utils.TimeRolling</code></a>, which are generic wrappers for computing over a window (of time).</li>
-<li>Use binary search to speed-up element removal in <a href="/api/utils/SortedWindow"><code>utils.SortedWindow</code></a>.</li>
+<li>Added <a href="../../api/utils/Rolling"><code>utils.Rolling</code></a> and <a href="../../api/utils/TimeRolling"><code>utils.TimeRolling</code></a>, which are generic wrappers for computing over a window (of time).</li>
+<li>Use binary search to speed-up element removal in <a href="../../api/utils/SortedWindow"><code>utils.SortedWindow</code></a>.</li>
 </ul>
 
 

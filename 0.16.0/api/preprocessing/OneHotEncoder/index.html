@@ -21,7 +21,7 @@
         <link rel="next" href="../PredClipper/">
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.10">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.11">
     
     
       
@@ -304,7 +304,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../../releases/unreleased/" class="md-tabs__link">
+      <a href="../../../releases/0.16.0/" class="md-tabs__link">
         Releases
       </a>
     </li>
@@ -10258,7 +10258,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../releases/unreleased/" class="md-nav__link">
+      <a href="../../../releases/0.16.0/" class="md-nav__link">
         0.16.0 - 2022-05-08
       </a>
     </li>
@@ -10875,7 +10875,7 @@
 
 <h1 id="onehotencoder">OneHotEncoder<a class="headerlink" href="#onehotencoder" title="Permanent link">&para;</a></h1>
 <p>One-hot encoding.</p>
-<p>This transformer will encode every feature it is provided with. If a list or set is provided, this transformer will encode every entry in the list/set. You can apply it to a subset of features by composing it  with <a href="/api/compose/Select"><code>compose.Select</code></a> or <a href="/api/compose/SelectType"><code>compose.SelectType</code></a>.</p>
+<p>This transformer will encode every feature it is provided with. If a list or set is provided, this transformer will encode every entry in the list/set. You can apply it to a subset of features by composing it  with <a href="../../compose/Select"><code>compose.Select</code></a> or <a href="../../compose/SelectType"><code>compose.SelectType</code></a>.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
@@ -10930,7 +10930,7 @@ present in the output.</p>
 <div class="language-text highlight"><pre><span></span><code>{&#39;c1_u&#39;: 1, &#39;c2_d&#39;: 1}
 {&#39;c1_a&#39;: 1, &#39;c1_u&#39;: 0, &#39;c2_d&#39;: 0, &#39;c2_x&#39;: 1}
 </code></pre></div></p>
-<p>A subset of the features can be one-hot encoded by using an instance of <a href="/api/compose/Select"><code>compose.Select</code></a>.</p>
+<p>A subset of the features can be one-hot encoded by using an instance of <a href="../../compose/Select"><code>compose.Select</code></a>.</p>
 <p><div class="language-python highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">compose</span>
 
 <span class="n">pp</span> <span class="o">=</span> <span class="n">compose</span><span class="o">.</span><span class="n">Select</span><span class="p">(</span><span class="s1">&#39;c1&#39;</span><span class="p">)</span> <span class="o">|</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">OneHotEncoder</span><span class="p">()</span>

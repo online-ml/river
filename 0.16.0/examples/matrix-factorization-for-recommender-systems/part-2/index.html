@@ -21,7 +21,7 @@
         <link rel="next" href="../part-3/">
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.10">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.11">
     
     
       
@@ -304,7 +304,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../../releases/unreleased/" class="md-tabs__link">
+      <a href="../../../releases/0.16.0/" class="md-tabs__link">
         Releases
       </a>
     </li>
@@ -10272,7 +10272,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../releases/unreleased/" class="md-nav__link">
+      <a href="../../../releases/0.16.0/" class="md-nav__link">
         0.16.0 - 2022-05-08
       </a>
     </li>
@@ -10971,12 +10971,12 @@
 
 <span class="n">evaluate</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>[25,000] MAE: 0.761778, RMSE: 0.960803 – 00:00:04 – 818.86 KB
-[50,000] MAE: 0.751986, RMSE: 0.949941 – 00:00:09 – 948.77 KB
-[75,000] MAE: 0.750044, RMSE: 0.948911 – 00:00:13 – 1.07 MB
-[100,000] MAE: 0.748609, RMSE: 0.947994 – 00:00:18 – 1.19 MB
+<div class="language-text highlight"><pre><span></span><code>[25,000] MAE: 0.761778, RMSE: 0.960803 – 00:00:03 – 818.86 KB
+[50,000] MAE: 0.751986, RMSE: 0.949941 – 00:00:08 – 948.77 KB
+[75,000] MAE: 0.750044, RMSE: 0.948911 – 00:00:12 – 1.07 MB
+[100,000] MAE: 0.748609, RMSE: 0.947994 – 00:00:16 – 1.19 MB
 </code></pre></div>
-<p>Both MAE are very close to each other (0.7486 vs 0.7485) showing that we almost reproduced <a href="/api/reco/BiasedMF/">[reco.BiasedMF](/api/reco/BiasedMF)</a> algorithm. The cost is a naturally slower running time as FM implementation offers more flexibility.</p>
+<p>Both MAE are very close to each other (0.7486 vs 0.7485) showing that we almost reproduced <a href="/api/reco/BiasedMF/">[reco.BiasedMF](../../../api/reco/BiasedMF)</a> algorithm. The cost is a naturally slower running time as FM implementation offers more flexibility.</p>
 <h2 id="feature-engineering-for-fm-models">Feature engineering for FM models<a class="headerlink" href="#feature-engineering-for-fm-models" title="Permanent link">&para;</a></h2>
 <p>Let's study the basics of how to properly encode data for FM models. We are going to keep using MovieLens 100K as it provides various feature types:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">json</span>
@@ -11050,10 +11050,10 @@ y = 4.0
 
 <span class="n">evaluate</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>[25,000] MAE: 0.759838, RMSE: 0.961281 – 00:00:12 – 935.54 KB
-[50,000] MAE: 0.751307, RMSE: 0.951391 – 00:00:24 – 1.06 MB
-[75,000] MAE: 0.750361, RMSE: 0.951393 – 00:00:36 – 1.22 MB
-[100,000] MAE: 0.749994, RMSE: 0.951435 – 00:00:49 – 1.37 MB
+<div class="language-text highlight"><pre><span></span><code>[25,000] MAE: 0.759838, RMSE: 0.961281 – 00:00:10 – 935.54 KB
+[50,000] MAE: 0.751307, RMSE: 0.951391 – 00:00:21 – 1.06 MB
+[75,000] MAE: 0.750361, RMSE: 0.951393 – 00:00:31 – 1.22 MB
+[100,000] MAE: 0.749994, RMSE: 0.951435 – 00:00:42 – 1.37 MB
 </code></pre></div>
 <p>Note that using more variables involves factorizing a larger latent space, then increasing the number of latent factors <span class="arithmatex">\(k\)</span> often helps capturing more information.</p>
 <p>Some other feature engineering tips from <a href="https://www.kaggle.com/c/criteo-display-ad-challenge/discussion/10555">3 idiots' winning solution</a> for Kaggle <a href="https://www.kaggle.com/c/criteo-display-ad-challenge">Criteo display ads</a> competition in 2014:</p>
@@ -11095,10 +11095,10 @@ y = 4.0
 
 <span class="n">evaluate</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>[25,000] MAE: 0.761297, RMSE: 0.962054 – 00:00:42 – 1.73 MB
-[50,000] MAE: 0.751865, RMSE: 0.951499 – 00:01:25 – 2.03 MB
-[75,000] MAE: 0.750853, RMSE: 0.951526 – 00:02:07 – 2.36 MB
-[100,000] MAE: 0.750607, RMSE: 0.951982 – 00:02:50 – 2.66 MB
+<div class="language-text highlight"><pre><span></span><code>[25,000] MAE: 0.761297, RMSE: 0.962054 – 00:00:36 – 1.73 MB
+[50,000] MAE: 0.751865, RMSE: 0.951499 – 00:01:13 – 2.03 MB
+[75,000] MAE: 0.750853, RMSE: 0.951526 – 00:01:49 – 2.36 MB
+[100,000] MAE: 0.750607, RMSE: 0.951982 – 00:02:26 – 2.66 MB
 </code></pre></div>
 <p>As said previously, high-order interactions are often hard to estimate due to too much sparsity, that's why we won't spend too much time here.</p>
 <h2 id="field-aware-factorization-machines-ffm">Field-aware Factorization Machines (FFM)<a class="headerlink" href="#field-aware-factorization-machines-ffm" title="Permanent link">&para;</a></h2>
@@ -11137,10 +11137,10 @@ y = 4.0
 
 <span class="n">evaluate</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>[25,000] MAE: 0.757718, RMSE: 0.958158 – 00:00:18 – 2.16 MB
-[50,000] MAE: 0.749502, RMSE: 0.948065 – 00:00:36 – 2.54 MB
-[75,000] MAE: 0.749275, RMSE: 0.948918 – 00:00:54 – 2.96 MB
-[100,000] MAE: 0.749542, RMSE: 0.949769 – 00:01:13 – 3.35 MB
+<div class="language-text highlight"><pre><span></span><code>[25,000] MAE: 0.757718, RMSE: 0.958158 – 00:00:15 – 2.16 MB
+[50,000] MAE: 0.749502, RMSE: 0.948065 – 00:00:31 – 2.54 MB
+[75,000] MAE: 0.749275, RMSE: 0.948918 – 00:00:47 – 2.96 MB
+[100,000] MAE: 0.749542, RMSE: 0.949769 – 00:01:02 – 3.35 MB
 </code></pre></div>
 <p>Note that FFM usually needs to learn smaller number of latent factors <span class="arithmatex">\(k\)</span> than FM as each latent vector only deals with one field.</p>
 <h2 id="field-weighted-factorization-machines-fwfm">Field-weighted Factorization Machines (FwFM)<a class="headerlink" href="#field-weighted-factorization-machines-fwfm" title="Permanent link">&para;</a></h2>
@@ -11177,10 +11177,10 @@ y = 4.0
 
 <span class="n">evaluate</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>[25,000] MAE: 0.761539, RMSE: 0.962241 – 00:00:23 – 834.1 KB
-[50,000] MAE: 0.754089, RMSE: 0.953181 – 00:00:45 – 964.01 KB
-[75,000] MAE: 0.754806, RMSE: 0.954979 – 00:01:08 – 1.08 MB
-[100,000] MAE: 0.755404, RMSE: 0.95604 – 00:01:31 – 1.21 MB
+<div class="language-text highlight"><pre><span></span><code>[25,000] MAE: 0.761539, RMSE: 0.962241 – 00:00:19 – 834.1 KB
+[50,000] MAE: 0.754089, RMSE: 0.953181 – 00:00:39 – 964.01 KB
+[75,000] MAE: 0.754806, RMSE: 0.954979 – 00:00:59 – 1.08 MB
+[100,000] MAE: 0.755404, RMSE: 0.95604 – 00:01:18 – 1.21 MB
 </code></pre></div>
 
 

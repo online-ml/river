@@ -21,7 +21,7 @@
         <link rel="next" href="../MAD/">
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.10">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.11">
     
     
       
@@ -304,7 +304,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../../releases/unreleased/" class="md-tabs__link">
+      <a href="../../../releases/0.16.0/" class="md-tabs__link">
         Releases
       </a>
     </li>
@@ -10265,7 +10265,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../releases/unreleased/" class="md-nav__link">
+      <a href="../../../releases/0.16.0/" class="md-nav__link">
         0.16.0 - 2022-05-08
       </a>
     </li>
@@ -10889,17 +10889,17 @@
 
 <h1 id="link">Link<a class="headerlink" href="#link" title="Permanent link">&para;</a></h1>
 <p>A link joins two univariate statistics as a sequence.</p>
-<p>This can be used to pipe the output of one statistic to the input of another. This can be used, for instance, to calculate the mean of the variance of a variable. It can also be used to compute shifted statistics by piping statistics with an instance of <a href="/api/stats/Shift"><code>stats.Shift</code></a>. </p>
+<p>This can be used to pipe the output of one statistic to the input of another. This can be used, for instance, to calculate the mean of the variance of a variable. It can also be used to compute shifted statistics by piping statistics with an instance of <a href="../../stats/Shift"><code>stats.Shift</code></a>. </p>
 <p>Note that a link is not meant to be instantiated via this class definition. Instead, users can link statistics together via the <code>|</code> operator.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
 <p><strong>left</strong></p>
-<p><em>Type</em> → <em><a href="/api/stats/base/Univariate">stats.base.Univariate</a></em></p>
+<p><em>Type</em> → <em><a href="../../stats/base/Univariate">stats.base.Univariate</a></em></p>
 </li>
 <li>
 <p><strong>right</strong></p>
-<p><em>Type</em> → <em><a href="/api/stats/base/Univariate">stats.base.Univariate</a></em></p>
+<p><em>Type</em> → <em><a href="../../stats/base/Univariate">stats.base.Univariate</a></em></p>
 <p>The output from <code>left</code>'s <code>get</code> method is passed to <code>right</code>'s <code>update</code> method if <code>left</code>'s <code>get</code> method doesn't produce <code>None.</code></p>
 </li>
 </ul>
@@ -10911,7 +10911,7 @@
 <div class="language-python highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">stats</span>
 <span class="n">stat</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">Shift</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">|</span> <span class="n">stats</span><span class="o">.</span><span class="n">Mean</span><span class="p">()</span>
 </code></pre></div>
-<p>No values have been seen, therefore <code>get</code> defaults to the initial value of <a href="/api/stats/Mean"><code>stats.Mean</code></a>,
+<p>No values have been seen, therefore <code>get</code> defaults to the initial value of <a href="../../stats/Mean"><code>stats.Mean</code></a>,
 which is 0.</p>
 <p><div class="language-python highlight"><pre><span></span><code><span class="n">stat</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
 </code></pre></div>
@@ -10920,14 +10920,14 @@ which is 0.</p>
 <p>Let us now call <code>update</code>.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">stat</span> <span class="o">=</span> <span class="n">stat</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 </code></pre></div>
-<p>The output from <code>get</code> will still be 0. The reason is that <a href="/api/stats/Shift"><code>stats.Shift</code></a> has not enough
-values, and therefore outputs it's default value, which is <code>None</code>. The <a href="/api/stats/Mean"><code>stats.Mean</code></a>
+<p>The output from <code>get</code> will still be 0. The reason is that <a href="../../stats/Shift"><code>stats.Shift</code></a> has not enough
+values, and therefore outputs it's default value, which is <code>None</code>. The <a href="../../stats/Mean"><code>stats.Mean</code></a>
 instance is therefore not updated.</p>
 <p><div class="language-python highlight"><pre><span></span><code><span class="n">stat</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
 </code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>0.0
 </code></pre></div></p>
-<p>On the next call to <code>update</code>, the <a href="/api/stats/Shift"><code>stats.Shift</code></a> instance has seen enough values, and
+<p>On the next call to <code>update</code>, the <a href="../../stats/Shift"><code>stats.Shift</code></a> instance has seen enough values, and
 therefore the mean can be updated. The mean is therefore equal to 1, because that's the
 only value from the past.</p>
 <p><div class="language-python highlight"><pre><span></span><code><span class="n">stat</span> <span class="o">=</span> <span class="n">stat</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>

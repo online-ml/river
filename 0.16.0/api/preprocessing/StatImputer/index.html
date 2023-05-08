@@ -21,7 +21,7 @@
         <link rel="next" href="../TargetStandardScaler/">
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.10">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.11">
     
     
       
@@ -304,7 +304,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../../releases/unreleased/" class="md-tabs__link">
+      <a href="../../../releases/0.16.0/" class="md-tabs__link">
         Releases
       </a>
     </li>
@@ -10258,7 +10258,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../releases/unreleased/" class="md-nav__link">
+      <a href="../../../releases/0.16.0/" class="md-nav__link">
         0.16.0 - 2022-05-08
       </a>
     </li>
@@ -10880,14 +10880,14 @@
 <ul>
 <li>
 <p><strong>imputers</strong></p>
-<p>A list of tuples where each tuple has two elements. The first elements is a feature name and the second value is an instance of <a href="/api/stats/base/Univariate"><code>stats.base.Univariate</code></a>. The second value can also be an arbitrary value, such as -1, in which case the missing values will be replaced with it.</p>
+<p>A list of tuples where each tuple has two elements. The first elements is a feature name and the second value is an instance of <a href="../../stats/base/Univariate"><code>stats.base.Univariate</code></a>. The second value can also be an arbitrary value, such as -1, in which case the missing values will be replaced with it.</p>
 </li>
 </ul>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
 <div class="language-python highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">preprocessing</span>
 <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">stats</span>
 </code></pre></div>
-<p>For numeric data, we can use a <a href="/api/stats/Mean"><code>stats.Mean</code></a>()` to replace missing values by the running
+<p>For numeric data, we can use a <a href="../../stats/Mean"><code>stats.Mean</code></a>()` to replace missing values by the running
 average of the previously seen values:</p>
 <p><div class="language-python highlight"><pre><span></span><code><span class="n">X</span> <span class="o">=</span> <span class="p">[</span>
     <span class="p">{</span><span class="s1">&#39;temperature&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
@@ -10909,7 +10909,7 @@ average of the previously seen values:</p>
 {&#39;temperature&#39;: 4.0}
 {&#39;temperature&#39;: 4}
 </code></pre></div></p>
-<p>For discrete/categorical data, a common practice is to <a href="/api/stats/Mode"><code>stats.Mode</code></a> to replace missing
+<p>For discrete/categorical data, a common practice is to <a href="../../stats/Mode"><code>stats.Mode</code></a> to replace missing
 values by the most commonly seen value:</p>
 <p><div class="language-python highlight"><pre><span></span><code><span class="n">X</span> <span class="o">=</span> <span class="p">[</span>
     <span class="p">{</span><span class="s1">&#39;weather&#39;</span><span class="p">:</span> <span class="s1">&#39;sunny&#39;</span><span class="p">},</span>

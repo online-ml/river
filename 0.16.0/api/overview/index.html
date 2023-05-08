@@ -21,7 +21,7 @@
         <link rel="next" href="../active/EntropySampler/">
       
       <link rel="icon" href="../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.10">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.11">
     
     
       
@@ -304,7 +304,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../releases/unreleased/" class="md-tabs__link">
+      <a href="../../releases/0.16.0/" class="md-tabs__link">
         Releases
       </a>
     </li>
@@ -1211,13 +1211,6 @@
           <li class="md-nav__item">
   <a href="#multioutput" class="md-nav__link">
     multioutput
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#base_7" class="md-nav__link">
-    base
   </a>
   
 </li>
@@ -10793,7 +10786,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../releases/unreleased/" class="md-nav__link">
+      <a href="../../releases/0.16.0/" class="md-nav__link">
         0.16.0 - 2022-05-08
       </a>
     </li>
@@ -11626,13 +11619,6 @@
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#base_7" class="md-nav__link">
-    base
-  </a>
-  
-</li>
-        
       </ul>
     </nav>
   
@@ -11982,7 +11968,7 @@ model.</p>
 <p>Multi-armed bandit (MAB) policies.</p>
 <p>The bandit policies in River are meant to have a generic API. This allows them to be used in a
 variety of contexts. Within River, they are used for model selection
-(see <a href="/api/model-selection/BanditRegressor"><code>model_selection.BanditRegressor</code></a>).</p>
+(see <a href="../model-selection/BanditRegressor"><code>model_selection.BanditRegressor</code></a>).</p>
 <p><strong>Classes</strong></p>
 <ul>
 <li><a href="../bandit/EpsilonGreedy">EpsilonGreedy</a></li>
@@ -12048,7 +12034,7 @@ non-mixin base class.</p>
 <p>This module contains adapters for making River estimators compatible with other libraries, and
 vice-versa whenever possible. The relevant adapters will only be usable if you have installed the
 necessary library. For instance, you have to install scikit-learn in order to use the
-<a href="/api/compat/convert-sklearn-to-river"><code>compat.convert_sklearn_to_river</code></a> function.</p>
+<a href="../compat/convert-sklearn-to-river"><code>compat.convert_sklearn_to_river</code></a> function.</p>
 <p><strong>Classes</strong></p>
 <ul>
 <li><a href="../compat/River2SKLClassifier">River2SKLClassifier</a></li>
@@ -12583,7 +12569,7 @@ be processed by a particular machine learning algorithm.</p>
 <p>Evaluation metrics.</p>
 <p>All the metrics are updated one sample at a time. This way we can track performance of
 predictive methods over time.</p>
-<p>Note that all metrics have a <code>revert</code> method, enabling them to be wrapped in <a href="/api/utils/Rolling"><code>utils.Rolling</code></a>.
+<p>Note that all metrics have a <code>revert</code> method, enabling them to be wrapped in <a href="../utils/Rolling"><code>utils.Rolling</code></a>.
 This allows computirng rolling metrics:</p>
 <div class="language-py highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">metrics</span><span class="p">,</span> <span class="n">utils</span>
 
@@ -12670,7 +12656,7 @@ Accuracy: 100.00%
 <li><a href="../metrics/multioutput/MultiLabelConfusionMatrix">MultiLabelConfusionMatrix</a></li>
 <li><a href="../metrics/multioutput/PerOutput">PerOutput</a></li>
 </ul>
-<h3 id="base_7">base<a class="headerlink" href="#base_7" title="Permanent link">&para;</a></h3>
+<h4 id="base_7">base<a class="headerlink" href="#base_7" title="Permanent link">&para;</a></h4>
 <ul>
 <li><a href="../metrics/multioutput/base/MultiOutputClassificationMetric">MultiOutputClassificationMetric</a></li>
 <li><a href="../metrics/multioutput/base/MultiOutputRegressionMetric">MultiOutputRegressionMetric</a></li>
@@ -12692,7 +12678,7 @@ goes by. Different strategies are possible, each one offering a different tradeo
 accuracy and computational performance.</p>
 <p>Model selection can be used for tuning the hyperparameters of a model. This may be done by creating
 a copy of the model for each set of hyperparameters, and treating each copy as a separate model.
-The <a href="/api/utils/expand-param-grid"><code>utils.expand_param_grid</code></a> function can be used for this purpose.</p>
+The <a href="../utils/expand-param-grid"><code>utils.expand_param_grid</code></a> function can be used for this purpose.</p>
 <ul>
 <li><a href="../model-selection/BanditRegressor">BanditRegressor</a></li>
 <li><a href="../model-selection/GreedyRegressor">GreedyRegressor</a></li>

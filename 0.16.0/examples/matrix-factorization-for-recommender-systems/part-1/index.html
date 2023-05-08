@@ -21,7 +21,7 @@
         <link rel="next" href="../part-2/">
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.10">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.11">
     
     
       
@@ -304,7 +304,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../../releases/unreleased/" class="md-tabs__link">
+      <a href="../../../releases/0.16.0/" class="md-tabs__link">
         Releases
       </a>
     </li>
@@ -10279,7 +10279,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../releases/unreleased/" class="md-nav__link">
+      <a href="../../../releases/0.16.0/" class="md-nav__link">
         0.16.0 - 2022-05-08
       </a>
     </li>
@@ -11042,7 +11042,7 @@ y = 4.0
 <div class="language-text highlight"><pre><span></span><code>[25,000] MAE: 0.761844, RMSE: 0.960972 – 00:00:01 – 173.6 KB
 [50,000] MAE: 0.753292, RMSE: 0.951223 – 00:00:02 – 242.23 KB
 [75,000] MAE: 0.754177, RMSE: 0.953376 – 00:00:03 – 286.04 KB
-[100,000] MAE: 0.754651, RMSE: 0.954148 – 00:00:05 – 309.64 KB
+[100,000] MAE: 0.754651, RMSE: 0.954148 – 00:00:04 – 309.64 KB
 </code></pre></div>
 <p>We won two tenth of MAE compared to our naive prediction (0.7546 vs 0.9421) meaning that significant information has been learnt by the model.</p>
 <h2 id="funk-matrix-factorization-funkmf">Funk Matrix Factorization (FunkMF)<a class="headerlink" href="#funk-matrix-factorization-funkmf" title="Permanent link">&para;</a></h2>
@@ -11067,10 +11067,10 @@ y = 4.0
 
 <span class="n">evaluate</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>[25,000] MAE: 1.070136, RMSE: 1.397014 – 00:00:02 – 570.35 KB
-[50,000] MAE: 0.99174, RMSE: 1.290666 – 00:00:04 – 716 KB
-[75,000] MAE: 0.961072, RMSE: 1.250842 – 00:00:06 – 844.09 KB
-[100,000] MAE: 0.944883, RMSE: 1.227688 – 00:00:08 – 945.19 KB
+<div class="language-text highlight"><pre><span></span><code>[25,000] MAE: 1.070136, RMSE: 1.397014 – 00:00:01 – 570.35 KB
+[50,000] MAE: 0.99174, RMSE: 1.290666 – 00:00:03 – 716 KB
+[75,000] MAE: 0.961072, RMSE: 1.250842 – 00:00:05 – 844.09 KB
+[100,000] MAE: 0.944883, RMSE: 1.227688 – 00:00:06 – 945.19 KB
 </code></pre></div>
 <p>Results are equivalent to our naive prediction (0.9448 vs 0.9421). By only focusing on the users preferences and the items characteristics, the model is limited in his ability to capture different views of the problem. Despite its poor performance alone, this algorithm is quite useful combined in other models or when we need to build dense representations for other tasks.</p>
 <h2 id="biased-matrix-factorization-biasedmf">Biased Matrix Factorization (BiasedMF)<a class="headerlink" href="#biased-matrix-factorization-biasedmf" title="Permanent link">&para;</a></h2>
@@ -11098,10 +11098,10 @@ y = 4.0
 
 <span class="n">evaluate</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>[25,000] MAE: 0.761818, RMSE: 0.961057 – 00:00:02 – 669.27 KB
-[50,000] MAE: 0.751667, RMSE: 0.949443 – 00:00:04 – 869.85 KB
-[75,000] MAE: 0.749653, RMSE: 0.948723 – 00:00:06 – 1 MB
-[100,000] MAE: 0.748559, RMSE: 0.947854 – 00:00:08 – 1.11 MB
+<div class="language-text highlight"><pre><span></span><code>[25,000] MAE: 0.761818, RMSE: 0.961057 – 00:00:01 – 669.27 KB
+[50,000] MAE: 0.751667, RMSE: 0.949443 – 00:00:03 – 869.85 KB
+[75,000] MAE: 0.749653, RMSE: 0.948723 – 00:00:05 – 1 MB
+[100,000] MAE: 0.748559, RMSE: 0.947854 – 00:00:07 – 1.11 MB
 </code></pre></div>
 <p>Results improved (0.7485 vs 0.7546) demonstrating that users and items latent representations bring additional information.</p>
 <p>To conclude this first tutorial about factorization models, let's review the important parameters to tune when dealing with this family of methods:</p>

@@ -21,7 +21,7 @@
         <link rel="next" href="../0.9.0/">
       
       <link rel="icon" href="../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.10">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.11">
     
     
       
@@ -304,7 +304,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../unreleased/" class="md-tabs__link md-tabs__link--active">
+      <a href="../0.16.0/" class="md-tabs__link md-tabs__link--active">
         Releases
       </a>
     </li>
@@ -10201,7 +10201,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../unreleased/" class="md-nav__link">
+      <a href="../0.16.0/" class="md-nav__link">
         0.16.0 - 2022-05-08
       </a>
     </li>
@@ -10986,7 +10986,7 @@
 <h1 id="0100-2022-02-04">0.10.0 - 2022-02-04<a class="headerlink" href="#0100-2022-02-04" title="Permanent link">&para;</a></h1>
 <h2 id="base">base<a class="headerlink" href="#base" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Introduce <a href="/api/base/MiniBatchTransformer"><code>base.MiniBatchTransformer</code></a>. Add support for mini-batches to <a href="/api/compose/TransformerUnion"><code>compose.TransformerUnion</code></a>, <a href="/api/compose/Select"><code>compose.Select</code></a>, and <a href="/api/preprocessing/OneHotEncoder"><code>preprocessing.OneHotEncoder</code></a>.</li>
+<li>Introduce <a href="../../api/base/MiniBatchTransformer"><code>base.MiniBatchTransformer</code></a>. Add support for mini-batches to <a href="../../api/compose/TransformerUnion"><code>compose.TransformerUnion</code></a>, <a href="../../api/compose/Select"><code>compose.Select</code></a>, and <a href="../../api/preprocessing/OneHotEncoder"><code>preprocessing.OneHotEncoder</code></a>.</li>
 </ul>
 <h2 id="checks">checks<a class="headerlink" href="#checks" title="Permanent link">&para;</a></h2>
 <ul>
@@ -10994,12 +10994,12 @@
 </ul>
 <h2 id="compose">compose<a class="headerlink" href="#compose" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Split <a href="/api/compose/Renamer"><code>compose.Renamer</code></a> into <a href="/api/compose/Prefixer"><code>compose.Prefixer</code></a> and <a href="/api/compose/Suffixer"><code>compose.Suffixer</code></a> that respectively prepend and append a string to the features' name.</li>
-<li>Changed <a href="/api/compose/Renamer"><code>compose.Renamer</code></a> to allow feature renaming following a mapping.</li>
+<li>Split <a href="../../api/compose/Renamer"><code>compose.Renamer</code></a> into <a href="../../api/compose/Prefixer"><code>compose.Prefixer</code></a> and <a href="../../api/compose/Suffixer"><code>compose.Suffixer</code></a> that respectively prepend and append a string to the features' name.</li>
+<li>Changed <a href="../../api/compose/Renamer"><code>compose.Renamer</code></a> to allow feature renaming following a mapping.</li>
 </ul>
 <h2 id="evaluate">evaluate<a class="headerlink" href="#evaluate" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Refactored <code>evaluate.progressive_validation</code> to work with <a href="/api/api/anomaly/base/AnomalyDetector"><code>api.anomaly.base.AnomalyDetector</code></a>s.</li>
+<li>Refactored <code>evaluate.progressive_validation</code> to work with <a href="../../api/api/anomaly/base/AnomalyDetector"><code>api.anomaly.base.AnomalyDetector</code></a>s.</li>
 </ul>
 <h2 id="facto">facto<a class="headerlink" href="#facto" title="Permanent link">&para;</a></h2>
 <ul>
@@ -11007,13 +11007,13 @@
 </ul>
 <h2 id="feature_extraction">feature_extraction<a class="headerlink" href="#feature_extraction" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Make the <code>by</code> parameter in <a href="/api/feature-extraction/Agg"><code>feature_extraction.Agg</code></a> and <a href="/api/feature-extraction/TargetAgg"><code>feature_extraction.TargetAgg</code></a> to be optional, allowing to calculate aggregates over the whole data.</li>
-<li>Removed <code>feature_extraction.Lagger</code> and <code>feature_extraction.TargetLagger</code>. Their functionality can be reproduced by combining <a href="/api/feature-extraction/Agg"><code>feature_extraction.Agg</code></a> and <a href="/api/stats/Shift"><code>stats.Shift</code></a>.</li>
-<li><a href="/api/feature-extraction/Agg"><code>feature_extraction.Agg</code></a> and <code>feature_extraction.Target</code> now have a <code>state</code> property. It returns a <code>pandas.Series</code> representing the current aggregates values within each group.</li>
+<li>Make the <code>by</code> parameter in <a href="../../api/feature-extraction/Agg"><code>feature_extraction.Agg</code></a> and <a href="../../api/feature-extraction/TargetAgg"><code>feature_extraction.TargetAgg</code></a> to be optional, allowing to calculate aggregates over the whole data.</li>
+<li>Removed <code>feature_extraction.Lagger</code> and <code>feature_extraction.TargetLagger</code>. Their functionality can be reproduced by combining <a href="../../api/feature-extraction/Agg"><code>feature_extraction.Agg</code></a> and <a href="../../api/stats/Shift"><code>stats.Shift</code></a>.</li>
+<li><a href="../../api/feature-extraction/Agg"><code>feature_extraction.Agg</code></a> and <code>feature_extraction.Target</code> now have a <code>state</code> property. It returns a <code>pandas.Series</code> representing the current aggregates values within each group.</li>
 </ul>
 <h2 id="metrics">metrics<a class="headerlink" href="#metrics" title="Permanent link">&para;</a></h2>
 <ul>
-<li><a href="/api/metrics/ROCAUC"><code>metrics.ROCAUC</code></a> works with <code>base.AnomalyDetectors</code>s.</li>
+<li><a href="../../api/metrics/ROCAUC"><code>metrics.ROCAUC</code></a> works with <code>base.AnomalyDetectors</code>s.</li>
 </ul>
 <h2 id="misc">misc<a class="headerlink" href="#misc" title="Permanent link">&para;</a></h2>
 <ul>
@@ -11029,7 +11029,7 @@
 </ul>
 <h2 id="stats">stats<a class="headerlink" href="#stats" title="Permanent link">&para;</a></h2>
 <ul>
-<li><a href="/api/stats/Mean"><code>stats.Mean</code></a>, <a href="/api/stats/Var"><code>stats.Var</code></a>, and <a href="/api/stats/Cov"><code>stats.Cov</code></a> each now have an <code>update_many</code> method which accepts numpy arrays.</li>
+<li><a href="../../api/stats/Mean"><code>stats.Mean</code></a>, <a href="../../api/stats/Var"><code>stats.Var</code></a>, and <a href="../../api/stats/Cov"><code>stats.Cov</code></a> each now have an <code>update_many</code> method which accepts numpy arrays.</li>
 </ul>
 <h2 id="utils">utils<a class="headerlink" href="#utils" title="Permanent link">&para;</a></h2>
 <ul>

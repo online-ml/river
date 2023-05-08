@@ -15,13 +15,13 @@
         <link rel="canonical" href="https://riverml.xyz/0.16.0/releases/0.15.0/">
       
       
-        <link rel="prev" href="../unreleased/">
+        <link rel="prev" href="../0.16.0/">
       
       
         <link rel="next" href="../0.14.0/">
       
       <link rel="icon" href="../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.10">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.11">
     
     
       
@@ -304,7 +304,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../unreleased/" class="md-tabs__link md-tabs__link--active">
+      <a href="../0.16.0/" class="md-tabs__link md-tabs__link--active">
         Releases
       </a>
     </li>
@@ -10201,7 +10201,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../unreleased/" class="md-nav__link">
+      <a href="../0.16.0/" class="md-nav__link">
         0.16.0 - 2022-05-08
       </a>
     </li>
@@ -11099,12 +11099,12 @@
 <h2 id="active">active<a class="headerlink" href="#active" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Created this module dedicated to online active learning.</li>
-<li>Added <a href="/api/api/active/EntropySampler"><code>api.active.EntropySampler</code></a>.</li>
+<li>Added <a href="../../api/api/active/EntropySampler"><code>api.active.EntropySampler</code></a>.</li>
 </ul>
 <h2 id="base">base<a class="headerlink" href="#base" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Fixed an issue where an estimator that has attribute a pipeline could not be cloned.</li>
-<li>Added a <a href="/api/base/DriftAndWarningDetector"><code>base.DriftAndWarningDetector</code></a> to clarify the difference between drift detectors that have a <code>warning_detected</code> property and those that don't.</li>
+<li>Added a <a href="../../api/base/DriftAndWarningDetector"><code>base.DriftAndWarningDetector</code></a> to clarify the difference between drift detectors that have a <code>warning_detected</code> property and those that don't.</li>
 <li>Added <code>MultiLabelClassifier</code>.</li>
 <li>Added <code>MultiTargetRegressor</code>.</li>
 <li>Added <code>drift.BinaryDriftDetector</code>.</li>
@@ -11113,8 +11113,8 @@
 <h2 id="conf">conf<a class="headerlink" href="#conf" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Introduced this new module to perform conformal predictions.</li>
-<li>Added a <a href="/api/conf/Interval"><code>conf.Interval</code></a> dataclass to represent predictive intervals.</li>
-<li>Added <a href="/api/conf/RegressionJackknife"><code>conf.RegressionJackknife</code></a>.</li>
+<li>Added a <a href="../../api/conf/Interval"><code>conf.Interval</code></a> dataclass to represent predictive intervals.</li>
+<li>Added <a href="../../api/conf/RegressionJackknife"><code>conf.RegressionJackknife</code></a>.</li>
 </ul>
 <h2 id="datasets">datasets<a class="headerlink" href="#datasets" title="Permanent link">&para;</a></h2>
 <ul>
@@ -11123,34 +11123,34 @@
 </ul>
 <h2 id="drift">drift<a class="headerlink" href="#drift" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Added <a href="/api/drift/DriftRetrainingClassifier"><code>drift.DriftRetrainingClassifier</code></a>.</li>
-<li>Renamed <code>drift.PeriodicTrigger</code> to <a href="/api/drift/DummyDriftDetector"><code>drift.DummyDriftDetector</code></a> to clarify it is a naive baseline.</li>
+<li>Added <a href="../../api/drift/DriftRetrainingClassifier"><code>drift.DriftRetrainingClassifier</code></a>.</li>
+<li>Renamed <code>drift.PeriodicTrigger</code> to <a href="../../api/drift/DummyDriftDetector"><code>drift.DummyDriftDetector</code></a> to clarify it is a naive baseline.</li>
 <li>Created a <code>binary</code> submodule to organize all drift detectors which only apply to binary inputs.</li>
 </ul>
 <h2 id="ensemble">ensemble<a class="headerlink" href="#ensemble" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Added <a href="/api/ensemble/ADWINBoostingClassifier"><code>ensemble.ADWINBoostingClassifier</code></a>.</li>
-<li>Added <a href="/api/ensemble/BOLEClassifier"><code>ensemble.BOLEClassifier</code></a>.</li>
+<li>Added <a href="../../api/ensemble/ADWINBoostingClassifier"><code>ensemble.ADWINBoostingClassifier</code></a>.</li>
+<li>Added <a href="../../api/ensemble/BOLEClassifier"><code>ensemble.BOLEClassifier</code></a>.</li>
 </ul>
 <h2 id="evaluate">evaluate<a class="headerlink" href="#evaluate" title="Permanent link">&para;</a></h2>
 <ul>
-<li><a href="/api/evaluate/progressive-val-score"><code>evaluate.progressive_val_score</code></a> and <a href="/api/evaluate/iter-progressive-val-score"><code>evaluate.iter_progressive_val_score</code></a> will now also produce a report once the last sample has been processed, in addition to every <code>print_every</code> steps.</li>
+<li><a href="../../api/evaluate/progressive-val-score"><code>evaluate.progressive_val_score</code></a> and <a href="../../api/evaluate/iter-progressive-val-score"><code>evaluate.iter_progressive_val_score</code></a> will now also produce a report once the last sample has been processed, in addition to every <code>print_every</code> steps.</li>
 </ul>
 <h2 id="feature_extraction">feature_extraction<a class="headerlink" href="#feature_extraction" title="Permanent link">&para;</a></h2>
 <ul>
-<li><a href="/api/feature-extraction/BagOfWords"><code>feature_extraction.BagOfWords</code></a> now outputs a dictionary, and not a <code>collections.Counter</code>.</li>
+<li><a href="../../api/feature-extraction/BagOfWords"><code>feature_extraction.BagOfWords</code></a> now outputs a dictionary, and not a <code>collections.Counter</code>.</li>
 </ul>
 <h2 id="forest">forest<a class="headerlink" href="#forest" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Created this new module to host all models based on an ensemble of decision trees.</li>
-<li>Moved <code>ensemble.AdaptiveRandomForestClassifier</code> to <a href="/api/forest/ARFClassifier"><code>forest.ARFClassifier</code></a>.</li>
-<li>Moved <code>ensemble.AdaptiveRandomForestRegressor</code> to <a href="/api/forest/ARFRegressor"><code>forest.ARFRegressor</code></a>.</li>
-<li>Added <a href="/api/forest/AMFClassifier"><code>forest.AMFClassifier</code></a>.</li>
-<li>Added <a href="/api/forest/OXTRegressor"><code>forest.OXTRegressor</code></a>.</li>
+<li>Moved <code>ensemble.AdaptiveRandomForestClassifier</code> to <a href="../../api/forest/ARFClassifier"><code>forest.ARFClassifier</code></a>.</li>
+<li>Moved <code>ensemble.AdaptiveRandomForestRegressor</code> to <a href="../../api/forest/ARFRegressor"><code>forest.ARFRegressor</code></a>.</li>
+<li>Added <a href="../../api/forest/AMFClassifier"><code>forest.AMFClassifier</code></a>.</li>
+<li>Added <a href="../../api/forest/OXTRegressor"><code>forest.OXTRegressor</code></a>.</li>
 </ul>
 <h2 id="linear_model">linear_model<a class="headerlink" href="#linear_model" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Renamed <code>use_dist</code> to <code>with_dist</code> in <a href="/api/linear-model/BayesianLinearRegression"><code>linear_model.BayesianLinearRegression</code></a>'s <code>predict_one</code> method.</li>
+<li>Renamed <code>use_dist</code> to <code>with_dist</code> in <a href="../../api/linear-model/BayesianLinearRegression"><code>linear_model.BayesianLinearRegression</code></a>'s <code>predict_one</code> method.</li>
 </ul>
 <h2 id="multiclass">multiclass<a class="headerlink" href="#multiclass" title="Permanent link">&para;</a></h2>
 <ul>
@@ -11162,25 +11162,25 @@
 </ul>
 <h2 id="preprocessing">preprocessing<a class="headerlink" href="#preprocessing" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Renamed <code>alpha</code> to <code>fading_factor</code> in <a href="/api/preprocessing/AdaptiveStandardScaler"><code>preprocessing.AdaptiveStandardScaler</code></a>.</li>
+<li>Renamed <code>alpha</code> to <code>fading_factor</code> in <a href="../../api/preprocessing/AdaptiveStandardScaler"><code>preprocessing.AdaptiveStandardScaler</code></a>.</li>
 </ul>
 <h2 id="rules">rules<a class="headerlink" href="#rules" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Renamed <code>alpha</code> to <code>fading_factor</code> in <a href="/api/rules/AMRules"><code>rules.AMRules</code></a>.</li>
+<li>Renamed <code>alpha</code> to <code>fading_factor</code> in <a href="../../api/rules/AMRules"><code>rules.AMRules</code></a>.</li>
 </ul>
 <h2 id="sketch">sketch<a class="headerlink" href="#sketch" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Renamed <code>alpha</code> to <code>fading_factor</code> in <a href="/api/sketch/HeavyHitters"><code>sketch.HeavyHitters</code></a>.</li>
+<li>Renamed <code>alpha</code> to <code>fading_factor</code> in <a href="../../api/sketch/HeavyHitters"><code>sketch.HeavyHitters</code></a>.</li>
 </ul>
 <h2 id="stats">stats<a class="headerlink" href="#stats" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Renamed <code>alpha</code> to <code>fading_factor</code> in <a href="/api/stats/Entropy"><code>stats.Entropy</code></a>.</li>
-<li>Renamed <code>alpha</code> to <code>fading_factor</code> in <a href="/api/stats/EWMean"><code>stats.EWMean</code></a>.</li>
-<li>Renamed <code>alpha</code> to <code>fading_factor</code> in <a href="/api/stats/EWVar"><code>stats.EWVar</code></a>.</li>
+<li>Renamed <code>alpha</code> to <code>fading_factor</code> in <a href="../../api/stats/Entropy"><code>stats.Entropy</code></a>.</li>
+<li>Renamed <code>alpha</code> to <code>fading_factor</code> in <a href="../../api/stats/EWMean"><code>stats.EWMean</code></a>.</li>
+<li>Renamed <code>alpha</code> to <code>fading_factor</code> in <a href="../../api/stats/EWVar"><code>stats.EWVar</code></a>.</li>
 </ul>
 <h2 id="stream">stream<a class="headerlink" href="#stream" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Upgraded <a href="/api/stream/iter-sql"><code>stream.iter_sql</code></a> to SQLAlchemy 2.0.</li>
+<li>Upgraded <a href="../../api/stream/iter-sql"><code>stream.iter_sql</code></a> to SQLAlchemy 2.0.</li>
 </ul>
 <h2 id="tree">tree<a class="headerlink" href="#tree" title="Permanent link">&para;</a></h2>
 <ul>

@@ -21,7 +21,7 @@
         <link rel="next" href="../model-evaluation/">
       
       <link rel="icon" href="../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.10">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.11">
     
     
       
@@ -304,7 +304,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../releases/unreleased/" class="md-tabs__link">
+      <a href="../../releases/0.16.0/" class="md-tabs__link">
         Releases
       </a>
     </li>
@@ -10211,7 +10211,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../releases/unreleased/" class="md-nav__link">
+      <a href="../../releases/0.16.0/" class="md-nav__link">
         0.16.0 - 2022-05-08
       </a>
     </li>
@@ -10800,7 +10800,7 @@
 <h1 id="reading-data">Reading data<a class="headerlink" href="#reading-data" title="Permanent link">&para;</a></h1>
 <p>In River, the features of a sample are stored inside a dictionary, which in Python is called a <code>dict</code> and is a native data structure. In other words, we don't use any sophisticated data structure, such as a <code>numpy.ndarray</code> or a <code>pandas.DataFrame</code>.</p>
 <p>The main advantage of using plain <code>dict</code>s is that it removes the overhead that comes with using the aforementioned data structures. This is important in a streaming context because we want to be able to process many individual samples in rapid succession. Another advantage is that <code>dict</code>s allow us to give names to our features. Finally, <code>dict</code>s are not typed, and can therefore store heterogeneous data.</p>
-<p>Another advantage which we haven't mentioned is that <code>dict</code>s play nicely with Python's standard library. Indeed, Python contains many tools that allow manipulating <code>dict</code>s. For instance, the <code>csv.DictReader</code> can be used to read a CSV file and convert each row to a <code>dict</code>. In fact, the <a href="/api/stream/iter-csv"><code>stream.iter_csv</code></a> method from River is just a wrapper on top of <code>csv.DictReader</code> that adds a few bells and whistles.</p>
+<p>Another advantage which we haven't mentioned is that <code>dict</code>s play nicely with Python's standard library. Indeed, Python contains many tools that allow manipulating <code>dict</code>s. For instance, the <code>csv.DictReader</code> can be used to read a CSV file and convert each row to a <code>dict</code>. In fact, the <a href="../../api/stream/iter-csv"><code>stream.iter_csv</code></a> method from River is just a wrapper on top of <code>csv.DictReader</code> that adds a few bells and whistles.</p>
 <p>River provides some out-of-the-box datasets to get you started.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">datasets</span>
 
@@ -10858,7 +10858,7 @@ Uncompressing into /home/runner/river_data/Bikes
  &#39;wind&#39;: 9.3}
 </code></pre></div>
 <p>As we can see, the values have different types.</p>
-<p>Under the hood, calling <code>for x, y in dataset</code> simply iterates over a file and parses each value appropriately. We can do this ourselves by using <a href="/api/stream/iter-csv"><code>stream.iter_csv</code></a>:</p>
+<p>Under the hood, calling <code>for x, y in dataset</code> simply iterates over a file and parses each value appropriately. We can do this ourselves by using <a href="../../api/stream/iter-csv"><code>stream.iter_csv</code></a>:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">stream</span>
 
 <span class="n">X_y</span> <span class="o">=</span> <span class="n">stream</span><span class="o">.</span><span class="n">iter_csv</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
@@ -10876,7 +10876,7 @@ Uncompressing into /home/runner/river_data/Bikes
   &#39;wind&#39;: &#39;9.3&#39;},
  None)
 </code></pre></div>
-<p>There are a couple things that are wrong. First of all, the numeric features have not been casted into numbers. Indeed, by default, <a href="/api/stream/iter-csv"><code>stream.iter_csv</code></a> assumes that everything is a string. A related issue is that the <code>moment</code> field hasn't been parsed into a <code>datetime</code>. Finally, the target field, which is <code>bikes</code>, hasn't been separated from the rest of the features. We can remedy to these issues by setting a few parameters:</p>
+<p>There are a couple things that are wrong. First of all, the numeric features have not been casted into numbers. Indeed, by default, <a href="../../api/stream/iter-csv"><code>stream.iter_csv</code></a> assumes that everything is a string. A related issue is that the <code>moment</code> field hasn't been parsed into a <code>datetime</code>. Finally, the target field, which is <code>bikes</code>, hasn't been separated from the rest of the features. We can remedy to these issues by setting a few parameters:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">X_y</span> <span class="o">=</span> <span class="n">stream</span><span class="o">.</span><span class="n">iter_csv</span><span class="p">(</span>
     <span class="n">dataset</span><span class="o">.</span><span class="n">path</span><span class="p">,</span>
     <span class="n">converters</span><span class="o">=</span><span class="p">{</span>
@@ -10904,7 +10904,7 @@ Uncompressing into /home/runner/river_data/Bikes
  1)
 </code></pre></div>
 <p>That's much better. We invite you to take a look at the <code>stream</code> module to see for yourself what other methods are available. Note that River is first and foremost a machine learning library, and therefore isn't as much concerned about reading data as it is about statistical algorithms. We do however believe that the fact that we use dictionary gives you, the user, a lot of freedom and flexibility.</p>
-<p>The <code>stream</code> module provides helper functions to read data from different formats. For instance, you can use the <a href="/api/stream/iter-sklearn-dataset"><code>stream.iter_sklearn_dataset</code></a> function to turn any scikit-learn dataset into a stream.</p>
+<p>The <code>stream</code> module provides helper functions to read data from different formats. For instance, you can use the <a href="../../api/stream/iter-sklearn-dataset"><code>stream.iter_sklearn_dataset</code></a> function to turn any scikit-learn dataset into a stream.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">datasets</span>
 
 <span class="n">dataset</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">load_diabetes</span><span class="p">()</span>

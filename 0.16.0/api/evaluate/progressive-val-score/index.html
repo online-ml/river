@@ -21,7 +21,7 @@
         <link rel="next" href="../../facto/FFMClassifier/">
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.10">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.11">
     
     
       
@@ -304,7 +304,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../../releases/unreleased/" class="md-tabs__link">
+      <a href="../../../releases/0.16.0/" class="md-tabs__link">
         Releases
       </a>
     </li>
@@ -10251,7 +10251,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../releases/unreleased/" class="md-nav__link">
+      <a href="../../../releases/0.16.0/" class="md-nav__link">
         0.16.0 - 2022-05-08
       </a>
     </li>
@@ -10862,7 +10862,7 @@
 <h1 id="progressive_val_score">progressive_val_score<a class="headerlink" href="#progressive_val_score" title="Permanent link">&para;</a></h1>
 <p>Evaluates the performance of a model on a streaming dataset.</p>
 <p>This method is the canonical way to evaluate a model's performance. When used correctly, it allows you to exactly assess how a model would have performed in a production scenario. </p>
-<p><code>dataset</code> is converted into a stream of questions and answers. At each step the model is either asked to predict an observation, or is either updated. The target is only revealed to the model after a certain amount of time, which is determined by the <code>delay</code> parameter. Note that under the hood this uses the <a href="/api/stream/simulate-qa"><code>stream.simulate_qa</code></a> function to go through the data in arrival order. </p>
+<p><code>dataset</code> is converted into a stream of questions and answers. At each step the model is either asked to predict an observation, or is either updated. The target is only revealed to the model after a certain amount of time, which is determined by the <code>delay</code> parameter. Note that under the hood this uses the <a href="../../stream/simulate-qa"><code>stream.simulate_qa</code></a> function to go through the data in arrival order. </p>
 <p>By default, there is no delay, which means that the samples are processed one after the other. When there is no delay, this function essentially performs progressive validation. When there is a delay, then we refer to it as delayed progressive validation. </p>
 <p>It is recommended to use this method when you want to determine a model's performance on a dataset. In particular, it is advised to use the <code>delay</code> parameter in order to get a reliable assessment. Indeed, in a production scenario, it is often the case that ground truths are made available after a certain amount of time. By using this method, you can reproduce this scenario and therefore truthfully assess what would have been the performance of a model on a given dataset.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
@@ -10878,7 +10878,7 @@
 </li>
 <li>
 <p><strong>metric</strong></p>
-<p><em>Type</em> → <em><a href="/api/metrics/base/Metric">metrics.base.Metric</a></em></p>
+<p><em>Type</em> → <em><a href="../../metrics/base/Metric">metrics.base.Metric</a></em></p>
 <p>The metric used to evaluate the model's predictions.</p>
 </li>
 <li>

@@ -21,7 +21,7 @@
         <link rel="next" href="../0.5.1/">
       
       <link rel="icon" href="../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.10">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.11">
     
     
       
@@ -304,7 +304,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../unreleased/" class="md-tabs__link md-tabs__link--active">
+      <a href="../0.16.0/" class="md-tabs__link md-tabs__link--active">
         Releases
       </a>
     </li>
@@ -10201,7 +10201,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../unreleased/" class="md-nav__link">
+      <a href="../0.16.0/" class="md-nav__link">
         0.16.0 - 2022-05-08
       </a>
     </li>
@@ -11004,17 +11004,17 @@
 </ul>
 <h2 id="compose">compose<a class="headerlink" href="#compose" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Added <a href="/api/compose/SelectType"><code>compose.SelectType</code></a>, which allows selecting feature subsets based on their type.</li>
-<li>Added a <code>score_one</code> method to <a href="/api/compose/Pipeline"><code>compose.Pipeline</code></a> so that estimators from the <code>anomaly</code> module can be pipelined.</li>
-<li>Added <a href="/api/compose/Grouper"><code>compose.Grouper</code></a>, which allows applying transformers within different subgroups.</li>
+<li>Added <a href="../../api/compose/SelectType"><code>compose.SelectType</code></a>, which allows selecting feature subsets based on their type.</li>
+<li>Added a <code>score_one</code> method to <a href="../../api/compose/Pipeline"><code>compose.Pipeline</code></a> so that estimators from the <code>anomaly</code> module can be pipelined.</li>
+<li>Added <a href="../../api/compose/Grouper"><code>compose.Grouper</code></a>, which allows applying transformers within different subgroups.</li>
 </ul>
 <h2 id="datasets">datasets<a class="headerlink" href="#datasets" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Added <a href="/api/datasets/Music"><code>datasets.Music</code></a>, which is a dataset for multi-output binary classification.</li>
-<li>Added <a href="/api/datasets/synth/Friedman"><code>datasets.synth.Friedman</code></a>, which is synthetic regression dataset.</li>
-<li>The <code>datasets.gen</code> module has been renamed to <a href="/api/datasets/synth"><code>datasets.synth</code></a></li>
+<li>Added <a href="../../api/datasets/Music"><code>datasets.Music</code></a>, which is a dataset for multi-output binary classification.</li>
+<li>Added <a href="../../api/datasets/synth/Friedman"><code>datasets.synth.Friedman</code></a>, which is synthetic regression dataset.</li>
+<li>The <code>datasets.gen</code> module has been renamed to <a href="../../api/datasets/synth"><code>datasets.synth</code></a></li>
 <li>Each dataset now has a <code>__repr__</code> method which displays some descriptive information.</li>
-<li>Added <a href="/api/datasets/Insects"><code>datasets.Insects</code></a>, which has 10 variants.</li>
+<li>Added <a href="../../api/datasets/Insects"><code>datasets.Insects</code></a>, which has 10 variants.</li>
 </ul>
 <h2 id="feature_extraction">feature_extraction<a class="headerlink" href="#feature_extraction" title="Permanent link">&para;</a></h2>
 <ul>
@@ -11026,7 +11026,7 @@
 </ul>
 <h2 id="metrics">metrics<a class="headerlink" href="#metrics" title="Permanent link">&para;</a></h2>
 <ul>
-<li>In <a href="/api/metrics/SMAPE"><code>metrics.SMAPE</code></a>, instead of raising a <code>ZeroDivisionError</code>, the convention is now to use 0 when both <code>y_true</code> and <code>y_pred</code> are equal to 0.</li>
+<li>In <a href="../../api/metrics/SMAPE"><code>metrics.SMAPE</code></a>, instead of raising a <code>ZeroDivisionError</code>, the convention is now to use 0 when both <code>y_true</code> and <code>y_pred</code> are equal to 0.</li>
 </ul>
 <h2 id="model_selection">model_selection<a class="headerlink" href="#model_selection" title="Permanent link">&para;</a></h2>
 <ul>
@@ -11034,28 +11034,28 @@
 </ul>
 <h2 id="multiclass">multiclass<a class="headerlink" href="#multiclass" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Added <a href="/api/multiclass/OutputCodeClassifier"><code>multiclass.OutputCodeClassifier</code></a>.</li>
-<li>Added <a href="/api/multiclass/OneVsOneClassifier"><code>multiclass.OneVsOneClassifier</code></a>.</li>
+<li>Added <a href="../../api/multiclass/OutputCodeClassifier"><code>multiclass.OutputCodeClassifier</code></a>.</li>
+<li>Added <a href="../../api/multiclass/OneVsOneClassifier"><code>multiclass.OneVsOneClassifier</code></a>.</li>
 </ul>
 <h2 id="multioutput">multioutput<a class="headerlink" href="#multioutput" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Fixed a bug where <a href="/api/multioutput/ClassifierChain"><code>multioutput.ClassifierChain</code></a> and <a href="/api/multioutput/RegressorChain"><code>multioutput.RegressorChain</code></a> could not be pickled.</li>
+<li>Fixed a bug where <a href="../../api/multioutput/ClassifierChain"><code>multioutput.ClassifierChain</code></a> and <a href="../../api/multioutput/RegressorChain"><code>multioutput.RegressorChain</code></a> could not be pickled.</li>
 </ul>
 <h2 id="stats">stats<a class="headerlink" href="#stats" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Added <a href="/api/stats/Shift"><code>stats.Shift</code></a>, which can be used to compute statistics over a shifted version of a variable.</li>
-<li>Added <a href="/api/stats/Link"><code>stats.Link</code></a>, which can be used to compose univariate statistics. Univariate statistics can now be composed via the <code>|</code> operator.</li>
-<li>Renamed <code>stats.Covariance</code> to <a href="/api/stats/Cov"><code>stats.Cov</code></a>.</li>
-<li>Renamed <code>stats.PearsonCorrelation</code> to <a href="/api/stats/PearsonCorr"><code>stats.PearsonCorr</code></a>.</li>
-<li>Renamed <code>stats.AutoCorrelation</code> to <a href="/api/stats/AutoCorr"><code>stats.AutoCorr</code></a>.</li>
+<li>Added <a href="../../api/stats/Shift"><code>stats.Shift</code></a>, which can be used to compute statistics over a shifted version of a variable.</li>
+<li>Added <a href="../../api/stats/Link"><code>stats.Link</code></a>, which can be used to compose univariate statistics. Univariate statistics can now be composed via the <code>|</code> operator.</li>
+<li>Renamed <code>stats.Covariance</code> to <a href="../../api/stats/Cov"><code>stats.Cov</code></a>.</li>
+<li>Renamed <code>stats.PearsonCorrelation</code> to <a href="../../api/stats/PearsonCorr"><code>stats.PearsonCorr</code></a>.</li>
+<li>Renamed <code>stats.AutoCorrelation</code> to <a href="../../api/stats/AutoCorr"><code>stats.AutoCorr</code></a>.</li>
 <li>Added <code>stats.RollingCov</code>, which computes covariance between two variables over a window.</li>
 <li>Added <code>stats.RollingPearsonCorr</code>, which computes the Pearson correlation over a window.</li>
 </ul>
 <h2 id="stream">stream<a class="headerlink" href="#stream" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Added a <a href="/api/stream/iter-sql"><code>stream.iter_sql</code></a> utility method to work with SQLAlchemy.</li>
-<li>The <code>target_name</code> parameter of <a href="/api/stream/iter-csv"><code>stream.iter_csv</code></a> has been renamed to <code>target</code>. It can now be passed a list of values in order to support multi-output scenarios.</li>
-<li>Added <a href="/api/stream/iter-arff"><code>stream.iter_arff</code></a> for handling ARFF files.</li>
+<li>Added a <a href="../../api/stream/iter-sql"><code>stream.iter_sql</code></a> utility method to work with SQLAlchemy.</li>
+<li>The <code>target_name</code> parameter of <a href="../../api/stream/iter-csv"><code>stream.iter_csv</code></a> has been renamed to <code>target</code>. It can now be passed a list of values in order to support multi-output scenarios.</li>
+<li>Added <a href="../../api/stream/iter-arff"><code>stream.iter_arff</code></a> for handling ARFF files.</li>
 </ul>
 <h2 id="tree">tree<a class="headerlink" href="#tree" title="Permanent link">&para;</a></h2>
 <ul>

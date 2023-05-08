@@ -21,7 +21,7 @@
         <link rel="next" href="../Quantizer/">
       
       <link rel="icon" href="../../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.10">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.11">
     
     
       
@@ -304,7 +304,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../../../releases/unreleased/" class="md-tabs__link">
+      <a href="../../../../releases/0.16.0/" class="md-tabs__link">
         Releases
       </a>
     </li>
@@ -10260,7 +10260,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../releases/unreleased/" class="md-nav__link">
+      <a href="../../../../releases/0.16.0/" class="md-nav__link">
         0.16.0 - 2022-05-08
       </a>
     </li>
@@ -10879,7 +10879,7 @@
 <p>Quantization observer (QO).</p>
 <p>This splitter utilizes a hash-based quantization algorithm to keep track of the target statistics and evaluate split candidates. QO, relies on the radius parameter to define discretization intervals for each incoming feature. Split candidates are defined as the midpoints between two consecutive hash slots. Both binary splits and multi-way splits can be created by this attribute observer. This class implements the algorithm described in <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>. </p>
 <p>The smaller the quantization radius, the more hash slots will be created to accommodate the discretized data. Hence, both the running time and memory consumption increase, but the resulting splits ought to be closer to the ones obtained by a batch exhaustive approach. On the other hand, if the radius is too large, fewer slots will be created, less memory and running time will be required, but at the cost of coarse split suggestions. </p>
-<p>QO assumes that all features have the same range. It is always advised to scale the features to apply this splitter. That can be done using the <code>preprocessing</code> module. A good "rule of thumb" is to scale data using <a href="/api/preprocessing/StandardScaler"><code>preprocessing.StandardScaler</code></a> and define the radius as a proportion of the features' standard deviation. For instance, the default radius value would correspond to one quarter of the normalized features' standard deviation (since the scaled data has zero mean and unit variance). If the features come from normal distributions, by following the empirical rule, roughly <code>32</code> hash slots will be created.</p>
+<p>QO assumes that all features have the same range. It is always advised to scale the features to apply this splitter. That can be done using the <code>preprocessing</code> module. A good "rule of thumb" is to scale data using <a href="../../../preprocessing/StandardScaler"><code>preprocessing.StandardScaler</code></a> and define the radius as a proportion of the features' standard deviation. For instance, the default radius value would correspond to one quarter of the normalized features' standard deviation (since the scaled data has zero mean and unit variance). If the features come from normal distributions, by following the empirical rule, roughly <code>32</code> hash slots will be created.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>

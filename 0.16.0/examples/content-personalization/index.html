@@ -21,7 +21,7 @@
         <link rel="next" href="../debugging-a-pipeline/">
       
       <link rel="icon" href="../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.10">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.11">
     
     
       
@@ -304,7 +304,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../releases/unreleased/" class="md-tabs__link">
+      <a href="../../releases/0.16.0/" class="md-tabs__link">
         Releases
       </a>
     </li>
@@ -10249,7 +10249,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../releases/unreleased/" class="md-nav__link">
+      <a href="../../releases/0.16.0/" class="md-nav__link">
         0.16.0 - 2022-05-08
       </a>
     </li>
@@ -10933,13 +10933,13 @@
 <div class="language-python highlight"><pre><span></span><code><span class="n">model</span><span class="o">.</span><span class="n">i_biases</span>
 </code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>defaultdict(Zeros (),
-            {&#39;health&#39;: 0.0,
-             &#39;music&#39;: 0.0,
-             &#39;sports&#39;: 0.0,
-             &#39;food&#39;: 0.0,
-             &#39;camping&#39;: 0.0,
-             &#39;finance&#39;: 0.0,
-             &#39;politics&#39;: 0.0})
+            {&#39;music&#39;: -0.013333333333333336,
+             &#39;health&#39;: -0.01,
+             &#39;camping&#39;: -0.0078000000000000005,
+             &#39;sports&#39;: -0.0063106666666666675,
+             &#39;finance&#39;: -0.0052320723809523816,
+             &#39;politics&#39;: 0.014896375560251602,
+             &#39;food&#39;: 0.0})
 </code></pre></div>
 <p>The model is not as performant if we use a reward function where both users have different preferences.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">simulate</span><span class="p">(</span>
@@ -11045,25 +11045,25 @@
 <span class="p">)</span>
 </code></pre></div>
 <style type="text/css">
-#T_1cd9e_row0_col3, #T_1cd9e_row1_col5, #T_1cd9e_row2_col4, #T_1cd9e_row3_col2 {
+#T_8bde7_row0_col5, #T_8bde7_row1_col3, #T_8bde7_row2_col4, #T_8bde7_row3_col5 {
   background-color: lightgreen;
 }
 </style>
-<table id="T_1cd9e">
+<table id="T_8bde7">
   <thead>
     <tr>
       <th class="blank level0" >&nbsp;</th>
-      <th id="T_1cd9e_level0_col0" class="col_heading level0 col0" colspan="7">preference</th>
+      <th id="T_8bde7_level0_col0" class="col_heading level0 col0" colspan="7">preference</th>
     </tr>
     <tr>
       <th class="index_name level1" >item</th>
-      <th id="T_1cd9e_level1_col0" class="col_heading level1 col0" >camping</th>
-      <th id="T_1cd9e_level1_col1" class="col_heading level1 col1" >finance</th>
-      <th id="T_1cd9e_level1_col2" class="col_heading level1 col2" >food</th>
-      <th id="T_1cd9e_level1_col3" class="col_heading level1 col3" >health</th>
-      <th id="T_1cd9e_level1_col4" class="col_heading level1 col4" >music</th>
-      <th id="T_1cd9e_level1_col5" class="col_heading level1 col5" >politics</th>
-      <th id="T_1cd9e_level1_col6" class="col_heading level1 col6" >sports</th>
+      <th id="T_8bde7_level1_col0" class="col_heading level1 col0" >camping</th>
+      <th id="T_8bde7_level1_col1" class="col_heading level1 col1" >finance</th>
+      <th id="T_8bde7_level1_col2" class="col_heading level1 col2" >food</th>
+      <th id="T_8bde7_level1_col3" class="col_heading level1 col3" >health</th>
+      <th id="T_8bde7_level1_col4" class="col_heading level1 col4" >music</th>
+      <th id="T_8bde7_level1_col5" class="col_heading level1 col5" >politics</th>
+      <th id="T_8bde7_level1_col6" class="col_heading level1 col6" >sports</th>
     </tr>
     <tr>
       <th class="index_name level0" >user</th>
@@ -11078,44 +11078,44 @@
   </thead>
   <tbody>
     <tr>
-      <th id="T_1cd9e_level0_row0" class="row_heading level0 row0" >Anna@afternoon</th>
-      <td id="T_1cd9e_row0_col0" class="data row0 col0" >-0.038575</td>
-      <td id="T_1cd9e_row0_col1" class="data row0 col1" >0.000000</td>
-      <td id="T_1cd9e_row0_col2" class="data row0 col2" >0.000000</td>
-      <td id="T_1cd9e_row0_col3" class="data row0 col3" >0.000000</td>
-      <td id="T_1cd9e_row0_col4" class="data row0 col4" >0.000000</td>
-      <td id="T_1cd9e_row0_col5" class="data row0 col5" >-0.007116</td>
-      <td id="T_1cd9e_row0_col6" class="data row0 col6" >-0.020241</td>
+      <th id="T_8bde7_level0_row0" class="row_heading level0 row0" >Anna@afternoon</th>
+      <td id="T_8bde7_row0_col0" class="data row0 col0" >-0.059103</td>
+      <td id="T_8bde7_row0_col1" class="data row0 col1" >-0.063251</td>
+      <td id="T_8bde7_row0_col2" class="data row0 col2" >0.008910</td>
+      <td id="T_8bde7_row0_col3" class="data row0 col3" >0.042961</td>
+      <td id="T_8bde7_row0_col4" class="data row0 col4" >-0.059516</td>
+      <td id="T_8bde7_row0_col5" class="data row0 col5" >1.000000</td>
+      <td id="T_8bde7_row0_col6" class="data row0 col6" >-0.040774</td>
     </tr>
     <tr>
-      <th id="T_1cd9e_level0_row1" class="row_heading level0 row1" >Anna@morning</th>
-      <td id="T_1cd9e_row1_col0" class="data row1 col0" >-0.014117</td>
-      <td id="T_1cd9e_row1_col1" class="data row1 col1" >0.000000</td>
-      <td id="T_1cd9e_row1_col2" class="data row1 col2" >-0.042009</td>
-      <td id="T_1cd9e_row1_col3" class="data row1 col3" >0.000000</td>
-      <td id="T_1cd9e_row1_col4" class="data row1 col4" >-0.012450</td>
-      <td id="T_1cd9e_row1_col5" class="data row1 col5" >0.000000</td>
-      <td id="T_1cd9e_row1_col6" class="data row1 col6" >-0.050836</td>
+      <th id="T_8bde7_level0_row1" class="row_heading level0 row1" >Anna@morning</th>
+      <td id="T_8bde7_row1_col0" class="data row1 col0" >-0.050493</td>
+      <td id="T_8bde7_row1_col1" class="data row1 col1" >-0.007153</td>
+      <td id="T_8bde7_row1_col2" class="data row1 col2" >0.000000</td>
+      <td id="T_8bde7_row1_col3" class="data row1 col3" >0.000000</td>
+      <td id="T_8bde7_row1_col4" class="data row1 col4" >-0.056446</td>
+      <td id="T_8bde7_row1_col5" class="data row1 col5" >0.000000</td>
+      <td id="T_8bde7_row1_col6" class="data row1 col6" >-0.043050</td>
     </tr>
     <tr>
-      <th id="T_1cd9e_level0_row2" class="row_heading level0 row2" >Tom@afternoon</th>
-      <td id="T_1cd9e_row2_col0" class="data row2 col0" >-0.075143</td>
-      <td id="T_1cd9e_row2_col1" class="data row2 col1" >-0.025437</td>
-      <td id="T_1cd9e_row2_col2" class="data row2 col2" >-0.225707</td>
-      <td id="T_1cd9e_row2_col3" class="data row2 col3" >0.114032</td>
-      <td id="T_1cd9e_row2_col4" class="data row2 col4" >1.000000</td>
-      <td id="T_1cd9e_row2_col5" class="data row2 col5" >0.069603</td>
-      <td id="T_1cd9e_row2_col6" class="data row2 col6" >0.061238</td>
+      <th id="T_8bde7_level0_row2" class="row_heading level0 row2" >Tom@afternoon</th>
+      <td id="T_8bde7_row2_col0" class="data row2 col0" >0.086251</td>
+      <td id="T_8bde7_row2_col1" class="data row2 col1" >0.136917</td>
+      <td id="T_8bde7_row2_col2" class="data row2 col2" >0.175334</td>
+      <td id="T_8bde7_row2_col3" class="data row2 col3" >0.118801</td>
+      <td id="T_8bde7_row2_col4" class="data row2 col4" >1.000000</td>
+      <td id="T_8bde7_row2_col5" class="data row2 col5" >-0.227664</td>
+      <td id="T_8bde7_row2_col6" class="data row2 col6" >-0.181387</td>
     </tr>
     <tr>
-      <th id="T_1cd9e_level0_row3" class="row_heading level0 row3" >Tom@morning</th>
-      <td id="T_1cd9e_row3_col0" class="data row3 col0" >-0.017889</td>
-      <td id="T_1cd9e_row3_col1" class="data row3 col1" >-0.024607</td>
-      <td id="T_1cd9e_row3_col2" class="data row3 col2" >-0.000000</td>
-      <td id="T_1cd9e_row3_col3" class="data row3 col3" >-0.018000</td>
-      <td id="T_1cd9e_row3_col4" class="data row3 col4" >-0.077983</td>
-      <td id="T_1cd9e_row3_col5" class="data row3 col5" >-0.014609</td>
-      <td id="T_1cd9e_row3_col6" class="data row3 col6" >-0.016501</td>
+      <th id="T_8bde7_level0_row3" class="row_heading level0 row3" >Tom@morning</th>
+      <td id="T_8bde7_row3_col0" class="data row3 col0" >-0.070338</td>
+      <td id="T_8bde7_row3_col1" class="data row3 col1" >-0.070863</td>
+      <td id="T_8bde7_row3_col2" class="data row3 col2" >-0.008973</td>
+      <td id="T_8bde7_row3_col3" class="data row3 col3" >0.042757</td>
+      <td id="T_8bde7_row3_col4" class="data row3 col4" >-0.213007</td>
+      <td id="T_8bde7_row3_col5" class="data row3 col5" >1.000000</td>
+      <td id="T_8bde7_row3_col6" class="data row3 col6" >-0.035938</td>
     </tr>
   </tbody>
 </table>

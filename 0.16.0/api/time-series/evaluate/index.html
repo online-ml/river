@@ -21,7 +21,7 @@
         <link rel="next" href="../iter-evaluate/">
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.10">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.11">
     
     
       
@@ -304,7 +304,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../../releases/unreleased/" class="md-tabs__link">
+      <a href="../../../releases/0.16.0/" class="md-tabs__link">
         Releases
       </a>
     </li>
@@ -10244,7 +10244,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../releases/unreleased/" class="md-nav__link">
+      <a href="../../../releases/0.16.0/" class="md-nav__link">
         0.16.0 - 2022-05-08
       </a>
     </li>
@@ -10847,7 +10847,7 @@
 
 <h1 id="evaluate">evaluate<a class="headerlink" href="#evaluate" title="Permanent link">&para;</a></h1>
 <p>Evaluates the performance of a forecaster on a time series dataset.</p>
-<p>To understand why this method is useful, it's important to understand the difference between nowcasting and forecasting. Nowcasting is about predicting a value at the next time step. This can be seen as a special case of regression, where the value to predict is the value at the next time step. In this case, the <a href="/api/evaluate/progressive-val-score"><code>evaluate.progressive_val_score</code></a> function may be used to evaluate a model via progressive validation. </p>
+<p>To understand why this method is useful, it's important to understand the difference between nowcasting and forecasting. Nowcasting is about predicting a value at the next time step. This can be seen as a special case of regression, where the value to predict is the value at the next time step. In this case, the <a href="../../evaluate/progressive-val-score"><code>evaluate.progressive_val_score</code></a> function may be used to evaluate a model via progressive validation. </p>
 <p>Forecasting models can also be evaluated via progressive validation. This is the purpose of this function. At each time step <code>t</code>, the forecaster is asked to predict the values at <code>t + 1</code>, <code>t + 2</code>, ..., <code>t + horizon</code>. The performance at each time step is measured and returned.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
@@ -10858,12 +10858,12 @@
 </li>
 <li>
 <p><strong>model</strong></p>
-<p><em>Type</em> → <em><a href="/api/time-series/base/Forecaster">time_series.base.Forecaster</a></em></p>
+<p><em>Type</em> → <em><a href="../../time-series/base/Forecaster">time_series.base.Forecaster</a></em></p>
 <p>A forecaster.</p>
 </li>
 <li>
 <p><strong>metric</strong></p>
-<p><em>Type</em> → <em><a href="/api/metrics/base/RegressionMetric">metrics.base.RegressionMetric</a></em></p>
+<p><em>Type</em> → <em><a href="../../metrics/base/RegressionMetric">metrics.base.RegressionMetric</a></em></p>
 <p>A regression metric.</p>
 </li>
 <li>

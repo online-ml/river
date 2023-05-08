@@ -21,7 +21,7 @@
         <link rel="next" href="../../api/overview/">
       
       <link rel="icon" href="../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.10">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.11">
     
     
       
@@ -304,7 +304,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../releases/unreleased/" class="md-tabs__link">
+      <a href="../../releases/0.16.0/" class="md-tabs__link">
         Releases
       </a>
     </li>
@@ -10211,7 +10211,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../releases/unreleased/" class="md-nav__link">
+      <a href="../../releases/0.16.0/" class="md-nav__link">
         0.16.0 - 2022-05-08
       </a>
     </li>
@@ -10798,7 +10798,7 @@
 
 
 <h1 id="rolling-computations">Rolling computations<a class="headerlink" href="#rolling-computations" title="Permanent link">&para;</a></h1>
-<p>You might wonder which classes in River can be wrapped with a <a href="/api/utils/Rolling"><code>utils.Rolling</code></a>. This can be answered with a bit of metaprogramming.</p>
+<p>You might wonder which classes in River can be wrapped with a <a href="../../api/utils/Rolling"><code>utils.Rolling</code></a>. This can be answered with a bit of metaprogramming.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">importlib</span>
 <span class="kn">import</span> <span class="nn">inspect</span>
 <span class="kn">from</span> <span class="nn">river.utils.rolling</span> <span class="kn">import</span> <span class="n">Rollable</span>
@@ -10809,66 +10809,66 @@
     <span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">submodule</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>[covariance.EmpiricalCovariance](/api/covariance/EmpiricalCovariance)
-[metrics.Accuracy](/api/metrics/Accuracy)
-[metrics.AdjustedMutualInfo](/api/metrics/AdjustedMutualInfo)
-[metrics.AdjustedRand](/api/metrics/AdjustedRand)
-[metrics.BalancedAccuracy](/api/metrics/BalancedAccuracy)
-[metrics.ClassificationReport](/api/metrics/ClassificationReport)
-[metrics.CohenKappa](/api/metrics/CohenKappa)
-[metrics.Completeness](/api/metrics/Completeness)
-[metrics.ConfusionMatrix](/api/metrics/ConfusionMatrix)
-[metrics.CrossEntropy](/api/metrics/CrossEntropy)
-[metrics.F1](/api/metrics/F1)
-[metrics.FBeta](/api/metrics/FBeta)
-[metrics.FowlkesMallows](/api/metrics/FowlkesMallows)
-[metrics.GeometricMean](/api/metrics/GeometricMean)
-[metrics.Homogeneity](/api/metrics/Homogeneity)
-[metrics.Jaccard](/api/metrics/Jaccard)
-[metrics.LogLoss](/api/metrics/LogLoss)
-[metrics.MAE](/api/metrics/MAE)
-[metrics.MAPE](/api/metrics/MAPE)
-[metrics.MCC](/api/metrics/MCC)
-[metrics.MSE](/api/metrics/MSE)
-[metrics.MacroF1](/api/metrics/MacroF1)
-[metrics.MacroFBeta](/api/metrics/MacroFBeta)
-[metrics.MacroJaccard](/api/metrics/MacroJaccard)
-[metrics.MacroPrecision](/api/metrics/MacroPrecision)
-[metrics.MacroRecall](/api/metrics/MacroRecall)
-[metrics.MicroF1](/api/metrics/MicroF1)
-[metrics.MicroFBeta](/api/metrics/MicroFBeta)
-[metrics.MicroJaccard](/api/metrics/MicroJaccard)
-[metrics.MicroPrecision](/api/metrics/MicroPrecision)
-[metrics.MicroRecall](/api/metrics/MicroRecall)
-[metrics.MultiFBeta](/api/metrics/MultiFBeta)
-[metrics.MutualInfo](/api/metrics/MutualInfo)
-[metrics.NormalizedMutualInfo](/api/metrics/NormalizedMutualInfo)
-[metrics.Precision](/api/metrics/Precision)
-[metrics.R2](/api/metrics/R2)
-[metrics.RMSE](/api/metrics/RMSE)
-[metrics.RMSLE](/api/metrics/RMSLE)
-[metrics.ROCAUC](/api/metrics/ROCAUC)
-[metrics.Rand](/api/metrics/Rand)
-[metrics.Recall](/api/metrics/Recall)
-[metrics.RollingROCAUC](/api/metrics/RollingROCAUC)
-[metrics.SMAPE](/api/metrics/SMAPE)
-[metrics.Silhouette](/api/metrics/Silhouette)
-[metrics.VBeta](/api/metrics/VBeta)
-[metrics.WeightedF1](/api/metrics/WeightedF1)
-[metrics.WeightedFBeta](/api/metrics/WeightedFBeta)
-[metrics.WeightedJaccard](/api/metrics/WeightedJaccard)
-[metrics.WeightedPrecision](/api/metrics/WeightedPrecision)
-[metrics.WeightedRecall](/api/metrics/WeightedRecall)
-[proba.Beta](/api/proba/Beta)
-[proba.Gaussian](/api/proba/Gaussian)
-[proba.Multinomial](/api/proba/Multinomial)
-[stats.BayesianMean](/api/stats/BayesianMean)
-[stats.Cov](/api/stats/Cov)
-[stats.Mean](/api/stats/Mean)
-[stats.PearsonCorr](/api/stats/PearsonCorr)
-[stats.SEM](/api/stats/SEM)
-[stats.Sum](/api/stats/Sum)
-[stats.Var](/api/stats/Var)
+<div class="language-text highlight"><pre><span></span><code>[covariance.EmpiricalCovariance](../../api/covariance/EmpiricalCovariance)
+[metrics.Accuracy](../../api/metrics/Accuracy)
+[metrics.AdjustedMutualInfo](../../api/metrics/AdjustedMutualInfo)
+[metrics.AdjustedRand](../../api/metrics/AdjustedRand)
+[metrics.BalancedAccuracy](../../api/metrics/BalancedAccuracy)
+[metrics.ClassificationReport](../../api/metrics/ClassificationReport)
+[metrics.CohenKappa](../../api/metrics/CohenKappa)
+[metrics.Completeness](../../api/metrics/Completeness)
+[metrics.ConfusionMatrix](../../api/metrics/ConfusionMatrix)
+[metrics.CrossEntropy](../../api/metrics/CrossEntropy)
+[metrics.F1](../../api/metrics/F1)
+[metrics.FBeta](../../api/metrics/FBeta)
+[metrics.FowlkesMallows](../../api/metrics/FowlkesMallows)
+[metrics.GeometricMean](../../api/metrics/GeometricMean)
+[metrics.Homogeneity](../../api/metrics/Homogeneity)
+[metrics.Jaccard](../../api/metrics/Jaccard)
+[metrics.LogLoss](../../api/metrics/LogLoss)
+[metrics.MAE](../../api/metrics/MAE)
+[metrics.MAPE](../../api/metrics/MAPE)
+[metrics.MCC](../../api/metrics/MCC)
+[metrics.MSE](../../api/metrics/MSE)
+[metrics.MacroF1](../../api/metrics/MacroF1)
+[metrics.MacroFBeta](../../api/metrics/MacroFBeta)
+[metrics.MacroJaccard](../../api/metrics/MacroJaccard)
+[metrics.MacroPrecision](../../api/metrics/MacroPrecision)
+[metrics.MacroRecall](../../api/metrics/MacroRecall)
+[metrics.MicroF1](../../api/metrics/MicroF1)
+[metrics.MicroFBeta](../../api/metrics/MicroFBeta)
+[metrics.MicroJaccard](../../api/metrics/MicroJaccard)
+[metrics.MicroPrecision](../../api/metrics/MicroPrecision)
+[metrics.MicroRecall](../../api/metrics/MicroRecall)
+[metrics.MultiFBeta](../../api/metrics/MultiFBeta)
+[metrics.MutualInfo](../../api/metrics/MutualInfo)
+[metrics.NormalizedMutualInfo](../../api/metrics/NormalizedMutualInfo)
+[metrics.Precision](../../api/metrics/Precision)
+[metrics.R2](../../api/metrics/R2)
+[metrics.RMSE](../../api/metrics/RMSE)
+[metrics.RMSLE](../../api/metrics/RMSLE)
+[metrics.ROCAUC](../../api/metrics/ROCAUC)
+[metrics.Rand](../../api/metrics/Rand)
+[metrics.Recall](../../api/metrics/Recall)
+[metrics.RollingROCAUC](../../api/metrics/RollingROCAUC)
+[metrics.SMAPE](../../api/metrics/SMAPE)
+[metrics.Silhouette](../../api/metrics/Silhouette)
+[metrics.VBeta](../../api/metrics/VBeta)
+[metrics.WeightedF1](../../api/metrics/WeightedF1)
+[metrics.WeightedFBeta](../../api/metrics/WeightedFBeta)
+[metrics.WeightedJaccard](../../api/metrics/WeightedJaccard)
+[metrics.WeightedPrecision](../../api/metrics/WeightedPrecision)
+[metrics.WeightedRecall](../../api/metrics/WeightedRecall)
+[proba.Beta](../../api/proba/Beta)
+[proba.Gaussian](../../api/proba/Gaussian)
+[proba.Multinomial](../../api/proba/Multinomial)
+[stats.BayesianMean](../../api/stats/BayesianMean)
+[stats.Cov](../../api/stats/Cov)
+[stats.Mean](../../api/stats/Mean)
+[stats.PearsonCorr](../../api/stats/PearsonCorr)
+[stats.SEM](../../api/stats/SEM)
+[stats.Sum](../../api/stats/Sum)
+[stats.Var](../../api/stats/Var)
 </code></pre></div>
 
 

@@ -21,7 +21,7 @@
         <link rel="next" href="../concept-drift-detection/">
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.10">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.11">
     
     
       
@@ -304,7 +304,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../../releases/unreleased/" class="md-tabs__link">
+      <a href="../../../releases/0.16.0/" class="md-tabs__link">
         Releases
       </a>
     </li>
@@ -10213,7 +10213,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../releases/unreleased/" class="md-nav__link">
+      <a href="../../../releases/0.16.0/" class="md-nav__link">
         0.16.0 - 2022-05-08
       </a>
     </li>
@@ -10878,7 +10878,7 @@ Features  9
 </code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>ROCAUC: 89.36%
 </code></pre></div>
-<p>This is a common way to evaluate an online model. In fact, there is a dedicated <a href="/api/evaluate/progressive-val-score"><code>evaluate.progressive_val_score</code></a> function that does this for you.</p>
+<p>This is a common way to evaluate an online model. In fact, there is a dedicated <a href="../../../api/evaluate/progressive-val-score"><code>evaluate.progressive_val_score</code></a> function that does this for you.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">evaluate</span>
 
 <span class="n">model</span> <span class="o">=</span> <span class="n">linear_model</span><span class="o">.</span><span class="n">LogisticRegression</span><span class="p">()</span>
@@ -10888,7 +10888,7 @@ Features  9
 </code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>ROCAUC: 89.36%
 </code></pre></div>
-<p>A common way to improve the performance of a logistic regression is to scale the data. This can be done by using a <a href="/api/preprocessing/StandardScaler"><code>preprocessing.StandardScaler</code></a>. In particular, we can define a pipeline to organise our model into a sequence of steps:</p>
+<p>A common way to improve the performance of a logistic regression is to scale the data. This can be done by using a <a href="../../../api/preprocessing/StandardScaler"><code>preprocessing.StandardScaler</code></a>. In particular, we can define a pipeline to organise our model into a sequence of steps:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">compose</span>
 <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">preprocessing</span>
 

@@ -21,7 +21,7 @@
         <link rel="next" href="../Binarizer/">
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.10">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.11">
     
     
       
@@ -304,7 +304,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../../releases/unreleased/" class="md-tabs__link">
+      <a href="../../../releases/0.16.0/" class="md-tabs__link">
         Releases
       </a>
     </li>
@@ -10258,7 +10258,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../releases/unreleased/" class="md-nav__link">
+      <a href="../../../releases/0.16.0/" class="md-nav__link">
         0.16.0 - 2022-05-08
       </a>
     </li>
@@ -10875,13 +10875,13 @@
 
 <h1 id="adaptivestandardscaler">AdaptiveStandardScaler<a class="headerlink" href="#adaptivestandardscaler" title="Permanent link">&para;</a></h1>
 <p>Scales data using exponentially weighted moving average and variance.</p>
-<p>Under the hood, a exponentially weighted running mean and variance are maintained for each feature. This can potentially provide better results for drifting data in comparison to <a href="/api/preprocessing/StandardScaler"><code>preprocessing.StandardScaler</code></a>. Indeed, the latter computes a global mean and variance for each feature, whereas this scaler weights data in proportion to their recency.</p>
+<p>Under the hood, a exponentially weighted running mean and variance are maintained for each feature. This can potentially provide better results for drifting data in comparison to <a href="../../preprocessing/StandardScaler"><code>preprocessing.StandardScaler</code></a>. Indeed, the latter computes a global mean and variance for each feature, whereas this scaler weights data in proportion to their recency.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
 <p><strong>fading_factor</strong></p>
 <p><em>Default</em> → <code>0.3</code></p>
-<p>This parameter is passed to <a href="/api/stats/EWVar"><code>stats.EWVar</code></a>. It is expected to be in [0, 1]. More weight is assigned to recent samples the closer <code>fading_factor</code> is to 1.</p>
+<p>This parameter is passed to <a href="../../stats/EWVar"><code>stats.EWVar</code></a>. It is expected to be in [0, 1]. More weight is assigned to recent samples the closer <code>fading_factor</code> is to 1.</p>
 </li>
 </ul>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>

@@ -21,7 +21,7 @@
         <link rel="next" href="../../feature-selection/PoissonInclusion/">
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.10">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.11">
     
     
       
@@ -304,7 +304,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../../releases/unreleased/" class="md-tabs__link">
+      <a href="../../../releases/0.16.0/" class="md-tabs__link">
         Releases
       </a>
     </li>
@@ -10265,7 +10265,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../releases/unreleased/" class="md-nav__link">
+      <a href="../../../releases/0.16.0/" class="md-nav__link">
         0.16.0 - 2022-05-08
       </a>
     </li>
@@ -10889,7 +10889,7 @@
 
 <h1 id="targetagg">TargetAgg<a class="headerlink" href="#targetagg" title="Permanent link">&para;</a></h1>
 <p>Computes a streaming aggregate of the target values.</p>
-<p>This transformer is identical to <a href="/api/feature-extraction/Agg"><code>feature_extraction.Agg</code></a>, the only difference is that it operates on the target rather than on a feature. At each step, the running statistic <code>how</code> of target values in group <code>by</code> is updated with the target. It is therefore a supervised transformer.</p>
+<p>This transformer is identical to <a href="../../feature-extraction/Agg"><code>feature_extraction.Agg</code></a>, the only difference is that it operates on the target rather than on a feature. At each step, the running statistic <code>how</code> of target values in group <code>by</code> is updated with the target. It is therefore a supervised transformer.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
@@ -10899,7 +10899,7 @@
 </li>
 <li>
 <p><strong>how</strong></p>
-<p><em>Type</em> → <em><a href="/api/stats/base/Univariate">stats.base.Univariate</a> | <a href="/api/utils/Rolling">utils.Rolling</a> | <a href="/api/utils/TimeRolling">utils.TimeRolling</a></em></p>
+<p><em>Type</em> → <em><a href="../../stats/base/Univariate">stats.base.Univariate</a> | <a href="../../utils/Rolling">utils.Rolling</a> | <a href="../../utils/TimeRolling">utils.TimeRolling</a></em></p>
 <p>The statistic to compute.</p>
 </li>
 <li>
@@ -10932,7 +10932,7 @@
 <span class="p">]</span>
 </code></pre></div>
 <p>As an example, let's perform a target encoding of the <code>place</code> feature. Instead of simply
-updating a running average, we use a <a href="/api/stats/BayesianMean"><code>stats.BayesianMean</code></a> which allows us to incorporate
+updating a running average, we use a <a href="../../stats/BayesianMean"><code>stats.BayesianMean</code></a> which allows us to incorporate
 some prior knowledge. This makes subsequent models less prone to overfitting. Indeed, it
 dampens the fact that too few samples might have been seen within a group.</p>
 <p><div class="language-python highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">feature_extraction</span>
@@ -10959,7 +10959,7 @@ dampens the fact that too few samples might have been seen within a group.</p>
 {&#39;y_bayes_mean_by_place&#39;: 15.75}
 {&#39;y_bayes_mean_by_place&#39;: 38.25}
 </code></pre></div></p>
-<p>Just like with <a href="/api/feature-extraction/Agg"><code>feature_extraction.Agg</code></a>, we can specify multiple features on which to
+<p>Just like with <a href="../../feature-extraction/Agg"><code>feature_extraction.Agg</code></a>, we can specify multiple features on which to
 group the data:</p>
 <p><div class="language-python highlight"><pre><span></span><code><span class="n">agg</span> <span class="o">=</span> <span class="n">feature_extraction</span><span class="o">.</span><span class="n">TargetAgg</span><span class="p">(</span>
     <span class="n">by</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;place&#39;</span><span class="p">,</span> <span class="s1">&#39;country&#39;</span><span class="p">],</span>
@@ -10991,7 +10991,7 @@ Burger King  Sweden     13.000000
 Taco Bell    Sweden     47.000000
 Name: y_bayes_mean_by_place_and_country, dtype: float64
 </code></pre></div></p>
-<p>This transformer can also be used in conjunction with <a href="/api/utils/TimeRolling"><code>utils.TimeRolling</code></a>. The latter requires
+<p>This transformer can also be used in conjunction with <a href="../../utils/TimeRolling"><code>utils.TimeRolling</code></a>. The latter requires
 a <code>t</code> argument, which is a timestamp that indicates when the current row was observed. For
 instance, we can calculate the average (how) revenue (on) for each place (by) over the last
 7 days (t):</p>

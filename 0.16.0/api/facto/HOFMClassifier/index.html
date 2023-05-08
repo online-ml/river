@@ -21,7 +21,7 @@
         <link rel="next" href="../HOFMRegressor/">
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.10">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.11">
     
     
       
@@ -304,7 +304,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../../releases/unreleased/" class="md-tabs__link">
+      <a href="../../../releases/0.16.0/" class="md-tabs__link">
         Releases
       </a>
     </li>
@@ -10265,7 +10265,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../releases/unreleased/" class="md-nav__link">
+      <a href="../../../releases/0.16.0/" class="md-nav__link">
         0.16.0 - 2022-05-08
       </a>
     </li>
@@ -10906,19 +10906,19 @@
 </li>
 <li>
 <p><strong>weight_optimizer</strong></p>
-<p><em>Type</em> → <em><a href="/api/optim/base/Optimizer">optim.base.Optimizer</a> | None</em></p>
+<p><em>Type</em> → <em><a href="../../optim/base/Optimizer">optim.base.Optimizer</a> | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
 <p>The sequential optimizer used for updating the feature weights. Note that the intercept is handled separately.</p>
 </li>
 <li>
 <p><strong>latent_optimizer</strong></p>
-<p><em>Type</em> → <em><a href="/api/optim/base/Optimizer">optim.base.Optimizer</a> | None</em></p>
+<p><em>Type</em> → <em><a href="../../optim/base/Optimizer">optim.base.Optimizer</a> | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
 <p>The sequential optimizer used for updating the latent factors.</p>
 </li>
 <li>
 <p><strong>loss</strong></p>
-<p><em>Type</em> → <em><a href="/api/optim/losses/BinaryLoss">optim.losses.BinaryLoss</a> | None</em></p>
+<p><em>Type</em> → <em><a href="../../optim/losses/BinaryLoss">optim.losses.BinaryLoss</a> | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
 <p>The loss function to optimize for.</p>
 </li>
@@ -10954,21 +10954,21 @@
 </li>
 <li>
 <p><strong>intercept_lr</strong></p>
-<p><em>Type</em> → <em><a href="/api/optim/base/Scheduler">optim.base.Scheduler</a> | float</em></p>
+<p><em>Type</em> → <em><a href="../../optim/base/Scheduler">optim.base.Scheduler</a> | float</em></p>
 <p><em>Default</em> → <code>0.01</code></p>
-<p>Learning rate scheduler used for updating the intercept. An instance of <a href="/api/optim/schedulers/Constant"><code>optim.schedulers.Constant</code></a> is used if a <code>float</code> is passed. No intercept will be used if this is set to 0.</p>
+<p>Learning rate scheduler used for updating the intercept. An instance of <a href="../../optim/schedulers/Constant"><code>optim.schedulers.Constant</code></a> is used if a <code>float</code> is passed. No intercept will be used if this is set to 0.</p>
 </li>
 <li>
 <p><strong>weight_initializer</strong></p>
-<p><em>Type</em> → <em><a href="/api/optim/initializers/Initializer">optim.initializers.Initializer</a> | None</em></p>
+<p><em>Type</em> → <em><a href="../../optim/initializers/Initializer">optim.initializers.Initializer</a> | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
-<p>Weights initialization scheme. Defaults to <a href="/api/optim/initializers/Zeros"><code>optim.initializers.Zeros</code></a>()`.</p>
+<p>Weights initialization scheme. Defaults to <a href="../../optim/initializers/Zeros"><code>optim.initializers.Zeros</code></a>()`.</p>
 </li>
 <li>
 <p><strong>latent_initializer</strong></p>
-<p><em>Type</em> → <em><a href="/api/optim/initializers/Initializer">optim.initializers.Initializer</a> | None</em></p>
+<p><em>Type</em> → <em><a href="../../optim/initializers/Initializer">optim.initializers.Initializer</a> | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
-<p>Latent factors initialization scheme. Defaults to <a href="/api/optim/initializers/Normal"><code>optim.initializers.Normal</code></a>(mu=.0, sigma=.1, random_state=self.random_state)`.</p>
+<p>Latent factors initialization scheme. Defaults to <a href="../../optim/initializers/Normal"><code>optim.initializers.Normal</code></a>(mu=.0, sigma=.1, random_state=self.random_state)`.</p>
 </li>
 <li>
 <p><strong>clip_gradient</strong></p>

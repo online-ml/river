@@ -21,7 +21,7 @@
         <link rel="next" href="../ARFRegressor/">
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.10">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.11">
     
     
       
@@ -304,7 +304,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../../releases/unreleased/" class="md-tabs__link">
+      <a href="../../../releases/0.16.0/" class="md-tabs__link">
         Releases
       </a>
     </li>
@@ -10265,7 +10265,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../releases/unreleased/" class="md-nav__link">
+      <a href="../../../releases/0.16.0/" class="md-nav__link">
         0.16.0 - 2022-05-08
       </a>
     </li>
@@ -10924,9 +10924,9 @@
 </li>
 <li>
 <p><strong>metric</strong></p>
-<p><em>Type</em> → <em><a href="/api/metrics/base/MultiClassMetric">metrics.base.MultiClassMetric</a> | None</em></p>
+<p><em>Type</em> → <em><a href="../../metrics/base/MultiClassMetric">metrics.base.MultiClassMetric</a> | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
-<p>Metric used to track trees performance within the ensemble. Defaults to <a href="/api/metrics/Accuracy"><code>metrics.Accuracy</code></a>()`.</p>
+<p>Metric used to track trees performance within the ensemble. Defaults to <a href="../../metrics/Accuracy"><code>metrics.Accuracy</code></a>()`.</p>
 </li>
 <li>
 <p><strong>disable_weighted_vote</strong></p>
@@ -10935,15 +10935,15 @@
 </li>
 <li>
 <p><strong>drift_detector</strong></p>
-<p><em>Type</em> → <em><a href="/api/base/DriftDetector">base.DriftDetector</a> | None</em></p>
+<p><em>Type</em> → <em><a href="../../base/DriftDetector">base.DriftDetector</a> | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
-<p>Drift Detection method. Set to None to disable Drift detection. Defaults to <a href="/api/drift/ADWIN"><code>drift.ADWIN</code></a>(delta=0.001)`.</p>
+<p>Drift Detection method. Set to None to disable Drift detection. Defaults to <a href="../../drift/ADWIN"><code>drift.ADWIN</code></a>(delta=0.001)`.</p>
 </li>
 <li>
 <p><strong>warning_detector</strong></p>
-<p><em>Type</em> → <em><a href="/api/base/DriftDetector">base.DriftDetector</a> | None</em></p>
+<p><em>Type</em> → <em><a href="../../base/DriftDetector">base.DriftDetector</a> | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
-<p>Warning Detection method. Set to None to disable warning detection. Defaults to <a href="/api/drift/ADWIN"><code>drift.ADWIN</code></a>(delta=0.01)`.</p>
+<p>Warning Detection method. Set to None to disable warning detection. Defaults to <a href="../../drift/ADWIN"><code>drift.ADWIN</code></a>(delta=0.01)`.</p>
 </li>
 <li>
 <p><strong>grace_period</strong></p>
@@ -10997,7 +10997,7 @@
 <p><strong>splitter</strong></p>
 <p><em>Type</em> → <em>Splitter | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
-<p>[<em>Tree parameter</em>] The Splitter or Attribute Observer (AO) used to monitor the class statistics of numeric features and perform splits. Splitters are available in the <a href="/api/tree/splitter"><code>tree.splitter</code></a> module. Different splitters are available for classification and regression tasks. Classification and regression splitters can be distinguished by their property <code>is_target_class</code>. This is an advanced option. Special care must be taken when choosing different splitters. By default, <a href="/api/tree/splitter/GaussianSplitter"><code>tree.splitter.GaussianSplitter</code></a> is used if <code>splitter</code> is <code>None</code>.</p>
+<p>[<em>Tree parameter</em>] The Splitter or Attribute Observer (AO) used to monitor the class statistics of numeric features and perform splits. Splitters are available in the <a href="../../tree/splitter"><code>tree.splitter</code></a> module. Different splitters are available for classification and regression tasks. Classification and regression splitters can be distinguished by their property <code>is_target_class</code>. This is an advanced option. Special care must be taken when choosing different splitters. By default, <a href="../../tree/splitter/GaussianSplitter"><code>tree.splitter.GaussianSplitter</code></a> is used if <code>splitter</code> is <code>None</code>.</p>
 </li>
 <li>
 <p><strong>binary_split</strong></p>

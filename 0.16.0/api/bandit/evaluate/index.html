@@ -21,7 +21,7 @@
         <link rel="next" href="../base/Policy/">
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.10">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.11">
     
     
       
@@ -304,7 +304,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../../releases/unreleased/" class="md-tabs__link">
+      <a href="../../../releases/0.16.0/" class="md-tabs__link">
         Releases
       </a>
     </li>
@@ -10251,7 +10251,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../releases/unreleased/" class="md-nav__link">
+      <a href="../../../releases/0.16.0/" class="md-nav__link">
         0.16.0 - 2022-05-08
       </a>
     </li>
@@ -10866,7 +10866,7 @@
 <ul>
 <li>
 <p><strong>policies</strong></p>
-<p><em>Type</em> → <em>list[<a href="/api/bandit/base/Policy">bandit.base.Policy</a>]</em></p>
+<p><em>Type</em> → <em>list[<a href="../../bandit/base/Policy">bandit.base.Policy</a>]</em></p>
 <p>A list of policies to evaluate. The policy will be reset before each episode.</p>
 </li>
 <li>
@@ -10876,14 +10876,14 @@
 </li>
 <li>
 <p><strong>pull_func</strong></p>
-<p><em>Type</em> → <em>Callable[[<a href="/api/bandit/base/Policy">bandit.base.Policy</a>, gym.Env], bandit.base.ArmID]</em></p>
+<p><em>Type</em> → <em>Callable[[<a href="../../bandit/base/Policy">bandit.base.Policy</a>, gym.Env], bandit.base.ArmID]</em></p>
 <p>A function that takes a policy and an environment as arguments and returns the arm that was pulled. This function is called at each time step for each policy. This is required because there is no standard way to pull an arm in Gym environments.</p>
 </li>
 <li>
 <p><strong>reward_stat</strong></p>
-<p><em>Type</em> → <em><a href="/api/stats/base/Univariate">stats.base.Univariate</a> | None</em></p>
+<p><em>Type</em> → <em><a href="../../stats/base/Univariate">stats.base.Univariate</a> | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
-<p>A univariate statistic to keep track of the rewards. This statistic will be reset before each episode. Note that this is not the same as the reward object used by the policies. It's just a statistic to keep track of each policy's performance. If <code>None</code>, <a href="/api/stats/Sum"><code>stats.Sum</code></a> is used.</p>
+<p>A univariate statistic to keep track of the rewards. This statistic will be reset before each episode. Note that this is not the same as the reward object used by the policies. It's just a statistic to keep track of each policy's performance. If <code>None</code>, <a href="../../stats/Sum"><code>stats.Sum</code></a> is used.</p>
 </li>
 <li>
 <p><strong>n_episodes</strong></p>

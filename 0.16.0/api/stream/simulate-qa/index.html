@@ -21,7 +21,7 @@
         <link rel="next" href="../../time-series/ForecastingMetric/">
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.10">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.11">
     
     
       
@@ -304,7 +304,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../../releases/unreleased/" class="md-tabs__link">
+      <a href="../../../releases/0.16.0/" class="md-tabs__link">
         Releases
       </a>
     </li>
@@ -10251,7 +10251,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../releases/unreleased/" class="md-nav__link">
+      <a href="../../../releases/0.16.0/" class="md-nav__link">
         0.16.0 - 2022-05-08
       </a>
     </li>
@@ -10861,7 +10861,7 @@
 
 <h1 id="simulate_qa">simulate_qa<a class="headerlink" href="#simulate_qa" title="Permanent link">&para;</a></h1>
 <p>Simulate a time-ordered question and answer session.</p>
-<p>This method allows looping through a dataset in the order in which it arrived. Indeed, it usually is the case that labels arrive after features. Being able to go through a dataset in arrival order enables assessing a model's performance in a reliable manner. For instance, the <a href="/api/evaluate/progressive-val-score"><code>evaluate.progressive_val_score</code></a> is a high-level method that can be used to score a model on a dataset. Under the hood it uses this method to determine the correct arrival order.</p>
+<p>This method allows looping through a dataset in the order in which it arrived. Indeed, it usually is the case that labels arrive after features. Being able to go through a dataset in arrival order enables assessing a model's performance in a reliable manner. For instance, the <a href="../../evaluate/progressive-val-score"><code>evaluate.progressive_val_score</code></a> is a high-level method that can be used to score a model on a dataset. Under the hood it uses this method to determine the correct arrival order.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
@@ -10935,7 +10935,7 @@ meant to occur.</p>
 <p>This function is extremely practical because it provides a reliable way to evaluate the
 performance of a model in a real scenario. Indeed, it allows to make predictions and
 perform model updates in exactly the same manner that would happen live. For instance, it
-is used in <a href="/api/evaluate/progressive-val-score"><code>evaluate.progressive_val_score</code></a>, which is a higher level function for
+is used in <a href="../../evaluate/progressive-val-score"><code>evaluate.progressive_val_score</code></a>, which is a higher level function for
 evaluating models in an online manner.</p>
 
 

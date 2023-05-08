@@ -21,7 +21,7 @@
         <link rel="next" href="../BagOfWords/">
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.10">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.11">
     
     
       
@@ -304,7 +304,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../../releases/unreleased/" class="md-tabs__link">
+      <a href="../../../releases/0.16.0/" class="md-tabs__link">
         Releases
       </a>
     </li>
@@ -10265,7 +10265,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../releases/unreleased/" class="md-nav__link">
+      <a href="../../../releases/0.16.0/" class="md-nav__link">
         0.16.0 - 2022-05-08
       </a>
     </li>
@@ -10891,7 +10891,7 @@
 <p>Computes a streaming aggregate.</p>
 <p>This transformer allows to compute an aggregate statistic, very much like the groupby method from <code>pandas</code>, but on a streaming dataset. This makes use of the streaming statistics from the <code>stats</code> module. </p>
 <p>When <code>learn_one</code> is called, the running statistic <code>how</code> of group <code>by</code> is updated with the value of <code>on</code>. Meanwhile, the output of <code>transform_one</code> is a single-element dictionary, where the key is the name of the aggregate and the value is the current value of the statistic for the relevant group. The key is automatically inferred from the parameters. </p>
-<p>Note that you can use a <a href="/api/compose/TransformerUnion"><code>compose.TransformerUnion</code></a> to extract many aggregate statistics in a concise manner.</p>
+<p>Note that you can use a <a href="../../compose/TransformerUnion"><code>compose.TransformerUnion</code></a> to extract many aggregate statistics in a concise manner.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
@@ -10906,7 +10906,7 @@
 </li>
 <li>
 <p><strong>how</strong></p>
-<p><em>Type</em> → <em><a href="/api/stats/base/Univariate">stats.base.Univariate</a> | <a href="/api/utils/Rolling">utils.Rolling</a> | <a href="/api/utils/TimeRolling">utils.TimeRolling</a></em></p>
+<p><em>Type</em> → <em><a href="../../stats/base/Univariate">stats.base.Univariate</a> | <a href="../../utils/Rolling">utils.Rolling</a> | <a href="../../utils/TimeRolling">utils.TimeRolling</a></em></p>
 <p>The statistic to compute.</p>
 </li>
 </ul>
@@ -10975,7 +10975,7 @@ day (by):</p>
 {&#39;revenue_max_by_place_and_country&#39;: 24}
 {&#39;revenue_max_by_place_and_country&#39;: 80}
 </code></pre></div></p>
-<p>You can use a <a href="/api/compose/TransformerUnion"><code>compose.TransformerUnion</code></a> in order to calculate multiple aggregates in one
+<p>You can use a <a href="../../compose/TransformerUnion"><code>compose.TransformerUnion</code></a> in order to calculate multiple aggregates in one
 go. The latter can be constructed by using the <code>+</code> operator:</p>
 <p><div class="language-python highlight"><pre><span></span><code><span class="n">agg</span> <span class="o">=</span> <span class="p">(</span>
     <span class="n">fx</span><span class="o">.</span><span class="n">Agg</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;revenue&#39;</span><span class="p">,</span> <span class="n">by</span><span class="o">=</span><span class="s1">&#39;place&#39;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="n">stats</span><span class="o">.</span><span class="n">Mean</span><span class="p">())</span> <span class="o">+</span>
@@ -11013,7 +11013,7 @@ Burger King  Sweden     20
 Taco Bell    Sweden     80
 Name: revenue_max_by_place_and_country, dtype: int64
 </code></pre></div></p>
-<p>This transformer can also be used in conjunction with <a href="/api/utils/TimeRolling"><code>utils.TimeRolling</code></a>. The latter requires
+<p>This transformer can also be used in conjunction with <a href="../../utils/TimeRolling"><code>utils.TimeRolling</code></a>. The latter requires
 a <code>t</code> argument, which is a timestamp that indicates when the current row was observed. For
 instance, we can calculate the average (how) revenue (on) for each place (by) over the last
 7 days (t):</p>
