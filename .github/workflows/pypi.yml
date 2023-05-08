@@ -58,7 +58,7 @@ jobs:
           platforms: all
 
       - name: Build wheels
-        uses: pypa/cibuildwheel@latest
+        uses: pypa/cibuildwheel@2.12.3
         env:
           CIBW_BUILD: "cp38-* cp39-* cp310-* cp311-*"
           CIBW_BEFORE_BUILD: >
