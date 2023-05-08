@@ -10,6 +10,8 @@ References
     PyInfVov (https://github.com/kzhai/PyInfVoc) with a batch size of 1.
 
 """
+from __future__ import annotations
+
 import numpy as np
 
 from river import preprocessing

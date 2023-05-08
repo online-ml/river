@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 import math
-import typing
 
 from river import stats as st
 from river.utils.norm import normalize_values_in_dict
@@ -138,7 +139,7 @@ class AdaBranchClassifier(DTBranch):
         self._alternate_tree = None
         self._mean_error: st.Mean = st.Mean()
 
-    def traverse(self, x, until_leaf=True) -> typing.List[HTLeaf]:  # type: ignore
+    def traverse(self, x, until_leaf=True) -> list[HTLeaf]:  # type: ignore
         """Return the leaves corresponding to the given input.
 
         Alternate subtree leaves are also included.
@@ -151,7 +152,7 @@ class AdaBranchClassifier(DTBranch):
             Whether or not branch nodes can be returned in case of missing features or emerging
             feature categories.
         """
-        found_nodes: typing.List[HTLeaf] = []
+        found_nodes: list[HTLeaf] = []
         for node in self.walk(x, until_leaf=until_leaf):
             if isinstance(node, AdaBranchClassifier) and node._alternate_tree:
                 if isinstance(node._alternate_tree, AdaBranchClassifier):

@@ -358,7 +358,7 @@ class Pipeline(base.Estimator):
     def __mul__(self, other):
         from river import compose
 
-        if isinstance(other, (base.Transformer, Pipeline)):
+        if isinstance(other, base.Transformer | Pipeline):
             return compose.TransformerProduct(self, other)
 
         return compose.Grouper(transformer=self, by=other)
@@ -424,7 +424,7 @@ class Pipeline(base.Estimator):
             name, obj = obj
 
         def _coerce_to_estimator(obj: typing.Any) -> base.Estimator:
-            if isinstance(obj, (types.FunctionType, types.LambdaType)):
+            if isinstance(obj, types.FunctionType | types.LambdaType):
                 return func.FuncTransformer(obj)
             if isinstance(obj, list):
                 return union.TransformerUnion(*[_coerce_to_estimator(part) for part in obj])
@@ -435,7 +435,7 @@ class Pipeline(base.Estimator):
         def infer_name(estimator: base.Estimator | typing.Callable) -> str:
             if isinstance(estimator, func.FuncTransformer):
                 return infer_name(estimator.func)
-            if isinstance(estimator, (types.FunctionType, types.LambdaType)):
+            if isinstance(estimator, types.FunctionType | types.LambdaType):
                 return estimator.__name__
             if hasattr(estimator, "__class__"):
                 return estimator.__class__.__name__

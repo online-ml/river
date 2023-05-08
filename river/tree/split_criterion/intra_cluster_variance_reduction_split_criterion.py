@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from .variance_reduction_split_criterion import VarianceReductionSplitCriterion
 
 

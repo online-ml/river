@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from river.utils.norm import normalize_values_in_dict
 
 from ..splitter.nominal_splitter_classif import NominalSplitterClassif

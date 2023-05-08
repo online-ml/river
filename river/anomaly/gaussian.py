@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from river import anomaly, proba, utils
 
 

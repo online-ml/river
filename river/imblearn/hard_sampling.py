@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import collections
 import random
 import typing
@@ -213,7 +215,7 @@ class HardSamplingClassifier(HardSampling, base.Classifier):
         classifier: base.Classifier,
         size: int,
         p: float,
-        loss: typing.Union[optim.losses.BinaryLoss, optim.losses.MultiClassLoss] = None,
+        loss: optim.losses.BinaryLoss | optim.losses.MultiClassLoss = None,
         seed: int = None,
     ):
         if loss is None:

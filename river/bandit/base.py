@@ -1,13 +1,16 @@
+from __future__ import annotations
+
 import abc
 import collections
-from typing import Counter, DefaultDict, Iterator, List, Union
+from collections import Counter
+from collections.abc import Iterator
 
 from river import base, metrics, proba, stats, utils
 
 __all__ = ["ArmID", "Policy", "RewardObj"]
 
-ArmID = Union[int, str]
-RewardObj = Union[stats.base.Statistic, metrics.base.Metric, proba.base.Distribution]
+ArmID = int | str
+RewardObj = stats.base.Statistic | metrics.base.Metric | proba.base.Distribution
 
 
 class Policy(base.Base, abc.ABC):
@@ -27,17 +30,17 @@ class Policy(base.Base, abc.ABC):
     def __init__(self, reward_obj: RewardObj = None, burn_in=0):
         self.reward_obj = reward_obj or stats.Mean()
         self.burn_in = burn_in
-        self._rewards: DefaultDict[ArmID, RewardObj] = collections.defaultdict(
+        self._rewards: collections.defaultdict[ArmID, RewardObj] = collections.defaultdict(
             self.reward_obj.clone
         )
         self._n = 0
         self._counts: Counter = collections.Counter()
 
     @abc.abstractmethod
-    def _pull(self, arm_ids: List[ArmID]) -> ArmID:
+    def _pull(self, arm_ids: list[ArmID]) -> ArmID:
         ...
 
-    def pull(self, arm_ids: List[ArmID]) -> Iterator[ArmID]:
+    def pull(self, arm_ids: list[ArmID]) -> Iterator[ArmID]:
         """Pull arm(s).
 
         This method is a generator that yields the arm(s) that should be pulled. During the burn-in
@@ -75,7 +78,7 @@ class Policy(base.Base, abc.ABC):
         return self
 
     @property
-    def ranking(self) -> List[ArmID]:
+    def ranking(self) -> list[ArmID]:
         """Return the list of arms in descending order of performance."""
         return sorted(
             self._rewards,

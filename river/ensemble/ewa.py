@@ -1,9 +1,9 @@
-import math
-import typing
+from __future__ import annotations
 
-from river import base
+import math
+
+from river import base, optim
 from river import linear_model as lm
-from river import optim
 from river import preprocessing as pp
 
 __all__ = ["EWARegressor"]
@@ -82,7 +82,7 @@ class EWARegressor(base.Ensemble, base.Regressor):
 
     def __init__(
         self,
-        models: typing.List[base.Regressor],
+        models: list[base.Regressor],
         loss: optim.losses.RegressionLoss = None,
         learning_rate=0.5,
     ):

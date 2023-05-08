@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import abc
 import typing
 
@@ -53,7 +55,7 @@ class Splitter(base.Estimator, abc.ABC):
     def best_evaluated_split_suggestion(
         self,
         criterion: SplitCriterion,
-        pre_split_dist: typing.Union[typing.List, typing.Dict],
+        pre_split_dist: list | dict,
         att_idx: base.typing.FeatureName,
         binary_only: bool,
     ) -> BranchFactory:
@@ -109,5 +111,5 @@ class Quantizer(base.Estimator, abc.ABC):
         pass
 
     @abc.abstractmethod
-    def __iter__(self) -> typing.Tuple[float, typing.Iterator[GradHessStats]]:
+    def __iter__(self) -> tuple[float, typing.Iterator[GradHessStats]]:
         pass

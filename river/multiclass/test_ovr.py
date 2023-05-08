@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import pandas as pd
 
 from river import datasets, linear_model, metrics, multiclass, preprocessing, stream

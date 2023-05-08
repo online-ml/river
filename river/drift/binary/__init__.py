@@ -1,4 +1,5 @@
 """Drift detection for binary data."""
+from __future__ import annotations
 
 from .ddm import DDM
 from .eddm import EDDM

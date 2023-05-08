@@ -1,7 +1,8 @@
+from __future__ import annotations
+
 import collections
 import functools
 import itertools
-import typing
 
 import numpy as np
 
@@ -247,7 +248,7 @@ class FwFMRegressor(FwFM, base.Regressor):
         l1_latent=0.0,
         l2_latent=0.0,
         intercept=0.0,
-        intercept_lr: typing.Union[optim.base.Scheduler, float] = 0.01,
+        intercept_lr: optim.base.Scheduler | float = 0.01,
         weight_initializer: optim.initializers.Initializer = None,
         latent_initializer: optim.initializers.Initializer = None,
         clip_gradient=1e12,
@@ -386,7 +387,7 @@ class FwFMClassifier(FwFM, base.Classifier):
         l1_latent=0.0,
         l2_latent=0.0,
         intercept=0.0,
-        intercept_lr: typing.Union[optim.base.Scheduler, float] = 0.01,
+        intercept_lr: optim.base.Scheduler | float = 0.01,
         weight_initializer: optim.initializers.Initializer = None,
         latent_initializer: optim.initializers.Initializer = None,
         clip_gradient=1e12,

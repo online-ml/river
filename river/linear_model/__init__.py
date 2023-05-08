@@ -1,4 +1,6 @@
 """Linear models."""
+from __future__ import annotations
+
 from . import base
 from .alma import ALMAClassifier
 from .bayesian_lin_reg import BayesianLinearRegression

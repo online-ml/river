@@ -1,4 +1,4 @@
-import typing
+from __future__ import annotations
 
 from .hoeffding_tree_classifier import HoeffdingTreeClassifier
 from .nodes.branch import DTBranch
@@ -169,7 +169,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
 
     def _branch_selector(
         self, numerical_feature=True, multiway_split=False
-    ) -> typing.Type[DTBranch]:
+    ) -> type[DTBranch]:
         """Create a new split node."""
         if numerical_feature:
             if not multiway_split:

@@ -26,6 +26,8 @@ Accuracy: 100.00%
 ```
 
 """
+from __future__ import annotations
+
 from . import base, multioutput
 from .accuracy import Accuracy
 from .balanced_accuracy import BalancedAccuracy

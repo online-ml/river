@@ -12,6 +12,7 @@ a copy of the model for each set of hyperparameters, and treating each copy as a
 The `utils.expand_param_grid` function can be used for this purpose.
 
 """
+from __future__ import annotations
 
 from . import base
 from .bandit import BanditRegressor

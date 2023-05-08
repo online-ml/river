@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import textwrap
 
 from river import metrics

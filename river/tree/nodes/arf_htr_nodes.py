@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from .arf_htc_nodes import BaseRandomLeaf
 from .htr_nodes import LeafAdaptive, LeafMean, LeafModel
 

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import inspect
 import textwrap
 from xml.etree import ElementTree as ET

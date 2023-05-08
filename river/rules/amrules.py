@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import collections
 import functools
 import io
@@ -309,7 +311,7 @@ class AMRules(base.Regressor):
         self.min_samples_split = min_samples_split
 
         self._default_rule = self._new_rule()
-        self._rules: typing.Dict[typing.Hashable, RegRule] = {}
+        self._rules: dict[typing.Hashable, RegRule] = {}
 
         self._n_drifts_detected: int = 0
 
@@ -354,7 +356,7 @@ class AMRules(base.Regressor):
             drift_detector=self.drift_detector.clone(),
         )
 
-    def learn_one(self, x: dict, y: base.typing.RegTarget, w: int = 1) -> "AMRules":
+    def learn_one(self, x: dict, y: base.typing.RegTarget, w: int = 1) -> AMRules:
         any_covered = False
         to_del = set()
 
@@ -428,7 +430,7 @@ class AMRules(base.Regressor):
         else:
             return self._default_rule.predict_one(x)
 
-    def anomaly_score(self, x) -> typing.Tuple[float, float, float]:
+    def anomaly_score(self, x) -> tuple[float, float, float]:
         """Aggregated anomaly score computed using all the rules that cover the input instance.
 
         Returns the mean anomaly score, the standard deviation of the score, and the proportion

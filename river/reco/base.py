@@ -1,12 +1,13 @@
+from __future__ import annotations
+
 import abc
 import numbers
 import random
-import typing
 
 from river import base
 
-ID = typing.Union[str, int]
-Reward = typing.Union[numbers.Number, bool]
+ID = str | int
+Reward = numbers.Number | bool
 
 
 __all__ = ["Ranker"]
@@ -66,7 +67,7 @@ class Ranker(base.Estimator):
 
         """
 
-    def rank(self, user: ID, items: typing.Set[ID], x: dict = None) -> typing.List[ID]:
+    def rank(self, user: ID, items: set[ID], x: dict = None) -> list[ID]:
         """Rank models by decreasing order of preference for a given user.
 
         Parameters

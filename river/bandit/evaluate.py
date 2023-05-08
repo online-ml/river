@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 import copy
 import random
-from typing import Callable, List
+from collections.abc import Callable
 
 try:
     import gym
@@ -10,9 +12,9 @@ from river import bandit, stats
 
 
 def evaluate(
-    policies: List[bandit.base.Policy],
-    env: "gym.Env",
-    pull_func: Callable[[bandit.base.Policy, "gym.Env"], bandit.base.ArmID],
+    policies: list[bandit.base.Policy],
+    env: gym.Env,
+    pull_func: Callable[[bandit.base.Policy, gym.Env], bandit.base.ArmID],
     reward_stat: stats.base.Univariate = None,
     n_episodes: int = 20,
     seed: int = None,

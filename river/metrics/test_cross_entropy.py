@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import math
 
 from sklearn import metrics as sk_metrics

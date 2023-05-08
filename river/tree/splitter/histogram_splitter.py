@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import bisect
 import collections
 import functools

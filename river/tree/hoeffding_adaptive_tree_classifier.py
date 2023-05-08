@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 import random
-import typing
 
 from river import base, drift
 from river.utils.norm import normalize_values_in_dict
@@ -135,7 +136,7 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
         splitter: Splitter = None,
         bootstrap_sampling: bool = True,
         drift_window_threshold: int = 300,
-        drift_detector: typing.Optional[base.DriftDetector] = None,
+        drift_detector: base.DriftDetector | None = None,
         switch_significance: float = 0.05,
         binary_split: bool = False,
         max_size: float = 100.0,
@@ -255,7 +256,7 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
 
     def _branch_selector(
         self, numerical_feature=True, multiway_split=False
-    ) -> typing.Type[AdaBranchClassifier]:
+    ) -> type[AdaBranchClassifier]:
         """Create a new split node."""
         if numerical_feature:
             if not multiway_split:

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import collections
 import operator
 import typing
@@ -63,7 +65,7 @@ class NearestNeighbors:
         self,
         window_size: int,
         min_distance_keep: float,
-        distance_func: typing.Union[DistanceFunc, FunctionWrapper],
+        distance_func: DistanceFunc | FunctionWrapper,
     ):
         self.window_size = window_size
 
@@ -75,7 +77,7 @@ class NearestNeighbors:
         self.distance_func = distance_func
         self.window: typing.Deque = collections.deque(maxlen=self.window_size)
 
-    def append(self, item: typing.Any, extra: typing.Optional[typing.Any] = None):
+    def append(self, item: typing.Any, extra: typing.Any | None = None):
         """Add a point to the window, optionally with extra metadata.
 
         Parameters
@@ -96,7 +98,7 @@ class NearestNeighbors:
         self,
         item: typing.Any,
         n_neighbors: int = 1,
-        extra: typing.Optional[typing.Any] = None,
+        extra: typing.Any | None = None,
     ):
         """Update the window with a new point, only added if > min distance.
 

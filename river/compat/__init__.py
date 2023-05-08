@@ -6,9 +6,9 @@ necessary library. For instance, you have to install scikit-learn in order to us
 `compat.convert_sklearn_to_river` function.
 
 """
-import typing
+from __future__ import annotations
 
-__all__: typing.List[str] = []
+__all__: list[str] = []
 
 try:
     from .river_to_sklearn import (

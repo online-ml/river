@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import abc
 import random
 import sys
@@ -34,7 +36,7 @@ class RandomSplitter(Splitter):
         """This attribute observer does not support probability density estimation."""
         raise NotImplementedError
 
-    def update(self, att_val, target_val, sample_weight) -> "Splitter":
+    def update(self, att_val, target_val, sample_weight) -> Splitter:
         if self.threshold is None:
             if len(self._buffer) < self.buffer_size:
                 self._buffer.append((att_val, target_val, sample_weight))

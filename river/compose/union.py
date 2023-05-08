@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import collections
 import types
 
@@ -214,13 +216,13 @@ class TransformerUnion(base.MiniBatchTransformer):
             name, transformer = transformer
 
         # If the step is a function then wrap it in a FuncTransformer
-        if isinstance(transformer, (types.FunctionType, types.LambdaType)):
+        if isinstance(transformer, types.FunctionType | types.LambdaType):
             transformer = func.FuncTransformer(transformer)
 
         def infer_name(transformer):
             if isinstance(transformer, func.FuncTransformer):
                 return infer_name(transformer.func)
-            elif isinstance(transformer, (types.FunctionType, types.LambdaType)):
+            elif isinstance(transformer, types.FunctionType | types.LambdaType):
                 return transformer.__name__
             elif hasattr(transformer, "__class__"):
                 return transformer.__class__.__name__

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from scipy.io.arff import arffread
 
 from river import base

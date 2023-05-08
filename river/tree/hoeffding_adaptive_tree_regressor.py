@@ -1,6 +1,7 @@
+from __future__ import annotations
+
 import random
 import statistics
-import typing
 from copy import deepcopy
 
 from river import base, drift
@@ -155,7 +156,7 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
         min_samples_split: int = 5,
         bootstrap_sampling: bool = True,
         drift_window_threshold: int = 300,
-        drift_detector: typing.Optional[base.DriftDetector] = None,
+        drift_detector: base.DriftDetector | None = None,
         switch_significance: float = 0.05,
         binary_split: bool = False,
         max_size: float = 500.0,
@@ -305,7 +306,7 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
 
     def _branch_selector(
         self, numerical_feature=True, multiway_split=False
-    ) -> typing.Type[AdaBranchRegressor]:
+    ) -> type[AdaBranchRegressor]:
         """Create a new split node."""
         if numerical_feature:
             if not multiway_split:

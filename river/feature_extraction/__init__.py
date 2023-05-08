@@ -6,6 +6,8 @@ the `preprocessing` module, in that the latter's purpose is rather to clean the 
 be processed by a particular machine learning algorithm.
 
 """
+from __future__ import annotations
+
 from .agg import Agg, TargetAgg
 from .kernel_approx import RBFSampler
 from .poly import PolynomialExtender

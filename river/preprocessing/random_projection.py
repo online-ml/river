@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import collections
 import random
 import typing
@@ -140,7 +142,7 @@ class SparseRandomProjector(base.Transformer):
         self.seed = seed
         self._rng = random.Random(seed)
         self._projection_matrix: typing.DefaultDict[
-            base.typing.FeatureName, typing.Dict[int, float]
+            base.typing.FeatureName, dict[int, float]
         ] = collections.defaultdict(self._rand_weights_for_feature)
 
     def _rand_weights_for_feature(self):

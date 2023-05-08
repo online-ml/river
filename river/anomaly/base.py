@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import abc
 
 from river import base
@@ -13,7 +15,7 @@ class AnomalyDetector(base.Estimator):
         return False
 
     @abc.abstractmethod
-    def learn_one(self, x: dict) -> "AnomalyDetector":
+    def learn_one(self, x: dict) -> AnomalyDetector:
         """Update the model.
 
         Parameters
@@ -50,7 +52,7 @@ class SupervisedAnomalyDetector(base.Estimator):
     """A supervised anomaly detector."""
 
     @abc.abstractmethod
-    def learn_one(self, x: dict, y: base.typing.Target) -> "SupervisedAnomalyDetector":
+    def learn_one(self, x: dict, y: base.typing.Target) -> SupervisedAnomalyDetector:
         """Update the model.
 
         Parameters

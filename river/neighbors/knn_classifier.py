@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 import functools
-import typing
 
 from river import base, utils
 from river.neighbors import NearestNeighbors
@@ -101,7 +102,7 @@ class KNNClassifier(base.Classifier):
 
         self.weighted = weighted
         self.cleanup_every = cleanup_every
-        self.classes: typing.Set[base.typing.ClfTarget] = set()
+        self.classes: set[base.typing.ClfTarget] = set()
         self.softmax = softmax
         self._cleanup_counter = cleanup_every
 

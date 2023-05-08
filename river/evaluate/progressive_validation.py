@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import datetime as dt
 import itertools
 import time
@@ -13,8 +15,8 @@ def _progressive_validation(
     model,
     metric: metrics.base.Metric,
     checkpoints: typing.Iterator[int],
-    moment: typing.Union[str, typing.Callable[[dict], dt.datetime]] = None,
-    delay: typing.Union[str, int, dt.timedelta, typing.Callable] = None,
+    moment: str | typing.Callable[[dict], dt.datetime] = None,
+    delay: str | int | dt.timedelta | typing.Callable = None,
     measure_time=False,
     measure_memory=False,
 ):
@@ -101,8 +103,8 @@ def iter_progressive_val_score(
     dataset: base.typing.Dataset,
     model,
     metric: metrics.base.Metric,
-    moment: typing.Union[str, typing.Callable] = None,
-    delay: typing.Union[str, int, dt.timedelta, typing.Callable] = None,
+    moment: str | typing.Callable = None,
+    delay: str | int | dt.timedelta | typing.Callable = None,
     step=1,
     measure_time=False,
     measure_memory=False,
@@ -201,8 +203,8 @@ def progressive_val_score(
     dataset: base.typing.Dataset,
     model,
     metric: metrics.base.Metric,
-    moment: typing.Union[str, typing.Callable] = None,
-    delay: typing.Union[str, int, dt.timedelta, typing.Callable] = None,
+    moment: str | typing.Callable = None,
+    delay: str | int | dt.timedelta | typing.Callable = None,
     print_every=0,
     show_time=False,
     show_memory=False,

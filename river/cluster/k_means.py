@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import collections
 import functools
 import random
@@ -95,7 +97,7 @@ class KMeans(base.Clusterer):
         self.seed = seed
         self._rng = random.Random(seed)
         rand_gauss = functools.partial(self._rng.gauss, self.mu, self.sigma)
-        self.centers: typing.Dict[int, typing.DefaultDict] = {
+        self.centers: dict[int, typing.DefaultDict] = {
             i: collections.defaultdict(rand_gauss) for i in range(n_clusters)
         }
 

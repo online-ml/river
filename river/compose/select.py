@@ -1,4 +1,4 @@
-import typing
+from __future__ import annotations
 
 from river import base
 
@@ -42,7 +42,7 @@ class Discard(base.Transformer):
 
     """
 
-    def __init__(self, *keys: typing.Tuple[base.typing.FeatureName]):
+    def __init__(self, *keys: tuple[base.typing.FeatureName]):
         self.keys = set(keys)
 
     def transform_one(self, x):
@@ -124,7 +124,7 @@ class Select(base.MiniBatchTransformer):
 
     """
 
-    def __init__(self, *keys: typing.Tuple[base.typing.FeatureName]):
+    def __init__(self, *keys: tuple[base.typing.FeatureName]):
         self.keys = set(keys)
 
     def transform_one(self, x):
@@ -173,7 +173,7 @@ class SelectType(base.Transformer):
 
     """
 
-    def __init__(self, *types: typing.Tuple[type]):
+    def __init__(self, *types: tuple[type]):
         self.types = types
 
     def transform_one(self, x):

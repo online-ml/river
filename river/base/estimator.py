@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 import abc
-import typing
 
 from . import base
 
@@ -47,7 +48,7 @@ class Estimator(base.Base, abc.ABC):
         return set()
 
     @property
-    def _tags(self) -> typing.Dict[str, bool]:
+    def _tags(self) -> dict[str, bool]:
         """Return the estimator's tags.
 
         Tags can be used to specify what kind of inputs an estimator is able to process. For
