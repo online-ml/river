@@ -65,7 +65,6 @@ setuptools.setup(
             "scikit-learn>=1.0.1",
             "sqlalchemy>=2.0.0",
             "sympy>=1.10.1",
-            "numpydoc>=1.5.0",
         ],
         "compat": base_packages
         + [
@@ -85,6 +84,7 @@ setuptools.setup(
             "mkdocs-charts-plugin",
             "mkdocs-material",
             "nbconvert",
+            "numpydoc",
             "python-slugify",
             "spacy",
             "tabulate",
