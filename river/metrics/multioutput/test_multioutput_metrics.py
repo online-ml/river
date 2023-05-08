@@ -1,11 +1,15 @@
+from __future__ import annotations
+
 import collections
 import functools
 import math
 import random
+
 import pandas as pd
 import pytest
-from river import metrics, utils
 from sklearn import metrics as sk_metrics
+
+from river import metrics
 
 
 @pytest.mark.parametrize(
