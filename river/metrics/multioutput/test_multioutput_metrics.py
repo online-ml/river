@@ -1,3 +1,4 @@
+import functools
 import math
 import random
 import pandas as pd
@@ -10,13 +11,42 @@ TEST_CASES = [
         metrics.multioutput.ExactMatch(),
         sk_metrics.accuracy_score,
     ),
+    (
+        metrics.multioutput.MacroAverage(metrics.Precision()),
+        functools.partial(sk_metrics.precision_score, average="macro", zero_division=0),
+    ),
+    (
+        metrics.multioutput.MicroAverage(metrics.Precision()),
+        functools.partial(sk_metrics.precision_score, average="micro", zero_division=0),
+    ),
+    (
+        metrics.multioutput.MacroAverage(metrics.Recall()),
+        functools.partial(sk_metrics.recall_score, average="macro", zero_division=0),
+    ),
+    (
+        metrics.multioutput.MicroAverage(metrics.Recall()),
+        functools.partial(sk_metrics.recall_score, average="micro", zero_division=0),
+    ),
+    (
+        metrics.multioutput.MacroAverage(metrics.F1()),
+        functools.partial(sk_metrics.f1_score, average="macro", zero_division=0),
+    ),
+    (
+        metrics.multioutput.MicroAverage(metrics.F1()),
+        functools.partial(sk_metrics.f1_score, average="micro", zero_division=0),
+    ),
 ]
 
 
 @pytest.mark.parametrize(
     "metric, sk_metric",
     [
-        pytest.param(metric, sk_metric, id=f"{metric.__class__.__name__}")
+        pytest.param(
+            metric,
+            sk_metric,
+            id=f"{metric.__class__.__name__}"
+            + (f"({metric.metric.__class__.__name__})" if hasattr(metric, "metric") else ""),
+        )
         for metric, sk_metric in TEST_CASES
     ],
 )
