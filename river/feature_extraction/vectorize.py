@@ -17,7 +17,7 @@ from river import base
 __all__ = ["BagOfWords", "TFIDF"]
 
 
-N_GRAM = str | tuple[str, ...]  # unigram  # n-gram
+N_GRAM = typing.Union[str, typing.Tuple[str, ...]]  # noqa: UP006, UP007
 
 
 def strip_accents_unicode(s: str) -> str:

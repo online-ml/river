@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import abc
+import typing
 
 import numpy as np
 
@@ -8,7 +9,7 @@ from river import base, optim, utils
 
 __all__ = ["Initializer", "Scheduler", "Optimizer", "Loss"]
 
-VectorLike = utils.VectorDict | np.ndarray
+VectorLike = typing.Union[utils.VectorDict, np.ndarray]  # noqa: UP007
 
 
 class Initializer(base.Base, abc.ABC):

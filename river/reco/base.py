@@ -3,11 +3,12 @@ from __future__ import annotations
 import abc
 import numbers
 import random
+import typing
 
 from river import base
 
-ID = str | int
-Reward = numbers.Number | bool
+ID = typing.Union[str, int]  # noqa: UP007
+Reward = typing.Union[numbers.Number, bool]  # noqa: UP007
 
 
 __all__ = ["Ranker"]

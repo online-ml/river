@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import abc
 import collections
+import typing
 from collections import Counter
 from collections.abc import Iterator
 
@@ -9,8 +10,10 @@ from river import base, metrics, proba, stats, utils
 
 __all__ = ["ArmID", "Policy", "RewardObj"]
 
-ArmID = int | str
-RewardObj = stats.base.Statistic | metrics.base.Metric | proba.base.Distribution
+ArmID = typing.Union[int, str]  # noqa: UP007
+RewardObj = typing.Union[  # noqa: UP007
+    stats.base.Statistic, metrics.base.Metric, proba.base.Distribution
+]
 
 
 class Policy(base.Base, abc.ABC):
