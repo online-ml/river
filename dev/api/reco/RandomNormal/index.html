@@ -21,7 +21,7 @@
         <link rel="next" href="../base/Ranker/">
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.9">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.11">
     
     
       
@@ -10229,6 +10229,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
@@ -10250,6 +10252,20 @@
   
     <li class="md-nav__item">
       <a href="../../../releases/unreleased/" class="md-nav__link">
+        Unreleased
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../releases/0.16.0/" class="md-nav__link">
         0.16.0 - 2022-05-08
       </a>
     </li>
@@ -10886,11 +10902,11 @@
 <ul>
 <li>
 <p><strong>mean</strong></p>
-<p><a href="/api/stats/Mean">stats.Mean</a></p>
+<p><a href="../../stats/Mean">stats.Mean</a></p>
 </li>
 <li>
 <p><strong>variance</strong></p>
-<p><a href="/api/stats/Var">stats.Var</a></p>
+<p><a href="../../stats/Var">stats.Var</a></p>
 </li>
 </ul>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
@@ -10923,10 +10939,10 @@
 <p>Fits a <code>user</code>-<code>item</code> pair and a real-valued target <code>y</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>user</strong>     — <em>Union[str, int]</em>    </li>
-<li><strong>item</strong>     — <em>Union[str, int]</em>    </li>
-<li><strong>y</strong>     — <em>Union[numbers.Number, bool]</em>    </li>
-<li><strong>x</strong>     — <em>dict</em>     — defaults to <code>None</code>    </li>
+<li><strong>user</strong>     — <em>'ID'</em>    </li>
+<li><strong>item</strong>     — <em>'ID'</em>    </li>
+<li><strong>y</strong>     — <em>'Reward'</em>    </li>
+<li><strong>x</strong>     — <em>'dict | None'</em>     — defaults to <code>None</code>    </li>
 </ul>
 </details>
 <p><span /></p>
@@ -10935,12 +10951,12 @@
 <p>Predicts the target value of a set of features <code>x</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>user</strong>     — <em>Union[str, int]</em>    </li>
-<li><strong>item</strong>     — <em>Union[str, int]</em>    </li>
-<li><strong>x</strong>     — <em>dict</em>     — defaults to <code>None</code>    </li>
+<li><strong>user</strong>     — <em>'ID'</em>    </li>
+<li><strong>item</strong>     — <em>'ID'</em>    </li>
+<li><strong>x</strong>     — <em>'dict | None'</em>     — defaults to <code>None</code>    </li>
 </ul>
 <p><strong>Returns</strong></p>
-<p><em>typing.Union[numbers.Number, bool]</em>:     The predicted preference from the user for the item.</p>
+<p><em>Reward</em>:     The predicted preference from the user for the item.</p>
 </details>
 <p><span /></p>
 <details class="- abstract">
@@ -10948,9 +10964,9 @@
 <p>Rank models by decreasing order of preference for a given user.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>user</strong>     — <em>Union[str, int]</em>    </li>
-<li><strong>items</strong>     — <em>Set[Union[str, int]]</em>    </li>
-<li><strong>x</strong>     — <em>dict</em>     — defaults to <code>None</code>    </li>
+<li><strong>user</strong>     — <em>'ID'</em>    </li>
+<li><strong>items</strong>     — <em>'set[ID]'</em>    </li>
+<li><strong>x</strong>     — <em>'dict | None'</em>     — defaults to <code>None</code>    </li>
 </ul>
 </details>
 <p><span /></p>

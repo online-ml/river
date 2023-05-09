@@ -21,7 +21,7 @@
         <link rel="next" href="../base/AnomalyDetector/">
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.9">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.11">
     
     
       
@@ -10222,6 +10222,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
@@ -10243,6 +10245,20 @@
   
     <li class="md-nav__item">
       <a href="../../../releases/unreleased/" class="md-nav__link">
+        Unreleased
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../releases/0.16.0/" class="md-nav__link">
         0.16.0 - 2022-05-08
       </a>
     </li>
@@ -10879,7 +10895,7 @@
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
 <p>Anomaly filters can be used as part of a pipeline. For instance, we might want to filter out
 anomalous observations so as not to corrupt a supervised model. As an example, let's take
-the <a href="/api/datasets/WaterFlow"><code>datasets.WaterFlow</code></a> dataset. Some of the samples have anomalous target variables because
+the <a href="../../datasets/WaterFlow"><code>datasets.WaterFlow</code></a> dataset. Some of the samples have anomalous target variables because
 of human interventions. We don't want our model to learn these values.</p>
 <p><div class="language-python highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">datasets</span>
 <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">metrics</span>
@@ -10943,7 +10959,7 @@ of human interventions. We don't want our model to learn these values.</p>
 <p>Classify an anomaly score as anomalous or not.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>score</strong>     — <em>float</em>    </li>
+<li><strong>score</strong>     — <em>'float'</em>    </li>
 </ul>
 <p><strong>Returns</strong></p>
 <p><em>bool</em>:     A boolean value indicating whether the anomaly score is anomalous or not.</p>

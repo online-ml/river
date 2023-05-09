@@ -21,7 +21,7 @@
         <link rel="next" href="../MultiTargetRegressor/">
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.9">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.11">
     
     
       
@@ -10208,6 +10208,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
@@ -10229,6 +10231,20 @@
   
     <li class="md-nav__item">
       <a href="../../../releases/unreleased/" class="md-nav__link">
+        Unreleased
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../releases/0.16.0/" class="md-nav__link">
         0.16.0 - 2022-05-08
       </a>
     </li>
@@ -10837,8 +10853,8 @@
 <p>Update the model with a set of features <code>x</code> and the labels <code>y</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     — <em>dict</em>    </li>
-<li><strong>y</strong>     — <em>Dict[Hashable, bool]</em>    </li>
+<li><strong>x</strong>     — <em>'dict'</em>    </li>
+<li><strong>y</strong>     — <em>'dict[FeatureName, bool]'</em>    </li>
 </ul>
 <p><strong>Returns</strong></p>
 <p><em>MultiLabelClassifier</em>:     self</p>
@@ -10849,11 +10865,11 @@
 <p>Predict the labels of a set of features <code>x</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     — <em>dict</em>    </li>
+<li><strong>x</strong>     — <em>'dict'</em>    </li>
 <li><strong>kwargs</strong>    </li>
 </ul>
 <p><strong>Returns</strong></p>
-<p><em>typing.Dict[typing.Hashable, bool]</em>:     The predicted labels.</p>
+<p><em>dict[FeatureName, bool]</em>:     The predicted labels.</p>
 </details>
 <p><span /></p>
 <details class="- abstract">
@@ -10861,11 +10877,11 @@
 <p>Predict the probability of each label appearing given dictionary of features <code>x</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     — <em>dict</em>    </li>
+<li><strong>x</strong>     — <em>'dict'</em>    </li>
 <li><strong>kwargs</strong>    </li>
 </ul>
 <p><strong>Returns</strong></p>
-<p><em>typing.Dict[typing.Hashable, typing.Dict[bool, float]]</em>:     A dictionary that associates a probability which each label.</p>
+<p><em>dict[FeatureName, dict[bool, float]]</em>:     A dictionary that associates a probability which each label.</p>
 </details>
 <p><span /></p>
 

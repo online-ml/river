@@ -15,8 +15,150 @@ import shutil
 
 from numpydoc.docscrape import ClassDoc, FunctionDoc
 
-from yamp import md
-from yamp import utils
+
+def md_line(text):
+    return f"{text}\n"
+
+
+def h1(text):
+    return md_line(f"# {text}")
+
+
+def h2(text):
+    return md_line(f"## {text}")
+
+
+def h3(text):
+    return md_line(f"### {text}")
+
+
+def h4(text):
+    return md_line(f"#### {text}")
+
+
+def link(caption, href):
+    return f"[{caption}]({href})"
+
+
+def code(text):
+    return f"`{text}`"
+
+
+def li(text):
+    return f"- {text}\n"
+
+
+def snake_to_kebab(text: str) -> str:
+    """
+
+    Examples
+    --------
+
+    >>> snake_to_kebab('donut_eat_animals')
+    'donut-eat-animals'
+
+    """
+    return text.replace("_", "-")
+
+
+def find_method_docstring(klass, method: str) -> str | None:
+    """Look through a class' ancestors for the first non-empty method docstring.
+
+    Since Python 3.5, inspect.getdoc is supposed to do exactly this. However, it doesn't seem to
+    work for Cython classes.
+
+    Examples
+    --------
+
+    >>> class Parent:
+    ...
+    ...     def foo(self):
+    ...         '''foo method'''
+
+    >>> class Child(Parent):
+    ...
+    ...     def foo(self):
+    ...         ...
+
+    >>> find_method_docstring(Child, 'foo')
+    'foo method'
+
+    """
+
+    for ancestor in inspect.getmro(klass):
+        try:
+            ancestor_meth = getattr(ancestor, method)
+        except AttributeError:
+            break
+        if doc := inspect.getdoc(ancestor_meth):
+            return doc
+
+
+def find_method_signature(klass, method: str) -> inspect.Signature | None:
+    """Look through a class' ancestors and fill out the methods signature.
+
+    A class method has a signature. But it might now always be complete. When a parameter is not
+    annotated, we might want to look through the ancestors and determine the annotation. This is
+    very useful when you have a base class that has annotations, and child classes that are not.
+
+    Examples
+    --------
+
+    >>> class Parent:
+    ...
+    ...     def foo(self, x: int) -> int:
+    ...         ...
+
+    >>> find_method_signature(Parent, 'foo')
+    <Signature (self, x: int) -> int>
+
+    >>> class Child(Parent):
+    ...
+    ...     def foo(self, x, y: float) -> str:
+    ...         ...
+
+    >>> find_method_signature(Child, 'foo')
+    <Signature (self, x: int, y: float) -> str>
+
+    """
+
+    m = getattr(klass, method)
+    sig = inspect.signature(m)
+
+    params = []
+
+    for param in sig.parameters.values():
+        if param.name == "self" or param.annotation is not param.empty:
+            params.append(param)
+            continue
+
+        for ancestor in inspect.getmro(klass):
+            try:
+                ancestor_meth = inspect.signature(getattr(ancestor, m.__name__))
+            except AttributeError:
+                break
+            try:
+                ancestor_param = ancestor_meth.parameters[param.name]
+            except KeyError:
+                break
+            if ancestor_param.annotation is not param.empty:
+                param = param.replace(annotation=ancestor_param.annotation)
+                break
+
+        params.append(param)
+
+    return_annotation = sig.return_annotation
+    if return_annotation is inspect._empty:
+        for ancestor in inspect.getmro(klass):
+            try:
+                ancestor_meth = inspect.signature(getattr(ancestor, m.__name__))
+            except AttributeError:
+                break
+            if ancestor_meth.return_annotation is not inspect._empty:
+                return_annotation = ancestor_meth.return_annotation
+                break
+
+    return sig.replace(parameters=params, return_annotation=return_annotation)
 
 
 class Linkifier:
@@ -45,7 +187,7 @@ class Linkifier:
                     f"{dotted_path}.{func_name}",
                     f"{func.__module__}.{func_name}",
                 ):
-                    path_index[e] = os.path.join(path, utils.snake_to_kebab(func_name))
+                    path_index[e] = os.path.join(path, snake_to_kebab(func_name))
                     rename_index[e] = f"{dotted_path}.{func_name}"
 
             for klass_name, klass in inspect.getmembers(mod, inspect.isclass):
@@ -61,7 +203,7 @@ class Linkifier:
                 if submod_name not in mod.__all__ or submod_name == "typing":
                     continue
                 for e in (f"{mod_name}.{submod_name}", f"{dotted_path}.{submod_name}"):
-                    path_index[e] = os.path.join(path, utils.snake_to_kebab(submod_name))
+                    path_index[e] = os.path.join(path, snake_to_kebab(submod_name))
 
                 # Recurse
                 index_module(submod_name, submod, path=path)
@@ -82,7 +224,7 @@ class Linkifier:
         self.path_index = path_index
         self.rename_index = rename_index
 
-    def linkify(self, text):
+    def linkify(self, text, prefix):
         def replace(x):
             # HACK
             if "collections" in x.group():
@@ -96,7 +238,7 @@ class Linkifier:
                 name = self.rename_index.get(y, y)
                 name = f"`{name}`'" if x.group().startswith("`") else name
                 name = name.strip("'")
-                return f"[{name}](/api/{path})"
+                return f"[{name}]({prefix}{path})"
             return x.group()
 
         return self.PATTERN.sub(replace, text)
@@ -106,8 +248,8 @@ def concat_lines(lines):
     return inspect.cleandoc(
         " ".join(
             # Either empty space or list item
-            f"{line}\n\n" if (line == "") or (line.strip().startswith("-")) else line
-            for line in lines
+            f"{l}\n\n" if (l == "") or (l.strip().startswith("-")) else l
+            for l in lines
         )
     )
 
@@ -119,9 +261,9 @@ def print_docstring(obj, file):
 
     printf = functools.partial(print, file=file)
 
-    printf(md.h1(obj.__name__))
-    printf(md.line(concat_lines(doc["Summary"])))
-    printf(md.line(concat_lines(doc["Extended Summary"])))
+    printf(h1(obj.__name__))
+    printf(md_line(concat_lines(doc["Summary"])))
+    printf(md_line(concat_lines(doc["Extended Summary"])))
 
     # We infer the type annotations from the signatures, and therefore rely on the signature
     # instead of the docstring for documenting parameters
@@ -135,7 +277,7 @@ def print_docstring(obj, file):
 
     # Parameters
     if signature.parameters:
-        printf(md.h2("Parameters"))
+        printf(h2("Parameters"))
     for param in signature.parameters.values():
         # Name
         printf(f"- **{param.name}**\n")
@@ -156,7 +298,7 @@ def print_docstring(obj, file):
 
     # Attributes
     if doc["Attributes"]:
-        printf(md.h2("Attributes"))
+        printf(h2("Attributes"))
     for attr in doc["Attributes"]:
         # Name
         printf(f"- **{attr.name}**", end="")
@@ -172,7 +314,7 @@ def print_docstring(obj, file):
 
     # Examples
     if doc["Examples"]:
-        printf(md.h2("Examples"))
+        printf(h2("Examples"))
 
         parser = doctest.DocTestParser()
         lines = parser.parse(inspect.cleandoc("\n".join(doc["Examples"])))
@@ -216,7 +358,7 @@ def print_docstring(obj, file):
 
     # Methods
     if inspect.isclass(obj) and doc["Methods"]:
-        printf(md.h2("Methods"))
+        printf(h2("Methods"))
         printf_indent = lambda x, **kwargs: printf(f"    {x}", **kwargs)
 
         for meth in doc["Methods"]:
@@ -250,21 +392,21 @@ def print_docstring(obj, file):
             ):
                 continue
 
-            printf(md.line(f'???- abstract "{meth.name}"'))
+            printf(md_line(f'???- abstract "{meth.name}"'))
 
             # Parse method docstring
-            docstring = utils.find_method_docstring(klass=obj, method=meth.name)
+            docstring = find_method_docstring(klass=obj, method=meth.name)
             if not docstring:
                 continue
             meth_doc = FunctionDoc(func=None, doc=docstring)
 
-            printf_indent(md.line(" ".join(meth_doc["Summary"])))
+            printf_indent(md_line(" ".join(meth_doc["Summary"])))
             if meth_doc["Extended Summary"]:
-                printf_indent(md.line(" ".join(meth_doc["Extended Summary"])))
+                printf_indent(md_line(" ".join(meth_doc["Extended Summary"])))
 
             # We infer the type annotations from the signatures, and therefore rely on the signature
             # instead of the docstring for documenting parameters
-            signature = utils.find_method_signature(obj, meth.name)
+            signature = find_method_signature(obj, meth.name)
             params_desc = {param.name: " ".join(param.desc) for param in doc["Parameters"]}
 
             # Parameters
@@ -305,19 +447,19 @@ def print_docstring(obj, file):
 
     # Notes
     if doc["Notes"]:
-        printf(md.h2("Notes"))
-        printf(md.line("\n".join(doc["Notes"])))
+        printf(h2("Notes"))
+        printf(md_line("\n".join(doc["Notes"])))
 
     # References
     if doc["References"]:
-        printf(md.line("\n".join(doc["References"])))
+        printf(md_line("\n".join(doc["References"])))
 
 
-def print_module(mod, path, overview, is_submodule=False, verbose=False):
+def print_module(mod, path, overview, depth=0, verbose=False):
     mod_name = mod.__name__.split(".")[-1]
 
     # Create a directory for the module
-    mod_slug = utils.snake_to_kebab(mod_name)
+    mod_slug = snake_to_kebab(mod_name)
     mod_path = path.joinpath(mod_slug)
     mod_short_path = str(mod_path).replace("docs/api/", "")
     os.makedirs(mod_path, exist_ok=True)
@@ -325,12 +467,16 @@ def print_module(mod, path, overview, is_submodule=False, verbose=False):
         f.write(f"title: {mod_name}")
 
     # Add the module to the overview
-    if is_submodule:
-        print(md.h3(mod_name), file=overview)
+    if depth == 0:
+        print(h2(mod_name), file=overview)
+    elif depth == 1:
+        print(h3(mod_name), file=overview)
+    elif depth == 2:
+        print(h4(mod_name), file=overview)
     else:
-        print(md.h2(mod_name), file=overview)
+        raise ValueError("Module depth must be between 0 and 2, you went too deep!")
     if mod.__doc__:
-        print(md.line(mod.__doc__), file=overview)
+        print(md_line(mod.__doc__), file=overview)
 
     # Extract all public classes and functions
     ispublic = lambda x: x.__name__ in mod.__all__ and not x.__name__.startswith("_")
@@ -350,9 +496,9 @@ def print_module(mod, path, overview, is_submodule=False, verbose=False):
                 print(f"{mod_name}.{c.__name__}")
 
             # Add the class to the overview
-            slug = utils.snake_to_kebab(c.__name__)
+            slug = snake_to_kebab(c.__name__)
             print(
-                md.li(md.link(c.__name__, f"../{mod_short_path}/{slug}")),
+                li(link(c.__name__, f"../{mod_short_path}/{slug}")),
                 end="",
                 file=overview,
             )
@@ -371,9 +517,9 @@ def print_module(mod, path, overview, is_submodule=False, verbose=False):
                 print(f"{mod_name}.{f.__name__}")
 
             # Add the function to the overview
-            slug = utils.snake_to_kebab(f.__name__)
+            slug = snake_to_kebab(f.__name__)
             print(
-                md.li(md.link(f.__name__, f"../{mod_short_path}/{slug}")),
+                li(link(f.__name__, f"../{mod_short_path}/{slug}")),
                 end="",
                 file=overview,
             )
@@ -399,7 +545,7 @@ def print_module(mod, path, overview, is_submodule=False, verbose=False):
             mod=submod,
             path=mod_path,
             overview=overview,
-            is_submodule=True,
+            depth=depth + 1,
             verbose=verbose,
         )
 
@@ -414,7 +560,7 @@ def print_library(library: str, output_dir: pathlib.Path, verbose=False):
         f.write("title: API reference 🍱\narrange:\n  - overview.md\n  - ...\n")
 
     overview = open(output_dir.joinpath("overview.md"), "w")
-    print(md.h1("Overview"), file=overview)
+    print(h1("Overview"), file=overview)
 
     for mod_name, mod in inspect.getmembers(
         importlib.import_module(f"{library}.api"), inspect.ismodule
@@ -437,11 +583,15 @@ def linkify_docs(library: str, docs_dir: pathlib.Path, verbose=False):
             continue
 
         text = page.read_text()
+        prefix = "../" * (str(page).count("/") - 1)
+
+        if "/api/" not in str(page):
+            prefix = f"../{prefix}api/"
 
         if "benchmarks" not in str(page):
             if verbose:
                 print(f"Adding links to {page}")
-            text = linkifier.linkify(text)
+            text = linkifier.linkify(text, prefix=prefix)
 
         # Write back text to file
         linkified_page = pathlib.Path(str(page).replace("docs/", "docs/linkified/"))

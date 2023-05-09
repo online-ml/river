@@ -21,7 +21,7 @@
         <link rel="next" href="../FwFMClassifier/">
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.9">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.11">
     
     
       
@@ -10229,6 +10229,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
@@ -10250,6 +10252,20 @@
   
     <li class="md-nav__item">
       <a href="../../../releases/unreleased/" class="md-nav__link">
+        Unreleased
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../releases/0.16.0/" class="md-nav__link">
         0.16.0 - 2022-05-08
       </a>
     </li>
@@ -10886,19 +10902,19 @@
 </li>
 <li>
 <p><strong>weight_optimizer</strong></p>
-<p><em>Type</em> → <em><a href="/api/optim/base/Optimizer">optim.base.Optimizer</a></em></p>
+<p><em>Type</em> → <em><a href="../../optim/base/Optimizer">optim.base.Optimizer</a> | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
 <p>The sequential optimizer used for updating the feature weights. Note that the intercept is handled separately.</p>
 </li>
 <li>
 <p><strong>latent_optimizer</strong></p>
-<p><em>Type</em> → <em><a href="/api/optim/base/Optimizer">optim.base.Optimizer</a></em></p>
+<p><em>Type</em> → <em><a href="../../optim/base/Optimizer">optim.base.Optimizer</a> | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
 <p>The sequential optimizer used for updating the latent factors.</p>
 </li>
 <li>
 <p><strong>loss</strong></p>
-<p><em>Type</em> → <em><a href="/api/optim/losses/RegressionLoss">optim.losses.RegressionLoss</a></em></p>
+<p><em>Type</em> → <em><a href="../../optim/losses/RegressionLoss">optim.losses.RegressionLoss</a> | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
 <p>The loss function to optimize for.</p>
 </li>
@@ -10934,21 +10950,21 @@
 </li>
 <li>
 <p><strong>intercept_lr</strong></p>
-<p><em>Type</em> → <em>Union[<a href="/api/optim/base/Scheduler">optim.base.Scheduler</a>, float]</em></p>
+<p><em>Type</em> → <em><a href="../../optim/base/Scheduler">optim.base.Scheduler</a> | float</em></p>
 <p><em>Default</em> → <code>0.01</code></p>
-<p>Learning rate scheduler used for updating the intercept. An instance of <a href="/api/optim/schedulers/Constant"><code>optim.schedulers.Constant</code></a> is used if a <code>float</code> is passed. No intercept will be used if this is set to 0.</p>
+<p>Learning rate scheduler used for updating the intercept. An instance of <a href="../../optim/schedulers/Constant"><code>optim.schedulers.Constant</code></a> is used if a <code>float</code> is passed. No intercept will be used if this is set to 0.</p>
 </li>
 <li>
 <p><strong>weight_initializer</strong></p>
-<p><em>Type</em> → <em><a href="/api/optim/base/Initializer">optim.base.Initializer</a></em></p>
+<p><em>Type</em> → <em><a href="../../optim/initializers/Initializer">optim.initializers.Initializer</a> | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
-<p>Weights initialization scheme. Defaults to <a href="/api/optim/initializers/Zeros"><code>optim.initializers.Zeros</code></a>()`.</p>
+<p>Weights initialization scheme. Defaults to <a href="../../optim/initializers/Zeros"><code>optim.initializers.Zeros</code></a>()`.</p>
 </li>
 <li>
 <p><strong>latent_initializer</strong></p>
-<p><em>Type</em> → <em><a href="/api/optim/base/Initializer">optim.base.Initializer</a></em></p>
+<p><em>Type</em> → <em><a href="../../optim/initializers/Initializer">optim.initializers.Initializer</a> | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
-<p>Latent factors initialization scheme. Defaults to <a href="/api/optim/initializers/Normal"><code>optim.initializers.Normal</code></a>(mu=.0, sigma=.1, random_state=self.random_state)`.</p>
+<p>Latent factors initialization scheme. Defaults to <a href="../../optim/initializers/Normal"><code>optim.initializers.Normal</code></a>(mu=.0, sigma=.1, random_state=self.random_state)`.</p>
 </li>
 <li>
 <p><strong>clip_gradient</strong></p>
@@ -10957,7 +10973,7 @@
 </li>
 <li>
 <p><strong>seed</strong></p>
-<p><em>Type</em> → <em>int</em></p>
+<p><em>Type</em> → <em>int | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
 <p>Randomization seed used for reproducibility.</p>
 </li>
@@ -11017,8 +11033,8 @@ Bob - Harry Potter    1.00000    0.00224        0.00224
 <p>Debugs the output of the FM regressor.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     — <em>dict</em>    </li>
-<li><strong>decimals</strong>     — <em>int</em>     — defaults to <code>5</code>    </li>
+<li><strong>x</strong>     — <em>'dict'</em>    </li>
+<li><strong>decimals</strong>     — <em>'int'</em>     — defaults to <code>5</code>    </li>
 </ul>
 <p><strong>Returns</strong></p>
 <p><em>str</em>:     A table which explains the output.</p>
@@ -11029,8 +11045,8 @@ Bob - Harry Potter    1.00000    0.00224        0.00224
 <p>Fits to a set of features <code>x</code> and a real-valued target <code>y</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     — <em>dict</em>    </li>
-<li><strong>y</strong>     — <em>numbers.Number</em>    </li>
+<li><strong>x</strong>     — <em>'dict'</em>    </li>
+<li><strong>y</strong>     — <em>'base.typing.RegTarget'</em>    </li>
 <li><strong>sample_weight</strong>     — defaults to <code>1.0</code>    </li>
 </ul>
 <p><strong>Returns</strong></p>

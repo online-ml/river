@@ -21,7 +21,7 @@
         <link rel="next" href="../ARFRegressor/">
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.9">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.11">
     
     
       
@@ -10229,6 +10229,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
@@ -10250,6 +10252,20 @@
   
     <li class="md-nav__item">
       <a href="../../../releases/unreleased/" class="md-nav__link">
+        Unreleased
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../releases/0.16.0/" class="md-nav__link">
         0.16.0 - 2022-05-08
       </a>
     </li>
@@ -10896,7 +10912,7 @@
 </li>
 <li>
 <p><strong>max_features</strong></p>
-<p><em>Type</em> → <em>Union[bool, str, int]</em></p>
+<p><em>Type</em> → <em>bool | str | int</em></p>
 <p><em>Default</em> → <code>sqrt</code></p>
 <p>Max number of attributes for each node split.<br/> - If <code>int</code>, then consider <code>max_features</code> at each split.<br/> - If <code>float</code>, then <code>max_features</code> is a percentage and   <code>int(max_features * n_features)</code> features are considered per split.<br/> - If "sqrt", then <code>max_features=sqrt(n_features)</code>.<br/> - If "log2", then <code>max_features=log2(n_features)</code>.<br/> - If None, then <code>max_features=n_features</code>.</p>
 </li>
@@ -10908,9 +10924,9 @@
 </li>
 <li>
 <p><strong>metric</strong></p>
-<p><em>Type</em> → <em><a href="/api/metrics/base/MultiClassMetric">metrics.base.MultiClassMetric</a></em></p>
+<p><em>Type</em> → <em><a href="../../metrics/base/MultiClassMetric">metrics.base.MultiClassMetric</a> | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
-<p>Metric used to track trees performance within the ensemble. Defaults to <a href="/api/metrics/Accuracy"><code>metrics.Accuracy</code></a>()`.</p>
+<p>Metric used to track trees performance within the ensemble. Defaults to <a href="../../metrics/Accuracy"><code>metrics.Accuracy</code></a>()`.</p>
 </li>
 <li>
 <p><strong>disable_weighted_vote</strong></p>
@@ -10919,15 +10935,15 @@
 </li>
 <li>
 <p><strong>drift_detector</strong></p>
-<p><em>Type</em> → <em>Optional[<a href="/api/base/DriftDetector">base.DriftDetector</a>]</em></p>
+<p><em>Type</em> → <em><a href="../../base/DriftDetector">base.DriftDetector</a> | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
-<p>Drift Detection method. Set to None to disable Drift detection. Defaults to <a href="/api/drift/ADWIN"><code>drift.ADWIN</code></a>(delta=0.001)`.</p>
+<p>Drift Detection method. Set to None to disable Drift detection. Defaults to <a href="../../drift/ADWIN"><code>drift.ADWIN</code></a>(delta=0.001)`.</p>
 </li>
 <li>
 <p><strong>warning_detector</strong></p>
-<p><em>Type</em> → <em>Optional[<a href="/api/base/DriftDetector">base.DriftDetector</a>]</em></p>
+<p><em>Type</em> → <em><a href="../../base/DriftDetector">base.DriftDetector</a> | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
-<p>Warning Detection method. Set to None to disable warning detection. Defaults to <a href="/api/drift/ADWIN"><code>drift.ADWIN</code></a>(delta=0.01)`.</p>
+<p>Warning Detection method. Set to None to disable warning detection. Defaults to <a href="../../drift/ADWIN"><code>drift.ADWIN</code></a>(delta=0.01)`.</p>
 </li>
 <li>
 <p><strong>grace_period</strong></p>
@@ -10937,7 +10953,7 @@
 </li>
 <li>
 <p><strong>max_depth</strong></p>
-<p><em>Type</em> → <em>int</em></p>
+<p><em>Type</em> → <em>int | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
 <p>[<em>Tree parameter</em>] The maximum depth a tree can reach. If <code>None</code>, the tree will grow indefinitely.</p>
 </li>
@@ -10973,15 +10989,15 @@
 </li>
 <li>
 <p><strong>nominal_attributes</strong></p>
-<p><em>Type</em> → <em>list</em></p>
+<p><em>Type</em> → <em>list | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
 <p>[<em>Tree parameter</em>] List of Nominal attributes. If empty, then assume that all attributes are numerical.</p>
 </li>
 <li>
 <p><strong>splitter</strong></p>
-<p><em>Type</em> → <em><a href="/api/tree/splitter/Splitter">tree.splitter.Splitter</a></em></p>
+<p><em>Type</em> → <em>Splitter | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
-<p>[<em>Tree parameter</em>] The Splitter or Attribute Observer (AO) used to monitor the class statistics of numeric features and perform splits. Splitters are available in the <a href="/api/tree/splitter"><code>tree.splitter</code></a> module. Different splitters are available for classification and regression tasks. Classification and regression splitters can be distinguished by their property <code>is_target_class</code>. This is an advanced option. Special care must be taken when choosing different splitters. By default, <a href="/api/tree/splitter/GaussianSplitter"><code>tree.splitter.GaussianSplitter</code></a> is used if <code>splitter</code> is <code>None</code>.</p>
+<p>[<em>Tree parameter</em>] The Splitter or Attribute Observer (AO) used to monitor the class statistics of numeric features and perform splits. Splitters are available in the <a href="../../tree/splitter"><code>tree.splitter</code></a> module. Different splitters are available for classification and regression tasks. Classification and regression splitters can be distinguished by their property <code>is_target_class</code>. This is an advanced option. Special care must be taken when choosing different splitters. By default, <a href="../../tree/splitter/GaussianSplitter"><code>tree.splitter.GaussianSplitter</code></a> is used if <code>splitter</code> is <code>None</code>.</p>
 </li>
 <li>
 <p><strong>binary_split</strong></p>
@@ -11021,7 +11037,7 @@
 </li>
 <li>
 <p><strong>seed</strong></p>
-<p><em>Type</em> → <em>int</em></p>
+<p><em>Type</em> → <em>int | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
 <p>Random seed for reproducibility.</p>
 </li>
@@ -11059,11 +11075,11 @@
 <p>Predict the label of a set of features <code>x</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     — <em>dict</em>    </li>
+<li><strong>x</strong>     — <em>'dict'</em>    </li>
 <li><strong>kwargs</strong>    </li>
 </ul>
 <p><strong>Returns</strong></p>
-<p><em>typing.Union[bool, str, int, NoneType]</em>:     The predicted label.</p>
+<p><em>base.typing.ClfTarget | None</em>:     The predicted label.</p>
 </details>
 <p><span /></p>
 <details class="- abstract">
@@ -11071,10 +11087,10 @@
 <p>Predict the probability of each label for a dictionary of features <code>x</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     — <em>dict</em>    </li>
+<li><strong>x</strong>     — <em>'dict'</em>    </li>
 </ul>
 <p><strong>Returns</strong></p>
-<p><em>typing.Dict[typing.Union[bool, str, int], float]</em>:     A dictionary that associates a probability which each label.</p>
+<p><em>dict[base.typing.ClfTarget, float]</em>:     A dictionary that associates a probability which each label.</p>
 </details>
 <p><span /></p>
 <div class="footnote">

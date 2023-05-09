@@ -21,7 +21,7 @@
         <link rel="next" href="../ProbabilisticClassifierChain/">
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.9">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.11">
     
     
       
@@ -10222,6 +10222,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
@@ -10243,6 +10245,20 @@
   
     <li class="md-nav__item">
       <a href="../../../releases/unreleased/" class="md-nav__link">
+        Unreleased
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../releases/0.16.0/" class="md-nav__link">
         0.16.0 - 2022-05-08
       </a>
     </li>
@@ -10865,7 +10881,7 @@
 <ul>
 <li>
 <p><strong>model</strong></p>
-<p><em>Type</em> → <em><a href="/api/base/Classifier">base.Classifier</a></em></p>
+<p><em>Type</em> → <em><a href="../../base/Classifier">base.Classifier</a></em></p>
 <p>The classifier used for learning.</p>
 </li>
 </ul>
@@ -10885,12 +10901,13 @@
 
 <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">dataset</span><span class="p">:</span>
    <span class="n">y_pred</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+   <span class="n">y_pred</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">y_pred</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">y</span><span class="p">}</span>
    <span class="n">metric</span> <span class="o">=</span> <span class="n">metric</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
    <span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 
 <span class="n">metric</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>MicroAverage(Jaccard): 95.41%
+<div class="language-text highlight"><pre><span></span><code>MicroAverage(Jaccard): 95.10%
 </code></pre></div></p>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <details class="- abstract">
@@ -10898,8 +10915,8 @@
 <p>Update the model with a set of features <code>x</code> and the labels <code>y</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     — <em>dict</em>    </li>
-<li><strong>y</strong>     — <em>Dict[Hashable, bool]</em>    </li>
+<li><strong>x</strong>     — <em>'dict'</em>    </li>
+<li><strong>y</strong>     — <em>'dict[FeatureName, bool]'</em>    </li>
 </ul>
 <p><strong>Returns</strong></p>
 <p><em>MultiLabelClassifier</em>:     self</p>
@@ -10910,11 +10927,11 @@
 <p>Predict the labels of a set of features <code>x</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     — <em>dict</em>    </li>
+<li><strong>x</strong>     — <em>'dict'</em>    </li>
 <li><strong>kwargs</strong>    </li>
 </ul>
 <p><strong>Returns</strong></p>
-<p><em>typing.Dict[typing.Hashable, bool]</em>:     The predicted labels.</p>
+<p><em>dict[FeatureName, bool]</em>:     The predicted labels.</p>
 </details>
 <p><span /></p>
 <details class="- abstract">
@@ -10922,11 +10939,11 @@
 <p>Predict the probability of each label appearing given dictionary of features <code>x</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     — <em>dict</em>    </li>
+<li><strong>x</strong>     — <em>'dict'</em>    </li>
 <li><strong>kwargs</strong>    </li>
 </ul>
 <p><strong>Returns</strong></p>
-<p><em>typing.Dict[typing.Hashable, typing.Dict[bool, float]]</em>:     A dictionary that associates a probability which each label.</p>
+<p><em>dict[FeatureName, dict[bool, float]]</em>:     A dictionary that associates a probability which each label.</p>
 </details>
 <p><span /></p>
 

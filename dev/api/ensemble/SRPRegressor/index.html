@@ -21,7 +21,7 @@
         <link rel="next" href="../StackingClassifier/">
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.9">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.11">
     
     
       
@@ -10236,6 +10236,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
@@ -10257,6 +10259,20 @@
   
     <li class="md-nav__item">
       <a href="../../../releases/unreleased/" class="md-nav__link">
+        Unreleased
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../releases/0.16.0/" class="md-nav__link">
         0.16.0 - 2022-05-08
       </a>
     </li>
@@ -10893,7 +10909,7 @@
 <ul>
 <li>
 <p><strong>model</strong></p>
-<p><em>Type</em> → <em><a href="/api/base/Regressor">base.Regressor</a></em></p>
+<p><em>Type</em> → <em><a href="../../base/Regressor">base.Regressor</a> | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
 <p>The base estimator.</p>
 </li>
@@ -10905,7 +10921,7 @@
 </li>
 <li>
 <p><strong>subspace_size</strong></p>
-<p><em>Type</em> → <em>Union[int, float, str]</em></p>
+<p><em>Type</em> → <em>int | float | str</em></p>
 <p><em>Default</em> → <code>0.6</code></p>
 <p>Number of features per subset for each classifier where <code>M</code> is the total number of features.<br/> A negative value means <code>M - subspace_size</code>.<br/> Only applies when using random subspaces or random patches.<br/> * If <code>int</code> indicates the number of features to use. Valid range [2, M]. <br/> * If <code>float</code> indicates the percentage of features to use, Valid range (0., 1.]. <br/> * 'sqrt' - <code>sqrt(M)+1</code><br/> * 'rmsqrt' - Residual from <code>M-(sqrt(M)+1)</code></p>
 </li>
@@ -10923,13 +10939,13 @@
 </li>
 <li>
 <p><strong>drift_detector</strong></p>
-<p><em>Type</em> → <em><a href="/api/base/DriftDetector">base.DriftDetector</a></em></p>
+<p><em>Type</em> → <em><a href="../../base/DriftDetector">base.DriftDetector</a> | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
 <p>Drift detector.</p>
 </li>
 <li>
 <p><strong>warning_detector</strong></p>
-<p><em>Type</em> → <em><a href="/api/base/DriftDetector">base.DriftDetector</a></em></p>
+<p><em>Type</em> → <em><a href="../../base/DriftDetector">base.DriftDetector</a> | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
 <p>Warning detector.</p>
 </li>
@@ -10964,7 +10980,7 @@
 </li>
 <li>
 <p><strong>metric</strong></p>
-<p><em>Type</em> → <em>Optional[<a href="/api/metrics/base/RegressionMetric">metrics.base.RegressionMetric</a>]</em></p>
+<p><em>Type</em> → <em>RegressionMetric | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
 <p>The metric to track members performance within the ensemble.</p>
 </li>

@@ -21,7 +21,7 @@
         <link rel="next" href="../StatisticRegressor/">
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.9">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.11">
     
     
       
@@ -10222,6 +10222,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
@@ -10243,6 +10245,20 @@
   
     <li class="md-nav__item">
       <a href="../../../releases/unreleased/" class="md-nav__link">
+        Unreleased
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../releases/0.16.0/" class="md-nav__link">
         0.16.0 - 2022-05-08
       </a>
     </li>
@@ -10903,8 +10919,8 @@
 <p>Update the model with a set of features <code>x</code> and a label <code>y</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     — <em>dict</em>    </li>
-<li><strong>y</strong>     — <em>Union[bool, str, int]</em>    </li>
+<li><strong>x</strong>     — <em>'dict'</em>    </li>
+<li><strong>y</strong>     — <em>'base.typing.ClfTarget'</em>    </li>
 </ul>
 <p><strong>Returns</strong></p>
 <p><em>Classifier</em>:     self</p>
@@ -10915,11 +10931,11 @@
 <p>Predict the label of a set of features <code>x</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     — <em>dict</em>    </li>
+<li><strong>x</strong>     — <em>'dict'</em>    </li>
 <li><strong>kwargs</strong>    </li>
 </ul>
 <p><strong>Returns</strong></p>
-<p><em>typing.Union[bool, str, int, NoneType]</em>:     The predicted label.</p>
+<p><em>base.typing.ClfTarget | None</em>:     The predicted label.</p>
 </details>
 <p><span /></p>
 <details class="- abstract">
@@ -10927,10 +10943,10 @@
 <p>Predict the probability of each label for a dictionary of features <code>x</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     — <em>dict</em>    </li>
+<li><strong>x</strong>     — <em>'dict'</em>    </li>
 </ul>
 <p><strong>Returns</strong></p>
-<p><em>typing.Dict[typing.Union[bool, str, int], float]</em>:     A dictionary that associates a probability which each label.</p>
+<p><em>dict[base.typing.ClfTarget, float]</em>:     A dictionary that associates a probability which each label.</p>
 </details>
 <p><span /></p>
 <div class="footnote">

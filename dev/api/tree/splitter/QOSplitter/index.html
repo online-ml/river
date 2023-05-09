@@ -21,7 +21,7 @@
         <link rel="next" href="../Quantizer/">
       
       <link rel="icon" href="../../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.9">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.11">
     
     
       
@@ -10224,6 +10224,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
@@ -10245,6 +10247,20 @@
   
     <li class="md-nav__item">
       <a href="../../../../releases/unreleased/" class="md-nav__link">
+        Unreleased
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../releases/0.16.0/" class="md-nav__link">
         0.16.0 - 2022-05-08
       </a>
     </li>
@@ -10863,7 +10879,7 @@
 <p>Quantization observer (QO).</p>
 <p>This splitter utilizes a hash-based quantization algorithm to keep track of the target statistics and evaluate split candidates. QO, relies on the radius parameter to define discretization intervals for each incoming feature. Split candidates are defined as the midpoints between two consecutive hash slots. Both binary splits and multi-way splits can be created by this attribute observer. This class implements the algorithm described in <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>. </p>
 <p>The smaller the quantization radius, the more hash slots will be created to accommodate the discretized data. Hence, both the running time and memory consumption increase, but the resulting splits ought to be closer to the ones obtained by a batch exhaustive approach. On the other hand, if the radius is too large, fewer slots will be created, less memory and running time will be required, but at the cost of coarse split suggestions. </p>
-<p>QO assumes that all features have the same range. It is always advised to scale the features to apply this splitter. That can be done using the <code>preprocessing</code> module. A good "rule of thumb" is to scale data using <a href="/api/preprocessing/StandardScaler"><code>preprocessing.StandardScaler</code></a> and define the radius as a proportion of the features' standard deviation. For instance, the default radius value would correspond to one quarter of the normalized features' standard deviation (since the scaled data has zero mean and unit variance). If the features come from normal distributions, by following the empirical rule, roughly <code>32</code> hash slots will be created.</p>
+<p>QO assumes that all features have the same range. It is always advised to scale the features to apply this splitter. That can be done using the <code>preprocessing</code> module. A good "rule of thumb" is to scale data using <a href="../../../preprocessing/StandardScaler"><code>preprocessing.StandardScaler</code></a> and define the radius as a proportion of the features' standard deviation. For instance, the default radius value would correspond to one quarter of the normalized features' standard deviation (since the scaled data has zero mean and unit variance). If the features come from normal distributions, by following the empirical rule, roughly <code>32</code> hash slots will be created.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
@@ -10895,10 +10911,10 @@
 <p>Get the best split suggestion given a criterion and the target's statistics.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>criterion</strong>     — <em>river.tree.split_criterion.base.SplitCriterion</em>    </li>
-<li><strong>pre_split_dist</strong>     — <em>Union[List, Dict]</em>    </li>
-<li><strong>att_idx</strong>     — <em>Hashable</em>    </li>
-<li><strong>binary_only</strong>     — <em>bool</em>     — defaults to <code>True</code>    </li>
+<li><strong>criterion</strong>     — <em>'SplitCriterion'</em>    </li>
+<li><strong>pre_split_dist</strong>     — <em>'list | dict'</em>    </li>
+<li><strong>att_idx</strong>     — <em>'base.typing.FeatureName'</em>    </li>
+<li><strong>binary_only</strong>     — <em>'bool'</em>     — defaults to <code>True</code>    </li>
 </ul>
 <p><strong>Returns</strong></p>
 <p><em>BranchFactory</em>:     Suggestion of the best attribute split.</p>
@@ -10910,7 +10926,7 @@
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>att_val</strong>    </li>
-<li><strong>target_val</strong>     — <em>Union[bool, str, int]</em>    </li>
+<li><strong>target_val</strong>     — <em>'base.typing.ClfTarget'</em>    </li>
 </ul>
 <p><strong>Returns</strong></p>
 <p><em>float</em>:     Probability for an attribute value given a class.</p>
@@ -10922,8 +10938,8 @@
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>att_val</strong>    </li>
-<li><strong>target_val</strong>     — <em>Union[bool, str, int, numbers.Number]</em>    </li>
-<li><strong>sample_weight</strong>     — <em>float</em>    </li>
+<li><strong>target_val</strong>     — <em>'base.typing.Target'</em>    </li>
+<li><strong>sample_weight</strong>     — <em>'float'</em>    </li>
 </ul>
 </details>
 <p><span /></p>

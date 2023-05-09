@@ -21,7 +21,7 @@
         <link rel="next" href="../SGTRegressor/">
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.9">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.11">
     
     
       
@@ -10229,6 +10229,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
@@ -10250,6 +10252,20 @@
   
     <li class="md-nav__item">
       <a href="../../../releases/unreleased/" class="md-nav__link">
+        Unreleased
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../releases/0.16.0/" class="md-nav__link">
         0.16.0 - 2022-05-08
       </a>
     </li>
@@ -10897,7 +10913,7 @@
 </li>
 <li>
 <p><strong>max_depth</strong></p>
-<p><em>Type</em> → <em>Optional[int]</em></p>
+<p><em>Type</em> → <em>int | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
 <p>The maximum depth the tree might reach. If set to <code>None</code>, the trees will grow indefinitely.</p>
 </li>
@@ -10915,15 +10931,15 @@
 </li>
 <li>
 <p><strong>nominal_attributes</strong></p>
-<p><em>Type</em> → <em>Optional[List]</em></p>
+<p><em>Type</em> → <em>list | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
 <p>List with identifiers of the nominal attributes. If None, all features containing numbers are assumed to be numeric.</p>
 </li>
 <li>
 <p><strong>feature_quantizer</strong></p>
-<p><em>Type</em> → <em><a href="/api/tree/splitter/Quantizer">tree.splitter.Quantizer</a></em></p>
+<p><em>Type</em> → <em><a href="../../tree/splitter/Quantizer">tree.splitter.Quantizer</a> | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
-<p>The algorithm used to quantize numeric features. Either a static quantizer (as in the original implementation) or a dynamic quantizer can be used. The correct choice and setup of the feature quantizer is a crucial step to determine the performance of SGTs. Feature quantizers are akin to the attribute observers used in Hoeffding Trees. By default, an instance of <a href="/api/tree/splitter/StaticQuantizer"><code>tree.splitter.StaticQuantizer</code></a> (with default parameters) is used if this parameter is not set.</p>
+<p>The algorithm used to quantize numeric features. Either a static quantizer (as in the original implementation) or a dynamic quantizer can be used. The correct choice and setup of the feature quantizer is a crucial step to determine the performance of SGTs. Feature quantizers are akin to the attribute observers used in Hoeffding Trees. By default, an instance of <a href="../../tree/splitter/StaticQuantizer"><code>tree.splitter.StaticQuantizer</code></a> (with default parameters) is used if this parameter is not set.</p>
 </li>
 </ul>
 <h2 id="attributes">Attributes<a class="headerlink" href="#attributes" title="Permanent link">&para;</a></h2>
@@ -10974,8 +10990,8 @@
 <p>Update the model with a set of features <code>x</code> and a label <code>y</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     — <em>dict</em>    </li>
-<li><strong>y</strong>     — <em>Union[bool, str, int]</em>    </li>
+<li><strong>x</strong>     — <em>'dict'</em>    </li>
+<li><strong>y</strong>     — <em>'base.typing.ClfTarget'</em>    </li>
 <li><strong>w</strong>     — defaults to <code>1.0</code>    </li>
 </ul>
 <p><strong>Returns</strong></p>
@@ -10987,11 +11003,11 @@
 <p>Predict the label of a set of features <code>x</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     — <em>dict</em>    </li>
+<li><strong>x</strong>     — <em>'dict'</em>    </li>
 <li><strong>kwargs</strong>    </li>
 </ul>
 <p><strong>Returns</strong></p>
-<p><em>typing.Union[bool, str, int, NoneType]</em>:     The predicted label.</p>
+<p><em>base.typing.ClfTarget | None</em>:     The predicted label.</p>
 </details>
 <p><span /></p>
 <details class="- abstract">
@@ -10999,10 +11015,10 @@
 <p>Predict the probability of each label for a dictionary of features <code>x</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     — <em>dict</em>    </li>
+<li><strong>x</strong>     — <em>'dict'</em>    </li>
 </ul>
 <p><strong>Returns</strong></p>
-<p><em>typing.Dict[typing.Union[bool, str, int], float]</em>:     A dictionary that associates a probability which each label.</p>
+<p><em>dict[base.typing.ClfTarget, float]</em>:     A dictionary that associates a probability which each label.</p>
 </details>
 <p><span /></p>
 <div class="footnote">

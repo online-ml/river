@@ -21,7 +21,7 @@
         <link rel="next" href="../PolynomialExtender/">
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.9">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.11">
     
     
       
@@ -10222,6 +10222,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
@@ -10243,6 +10245,20 @@
   
     <li class="md-nav__item">
       <a href="../../../releases/unreleased/" class="md-nav__link">
+        Unreleased
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../releases/0.16.0/" class="md-nav__link">
         0.16.0 - 2022-05-08
       </a>
     </li>
@@ -10860,12 +10876,12 @@
 <h1 id="bagofwords">BagOfWords<a class="headerlink" href="#bagofwords" title="Permanent link">&para;</a></h1>
 <p>Counts tokens in sentences.</p>
 <p>This transformer can be used to counts tokens in a given piece of text. It takes care of normalizing the text before tokenizing it. In mini-batch settings, this transformers allows to convert a series of pandas of text into sparse dataframe. </p>
-<p>Note that the parameters are identical to those of <a href="/api/feature-extraction/TFIDF"><code>feature_extraction.TFIDF</code></a>.</p>
+<p>Note that the parameters are identical to those of <a href="../../feature-extraction/TFIDF"><code>feature_extraction.TFIDF</code></a>.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
 <p><strong>on</strong></p>
-<p><em>Type</em> → <em>str</em></p>
+<p><em>Type</em> → <em>str | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
 <p>The name of the feature that contains the text to vectorize. If <code>None</code>, then each <code>learn_one</code> and <code>transform_one</code> will assume that each <code>x</code> that is provided is a <code>str</code>, andnot a <code>dict</code>.</p>
 </li>
@@ -10881,13 +10897,13 @@
 </li>
 <li>
 <p><strong>preprocessor</strong></p>
-<p><em>Type</em> → <em>typing.Callable</em></p>
+<p><em>Type</em> → <em>typing.Callable | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
 <p>An optional preprocessing function which overrides the <code>strip_accents</code> and <code>lowercase</code> steps, while preserving the tokenizing and n-grams generation steps.</p>
 </li>
 <li>
 <p><strong>stop_words</strong></p>
-<p><em>Type</em> → <em>set[str]</em></p>
+<p><em>Type</em> → <em>set[str] | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
 <p>An optional set of tokens to remove.</p>
 </li>
@@ -10898,7 +10914,7 @@
 </li>
 <li>
 <p><strong>tokenizer</strong></p>
-<p><em>Type</em> → <em>typing.Callable</em></p>
+<p><em>Type</em> → <em>typing.Callable | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
 <p>A function used to convert preprocessed text into a <code>dict</code> of tokens. By default, a regex formula that works well in most cases is used.</p>
 </li>
@@ -10988,7 +11004,7 @@ rocks      1      0      1
 <p>A lot of transformers don't actually have to do anything during the <code>learn_one</code> step because they are stateless. For this reason the default behavior of this function is to do nothing. Transformers that however do something during the <code>learn_one</code> can override this method.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     — <em>dict</em>    </li>
+<li><strong>x</strong>     — <em>'dict'</em>    </li>
 </ul>
 <p><strong>Returns</strong></p>
 <p><em>Transformer</em>:     self</p>
@@ -11011,7 +11027,7 @@ rocks      1      0      1
 <p>Transform a set of features <code>x</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     — <em>dict</em>    </li>
+<li><strong>x</strong>     — <em>'dict'</em>    </li>
 </ul>
 <p><strong>Returns</strong></p>
 <p><em>dict</em>:     The transformed values.</p>

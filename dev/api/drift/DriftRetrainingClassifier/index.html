@@ -21,7 +21,7 @@
         <link rel="next" href="../DummyDriftDetector/">
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.9">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.11">
     
     
       
@@ -10222,6 +10222,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
@@ -10243,6 +10245,20 @@
   
     <li class="md-nav__item">
       <a href="../../../releases/unreleased/" class="md-nav__link">
+        Unreleased
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../releases/0.16.0/" class="md-nav__link">
         0.16.0 - 2022-05-08
       </a>
     </li>
@@ -10864,12 +10880,12 @@
 <ul>
 <li>
 <p><strong>model</strong></p>
-<p><em>Type</em> → <em><a href="/api/base/Classifier">base.Classifier</a></em></p>
+<p><em>Type</em> → <em><a href="../../base/Classifier">base.Classifier</a></em></p>
 <p>The classifier and background classifier class.</p>
 </li>
 <li>
 <p><strong>drift_detector</strong></p>
-<p><em>Type</em> → <em><a href="/api/base/DriftAndWarningDetector">base.DriftAndWarningDetector</a> | <a href="/api/base/BinaryDriftAndWarningDetector">base.BinaryDriftAndWarningDetector</a> | None</em></p>
+<p><em>Type</em> → <em><a href="../../base/DriftAndWarningDetector">base.DriftAndWarningDetector</a> | <a href="../../base/BinaryDriftAndWarningDetector">base.BinaryDriftAndWarningDetector</a> | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
 <p>Algorithm to track warnings and concept drifts. Attention! If the parameter train_in_background is True, the drift_detector must have a warning tracker.</p>
 </li>
@@ -10919,11 +10935,11 @@
 <p>Predict the label of a set of features <code>x</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     — <em>dict</em>    </li>
+<li><strong>x</strong>     — <em>'dict'</em>    </li>
 <li><strong>kwargs</strong>    </li>
 </ul>
 <p><strong>Returns</strong></p>
-<p><em>typing.Union[bool, str, int, NoneType]</em>:     The predicted label.</p>
+<p><em>base.typing.ClfTarget | None</em>:     The predicted label.</p>
 </details>
 <p><span /></p>
 <details class="- abstract">

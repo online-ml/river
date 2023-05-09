@@ -21,7 +21,7 @@
         <link rel="next" href="../MonteCarloClassifierChain/">
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.9">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.11">
     
     
       
@@ -10222,6 +10222,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
@@ -10243,6 +10245,20 @@
   
     <li class="md-nav__item">
       <a href="../../../releases/unreleased/" class="md-nav__link">
+        Unreleased
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../releases/0.16.0/" class="md-nav__link">
         0.16.0 - 2022-05-08
       </a>
     </li>
@@ -10864,12 +10880,12 @@
 <ul>
 <li>
 <p><strong>model</strong></p>
-<p><em>Type</em> → <em><a href="/api/base/Classifier">base.Classifier</a></em></p>
+<p><em>Type</em> → <em><a href="../../base/Classifier">base.Classifier</a></em></p>
 <p>A classifier model used for each label.</p>
 </li>
 <li>
 <p><strong>order</strong></p>
-<p><em>Type</em> → <em>list</em></p>
+<p><em>Type</em> → <em>list | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
 <p>A list with the targets order in which to construct the chain. If <code>None</code> then the order will be inferred from the order of the keys in the target.</p>
 </li>
@@ -10884,7 +10900,7 @@
 <span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">datasets</span>
 
 <span class="n">dataset</span> <span class="o">=</span> <span class="n">stream</span><span class="o">.</span><span class="n">iter_sklearn_dataset</span><span class="p">(</span>
-    <span class="n">dataset</span><span class="o">=</span><span class="n">datasets</span><span class="o">.</span><span class="n">fetch_openml</span><span class="p">(</span><span class="s1">&#39;yeast&#39;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">as_frame</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+    <span class="n">dataset</span><span class="o">=</span><span class="n">datasets</span><span class="o">.</span><span class="n">fetch_openml</span><span class="p">(</span><span class="s1">&#39;yeast&#39;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">parser</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span> <span class="n">as_frame</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
     <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">seed</span><span class="o">=</span><span class="mi">42</span>
 <span class="p">)</span>
@@ -10960,7 +10976,7 @@
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>key</strong>    </li>
-<li><strong>default</strong>     — defaults to <code>&lt;object object at 0x7eff52bac150&gt;</code>    </li>
+<li><strong>default</strong>     — defaults to <code>&lt;object object at 0x7f7ed284c150&gt;</code>    </li>
 </ul>
 </details>
 <p><span /></p>
@@ -10974,11 +10990,11 @@
 <p>Predict the labels of a set of features <code>x</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     — <em>dict</em>    </li>
+<li><strong>x</strong>     — <em>'dict'</em>    </li>
 <li><strong>kwargs</strong>    </li>
 </ul>
 <p><strong>Returns</strong></p>
-<p><em>typing.Dict[typing.Hashable, bool]</em>:     The predicted labels.</p>
+<p><em>dict[FeatureName, bool]</em>:     The predicted labels.</p>
 </details>
 <p><span /></p>
 <details class="- abstract">

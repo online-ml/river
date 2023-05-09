@@ -18,14 +18,14 @@
         <link rel="prev" href="../../faq/">
       
       
-        <link rel="next" href="../0.15.0/">
+        <link rel="next" href="../0.16.0/">
       
       <link rel="icon" href="../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.9">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.11">
     
     
       
-        <title>0.16.0 - 2022-05-08 - River</title>
+        <title>Unreleased - River</title>
       
     
     
@@ -82,7 +82,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#0160-2022-05-08" class="md-skip">
+        <a href="#unreleased" class="md-skip">
           Skip to content
         </a>
       
@@ -118,7 +118,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              0.16.0 - 2022-05-08
+              Unreleased
             
           </span>
         </div>
@@ -10165,6 +10165,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
@@ -10195,12 +10197,12 @@
       
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
-          0.16.0 - 2022-05-08
+          Unreleased
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <a href="./" class="md-nav__link md-nav__link--active">
-        0.16.0 - 2022-05-08
+        Unreleased
       </a>
       
         
@@ -10219,29 +10221,8 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#feature_extraction" class="md-nav__link">
-    feature_extraction
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#metrics" class="md-nav__link">
-    metrics
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#preprocessing" class="md-nav__link">
-    preprocessing
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#stats" class="md-nav__link">
-    stats
+  <a href="#multioutput" class="md-nav__link">
+    multioutput
   </a>
   
 </li>
@@ -10250,6 +10231,20 @@
   
 </nav>
       
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../0.16.0/" class="md-nav__link">
+        0.16.0 - 2022-05-08
+      </a>
     </li>
   
 
@@ -10827,29 +10822,8 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#feature_extraction" class="md-nav__link">
-    feature_extraction
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#metrics" class="md-nav__link">
-    metrics
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#preprocessing" class="md-nav__link">
-    preprocessing
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#stats" class="md-nav__link">
-    stats
+  <a href="#multioutput" class="md-nav__link">
+    multioutput
   </a>
   
 </li>
@@ -10869,25 +10843,11 @@
                   
 
 
-<h1 id="0160-2022-05-08">0.16.0 - 2022-05-08<a class="headerlink" href="#0160-2022-05-08" title="Permanent link">&para;</a></h1>
-<p>Added wheels for Python 3.11.</p>
-<h2 id="feature_extraction">feature_extraction<a class="headerlink" href="#feature_extraction" title="Permanent link">&para;</a></h2>
+<h1 id="unreleased">Unreleased<a class="headerlink" href="#unreleased" title="Permanent link">&para;</a></h1>
+<p>Dropping wheel support for Python 3.8.</p>
+<h2 id="multioutput">multioutput<a class="headerlink" href="#multioutput" title="Permanent link">&para;</a></h2>
 <ul>
-<li><a href="/api/feature-extraction/Agg"><code>feature_extraction.Agg</code></a> and <a href="/api/feature-extraction/TargetAgg"><code>feature_extraction.TargetAgg</code></a> can now be passed an optional <code>t</code> in its <code>learn_one</code> method, which allows it to work with <a href="/api/utils/TimeRolling"><code>utils.TimeRolling</code></a>.</li>
-</ul>
-<h2 id="metrics">metrics<a class="headerlink" href="#metrics" title="Permanent link">&para;</a></h2>
-<ul>
-<li>Added <a href="/api/metrics/MAPE"><code>metrics.MAPE</code></a>.</li>
-<li>Added <a href="/api/metrics/RollingROCAUC"><code>metrics.RollingROCAUC</code></a>.</li>
-</ul>
-<h2 id="preprocessing">preprocessing<a class="headerlink" href="#preprocessing" title="Permanent link">&para;</a></h2>
-<ul>
-<li>Added <a href="/api/preprocessing/GaussianRandomProjector"><code>preprocessing.GaussianRandomProjector</code></a>.</li>
-<li>Added <a href="/api/preprocessing/SparseRandomProjector"><code>preprocessing.SparseRandomProjector</code></a>.</li>
-</ul>
-<h2 id="stats">stats<a class="headerlink" href="#stats" title="Permanent link">&para;</a></h2>
-<ul>
-<li>Fixed randomness issue with the first few outputs of <a href="/api/stats/Quantile"><code>stats.Quantile</code></a>.</li>
+<li><a href="../../api/metrics/multioutput/MacroAverage"><code>metrics.multioutput.MacroAverage</code></a> and <a href="../../api/metrics/multioutput/MicroAverage"><code>metrics.multioutput.MicroAverage</code></a> now loop over the keys of <code>y_true</code> instead of <code>y_pred</code>. This ensures a <code>KeyError</code> is correctly raised if <code>y_pred</code> is missing an output that is present in <code>y_true</code>.</li>
 </ul>
 
 

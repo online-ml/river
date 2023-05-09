@@ -21,7 +21,7 @@
         <link rel="next" href="../cloning-and-mutating/">
       
       <link rel="icon" href="../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.9">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.11">
     
     
       
@@ -10213,6 +10213,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
@@ -10234,6 +10236,20 @@
   
     <li class="md-nav__item">
       <a href="../../releases/unreleased/" class="md-nav__link">
+        Unreleased
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../releases/0.16.0/" class="md-nav__link">
         0.16.0 - 2022-05-08
       </a>
     </li>
@@ -10850,7 +10866,7 @@
     <span class="k">if</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;river_bandits&#39;</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
 </code></pre></div>
-<p>River's bandit module offers the <a href="/api/bandit/evaluate"><code>bandit.evaluate</code></a> function to benchmark several policies on a given environment. It takes as input a list of bandit policies, a bandit environment (the problem to solve), and a reward object. There is a also a <code>pull_func</code> parameter that is necessary to define how a policy is supposed to pull an arm from a given environment.</p>
+<p>River's bandit module offers the <a href="../../api/bandit/evaluate"><code>bandit.evaluate</code></a> function to benchmark several policies on a given environment. It takes as input a list of bandit policies, a bandit environment (the problem to solve), and a reward object. There is a also a <code>pull_func</code> parameter that is necessary to define how a policy is supposed to pull an arm from a given environment.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">gym</span>
 <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">bandit</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
@@ -10879,7 +10895,7 @@
     <span class="n">n_episodes</span><span class="o">=</span><span class="p">(</span><span class="n">n_episodes</span> <span class="o">:=</span> <span class="mi">2000</span><span class="p">),</span>
 <span class="p">)</span>
 </code></pre></div>
-<p>The <a href="/api/bandit/evaluate"><code>bandit.evaluate</code></a> function returns a generator containing the results at each step of the benchmark. This can be wrapped with a <code>pandas.DataFrame</code> to gather all the results.</p>
+<p>The <a href="../../api/bandit/evaluate"><code>bandit.evaluate</code></a> function returns a generator containing the results at each step of the benchmark. This can be wrapped with a <code>pandas.DataFrame</code> to gather all the results.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">trace_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">tqdm</span><span class="p">(</span>
     <span class="n">trace</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="p">(</span>
         <span class="n">n_episodes</span> <span class="o">*</span>
@@ -10997,8 +11013,8 @@
 
 <p><img alt="png" src="../bandits-101_files/bandits-101_8_2.png" /></p>
 <h2 id="controlling-the-evaluation-loop">Controlling the evaluation loop<a class="headerlink" href="#controlling-the-evaluation-loop" title="Permanent link">&para;</a></h2>
-<p>The <a href="/api/bandit/evaluate"><code>bandit.evaluate</code></a> function is useful for benchmarking. But in practice, you'll want to have control over your bandit policy. Indeed you'll want the freedom to pull arms (with the <code>pull</code> method) and update the policy (with the <code>update</code> method) at your discretion.</p>
-<p>As an example, the following is a possible reimplementation of the <a href="/api/bandit/evaluate"><code>bandit.evaluate</code></a> function. Here we'll be measuring the rate at which each policy selects the optimal arm.</p>
+<p>The <a href="../../api/bandit/evaluate"><code>bandit.evaluate</code></a> function is useful for benchmarking. But in practice, you'll want to have control over your bandit policy. Indeed you'll want the freedom to pull arms (with the <code>pull</code> method) and update the policy (with the <code>update</code> method) at your discretion.</p>
+<p>As an example, the following is a possible reimplementation of the <a href="../../api/bandit/evaluate"><code>bandit.evaluate</code></a> function. Here we'll be measuring the rate at which each policy selects the optimal arm.</p>
 <p>Note how the <code>pull</code> and <code>update</code> methods are used.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">copy</span>
 
@@ -11069,7 +11085,7 @@
 <h2 id="handling-drift">Handling drift<a class="headerlink" href="#handling-drift" title="Permanent link">&para;</a></h2>
 <p>The environment used above is a toy situation used for introducing bandits. It is stationary, meaning that the expected reward of each arm does not change over time.</p>
 <p>In practice, arms are dynamic, and their performance can vary over time. A simple example of this is the <a href="https://www.kaggle.com/c/santa-2020">Candy Cane Contest</a> that was hosted on Kaggle in 2020. The expected reward of each arm diminishes each time it is pulled.</p>
-<p>The way bandit policies in River deal with drift depends on the method. For the <a href="/api/bandit/EpsilonGreedy"><code>bandit.EpsilonGreedy</code></a> policy, it makes sense to use a rolling average as the reward object. What this means is that the empirical reward the policy calculates for each arm is a rolling average, rather than a global one.</p>
+<p>The way bandit policies in River deal with drift depends on the method. For the <a href="../../api/bandit/EpsilonGreedy"><code>bandit.EpsilonGreedy</code></a> policy, it makes sense to use a rolling average as the reward object. What this means is that the empirical reward the policy calculates for each arm is a rolling average, rather than a global one.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">proba</span><span class="p">,</span> <span class="n">utils</span>
 
 <span class="n">policies</span><span class="o">=</span><span class="p">[</span>
@@ -11125,13 +11141,13 @@ policy_idx
 Name: reward_stat, dtype: float64
 </pre>
 
-<p>We see that using a rolling average gives a boost to the epsilon greedy strategy. However, we see that the <a href="/api/bandit/ThompsonSampling"><code>bandit.ThompsonSampling</code></a> policy performs even better, even though no particular care was given to drift. A natural next step would thus be to see how it could be improved to handle drift. For instance, its <code>dist</code> parameter could be wrapped with a <a href="/api/utils/Rolling"><code>utils.Rolling</code></a>:</p>
+<p>We see that using a rolling average gives a boost to the epsilon greedy strategy. However, we see that the <a href="../../api/bandit/ThompsonSampling"><code>bandit.ThompsonSampling</code></a> policy performs even better, even though no particular care was given to drift. A natural next step would thus be to see how it could be improved to handle drift. For instance, its <code>dist</code> parameter could be wrapped with a <a href="../../api/utils/Rolling"><code>utils.Rolling</code></a>:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">policy</span> <span class="o">=</span> <span class="n">bandit</span><span class="o">.</span><span class="n">ThompsonSampling</span><span class="p">(</span>
     <span class="n">dist</span><span class="o">=</span><span class="n">utils</span><span class="o">.</span><span class="n">Rolling</span><span class="p">(</span><span class="n">proba</span><span class="o">.</span><span class="n">Beta</span><span class="p">(),</span> <span class="n">window_size</span><span class="o">=</span><span class="mi">50</span><span class="p">),</span>
     <span class="n">seed</span><span class="o">=</span><span class="mi">42</span>
 <span class="p">)</span>
 </code></pre></div>
-<p>Bandits can be used for several tasks. They can be used for content personalization, as well as online model selection (see <a href="/api/model-selection/BanditRegressor"><code>model_selection.BanditRegressor</code></a>). The policies in River are therefore designed to be flexible, so that they can be used in conjunction with other River modules. For instance, the <code>reward_obj</code> in <a href="/api/bandit/EpsilonGreedy"><code>bandit.EpsilonGreedy</code></a> can be a metric, a probability distribution, or a statistic. This works because objects in River adher to a coherent get/update interface.</p>
+<p>Bandits can be used for several tasks. They can be used for content personalization, as well as online model selection (see <a href="../../api/model-selection/BanditRegressor"><code>model_selection.BanditRegressor</code></a>). The policies in River are therefore designed to be flexible, so that they can be used in conjunction with other River modules. For instance, the <code>reward_obj</code> in <a href="../../api/bandit/EpsilonGreedy"><code>bandit.EpsilonGreedy</code></a> can be a metric, a probability distribution, or a statistic. This works because objects in River adher to a coherent get/update interface.</p>
 
 
   

@@ -21,7 +21,7 @@
         <link rel="next" href="../../neural-net/MLPRegressor/">
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.9">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.11">
     
     
       
@@ -10222,6 +10222,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
@@ -10243,6 +10245,20 @@
   
     <li class="md-nav__item">
       <a href="../../../releases/unreleased/" class="md-nav__link">
+        Unreleased
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../releases/0.16.0/" class="md-nav__link">
         0.16.0 - 2022-05-08
       </a>
     </li>
@@ -10873,7 +10889,7 @@
 </li>
 <li>
 <p><strong>distance_func</strong></p>
-<p><em>Type</em> → <em>Union[river.neighbors.base.DistanceFunc, river.neighbors.base.FunctionWrapper]</em></p>
+<p><em>Type</em> → <em>DistanceFunc | FunctionWrapper</em></p>
 <p>A distance function which accepts two input items to compare.</p>
 </li>
 </ul>
@@ -10883,8 +10899,8 @@
 <p>Add a point to the window, optionally with extra metadata.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>item</strong>     — <em>Any</em>    </li>
-<li><strong>extra</strong>     — <em>Optional[Any]</em>     — defaults to <code>None</code>    </li>
+<li><strong>item</strong>     — <em>'typing.Any'</em>    </li>
+<li><strong>extra</strong>     — <em>'typing.Any | None'</em>     — defaults to <code>None</code>    </li>
 </ul>
 </details>
 <p><span /></p>
@@ -10893,8 +10909,8 @@
 <p>Find the <code>n_neighbors</code> closest points to <code>item</code>, along with their distances.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>item</strong>     — <em>Any</em>    </li>
-<li><strong>n_neighbors</strong>     — <em>int</em>     — defaults to <code>1</code>    </li>
+<li><strong>item</strong>     — <em>'typing.Any'</em>    </li>
+<li><strong>n_neighbors</strong>     — <em>'int'</em>     — defaults to <code>1</code>    </li>
 </ul>
 </details>
 <p><span /></p>
@@ -10904,9 +10920,9 @@
 <p>If min distance is 0, we do not need to do the calculation. The item (and extra metadata) will not be added to the window if it is too close to an existing point.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>item</strong>     — <em>Any</em>    </li>
-<li><strong>n_neighbors</strong>     — <em>int</em>     — defaults to <code>1</code>    </li>
-<li><strong>extra</strong>     — <em>Optional[Any]</em>     — defaults to <code>None</code>    </li>
+<li><strong>item</strong>     — <em>'typing.Any'</em>    </li>
+<li><strong>n_neighbors</strong>     — <em>'int'</em>     — defaults to <code>1</code>    </li>
+<li><strong>extra</strong>     — <em>'typing.Any | None'</em>     — defaults to <code>None</code>    </li>
 </ul>
 <p><strong>Returns</strong></p>
 <p>A boolean (true/false) to indicate if the point was added.</p>

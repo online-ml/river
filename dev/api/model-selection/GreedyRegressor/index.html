@@ -21,7 +21,7 @@
         <link rel="next" href="../SuccessiveHalvingClassifier/">
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.9">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.11">
     
     
       
@@ -10229,6 +10229,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
@@ -10250,6 +10252,20 @@
   
     <li class="md-nav__item">
       <a href="../../../releases/unreleased/" class="md-nav__link">
+        Unreleased
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../releases/0.16.0/" class="md-nav__link">
         0.16.0 - 2022-05-08
       </a>
     </li>
@@ -10878,12 +10894,12 @@
 <ul>
 <li>
 <p><strong>models</strong></p>
-<p><em>Type</em> → <em>List[<a href="/api/base/Regressor">base.Regressor</a>]</em></p>
+<p><em>Type</em> → <em>list[<a href="../../base/Regressor">base.Regressor</a>]</em></p>
 <p>The models to select from.</p>
 </li>
 <li>
 <p><strong>metric</strong></p>
-<p><em>Type</em> → <em><a href="/api/metrics/base/RegressionMetric">metrics.base.RegressionMetric</a></em></p>
+<p><em>Type</em> → <em><a href="../../metrics/base/RegressionMetric">metrics.base.RegressionMetric</a> | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
 <p>The metric that is used to measure the performance of each model.</p>
 </li>
@@ -10929,8 +10945,8 @@
 <p>Fits to a set of features <code>x</code> and a real-valued target <code>y</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     — <em>dict</em>    </li>
-<li><strong>y</strong>     — <em>numbers.Number</em>    </li>
+<li><strong>x</strong>     — <em>'dict'</em>    </li>
+<li><strong>y</strong>     — <em>'base.typing.RegTarget'</em>    </li>
 </ul>
 <p><strong>Returns</strong></p>
 <p><em>Regressor</em>:     self</p>

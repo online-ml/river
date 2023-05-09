@@ -21,7 +21,7 @@
         <link rel="next" href="../ComplementNB/">
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.9">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.11">
     
     
       
@@ -10229,6 +10229,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
@@ -10250,6 +10252,20 @@
   
     <li class="md-nav__item">
       <a href="../../../releases/unreleased/" class="md-nav__link">
+        Unreleased
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../releases/0.16.0/" class="md-nav__link">
         0.16.0 - 2022-05-08
       </a>
     </li>
@@ -10975,7 +10991,7 @@ dtype: object
 <p>Computes the joint log likelihood of input features.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     — <em>dict</em>    </li>
+<li><strong>x</strong>     — <em>'dict'</em>    </li>
 </ul>
 <p><strong>Returns</strong></p>
 <p><em>float</em>:     Mapping between classes and joint log likelihood.</p>
@@ -10986,10 +11002,10 @@ dtype: object
 <p>Computes the joint log likelihood of input features.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>X</strong>     — <em>pandas.core.frame.DataFrame</em>    </li>
+<li><strong>X</strong>     — <em>'pd.DataFrame'</em>    </li>
 </ul>
 <p><strong>Returns</strong></p>
-<p><em>DataFrame</em>:     Input samples joint log likelihood.</p>
+<p><em>pd.DataFrame</em>:     Input samples joint log likelihood.</p>
 </details>
 <p><span /></p>
 <details class="- abstract">
@@ -10997,8 +11013,8 @@ dtype: object
 <p>Learn from a batch of count vectors.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>X</strong>     — <em>pandas.core.frame.DataFrame</em>    </li>
-<li><strong>y</strong>     — <em>pandas.core.series.Series</em>    </li>
+<li><strong>X</strong>     — <em>'pd.DataFrame'</em>    </li>
+<li><strong>y</strong>     — <em>'pd.Series'</em>    </li>
 </ul>
 <p><strong>Returns</strong></p>
 <p><em>MiniBatchClassifier</em>:     self</p>
@@ -11009,8 +11025,8 @@ dtype: object
 <p>Updates the model with a single observation.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     — <em>dict</em>    </li>
-<li><strong>y</strong>     — <em>Union[bool, str, int]</em>    </li>
+<li><strong>x</strong>     — <em>'dict'</em>    </li>
+<li><strong>y</strong>     — <em>'base.typing.ClfTarget'</em>    </li>
 </ul>
 <p><strong>Returns</strong></p>
 <p><em>Classifier</em>:     self</p>
@@ -11041,11 +11057,11 @@ dtype: object
 <p>Predict the label of a set of features <code>x</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     — <em>dict</em>    </li>
+<li><strong>x</strong>     — <em>'dict'</em>    </li>
 <li><strong>kwargs</strong>    </li>
 </ul>
 <p><strong>Returns</strong></p>
-<p><em>typing.Union[bool, str, int, NoneType]</em>:     The predicted label.</p>
+<p><em>base.typing.ClfTarget | None</em>:     The predicted label.</p>
 </details>
 <p><span /></p>
 <details class="- abstract">
@@ -11053,7 +11069,7 @@ dtype: object
 <p>Return probabilities using the log-likelihoods in mini-batchs setting.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>X</strong>     — <em>pandas.core.frame.DataFrame</em>    </li>
+<li><strong>X</strong>     — <em>'pd.DataFrame'</em>    </li>
 </ul>
 </details>
 <p><span /></p>
@@ -11062,7 +11078,7 @@ dtype: object
 <p>Return probabilities using the log-likelihoods.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     — <em>dict</em>    </li>
+<li><strong>x</strong>     — <em>'dict'</em>    </li>
 </ul>
 </details>
 <p><span /></p>

@@ -21,7 +21,7 @@
         <link rel="next" href="../QOSplitter/">
       
       <link rel="icon" href="../../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.9">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.11">
     
     
       
@@ -10224,6 +10224,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
@@ -10245,6 +10247,20 @@
   
     <li class="md-nav__item">
       <a href="../../../../releases/unreleased/" class="md-nav__link">
+        Unreleased
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../releases/0.16.0/" class="md-nav__link">
         0.16.0 - 2022-05-08
       </a>
     </li>
@@ -10893,10 +10909,10 @@
 <p>Get the best split suggestion given a criterion and the target's statistics.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>criterion</strong>     — <em>river.tree.split_criterion.base.SplitCriterion</em>    </li>
-<li><strong>pre_split_dist</strong>     — <em>Union[List, Dict]</em>    </li>
-<li><strong>att_idx</strong>     — <em>Hashable</em>    </li>
-<li><strong>binary_only</strong>     — <em>bool</em>    </li>
+<li><strong>criterion</strong>     — <em>'SplitCriterion'</em>    </li>
+<li><strong>pre_split_dist</strong>     — <em>'list | dict'</em>    </li>
+<li><strong>att_idx</strong>     — <em>'base.typing.FeatureName'</em>    </li>
+<li><strong>binary_only</strong>     — <em>'bool'</em>    </li>
 </ul>
 <p><strong>Returns</strong></p>
 <p><em>BranchFactory</em>:     Suggestion of the best attribute split.</p>
@@ -10908,7 +10924,7 @@
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>att_val</strong>    </li>
-<li><strong>target_val</strong>     — <em>Union[bool, str, int]</em>    </li>
+<li><strong>target_val</strong>     — <em>'base.typing.ClfTarget'</em>    </li>
 </ul>
 <p><strong>Returns</strong></p>
 <p><em>float</em>:     Probability for an attribute value given a class.</p>
@@ -10920,8 +10936,8 @@
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>att_val</strong>    </li>
-<li><strong>target_val</strong>     — <em>Union[bool, str, int, numbers.Number]</em>    </li>
-<li><strong>sample_weight</strong>     — <em>float</em>    </li>
+<li><strong>target_val</strong>     — <em>'base.typing.Target'</em>    </li>
+<li><strong>sample_weight</strong>     — <em>'float'</em>    </li>
 </ul>
 </details>
 <p><span /></p>

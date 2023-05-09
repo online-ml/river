@@ -21,7 +21,7 @@
         <link rel="next" href="../FunkMF/">
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.9">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.11">
     
     
       
@@ -10229,6 +10229,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
@@ -10250,6 +10252,20 @@
   
     <li class="md-nav__item">
       <a href="../../../releases/unreleased/" class="md-nav__link">
+        Unreleased
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../releases/0.16.0/" class="md-nav__link">
         0.16.0 - 2022-05-08
       </a>
     </li>
@@ -10888,19 +10904,19 @@
 </li>
 <li>
 <p><strong>bias_optimizer</strong></p>
-<p><em>Type</em> → <em><a href="/api/optim/base/Optimizer">optim.base.Optimizer</a></em></p>
+<p><em>Type</em> → <em><a href="../../optim/base/Optimizer">optim.base.Optimizer</a> | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
 <p>The sequential optimizer used for updating the bias weights.</p>
 </li>
 <li>
 <p><strong>latent_optimizer</strong></p>
-<p><em>Type</em> → <em><a href="/api/optim/base/Optimizer">optim.base.Optimizer</a></em></p>
+<p><em>Type</em> → <em><a href="../../optim/base/Optimizer">optim.base.Optimizer</a> | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
 <p>The sequential optimizer used for updating the latent weights.</p>
 </li>
 <li>
 <p><strong>loss</strong></p>
-<p><em>Type</em> → <em><a href="/api/optim/base/Loss">optim.base.Loss</a></em></p>
+<p><em>Type</em> → <em><a href="../../optim/losses/Loss">optim.losses.Loss</a> | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
 <p>The loss function to optimize for.</p>
 </li>
@@ -10916,13 +10932,13 @@
 </li>
 <li>
 <p><strong>weight_initializer</strong></p>
-<p><em>Type</em> → <em><a href="/api/optim/base/Initializer">optim.base.Initializer</a></em></p>
+<p><em>Type</em> → <em><a href="../../optim/initializers/Initializer">optim.initializers.Initializer</a> | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
 <p>Weights initialization scheme.</p>
 </li>
 <li>
 <p><strong>latent_initializer</strong></p>
-<p><em>Type</em> → <em><a href="/api/optim/base/Initializer">optim.base.Initializer</a></em></p>
+<p><em>Type</em> → <em><a href="../../optim/initializers/Initializer">optim.initializers.Initializer</a> | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
 <p>Latent factors initialization scheme.</p>
 </li>
@@ -10940,7 +10956,7 @@
 <h2 id="attributes">Attributes<a class="headerlink" href="#attributes" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
-<p><strong>global_mean</strong> (<em><a href="/api/stats/Mean">stats.Mean</a></em>)</p>
+<p><strong>global_mean</strong> (<em><a href="../../stats/Mean">stats.Mean</a></em>)</p>
 <p>The target arithmetic mean.</p>
 </li>
 <li>
@@ -10960,19 +10976,19 @@
 <p>The item latent vectors randomly initialized.</p>
 </li>
 <li>
-<p><strong>u_bias_optimizer</strong> (<em><a href="/api/optim/base/Optimizer">optim.base.Optimizer</a></em>)</p>
+<p><strong>u_bias_optimizer</strong> (<em><a href="../../optim/base/Optimizer">optim.base.Optimizer</a></em>)</p>
 <p>The sequential optimizer used for updating the user bias weights.</p>
 </li>
 <li>
-<p><strong>i_bias_optimizer</strong> (<em><a href="/api/optim/base/Optimizer">optim.base.Optimizer</a></em>)</p>
+<p><strong>i_bias_optimizer</strong> (<em><a href="../../optim/base/Optimizer">optim.base.Optimizer</a></em>)</p>
 <p>The sequential optimizer used for updating the item bias weights.</p>
 </li>
 <li>
-<p><strong>u_latent_optimizer</strong> (<em><a href="/api/optim/base/Optimizer">optim.base.Optimizer</a></em>)</p>
+<p><strong>u_latent_optimizer</strong> (<em><a href="../../optim/base/Optimizer">optim.base.Optimizer</a></em>)</p>
 <p>The sequential optimizer used for updating the user latent weights.</p>
 </li>
 <li>
-<p><strong>i_latent_optimizer</strong> (<em><a href="/api/optim/base/Optimizer">optim.base.Optimizer</a></em>)</p>
+<p><strong>i_latent_optimizer</strong> (<em><a href="../../optim/base/Optimizer">optim.base.Optimizer</a></em>)</p>
 <p>The sequential optimizer used for updating the item latent weights.</p>
 </li>
 </ul>
@@ -11012,10 +11028,10 @@
 <p>Fits a <code>user</code>-<code>item</code> pair and a real-valued target <code>y</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>user</strong>     — <em>Union[str, int]</em>    </li>
-<li><strong>item</strong>     — <em>Union[str, int]</em>    </li>
-<li><strong>y</strong>     — <em>Union[numbers.Number, bool]</em>    </li>
-<li><strong>x</strong>     — <em>dict</em>     — defaults to <code>None</code>    </li>
+<li><strong>user</strong>     — <em>'ID'</em>    </li>
+<li><strong>item</strong>     — <em>'ID'</em>    </li>
+<li><strong>y</strong>     — <em>'Reward'</em>    </li>
+<li><strong>x</strong>     — <em>'dict | None'</em>     — defaults to <code>None</code>    </li>
 </ul>
 </details>
 <p><span /></p>
@@ -11024,12 +11040,12 @@
 <p>Predicts the target value of a set of features <code>x</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>user</strong>     — <em>Union[str, int]</em>    </li>
-<li><strong>item</strong>     — <em>Union[str, int]</em>    </li>
-<li><strong>x</strong>     — <em>dict</em>     — defaults to <code>None</code>    </li>
+<li><strong>user</strong>     — <em>'ID'</em>    </li>
+<li><strong>item</strong>     — <em>'ID'</em>    </li>
+<li><strong>x</strong>     — <em>'dict | None'</em>     — defaults to <code>None</code>    </li>
 </ul>
 <p><strong>Returns</strong></p>
-<p><em>typing.Union[numbers.Number, bool]</em>:     The predicted preference from the user for the item.</p>
+<p><em>Reward</em>:     The predicted preference from the user for the item.</p>
 </details>
 <p><span /></p>
 <details class="- abstract">
@@ -11037,9 +11053,9 @@
 <p>Rank models by decreasing order of preference for a given user.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>user</strong>     — <em>Union[str, int]</em>    </li>
-<li><strong>items</strong>     — <em>Set[Union[str, int]]</em>    </li>
-<li><strong>x</strong>     — <em>dict</em>     — defaults to <code>None</code>    </li>
+<li><strong>user</strong>     — <em>'ID'</em>    </li>
+<li><strong>items</strong>     — <em>'set[ID]'</em>    </li>
+<li><strong>x</strong>     — <em>'dict | None'</em>     — defaults to <code>None</code>    </li>
 </ul>
 </details>
 <p><span /></p>

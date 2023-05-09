@@ -21,7 +21,7 @@
         <link rel="next" href="../Pipeline/">
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.9">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.11">
     
     
       
@@ -10215,6 +10215,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
@@ -10236,6 +10238,20 @@
   
     <li class="md-nav__item">
       <a href="../../../releases/unreleased/" class="md-nav__link">
+        Unreleased
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../releases/0.16.0/" class="md-nav__link">
         0.16.0 - 2022-05-08
       </a>
     </li>
@@ -10850,11 +10866,11 @@
 <ul>
 <li>
 <p><strong>transformer</strong></p>
-<p><em>Type</em> → <em><a href="/api/base/Transformer">base.Transformer</a></em></p>
+<p><em>Type</em> → <em><a href="../../base/Transformer">base.Transformer</a></em></p>
 </li>
 <li>
 <p><strong>by</strong></p>
-<p><em>Type</em> → <em>Union[Hashable, List[Hashable]]</em></p>
+<p><em>Type</em> → <em>base.typing.FeatureName | list[base.typing.FeatureName]</em></p>
 <p>The field on which to group the data. This can either by a single value, or a list of values.</p>
 </li>
 </ul>
@@ -10865,7 +10881,7 @@
 <p>A lot of transformers don't actually have to do anything during the <code>learn_one</code> step because they are stateless. For this reason the default behavior of this function is to do nothing. Transformers that however do something during the <code>learn_one</code> can override this method.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     — <em>dict</em>    </li>
+<li><strong>x</strong>     — <em>'dict'</em>    </li>
 </ul>
 <p><strong>Returns</strong></p>
 <p><em>Transformer</em>:     self</p>
@@ -10876,7 +10892,7 @@
 <p>Transform a set of features <code>x</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     — <em>dict</em>    </li>
+<li><strong>x</strong>     — <em>'dict'</em>    </li>
 </ul>
 <p><strong>Returns</strong></p>
 <p><em>dict</em>:     The transformed values.</p>

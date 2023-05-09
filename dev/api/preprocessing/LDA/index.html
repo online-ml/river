@@ -21,7 +21,7 @@
         <link rel="next" href="../MaxAbsScaler/">
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.9">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.11">
     
     
       
@@ -10229,6 +10229,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
@@ -10250,6 +10252,20 @@
   
     <li class="md-nav__item">
       <a href="../../../releases/unreleased/" class="md-nav__link">
+        Unreleased
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../releases/0.16.0/" class="md-nav__link">
         0.16.0 - 2022-05-08
       </a>
     </li>
@@ -10874,7 +10890,7 @@
 <h1 id="lda">LDA<a class="headerlink" href="#lda" title="Permanent link">&para;</a></h1>
 <p>Online Latent Dirichlet Allocation with Infinite Vocabulary.</p>
 <p>Latent Dirichlet allocation (LDA) is a probabilistic approach for exploring topics in document collections. The key advantage of this variant is that it assumes an infinite vocabulary, meaning that the set of tokens does not have to known in advance, as opposed to the <a href="https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.LatentDirichletAllocation.html">implementation from sklearn</a> The results produced by this implementation are identical to those from <a href="https://github.com/kzhai/PyInfVoc">the original implementation</a> proposed by the method's authors. </p>
-<p>This class takes as input token counts. Therefore, it requires you to tokenize beforehand. You can do so by using a <a href="/api/feature-extraction/BagOfWords"><code>feature_extraction.BagOfWords</code></a> instance, as shown in the example below.</p>
+<p>This class takes as input token counts. Therefore, it requires you to tokenize beforehand. You can do so by using a <a href="../../feature-extraction/BagOfWords"><code>feature_extraction.BagOfWords</code></a> instance, as shown in the example below.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
@@ -10933,7 +10949,7 @@
 </li>
 <li>
 <p><strong>seed</strong></p>
-<p><em>Type</em> → <em>int</em></p>
+<p><em>Type</em> → <em>int | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
 <p>Random number seed used for reproducibility.</p>
 </li>
@@ -11009,7 +11025,7 @@
 <p>A lot of transformers don't actually have to do anything during the <code>learn_one</code> step because they are stateless. For this reason the default behavior of this function is to do nothing. Transformers that however do something during the <code>learn_one</code> can override this method.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     — <em>dict</em>    </li>
+<li><strong>x</strong>     — <em>'dict'</em>    </li>
 </ul>
 <p><strong>Returns</strong></p>
 <p><em>Transformer</em>:     self</p>
@@ -11031,7 +11047,7 @@
 <p>Transform a set of features <code>x</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     — <em>dict</em>    </li>
+<li><strong>x</strong>     — <em>'dict'</em>    </li>
 </ul>
 <p><strong>Returns</strong></p>
 <p><em>dict</em>:     The transformed values.</p>

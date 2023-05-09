@@ -21,7 +21,7 @@
         <link rel="next" href="../Prefixer/">
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.9">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.11">
     
     
       
@@ -10222,6 +10222,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
@@ -10243,6 +10245,20 @@
   
     <li class="md-nav__item">
       <a href="../../../releases/unreleased/" class="md-nav__link">
+        Unreleased
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../releases/0.16.0/" class="md-nav__link">
         0.16.0 - 2022-05-08
       </a>
     </li>
@@ -10923,13 +10939,13 @@ to chain estimators in a very terse manner:</p>
   initializer=Zeros ()
 )
 </code></pre></div></p>
-<p>Note that you can also declare a pipeline by using the <a href="/api/compose/Pipeline"><code>compose.Pipeline</code></a> constructor
+<p>Note that you can also declare a pipeline by using the <a href="../../compose/Pipeline"><code>compose.Pipeline</code></a> constructor
 method, which is slightly more verbose:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">compose</span>
 
 <span class="n">model</span> <span class="o">=</span> <span class="n">compose</span><span class="o">.</span><span class="n">Pipeline</span><span class="p">(</span><span class="n">scaler</span><span class="p">,</span> <span class="n">log_reg</span><span class="p">)</span>
 </code></pre></div>
-<p>By using a <a href="/api/compose/TransformerUnion"><code>compose.TransformerUnion</code></a>, you can define complex pipelines that apply
+<p>By using a <a href="../../compose/TransformerUnion"><code>compose.TransformerUnion</code></a>, you can define complex pipelines that apply
 different steps to different parts of the data. For instance, we can extract word counts
 from text data, and extract polynomial features from numeric data.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">feature_extraction</span> <span class="k">as</span> <span class="n">fx</span>
@@ -11010,7 +11026,7 @@ True: 0.80687
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>horizon</strong>     — <em>'int'</em>    </li>
-<li><strong>xs</strong>     — <em>'list[dict]'</em>     — defaults to <code>None</code>    </li>
+<li><strong>xs</strong>     — <em>'list[dict] | None'</em>     — defaults to <code>None</code>    </li>
 </ul>
 </details>
 <p><span /></p>
@@ -11020,7 +11036,7 @@ True: 0.80687
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>X</strong>     — <em>'pd.DataFrame'</em>    </li>
-<li><strong>y</strong>     — <em>'pd.Series'</em>     — defaults to <code>None</code>    </li>
+<li><strong>y</strong>     — <em>'pd.Series | None'</em>     — defaults to <code>None</code>    </li>
 <li><strong>params</strong>    </li>
 </ul>
 </details>

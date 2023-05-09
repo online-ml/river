@@ -21,7 +21,7 @@
         <link rel="next" href="../pure-inference-mode/">
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.9">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.11">
     
     
       
@@ -10222,6 +10222,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
@@ -10243,6 +10245,20 @@
   
     <li class="md-nav__item">
       <a href="../../../releases/unreleased/" class="md-nav__link">
+        Unreleased
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../releases/0.16.0/" class="md-nav__link">
         0.16.0 - 2022-05-08
       </a>
     </li>
@@ -10880,7 +10896,7 @@
 <span class="p">]</span>
 </code></pre></div>
 <p>As an example, let's assume we want to compute two aggregates of a dataset. We therefore
-define two <a href="/api/feature-extraction/Agg"><code>feature_extraction.Agg</code></a>s and initialize a <code>TransformerUnion</code> with them:</p>
+define two <a href="../../feature-extraction/Agg"><code>feature_extraction.Agg</code></a>s and initialize a <code>TransformerUnion</code> with them:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">compose</span>
 <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">feature_extraction</span>
 <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">stats</span>
@@ -10988,8 +11004,8 @@ a <code>StandardScaler</code>.</p>
 <p>Update each transformer.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>X</strong>     — <em>pandas.core.frame.DataFrame</em>    </li>
-<li><strong>y</strong>     — <em>pandas.core.series.Series</em>     — defaults to <code>None</code>    </li>
+<li><strong>X</strong>     — <em>'pd.DataFrame'</em>    </li>
+<li><strong>y</strong>     — <em>'pd.Series | None'</em>     — defaults to <code>None</code>    </li>
 </ul>
 </details>
 <p><span /></p>
@@ -10998,7 +11014,7 @@ a <code>StandardScaler</code>.</p>
 <p>Update each transformer.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     — <em>dict</em>    </li>
+<li><strong>x</strong>     — <em>'dict'</em>    </li>
 <li><strong>y</strong>     — defaults to <code>None</code>    </li>
 </ul>
 </details>
@@ -11017,7 +11033,7 @@ a <code>StandardScaler</code>.</p>
 <p>Passes the data through each transformer and packs the results together.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     — <em>dict</em>    </li>
+<li><strong>x</strong>     — <em>'dict'</em>    </li>
 </ul>
 </details>
 <p><span /></p>

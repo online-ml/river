@@ -21,7 +21,7 @@
         <link rel="next" href="../TargetAgg/">
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.9">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.11">
     
     
       
@@ -10229,6 +10229,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
@@ -10250,6 +10252,20 @@
   
     <li class="md-nav__item">
       <a href="../../../releases/unreleased/" class="md-nav__link">
+        Unreleased
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../releases/0.16.0/" class="md-nav__link">
         0.16.0 - 2022-05-08
       </a>
     </li>
@@ -10874,7 +10890,7 @@
 <h1 id="tfidf">TFIDF<a class="headerlink" href="#tfidf" title="Permanent link">&para;</a></h1>
 <p>Computes TF-IDF values from sentences.</p>
 <p>The TF-IDF formula is the same one as scikit-learn. The only difference is the fact that the document frequencies are determined online, whereas in a batch setting they can be determined by performing an initial pass through the data. </p>
-<p>Note that the parameters are identical to those of <a href="/api/feature-extraction/BagOfWords"><code>feature_extraction.BagOfWords</code></a>.</p>
+<p>Note that the parameters are identical to those of <a href="../../feature-extraction/BagOfWords"><code>feature_extraction.BagOfWords</code></a>.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
@@ -10884,7 +10900,7 @@
 </li>
 <li>
 <p><strong>on</strong></p>
-<p><em>Type</em> → <em>str</em></p>
+<p><em>Type</em> → <em>str | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
 <p>The name of the feature that contains the text to vectorize. If <code>None</code>, then the input is treated as a document instead of a set of features.</p>
 </li>
@@ -10900,13 +10916,13 @@
 </li>
 <li>
 <p><strong>preprocessor</strong></p>
-<p><em>Type</em> → <em>typing.Callable</em></p>
+<p><em>Type</em> → <em>typing.Callable | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
 <p>An optional preprocessing function which overrides the <code>strip_accents</code> and <code>lowercase</code> steps, while preserving the tokenizing and n-grams generation steps.</p>
 </li>
 <li>
 <p><strong>tokenizer</strong></p>
-<p><em>Type</em> → <em>typing.Callable</em></p>
+<p><em>Type</em> → <em>typing.Callable | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
 <p>A function used to convert preprocessed text into a <code>dict</code> of tokens. By default, a regex formula that works well in most cases is used.</p>
 </li>
@@ -10972,7 +10988,7 @@ field to access if the string is stored in a dictionary:</p>
 <p>A lot of transformers don't actually have to do anything during the <code>learn_one</code> step because they are stateless. For this reason the default behavior of this function is to do nothing. Transformers that however do something during the <code>learn_one</code> can override this method.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     — <em>dict</em>    </li>
+<li><strong>x</strong>     — <em>'dict'</em>    </li>
 </ul>
 <p><strong>Returns</strong></p>
 <p><em>Transformer</em>:     self</p>
@@ -10995,7 +11011,7 @@ field to access if the string is stored in a dictionary:</p>
 <p>Transform a set of features <code>x</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     — <em>dict</em>    </li>
+<li><strong>x</strong>     — <em>'dict'</em>    </li>
 </ul>
 <p><strong>Returns</strong></p>
 <p><em>dict</em>:     The transformed values.</p>

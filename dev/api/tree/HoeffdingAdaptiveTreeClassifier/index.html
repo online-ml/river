@@ -21,7 +21,7 @@
         <link rel="next" href="../HoeffdingAdaptiveTreeRegressor/">
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.9">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.11">
     
     
       
@@ -10236,6 +10236,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
@@ -10257,6 +10259,20 @@
   
     <li class="md-nav__item">
       <a href="../../../releases/unreleased/" class="md-nav__link">
+        Unreleased
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../releases/0.16.0/" class="md-nav__link">
         0.16.0 - 2022-05-08
       </a>
     </li>
@@ -10897,7 +10913,7 @@
 </li>
 <li>
 <p><strong>max_depth</strong></p>
-<p><em>Type</em> → <em>int</em></p>
+<p><em>Type</em> → <em>int | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
 <p>The maximum depth a tree can reach. If <code>None</code>, the tree will grow indefinitely.</p>
 </li>
@@ -10933,15 +10949,15 @@
 </li>
 <li>
 <p><strong>nominal_attributes</strong></p>
-<p><em>Type</em> → <em>list</em></p>
+<p><em>Type</em> → <em>list | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
 <p>List of Nominal attributes. If empty, then assume that all numeric attributes should be treated as continuous.</p>
 </li>
 <li>
 <p><strong>splitter</strong></p>
-<p><em>Type</em> → <em><a href="/api/tree/splitter/Splitter">tree.splitter.Splitter</a></em></p>
+<p><em>Type</em> → <em>Splitter | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
-<p>The Splitter or Attribute Observer (AO) used to monitor the class statistics of numeric features and perform splits. Splitters are available in the <a href="/api/tree/splitter"><code>tree.splitter</code></a> module. Different splitters are available for classification and regression tasks. Classification and regression splitters can be distinguished by their property <code>is_target_class</code>. This is an advanced option. Special care must be taken when choosing different splitters. By default, <a href="/api/tree/splitter/GaussianSplitter"><code>tree.splitter.GaussianSplitter</code></a> is used if <code>splitter</code> is <code>None</code>.</p>
+<p>The Splitter or Attribute Observer (AO) used to monitor the class statistics of numeric features and perform splits. Splitters are available in the <a href="../../tree/splitter"><code>tree.splitter</code></a> module. Different splitters are available for classification and regression tasks. Classification and regression splitters can be distinguished by their property <code>is_target_class</code>. This is an advanced option. Special care must be taken when choosing different splitters. By default, <a href="../../tree/splitter/GaussianSplitter"><code>tree.splitter.GaussianSplitter</code></a> is used if <code>splitter</code> is <code>None</code>.</p>
 </li>
 <li>
 <p><strong>bootstrap_sampling</strong></p>
@@ -10957,9 +10973,9 @@
 </li>
 <li>
 <p><strong>drift_detector</strong></p>
-<p><em>Type</em> → <em>Optional[<a href="/api/base/DriftDetector">base.DriftDetector</a>]</em></p>
+<p><em>Type</em> → <em><a href="../../base/DriftDetector">base.DriftDetector</a> | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
-<p>The drift detector used to build the tree. If <code>None</code> then <a href="/api/drift/ADWIN"><code>drift.ADWIN</code></a> is used.</p>
+<p>The drift detector used to build the tree. If <code>None</code> then <a href="../../drift/ADWIN"><code>drift.ADWIN</code></a> is used.</p>
 </li>
 <li>
 <p><strong>switch_significance</strong></p>
@@ -11005,7 +11021,7 @@
 </li>
 <li>
 <p><strong>seed</strong></p>
-<p><em>Type</em> → <em>int</em></p>
+<p><em>Type</em> → <em>int | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
 <p>Random seed for reproducibility.</p>
 </li>
@@ -11087,10 +11103,10 @@
 <p>Print an explanation of how <code>x</code> is predicted.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     — <em>dict</em>    </li>
+<li><strong>x</strong>     — <em>'dict'</em>    </li>
 </ul>
 <p><strong>Returns</strong></p>
-<p><em>typing.Optional[str]</em>:     A representation of the path followed by the tree to predict <code>x</code>; <code>None</code> if</p>
+<p><em>str | None</em>:     A representation of the path followed by the tree to predict <code>x</code>; <code>None</code> if</p>
 </details>
 <p><span /></p>
 <details class="- abstract">
@@ -11099,7 +11115,7 @@
 <p>Since the tree is drawn without passing incoming samples, classification trees will show the majority class in their leaves, whereas regression trees will use the target mean.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>max_depth</strong>     — <em>int</em>     — defaults to <code>None</code>  <br />
+<li><strong>max_depth</strong>     — <em>'int | None'</em>     — defaults to <code>None</code>  <br />
     The maximum depth a tree can reach. If <code>None</code>, the tree will grow indefinitely.</li>
 </ul>
 </details>
@@ -11122,11 +11138,11 @@
 <p>Predict the label of a set of features <code>x</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     — <em>dict</em>    </li>
+<li><strong>x</strong>     — <em>'dict'</em>    </li>
 <li><strong>kwargs</strong>    </li>
 </ul>
 <p><strong>Returns</strong></p>
-<p><em>typing.Union[bool, str, int, NoneType]</em>:     The predicted label.</p>
+<p><em>base.typing.ClfTarget | None</em>:     The predicted label.</p>
 </details>
 <p><span /></p>
 <details class="- abstract">

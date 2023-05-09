@@ -21,7 +21,7 @@
         <link rel="next" href="../BinaryDriftAndWarningDetector/">
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.9">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.11">
     
     
       
@@ -10208,6 +10208,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
@@ -10229,6 +10231,20 @@
   
     <li class="md-nav__item">
       <a href="../../../releases/unreleased/" class="md-nav__link">
+        Unreleased
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../releases/0.16.0/" class="md-nav__link">
         0.16.0 - 2022-05-08
       </a>
     </li>
@@ -10850,7 +10866,7 @@
 <p>The clone has the same parameters but has not been updated with any data.  This works by looking at the parameters from the class signature. Each parameter is either  - recursively cloned if its a class. - deep-copied via <code>copy.deepcopy</code> if not.  If the calling object is stochastic (i.e. it accepts a seed parameter) and has not been seeded, then the clone will not be idempotent. Indeed, this method's purpose if simply to return a new instance with the same input parameters.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>new_params</strong>     — <em>dict</em>     — defaults to <code>None</code>    </li>
+<li><strong>new_params</strong>     — <em>'dict | None'</em>     — defaults to <code>None</code>    </li>
 <li><strong>include_attributes</strong>     — defaults to <code>False</code>    </li>
 </ul>
 </details>
@@ -10861,7 +10877,7 @@
 <p>This changes parameters inplace. Although you can change attributes yourself, this is the recommended way to proceed. By default, all attributes are immutable, meaning they shouldn't be mutated. Calling <code>mutate</code> on an immutable attribute raises a <code>ValueError</code>. Mutable attributes are specified via the <code>_mutable_attributes</code> property, and are thus specified on a per-estimator basis.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>new_attrs</strong>     — <em>dict</em>    </li>
+<li><strong>new_attrs</strong>     — <em>'dict'</em>    </li>
 </ul>
 </details>
 <p><span /></p>

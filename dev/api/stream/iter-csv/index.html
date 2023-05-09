@@ -21,7 +21,7 @@
         <link rel="next" href="../iter-libsvm/">
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.9">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.11">
     
     
       
@@ -10215,6 +10215,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
@@ -10236,6 +10238,20 @@
   
     <li class="md-nav__item">
       <a href="../../../releases/unreleased/" class="md-nav__link">
+        Unreleased
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../releases/0.16.0/" class="md-nav__link">
         0.16.0 - 2022-05-08
       </a>
     </li>
@@ -10845,7 +10861,7 @@
 
 <h1 id="iter_csv">iter_csv<a class="headerlink" href="#iter_csv" title="Permanent link">&para;</a></h1>
 <p>Iterates over rows from a CSV file.</p>
-<p>Reading CSV files can be quite slow. If, for whatever reason, you're going to loop through the same file multiple times, then we recommend that you to use the <a href="/api/stream/Cache"><code>stream.Cache</code></a> utility.</p>
+<p>Reading CSV files can be quite slow. If, for whatever reason, you're going to loop through the same file multiple times, then we recommend that you to use the <a href="../../stream/Cache"><code>stream.Cache</code></a> utility.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
@@ -10854,25 +10870,25 @@
 </li>
 <li>
 <p><strong>target</strong></p>
-<p><em>Type</em> → <em>Union[str, List[str]]</em></p>
+<p><em>Type</em> → <em>str | list[str] | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
 <p>A single target column is assumed if a string is passed. A multiple output scenario is assumed if a list of strings is passed. A <code>None</code> value will be assigned to each <code>y</code> if this parameter is omitted.</p>
 </li>
 <li>
 <p><strong>converters</strong></p>
-<p><em>Type</em> → <em>dict</em></p>
+<p><em>Type</em> → <em>dict | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
 <p>All values in the CSV are interpreted as strings by default. You can use this parameter to cast values to the desired type. This should be a <code>dict</code> mapping feature names to callables used to parse their associated values. Note that a callable may be a type, such as <code>float</code> and <code>int</code>.</p>
 </li>
 <li>
 <p><strong>parse_dates</strong></p>
-<p><em>Type</em> → <em>dict</em></p>
+<p><em>Type</em> → <em>dict | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
 <p>A <code>dict</code> mapping feature names to a format passed to the <code>datetime.datetime.strptime</code> method.</p>
 </li>
 <li>
 <p><strong>drop</strong></p>
-<p><em>Type</em> → <em>List[str]</em></p>
+<p><em>Type</em> → <em>list[str] | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
 <p>Fields to ignore.</p>
 </li>
@@ -10893,13 +10909,13 @@
 </li>
 <li>
 <p><strong>seed</strong></p>
-<p><em>Type</em> → <em>int</em></p>
+<p><em>Type</em> → <em>int | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
 <p>If specified, the sampling will be deterministic.</p>
 </li>
 <li>
 <p><strong>field_size_limit</strong></p>
-<p><em>Type</em> → <em>int</em></p>
+<p><em>Type</em> → <em>int | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
 <p>If not <code>None</code>, this will be passed to the <code>csv.field_size_limit</code> function.</p>
 </li>

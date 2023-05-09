@@ -21,7 +21,7 @@
         <link rel="next" href="../../facto/FFMClassifier/">
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.9">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.11">
     
     
       
@@ -10215,6 +10215,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
@@ -10236,6 +10238,20 @@
   
     <li class="md-nav__item">
       <a href="../../../releases/unreleased/" class="md-nav__link">
+        Unreleased
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../releases/0.16.0/" class="md-nav__link">
         0.16.0 - 2022-05-08
       </a>
     </li>
@@ -10846,14 +10862,14 @@
 <h1 id="progressive_val_score">progressive_val_score<a class="headerlink" href="#progressive_val_score" title="Permanent link">&para;</a></h1>
 <p>Evaluates the performance of a model on a streaming dataset.</p>
 <p>This method is the canonical way to evaluate a model's performance. When used correctly, it allows you to exactly assess how a model would have performed in a production scenario. </p>
-<p><code>dataset</code> is converted into a stream of questions and answers. At each step the model is either asked to predict an observation, or is either updated. The target is only revealed to the model after a certain amount of time, which is determined by the <code>delay</code> parameter. Note that under the hood this uses the <a href="/api/stream/simulate-qa"><code>stream.simulate_qa</code></a> function to go through the data in arrival order. </p>
+<p><code>dataset</code> is converted into a stream of questions and answers. At each step the model is either asked to predict an observation, or is either updated. The target is only revealed to the model after a certain amount of time, which is determined by the <code>delay</code> parameter. Note that under the hood this uses the <a href="../../stream/simulate-qa"><code>stream.simulate_qa</code></a> function to go through the data in arrival order. </p>
 <p>By default, there is no delay, which means that the samples are processed one after the other. When there is no delay, this function essentially performs progressive validation. When there is a delay, then we refer to it as delayed progressive validation. </p>
 <p>It is recommended to use this method when you want to determine a model's performance on a dataset. In particular, it is advised to use the <code>delay</code> parameter in order to get a reliable assessment. Indeed, in a production scenario, it is often the case that ground truths are made available after a certain amount of time. By using this method, you can reproduce this scenario and therefore truthfully assess what would have been the performance of a model on a given dataset.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
 <p><strong>dataset</strong></p>
-<p><em>Type</em> → <em>Iterable[Tuple[dict, Any]]</em></p>
+<p><em>Type</em> → <em>base.typing.Dataset</em></p>
 <p>The stream of observations against which the model will be evaluated.</p>
 </li>
 <li>
@@ -10862,18 +10878,18 @@
 </li>
 <li>
 <p><strong>metric</strong></p>
-<p><em>Type</em> → <em><a href="/api/metrics/base/Metric">metrics.base.Metric</a></em></p>
+<p><em>Type</em> → <em><a href="../../metrics/base/Metric">metrics.base.Metric</a></em></p>
 <p>The metric used to evaluate the model's predictions.</p>
 </li>
 <li>
 <p><strong>moment</strong></p>
-<p><em>Type</em> → <em>Union[str, Callable]</em></p>
+<p><em>Type</em> → <em>str | typing.Callable | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
 <p>The attribute used for measuring time. If a callable is passed, then it is expected to take as input a <code>dict</code> of features. If <code>None</code>, then the observations are implicitly timestamped in the order in which they arrive.</p>
 </li>
 <li>
 <p><strong>delay</strong></p>
-<p><em>Type</em> → <em>Union[str, int, datetime.timedelta, Callable]</em></p>
+<p><em>Type</em> → <em>str | int | dt.timedelta | typing.Callable | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
 <p>The amount to wait before revealing the target associated with each observation to the model. This value is expected to be able to sum with the <code>moment</code> value. For instance, if <code>moment</code> is a <code>datetime.date</code>, then <code>delay</code> is expected to be a <code>datetime.timedelta</code>. If a callable is passed, then it is expected to take as input a <code>dict</code> of features and the target. If a <code>str</code> is passed, then it will be used to access the relevant field from the features. If <code>None</code> is passed, then no delay will be used, which leads to doing standard online validation.</p>
 </li>

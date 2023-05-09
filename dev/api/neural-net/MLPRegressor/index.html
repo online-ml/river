@@ -21,7 +21,7 @@
         <link rel="next" href="../activations/Identity/">
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.9">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.11">
     
     
       
@@ -10229,6 +10229,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
@@ -10250,6 +10252,20 @@
   
     <li class="md-nav__item">
       <a href="../../../releases/unreleased/" class="md-nav__link">
+        Unreleased
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../releases/0.16.0/" class="md-nav__link">
         0.16.0 - 2022-05-08
       </a>
     </li>
@@ -10877,17 +10893,11 @@
 <ul>
 <li>
 <p><code>learn_one</code> and <code>predict_one</code> just cast the input <code>dict</code> to a single row dataframe and then</p>
-<p>call <code>learn_many</code> and <code>predict_many</code> respectively. This is very inefficient. </p>
-</li>
-<li>
-<p>Not all of the optimizers in the <code>optim</code> module can be used as they are not all vectorised.</p>
+<p>call <code>learn_many</code> and <code>predict_many</code> respectively. This is very inefficient. - Not all of the optimizers in the <code>optim</code> module can be used as they are not all vectorised.</p>
 </li>
 <li>
 <p>Emerging and disappearing features are not supported. Each instance/batch has to have the</p>
-<p>same features. </p>
-</li>
-<li>
-<p>The gradient haven't been numerically checked.</p>
+<p>same features. - The gradient haven't been numerically checked.</p>
 </li>
 </ul>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
@@ -10902,19 +10912,19 @@
 </li>
 <li>
 <p><strong>loss</strong></p>
-<p><em>Type</em> → <em><a href="/api/optim/losses/Loss">optim.losses.Loss</a></em></p>
+<p><em>Type</em> → <em><a href="../../optim/losses/Loss">optim.losses.Loss</a> | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
-<p>Loss function. Defaults to <a href="/api/optim/losses/Squared"><code>optim.losses.Squared</code></a>.</p>
+<p>Loss function. Defaults to <a href="../../optim/losses/Squared"><code>optim.losses.Squared</code></a>.</p>
 </li>
 <li>
 <p><strong>optimizer</strong></p>
-<p><em>Type</em> → <em><a href="/api/optim/base/Optimizer">optim.base.Optimizer</a></em></p>
+<p><em>Type</em> → <em><a href="../../optim/base/Optimizer">optim.base.Optimizer</a> | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
-<p>Optimizer. Defaults to <a href="/api/optim/SGD"><code>optim.SGD</code></a> with the learning rate set to <code>0.01</code>.</p>
+<p>Optimizer. Defaults to <a href="../../optim/SGD"><code>optim.SGD</code></a> with the learning rate set to <code>0.01</code>.</p>
 </li>
 <li>
 <p><strong>seed</strong></p>
-<p><em>Type</em> → <em>int</em></p>
+<p><em>Type</em> → <em>int | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
 <p>Random number generation seed. Set this for reproducibility.</p>
 </li>
@@ -11018,8 +11028,8 @@
 <p>Fits to a set of features <code>x</code> and a real-valued target <code>y</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     — <em>dict</em>    </li>
-<li><strong>y</strong>     — <em>numbers.Number</em>    </li>
+<li><strong>x</strong>     — <em>'dict'</em>    </li>
+<li><strong>y</strong>     — <em>'base.typing.RegTarget'</em>    </li>
 </ul>
 <p><strong>Returns</strong></p>
 <p><em>Regressor</em>:     self</p>
@@ -11033,10 +11043,10 @@
 <p>Predict the output of features <code>x</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     — <em>dict</em>    </li>
+<li><strong>x</strong>     — <em>'dict'</em>    </li>
 </ul>
 <p><strong>Returns</strong></p>
-<p><em>Number</em>:     The prediction.</p>
+<p><em>base.typing.RegTarget</em>:     The prediction.</p>
 </details>
 <p><span /></p>
 

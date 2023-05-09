@@ -21,7 +21,7 @@
         <link rel="next" href="../iter-csv/">
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.9">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.11">
     
     
       
@@ -10215,6 +10215,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
@@ -10236,6 +10238,20 @@
   
     <li class="md-nav__item">
       <a href="../../../releases/unreleased/" class="md-nav__link">
+        Unreleased
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../releases/0.16.0/" class="md-nav__link">
         0.16.0 - 2022-05-08
       </a>
     </li>
@@ -10850,24 +10866,24 @@
 <ul>
 <li>
 <p><strong>X</strong></p>
-<p><em>Type</em> → <em>numpy.ndarray</em></p>
+<p><em>Type</em> → <em>np.ndarray</em></p>
 <p>A 2D array of features. This can also be a 1D array of strings, which can be the case if you're working with text.</p>
 </li>
 <li>
 <p><strong>y</strong></p>
-<p><em>Type</em> → <em>numpy.ndarray</em></p>
+<p><em>Type</em> → <em>np.ndarray | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
 <p>An optional array of targets.</p>
 </li>
 <li>
 <p><strong>feature_names</strong></p>
-<p><em>Type</em> → <em>List[Hashable]</em></p>
+<p><em>Type</em> → <em>list[base.typing.FeatureName] | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
 <p>An optional list of feature names. The features will be labeled with integers if no names are provided.</p>
 </li>
 <li>
 <p><strong>target_names</strong></p>
-<p><em>Type</em> → <em>List[Hashable]</em></p>
+<p><em>Type</em> → <em>list[base.typing.FeatureName] | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
 <p>An optional list of output names. The outputs will be labeled with integers if no names are provided. Only applies if there are multiple outputs, i.e. if <code>y</code> is a 2D array.</p>
 </li>
@@ -10879,7 +10895,7 @@
 </li>
 <li>
 <p><strong>seed</strong></p>
-<p><em>Type</em> → <em>int</em></p>
+<p><em>Type</em> → <em>int | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
 <p>Random seed used for shuffling the data.</p>
 </li>

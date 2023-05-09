@@ -21,7 +21,7 @@
         <link rel="next" href="../part-3/">
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.9">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.11">
     
     
       
@@ -10236,6 +10236,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
@@ -10257,6 +10259,20 @@
   
     <li class="md-nav__item">
       <a href="../../../releases/unreleased/" class="md-nav__link">
+        Unreleased
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../releases/0.16.0/" class="md-nav__link">
         0.16.0 - 2022-05-08
       </a>
     </li>
@@ -10962,7 +10978,7 @@ Uncompressing into /Users/max/river_data/MovieLens100K
 [75,000] MAE: 0.750044, RMSE: 0.948911 – 00:00:05 – 1.07 MB
 [100,000] MAE: 0.748609, RMSE: 0.947994 – 00:00:07 – 1.19 MB
 </code></pre></div>
-<p>Both MAE are very close to each other (0.7486 vs 0.7485) showing that we almost reproduced <a href="/api/reco/BiasedMF/">[reco.BiasedMF](/api/reco/BiasedMF)</a> algorithm. The cost is a naturally slower running time as FM implementation offers more flexibility.</p>
+<p>Both MAE are very close to each other (0.7486 vs 0.7485) showing that we almost reproduced <a href="/api/reco/BiasedMF/">[reco.BiasedMF](../../../api/reco/BiasedMF)</a> algorithm. The cost is a naturally slower running time as FM implementation offers more flexibility.</p>
 <h2 id="feature-engineering-for-fm-models">Feature engineering for FM models<a class="headerlink" href="#feature-engineering-for-fm-models" title="Permanent link">&para;</a></h2>
 <p>Let's study the basics of how to properly encode data for FM models. We are going to keep using MovieLens 100K as it provides various feature types:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">json</span>

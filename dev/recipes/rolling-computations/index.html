@@ -21,7 +21,7 @@
         <link rel="next" href="../../api/overview/">
       
       <link rel="icon" href="../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.9">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.11">
     
     
       
@@ -10175,6 +10175,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
@@ -10196,6 +10198,20 @@
   
     <li class="md-nav__item">
       <a href="../../releases/unreleased/" class="md-nav__link">
+        Unreleased
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../releases/0.16.0/" class="md-nav__link">
         0.16.0 - 2022-05-08
       </a>
     </li>
@@ -10782,7 +10798,7 @@
 
 
 <h1 id="rolling-computations">Rolling computations<a class="headerlink" href="#rolling-computations" title="Permanent link">&para;</a></h1>
-<p>You might wonder which classes in River can be wrapped with a <a href="/api/utils/Rolling"><code>utils.Rolling</code></a>. This can be answered with a bit of metaprogramming.</p>
+<p>You might wonder which classes in River can be wrapped with a <a href="../../api/utils/Rolling"><code>utils.Rolling</code></a>. This can be answered with a bit of metaprogramming.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">importlib</span>
 <span class="kn">import</span> <span class="nn">inspect</span>
 <span class="kn">from</span> <span class="nn">river.utils.rolling</span> <span class="kn">import</span> <span class="n">Rollable</span>
@@ -10793,178 +10809,178 @@
     <span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">submodule</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[covariance.EmpiricalCovariance](/api/covariance/EmpiricalCovariance)
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[covariance.EmpiricalCovariance](../../api/covariance/EmpiricalCovariance)
 </pre>
 
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.Accuracy](/api/metrics/Accuracy)
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.Accuracy](../../api/metrics/Accuracy)
 </pre>
 
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.AdjustedMutualInfo](/api/metrics/AdjustedMutualInfo)
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.AdjustedMutualInfo](../../api/metrics/AdjustedMutualInfo)
 </pre>
 
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.AdjustedRand](/api/metrics/AdjustedRand)
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.AdjustedRand](../../api/metrics/AdjustedRand)
 </pre>
 
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.BalancedAccuracy](/api/metrics/BalancedAccuracy)
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.BalancedAccuracy](../../api/metrics/BalancedAccuracy)
 </pre>
 
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.ClassificationReport](/api/metrics/ClassificationReport)
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.ClassificationReport](../../api/metrics/ClassificationReport)
 </pre>
 
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.CohenKappa](/api/metrics/CohenKappa)
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.CohenKappa](../../api/metrics/CohenKappa)
 </pre>
 
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.Completeness](/api/metrics/Completeness)
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.Completeness](../../api/metrics/Completeness)
 </pre>
 
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.ConfusionMatrix](/api/metrics/ConfusionMatrix)
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.ConfusionMatrix](../../api/metrics/ConfusionMatrix)
 </pre>
 
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.CrossEntropy](/api/metrics/CrossEntropy)
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.CrossEntropy](../../api/metrics/CrossEntropy)
 </pre>
 
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.F1](/api/metrics/F1)
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.F1](../../api/metrics/F1)
 </pre>
 
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.FBeta](/api/metrics/FBeta)
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.FBeta](../../api/metrics/FBeta)
 </pre>
 
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.FowlkesMallows](/api/metrics/FowlkesMallows)
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.FowlkesMallows](../../api/metrics/FowlkesMallows)
 </pre>
 
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.GeometricMean](/api/metrics/GeometricMean)
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.GeometricMean](../../api/metrics/GeometricMean)
 </pre>
 
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.Homogeneity](/api/metrics/Homogeneity)
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.Homogeneity](../../api/metrics/Homogeneity)
 </pre>
 
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.Jaccard](/api/metrics/Jaccard)
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.Jaccard](../../api/metrics/Jaccard)
 </pre>
 
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.LogLoss](/api/metrics/LogLoss)
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.LogLoss](../../api/metrics/LogLoss)
 </pre>
 
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.MAE](/api/metrics/MAE)
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.MAE](../../api/metrics/MAE)
 </pre>
 
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.MCC](/api/metrics/MCC)
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.MCC](../../api/metrics/MCC)
 </pre>
 
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.MSE](/api/metrics/MSE)
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.MSE](../../api/metrics/MSE)
 </pre>
 
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.MacroF1](/api/metrics/MacroF1)
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.MacroF1](../../api/metrics/MacroF1)
 </pre>
 
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.MacroFBeta](/api/metrics/MacroFBeta)
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.MacroFBeta](../../api/metrics/MacroFBeta)
 </pre>
 
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.MacroJaccard](/api/metrics/MacroJaccard)
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.MacroJaccard](../../api/metrics/MacroJaccard)
 </pre>
 
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.MacroPrecision](/api/metrics/MacroPrecision)
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.MacroPrecision](../../api/metrics/MacroPrecision)
 </pre>
 
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.MacroRecall](/api/metrics/MacroRecall)
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.MacroRecall](../../api/metrics/MacroRecall)
 </pre>
 
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.MicroF1](/api/metrics/MicroF1)
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.MicroF1](../../api/metrics/MicroF1)
 </pre>
 
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.MicroFBeta](/api/metrics/MicroFBeta)
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.MicroFBeta](../../api/metrics/MicroFBeta)
 </pre>
 
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.MicroJaccard](/api/metrics/MicroJaccard)
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.MicroJaccard](../../api/metrics/MicroJaccard)
 </pre>
 
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.MicroPrecision](/api/metrics/MicroPrecision)
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.MicroPrecision](../../api/metrics/MicroPrecision)
 </pre>
 
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.MicroRecall](/api/metrics/MicroRecall)
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.MicroRecall](../../api/metrics/MicroRecall)
 </pre>
 
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.MultiFBeta](/api/metrics/MultiFBeta)
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.MultiFBeta](../../api/metrics/MultiFBeta)
 </pre>
 
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.MutualInfo](/api/metrics/MutualInfo)
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.MutualInfo](../../api/metrics/MutualInfo)
 </pre>
 
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.NormalizedMutualInfo](/api/metrics/NormalizedMutualInfo)
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.NormalizedMutualInfo](../../api/metrics/NormalizedMutualInfo)
 </pre>
 
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.Precision](/api/metrics/Precision)
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.Precision](../../api/metrics/Precision)
 </pre>
 
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.R2](/api/metrics/R2)
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.R2](../../api/metrics/R2)
 </pre>
 
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.RMSE](/api/metrics/RMSE)
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.RMSE](../../api/metrics/RMSE)
 </pre>
 
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.RMSLE](/api/metrics/RMSLE)
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.RMSLE](../../api/metrics/RMSLE)
 </pre>
 
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.ROCAUC](/api/metrics/ROCAUC)
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.ROCAUC](../../api/metrics/ROCAUC)
 </pre>
 
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.Rand](/api/metrics/Rand)
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.Rand](../../api/metrics/Rand)
 </pre>
 
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.Recall](/api/metrics/Recall)
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.Recall](../../api/metrics/Recall)
 </pre>
 
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.SMAPE](/api/metrics/SMAPE)
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.SMAPE](../../api/metrics/SMAPE)
 </pre>
 
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.Silhouette](/api/metrics/Silhouette)
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.Silhouette](../../api/metrics/Silhouette)
 </pre>
 
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.VBeta](/api/metrics/VBeta)
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.VBeta](../../api/metrics/VBeta)
 </pre>
 
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.WeightedF1](/api/metrics/WeightedF1)
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.WeightedF1](../../api/metrics/WeightedF1)
 </pre>
 
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.WeightedFBeta](/api/metrics/WeightedFBeta)
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.WeightedFBeta](../../api/metrics/WeightedFBeta)
 </pre>
 
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.WeightedJaccard](/api/metrics/WeightedJaccard)
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.WeightedJaccard](../../api/metrics/WeightedJaccard)
 </pre>
 
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.WeightedPrecision](/api/metrics/WeightedPrecision)
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.WeightedPrecision](../../api/metrics/WeightedPrecision)
 </pre>
 
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.WeightedRecall](/api/metrics/WeightedRecall)
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[metrics.WeightedRecall](../../api/metrics/WeightedRecall)
 </pre>
 
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[proba.Beta](/api/proba/Beta)
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[proba.Beta](../../api/proba/Beta)
 </pre>
 
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[proba.Gaussian](/api/proba/Gaussian)
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[proba.Gaussian](../../api/proba/Gaussian)
 </pre>
 
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[proba.Multinomial](/api/proba/Multinomial)
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[proba.Multinomial](../../api/proba/Multinomial)
 </pre>
 
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[stats.BayesianMean](/api/stats/BayesianMean)
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[stats.BayesianMean](../../api/stats/BayesianMean)
 </pre>
 
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[stats.Cov](/api/stats/Cov)
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[stats.Cov](../../api/stats/Cov)
 </pre>
 
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[stats.Mean](/api/stats/Mean)
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[stats.Mean](../../api/stats/Mean)
 </pre>
 
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[stats.PearsonCorr](/api/stats/PearsonCorr)
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[stats.PearsonCorr](../../api/stats/PearsonCorr)
 </pre>
 
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[stats.SEM](/api/stats/SEM)
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[stats.SEM](../../api/stats/SEM)
 </pre>
 
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[stats.Sum](/api/stats/Sum)
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[stats.Sum](../../api/stats/Sum)
 </pre>
 
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[stats.Var](/api/stats/Var)
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">[stats.Var](../../api/stats/Var)
 </pre>
 
 
