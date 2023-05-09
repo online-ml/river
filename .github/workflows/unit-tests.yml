@@ -36,13 +36,10 @@ jobs:
           path: ~/scikit_learn_data
           key: ${{ runner.os }}
 
-      # HACK: doesn't work because of modern type annotations. But it's okayish because the
-      # datasets are already cached. Just need to uncomment this if we ever need to download
-      # them again.
-      # - name: Download datasets
-      #   run: |
-      #     source ~/.venv/bin/activate
-      #     python -c "from river import datasets; datasets.CreditCard().download(); datasets.Elec2().download(); datasets.SMSSpam().download()"
+      - name: Download datasets
+        run: |
+          source ~/.venv/bin/activate
+          python -c "from river import datasets; datasets.CreditCard().download(); datasets.Elec2().download(); datasets.SMSSpam().download()"
 
       - name: pytest [Branch]
         if: github.event_name == 'pull_request'
