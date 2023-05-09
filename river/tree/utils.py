@@ -289,7 +289,9 @@ def calculate_object_size(obj: typing.Any, unit: str = "byte") -> int:
                 to_visit.append(k)
         elif hasattr(obj, "__dict__"):
             to_visit.append(obj.__dict__)
-        elif hasattr(obj, "__iter__") and not isinstance(obj, str | bytes | bytearray):
+        elif hasattr(obj, "__iter__") and not (
+            isinstance(obj, str) or isinstance(obj, bytes) or isinstance(obj, bytearray)
+        ):
             for i in obj:
                 to_visit.append(i)
 

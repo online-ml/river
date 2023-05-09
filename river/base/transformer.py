@@ -29,7 +29,7 @@ class BaseTransformer:
     def __mul__(self, other):
         from river import compose
 
-        if isinstance(other, Transformer | compose.Pipeline):
+        if isinstance(other, Transformer) or isinstance(other, compose.Pipeline):
             return compose.TransformerProduct(self, other)
 
         return compose.Grouper(transformer=self, by=other)

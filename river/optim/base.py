@@ -110,8 +110,8 @@ class Optimizer(base.Base):
 
         """
 
-        if isinstance(w, utils.VectorDict | np.ndarray) and isinstance(
-            g, utils.VectorDict | np.ndarray
+        if (isinstance(w, utils.VectorDict) or isinstance(w, np.ndarray)) and (
+            isinstance(g, utils.VectorDict) or isinstance(g, np.ndarray)
         ):
             try:
                 w = self._step_with_vector(w, g)

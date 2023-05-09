@@ -94,7 +94,7 @@ class StochasticGradientTree(base.Estimator, abc.ABC):
             node = self._root
 
         # A leaf could not be reached in a single attempt let's deal with that
-        if isinstance(node, NumericBinaryBranch | NominalMultiwayBranch):
+        if isinstance(node, NumericBinaryBranch) or isinstance(node, NominalMultiwayBranch):
             while True:
                 # Split node encountered a previously unseen categorical value (in a multi-way
                 #  test), so there is no branch to sort the instance to

@@ -174,7 +174,7 @@ class OneHotEncoder(base.MiniBatchTransformer):
 
     def learn_one(self, x):
         for i, xi in x.items():
-            if isinstance(xi, list | set):
+            if isinstance(xi, list) or isinstance(xi, set):
                 for xj in xi:
                     self.values[i].add(xj)
             else:
@@ -191,7 +191,7 @@ class OneHotEncoder(base.MiniBatchTransformer):
 
         # Add 1s
         for i, xi in x.items():
-            if isinstance(xi, list | set):
+            if isinstance(xi, list) or isinstance(xi, set):
                 for xj in xi:
                     oh[f"{i}_{xj}"] = 1
             else:

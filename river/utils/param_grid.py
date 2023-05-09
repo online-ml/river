@@ -126,7 +126,7 @@ def _expand_param_grid(grid: dict) -> typing.Iterator[dict]:
         # Example:
         # k = 'lr'
         # v = [0.001, 0.01, 0.1]
-        if isinstance(v, list | set | np.ndarray):
+        if isinstance(v, list) or isinstance(v, set) or isinstance(v, np.ndarray):
             combos = []
 
             for el in v:
