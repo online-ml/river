@@ -436,7 +436,7 @@ class Pipeline(base.Estimator):
             if isinstance(estimator, func.FuncTransformer):
                 return infer_name(estimator.func)
             if isinstance(estimator, types.FunctionType) or isinstance(obj, types.LambdaType):
-                return estimator.__name__
+                return estimator.__name__  # type: ignore
             if hasattr(estimator, "__class__"):
                 return estimator.__class__.__name__
             return str(estimator)
