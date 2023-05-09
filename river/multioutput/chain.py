@@ -61,7 +61,7 @@ class ClassifierChain(BaseChain, base.MultiLabelClassifier):
     >>> from sklearn import datasets
 
     >>> dataset = stream.iter_sklearn_dataset(
-    ...     dataset=datasets.fetch_openml('yeast', version=4, as_frame=False),
+    ...     dataset=datasets.fetch_openml('yeast', version=4, parser='auto', as_frame=False),
     ...     shuffle=True,
     ...     seed=42
     ... )
@@ -397,7 +397,7 @@ class MonteCarloClassifierChain(ProbabilisticClassifierChain):
     ...    model = model.learn_one(x, y)
 
     >>> metric
-    MicroAverage(Jaccard): 51.92%
+    MicroAverage(Jaccard): 51.79%
 
     References
     ----------
