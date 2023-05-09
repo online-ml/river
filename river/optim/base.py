@@ -63,7 +63,7 @@ class Optimizer(base.Base):
     """
 
     def __init__(self, lr: int | float | Scheduler):
-        if isinstance(lr, int | float):
+        if isinstance(lr, int) or isinstance(lr, float):
             lr = optim.schedulers.Constant(lr)
         self.lr = lr
         self.n_iterations = 0
