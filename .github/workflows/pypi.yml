@@ -27,6 +27,8 @@ jobs:
             arch: alt
           - os: macos-latest
             arch: alt
+          - os: ubuntu-latest
+            arch: alt
 
     steps:
       - uses: actions/checkout@v2
