@@ -34,7 +34,7 @@ Note that River also supports some more basic tasks. For instance, you might jus
 
 ## Dictionaries everywhere
 
-River a Python library. It is composed of a bunch of classes which implement various online processing algorithms. Most of these classes are machine learning models which can process a single sample, be it for learning or for inference.
+River is a Python library. It is composed of a bunch of classes which implement various online processing algorithms. Most of these classes are machine learning models which can process a single sample, be it for learning or for inference.
 
 We made the choice to use dictionaries as the basic building block. First of all, online processing is different to batch processing, in that vectorization doesn't bring any speedup. Therefore numeric processing libraries such as numpy and PyTorch actually bring too much overhead. Using native Python data structures is faster.
 
