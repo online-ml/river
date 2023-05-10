@@ -19,9 +19,6 @@ jobs:
             platform: linux
           - os: windows-latest
             ls: dir
-          - os: ubuntu-latest
-            arch: alt
-            alt_arch_name: aarch64
           - os: macos-latest
             arch: alt
             alt_arch_name: arm64
@@ -66,8 +63,7 @@ jobs:
             rustup default nightly &&
             rustup show
           # rust doesn't seem to be available for musl linux on i686
-          # compilation is very slow on aarch64, so skip it
-          CIBW_SKIP: "*-musllinux_i686 *-manylinux_aarch64"
+          CIBW_SKIP: "*-musllinux_i686"
           # we build for "alt_arch_name" if it exists, else 'auto
           CIBW_ARCHS: ${{ matrix.alt_arch_name || 'auto' }}
 
