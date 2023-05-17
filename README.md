@@ -125,20 +125,32 @@ pip install git+ssh://git@github.com/online-ml/river.git --upgrade
 
 ## 🔮 Features
 
-- Linear models with a wide array of optimizers
-- Nearest neighbors, decision trees, naïve Bayes
+River provides online implementations of the following family of algorithms:
+
+- Linear models, with a wide array of optimizers
+- Decision trees and random forests
+- (Approximate) nearest neighbors
 - Anomaly detection
 - Drift detection
 - Recommender systems
 - Time series forecasting
+- Bandits
+- Factorization machines
 - Imbalanced learning
 - Clustering
+- Bagging/boosting/stacking
+- Active learning
+
+River also provides other online utilities:
+
 - Feature extraction and selection
 - Online statistics and metrics
+- Preprocessing
 - Built-in datasets
 - Progressive model validation
 - Model pipelines
-- Check out [the API](https://riverml.xyz/latest/api/overview/) for a comprehensive overview
+
+Check out [the API](https://riverml.xyz/latest/api/overview/) for a comprehensive overview
 
 ## 🤔 Should I be using River?
 
