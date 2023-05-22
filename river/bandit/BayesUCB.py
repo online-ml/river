@@ -1,5 +1,4 @@
 import random
-from random import betavariate
 from river import bandit
 from scipy.special import btdtri
 
@@ -23,7 +22,7 @@ class Beta:
         self.N[int(obs)] += 1
 
     def sample(self):
-        return betavariate(self.N[1], self.N[0])
+        return random.betavariate(self.N[1], self.N[0])
 
     def quantile(self, p):
         return btdtri(self.N[1], self.N[0], p)
@@ -61,7 +60,7 @@ class BayesUCB(bandit.base.Policy):
 
     print('Sum:', metric.get())
     """
-    def __init__(self, n_arms: int, reward_obj=None, burn_in=0):
+    def __init__(self, n_arms, reward_obj=None, burn_in=0):
         super().__init__(reward_obj, burn_in)
         self.n_arms = n_arms
         self.t = 1
