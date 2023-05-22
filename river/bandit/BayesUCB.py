@@ -1,5 +1,9 @@
+from __future__ import annotations
+
 import random
+
 from river import bandit
+
 from scipy.special import btdtri
 
 
