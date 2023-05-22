@@ -3,13 +3,11 @@ from __future__ import annotations
 import random
 
 from river import bandit
-
 from scipy.special import btdtri
 
 
 class Beta:
-    """
-    Posterior of Bernoulli/Beta distribution
+    """Posterior of Bernoulli/Beta distribution
     """
     def __init__(self, a=1, b=1):
         self.a = a
@@ -33,8 +31,7 @@ class Beta:
 
 
 class BayesUCB(bandit.base.Policy):
-    """
-    Bayes-UCB strategy for bandit algorithm proposed by Kaufmann E. et al.
+    """Bayes-UCB strategy for bandit algorithm proposed by Kaufmann E. et al.
 
     Parameters
     --------
