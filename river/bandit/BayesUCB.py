@@ -1,7 +1,8 @@
-from river import bandit
-from random import betavariate
-from scipy.special import btdtri
 import random
+from random import betavariate
+from river import bandit
+from scipy.special import btdtri
+
 
 class Beta:
     """
