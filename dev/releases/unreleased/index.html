@@ -21,7 +21,7 @@
         <link rel="next" href="../0.16.0/">
       
       <link rel="icon" href="../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.13">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.14">
     
     
       
@@ -10221,6 +10221,13 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#compose" class="md-nav__link">
+    compose
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#multioutput" class="md-nav__link">
     multioutput
   </a>
@@ -10822,6 +10829,13 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#compose" class="md-nav__link">
+    compose
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#multioutput" class="md-nav__link">
     multioutput
   </a>
@@ -10845,6 +10859,10 @@
 
 <h1 id="unreleased">Unreleased<a class="headerlink" href="#unreleased" title="Permanent link">&para;</a></h1>
 <p>Dropping wheel support for Python 3.8.</p>
+<h2 id="compose">compose<a class="headerlink" href="#compose" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../../api/compose/TransformerProduct"><code>compose.TransformerProduct</code></a> now correctly returns a <a href="../../api/compose/TransformerUnion"><code>compose.TransformerUnion</code></a> when a transformer is added to it.</li>
+</ul>
 <h2 id="multioutput">multioutput<a class="headerlink" href="#multioutput" title="Permanent link">&para;</a></h2>
 <ul>
 <li><a href="../../api/metrics/multioutput/MacroAverage"><code>metrics.multioutput.MacroAverage</code></a> and <a href="../../api/metrics/multioutput/MicroAverage"><code>metrics.multioutput.MicroAverage</code></a> now loop over the keys of <code>y_true</code> instead of <code>y_pred</code>. This ensures a <code>KeyError</code> is correctly raised if <code>y_pred</code> is missing an output that is present in <code>y_true</code>.</li>
