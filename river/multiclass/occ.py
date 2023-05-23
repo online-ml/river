@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import collections
 import random
-import typing
 
 from river import base, linear_model
 
@@ -107,7 +106,7 @@ class OutputCodeClassifier(base.Wrapper, base.Classifier):
             integers = list(range(2**code_size))
             self._rng.shuffle(integers)
             self._integers = iter(integers)
-        self.code_book: typing.DefaultDict = collections.defaultdict(self._next_code)
+        self.code_book: collections.defaultdict = collections.defaultdict(self._next_code)
 
     def _next_code(self):
         if self.coding_method == "random":

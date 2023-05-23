@@ -4,7 +4,6 @@ import collections
 import functools
 import io
 import math
-import typing
 from abc import ABC, abstractmethod
 
 from river import base
@@ -444,7 +443,7 @@ class HoeffdingTree(ABC):
 
         # Pick a color palette which maps classes to colors
         new_color = functools.partial(next, iter(_color_brew(n_colors)))
-        palette: typing.DefaultDict = collections.defaultdict(new_color)
+        palette: collections.defaultdict = collections.defaultdict(new_color)
 
         for parent_no, parent, child, child_no, branch_index in iterate():
             if child.depth > max_depth and max_depth != -1:

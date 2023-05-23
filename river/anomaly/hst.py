@@ -3,7 +3,6 @@ from __future__ import annotations
 import collections
 import functools
 import random
-import typing
 
 from river import anomaly, base, tree
 
@@ -212,7 +211,7 @@ class HalfSpaceTrees(anomaly.base.AnomalyDetector):
         self.n_trees = n_trees
         self.window_size = window_size
         self.height = height
-        self.limits: typing.DefaultDict = collections.defaultdict(
+        self.limits: collections.defaultdict = collections.defaultdict(
             functools.partial(tuple, (0.0, 1.0))
         )
         if limits is not None:

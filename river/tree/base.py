@@ -130,7 +130,7 @@ class Branch(base.Base, abc.ABC):
 
     def to_dataframe(self) -> pd.DataFrame:
         """Build a DataFrame containing one record for each node."""
-        node_ids: typing.DefaultDict[typing.Hashable, int] = defaultdict(lambda: len(node_ids))  # type: ignore
+        node_ids: defaultdict[typing.Hashable, int] = defaultdict(lambda: len(node_ids))  # type: ignore
         nodes = []
 
         queue: Queue = Queue()

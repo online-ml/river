@@ -259,7 +259,7 @@ def calculate_object_size(obj: typing.Any, unit: str = "byte") -> int:
 
     """
     seen = set()
-    to_visit: typing.Deque = collections.deque()
+    to_visit: collections.deque = collections.deque()
     byte_size = 0
 
     to_visit.append(obj)

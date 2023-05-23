@@ -3,7 +3,6 @@ from __future__ import annotations
 import collections
 import copy
 import functools
-import typing
 
 import pandas as pd
 
@@ -176,7 +175,7 @@ class Agg(base.Transformer):
         self.on = on
         self.by = (by if isinstance(by, list) else [by]) if by is not None else by
         self.how = how
-        self._groups: typing.DefaultDict = collections.defaultdict(
+        self._groups: collections.defaultdict = collections.defaultdict(
             functools.partial(copy.deepcopy, how)
         )
         self._feature_name = f"{self.on}_{self.how.name}"

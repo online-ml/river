@@ -3,7 +3,6 @@ from __future__ import annotations
 import collections
 import copy
 import functools
-import typing
 
 from river import base
 
@@ -34,7 +33,7 @@ class Grouper(base.Transformer):
     ):
         self.transformer = transformer
         self.by = by if isinstance(by, list) else [by]
-        self.transformers: typing.DefaultDict = collections.defaultdict(
+        self.transformers: collections.defaultdict = collections.defaultdict(
             functools.partial(copy.deepcopy, transformer)
         )
 

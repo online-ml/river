@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import math
-import typing
 from collections import defaultdict
 
 from river import base, cluster, stats, utils
@@ -137,13 +136,13 @@ class CluStream(base.Clusterer):
 
         self.kwargs = kwargs
 
-        self.centers: dict[int, typing.DefaultDict] = {}
+        self.centers: dict[int, defaultdict] = {}
         self.micro_clusters: dict[int, CluStreamMicroCluster] = {}
 
         self._timestamp = -1
         self._initialized = False
 
-        self._mc_centers: dict[int, typing.DefaultDict] = {}
+        self._mc_centers: dict[int, defaultdict] = {}
         self._kmeans_mc = None
 
     def _maintain_micro_clusters(self, x, w):

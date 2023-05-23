@@ -147,8 +147,8 @@ class LDA(base.Transformer):
         self.word_to_index: dict[str, int] = {}
         self.index_to_word: dict[int, str] = {}
 
-        self.nu_1: typing.DefaultDict = defaultdict(functools.partial(np.ones, 1))
-        self.nu_2: typing.DefaultDict = defaultdict(functools.partial(np.array, [self.alpha_beta]))
+        self.nu_1: defaultdict = defaultdict(functools.partial(np.ones, 1))
+        self.nu_2: defaultdict = defaultdict(functools.partial(np.array, [self.alpha_beta]))
 
         for topic in range(self.n_components):
             self.nu_1[topic] = np.ones(1)
@@ -327,7 +327,7 @@ class LDA(base.Transformer):
         Computed statistics over the words. Document reprensetation across topics.
 
         """
-        statistics: typing.DefaultDict = defaultdict(lambda: np.zeros(self.truncation_size_prime))
+        statistics: defaultdict = defaultdict(lambda: np.zeros(self.truncation_size_prime))
 
         exp_weights, exp_oov_weights = self._compute_weights(
             n_components=self.n_components, nu_1=self.nu_1, nu_2=self.nu_2

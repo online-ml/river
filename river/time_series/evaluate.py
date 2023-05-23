@@ -55,8 +55,8 @@ def _iter_with_horizon(dataset: base.typing.Dataset, horizon: int) -> TimeSeries
 
     """
 
-    x_horizon: typing.Deque[dict] = collections.deque(maxlen=horizon)
-    y_horizon: typing.Deque = collections.deque(maxlen=horizon)
+    x_horizon: collections.deque[dict] = collections.deque(maxlen=horizon)
+    y_horizon: collections.deque = collections.deque(maxlen=horizon)
 
     stream = iter(dataset)
 

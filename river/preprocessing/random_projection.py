@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import collections
 import random
-import typing
 
 from river import base
 
@@ -64,7 +63,7 @@ class GaussianRandomProjector(base.Transformer):
         self.n_components = n_components
         self.seed = seed
         self._rng = random.Random(seed)
-        self._projection_matrix: typing.DefaultDict[
+        self._projection_matrix: collections.defaultdict[
             base.typing.FeatureName, float
         ] = collections.defaultdict(self._rand_gauss)
 
@@ -141,7 +140,7 @@ class SparseRandomProjector(base.Transformer):
         self.density = density
         self.seed = seed
         self._rng = random.Random(seed)
-        self._projection_matrix: typing.DefaultDict[
+        self._projection_matrix: collections.defaultdict[
             base.typing.FeatureName, dict[int, float]
         ] = collections.defaultdict(self._rand_weights_for_feature)
 

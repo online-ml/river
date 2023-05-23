@@ -3,7 +3,6 @@ from __future__ import annotations
 import collections
 import itertools
 import math
-import typing
 
 from river import base, linear_model, preprocessing, time_series
 
@@ -296,9 +295,9 @@ class SNARIMAX(time_series.base.Forecaster):
             else preprocessing.StandardScaler() | linear_model.LinearRegression()
         )
         self.differencer = Differencer(d=d, m=1) * Differencer(d=sd, m=m)
-        self.y_hist: typing.Deque[float] = collections.deque(maxlen=d + m * sd)
-        self.y_diff: typing.Deque[float] = collections.deque(maxlen=max(p, m * sp))
-        self.errors: typing.Deque[float] = collections.deque(maxlen=max(q, m * sq))
+        self.y_hist: collections.deque[float] = collections.deque(maxlen=d + m * sd)
+        self.y_diff: collections.deque[float] = collections.deque(maxlen=max(p, m * sp))
+        self.errors: collections.deque[float] = collections.deque(maxlen=max(q, m * sq))
 
     def _add_lag_features(self, x, Y, errors):
         if x is None:

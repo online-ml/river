@@ -109,7 +109,7 @@ class KSWIN(DriftDetector):
         super()._reset()
         self.p_value = 0
         self.n = 0
-        self.window: typing.Deque = collections.deque(maxlen=self.window_size)
+        self.window: collections.deque = collections.deque(maxlen=self.window_size)
         self._rng = random.Random(self.seed)
 
     def update(self, x):

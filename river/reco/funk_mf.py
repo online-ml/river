@@ -3,7 +3,6 @@ from __future__ import annotations
 import collections
 import copy
 import functools
-import typing
 
 import numpy as np
 
@@ -116,10 +115,10 @@ class FunkMF(reco.base.Ranker):
         self.clip_gradient = clip_gradient
 
         random_latents = functools.partial(self.initializer, shape=self.n_factors)
-        self.u_latents: typing.DefaultDict[
+        self.u_latents: collections.defaultdict[
             int, optim.initializers.Initializer
         ] = collections.defaultdict(random_latents)
-        self.i_latents: typing.DefaultDict[
+        self.i_latents: collections.defaultdict[
             int, optim.initializers.Initializer
         ] = collections.defaultdict(random_latents)
 

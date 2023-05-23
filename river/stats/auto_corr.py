@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import collections
 import numbers
-import typing
 
 from river import stats
 
@@ -51,7 +50,7 @@ class AutoCorr(stats.base.Univariate):
     """
 
     def __init__(self, lag: int):
-        self.window: typing.Deque[numbers.Number] = collections.deque(maxlen=lag)
+        self.window: collections.deque[numbers.Number] = collections.deque(maxlen=lag)
         self.lag = lag
         self.pearson = stats.PearsonCorr(ddof=1)
 

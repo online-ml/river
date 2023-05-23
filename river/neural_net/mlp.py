@@ -3,7 +3,6 @@ from __future__ import annotations
 import collections
 import copy
 import functools
-import typing
 
 import numpy as np
 import pandas as pd
@@ -58,7 +57,7 @@ class MLP:
         self.loss = loss
         self.optimizer = optimizer
         self.seed = seed
-        self._optimizers: typing.DefaultDict = collections.defaultdict(
+        self._optimizers: collections.defaultdict = collections.defaultdict(
             functools.partial(copy.deepcopy, optimizer)
         )
 

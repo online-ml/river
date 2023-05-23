@@ -75,7 +75,7 @@ class NearestNeighbors:
         self.min_distance_keep = min_distance_keep
 
         self.distance_func = distance_func
-        self.window: typing.Deque = collections.deque(maxlen=self.window_size)
+        self.window: collections.deque = collections.deque(maxlen=self.window_size)
 
     def append(self, item: typing.Any, extra: typing.Any | None = None):
         """Add a point to the window, optionally with extra metadata.
