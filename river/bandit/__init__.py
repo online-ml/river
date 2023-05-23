@@ -10,7 +10,8 @@ from __future__ import annotations
 from . import base, envs
 from .epsilon_greedy import EpsilonGreedy
 from .evaluate import evaluate
+from .exp3 import Exp3
 from .thompson import ThompsonSampling
 from .ucb import UCB
 
-__all__ = ["base", "envs", "evaluate", "EpsilonGreedy", "ThompsonSampling", "UCB"]
+__all__ = ["base", "envs", "evaluate", "EpsilonGreedy", "Exp3", "ThompsonSampling", "UCB"]
