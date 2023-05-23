@@ -227,7 +227,7 @@ class HierarchicalClustering(base.Clusterer):
     def learn_one(self, x):
         x = utils.dict2numpy(x)
         # We create the node for x and add it to the tree
-        if self.window_size > 0 and len(self.X.keys()) >= self.window_size:
+        if len(self.X.keys()) >= self.window_size:
             # If we have reached the maximum of data points, we delete the oldest one and add a node with the same key as the one we deleted
             oldest_key = self.X[list(self.X.keys())[0]]
             oldest = self.nodes[oldest_key]
