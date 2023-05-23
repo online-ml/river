@@ -3,6 +3,7 @@ from __future__ import annotations
 import collections
 import functools
 import itertools
+import math
 import numbers
 
 import numpy as np
@@ -18,6 +19,7 @@ __all__ = [
     "Normalizer",
     "RobustScaler",
     "StandardScaler",
+    "TargetMinMaxScaler",
     "TargetStandardScaler",
 ]
 
@@ -576,6 +578,8 @@ class TargetStandardScaler(compose.TargetTransformRegressor):
     >>> evaluate.progressive_val_score(dataset, model, metric)
     MSE: 2.003724
 
+
+
     """
 
     def __init__(self, regressor: base.Regressor):
@@ -587,10 +591,57 @@ class TargetStandardScaler(compose.TargetTransformRegressor):
         return super().learn_one(x, y)
 
     def _scale(self, y):
-        try:
-            return (y - self.var.mean.get()) / self.var.get() ** 0.5
-        except ZeroDivisionError:
-            return 0.0
+        return safe_div(y - self.var.mean.get(), self.var.get() ** 0.5)
 
     def _unscale(self, y):
         return y * self.var.get() ** 0.5 + self.var.mean.get()
+
+
+class TargetMinMaxScaler(compose.TargetTransformRegressor):
+    """Applies min-max scaling to the target.
+
+    Parameters
+    ----------
+    regressor
+        Regression model to wrap.
+
+    Examples
+    --------
+
+    >>> from river import datasets
+    >>> from river import evaluate
+    >>> from river import linear_model
+    >>> from river import metrics
+    >>> from river import preprocessing
+
+    >>> dataset = datasets.TrumpApproval()
+    >>> model = (
+    ...     preprocessing.StandardScaler() |
+    ...     preprocessing.TargetMinMaxScaler(
+    ...         regressor=linear_model.LinearRegression(intercept_lr=0.15)
+    ...     )
+    ... )
+    >>> metric = metrics.MSE()
+
+    >>> evaluate.progressive_val_score(dataset, model, metric)
+    MSE: 2.01689
+
+    """
+
+    def __init__(self, regressor: base.Regressor):
+        self.min = stats.Min()
+        self.max = stats.Max()
+        super().__init__(regressor=regressor, func=self._scale, inverse_func=self._unscale)
+
+    def learn_one(self, x, y):
+        self.min.update(y)
+        self.max.update(y)
+        return super().learn_one(x, y)
+
+    def _scale(self, y):
+        return safe_div(y - self.min.get(), self.max.get() - self.min.get())
+
+    def _unscale(self, y):
+        if self.min.get() == math.inf:
+            return y
+        return y * (self.max.get() - self.min.get()) + self.min.get()

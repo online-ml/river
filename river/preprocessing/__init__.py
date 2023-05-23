@@ -22,6 +22,7 @@ from .scale import (
     Normalizer,
     RobustScaler,
     StandardScaler,
+    TargetMinMaxScaler,
     TargetStandardScaler,
 )
 
@@ -41,5 +42,6 @@ __all__ = [
     "SparseRandomProjector",
     "StandardScaler",
     "StatImputer",
+    "TargetMinMaxScaler",
     "TargetStandardScaler",
 ]
