@@ -14,16 +14,12 @@ class BaseTransformer:
         """Fuses with another Transformer into a TransformerUnion."""
         from river import compose
 
-        if isinstance(other, compose.TransformerUnion):
-            return other.__add__(self)
         return compose.TransformerUnion(self, other)
 
     def __radd__(self, other):
         """Fuses with another Transformer into a TransformerUnion."""
         from river import compose
 
-        if isinstance(other, compose.TransformerUnion):
-            return other.__add__(self)
         return compose.TransformerUnion(other, self)
 
     def __mul__(self, other):

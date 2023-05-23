@@ -159,7 +159,11 @@ class TransformerUnion(base.MiniBatchTransformer):
     def __init__(self, *transformers):
         self.transformers = {}
         for transformer in transformers:
-            self += transformer
+            if transformer.__class__ == self.__class__:
+                for t in transformer:
+                    self._add_step(t)
+            else:
+                self._add_step(transformer)
 
     def __getitem__(self, key):
         """Just for convenience."""
