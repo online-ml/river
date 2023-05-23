@@ -3,6 +3,31 @@ from __future__ import annotations
 from river import compose, preprocessing
 
 
+def test_issue_1238():
+    """
+
+    https://github.com/online-ml/river/issues/1238
+
+    >>> from river import compose
+
+    >>> x = dict(a=0, b=1, x=2, y=3)
+    >>> group_1 = compose.Select('a', 'b')
+    >>> group_2 = compose.Select('x', 'y')
+    >>> product = group_1 + group_2 + group_1 * group_2
+    >>> sorted(product.transform_one(x), key=lambda k: (len(k), k))
+    ['a', 'b', 'x', 'y', 'a*x', 'a*y', 'b*x', 'b*y']
+
+    >>> product = group_1 * group_2 + group_1 + group_2
+    >>> sorted(product.transform_one(x), key=lambda k: (len(k), k))
+    ['a', 'b', 'x', 'y', 'a*x', 'a*y', 'b*x', 'b*y']
+
+    >>> product = group_1 + group_1 * group_2
+    >>> sorted(product.transform_one(x), key=lambda k: (len(k), k))
+    ['a', 'b', 'a*x', 'a*y', 'b*x', 'b*y']
+
+    """
+
+
 def test_left_is_pipeline():
     group_1 = compose.Select("a", "b")
     group_2 = compose.Select("x", "y") | preprocessing.OneHotEncoder(sparse=True)

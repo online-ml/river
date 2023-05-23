@@ -60,8 +60,16 @@ class TransformerProduct(union.TransformerUnion):
 
     """
 
+    def __str__(self):
+        return " * ".join(map(str, self.transformers.values()))
+
     def __repr__(self):
         return super().__repr__().replace("Union", "Product", 1)
+
+    def __add__(self, other):
+        from .union import TransformerUnion
+
+        return TransformerUnion(self, other)
 
     def __mul__(self, other):
         return self._add_step(other)
