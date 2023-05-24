@@ -72,7 +72,7 @@ class ThompsonSampling(bandit.base.Policy):
     """
 
     def __init__(self, dist: proba.base.Distribution, burn_in=0, seed: int | None = None):
-        super().__init__(dist, burn_in)
+        super().__init__(reward_obj=dist, burn_in=burn_in)
         self.seed = seed
         self._rng = random.Random(seed)
         self._rewards.default_factory = self._clone_dist_with_seed

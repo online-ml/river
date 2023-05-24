@@ -31,7 +31,10 @@ def safe_div(a, b):
     the denominator can be nil if a feature has no variance.
 
     """
-    return a / b if b else 0.0
+    try:
+        return a / b
+    except ZeroDivisionError:
+        return a
 
 
 class Binarizer(base.Transformer):
@@ -547,101 +550,3 @@ class AdaptiveStandardScaler(base.Transformer):
             i: safe_div(x[i] - m, s2**0.5 if s2 > 0 else 0)
             for i, m, s2 in ((i, self.means[i].get(), self.vars[i].get()) for i in x)
         }
-
-
-class TargetStandardScaler(compose.TargetTransformRegressor):
-    """Applies standard scaling to the target.
-
-    Parameters
-    ----------
-    regressor
-        Regression model to wrap.
-
-    Examples
-    --------
-
-    >>> from river import datasets
-    >>> from river import evaluate
-    >>> from river import linear_model
-    >>> from river import metrics
-    >>> from river import preprocessing
-
-    >>> dataset = datasets.TrumpApproval()
-    >>> model = (
-    ...     preprocessing.StandardScaler() |
-    ...     preprocessing.TargetStandardScaler(
-    ...         regressor=linear_model.LinearRegression(intercept_lr=0.15)
-    ...     )
-    ... )
-    >>> metric = metrics.MSE()
-
-    >>> evaluate.progressive_val_score(dataset, model, metric)
-    MSE: 2.003724
-
-
-
-    """
-
-    def __init__(self, regressor: base.Regressor):
-        self.var = stats.Var()
-        super().__init__(regressor=regressor, func=self._scale, inverse_func=self._unscale)
-
-    def learn_one(self, x, y):
-        self.var.update(y)
-        return super().learn_one(x, y)
-
-    def _scale(self, y):
-        return safe_div(y - self.var.mean.get(), self.var.get() ** 0.5)
-
-    def _unscale(self, y):
-        return y * self.var.get() ** 0.5 + self.var.mean.get()
-
-
-class TargetMinMaxScaler(compose.TargetTransformRegressor):
-    """Applies min-max scaling to the target.
-
-    Parameters
-    ----------
-    regressor
-        Regression model to wrap.
-
-    Examples
-    --------
-
-    >>> from river import datasets
-    >>> from river import evaluate
-    >>> from river import linear_model
-    >>> from river import metrics
-    >>> from river import preprocessing
-
-    >>> dataset = datasets.TrumpApproval()
-    >>> model = (
-    ...     preprocessing.StandardScaler() |
-    ...     preprocessing.TargetMinMaxScaler(
-    ...         regressor=linear_model.LinearRegression(intercept_lr=0.15)
-    ...     )
-    ... )
-    >>> metric = metrics.MSE()
-
-    >>> evaluate.progressive_val_score(dataset, model, metric)
-    MSE: 2.01689
-
-    """
-
-    def __init__(self, regressor: base.Regressor):
-        self.min = stats.Min()
-        self.max = stats.Max()
-        super().__init__(regressor=regressor, func=self._scale, inverse_func=self._unscale)
-
-    def learn_one(self, x, y):
-        self.min.update(y)
-        self.max.update(y)
-        return super().learn_one(x, y)
-
-    def _scale(self, y):
-        return safe_div(y - self.min.get(), self.max.get() - self.min.get())
-
-    def _unscale(self, y):
-        if self.min.get() == math.inf:
-            return y
-        return y * (self.max.get() - self.min.get()) + self.min.get()

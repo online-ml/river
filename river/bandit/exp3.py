@@ -23,6 +23,9 @@ class Exp3(bandit.base.Policy):
     reward_obj
         The reward object used to measure the performance of each arm. This can be a metric, a
         statistic, or a distribution.
+    reward_scaler
+        A reward scaler used to scale the rewards before they are fed to the reward object. This
+        can be useful to scale the rewards to a (0, 1) range for instance.
     burn_in
         The number of steps to use for the burn-in phase. Each arm is given the chance to be pulled
         during the burn-in phase. This is useful to mitigate selection bias.
@@ -62,22 +65,26 @@ class Exp3(bandit.base.Policy):
 
     """
 
-    def __init__(self, gamma: float, reward_obj=None, burn_in=0, seed: int | None = None):
-        super().__init__(reward_obj, burn_in)
-
-        # This policy only works with univariate reward objects, because it manipulates the reward
-        # values directly.
-        if not (
-            isinstance(self.reward_obj, proba.base.Distribution)
-            or isinstance(self.reward_obj, stats.base.Univariate)
-        ):
-            raise TypeError("The reward object should be a distribution or a univariate statistic.")
-
+    def __init__(
+        self, gamma: float, reward_obj=None, reward_scaler=None, burn_in=0, seed: int | None = None
+    ):
+        super().__init__(reward_obj=reward_obj, reward_scaler=reward_scaler, burn_in=burn_in)
         self.seed = seed
         self.gamma = gamma
         self._rng = random.Random(seed)
         self._weights = collections.defaultdict(functools.partial(float, 1))
         self._probabilities = {}
+
+    def __post_init__(self):
+        # This policy only works with univariate reward values, because it manipulates the reward
+        # values directly.
+        if not (
+            isinstance(self.reward_obj, proba.base.Distribution)
+            or isinstance(self.reward_obj, stats.base.Univariate)
+        ):
+            raise ValueError(
+                "The reward object should be a distribution or a univariate statistic."
+            )
 
     def _pull(self, arm_ids):
         total = sum(self._weights[arm_id] for arm_id in arm_ids)
