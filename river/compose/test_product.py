@@ -1,6 +1,8 @@
 from __future__ import annotations
 
-from river import compose, preprocessing
+import pandas as pd
+
+from river import compose, datasets, preprocessing, stream
 
 
 def test_issue_1238():
@@ -92,3 +94,24 @@ def test_prefixing():
 def test_suffixing():
     suffixer = compose.Suffixer("_x")
     assert suffixer.transform_one(dict(a=1, b=2, d=3)) == dict(a_x=1, b_x=2, d_x=3)
+
+
+def test_one_many_consistent():
+    """Checks that using transform_one or transform_many produces the same result."""
+
+    product = (
+        compose.Select("ordinal_date")
+        + compose.Select("gallup", "ipsos") * compose.Select("morning_consult")
+        + compose.Select("rasmussen") * compose.Select("you_gov", "five_thirty_eight")
+    )
+    X = pd.read_csv(datasets.TrumpApproval().path)
+
+    one_outputs = []
+    for x, _ in stream.iter_pandas(X):
+        one_outputs.append(product.transform_one(x))
+    one_outputs = pd.DataFrame(one_outputs)
+
+    many_outputs = product.transform_many(X)
+
+    # check_dtype=False to avoid int/float comparison
+    pd.testing.assert_frame_equal(many_outputs[one_outputs.columns], one_outputs, check_dtype=False)

@@ -1,6 +1,10 @@
 from __future__ import annotations
 
+import functools
 import itertools
+
+import numpy as np
+import pandas as pd
 
 from river import utils
 
@@ -75,9 +79,19 @@ class TransformerProduct(union.TransformerUnion):
         return self._add_step(other)
 
     def transform_one(self, x):
-        """Passes the data through each transformer and packs the results together."""
         outputs = [t.transform_one(x) for t in self.transformers.values()]
         return {
             "*".join(combo): utils.math.prod(outputs[i][f] for i, f in enumerate(combo))
             for combo in itertools.product(*outputs)
         }
+
+    def transform_many(self, X):
+        outputs = [t.transform_many(X) for t in self.transformers.values()]
+        return pd.DataFrame(
+            {
+                "*".join(combo): functools.reduce(
+                    np.multiply, (outputs[i][f] for i, f in enumerate(combo))
+                )
+                for combo in itertools.product(*outputs)
+            }
+        )
