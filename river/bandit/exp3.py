@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+import collections
+import functools
 import math
+import random
 
-from river import bandit, proba
+from river import bandit, stats, proba
 
 
 class Exp3(bandit.base.Policy):
@@ -24,6 +27,34 @@ class Exp3(bandit.base.Policy):
         The number of steps to use for the burn-in phase. Each arm is given the chance to be pulled
         during the burn-in phase. This is useful to mitigate selection bias.
 
+    Examples
+    --------
+
+    >>> import gym
+    >>> from river import bandit
+    >>> from river import proba
+    >>> from river import stats
+
+    >>> env = gym.make(
+    ...     'river_bandits/CandyCaneContest-v0'
+    ... )
+    >>> _ = env.reset(seed=42)
+    >>> _ = env.action_space.seed(123)
+
+    >>> policy = bandit.Exp3(gamma=0.5, seed=42)
+
+    >>> metric = stats.Sum()
+    >>> while True:
+    ...     action = policy.pull(range(env.action_space.n))
+    ...     observation, reward, terminated, truncated, info = env.step(action)
+    ...     policy = policy.update(action, reward)
+    ...     metric = metric.update(reward)
+    ...     if terminated or truncated:
+    ...         break
+
+    >>> metric
+    Sum: 799.
+
     References
     ----------
     [^1]: [Auer, P., Cesa-Bianchi, N., Freund, Y. and Schapire, R.E., 2002. The nonstochastic multiarmed bandit problem. SIAM journal on computing, 32(1), pp.48-77.](https://cseweb.ucsd.edu/~yfreund/papers/bandits.pdf)
@@ -31,13 +62,40 @@ class Exp3(bandit.base.Policy):
 
     """
 
-    def __init__(self, gamma: float, reward_obj=None, burn_in=0):
+    def __init__(self, gamma: float, reward_obj=None, burn_in=0, seed: int | None = None):
         super().__init__(reward_obj, burn_in)
+
+        # This policy only works with univariate reward objects, because it manipulates the reward
+        # values directly.
+        if not (
+            isinstance(self.reward_obj, proba.base.Distribution)
+            or isinstance(self.reward_obj, stats.base.Univariate)
+        ):
+            raise TypeError("The reward object should be a distribution or a univariate statistic.")
+
+        self.seed = seed
         self.gamma = gamma
+        self._rng = random.Random(seed)
+        self._weights = collections.defaultdict(functools.partial(float, 1))
+        self._probabilities = {}
 
     def _pull(self, arm_ids):
-        return max(arm_ids, key=lambda arm_id: self._rewards[arm_id].sample())
+        total = sum(self._weights[arm_id] for arm_id in arm_ids)
+        self._probabilities = {
+            arm_id: (1 - self.gamma) * (self._weights[arm_id] / total) + self.gamma / len(arm_ids)
+            for arm_id in arm_ids
+        }
+        return self._rng.choices(arm_ids, weights=self._probabilities.values())[0]
+
+    def update(self, arm_id, *reward_args, **reward_kwargs):
+        super().update(arm_id, *reward_args, **reward_kwargs)
+        reward = reward_args[0]
+        reward /= self._probabilities[arm_id]
+        self._weights[arm_id] *= math.exp(self.gamma * reward / len(self._weights))
+        return self
 
     @classmethod
     def _unit_test_params(cls):
+        yield {"gamma": 0.0}
         yield {"gamma": 0.5}
+        yield {"gamma": 1.0}

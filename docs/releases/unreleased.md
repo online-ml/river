@@ -3,6 +3,7 @@
 ## bandit
 
 - Bandit policy now return a single arm, instead of yielding or one more arms at a time. This is simpler to understand. We will move back to multi-armed pulls in the future.
+- Added `bandit.Exp3`.
 
 ## compose
 
