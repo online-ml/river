@@ -1,5 +1,13 @@
+from __future__ import annotations
+
 import math
+
 from river import base, compose, stats
+
+__all__ = [
+    "TargetMinMaxScaler",
+    "TargetStandardScaler",
+]
 
 
 def safe_div(a, b):

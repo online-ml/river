@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import copy
 import random
-from collections.abc import Callable
 
 try:
     import gym
@@ -134,7 +133,7 @@ def evaluate(
                 if done[policy_idx]:
                     continue
 
-                action = _policy.pull(range(_env.action_space.n))
+                action = _policy.pull(range(_env.action_space.n))  # type: ignore[attr-defined]
                 observation, reward, terminated, truncated, info = _env.step(action)
                 _policy.update(action, reward)
                 _reward_stat.update(reward)

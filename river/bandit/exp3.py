@@ -5,7 +5,7 @@ import functools
 import math
 import random
 
-from river import bandit, stats, proba
+from river import bandit, proba, stats
 
 
 class Exp3(bandit.base.Policy):
@@ -72,8 +72,10 @@ class Exp3(bandit.base.Policy):
         self.seed = seed
         self.gamma = gamma
         self._rng = random.Random(seed)
-        self._weights = collections.defaultdict(functools.partial(float, 1))
-        self._probabilities = {}
+        self._weights: collections.defaultdict = collections.defaultdict(
+            functools.partial(float, 1)
+        )
+        self._probabilities: dict[bandit.base.ArmID, float] = {}
 
     def __post_init__(self):
         # This policy only works with univariate reward values, because it manipulates the reward

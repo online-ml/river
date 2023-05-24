@@ -3,13 +3,12 @@ from __future__ import annotations
 import collections
 import functools
 import itertools
-import math
 import numbers
 
 import numpy as np
 import pandas as pd
 
-from river import base, compose, stats, utils
+from river import base, stats, utils
 
 __all__ = [
     "AdaptiveStandardScaler",
@@ -19,8 +18,6 @@ __all__ = [
     "Normalizer",
     "RobustScaler",
     "StandardScaler",
-    "TargetMinMaxScaler",
-    "TargetStandardScaler",
 ]
 
 

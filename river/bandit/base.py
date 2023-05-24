@@ -4,7 +4,6 @@ import abc
 import collections
 import typing
 from collections import Counter
-from collections.abc import Iterator
 
 from river import base, compose, metrics, proba, stats, utils
 
@@ -48,7 +47,7 @@ class Policy(base.Base, abc.ABC):
     def __post_init__(self):
         # It's only possible to use a reward scaler if the reward object is updated with univariate
         # reward values, because it manipulates the reward values directly.
-        if reward_scaler and not (
+        if self.reward_scaler and not (
             isinstance(self.reward_obj, proba.base.Distribution)
             or isinstance(self.reward_obj, stats.base.Univariate)
         ):

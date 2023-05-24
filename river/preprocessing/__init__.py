@@ -23,7 +23,7 @@ from .scale import (
     RobustScaler,
     StandardScaler,
 )
-from .scale_target import TargetStandardScaler, TargetMinMaxScaler
+from .scale_target import TargetMinMaxScaler, TargetStandardScaler
 
 __all__ = [
     "AdaptiveStandardScaler",
