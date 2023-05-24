@@ -30,6 +30,35 @@ def test_issue_1238():
     """
 
 
+def test_issue_1243():
+    """
+
+    https://github.com/online-ml/river/issues/1243
+
+    >>> import random
+    >>> import pandas as pd
+    >>> from river import compose, preprocessing
+
+    >>> rng = random.Random(42)
+    >>> X = [{'x': rng.uniform(8, 12), 'z': 1 } for _ in range(6)]
+
+    >>> X = pd.DataFrame.from_dict(X)
+    >>> group1 = compose.Select('z')
+    >>> group2 = compose.Select('x') | preprocessing.StandardScaler()
+    >>> model = group1 + group2 + group1 * group2
+    >>> model = model.learn_many(X)
+    >>> for x in X.to_dict('records'):
+    ...     print(model.transform_one(x))
+    {'z*x': 0.6970742382786903, 'x': 0.6970742382786903, 'z': 1}
+    {'z*x': -1.3517164298332776, 'x': -1.3517164298332776, 'z': 1}
+    {'z*x': -0.43088664845365376, 'x': -0.43088664845365376, 'z': 1}
+    {'z*x': -0.5808685249415694, 'x': -0.5808685249415694, 'z': 1}
+    {'z*x': 1.2284634549662397, 'x': 1.2284634549662397, 'z': 1}
+    {'z*x': 0.9247217767545431, 'x': 0.9247217767545431, 'z': 1}
+
+    """
+
+
 def test_left_is_pipeline():
     group_1 = compose.Select("a", "b")
     group_2 = compose.Select("x", "y") | preprocessing.OneHotEncoder(sparse=True)

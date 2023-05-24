@@ -284,7 +284,7 @@ class Metrics(Metric, collections.UserList):
         return self
 
     def clone(self):
-        return Metrics([m.clone() for m in self])
+        return self.__class__([m.clone() for m in self])
 
 
 class WrapperMetric(Metric):

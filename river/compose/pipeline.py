@@ -383,7 +383,7 @@ class Pipeline(base.Estimator):
         if new_params is None:
             new_params = {}
 
-        return Pipeline(
+        return self.__class__(
             *[
                 (name, new_params[name])
                 if isinstance(new_params.get(name), base.Estimator)

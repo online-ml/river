@@ -149,6 +149,10 @@ def check_tags(model):
     assert isinstance(model._tags, set)
 
 
+def check_clone_same_class(model):
+    assert isinstance(model.clone(), model.__class__)
+
+
 def check_clone_is_idempotent(model):
     before = model._get_params()
     after = model.clone()._get_params()

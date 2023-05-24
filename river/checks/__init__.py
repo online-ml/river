@@ -124,6 +124,7 @@ def yield_checks(model: Estimator) -> typing.Iterator[typing.Callable]:
     yield common.check_repr
     yield common.check_str
     yield common.check_tags
+    yield common.check_clone_same_class
     yield common.check_clone_is_idempotent
     yield common.check_init_has_default_params_for_tests
     yield common.check_init_default_params_are_not_mutable

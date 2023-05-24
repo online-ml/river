@@ -192,7 +192,7 @@ class TransformerUnion(base.MiniBatchTransformer):
         if new_params is None:
             new_params = {}
 
-        return TransformerUnion(
+        return self.__class__(
             *[
                 (name, new_params[name])
                 if isinstance(new_params.get(name), base.Estimator)
@@ -245,7 +245,7 @@ class TransformerUnion(base.MiniBatchTransformer):
             name = f"{name}{counter}"
 
         # Store the transformer
-        self.transformers[name] = transformer
+        self.transformers[name] = transformer.clone(include_attributes=True)
 
         return self
 
