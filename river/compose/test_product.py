@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pandas as pd
 
-from river import compose, datasets, stream, preprocessing
+from river import compose, datasets, preprocessing, stream
 
 
 def test_issue_1238():
