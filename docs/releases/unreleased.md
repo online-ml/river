@@ -1,5 +1,9 @@
 # Unreleased
 
+## bandit
+
+- Bandit policy now return a single arm, instead of yielding or one more arms at a time. This is simpler to understand. We will move back to multi-armed pulls in the future.
+
 ## compose
 
 - `compose.TransformerProduct` now correctly returns a `compose.TransformerUnion` when a transformer is added to it.

@@ -15,7 +15,6 @@ from river import bandit, stats
 def evaluate(
     policies: list[bandit.base.Policy],
     env: gym.Env,
-    pull_func: Callable[[bandit.base.Policy, gym.Env], bandit.base.ArmID],
     reward_stat: stats.base.Univariate | None = None,
     n_episodes: int = 20,
     seed: int | None = None,
@@ -54,9 +53,6 @@ def evaluate(
     >>> import gym
     >>> from river import bandit
 
-    >>> def pull_func(policy, env):
-    ...     return next(policy.pull(range(env.action_space.n)))
-
     >>> trace = bandit.evaluate(
     ...     policies=[
     ...         bandit.UCB(delta=1),
@@ -66,7 +62,6 @@ def evaluate(
     ...         'river_bandits/CandyCaneContest-v0',
     ...         max_episode_steps=100
     ...     ),
-    ...     pull_func=pull_func,
     ...     n_episodes=5,
     ...     seed=42
     ... )
@@ -90,7 +85,6 @@ def evaluate(
     ...         'river_bandits/CandyCaneContest-v0',
     ...         max_episode_steps=100
     ...     ),
-    ...     pull_func=pull_func,
     ...     n_episodes=5,
     ...     seed=42
     ... )
@@ -140,7 +134,7 @@ def evaluate(
                 if done[policy_idx]:
                     continue
 
-                action = pull_func(_policy, _env)
+                action = _policy.pull(range(_env.action_space.n))
                 observation, reward, terminated, truncated, info = _env.step(action)
                 _policy.update(action, reward)
                 _reward_stat.update(reward)

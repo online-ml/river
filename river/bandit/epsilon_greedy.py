@@ -47,7 +47,7 @@ class EpsilonGreedy(bandit.base.Policy):
 
     >>> metric = stats.Sum()
     >>> while True:
-    ...     action = next(policy.pull(range(env.action_space.n)))
+    ...     action = policy.pull(range(env.action_space.n))
     ...     observation, reward, terminated, truncated, info = env.step(action)
     ...     policy = policy.update(action, reward)
     ...     metric = metric.update(reward)

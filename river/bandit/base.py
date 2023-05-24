@@ -43,7 +43,7 @@ class Policy(base.Base, abc.ABC):
     def _pull(self, arm_ids: list[ArmID]) -> ArmID:
         ...
 
-    def pull(self, arm_ids: list[ArmID]) -> Iterator[ArmID]:
+    def pull(self, arm_ids: list[ArmID]) -> ArmID:
         """Pull arm(s).
 
         This method is a generator that yields the arm(s) that should be pulled. During the burn-in
@@ -56,11 +56,15 @@ class Policy(base.Base, abc.ABC):
         arm_ids
             The list of arms that can be pulled.
 
+        Returns
+        -------
+        A single arm.
+
         """
         for arm_id in arm_ids:
             if self._counts[arm_id] < self.burn_in:
-                yield arm_id
-        yield self._pull(arm_ids)
+                return arm_id
+        return self._pull(arm_ids)
 
     def update(self, arm_id, *reward_args, **reward_kwargs):
         """Update an arm's state.

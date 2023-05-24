@@ -34,3 +34,10 @@ class Exp3(bandit.base.Policy):
     def __init__(self, gamma: float, reward_obj=None, burn_in=0):
         super().__init__(reward_obj, burn_in)
         self.gamma = gamma
+
+    def _pull(self, arm_ids):
+        return max(arm_ids, key=lambda arm_id: self._rewards[arm_id].sample())
+
+    @classmethod
+    def _unit_test_params(cls):
+        yield {"gamma": 0.5}
