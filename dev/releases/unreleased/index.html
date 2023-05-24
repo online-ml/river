@@ -10250,7 +10250,7 @@
   
     <li class="md-nav__item">
       <a href="../0.16.0/" class="md-nav__link">
-        0.16.0 - 2022-05-08
+        0.16.0 - 2023-05-08
       </a>
     </li>
   
@@ -10264,7 +10264,7 @@
   
     <li class="md-nav__item">
       <a href="../0.15.0/" class="md-nav__link">
-        0.15.0 - 2022-01-29
+        0.15.0 - 2023-01-29
       </a>
     </li>
   
@@ -10858,10 +10858,11 @@
 
 
 <h1 id="unreleased">Unreleased<a class="headerlink" href="#unreleased" title="Permanent link">&para;</a></h1>
-<p>Dropping wheel support for Python 3.8.</p>
 <h2 id="compose">compose<a class="headerlink" href="#compose" title="Permanent link">&para;</a></h2>
 <ul>
 <li><a href="../../api/compose/TransformerProduct"><code>compose.TransformerProduct</code></a> now correctly returns a <a href="../../api/compose/TransformerUnion"><code>compose.TransformerUnion</code></a> when a transformer is added to it.</li>
+<li>Fixed <a href="../../api/compose/TransformerProduct"><code>compose.TransformerProduct</code></a>'s <code>transform_many</code> behavior.</li>
+<li><a href="../../api/compose/TransformerUnion"><code>compose.TransformerUnion</code></a> and <a href="../../api/compose/TransformerProduct"><code>compose.TransformerProduct</code></a> will now clone the provided estimators, so that shallow copies aren't shared in different places.</li>
 </ul>
 <h2 id="multioutput">multioutput<a class="headerlink" href="#multioutput" title="Permanent link">&para;</a></h2>
 <ul>
