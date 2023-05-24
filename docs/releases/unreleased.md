@@ -5,6 +5,7 @@ Dropping wheel support for Python 3.8.
 ## compose
 
 - `compose.TransformerProduct` now correctly returns a `compose.TransformerUnion` when a transformer is added to it.
+- Fixed `compose.TransformerProduct`'s `transform_many` behavior.
 
 ## multioutput
 
