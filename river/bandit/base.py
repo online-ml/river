@@ -23,6 +23,9 @@ class Policy(base.Base, abc.ABC):
     reward_obj
         The reward object used to measure the performance of each arm. This can be a metric, a
         statistic, or a distribution.
+    reward_scaler
+        A reward scaler used to scale the rewards before they are fed to the reward object. This
+        can be useful to scale the rewards to a (0, 1) range for instance.
     burn_in
         The number of steps to use for the burn-in phase. Each arm is given the chance to be pulled
         during the burn-in phase. This is useful to mitigate selection bias.
