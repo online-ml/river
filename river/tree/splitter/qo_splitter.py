@@ -142,9 +142,6 @@ class Slot:
         y=typing.Union[float, "utils.VectorDict"],
         weight: float = 1.0,
     ):
-        # Import river.utils here to prevent circular import of river.utils
-        from river import utils
-
         self.x_stats = stats.Mean()
         self.x_stats.update(x, weight)
 
