@@ -92,3 +92,31 @@ class ModelSelectionClassifier(ModelSelector, base.Classifier):
         if self.best_model is None:
             return self.models[0].predict_proba_one(x)
         return self.best_model.predict_proba_one(x)
+
+    @classmethod
+    def _unit_test_params(cls):
+        from river import compose, linear_model, optim, preprocessing
+
+        yield {
+            "models": [
+                compose.Pipeline(
+                    preprocessing.StandardScaler(),
+                    linear_model.LogisticRegression(optimizer=optim.SGD(lr=1e-2)),
+                ),
+                compose.Pipeline(
+                    preprocessing.StandardScaler(),
+                    linear_model.LogisticRegression(optimizer=optim.SGD(lr=1e-1)),
+                ),
+            ],
+            "metric": metrics.Accuracy(),
+        }
+        yield {
+            "models": [
+                compose.Pipeline(
+                    preprocessing.StandardScaler(),
+                    linear_model.LogisticRegression(optimizer=optim.SGD(lr=lr)),
+                )
+                for lr in [1e-4, 1e-3, 1e-2, 1e-1]
+            ],
+            "metric": metrics.Accuracy(),
+        }

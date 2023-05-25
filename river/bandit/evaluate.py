@@ -127,16 +127,16 @@ def evaluate(
         done = [False] * len(policies)
 
         while not all(done):
-            for policy_idx, (_policy, _env, _reward_stat) in enumerate(
+            for policy_idx, (policy_, env_, reward_stat_) in enumerate(
                 zip(episode_policies, episode_envs, episode_reward_stats)
             ):
                 if done[policy_idx]:
                     continue
 
-                action = _policy.pull(range(_env.action_space.n))  # type: ignore[attr-defined]
-                observation, reward, terminated, truncated, info = _env.step(action)
-                _policy.update(action, reward)
-                _reward_stat.update(reward)
+                action = policy_.pull(range(env_.action_space.n))  # type: ignore[attr-defined]
+                observation, reward, terminated, truncated, info = env_.step(action)
+                policy_.update(action, reward)
+                reward_stat_.update(reward)
 
                 yield {
                     "episode": episode,
@@ -144,7 +144,7 @@ def evaluate(
                     "policy_idx": policy_idx,
                     "action": action,
                     "reward": reward,
-                    "reward_stat": _reward_stat.get(),
+                    "reward_stat": reward_stat_.get(),
                 }
 
                 done[policy_idx] = terminated or truncated

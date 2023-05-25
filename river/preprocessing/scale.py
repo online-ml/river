@@ -28,10 +28,7 @@ def safe_div(a, b):
     the denominator can be nil if a feature has no variance.
 
     """
-    try:
-        return a / b
-    except ZeroDivisionError:
-        return a
+    return a / b if b else 0.0
 
 
 class Binarizer(base.Transformer):
