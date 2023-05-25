@@ -15,12 +15,13 @@ The `utils.expand_param_grid` function can be used for this purpose.
 from __future__ import annotations
 
 from . import base
-from .bandit import BanditRegressor
+from .bandit import BanditClassifier, BanditRegressor
 from .greedy import GreedyRegressor
 from .sh import SuccessiveHalvingClassifier, SuccessiveHalvingRegressor
 
 __all__ = [
     "base",
+    "BanditClassifier",
     "BanditRegressor",
     "GreedyRegressor",
     "SuccessiveHalvingClassifier",
