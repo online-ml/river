@@ -55,7 +55,7 @@ class ThompsonSampling(bandit.base.Policy):
 
     >>> metric = stats.Sum()
     >>> while True:
-    ...     action = next(policy.pull(range(env.action_space.n)))
+    ...     action = policy.pull(range(env.action_space.n))
     ...     observation, reward, terminated, truncated, info = env.step(action)
     ...     policy = policy.update(action, reward)
     ...     metric = metric.update(reward)
@@ -72,7 +72,7 @@ class ThompsonSampling(bandit.base.Policy):
     """
 
     def __init__(self, dist: proba.base.Distribution, burn_in=0, seed: int | None = None):
-        super().__init__(dist, burn_in)
+        super().__init__(reward_obj=dist, burn_in=burn_in)
         self.seed = seed
         self._rng = random.Random(seed)
         self._rewards.default_factory = self._clone_dist_with_seed

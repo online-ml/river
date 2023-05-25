@@ -47,7 +47,7 @@ class EpsilonGreedy(bandit.base.Policy):
 
     >>> metric = stats.Sum()
     >>> while True:
-    ...     action = next(policy.pull(range(env.action_space.n)))
+    ...     action = policy.pull(range(env.action_space.n))
     ...     observation, reward, terminated, truncated, info = env.step(action)
     ...     policy = policy.update(action, reward)
     ...     metric = metric.update(reward)
@@ -66,7 +66,7 @@ class EpsilonGreedy(bandit.base.Policy):
     def __init__(
         self, epsilon: float, decay=0.0, reward_obj=None, burn_in=0, seed: int | None = None
     ):
-        super().__init__(reward_obj, burn_in)
+        super().__init__(reward_obj=reward_obj, burn_in=burn_in)
         self.epsilon = epsilon
         self.decay = decay
         self.seed = seed
