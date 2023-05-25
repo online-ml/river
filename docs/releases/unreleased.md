@@ -2,7 +2,7 @@
 
 ## bandit
 
-- Bandit policy now return a single arm, instead of yielding or one more arms at a time. This is simpler to understand. We will move back to multi-armed pulls in the future.
+- Bandit policies now return a single arm when the `pull` method is called, instead of yielding or one more arms at a time. This is simpler to understand. We will move back to multi-armed pulls in the future.
 - Added `bandit.Exp3`.
 - `bandit.UCB` and `bandit.Exp3` have an extra `reward_scaler` parameter, which can be any object that inherits from `compose.TargetTransformRegressor`. This allows scaling rewards before updating arms.
 
