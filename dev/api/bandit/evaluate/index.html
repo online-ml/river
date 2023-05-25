@@ -1273,6 +1273,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_3_4" id="__nav_3_4_label" tabindex="0">
@@ -1295,6 +1297,20 @@
     <li class="md-nav__item">
       <a href="../EpsilonGreedy/" class="md-nav__link">
         EpsilonGreedy
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Exp3/" class="md-nav__link">
+        Exp3
       </a>
     </li>
   
@@ -1402,7 +1418,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_4_5" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_4_6" >
       
       
         
@@ -1410,13 +1426,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_3_4_5" id="__nav_3_4_5_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3_4_6" id="__nav_3_4_6_label" tabindex="0">
           base
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_4_5_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_3_4_5">
+      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_4_6_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_4_6">
           <span class="md-nav__icon md-icon"></span>
           base
         </label>
@@ -1454,7 +1470,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_4_6" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_4_7" >
       
       
         
@@ -1464,13 +1480,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_3_4_6" id="__nav_3_4_6_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3_4_7" id="__nav_3_4_7_label" tabindex="0">
           envs
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_4_6_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_3_4_6">
+      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_4_7_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_4_7">
           <span class="md-nav__icon md-icon"></span>
           envs
         </label>
@@ -5463,6 +5479,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_3_24" id="__nav_3_24_label" tabindex="0">
@@ -5476,6 +5494,20 @@
           model_selection
         </label>
         <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../model-selection/BanditClassifier/" class="md-nav__link">
+        BanditClassifier
+      </a>
+    </li>
+  
+
+            
           
             
               
@@ -5544,7 +5576,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_24_5" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_24_6" >
       
       
         
@@ -5554,13 +5586,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_3_24_5" id="__nav_3_24_5_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3_24_6" id="__nav_3_24_6_label" tabindex="0">
           base
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_24_5_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_3_24_5">
+      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_24_6_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_24_6">
           <span class="md-nav__icon md-icon"></span>
           base
         </label>
@@ -6957,6 +6989,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_3_31" id="__nav_3_31_label" tabindex="0">
@@ -7175,6 +7209,20 @@
     <li class="md-nav__item">
       <a href="../../preprocessing/StatImputer/" class="md-nav__link">
         StatImputer
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../preprocessing/TargetMinMaxScaler/" class="md-nav__link">
+        TargetMinMaxScaler
       </a>
     </li>
   
@@ -10875,11 +10923,6 @@
 <p>The Gym environment to use. One copy will be made for each policy at the beginning of each episode.</p>
 </li>
 <li>
-<p><strong>pull_func</strong></p>
-<p><em>Type</em> → <em>Callable[[<a href="../../bandit/base/Policy">bandit.base.Policy</a>, gym.Env], bandit.base.ArmID]</em></p>
-<p>A function that takes a policy and an environment as arguments and returns the arm that was pulled. This function is called at each time step for each policy. This is required because there is no standard way to pull an arm in Gym environments.</p>
-</li>
-<li>
 <p><strong>reward_stat</strong></p>
 <p><em>Type</em> → <em><a href="../../stats/base/Univariate">stats.base.Univariate</a> | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
@@ -10902,9 +10945,6 @@
 <p><div class="language-python highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">gym</span>
 <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">bandit</span>
 
-<span class="k">def</span> <span class="nf">pull_func</span><span class="p">(</span><span class="n">policy</span><span class="p">,</span> <span class="n">env</span><span class="p">):</span>
-    <span class="k">return</span> <span class="nb">next</span><span class="p">(</span><span class="n">policy</span><span class="o">.</span><span class="n">pull</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">action_space</span><span class="o">.</span><span class="n">n</span><span class="p">)))</span>
-
 <span class="n">trace</span> <span class="o">=</span> <span class="n">bandit</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span>
     <span class="n">policies</span><span class="o">=</span><span class="p">[</span>
         <span class="n">bandit</span><span class="o">.</span><span class="n">UCB</span><span class="p">(</span><span class="n">delta</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
@@ -10914,7 +10954,6 @@
         <span class="s1">&#39;river_bandits/CandyCaneContest-v0&#39;</span><span class="p">,</span>
         <span class="n">max_episode_steps</span><span class="o">=</span><span class="mi">100</span>
     <span class="p">),</span>
-    <span class="n">pull_func</span><span class="o">=</span><span class="n">pull_func</span><span class="p">,</span>
     <span class="n">n_episodes</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
     <span class="n">seed</span><span class="o">=</span><span class="mi">42</span>
 <span class="p">)</span>
@@ -10938,7 +10977,6 @@ You can pass the generator to a <code>pandas.DataFrame</code> to get a nice repr
         <span class="s1">&#39;river_bandits/CandyCaneContest-v0&#39;</span><span class="p">,</span>
         <span class="n">max_episode_steps</span><span class="o">=</span><span class="mi">100</span>
     <span class="p">),</span>
-    <span class="n">pull_func</span><span class="o">=</span><span class="n">pull_func</span><span class="p">,</span>
     <span class="n">n_episodes</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
     <span class="n">seed</span><span class="o">=</span><span class="mi">42</span>
 <span class="p">)</span>
