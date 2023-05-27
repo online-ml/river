@@ -483,40 +483,22 @@ def print_module(mod, path, overview, depth=0, verbose=False):
     classes = inspect.getmembers(mod, lambda x: inspect.isclass(x) and ispublic(x))
     funcs = inspect.getmembers(mod, lambda x: inspect.isfunction(x) and ispublic(x))
 
-    # Classes
-
+    # Overview
     if hasattr(mod, "_docs_overview"):
         mod._docs_overview(functools.partial(print, file=overview))
     else:
         if classes and funcs:
             print("\n**Classes**\n", file=overview)
-
         for _, c in classes:
-            if verbose:
-                print(f"{mod_name}.{c.__name__}")
-
-            # Add the class to the overview
             slug = snake_to_kebab(c.__name__)
             print(
                 li(link(c.__name__, f"../{mod_short_path}/{slug}")),
                 end="",
                 file=overview,
             )
-
-            # Write down the class' docstring
-            with open(mod_path.joinpath(slug).with_suffix(".md"), "w") as file:
-                print_docstring(obj=c, file=file)
-
-        # Functions
-
         if classes and funcs:
             print("\n**Functions**\n", file=overview)
-
         for _, f in funcs:
-            if verbose:
-                print(f"{mod_name}.{f.__name__}")
-
-            # Add the function to the overview
             slug = snake_to_kebab(f.__name__)
             print(
                 li(link(f.__name__, f"../{mod_short_path}/{slug}")),
@@ -524,9 +506,20 @@ def print_module(mod, path, overview, depth=0, verbose=False):
                 file=overview,
             )
 
-            # Write down the function' docstring
-            with open(mod_path.joinpath(slug).with_suffix(".md"), "w") as file:
-                print_docstring(obj=f, file=file)
+    # Docstrings
+    for _, c in classes:
+        if verbose:
+            print(f"{mod_name}.{c.__name__}")
+        slug = snake_to_kebab(c.__name__)
+        with open(mod_path.joinpath(slug).with_suffix(".md"), "w") as file:
+            print_docstring(obj=c, file=file)
+
+    for _, f in funcs:
+        if verbose:
+            print(f"{mod_name}.{f.__name__}")
+        slug = snake_to_kebab(f.__name__)
+        with open(mod_path.joinpath(slug).with_suffix(".md"), "w") as file:
+            print_docstring(obj=f, file=file)
 
     # Sub-modules
     for name, submod in inspect.getmembers(mod, inspect.ismodule):
