@@ -11663,8 +11663,7 @@
 </li>
 </ul>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
-<div class="language-python highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">sketch</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<p><div class="language-python highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">sketch</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
@@ -11674,19 +11673,30 @@
     <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1000</span><span class="p">),</span>
 <span class="p">))</span>
 
-<span class="n">hist</span> <span class="o">=</span> <span class="n">sketch</span><span class="o">.</span><span class="n">Histogram</span><span class="p">(</span><span class="n">max_bins</span><span class="o">=</span><span class="mi">60</span><span class="p">)</span>
+<span class="n">hist</span> <span class="o">=</span> <span class="n">sketch</span><span class="o">.</span><span class="n">Histogram</span><span class="p">(</span><span class="n">max_bins</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
 
 <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">values</span><span class="p">:</span>
     <span class="n">hist</span> <span class="o">=</span> <span class="n">hist</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
-<span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span>
-    <span class="n">x</span><span class="o">=</span><span class="p">[(</span><span class="n">b</span><span class="o">.</span><span class="n">left</span> <span class="o">+</span> <span class="n">b</span><span class="o">.</span><span class="n">right</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">hist</span><span class="p">],</span>
-    <span class="n">height</span><span class="o">=</span><span class="p">[</span><span class="n">b</span><span class="o">.</span><span class="n">count</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">hist</span><span class="p">],</span>
-    <span class="n">width</span><span class="o">=</span><span class="p">[(</span><span class="n">b</span><span class="o">.</span><span class="n">right</span> <span class="o">-</span> <span class="n">b</span><span class="o">.</span><span class="n">left</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">hist</span><span class="p">]</span>
-<span class="p">)</span>
+<span class="k">for</span> <span class="nb">bin</span> <span class="ow">in</span> <span class="n">hist</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="nb">bin</span><span class="p">)</span>
 </code></pre></div>
-<p>.. image:: ../../docs/img/histogram_docstring.svg
-    :align: center</p>
+<div class="language-text highlight"><pre><span></span><code>[-6.24127, -6.24127]: 1
+[-5.69689, -5.19881]: 8
+[-5.12390, -4.43014]: 57
+[-4.42475, -3.72574]: 158
+[-3.71984, -3.01642]: 262
+[-3.01350, -2.50668]: 206
+[-2.50329, -0.81020]: 294
+[-0.80954, 0.29677]: 19
+[0.40896, 0.82733]: 7
+[0.84661, 1.25147]: 24
+[1.26029, 2.30758]: 178
+[2.31081, 3.05701]: 284
+[3.05963, 3.69695]: 242
+[3.69822, 5.64434]: 258
+[6.13775, 6.19311]: 2
+</code></pre></div></p>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <details class="- abstract">
 <summary>append</summary>

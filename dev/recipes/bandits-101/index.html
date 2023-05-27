@@ -11624,15 +11624,12 @@
     <span class="k">if</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;river_bandits&#39;</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
 </code></pre></div>
-<p>River's bandit module offers the <a href="../../api/bandit/evaluate"><code>bandit.evaluate</code></a> function to benchmark several policies on a given environment. It takes as input a list of bandit policies, a bandit environment (the problem to solve), and a reward object. There is a also a <code>pull_func</code> parameter that is necessary to define how a policy is supposed to pull an arm from a given environment.</p>
+<p>River's bandit module offers the <a href="../../api/bandit/evaluate"><code>bandit.evaluate</code></a> function to benchmark several policies on a given environment. It takes as input a list of bandit policies, a bandit environment (the problem to solve), and a reward object.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">gym</span>
 <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">bandit</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
 <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">stats</span>
-
-<span class="k">def</span> <span class="nf">pull_func</span><span class="p">(</span><span class="n">policy</span><span class="p">,</span> <span class="n">env</span><span class="p">):</span>
-    <span class="k">return</span> <span class="nb">next</span><span class="p">(</span><span class="n">policy</span><span class="o">.</span><span class="n">pull</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">action_space</span><span class="o">.</span><span class="n">n</span><span class="p">)))</span>
 
 <span class="n">policies</span><span class="o">=</span><span class="p">[</span>
     <span class="n">bandit</span><span class="o">.</span><span class="n">EpsilonGreedy</span><span class="p">(</span><span class="n">epsilon</span><span class="o">=</span><span class="mf">0.1</span><span class="p">),</span>
@@ -11649,7 +11646,6 @@
     <span class="n">policies</span><span class="o">=</span><span class="n">policies</span><span class="p">,</span>
     <span class="n">env</span><span class="o">=</span><span class="n">env</span><span class="p">,</span>
     <span class="n">reward_stat</span><span class="o">=</span><span class="n">stats</span><span class="o">.</span><span class="n">Mean</span><span class="p">(),</span>
-    <span class="n">pull_func</span><span class="o">=</span><span class="n">pull_func</span><span class="p">,</span>
     <span class="n">n_episodes</span><span class="o">=</span><span class="p">(</span><span class="n">n_episodes</span> <span class="o">:=</span> <span class="mi">2000</span><span class="p">),</span>
 <span class="p">)</span>
 </code></pre></div>
@@ -11663,7 +11659,9 @@
 <span class="p">))</span>
 <span class="n">trace_df</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>100%|██████████████████████████████████████████████████████████████████████████████████████████| 6000000/6000000 [01:26&lt;00:00, 69579.00it/s]
+<div class="language-text highlight"><pre><span></span><code>  0%|          | 0/6000000 [00:00&lt;?, ?it/s]/Users/max/.pyenv/versions/3.10/envs/river310/lib/python3.10/site-packages/gym/utils/passive_env_checker.py:233: DeprecationWarning: `np.bool8` is a deprecated alias for `np.bool_`.  (Deprecated NumPy 1.24)
+  if not isinstance(terminated, (bool, np.bool8)):
+100%|██████████| 6000000/6000000 [00:36&lt;00:00, 163866.33it/s]
 </code></pre></div>
 <div>
 <style scoped>
@@ -11697,18 +11695,18 @@
       <td>441</td>
       <td>632</td>
       <td>0</td>
-      <td>1</td>
-      <td>1.173982</td>
-      <td>1.410379</td>
+      <td>4</td>
+      <td>1.215703</td>
+      <td>1.798879</td>
     </tr>
     <tr>
       <th>3566176</th>
       <td>1188</td>
       <td>725</td>
       <td>1</td>
-      <td>3</td>
-      <td>-0.361536</td>
-      <td>0.904599</td>
+      <td>8</td>
+      <td>-0.427939</td>
+      <td>0.757612</td>
     </tr>
     <tr>
       <th>1109043</th>
@@ -11716,26 +11714,26 @@
       <td>681</td>
       <td>0</td>
       <td>7</td>
-      <td>1.794703</td>
-      <td>0.899742</td>
+      <td>0.256075</td>
+      <td>0.908808</td>
     </tr>
     <tr>
       <th>4286042</th>
       <td>1428</td>
       <td>680</td>
       <td>2</td>
-      <td>3</td>
-      <td>1.677845</td>
-      <td>0.680013</td>
+      <td>2</td>
+      <td>2.794259</td>
+      <td>1.435460</td>
     </tr>
     <tr>
       <th>5395174</th>
       <td>1798</td>
       <td>391</td>
       <td>1</td>
-      <td>3</td>
-      <td>1.501662</td>
-      <td>1.062698</td>
+      <td>1</td>
+      <td>-0.206970</td>
+      <td>0.709420</td>
     </tr>
   </tbody>
 </table>
@@ -11763,13 +11761,9 @@
     <span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">)</span>
 <span class="p">)</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="font-weight: bold">&lt;</span><span style="color: #ff00ff; text-decoration-color: #ff00ff; font-weight: bold">AxesSubplot:</span><span style="color: #808000; text-decoration-color: #808000; font-weight: bold">xlabel</span><span style="color: #000000; text-decoration-color: #000000">=</span><span style="color: #008000; text-decoration-color: #008000">'step'</span><span style="font-weight: bold">&gt;</span>
-</pre>
-
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="font-weight: bold">&lt;</span><span style="color: #ff00ff; text-decoration-color: #ff00ff; font-weight: bold">Figure</span><span style="color: #000000; text-decoration-color: #000000"> size 432x288 with </span><span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1</span><span style="color: #000000; text-decoration-color: #000000"> Axes</span><span style="font-weight: bold">&gt;</span>
-</pre>
-
-<p><img alt="png" src="../bandits-101_files/bandits-101_8_2.png" /></p>
+<div class="language-text highlight"><pre><span></span><code>&lt;Axes: xlabel=&#39;step&#39;&gt;
+</code></pre></div>
+<p><img alt="png" src="../bandits-101_files/bandits-101_8_1.png" /></p>
 <h2 id="controlling-the-evaluation-loop">Controlling the evaluation loop<a class="headerlink" href="#controlling-the-evaluation-loop" title="Permanent link">&para;</a></h2>
 <p>The <a href="../../api/bandit/evaluate"><code>bandit.evaluate</code></a> function is useful for benchmarking. But in practice, you'll want to have control over your bandit policy. Indeed you'll want the freedom to pull arms (with the <code>pull</code> method) and update the policy (with the <code>update</code> method) at your discretion.</p>
 <p>As an example, the following is a possible reimplementation of the <a href="../../api/bandit/evaluate"><code>bandit.evaluate</code></a> function. Here we'll be measuring the rate at which each policy selects the optimal arm.</p>
@@ -11798,7 +11792,7 @@
             <span class="n">episode_env</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
             <span class="n">step</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-                <span class="n">action</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">episode_policy</span><span class="o">.</span><span class="n">pull</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">episode_env</span><span class="o">.</span><span class="n">action_space</span><span class="o">.</span><span class="n">n</span><span class="p">)))</span>
+                <span class="n">action</span> <span class="o">=</span> <span class="n">episode_policy</span><span class="o">.</span><span class="n">pull</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">episode_env</span><span class="o">.</span><span class="n">action_space</span><span class="o">.</span><span class="n">n</span><span class="p">))</span>
                 <span class="n">observation</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">terminated</span><span class="p">,</span> <span class="n">truncated</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">episode_env</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
                 <span class="n">best_action</span> <span class="o">=</span> <span class="n">observation</span>
                 <span class="n">episode_policy</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">action</span><span class="p">,</span> <span class="n">reward</span><span class="p">)</span>
@@ -11817,7 +11811,9 @@
 
 <span class="n">trace_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">trace</span><span class="p">)</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>100%|██████████████████████████████████████████████████████████████████████████████████████████| 6000000/6000000 [01:25&lt;00:00, 70039.23it/s]
+<div class="language-text highlight"><pre><span></span><code>  0%|          | 0/6000000 [00:00&lt;?, ?it/s]/Users/max/.pyenv/versions/3.10/envs/river310/lib/python3.10/site-packages/gym/utils/passive_env_checker.py:233: DeprecationWarning: `np.bool8` is a deprecated alias for `np.bool_`.  (Deprecated NumPy 1.24)
+  if not isinstance(terminated, (bool, np.bool8)):
+100%|██████████| 6000000/6000000 [00:36&lt;00:00, 163521.24it/s]
 </code></pre></div>
 <div class="language-python highlight"><pre><span></span><code><span class="n">colors</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s1">&#39;ε = 0.1&#39;</span><span class="p">:</span> <span class="s1">&#39;tab:blue&#39;</span><span class="p">,</span>
@@ -11833,13 +11829,9 @@
     <span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">)</span>
 <span class="p">)</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="font-weight: bold">&lt;</span><span style="color: #ff00ff; text-decoration-color: #ff00ff; font-weight: bold">AxesSubplot:</span><span style="color: #808000; text-decoration-color: #808000; font-weight: bold">xlabel</span><span style="color: #000000; text-decoration-color: #000000">=</span><span style="color: #008000; text-decoration-color: #008000">'step'</span><span style="font-weight: bold">&gt;</span>
-</pre>
-
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="font-weight: bold">&lt;</span><span style="color: #ff00ff; text-decoration-color: #ff00ff; font-weight: bold">Figure</span><span style="color: #000000; text-decoration-color: #000000"> size 432x288 with </span><span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1</span><span style="color: #000000; text-decoration-color: #000000"> Axes</span><span style="font-weight: bold">&gt;</span>
-</pre>
-
-<p><img alt="png" src="../bandits-101_files/bandits-101_12_2.png" /></p>
+<div class="language-text highlight"><pre><span></span><code>&lt;Axes: xlabel=&#39;step&#39;&gt;
+</code></pre></div>
+<p><img alt="png" src="../bandits-101_files/bandits-101_12_1.png" /></p>
 <h2 id="handling-drift">Handling drift<a class="headerlink" href="#handling-drift" title="Permanent link">&para;</a></h2>
 <p>The environment used above is a toy situation used for introducing bandits. It is stationary, meaning that the expected reward of each arm does not change over time.</p>
 <p>In practice, arms are dynamic, and their performance can vary over time. A simple example of this is the <a href="https://www.kaggle.com/c/santa-2020">Candy Cane Contest</a> that was hosted on Kaggle in 2020. The expected reward of each arm diminishes each time it is pulled.</p>
@@ -11867,7 +11859,6 @@
 <span class="n">trace</span> <span class="o">=</span> <span class="n">bandit</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span>
     <span class="n">policies</span><span class="o">=</span><span class="n">policies</span><span class="p">,</span>
     <span class="n">env</span><span class="o">=</span><span class="n">env</span><span class="p">,</span>
-    <span class="n">pull_func</span><span class="o">=</span><span class="n">pull_func</span><span class="p">,</span>
     <span class="n">n_episodes</span><span class="o">=</span><span class="p">(</span><span class="n">n_episodes</span> <span class="o">:=</span> <span class="mi">30</span><span class="p">),</span>
     <span class="n">seed</span><span class="o">=</span><span class="mi">42</span>
 <span class="p">)</span>
@@ -11880,7 +11871,9 @@
     <span class="p">)</span>
 <span class="p">))</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>100%|█████████████████████████████████████████████████████████████████████████████████████████████| 180000/180000 [00:27&lt;00:00, 6442.28it/s]
+<div class="language-text highlight"><pre><span></span><code>  0%|          | 0/180000 [00:00&lt;?, ?it/s]/Users/max/.pyenv/versions/3.10/envs/river310/lib/python3.10/site-packages/gym/utils/passive_env_checker.py:233: DeprecationWarning: `np.bool8` is a deprecated alias for `np.bool_`.  (Deprecated NumPy 1.24)
+  if not isinstance(terminated, (bool, np.bool8)):
+100%|██████████| 180000/180000 [00:15&lt;00:00, 11881.36it/s]
 </code></pre></div>
 <p>We can compare the performance of each policy by checking the average reward at the end of each episode.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="p">(</span>
@@ -11891,14 +11884,12 @@
     <span class="o">.</span><span class="n">reward_stat</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
 <span class="p">)</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">
-policy_idx
-<span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0</span>    <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">736.1</span>
-<span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1</span>    <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">817.0</span>
-<span style="color: #008080; text-decoration-color: #008080; font-weight: bold">2</span>    <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">854.0</span>
+<div class="language-text highlight"><pre><span></span><code>policy_idx
+0    736.1
+1    817.0
+2    854.0
 Name: reward_stat, dtype: float64
-</pre>
-
+</code></pre></div>
 <p>We see that using a rolling average gives a boost to the epsilon greedy strategy. However, we see that the <a href="../../api/bandit/ThompsonSampling"><code>bandit.ThompsonSampling</code></a> policy performs even better, even though no particular care was given to drift. A natural next step would thus be to see how it could be improved to handle drift. For instance, its <code>dist</code> parameter could be wrapped with a <a href="../../api/utils/Rolling"><code>utils.Rolling</code></a>:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">policy</span> <span class="o">=</span> <span class="n">bandit</span><span class="o">.</span><span class="n">ThompsonSampling</span><span class="p">(</span>
     <span class="n">dist</span><span class="o">=</span><span class="n">utils</span><span class="o">.</span><span class="n">Rolling</span><span class="p">(</span><span class="n">proba</span><span class="o">.</span><span class="n">Beta</span><span class="p">(),</span> <span class="n">window_size</span><span class="o">=</span><span class="mi">50</span><span class="p">),</span>
