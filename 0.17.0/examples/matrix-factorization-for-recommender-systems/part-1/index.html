@@ -11841,10 +11841,10 @@ y = 4.0
 
 <span class="n">evaluate</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>[25,000] MAE: 1.070136, RMSE: 1.397014 – 00:00:02 – 570.35 KB
-[50,000] MAE: 0.99174, RMSE: 1.290666 – 00:00:04 – 716 KB
+<div class="language-text highlight"><pre><span></span><code>[25,000] MAE: 1.070136, RMSE: 1.397014 – 00:00:01 – 570.35 KB
+[50,000] MAE: 0.99174, RMSE: 1.290666 – 00:00:03 – 716 KB
 [75,000] MAE: 0.961072, RMSE: 1.250842 – 00:00:05 – 844.09 KB
-[100,000] MAE: 0.944883, RMSE: 1.227688 – 00:00:07 – 945.19 KB
+[100,000] MAE: 0.944883, RMSE: 1.227688 – 00:00:06 – 945.19 KB
 </code></pre></div>
 <p>Results are equivalent to our naive prediction (0.9448 vs 0.9421). By only focusing on the users preferences and the items characteristics, the model is limited in his ability to capture different views of the problem. Despite its poor performance alone, this algorithm is quite useful combined in other models or when we need to build dense representations for other tasks.</p>
 <h2 id="biased-matrix-factorization-biasedmf">Biased Matrix Factorization (BiasedMF)<a class="headerlink" href="#biased-matrix-factorization-biasedmf" title="Permanent link">&para;</a></h2>
@@ -11872,10 +11872,10 @@ y = 4.0
 
 <span class="n">evaluate</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>[25,000] MAE: 0.761818, RMSE: 0.961057 – 00:00:02 – 669.27 KB
-[50,000] MAE: 0.751667, RMSE: 0.949443 – 00:00:04 – 869.85 KB
-[75,000] MAE: 0.749653, RMSE: 0.948723 – 00:00:06 – 1 MB
-[100,000] MAE: 0.748559, RMSE: 0.947854 – 00:00:08 – 1.11 MB
+<div class="language-text highlight"><pre><span></span><code>[25,000] MAE: 0.761818, RMSE: 0.961057 – 00:00:01 – 669.27 KB
+[50,000] MAE: 0.751667, RMSE: 0.949443 – 00:00:03 – 869.85 KB
+[75,000] MAE: 0.749653, RMSE: 0.948723 – 00:00:05 – 1 MB
+[100,000] MAE: 0.748559, RMSE: 0.947854 – 00:00:07 – 1.11 MB
 </code></pre></div>
 <p>Results improved (0.7485 vs 0.7546) demonstrating that users and items latent representations bring additional information.</p>
 <p>To conclude this first tutorial about factorization models, let's review the important parameters to tune when dealing with this family of methods:</p>
