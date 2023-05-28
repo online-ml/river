@@ -2,6 +2,9 @@ from __future__ import annotations
 
 import functools
 import statistics
+from decimal import Decimal
+from fractions import Fraction
+from numbers import Integral
 
 from river import base, utils
 from river.neighbors import NearestNeighbors
@@ -114,6 +117,8 @@ class KNNRegressor(base.Regressor):
             )
 
     def learn_one(self, x, y):
+        assert isinstance(y, (int, float, Decimal, Fraction, Integral))
+
         self._nn.update((x, y), n_neighbors=self.n_neighbors)
         return self
 
