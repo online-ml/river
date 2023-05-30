@@ -1,5 +1,5 @@
 ---
-title: 'River's `cluster` module: practical online clustering for streaming data'
+title: "River's `cluster` module: practical online clustering for streaming data"
 tags:
     - stream learning
     - online learning
