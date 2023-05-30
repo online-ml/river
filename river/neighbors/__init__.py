@@ -9,9 +9,11 @@ from __future__ import annotations
 from .base import NearestNeighbors
 from .knn_classifier import KNNClassifier
 from .knn_regressor import KNNRegressor
+from .approx_neighbors import ANNClassifier
 
 __all__ = [
     "NearestNeighbors",
     "KNNClassifier",
     "KNNRegressor",
+    "ANNClassifier",
 ]
