@@ -2,14 +2,10 @@ from __future__ import annotations
 
 import functools
 import statistics
-import typing
 
 from river import base, utils
-from river.neighbors.approx import SWINN
-
-
-def distance_wrapper(item1, item2, dist):
-    return dist(item1[0], item2[0])
+from river.neighbors.ann import SWINN
+from river.neighbors.base import DistanceFunc, FunctionWrapper
 
 
 class ANNClassifier(base.Classifier):
@@ -28,6 +24,8 @@ class ANNClassifier(base.Classifier):
         Number of instances to buffer to store before switching to the approximate search.
         Before `warm_up` instances are observed, search will be exact and exhaustive.
     distance_func
+        An optional distance function that should receive two elements and return their
+        distance. If not set, defaults to the Euclidean distance.
     graph_k
         The number of neighbors used to build the graph-based search index.
     max_candidates
@@ -58,12 +56,11 @@ class ANNClassifier(base.Classifier):
 
     >>> model = (
     ...     preprocessing.StandardScaler() |
-    ...     neighbors.ANNClassifier()
+    ...     neighbors.ANNClassifier(seed=8)
     ... )
 
     >>> evaluate.progressive_val_score(dataset, model, metrics.Accuracy())
-    Accuracy: 84.55%
-
+    Accuracy: 89.19%
 
     """
 
@@ -72,7 +69,7 @@ class ANNClassifier(base.Classifier):
         n_neighbors: int = 5,
         window_size: int = 1000,
         warm_up: int = 500,
-        distance_func: typing.Callable = None,
+        distance_func: DistanceFunc | None = None,
         graph_k: int = 20,
         max_candidates: int = 50,
         delta: float = 0.001,
@@ -85,7 +82,7 @@ class ANNClassifier(base.Classifier):
         self.n_neighbors = n_neighbors
         self.window_size = window_size
         self.warm_up = warm_up
-        self.distance_func = (
+        self.distance_func: DistanceFunc = (
             functools.partial(utils.math.minkowski_distance, p=2)
             if distance_func is None
             else distance_func
@@ -100,12 +97,11 @@ class ANNClassifier(base.Classifier):
         self.weighted = weighted
         self.seed = seed
 
-        distance_func = functools.partial(distance_wrapper, dist=self.distance_func)
         self._buffer = SWINN(
             n_neighbors=self.graph_k,
             maxlen=self.window_size,
             warm_up=self.warm_up,
-            dist_func=distance_func,
+            dist_func=FunctionWrapper(self.distance_func),
             max_candidates=self.max_candidates,
             delta=self.delta,
             prune_prob=self.prune_prob,
@@ -115,9 +111,15 @@ class ANNClassifier(base.Classifier):
 
         self.classes_: set[base.typing.ClfTarget] = set()
 
+    @property
+    def _multiclass(self):
+        return True
+
     def learn_one(self, x, y):
         self.classes_.add(y)
         self._buffer.add((x, y))
+
+        return self
 
     def predict_proba_one(self, x):
         proba = {cid: 0.0 for cid in self.classes_}
@@ -128,7 +130,7 @@ class ANNClassifier(base.Classifier):
 
         # If the closest neighbor has a distance of 0, then return it's output
         if dists[0] == 0:
-            proba[points[0]][1] = 1.0
+            proba[points[0][1]] = 1.0
             return proba
 
         if not self.weighted:  # Uniform weights
@@ -147,11 +149,11 @@ class ANNRegressor(base.Regressor):
         k: int = 5,
         window_size: int = 1000,
         warm_up: int = 100,
-        dist_func: typing.Callable = None,
-        graph_k: int = None,
+        distance_func: DistanceFunc | None = None,
+        graph_k: int = 20,
         max_candidates: int = None,
         delta: float = 0.001,
-        prune_prob: float = 1.0,
+        prune_prob: float = 0.0,
         n_iters: int = 10,
         epsilon: float = 0.1,
         weighted: bool = False,
@@ -160,10 +162,10 @@ class ANNRegressor(base.Regressor):
         self.k = k
         self.window_size = window_size
         self.warm_up = warm_up
-        self.dist_func = (
+        self.distance_func: DistanceFunc = (
             functools.partial(utils.math.minkowski_distance, p=2)
-            if dist_func is None
-            else dist_func
+            if distance_func is None
+            else distance_func
         )
         self.graph_k = graph_k if graph_k else 2 * self.k
         self.max_candidates = max_candidates
@@ -175,12 +177,11 @@ class ANNRegressor(base.Regressor):
         self.weighted = weighted
         self.seed = seed
 
-        dist_func = functools.partial(distance_wrapper, dist=self.dist_func)
         self._buffer = SWINN(
             n_neighbors=self.graph_k,
             maxlen=self.window_size,
             warm_up=self.warm_up,
-            dist_func=dist_func,
+            dist_func=FunctionWrapper(self.distance_func),
             max_candidates=self.max_candidates,
             delta=self.delta,
             prune_prob=self.prune_prob,

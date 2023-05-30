@@ -9,6 +9,7 @@ import random
 import typing
 
 from river import base
+from river.neighbors.base import DistanceFunc, FunctionWrapper
 
 from .nn_vertex import Vertex
 
@@ -66,7 +67,7 @@ class SWINN(base.Base):
     def __init__(
         self,
         n_neighbors: int,
-        dist_func: typing.Callable[..., float],
+        dist_func: DistanceFunc | FunctionWrapper,
         maxlen: int = 1000,
         warm_up: int = 500,
         max_candidates: int = None,
