@@ -4,6 +4,7 @@ the __doc__ of each object and formats it so that MkDocs can process it in turn.
 
 """
 import argparse
+import collections
 import doctest
 import functools
 import importlib
@@ -371,7 +372,7 @@ def print_docstring(obj, file):
             ):
                 continue
 
-            ensemble_method_names = {
+            container_method_names = {
                 "append",
                 "clear",
                 "copy",
@@ -380,15 +381,23 @@ def print_docstring(obj, file):
                 "index",
                 "insert",
                 "pop",
+                "popitem",
+                "keys",
+                "fromkeys",
+                "get",
                 "remove",
                 "reverse",
                 "sort",
+                "setdefault",
+                "values",
+                "update",
+                "items",
             }
 
             if (
-                issubclass(obj, river.base.Ensemble)
+                issubclass(obj, (collections.UserList, collections.UserDict))
                 and not obj is river.base.Ensemble
-                and meth.name in ensemble_method_names
+                and meth.name in container_method_names
             ):
                 continue
 

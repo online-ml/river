@@ -21,7 +21,7 @@
         <link rel="next" href="../MonteCarloClassifierChain/">
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.14">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.15">
     
     
       
@@ -29,10 +29,10 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.85bb2934.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.26e3688c.min.css">
       
         
-        <link rel="stylesheet" href="../../../assets/stylesheets/palette.a6bdf11c.min.css">
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ecc896b0.min.css">
       
       
 
@@ -304,7 +304,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../../releases/0.17.0/" class="md-tabs__link">
+      <a href="../../../releases/unreleased/" class="md-tabs__link">
         Releases
       </a>
     </li>
@@ -10982,6 +10982,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
@@ -10995,6 +10997,20 @@
           Releases
         </label>
         <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../releases/unreleased/" class="md-nav__link">
+        Unreleased
+      </a>
+    </li>
+  
+
+            
           
             
               
@@ -11685,37 +11701,6 @@
 </code></pre></div></p>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <details class="- abstract">
-<summary>clear</summary>
-<p>D.clear() -&gt; None.  Remove all items from D.</p>
-</details>
-<p><span /></p>
-<details class="- abstract">
-<summary>copy</summary>
-</details>
-<details class="- abstract">
-<summary>fromkeys</summary>
-</details>
-<details class="- abstract">
-<summary>get</summary>
-<p>D.get(k[,d]) -&gt; D[k] if k in D, else d.  d defaults to None.</p>
-<p><strong>Parameters</strong></p>
-<ul>
-<li><strong>key</strong>    </li>
-<li><strong>default</strong>     — defaults to <code>None</code>    </li>
-</ul>
-</details>
-<p><span /></p>
-<details class="- abstract">
-<summary>items</summary>
-<p>D.items() -&gt; a set-like object providing a view on D's items</p>
-</details>
-<p><span /></p>
-<details class="- abstract">
-<summary>keys</summary>
-<p>D.keys() -&gt; a set-like object providing a view on D's keys</p>
-</details>
-<p><span /></p>
-<details class="- abstract">
 <summary>learn_one</summary>
 <p>Update the model with a set of features <code>x</code> and the labels <code>y</code>.</p>
 <p><strong>Parameters</strong></p>
@@ -11726,21 +11711,6 @@
 </ul>
 <p><strong>Returns</strong></p>
 <p>self</p>
-</details>
-<p><span /></p>
-<details class="- abstract">
-<summary>pop</summary>
-<p>D.pop(k[,d]) -&gt; v, remove specified key and return the corresponding value. If key is not found, d is returned if given, otherwise KeyError is raised.</p>
-<p><strong>Parameters</strong></p>
-<ul>
-<li><strong>key</strong>    </li>
-<li><strong>default</strong>     — defaults to <code>&lt;object object at 0x7f8775978150&gt;</code>    </li>
-</ul>
-</details>
-<p><span /></p>
-<details class="- abstract">
-<summary>popitem</summary>
-<p>D.popitem() -&gt; (k, v), remove and return some (key, value) pair as a 2-tuple; but raise KeyError if D is empty.</p>
 </details>
 <p><span /></p>
 <details class="- abstract">
@@ -11765,31 +11735,6 @@
 </ul>
 <p><strong>Returns</strong></p>
 <p>A dictionary that associates a probability which each label.</p>
-</details>
-<p><span /></p>
-<details class="- abstract">
-<summary>setdefault</summary>
-<p>D.setdefault(k[,d]) -&gt; D.get(k,d), also set D[k]=d if k not in D</p>
-<p><strong>Parameters</strong></p>
-<ul>
-<li><strong>key</strong>    </li>
-<li><strong>default</strong>     — defaults to <code>None</code>    </li>
-</ul>
-</details>
-<p><span /></p>
-<details class="- abstract">
-<summary>update</summary>
-<p>D.update([E, ]**F) -&gt; None.  Update D from mapping/iterable E and F. If E present and has a .keys() method, does:     for k in E: D[k] = E[k] If E present and lacks .keys() method, does:     for (k, v) in E: D[k] = v In either case, this is followed by: for k, v in F.items(): D[k] = v</p>
-<p><strong>Parameters</strong></p>
-<ul>
-<li><strong>other</strong>     — defaults to <code>()</code>    </li>
-<li><strong>kwds</strong>    </li>
-</ul>
-</details>
-<p><span /></p>
-<details class="- abstract">
-<summary>values</summary>
-<p>D.values() -&gt; an object providing a view on D's values</p>
 </details>
 <p><span /></p>
 <div class="footnote">
