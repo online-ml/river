@@ -9,7 +9,7 @@ from river import base
 __all__ = ["Distribution", "BinaryDistribution", "DiscreteDistribution", "ContinuousDistribution"]
 
 
-class Distribution(base.Base):
+class Distribution(abc.ABC, base.Base):
     """General distribution.
 
     Parameters
