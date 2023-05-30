@@ -12,7 +12,7 @@ jobs:
         with:
           journal: joss
           # This should be the path to the paper within your repo.
-          paper-path: paper.md
+          paper-path: paper/paper.md
       - name: Upload
         uses: actions/upload-artifact@v1
         with:
