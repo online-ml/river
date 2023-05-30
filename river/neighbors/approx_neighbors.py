@@ -5,7 +5,6 @@ import statistics
 import typing
 
 from river import base, utils
-
 from river.neighbors.approx import SWINN
 
 
@@ -114,7 +113,7 @@ class ANNClassifier(base.Classifier):
             seed=self.seed,
         )
 
-        self.classes_ = set()
+        self.classes_: set[base.typing.ClfTarget] = set()
 
     def learn_one(self, x, y):
         self.classes_.add(y)
@@ -176,7 +175,7 @@ class ANNRegressor(base.Regressor):
         self.weighted = weighted
         self.seed = seed
 
-        dist_func = functools.partial(wrapper, dist=self.dist_func)
+        dist_func = functools.partial(distance_wrapper, dist=self.dist_func)
         self._buffer = SWINN(
             n_neighbors=self.graph_k,
             maxlen=self.window_size,
@@ -188,8 +187,6 @@ class ANNRegressor(base.Regressor):
             n_iters=self.n_iters,
             seed=self.seed,
         )
-
-        self.classes_ = set()
 
     def learn_one(self, x, y):
         self._buffer.add((x, y))

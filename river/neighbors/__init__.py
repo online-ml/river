@@ -6,10 +6,10 @@ until a query is received.
 """
 from __future__ import annotations
 
+from .approx_neighbors import ANNClassifier
 from .base import NearestNeighbors
 from .knn_classifier import KNNClassifier
 from .knn_regressor import KNNRegressor
-from .approx_neighbors import ANNClassifier
 
 __all__ = [
     "NearestNeighbors",

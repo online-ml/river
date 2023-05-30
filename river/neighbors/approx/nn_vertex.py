@@ -4,26 +4,28 @@ import heapq
 import itertools
 import math
 import random
-import typing
 
 from river import base
 
 
 class Vertex(base.Base):
-    _isolated = set()
+    _isolated: set["Vertex"] = set()
 
     def __init__(self, item, uuid: int) -> None:
         self.item = item
         self.uuid = uuid
-        self.edges: typing.Dict["Vertex", float] = {}
-        self.r_edges: typing.Dict["Vertex", float] = {}
-        self.flags = set()
-        self.worst_edge = None
+        self.edges: dict["Vertex", float] = {}
+        self.r_edges: dict["Vertex", float] = {}
+        self.flags: set["Vertex"] = set()
+        self.worst_edge: "Vertex" | None = None
 
     def __hash__(self) -> int:
         return self.uuid
 
-    def __eq__(self, other: "Vertex") -> bool:
+    def __eq__(self, other) -> bool:
+        if not isinstance(other, Vertex):
+            return NotImplemented
+
         return self.uuid == other.uuid
 
     def farewell(self):
@@ -38,7 +40,7 @@ class Vertex(base.Base):
 
         Vertex._isolated.discard(self)
 
-    def fill(self, neighbors: typing.List["Vertex"], dists: typing.List[float]):
+    def fill(self, neighbors: list["Vertex"], dists: list[float]):
         for n, dist in zip(neighbors, dists):
             self.edges[n] = dist
             self.flags.add(n)
@@ -62,7 +64,7 @@ class Vertex(base.Base):
 
         if self.has_neighbors():
             if vertex == self.worst_edge:
-                self.worst_edge = max(self.edges, key=self.edges.get)
+                self.worst_edge = max(self.edges, key=self.edges.get)  # type: ignore
         else:
             self.worst_edge = None
 
@@ -74,7 +76,7 @@ class Vertex(base.Base):
             return 0
 
         if len(self.edges) >= max_edges:
-            if self.edges.get(self.worst_edge, math.inf) <= dist:
+            if self.worst_edge is None or self.edges.get(self.worst_edge, math.inf) <= dist:
                 return 0
             self.rem_edge(self.worst_edge)
 
@@ -104,13 +106,13 @@ class Vertex(base.Base):
     def sample_flags(self, sampled):
         self.flags -= set(sampled)
 
-    def neighbors(self) -> typing.Tuple[typing.List["Vertex"], typing.List[float]]:
+    def neighbors(self) -> tuple[list["Vertex"], list[float]]:
         res = tuple(map(list, zip(*((node, dist) for node, dist in self.edges.items()))))
-        return res if len(res) > 0 else ([], [])
+        return res if len(res) > 0 else ([], [])  # type: ignore
 
-    def r_neighbors(self) -> typing.Tuple[typing.List["Vertex"], typing.List[float]]:
+    def r_neighbors(self) -> tuple[list["Vertex"], list[float]]:
         res = tuple(map(list, zip(*((vertex, dist) for vertex, dist in self.r_edges.items()))))
-        return res if len(res) > 0 else ([], [])
+        return res if len(res) > 0 else ([], [])  # type: ignore
 
     def all_neighbors(self):
         return set.union(set(self.edges.keys()), set(self.r_edges.keys()))
@@ -128,7 +130,7 @@ class Vertex(base.Base):
 
         # To avoid tie in distances
         counter = itertools.count()
-        edge_pool: typing.List[typing.Tuple[float, int, "Vertex", bool]] = []
+        edge_pool: list[tuple[float, int, "Vertex", bool]] = []
         for n, dist in self.edges.items():
             heapq.heappush(edge_pool, (dist, next(counter), n, True))
 
@@ -136,7 +138,7 @@ class Vertex(base.Base):
             heapq.heappush(edge_pool, (dist, next(counter), rn, False))
 
         # Start with the best undirected edge
-        selected: typing.List["Vertex"] = [heapq.heappop(edge_pool)[2]]
+        selected: list["Vertex"] = [heapq.heappop(edge_pool)[2]]
         while len(edge_pool) > 0:
             c_dist, _, c, c_isdir = heapq.heappop(edge_pool)
             discarded = False

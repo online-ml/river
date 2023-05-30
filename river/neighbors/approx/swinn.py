@@ -101,6 +101,9 @@ class SWINN(base.Base):
     def __getitem__(self, i):
         return self._data[i]
 
+    def __iter__(self):
+        yield from self._data
+
     def _init_graph(self):
         """Create a random nearest neighbor graph."""
         n_nodes = len(self)
@@ -169,7 +172,7 @@ class SWINN(base.Base):
 
         self._refine(affected)
 
-    def _refine(self, nodes: typing.List[Vertex] = None):
+    def _refine(self, nodes: list[Vertex] = None):
         """Update the nearest neighbor graph to improve the edge distances.
 
         Parameters
@@ -209,14 +212,14 @@ class SWINN(base.Base):
             # Limits the maximum number of edges to explore and update sample flags
             for node in nodes:
                 if len(new[node]) > self.max_candidates:
-                    new[node] = self._rng.sample(tuple(new[node]), self.max_candidates)
+                    new[node] = self._rng.sample(tuple(new[node]), self.max_candidates)  # type: ignore
                 else:
-                    new[node] = list(new[node])
+                    new[node] = new[node]
 
                 if len(old[node]) > self.max_candidates:
-                    old[node] = self._rng.sample(tuple(old[node]), self.max_candidates)
+                    old[node] = self._rng.sample(tuple(old[node]), self.max_candidates)  # type: ignore
                 else:
-                    old[node] = list(old[node])
+                    old[node] = old[node]
 
                 node.sample_flags = new[node]
 
@@ -298,9 +301,7 @@ class SWINN(base.Base):
 
         return tuple(map(list, zip(*sorted(points, key=operator.itemgetter(-1))[:k])))
 
-    def _search(
-        self, item, k, epsilon: float = 0.1, seed=None, exclude=None
-    ) -> typing.Tuple[typing.List, typing.List]:
+    def _search(self, item, k, epsilon: float = 0.1, seed=None, exclude=None) -> tuple[list, list]:
         # Limiter for the distance bound
         distance_scale = 1 + epsilon
         # Distance threshold for early stops
@@ -356,7 +357,7 @@ class SWINN(base.Base):
 
         return neighbors, dists
 
-    def search(self, item, k, epsilon) -> typing.Tuple[typing.List, typing.List]:
+    def search(self, item, k, epsilon) -> tuple[list, list]:
         """Search the underlying nearest neighbor graph given a query item.
 
         In case not enough samples were observed, i.e., the number of stored samples is smaller than
@@ -388,7 +389,7 @@ class SWINN(base.Base):
         neighbors, dists = self._search(item, k, epsilon)
         return [n.item for n in neighbors], dists
 
-    def connectivity(self) -> typing.List[int]:
+    def connectivity(self) -> list[int]:
         """Get a list with the size of each connected component in the search graph.
 
         This metric provides an overview of reachability in the search index by using Kruskal's
