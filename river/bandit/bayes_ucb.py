@@ -69,7 +69,8 @@ class BayesUCB(bandit.base.Policy):
         """the p-th quantile of the beta distribution for the arm
         """
         p = 1 - 1. / (self._n + 1)
-        return btdtri(self.posterior[arm_id].alpha, self.posterior[arm_id].beta, p)
+        return special.btdtri(self.posterior[arm_id].alpha, self.posterior[arm_id].beta, p)
+
 
     def update(self, arm_id, *reward_args, **reward_kwargs):
         """Rewrite update function
