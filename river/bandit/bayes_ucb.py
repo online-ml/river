@@ -46,8 +46,9 @@ class BayesUCB(bandit.base.Policy):
 
     Reference
     --------
-    [1] Kaufmann, Emilie, Olivier Cappé, and Aurélien Garivier. "On Bayesian upper confidence bounds for bandit problems." Artificial intelligence and statistics. PMLR, 2012.  
+    [^1]: [Kaufmann, Emilie, Olivier Cappé, and Aurélien Garivier. "On Bayesian upper confidence bounds for bandit problems." Artificial intelligence and statistics. PMLR, 2012.](http://proceedings.mlr.press/v22/kaufmann12/kaufmann12.pdf)
     """
+
 
     def __init__(self, n_arms: int, reward_obj=None, burn_in=0):
         super().__init__(reward_obj, burn_in)
