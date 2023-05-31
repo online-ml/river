@@ -32,6 +32,8 @@ class Policy(base.Base, abc.ABC):
 
     """
 
+    _REQUIRES_UNIVARIATE_REWARD = False
+
     def __init__(
         self,
         reward_obj: RewardObj | None = None,
@@ -50,9 +52,12 @@ class Policy(base.Base, abc.ABC):
     def __post_init__(self):
         # It's only possible to use a reward scaler if the reward object is updated with univariate
         # reward values, because it manipulates the reward values directly.
-        if self.reward_scaler and not (
-            isinstance(self.reward_obj, proba.base.Distribution)
-            or isinstance(self.reward_obj, stats.base.Univariate)
+        if _REQUIRES_UNIVARIATE_REWARD or (
+            self.reward_scaler
+            and not (
+                isinstance(self.reward_obj, proba.base.Distribution)
+                or isinstance(self.reward_obj, stats.base.Univariate)
+            )
         ):
             raise ValueError(
                 "The reward object should be a distribution or a univariate statistic if a "
