@@ -181,6 +181,7 @@ class SWINN(base.Base):
             The list of nodes for which the neighborhood refinement will be applied.
             If `None`, all nodes will have their neighborhood enhanced.
         """
+        
 
         if nodes is None:
             nodes = [n for n in self]
