@@ -6,7 +6,6 @@ import itertools
 import math
 import operator
 import random
-import typing
 
 from river import base
 from river.neighbors.base import DistanceFunc, FunctionWrapper
@@ -91,7 +90,7 @@ class SWINN(base.Base):
         self.n_iters = n_iters
         self.seed = seed
 
-        self._data: typing.Deque[Vertex] = collections.deque(maxlen=self.maxlen)
+        self._data: collections.deque[Vertex] = collections.deque(maxlen=self.maxlen)
         self._uuid = itertools.cycle(range(self.maxlen))
         self._rng = random.Random(self.seed)
         self._index = False
