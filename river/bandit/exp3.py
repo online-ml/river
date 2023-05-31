@@ -5,7 +5,7 @@ import functools
 import math
 import random
 
-from river import bandit, proba, stats
+from river import bandit
 
 
 class Exp3(bandit.base.Policy):

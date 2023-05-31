@@ -52,7 +52,7 @@ class Policy(base.Base, abc.ABC):
     def __post_init__(self):
         # It's only possible to use a reward scaler if the reward object is updated with univariate
         # reward values, because it manipulates the reward values directly.
-        if _REQUIRES_UNIVARIATE_REWARD or (
+        if self._REQUIRES_UNIVARIATE_REWARD or (
             self.reward_scaler
             and not (
                 isinstance(self.reward_obj, proba.base.Distribution)

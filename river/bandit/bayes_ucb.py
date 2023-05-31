@@ -3,10 +3,9 @@ from __future__ import annotations
 import collections
 import random
 
-from river import bandit
-from river import proba
-
 import scipy.special
+
+from river import bandit, proba
 
 
 class BayesUCB(bandit.base.Policy):
