@@ -58,7 +58,8 @@ class BayesUCB(bandit.base.Policy):
 
 
     def _pull(self, arm_ids):
-        index = dict()
+        indices = {}
+
         for arm_id in arm_ids:
             index[arm_id] = self.compute_index(arm_id)
         max_index = max(index.values())
