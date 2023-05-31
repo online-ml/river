@@ -3,7 +3,8 @@ from __future__ import annotations
 import random
 
 from river import bandit
-from river.proba import Beta
+from river import proba
+
 from scipy.special import btdtri
 
 
