@@ -61,7 +61,8 @@ class BayesUCB(bandit.base.Policy):
         index = dict()
         for arm_id in arm_ids:
             index[arm_id] = self.compute_index(arm_id)
-        maxIndex = max(index.values())
+        max_index = max(index.values())
+
         best_arms = [arm for arm in index if index[arm] == max_index]
 
         return random.choice(bestArms)
