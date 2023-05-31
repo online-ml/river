@@ -10,7 +10,8 @@ from scipy import special
 
 
 class BayesUCB(bandit.base.Policy):
-    """Bayes-UCB bandit policy
+    """Bayes-UCB bandit policy.
+
 
     Parameters
     --------
