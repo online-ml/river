@@ -49,7 +49,8 @@ class BayesUCB(bandit.base.Policy):
         self.n_arms = n_arms
         self.posterior = dict()
         for arm_id in range(self.n_arms):
-            self.posterior[arm_id] = Beta()
+            self.posterior[arm_id] = proba.Beta()
+
 
     def _pull(self, arm_ids):
         index = dict()
