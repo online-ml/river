@@ -24,9 +24,15 @@ class Vertex(base.Base):
 
     def __eq__(self, other) -> bool:
         if not isinstance(other, Vertex):
-            return NotImplemented
+            raise NotImplementedError
 
         return self.uuid == other.uuid
+
+    def __lt__(self, other) -> bool:
+        if not isinstance(other, Vertex):
+            raise NotImplementedError
+
+        return self.uuid < other.uuid
 
     def farewell(self):
         for rn in list(self.r_edges):

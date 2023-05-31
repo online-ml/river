@@ -144,14 +144,65 @@ class ANNClassifier(base.Classifier):
 
 
 class ANNRegressor(base.Regressor):
+    """Approximate Nearest Neighbor Regressor.
+
+    This implementation relies on SWINN to keep a sliding window of the most recent data.
+    Search queries are approximate, considering the graph-based nearest neighbor search index.
+
+    Parameters
+    ----------
+    n_neighbors
+        The number of nearest neighbors to search for.
+    window_size
+        The maximum size of the window storing the last observed samples.
+    warm_up
+        Number of instances to buffer to store before switching to the approximate search.
+        Before `warm_up` instances are observed, search will be exact and exhaustive.
+    distance_func
+        An optional distance function that should receive two elements and return their
+        distance. If not set, defaults to the Euclidean distance.
+    graph_k
+        The number of neighbors used to build the graph-based search index.
+    max_candidates
+        The maximum number of candidates used in SWINN's neighborhood joins.
+    delta
+        Early stop parameter in SWINN's neighborhood refinement procedure.
+    prune_prob
+        The probability of pruning potentially redundant edges in SWINN's search graph.
+    n_iters
+        The maximum number of neighborhood join iterations performed by SWINN to refine the search graph.
+    epsilon
+        Distance bound used in SWINN to aid in avoiding local minima while traversing the search graph.
+        The higher its value, the most accurate the search queries become, at the cost of increased running time.
+    weighted
+        Weight the contribution of each neighbor by it's inverse distance.
+    seed
+        Random seed for reproducibility.
+
+    Examples
+    --------
+    >>> from river import datasets
+    >>> from river import evaluate
+    >>> from river import metrics
+    >>> from river import neighbors
+    >>> from river import preprocessing
+
+    >>> dataset = datasets.TrumpApproval()
+
+    >>> model = preprocessing.StandardScaler() | neighbors.ANNRegressor(seed=8)
+    >>> evaluate.progressive_val_score(dataset, model, metrics.RMSE())
+    RMSE: 1.596315
+
+    """
+
     def __init__(
         self,
-        k: int = 5,
+        n_neighbors: int = 5,
         window_size: int = 1000,
-        warm_up: int = 100,
+        warm_up: int = 500,
         distance_func: DistanceFunc | None = None,
         graph_k: int = 20,
-        max_candidates: int = None,
+        max_candidates: int = 50,
         delta: float = 0.001,
         prune_prob: float = 0.0,
         n_iters: int = 10,
@@ -159,7 +210,7 @@ class ANNRegressor(base.Regressor):
         weighted: bool = False,
         seed: int = None,
     ):
-        self.k = k
+        self.n_neighbors = n_neighbors
         self.window_size = window_size
         self.warm_up = warm_up
         self.distance_func: DistanceFunc = (
@@ -167,7 +218,7 @@ class ANNRegressor(base.Regressor):
             if distance_func is None
             else distance_func
         )
-        self.graph_k = graph_k if graph_k else 2 * self.k
+        self.graph_k = graph_k if graph_k else 2 * self.n_neighbors
         self.max_candidates = max_candidates
         self.delta = delta
         self.prune_prob = prune_prob
@@ -193,7 +244,7 @@ class ANNRegressor(base.Regressor):
         self._buffer.add((x, y))
 
     def predict_one(self, x):
-        result = self._buffer.search((x,), k=self.k, epsilon=self.epsilon)
+        result = self._buffer.search((x,), k=self.n_neighbors, epsilon=self.epsilon)
 
         if not result:
             return 0.0
