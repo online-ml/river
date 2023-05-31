@@ -5,7 +5,8 @@ import random
 from river import bandit
 from river import proba
 
-from scipy.special import btdtri
+from scipy import special
+
 
 
 class BayesUCB(bandit.base.Policy):
