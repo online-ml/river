@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import math
 
+import scipy.special
+
 from river.proba import base
 
 __all__ = ["Beta"]
@@ -58,6 +60,9 @@ class Beta(base.ContinuousDistribution):
     >>> beta(.21), beta(.35)
     (2.525...e-05, 0.841...)
 
+    >>> beta.cdf(.35)
+    0.994168...
+
     References
     ----------
     [^1]: [What is the intuition behind beta distribution?](https://stats.stackexchange.com/questions/47771/what-is-the-intuition-behind-beta-distribution)
@@ -103,3 +108,6 @@ class Beta(base.ContinuousDistribution):
             return (self.alpha - 1) / (self.alpha + self.beta - 2)
         except ZeroDivisionError:
             return 0.5
+
+    def cdf(self, x):
+        return scipy.special.betainc(self.alpha, self.beta, x)
