@@ -20,7 +20,9 @@ class BayesUCB(bandit.base.Policy):
 
     Examples
     --------
+    
     >>> env = gym.make('river_bandits/CandyCaneContest-v0')
+
     >>> _ = env.reset(seed=42)
     >>> _ = env.action_space.seed(123)
 
