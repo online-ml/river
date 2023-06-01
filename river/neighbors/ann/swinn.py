@@ -17,7 +17,24 @@ class SWINN(base.Base):
     """Sliding WIndow-based Nearest Neighbor (SWINN) search using Graphs.
 
     Extends the NNDescent algorithm[^1] to handle vertex addition and removal in a FIFO data
-    ingestion policy.
+    ingestion policy. SWINN builds and keeps a directed graph where edges connect the nearest
+    neighbors. Any distance metric can be used to build the graph. By using a directed graph,
+    the user must set the desired number of neighbors. More neighbors imply more accurate
+    search queries at the cost of increased running time and memory usage. Note that although
+    the number of directed neighbors is limited by the user, there is no direct control on the
+    number of reverse neighbors, i.e., the number of vertices that have an edge to a given vertex.
+
+    The basic idea of SWINN and NNDescent is that "the neighbor of my neighbors might as well be
+    my neighbor". Hence, the connections are constantly revisited to improve the graph structure.
+    The algorithm for creating and maintaining the search graph can be described
+    in general lines as follows:
+
+    * Start with a random neighborhood graph;<\br>
+    * For each node in the search graph: refine the current neighborhood by checking if there
+    are better neighborhood options among the neighbors of the current neighbors;<\br>
+    * If the total number of neighborhood changes is smaller than a given stopping criterion, then stop.
+
+    SWINN adds strategies to remove vertices from the search graph and pruning redundant edges.
 
     Parameters
     ----------
@@ -167,6 +184,7 @@ class SWINN(base.Base):
             if len(ns) > 0:
                 seed = self._rng.choice(ns)
 
+            # Use the search index to create new connections
             neighbors, dists = self._search(rn.item, self.n_neighbors, seed=seed, exclude=rn)
             rn.fill(neighbors, dists)
 
@@ -223,8 +241,11 @@ class SWINN(base.Base):
 
                 node.sample_flags = new[node]
 
+            # Perform local joins an attempt to improve the neighborhood
             for node in nodes:
+                # The origin of the join must have a boolean flag set to true
                 for n1 in new[node]:
+                    # Consider connections between vertices whose boolean flags are both true
                     for n2 in new[node]:
                         if n1.uuid == n2.uuid or n1.is_neighbor(n2):
                             continue
@@ -238,6 +259,7 @@ class SWINN(base.Base):
 
                         tried.add((n1.uuid, n2.uuid))
 
+                    # Or one of the connections has a boolean flag set to false
                     for n2 in old[node]:
                         if n1.uuid == n2.uuid or n1.is_neighbor(n2):
                             continue
@@ -251,6 +273,7 @@ class SWINN(base.Base):
 
                         tried.add((n1.uuid, n2.uuid))
 
+            # Stopping criterion
             if total_changes <= min_changes:
                 break
 
@@ -297,6 +320,7 @@ class SWINN(base.Base):
         node.fill(neighbors, dists)
 
     def _linear_scan(self, item, k):
+        # Lazy search while the warm-up period is not finished
         points = [(p.item, self.dist_func(item, p.item)) for p in self]
 
         return tuple(map(list, zip(*sorted(points, key=operator.itemgetter(-1))[:k])))
