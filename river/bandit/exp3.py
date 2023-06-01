@@ -5,7 +5,7 @@ import functools
 import math
 import random
 
-from river import bandit, proba, stats
+from river import bandit
 
 
 class Exp3(bandit.base.Policy):
@@ -67,6 +67,8 @@ class Exp3(bandit.base.Policy):
 
     """
 
+    _REQUIRES_UNIVARIATE_REWARD = True
+
     def __init__(
         self, gamma: float, reward_obj=None, reward_scaler=None, burn_in=0, seed: int | None = None
     ):
@@ -78,17 +80,6 @@ class Exp3(bandit.base.Policy):
             functools.partial(float, 1)
         )
         self._probabilities: dict[bandit.base.ArmID, float] = {}
-
-    def __post_init__(self):
-        # This policy only works with univariate reward values, because it manipulates the reward
-        # values directly.
-        if not (
-            isinstance(self.reward_obj, proba.base.Distribution)
-            or isinstance(self.reward_obj, stats.base.Univariate)
-        ):
-            raise ValueError(
-                "The reward object should be a distribution or a univariate statistic."
-            )
 
     def _pull(self, arm_ids):
         total = sum(self._weights[arm_id] for arm_id in arm_ids)

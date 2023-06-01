@@ -8,10 +8,20 @@ variety of contexts. Within River, they are used for model selection
 from __future__ import annotations
 
 from . import base, envs
+from .bayes_ucb import BayesUCB
 from .epsilon_greedy import EpsilonGreedy
 from .evaluate import evaluate
 from .exp3 import Exp3
 from .thompson import ThompsonSampling
 from .ucb import UCB
 
-__all__ = ["base", "envs", "evaluate", "EpsilonGreedy", "Exp3", "ThompsonSampling", "UCB"]
+__all__ = [
+    "base",
+    "envs",
+    "evaluate",
+    "BayesUCB",
+    "EpsilonGreedy",
+    "Exp3",
+    "ThompsonSampling",
+    "UCB",
+]
