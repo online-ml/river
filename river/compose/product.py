@@ -87,6 +87,7 @@ class TransformerProduct(union.TransformerUnion):
 
     def transform_many(self, X):
         outputs = [t.transform_many(X) for t in self.transformers.values()]
+        # TODO: this is a bit slow, there must be a vectorized way to do this
         return pd.DataFrame(
             {
                 "*".join(combo): functools.reduce(

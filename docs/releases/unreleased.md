@@ -13,6 +13,11 @@
 - Add `neighbors.SWINN` to power-up approximate nearest neighbor search. SWINN uses graphs to speed up nearest neighbor search in large sliding windows of data.
 - Add classes `neighbors.ANNClassifier` and `neighbors.ANNRegressor` to perform approximate nearest neighbor search in classification and regression tasks.
 
+## preprocessing
+
+- Rename `sparse` parameter to `drop_zeros` in `preprocessing.OneHotEncoder`.
+- The `transform_many` method of `preprocessing.OneHotEncoder` will now return a sparse dataframe, rather than a dense one, which will consume much less memory.
+
 ## proba
 
 - Added a `cdf` method to `proba.Beta`.

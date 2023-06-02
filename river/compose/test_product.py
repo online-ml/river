@@ -61,7 +61,7 @@ def test_issue_1243():
 
 def test_left_is_pipeline():
     group_1 = compose.Select("a", "b")
-    group_2 = compose.Select("x", "y") | preprocessing.OneHotEncoder(sparse=True)
+    group_2 = compose.Select("x", "y") | preprocessing.OneHotEncoder()
 
     product = group_1 + group_2 + group_1 * group_2
     assert product.transform_one(dict(a=1, b=2, x=4, y=4, z=5)) == {
@@ -77,7 +77,7 @@ def test_left_is_pipeline():
 
 
 def test_right_is_pipeline():
-    group_1 = compose.Select("a", "b") | preprocessing.OneHotEncoder(sparse=True)
+    group_1 = compose.Select("a", "b") | preprocessing.OneHotEncoder()
     group_2 = compose.Select("x", "y")
 
     product = group_1 + group_2 + group_1 * group_2
@@ -94,8 +94,8 @@ def test_right_is_pipeline():
 
 
 def test_both_are_pipelines():
-    group_1 = compose.Select("a", "b") | preprocessing.OneHotEncoder(sparse=True)
-    group_2 = compose.Select("x", "y") | preprocessing.OneHotEncoder(sparse=True)
+    group_1 = compose.Select("a", "b") | preprocessing.OneHotEncoder()
+    group_2 = compose.Select("x", "y") | preprocessing.OneHotEncoder()
 
     product = group_1 + group_2 + group_1 * group_2
     assert product.transform_one(dict(a=1, b=2, x=4, y=4, z=5)) == {

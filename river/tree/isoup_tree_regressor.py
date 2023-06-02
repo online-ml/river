@@ -92,7 +92,7 @@ class iSOUPTreeRegressor(tree.HoeffdingTreeRegressor, base.MultiTargetRegressor)
     >>> dataset = datasets.SolarFlare()
 
     >>> num = compose.SelectType(numbers.Number) | preprocessing.MinMaxScaler()
-    >>> cat = compose.SelectType(str) | preprocessing.OneHotEncoder(sparse=False)
+    >>> cat = compose.SelectType(str) | preprocessing.OneHotEncoder()
 
     >>> model = tree.iSOUPTreeRegressor(
     ...     grace_period=100,
