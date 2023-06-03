@@ -11669,7 +11669,7 @@
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
-<p><strong>sparse</strong></p>
+<p><strong>drop_zeros</strong></p>
 <p><em>Default</em> → <code>False</code></p>
 <p>Whether or not 0s should be made explicit or not.</p>
 </li>
@@ -11696,11 +11696,21 @@
     {&#39;c1&#39;: &#39;i&#39;, &#39;c2&#39;: &#39;h&#39;},
     {&#39;c1&#39;: &#39;h&#39;, &#39;c2&#39;: &#39;e&#39;}]
 </code></pre></div></p>
-<p>We can now apply one-hot encoding. All the provided are one-hot encoded, there is therefore
+<p>e can now apply one-hot encoding. All the provided are one-hot encoded, there is therefore
 no need to specify which features to encode.</p>
 <p><div class="language-python highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">preprocessing</span>
 
-<span class="n">oh</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">OneHotEncoder</span><span class="p">(</span><span class="n">sparse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">oh</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">OneHotEncoder</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">X</span><span class="p">[:</span><span class="mi">2</span><span class="p">]:</span>
+    <span class="n">oh</span> <span class="o">=</span> <span class="n">oh</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">pprint</span><span class="p">(</span><span class="n">oh</span><span class="o">.</span><span class="n">transform_one</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>{&#39;c1_u&#39;: 1, &#39;c2_d&#39;: 1}
+{&#39;c1_a&#39;: 1, &#39;c1_u&#39;: 0, &#39;c2_d&#39;: 0, &#39;c2_x&#39;: 1}
+</code></pre></div></p>
+<p>The <code>drop_zeros</code> parameter can be set to <code>True</code> if you don't want the past features to be included
+in the output. Otherwise, all the past features will be included in the output.</p>
+<p><div class="language-python highlight"><pre><span></span><code><span class="n">oh</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">OneHotEncoder</span><span class="p">(</span><span class="n">drop_zeros</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">X</span><span class="p">:</span>
     <span class="n">oh</span> <span class="o">=</span> <span class="n">oh</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
     <span class="n">pprint</span><span class="p">(</span><span class="n">oh</span><span class="o">.</span><span class="n">transform_one</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
@@ -11710,17 +11720,8 @@ no need to specify which features to encode.</p>
 {&#39;c1_i&#39;: 1, &#39;c2_h&#39;: 1}
 {&#39;c1_h&#39;: 1, &#39;c2_e&#39;: 1}
 </code></pre></div></p>
-<p>The <code>sparse</code> parameter can be set to <code>False</code> in order to include the values that are not
-present in the output.</p>
-<p><div class="language-python highlight"><pre><span></span><code><span class="n">oh</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">OneHotEncoder</span><span class="p">(</span><span class="n">sparse</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">X</span><span class="p">[:</span><span class="mi">2</span><span class="p">]:</span>
-    <span class="n">oh</span> <span class="o">=</span> <span class="n">oh</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-    <span class="n">pprint</span><span class="p">(</span><span class="n">oh</span><span class="o">.</span><span class="n">transform_one</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
-</code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>{&#39;c1_u&#39;: 1, &#39;c2_d&#39;: 1}
-{&#39;c1_a&#39;: 1, &#39;c1_u&#39;: 0, &#39;c2_d&#39;: 0, &#39;c2_x&#39;: 1}
-</code></pre></div></p>
-<p>A subset of the features can be one-hot encoded by using an instance of <a href="../../compose/Select"><code>compose.Select</code></a>.</p>
+<p>A subset of the features can be one-hot encoded by piping a <a href="../../compose/Select"><code>compose.Select</code></a> into the
+<code>OneHotEncoder</code>.</p>
 <p><div class="language-python highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">compose</span>
 
 <span class="n">pp</span> <span class="o">=</span> <span class="n">compose</span><span class="o">.</span><span class="n">Select</span><span class="p">(</span><span class="s1">&#39;c1&#39;</span><span class="p">)</span> <span class="o">|</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">OneHotEncoder</span><span class="p">()</span>
@@ -11754,7 +11755,7 @@ encode all of the entries individually.</p>
     <span class="p">{</span><span class="s1">&#39;c1&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;i&#39;</span><span class="p">],</span> <span class="s1">&#39;c2&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;h&#39;</span><span class="p">,</span> <span class="s1">&#39;z&#39;</span><span class="p">]},</span>
     <span class="p">{</span><span class="s1">&#39;c1&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;h&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">],</span> <span class="s1">&#39;c2&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;e&#39;</span><span class="p">]}]</span>
 
-<span class="n">oh</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">OneHotEncoder</span><span class="p">(</span><span class="n">sparse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">oh</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">OneHotEncoder</span><span class="p">(</span><span class="n">drop_zeros</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">X</span><span class="p">:</span>
     <span class="n">oh</span> <span class="o">=</span> <span class="n">oh</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
     <span class="n">pprint</span><span class="p">(</span><span class="n">oh</span><span class="o">.</span><span class="n">transform_one</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
@@ -11776,7 +11777,7 @@ encode all of the entries individually.</p>
         <span class="s1">&#39;c1&#39;</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">alphabet</span><span class="p">),</span>
         <span class="s1">&#39;c2&#39;</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">alphabet</span><span class="p">),</span>
     <span class="p">}</span>
-    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
 <span class="p">)</span>
 <span class="n">X</span>
 </code></pre></div>
@@ -11784,36 +11785,43 @@ encode all of the entries individually.</p>
 0  u  d
 1  a  x
 2  i  h
-3  h  e
 </code></pre></div></p>
-<p><div class="language-python highlight"><pre><span></span><code><span class="n">oh</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">OneHotEncoder</span><span class="p">(</span><span class="n">sparse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<p><div class="language-python highlight"><pre><span></span><code><span class="n">oh</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">OneHotEncoder</span><span class="p">(</span><span class="n">drop_zeros</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">oh</span> <span class="o">=</span> <span class="n">oh</span><span class="o">.</span><span class="n">learn_many</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 
 <span class="n">df</span> <span class="o">=</span> <span class="n">oh</span><span class="o">.</span><span class="n">transform_many</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
-<span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">)]</span>
+<span class="n">df</span><span class="o">.</span><span class="n">sort_index</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">&quot;columns&quot;</span><span class="p">)</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>    c1_a  c1_h  c1_i  c1_u  c2_d  c2_e  c2_h  c2_x
-0     0     0     0     1     1     0     0     0
-1     1     0     0     0     0     0     0     1
-2     0     0     1     0     0     0     1     0
-3     0     1     0     0     0     1     0     0
+<div class="language-text highlight"><pre><span></span><code>    c1_a   c1_i   c1_u   c2_d   c2_h   c2_x
+0  False  False   True   True  False  False
+1   True  False  False  False  False   True
+2  False   True  False  False   True  False
 </code></pre></div></p>
-<p>Keep in mind that ability for sparse transformations is limited in mini-batch case,
-which might affect speed/memory footprint of your training loop.</p>
-<p>Here's a non-sparse example:</p>
-<p><div class="language-python highlight"><pre><span></span><code><span class="n">oh</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">OneHotEncoder</span><span class="p">(</span><span class="n">sparse</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="n">X_init</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([{</span><span class="s1">&#39;c1&#39;</span><span class="p">:</span> <span class="s2">&quot;Oranges&quot;</span><span class="p">,</span> <span class="s1">&#39;c2&#39;</span><span class="p">:</span> <span class="s2">&quot;Apples&quot;</span><span class="p">}])</span>
+<p>Here's an example where the zeros are kept:</p>
+<p><div class="language-python highlight"><pre><span></span><code><span class="n">oh</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">OneHotEncoder</span><span class="p">(</span><span class="n">drop_zeros</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">X_init</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([{</span><span class="s2">&quot;c1&quot;</span><span class="p">:</span> <span class="s2">&quot;Oranges&quot;</span><span class="p">,</span> <span class="s2">&quot;c2&quot;</span><span class="p">:</span> <span class="s2">&quot;Apples&quot;</span><span class="p">}])</span>
 <span class="n">oh</span> <span class="o">=</span> <span class="n">oh</span><span class="o">.</span><span class="n">learn_many</span><span class="p">(</span><span class="n">X_init</span><span class="p">)</span>
 <span class="n">oh</span> <span class="o">=</span> <span class="n">oh</span><span class="o">.</span><span class="n">learn_many</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 
 <span class="n">df</span> <span class="o">=</span> <span class="n">oh</span><span class="o">.</span><span class="n">transform_many</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
-<span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">)]</span>
+<span class="n">df</span><span class="o">.</span><span class="n">sort_index</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">&quot;columns&quot;</span><span class="p">)</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>    c1_Oranges  c1_a  c1_h  c1_i  c1_u  c2_Apples  c2_d  c2_e  c2_h  c2_x
-0           0     0     0     0     1          0     1     0     0     0
-1           0     1     0     0     0          0     0     0     0     1
-2           0     0     0     1     0          0     0     0     1     0
-3           0     0     1     0     0          0     0     1     0     0
+<div class="language-text highlight"><pre><span></span><code>   c1_Oranges   c1_a   c1_i   c1_u  c2_Apples   c2_d   c2_h   c2_x
+0       False  False  False   True      False   True  False  False
+1       False   True  False  False      False  False  False   True
+2       False  False   True  False      False  False   True  False
+</code></pre></div></p>
+<p><div class="language-python highlight"><pre><span></span><code><span class="n">df</span><span class="o">.</span><span class="n">dtypes</span><span class="o">.</span><span class="n">sort_index</span><span class="p">()</span>
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>c1_Oranges    Sparse[bool, False]
+c1_a          Sparse[bool, False]
+c1_i          Sparse[bool, False]
+c1_u          Sparse[bool, False]
+c2_Apples     Sparse[bool, False]
+c2_d          Sparse[bool, False]
+c2_h          Sparse[bool, False]
+c2_x          Sparse[bool, False]
+dtype: object
 </code></pre></div></p>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <details class="- abstract">
