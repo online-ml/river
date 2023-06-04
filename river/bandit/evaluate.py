@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import copy
 import random
+import typing
 
 try:
     import gym
