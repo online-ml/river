@@ -11753,6 +11753,18 @@ this in a pure way by unpacking the input <code>dict</code> into the output <cod
 </code></pre></div>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <details class="- abstract">
+<summary>learn_many</summary>
+<p>Update with a mini-batch of features.</p>
+<p>A lot of transformers don't actually have to do anything during the <code>learn_many</code> step because they are stateless. For this reason the default behavior of this function is to do nothing. Transformers that however do something during the <code>learn_many</code> can override this method.</p>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><strong>X</strong>     — <em>'pd.DataFrame'</em>    </li>
+</ul>
+<p><strong>Returns</strong></p>
+<p><em>Transformer</em>:     self</p>
+</details>
+<p><span /></p>
+<details class="- abstract">
 <summary>learn_one</summary>
 <p>Update with a set of features <code>x</code>.</p>
 <p>A lot of transformers don't actually have to do anything during the <code>learn_one</code> step because they are stateless. For this reason the default behavior of this function is to do nothing. Transformers that however do something during the <code>learn_one</code> can override this method.</p>
@@ -11762,6 +11774,17 @@ this in a pure way by unpacking the input <code>dict</code> into the output <cod
 </ul>
 <p><strong>Returns</strong></p>
 <p><em>Transformer</em>:     self</p>
+</details>
+<p><span /></p>
+<details class="- abstract">
+<summary>transform_many</summary>
+<p>Transform a mini-batch of features.</p>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><strong>X</strong>     — <em>'pd.DataFrame'</em>    </li>
+</ul>
+<p><strong>Returns</strong></p>
+<p><em>pd.DataFrame</em>:     A new DataFrame.</p>
 </details>
 <p><span /></p>
 <details class="- abstract">
