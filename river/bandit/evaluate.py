@@ -158,7 +158,7 @@ History = typing.Iterator[
     tuple[
         list[ArmID],  # arms available to pull from
         ArmID,  # arm that was pulled
-        float | None,  # probability of pulling the arm
+        typing.Union[float, None],  # noqa: UP007, probability of pulling the arm
         float,  # reward
     ]
 ]
