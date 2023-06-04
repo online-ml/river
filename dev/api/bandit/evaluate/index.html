@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://riverml.xyz/dev/api/bandit/evaluate/">
       
       
-        <link rel="prev" href="../UCB/">
+        <link rel="prev" href="../evaluate-offline/">
       
       
         <link rel="next" href="../base/Policy/">
@@ -1277,6 +1277,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_3_4" id="__nav_3_4_label" tabindex="0">
@@ -1365,6 +1367,20 @@
               
   
   
+  
+    <li class="md-nav__item">
+      <a href="../evaluate-offline/" class="md-nav__link">
+        evaluate_offline
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
     
   
   
@@ -1434,7 +1450,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_4_7" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_4_8" >
       
       
         
@@ -1442,13 +1458,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_3_4_7" id="__nav_3_4_7_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3_4_8" id="__nav_3_4_8_label" tabindex="0">
           base
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_4_7_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_3_4_7">
+      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_4_8_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_4_8">
           <span class="md-nav__icon md-icon"></span>
           base
         </label>
@@ -1486,7 +1502,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_4_8" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_4_9" >
       
       
         
@@ -1496,13 +1512,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_3_4_8" id="__nav_3_4_8_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3_4_9" id="__nav_3_4_9_label" tabindex="0">
           envs
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_4_8_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_3_4_8">
+      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_4_9_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_4_9">
           <span class="md-nav__icon md-icon"></span>
           envs
         </label>
@@ -11704,7 +11720,7 @@
     <span class="nb">print</span><span class="p">(</span><span class="n">step</span><span class="p">)</span>
     <span class="k">break</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>{&#39;episode&#39;: 0, &#39;step&#39;: 0, &#39;policy_idx&#39;: 0, &#39;action&#39;: 0, &#39;reward&#39;: 0.0, &#39;reward_stat&#39;: 0.0}
+<div class="language-text highlight"><pre><span></span><code>{&#39;episode&#39;: 0, &#39;step&#39;: 0, &#39;policy_idx&#39;: 0, &#39;arm&#39;: 0, &#39;reward&#39;: 0.0, &#39;reward_stat&#39;: 0.0}
 </code></pre></div></p>
 <p>The return type of this function is a generator. Each step of the generator is a dictionary.
 You can pass the generator to a <code>pandas.DataFrame</code> to get a nice representation of the results.</p>
@@ -11726,12 +11742,12 @@ You can pass the generator to a <code>pandas.DataFrame</code> to get a nice repr
 <span class="n">trace_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">trace</span><span class="p">)</span>
 <span class="n">trace_df</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>     episode  step  policy_idx  action  reward  reward_stat
-521        2    60           1      25     0.0         36.0
-737        3    68           1      40     1.0         20.0
-740        3    70           0      70     1.0         33.0
-660        3    30           0      30     1.0         13.0
-411        2     5           1      35     1.0          5.0
+<div class="language-text highlight"><pre><span></span><code>     episode  step  policy_idx  arm  reward  reward_stat
+521        2    60           1   25     0.0         36.0
+737        3    68           1   40     1.0         20.0
+740        3    70           0   70     1.0         33.0
+660        3    30           0   30     1.0         13.0
+411        2     5           1   35     1.0          5.0
 </code></pre></div></p>
 <p>The length of the dataframe is the number of policies times the number of episodes times the
 maximum number of steps per episode.</p>

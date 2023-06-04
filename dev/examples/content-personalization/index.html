@@ -1273,6 +1273,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_3_4" id="__nav_3_4_label" tabindex="0">
@@ -1363,6 +1365,20 @@
   
   
     <li class="md-nav__item">
+      <a href="../../api/bandit/evaluate-offline/" class="md-nav__link">
+        evaluate_offline
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../api/bandit/evaluate/" class="md-nav__link">
         evaluate
       </a>
@@ -1382,7 +1398,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_4_7" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_4_8" >
       
       
         
@@ -1390,13 +1406,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_3_4_7" id="__nav_3_4_7_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3_4_8" id="__nav_3_4_8_label" tabindex="0">
           base
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_4_7_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_3_4_7">
+      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_4_8_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_4_8">
           <span class="md-nav__icon md-icon"></span>
           base
         </label>
@@ -1434,7 +1450,7 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_4_8" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_4_9" >
       
       
         
@@ -1444,13 +1460,13 @@
         
       
       
-        <label class="md-nav__link" for="__nav_3_4_8" id="__nav_3_4_8_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_3_4_9" id="__nav_3_4_9_label" tabindex="0">
           envs
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_4_8_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_3_4_8">
+      <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_4_9_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3_4_9">
           <span class="md-nav__icon md-icon"></span>
           envs
         </label>
@@ -11651,14 +11667,31 @@
 <h2 id="without-context">Without context<a class="headerlink" href="#without-context" title="Permanent link">&para;</a></h2>
 <p>This example takes inspiration from Vowpal Wabbit's <a href="https://vowpalwabbit.org/tutorials/cb_simulation.html">excellent tutorial</a>.</p>
 <p>Content personalization is about taking into account user preferences. It's a special case of recommender systems. Ideally, side-information should be taken into account in addition to the user. But we'll start with something simpler. We'll assume that each user has stable preferences that are independent of the context. We capture this by implementing a "reward" function.</p>
-<div class="language-python highlight"><pre><span></span><code><span class="n">users</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Tom&#39;</span><span class="p">,</span> <span class="s1">&#39;Anna&#39;</span><span class="p">]</span>
-<span class="n">items</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;politics&#39;</span><span class="p">,</span> <span class="s1">&#39;sports&#39;</span><span class="p">,</span> <span class="s1">&#39;music&#39;</span><span class="p">,</span> <span class="s1">&#39;food&#39;</span><span class="p">,</span> <span class="s1">&#39;finance&#39;</span><span class="p">,</span> <span class="s1">&#39;health&#39;</span><span class="p">,</span> <span class="s1">&#39;camping&#39;</span><span class="p">}</span>
+<div class="language-python highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get_reward</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
 
-<span class="k">def</span> <span class="nf">get_reward</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="n">time_of_day</span> <span class="o">=</span> <span class="n">context</span><span class="p">[</span><span class="s1">&#39;time_of_day&#39;</span><span class="p">]</span>
+
+    <span class="n">USER_LIKED_ARTICLE</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">USER_DISLIKED_ARTICLE</span> <span class="o">=</span> <span class="mi">0</span>
+
     <span class="k">if</span> <span class="n">user</span> <span class="o">==</span> <span class="s1">&#39;Tom&#39;</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">item</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">&#39;music&#39;</span><span class="p">,</span> <span class="s1">&#39;politics&#39;</span><span class="p">}</span>
-    <span class="k">if</span> <span class="n">user</span> <span class="o">==</span> <span class="s1">&#39;Anna&#39;</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">item</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">&#39;politics&#39;</span><span class="p">,</span> <span class="s1">&#39;sports&#39;</span><span class="p">}</span>
+        <span class="k">if</span> <span class="n">time_of_day</span> <span class="o">==</span> <span class="s1">&#39;morning&#39;</span> <span class="ow">and</span> <span class="n">item</span> <span class="o">==</span> <span class="s1">&#39;politics&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">USER_LIKED_ARTICLE</span>
+        <span class="k">elif</span> <span class="n">time_of_day</span> <span class="o">==</span> <span class="s1">&#39;afternoon&#39;</span> <span class="ow">and</span> <span class="n">item</span> <span class="o">==</span> <span class="s1">&#39;music&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">USER_LIKED_ARTICLE</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">USER_DISLIKED_ARTICLE</span>
+    <span class="k">elif</span> <span class="n">user</span> <span class="o">==</span> <span class="s1">&#39;Anna&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">time_of_day</span> <span class="o">==</span> <span class="s1">&#39;morning&#39;</span> <span class="ow">and</span> <span class="n">item</span> <span class="o">==</span> <span class="s1">&#39;sports&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">USER_LIKED_ARTICLE</span>
+        <span class="k">elif</span> <span class="n">time_of_day</span> <span class="o">==</span> <span class="s1">&#39;afternoon&#39;</span> <span class="ow">and</span> <span class="n">item</span> <span class="o">==</span> <span class="s1">&#39;politics&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">USER_LIKED_ARTICLE</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">USER_DISLIKED_ARTICLE</span>
+
+<span class="n">get_reward</span><span class="p">(</span><span class="s1">&#39;Tom&#39;</span><span class="p">,</span> <span class="s1">&#39;politics&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;time_of_day&#39;</span><span class="p">:</span> <span class="s1">&#39;morning&#39;</span><span class="p">})</span>
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>1
 </code></pre></div>
 <p>Measuring the performance of a recommendation is not straightforward, mostly because of the interactive aspect of recommender systems. In a real situation, recommendations are presented to a user, and the user gives feedback indicating whether they like what they have been recommended or not. This feedback loop can't be captured entirely by a historical dataset. Some kind of simulator is required to generate recommendations and capture feedback. We already have a reward function. Now let's implement a simulation function.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">random</span>
@@ -11672,6 +11705,10 @@
     <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;final CTR: </span><span class="si">{</span><span class="n">ctr</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s1">.2%</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
 
+<span class="n">users</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Tom&#39;</span><span class="p">,</span> <span class="s1">&#39;Anna&#39;</span><span class="p">]</span>
+<span class="n">times_of_day</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;morning&#39;</span><span class="p">,</span> <span class="s1">&#39;afternoon&#39;</span><span class="p">]</span>
+<span class="n">items</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;politics&#39;</span><span class="p">,</span> <span class="s1">&#39;sports&#39;</span><span class="p">,</span> <span class="s1">&#39;music&#39;</span><span class="p">,</span> <span class="s1">&#39;food&#39;</span><span class="p">,</span> <span class="s1">&#39;finance&#39;</span><span class="p">,</span> <span class="s1">&#39;health&#39;</span><span class="p">,</span> <span class="s1">&#39;camping&#39;</span><span class="p">}</span>
+
 <span class="k">def</span> <span class="nf">simulate</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">reward_func</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">seed</span><span class="p">):</span>
 
     <span class="n">rng</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">Random</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
@@ -11680,19 +11717,22 @@
 
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
 
-        <span class="c1"># Pick a user at random</span>
+        <span class="c1"># Generate a context at random</span>
         <span class="n">user</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">users</span><span class="p">)</span>
+        <span class="n">context</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;time_of_day&#39;</span><span class="p">:</span> <span class="n">rng</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">times_of_day</span><span class="p">)</span>
+        <span class="p">}</span>
 
         <span class="c1"># Make a single recommendation</span>
-        <span class="n">item</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">rank</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">items</span><span class="o">=</span><span class="n">items</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">item</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">rank</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">items</span><span class="o">=</span><span class="n">items</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="n">context</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 
         <span class="c1"># Measure the reward</span>
-        <span class="n">clicked</span> <span class="o">=</span> <span class="n">reward_func</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
+        <span class="n">clicked</span> <span class="o">=</span> <span class="n">reward_func</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
         <span class="n">n_clicks</span> <span class="o">+=</span> <span class="n">clicked</span>
         <span class="n">ctr</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">n_clicks</span> <span class="o">/</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
 
         <span class="c1"># Update the model</span>
-        <span class="n">model</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">clicked</span><span class="p">)</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">clicked</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="n">context</span><span class="p">)</span>
 
     <span class="n">plot_ctr</span><span class="p">(</span><span class="n">ctr</span><span class="p">)</span>
 </code></pre></div>
@@ -11704,7 +11744,34 @@
 <span class="n">model</span> <span class="o">=</span> <span class="n">reco</span><span class="o">.</span><span class="n">RandomNormal</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
 <span class="n">simulate</span><span class="p">(</span><span class="mi">5_000</span><span class="p">,</span> <span class="n">get_reward</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
 </code></pre></div>
-<p><img alt="png" src="../content-personalization_files/content-personalization_7_0.png" /></p>
+<div class="language-text highlight"><pre><span></span><code>---------------------------------------------------------------------------
+
+TypeError                                 Traceback (most recent call last)
+
+Cell In[15], line 4
+      1 from river import reco
+      3 model = [reco.RandomNormal](../../api/reco/RandomNormal)(seed=10)
+----&gt; 4 simulate(5_000, get_reward, model, seed=42)
+
+
+Cell In[14], line 34, in simulate(n, reward_func, model, seed)
+     31 item = model.rank(user, items=items, x=context)[0]
+     33 # Measure the reward
+---&gt; 34 clicked = reward_func(user, item)
+     35 n_clicks += clicked
+     36 ctr.append(n_clicks / (i + 1))
+
+
+Cell In[13], line 6, in get_reward(context, item)
+      3 USER_LIKED_ARTICLE = 1
+      4 USER_DISLIKED_ARTICLE = 0
+----&gt; 6 if context[&#39;user&#39;] == &#39;Tom&#39;:
+      7     if context[&#39;time_of_day&#39;] == &#39;morning&#39; and item == &#39;politics&#39;:
+      8         return USER_LIKED_ARTICLE
+
+
+TypeError: string indices must be integers
+</code></pre></div>
 <p>We can see that the click-through rate (CTR) oscillates around 28.74%. In fact, this model is expected to be correct <code>100 * (2 / 7)% = 28.57%</code> of the time. Indeed, each user likes two items, and there are seven items in total.</p>
 <p>Let's now use the <code>Baseline</code> recommended. This one models each preference as the following sum:</p>
 <div class="arithmatex">\[preference = \bar{y} + b_{u} + b_{i}\]</div>
@@ -11722,15 +11789,18 @@
 <p>This baseline model seems perfect, which is surprising. The reason why it works so well is because both users have in common that they both like politics. The model therefore learns that the <code>'politics'</code> is a good item to recommend.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">model</span><span class="o">.</span><span class="n">i_biases</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>defaultdict(Zeros (),
-            {&#39;music&#39;: -0.013333333333333336,
-             &#39;politics&#39;: 0.004578648064431509,
-             &#39;sports&#39;: 0.0,
-             &#39;food&#39;: 0.0,
-             &#39;finance&#39;: 0.0,
-             &#39;health&#39;: 0.0,
-             &#39;camping&#39;: 0.0})
-</code></pre></div>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">
+<span style="color: #800080; text-decoration-color: #800080; font-weight: bold">defaultdict</span><span style="font-weight: bold">(</span>Zeros <span style="font-weight: bold">()</span>, <span style="font-weight: bold">{</span>
+    <span style="color: #008000; text-decoration-color: #008000">'music'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">-0.013333333333333336</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'camping'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">-0.01</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'health'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">-0.0078000000000000005</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'sports'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">-0.0063106666666666675</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'food'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">-0.0052320723809523816</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'finance'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">-0.00441314521904762</span>,
+    <span style="color: #008000; text-decoration-color: #008000">'politics'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.01650162758658716</span>
+<span style="font-weight: bold">})</span>
+</pre>
+
 <p>The model is not as performant if we use a reward function where both users have different preferences.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">simulate</span><span class="p">(</span>
     <span class="mi">5_000</span><span class="p">,</span>
@@ -11795,8 +11865,9 @@
 <div class="language-python highlight"><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">reco</span><span class="o">.</span><span class="n">FunkMF</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
 <span class="n">model</span><span class="o">.</span><span class="n">is_contextual</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>False
-</code></pre></div>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #ff0000; text-decoration-color: #ff0000; font-style: italic">False</span>
+</pre>
+
 <p>Let's see well it performs.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">simulate</span><span class="p">(</span><span class="mi">5_000</span><span class="p">,</span> <span class="n">get_reward</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
 </code></pre></div>
@@ -11830,30 +11901,33 @@
         <span class="k">for</span> <span class="n">user</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">u_latents</span>
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">i_latents</span>
     <span class="p">)</span>
-    <span class="o">.</span><span class="n">pivot</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="s1">&#39;user&#39;</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="s1">&#39;item&#39;</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">pivot</span><span class="p">(</span><span class="s1">&#39;user&#39;</span><span class="p">,</span> <span class="s1">&#39;item&#39;</span><span class="p">)</span>
     <span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">highlight_max</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s1">&#39;lightgreen&#39;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s1">&#39;columns&#39;</span><span class="p">)</span>
 <span class="p">)</span>
 </code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>/var/folders/8q/xqx16rw14bl7rqyybl7zk8sh0000gn/T/ipykernel_38920/1851263114.py:13: FutureWarning: In a future version of pandas all arguments of DataFrame.pivot will be keyword-only.
+  .pivot(&#39;user&#39;, &#39;item&#39;)
+</code></pre></div>
 <style type="text/css">
-#T_18b78_row0_col5, #T_18b78_row1_col3, #T_18b78_row2_col4, #T_18b78_row3_col5 {
+#T_cc68a_row0_col0, #T_cc68a_row1_col1, #T_cc68a_row2_col4, #T_cc68a_row3_col0 {
   background-color: lightgreen;
 }
 </style>
-<table id="T_18b78">
+<table id="T_cc68a">
   <thead>
     <tr>
       <th class="blank level0" >&nbsp;</th>
-      <th id="T_18b78_level0_col0" class="col_heading level0 col0" colspan="7">preference</th>
+      <th id="T_cc68a_level0_col0" class="col_heading level0 col0" colspan="7">preference</th>
     </tr>
     <tr>
       <th class="index_name level1" >item</th>
-      <th id="T_18b78_level1_col0" class="col_heading level1 col0" >camping</th>
-      <th id="T_18b78_level1_col1" class="col_heading level1 col1" >finance</th>
-      <th id="T_18b78_level1_col2" class="col_heading level1 col2" >food</th>
-      <th id="T_18b78_level1_col3" class="col_heading level1 col3" >health</th>
-      <th id="T_18b78_level1_col4" class="col_heading level1 col4" >music</th>
-      <th id="T_18b78_level1_col5" class="col_heading level1 col5" >politics</th>
-      <th id="T_18b78_level1_col6" class="col_heading level1 col6" >sports</th>
+      <th id="T_cc68a_level1_col0" class="col_heading level1 col0" >camping</th>
+      <th id="T_cc68a_level1_col1" class="col_heading level1 col1" >finance</th>
+      <th id="T_cc68a_level1_col2" class="col_heading level1 col2" >food</th>
+      <th id="T_cc68a_level1_col3" class="col_heading level1 col3" >health</th>
+      <th id="T_cc68a_level1_col4" class="col_heading level1 col4" >music</th>
+      <th id="T_cc68a_level1_col5" class="col_heading level1 col5" >politics</th>
+      <th id="T_cc68a_level1_col6" class="col_heading level1 col6" >sports</th>
     </tr>
     <tr>
       <th class="index_name level0" >user</th>
@@ -11868,44 +11942,44 @@
   </thead>
   <tbody>
     <tr>
-      <th id="T_18b78_level0_row0" class="row_heading level0 row0" >Anna@afternoon</th>
-      <td id="T_18b78_row0_col0" class="data row0 col0" >0.005480</td>
-      <td id="T_18b78_row0_col1" class="data row0 col1" >-0.113309</td>
-      <td id="T_18b78_row0_col2" class="data row0 col2" >-0.089900</td>
-      <td id="T_18b78_row0_col3" class="data row0 col3" >0.009723</td>
-      <td id="T_18b78_row0_col4" class="data row0 col4" >0.043391</td>
-      <td id="T_18b78_row0_col5" class="data row0 col5" >1.000000</td>
-      <td id="T_18b78_row0_col6" class="data row0 col6" >-0.047301</td>
+      <th id="T_cc68a_level0_row0" class="row_heading level0 row0" >Anna@afternoon</th>
+      <td id="T_cc68a_row0_col0" class="data row0 col0" >0.000000</td>
+      <td id="T_cc68a_row0_col1" class="data row0 col1" >0.000000</td>
+      <td id="T_cc68a_row0_col2" class="data row0 col2" >-0.030868</td>
+      <td id="T_cc68a_row0_col3" class="data row0 col3" >-0.019562</td>
+      <td id="T_cc68a_row0_col4" class="data row0 col4" >0.000000</td>
+      <td id="T_cc68a_row0_col5" class="data row0 col5" >-0.003385</td>
+      <td id="T_cc68a_row0_col6" class="data row0 col6" >0.000000</td>
     </tr>
     <tr>
-      <th id="T_18b78_level0_row1" class="row_heading level0 row1" >Anna@morning</th>
-      <td id="T_18b78_row1_col0" class="data row1 col0" >0.000000</td>
-      <td id="T_18b78_row1_col1" class="data row1 col1" >-0.011465</td>
-      <td id="T_18b78_row1_col2" class="data row1 col2" >-0.045114</td>
-      <td id="T_18b78_row1_col3" class="data row1 col3" >0.000000</td>
-      <td id="T_18b78_row1_col4" class="data row1 col4" >-0.042740</td>
-      <td id="T_18b78_row1_col5" class="data row1 col5" >0.000000</td>
-      <td id="T_18b78_row1_col6" class="data row1 col6" >-0.050311</td>
+      <th id="T_cc68a_level0_row1" class="row_heading level0 row1" >Anna@morning</th>
+      <td id="T_cc68a_row1_col0" class="data row1 col0" >0.000000</td>
+      <td id="T_cc68a_row1_col1" class="data row1 col1" >0.000000</td>
+      <td id="T_cc68a_row1_col2" class="data row1 col2" >-0.008942</td>
+      <td id="T_cc68a_row1_col3" class="data row1 col3" >-0.050784</td>
+      <td id="T_cc68a_row1_col4" class="data row1 col4" >-0.053185</td>
+      <td id="T_cc68a_row1_col5" class="data row1 col5" >0.000000</td>
+      <td id="T_cc68a_row1_col6" class="data row1 col6" >-0.035998</td>
     </tr>
     <tr>
-      <th id="T_18b78_level0_row2" class="row_heading level0 row2" >Tom@afternoon</th>
-      <td id="T_18b78_row2_col0" class="data row2 col0" >0.174318</td>
-      <td id="T_18b78_row2_col1" class="data row2 col1" >0.137097</td>
-      <td id="T_18b78_row2_col2" class="data row2 col2" >-0.181282</td>
-      <td id="T_18b78_row2_col3" class="data row2 col3" >-0.033744</td>
-      <td id="T_18b78_row2_col4" class="data row2 col4" >1.000000</td>
-      <td id="T_18b78_row2_col5" class="data row2 col5" >0.024875</td>
-      <td id="T_18b78_row2_col6" class="data row2 col6" >0.089332</td>
+      <th id="T_cc68a_level0_row2" class="row_heading level0 row2" >Tom@afternoon</th>
+      <td id="T_cc68a_row2_col0" class="data row2 col0" >0.124429</td>
+      <td id="T_cc68a_row2_col1" class="data row2 col1" >-0.032077</td>
+      <td id="T_cc68a_row2_col2" class="data row2 col2" >0.137096</td>
+      <td id="T_cc68a_row2_col3" class="data row2 col3" >0.089332</td>
+      <td id="T_cc68a_row2_col4" class="data row2 col4" >1.000000</td>
+      <td id="T_cc68a_row2_col5" class="data row2 col5" >0.174578</td>
+      <td id="T_cc68a_row2_col6" class="data row2 col6" >-0.179105</td>
     </tr>
     <tr>
-      <th id="T_18b78_level0_row3" class="row_heading level0 row3" >Tom@morning</th>
-      <td id="T_18b78_row3_col0" class="data row3 col0" >-0.002136</td>
-      <td id="T_18b78_row3_col1" class="data row3 col1" >-0.096596</td>
-      <td id="T_18b78_row3_col2" class="data row3 col2" >-0.114500</td>
-      <td id="T_18b78_row3_col3" class="data row3 col3" >-0.023688</td>
-      <td id="T_18b78_row3_col4" class="data row3 col4" >-0.033961</td>
-      <td id="T_18b78_row3_col5" class="data row3 col5" >1.000000</td>
-      <td id="T_18b78_row3_col6" class="data row3 col6" >-0.041230</td>
+      <th id="T_cc68a_level0_row3" class="row_heading level0 row3" >Tom@morning</th>
+      <td id="T_cc68a_row3_col0" class="data row3 col0" >-0.000000</td>
+      <td id="T_cc68a_row3_col1" class="data row3 col1" >-0.024397</td>
+      <td id="T_cc68a_row3_col2" class="data row3 col2" >-0.017108</td>
+      <td id="T_cc68a_row3_col3" class="data row3 col3" >-0.016825</td>
+      <td id="T_cc68a_row3_col4" class="data row3 col4" >-0.118900</td>
+      <td id="T_cc68a_row3_col5" class="data row3 col5" >-0.014694</td>
+      <td id="T_cc68a_row3_col6" class="data row3 col6" >-0.000848</td>
     </tr>
   </tbody>
 </table>

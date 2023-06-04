@@ -86,6 +86,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://riverml.xyz/dev/api/bandit/evaluate-offline/</loc>
+         <lastmod>2023-06-04</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://riverml.xyz/dev/api/bandit/evaluate/</loc>
          <lastmod>2023-06-04</lastmod>
          <changefreq>daily</changefreq>
