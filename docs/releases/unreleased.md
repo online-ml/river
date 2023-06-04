@@ -12,6 +12,7 @@
 ## compose
 
 - `compose.TransformerProduct` will now preserve the density of sparse columns.
+- Added a `transform_many` method to `compose.FuncTransformer`, allowing it to be used in mini-batch pipelines.
 
 ## preprocessing
 
