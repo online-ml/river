@@ -11011,6 +11011,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#compose" class="md-nav__link">
+    compose
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#preprocessing" class="md-nav__link">
     preprocessing
   </a>
@@ -11647,6 +11654,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#compose" class="md-nav__link">
+    compose
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#preprocessing" class="md-nav__link">
     preprocessing
   </a>
@@ -11683,6 +11697,10 @@
 <h2 id="compat">compat<a class="headerlink" href="#compat" title="Permanent link">&para;</a></h2>
 <ul>
 <li>The <code>predict_many</code> method scikit-learn models wrapped with <a href="../../api/compat/convert-sklearn-to-river"><code>compat.convert_sklearn_to_river</code></a> raised an exception if the model had been fitted on any data yet. Instead, default predictions will be produced, which is consistent with the rest of River.</li>
+</ul>
+<h2 id="compose">compose<a class="headerlink" href="#compose" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../../api/compose/TransformerProduct"><code>compose.TransformerProduct</code></a> will now preserve the density of sparse columns.</li>
 </ul>
 <h2 id="preprocessing">preprocessing<a class="headerlink" href="#preprocessing" title="Permanent link">&para;</a></h2>
 <ul>

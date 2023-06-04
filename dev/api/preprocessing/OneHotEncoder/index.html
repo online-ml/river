@@ -11792,10 +11792,10 @@ encode all of the entries individually.</p>
 <span class="n">df</span> <span class="o">=</span> <span class="n">oh</span><span class="o">.</span><span class="n">transform_many</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 <span class="n">df</span><span class="o">.</span><span class="n">sort_index</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">&quot;columns&quot;</span><span class="p">)</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>    c1_a   c1_i   c1_u   c2_d   c2_h   c2_x
-0  False  False   True   True  False  False
-1   True  False  False  False  False   True
-2  False   True  False  False   True  False
+<div class="language-text highlight"><pre><span></span><code>   c1_a  c1_i  c1_u  c2_d  c2_h  c2_x
+0     0     0     1     1     0     0
+1     1     0     0     0     0     1
+2     0     1     0     0     1     0
 </code></pre></div></p>
 <p>Here's an example where the zeros are kept:</p>
 <p><div class="language-python highlight"><pre><span></span><code><span class="n">oh</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">OneHotEncoder</span><span class="p">(</span><span class="n">drop_zeros</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -11806,21 +11806,21 @@ encode all of the entries individually.</p>
 <span class="n">df</span> <span class="o">=</span> <span class="n">oh</span><span class="o">.</span><span class="n">transform_many</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 <span class="n">df</span><span class="o">.</span><span class="n">sort_index</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">&quot;columns&quot;</span><span class="p">)</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>   c1_Oranges   c1_a   c1_i   c1_u  c2_Apples   c2_d   c2_h   c2_x
-0       False  False  False   True      False   True  False  False
-1       False   True  False  False      False  False  False   True
-2       False  False   True  False      False  False   True  False
+<div class="language-text highlight"><pre><span></span><code>   c1_Oranges  c1_a  c1_i  c1_u  c2_Apples  c2_d  c2_h  c2_x
+0           0     0     0     1          0     1     0     0
+1           0     1     0     0          0     0     0     1
+2           0     0     1     0          0     0     1     0
 </code></pre></div></p>
 <p><div class="language-python highlight"><pre><span></span><code><span class="n">df</span><span class="o">.</span><span class="n">dtypes</span><span class="o">.</span><span class="n">sort_index</span><span class="p">()</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>c1_Oranges    Sparse[bool, False]
-c1_a          Sparse[bool, False]
-c1_i          Sparse[bool, False]
-c1_u          Sparse[bool, False]
-c2_Apples     Sparse[bool, False]
-c2_d          Sparse[bool, False]
-c2_h          Sparse[bool, False]
-c2_x          Sparse[bool, False]
+<div class="language-text highlight"><pre><span></span><code>c1_Oranges    Sparse[uint8, 0]
+c1_a          Sparse[uint8, 0]
+c1_i          Sparse[uint8, 0]
+c1_u          Sparse[uint8, 0]
+c2_Apples     Sparse[uint8, 0]
+c2_d          Sparse[uint8, 0]
+c2_h          Sparse[uint8, 0]
+c2_x          Sparse[uint8, 0]
 dtype: object
 </code></pre></div></p>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
