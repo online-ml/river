@@ -170,7 +170,7 @@ def evaluate_offline(
     """Evaluate a policy on historical logs using replay.
 
     This is a high-level utility function for evaluating a policy using the replay methodology.
-    This methodology is an off-policy evaluation method. It does not require an environemnt, and is
+    This methodology is an off-policy evaluation method. It does not require an environment, and is
     instead data-driven.
 
     At each step, an arm is pulled from the provided policy. If the arm is the same as the arm
