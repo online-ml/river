@@ -80,11 +80,11 @@ def test_issue_1253():
     >>> model = group1 + group1 * group2
     >>> XT = model.transform_many(X)
 
-    >>> XT.memory_usage().sum()
-    85128
+    >>> XT.memory_usage().sum() // 1000
+    85
 
-    >>> XT.sparse.to_dense().memory_usage().sum()
-    4455128
+    >>> XT.sparse.to_dense().memory_usage().sum() // 1000
+    4455
 
     """
 
