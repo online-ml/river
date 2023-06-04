@@ -59,6 +59,36 @@ def test_issue_1243():
     """
 
 
+def test_issue_1253():
+    """
+
+    https://github.com/online-ml/river/issues/1253
+
+    >>> import numpy as np
+    >>> import pandas as pd
+    >>> from river import compose, preprocessing
+    >>> from sklearn import datasets
+
+    >>> np.random.seed(1000)
+    >>> X, y = datasets.make_regression(n_samples=5_000, n_features=2)
+    >>> X = pd.DataFrame(X, columns=['feat_1','feat_2'])
+    >>> X['cat'] = np.random.randint(1, 100, len(X))
+    >>> X['cat'] = X['cat'].astype('string')
+
+    >>> group1 = compose.Select('cat') | preprocessing.OneHotEncoder()
+    >>> group2 = compose.Select('feat_2') | preprocessing.StandardScaler()
+    >>> model = group1 + group1 * group2
+    >>> XT = model.transform_many(X)
+
+    >>> XT.memory_usage().sum()
+    85128
+
+    >>> XT.sparse.to_dense().memory_usage().sum()
+    4455128
+
+    """
+
+
 def test_left_is_pipeline():
     group_1 = compose.Select("a", "b")
     group_2 = compose.Select("x", "y") | preprocessing.OneHotEncoder()

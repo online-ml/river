@@ -141,10 +141,10 @@ class OneHotEncoder(base.MiniBatchTransformer):
 
     >>> df = oh.transform_many(X)
     >>> df.sort_index(axis="columns")
-        c1_a   c1_i   c1_u   c2_d   c2_h   c2_x
-    0  False  False   True   True  False  False
-    1   True  False  False  False  False   True
-    2  False   True  False  False   True  False
+       c1_a  c1_i  c1_u  c2_d  c2_h  c2_x
+    0     0     0     1     1     0     0
+    1     1     0     0     0     0     1
+    2     0     1     0     0     1     0
 
     Here's an example where the zeros are kept:
 
@@ -155,20 +155,20 @@ class OneHotEncoder(base.MiniBatchTransformer):
 
     >>> df = oh.transform_many(X)
     >>> df.sort_index(axis="columns")
-       c1_Oranges   c1_a   c1_i   c1_u  c2_Apples   c2_d   c2_h   c2_x
-    0       False  False  False   True      False   True  False  False
-    1       False   True  False  False      False  False  False   True
-    2       False  False   True  False      False  False   True  False
+       c1_Oranges  c1_a  c1_i  c1_u  c2_Apples  c2_d  c2_h  c2_x
+    0           0     0     0     1          0     1     0     0
+    1           0     1     0     0          0     0     0     1
+    2           0     0     1     0          0     0     1     0
 
     >>> df.dtypes.sort_index()
-    c1_Oranges    Sparse[bool, False]
-    c1_a          Sparse[bool, False]
-    c1_i          Sparse[bool, False]
-    c1_u          Sparse[bool, False]
-    c2_Apples     Sparse[bool, False]
-    c2_d          Sparse[bool, False]
-    c2_h          Sparse[bool, False]
-    c2_x          Sparse[bool, False]
+    c1_Oranges    Sparse[uint8, 0]
+    c1_a          Sparse[uint8, 0]
+    c1_i          Sparse[uint8, 0]
+    c1_u          Sparse[uint8, 0]
+    c2_Apples     Sparse[uint8, 0]
+    c2_d          Sparse[uint8, 0]
+    c2_h          Sparse[uint8, 0]
+    c2_x          Sparse[uint8, 0]
     dtype: object
 
     """
@@ -217,12 +217,12 @@ class OneHotEncoder(base.MiniBatchTransformer):
         return self
 
     def transform_many(self, X):
-        oh = pd.get_dummies(X, sparse=True, dtype="bool")
+        oh = pd.get_dummies(X, sparse=True, dtype="uint8")
 
         if not self.drop_zeros:
             seen_in_the_past = {f"{col}_{val}" for col, vals in self.values.items() for val in vals}
             to_add = seen_in_the_past - set(oh.columns)
             for col in to_add:
-                oh[col] = pd.arrays.SparseArray([0] * len(oh), dtype="bool")
+                oh[col] = pd.arrays.SparseArray([0] * len(oh), dtype="uint8")
 
         return oh
