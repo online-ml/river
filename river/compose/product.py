@@ -101,7 +101,7 @@ class TransformerProduct(union.TransformerUnion):
             if pd.api.types.is_sparse(a):
                 return pd.arrays.SparseArray(a * b, fill_value=a.sparse.fill_value)
             # Fast-track for numeric * sparse
-            if pd.api.types.is_sparse(a):
+            if pd.api.types.is_sparse(b):
                 return pd.arrays.SparseArray(a * b, fill_value=b.sparse.fill_value)
             # Default
             return np.multiply(a, b)
@@ -112,5 +112,6 @@ class TransformerProduct(union.TransformerUnion):
                     multiply, (outputs[i][f] for i, f in enumerate(combo))
                 )
                 for combo in itertools.product(*outputs)
-            }
+            },
+            index=X.index,
         )

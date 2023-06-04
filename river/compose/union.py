@@ -298,6 +298,7 @@ class TransformerUnion(base.MiniBatchTransformer):
 
     def transform_many(self, X):
         """Passes the data through each transformer and packs the results together."""
+
         return pd.concat(
             (t.transform_many(X) for t in self.transformers.values()),
             copy=False,
