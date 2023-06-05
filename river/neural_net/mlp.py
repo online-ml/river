@@ -3,16 +3,17 @@ from __future__ import annotations
 import collections
 import copy
 import functools
+import typing
 
 import numpy as np
 import pandas as pd
 
 from river import base, optim
 
-__all__ = ["MLPRegressor"]
+__all__ = ["MLPRegressor", "MLPBinaryClassifier"]
 
 
-def xavier_init(dims: tuple[int, ...], seed: int | None = None):
+def xavier_init(dims: tuple[int, ...], seed: int = None):
     """Xavier weight initialization.
 
     References
@@ -50,14 +51,14 @@ class MLP:
         activations,
         loss: optim.losses.Loss,
         optimizer: optim.base.Optimizer,
-        seed: int | None = None,
+        seed: int = None,
     ):
         self.activations = activations
         self.hidden_dims = hidden_dims
         self.loss = loss
         self.optimizer = optimizer
         self.seed = seed
-        self._optimizers: collections.defaultdict = collections.defaultdict(
+        self._optimizers: typing.DefaultDict = collections.defaultdict(
             functools.partial(copy.deepcopy, optimizer)
         )
 
@@ -203,7 +204,7 @@ class MLPRegressor(base.Regressor, MLP):
     loss
         Loss function. Defaults to `optim.losses.Squared`.
     optimizer
-        Optimizer. Defaults to `optim.SGD` with the learning rate set to `0.01`.
+        Optimizer. Defaults to `optim.SGD(.01)`.
     seed
         Random number generation seed. Set this for reproducibility.
 
@@ -281,9 +282,9 @@ class MLPRegressor(base.Regressor, MLP):
         self,
         hidden_dims,
         activations,
-        loss: optim.losses.Loss | None = None,
-        optimizer: optim.base.Optimizer | None = None,
-        seed: int | None = None,
+        loss: optim.losses.Loss = None,
+        optimizer: optim.base.Optimizer = None,
+        seed: int = None,
     ):
         super().__init__(
             hidden_dims=hidden_dims,
@@ -324,3 +325,91 @@ class MLPRegressor(base.Regressor, MLP):
 
         # Single output
         return y_pred.iloc[0, 0]
+
+
+
+class MLPBinaryClassifier(base.Classifier, MLP):
+
+    """Multi-layer Perceptron for binary classification.
+
+    This model is still work in progress. Here are some features that still need implementing:
+
+    - `learn_one` and `predict_one` just cast the input `dict` to a single row dataframe and then
+        call `learn_many` and `predict_many` respectively. This is very inefficient.
+    - Not all of the optimizers in the `optim` module can be used as they are not all vectorised.
+    - Emerging and disappearing features are not supported. Each instance/batch has to have the
+        same features.
+    - The gradient haven't been numerically checked.
+
+    Parameters
+    ----------
+    hidden_dims
+        The dimensions of the hidden layers. For example, specifying `(10, 20)` means that there
+        are two hidden layers with 10 and 20 neurons, respectively. Note that the number of layers
+        the network contains is equal to the number of hidden layers plus two (to account for the
+        input and output layers).
+    activations
+        The activation functions to use at each layer, including the input and output layers.
+        Therefore you need to specify three activation if you specify one hidden layer.
+    loss
+        Loss function. Defaults to `optim.losses.Log`.
+    optimizer
+        Optimizer. Defaults to `optim.SGD(.01)`.
+    seed
+        Random number generation seed. Set this for reproducibility.
+
+    """
+
+    def __init__(
+        self,
+        hidden_dims,
+        activations,
+        loss: optim.losses.Loss = None,
+        optimizer: optim.base.Optimizer = None,
+        seed: int = None,
+    ):
+        super().__init__(
+            hidden_dims=hidden_dims,
+            activations=activations,
+            loss = loss or optim.losses.Log(),
+            optimizer = optimizer or optim.SGD(0.01),
+            seed=seed,
+        )
+
+    @classmethod
+    def _default_params(self):
+        from . import activations
+
+        return {
+            "hidden_dims": (20,),
+            "activations": (activations.ReLU, activations.ReLU, activations.Identity),
+        }
+
+    def predict_many(self, X):
+        if not hasattr(self, "w"):
+            return pd.DataFrame({0: 0}, index=X.index)
+        return self(X)
+
+    def learn_one(self, x, y):
+        # Multi-output
+        if isinstance(y, dict):
+            return self.learn_many(X = pd.DataFrame([x]), y=pd.DataFrame([y]))
+
+        # Single output
+        return self.learn_many(X = pd.DataFrame([x]), y=pd.Series([y]))
+
+    def predict_prob_one(self, x):
+        y_pred = self.predict_many(X = pd.DataFrame([x]))
+        sigmoid = nn.activations.Sigmoid()
+
+        # Multi-output
+        if len(y_pred.columns) > 1:
+            return sigmoid.apply(y_pred.iloc[0]).to_dict()
+
+        # Single output
+        return sigmoid.apply(y_pred.iloc[0, 0])
+
+    def predict_one(self, x):
+        y_pred_label = self.predict_prob_one(x)
+        
+        return y_pred_label > 0.5 # conventional threshold of 0.5 chosen
