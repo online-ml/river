@@ -69,7 +69,7 @@ class KNNRegressor(base.Regressor):
         def _distance_func(a, b):
             return dist_func(a[0], b[0])
 
-        engine.dist_func = _distance_func
+        engine.dist_func = _distance_func  # type: ignore
         self.engine = engine
 
         # Create a fresh copy of the supplied search engine
