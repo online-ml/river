@@ -60,7 +60,7 @@ class KNNRegressor(base.Regressor):
         dist_func = (
             functools.partial(utils.math.minkowski_distance, p=2)
             if engine is None
-            else engine.dist_func
+            else engine.dist_func  # type: ignore
         )
 
         if engine is None:

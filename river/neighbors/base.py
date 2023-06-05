@@ -12,8 +12,6 @@ class DistanceFunc(typing.Protocol):
 
 
 class BaseNN(base.Estimator, abc.ABC):
-    dist_func = None
-
     @abc.abstractmethod
     def append(self, item: typing.Any, **kwargs):
         pass
