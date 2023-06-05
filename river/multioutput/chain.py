@@ -104,7 +104,7 @@ class ClassifierChain(BaseChain, base.MultiLabelClassifier):
         yield {
             "model": neighbors.KNNClassifier(
                 n_neighbors=1,
-                engine=neighbors.LazyNN(
+                engine=neighbors.LazySearch(
                     window_size=50,
                     distance_func=neighbors.FunctionWrapper(
                         functools.partial(minkowski_distance, p=2)

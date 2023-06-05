@@ -10,11 +10,11 @@ from .ann import SWINN
 from .base import FunctionWrapper
 from .knn_classifier import KNNClassifier
 from .knn_regressor import KNNRegressor
-from .lazy import LazyNN
+from .lazy import LazySearch
 
 __all__ = [
     "FunctionWrapper",
-    "LazyNN",
+    "LazySearch",
     "KNNClassifier",
     "KNNRegressor",
     "SWINN",

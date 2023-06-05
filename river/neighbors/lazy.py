@@ -10,7 +10,7 @@ from river import utils
 from .base import BaseNN, DistanceFunc
 
 
-class LazyNN(BaseNN):
+class LazySearch(BaseNN):
     """Exact nearest neighbors using a lazy search estrategy.
 
     Parameters
