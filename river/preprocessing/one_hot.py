@@ -217,7 +217,7 @@ class OneHotEncoder(base.MiniBatchTransformer):
         return self
 
     def transform_many(self, X):
-        oh = pd.get_dummies(X, sparse=True, dtype="uint8")
+        oh = pd.get_dummies(X, columns=X.columns, sparse=True, dtype="uint8")
 
         if not self.drop_zeros:
             seen_in_the_past = {f"{col}_{val}" for col, vals in self.values.items() for val in vals}
