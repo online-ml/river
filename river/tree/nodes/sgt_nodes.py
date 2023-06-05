@@ -1,9 +1,10 @@
+from __future__ import annotations
+
 import collections
 import math
 import numbers
 import sys
-import typing
-from typing import Dict, Hashable, Optional, Union
+from collections.abc import Hashable
 
 from river import stats
 from river.base.typing import FeatureName
@@ -41,12 +42,9 @@ class SGTLeaf(Leaf):
         )
         self.last_split_attempt_at = 0
 
-        self._split_stats: Optional[
-            Dict[
-                FeatureName,
-                Union[Dict[Hashable, GradHessStats], DynamicQuantizer, StaticQuantizer],
-            ]
-        ] = {}
+        self._split_stats: dict[
+            FeatureName, dict[Hashable, GradHessStats] | DynamicQuantizer | StaticQuantizer
+        ] | None = {}
         self._update_stats = GradHessStats()
 
     def reset(self):
@@ -85,9 +83,7 @@ class SGTLeaf(Leaf):
     def prediction(self) -> float:
         return self._prediction
 
-    def _eval_categorical_splits(
-        self, feature_idx, candidate, sgt
-    ) -> typing.Tuple[BranchFactory, bool]:
+    def _eval_categorical_splits(self, feature_idx, candidate, sgt) -> tuple[BranchFactory, bool]:
         skip_candidate = True
 
         # Nominal attribute has been already used in a previous split
@@ -116,9 +112,7 @@ class SGTLeaf(Leaf):
 
         return candidate, skip_candidate
 
-    def _eval_numerical_splits(
-        self, feature_idx, candidate, sgt
-    ) -> typing.Tuple[BranchFactory, bool]:
+    def _eval_numerical_splits(self, feature_idx, candidate, sgt) -> tuple[BranchFactory, bool]:
         skip_candidate = True
         quantizer = self._split_stats[feature_idx]  # type: ignore
 

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from river import metrics, utils
 from river.metrics.multioutput.base import MultiOutputMetric
 
@@ -29,12 +31,12 @@ class MicroAverage(MultiOutputMetric, metrics.base.WrapperMetric):
         return utils.inspect.ismoregressor(model)
 
     def update(self, y_true, y_pred, sample_weight=1.0):
-        for i in y_pred:
+        for i in y_true:
             self.metric.update(y_true[i], y_pred[i], sample_weight)
         return self
 
     def revert(self, y_true, y_pred, sample_weight=1.0):
-        for i in y_pred:
+        for i in y_true:
             self.metric.revert(y_true[i], y_pred[i], sample_weight)
         return self
 

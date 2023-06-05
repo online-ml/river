@@ -1,13 +1,15 @@
+from __future__ import annotations
+
 import abc
 import random
 import typing
 
 from river import base
 
-__all__ = ["BinaryDistribution", "DiscreteDistribution", "ContinuousDistribution"]
+__all__ = ["Distribution", "BinaryDistribution", "DiscreteDistribution", "ContinuousDistribution"]
 
 
-class Distribution(base.Base):
+class Distribution(abc.ABC, base.Base):
     """General distribution.
 
     Parameters
@@ -17,7 +19,7 @@ class Distribution(base.Base):
 
     """
 
-    def __init__(self, seed: int = None):
+    def __init__(self, seed: int | None = None):
         self.seed = seed
         self._rng = random.Random(seed)
 

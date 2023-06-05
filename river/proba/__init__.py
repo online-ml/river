@@ -1,4 +1,6 @@
 """Probability distributions."""
+from __future__ import annotations
+
 from . import base
 from .beta import Beta
 from .gaussian import Gaussian

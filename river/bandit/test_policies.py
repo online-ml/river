@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import copy
 import importlib
 import inspect
@@ -75,47 +77,53 @@ def _iter_policies():
         )
         # TODO: add simpler environments to test with
         for policy in _iter_policies()
-        if policy.__class__ not in {bandit.EpsilonGreedy, bandit.UCB}
         for env in _iter_envs()
     ],
 )
 @pytest.mark.skip(reason="flaky")
 def test_better_than_random_policy(policy: bandit.base.Policy, env: gym.Env):
     """Test that the policy is better than random."""
-    policy = policy.clone()
-    random_policy = RandomPolicy()
 
-    env_seed = random.randint(0, 2**32 - 1)
-    env = copy.deepcopy(env)
-    _ = env.reset(seed=env_seed)
-    _ = env.action_space.seed(env_seed)
+    n_trials = 30
+    n_successes = 0
 
-    random_env = copy.deepcopy(env)
-    _ = random_env.reset(seed=env_seed)
-    _ = random_env.action_space.seed(env_seed)
+    for _ in range(n_trials):
+        policy = policy.clone()
+        random_policy = RandomPolicy()
 
-    policy_reward = 0.0
-    random_reward = 0.0
+        env_seed = random.randint(0, 2**32 - 1)
+        env = copy.deepcopy(env)
+        _ = env.reset(seed=env_seed)
+        _ = env.action_space.seed(env_seed)
 
-    terminated, truncated = False, False
+        random_env = copy.deepcopy(env)
+        _ = random_env.reset(seed=env_seed)
+        _ = random_env.action_space.seed(env_seed)
 
-    arm_ids = list(range(env.action_space.n))  # type: ignore
+        policy_reward = 0.0
+        random_reward = 0.0
 
-    while not terminated and not truncated:
-        arm_id = next(policy.pull(arm_ids))  # type: ignore
-        observation, reward, terminated, truncated, info = env.step(arm_id)
-        policy.update(arm_id, reward)
-        policy_reward += reward
+        terminated, truncated = False, False
 
-        random_arm_id = next(random_policy.pull(arm_ids))  # type: ignore
-        (
-            observation,
-            reward,
-            terminated,
-            truncated,
-            info,
-        ) = random_env.step(random_arm_id)
-        random_policy.update(random_arm_id, reward)
-        random_reward += reward
+        arm_ids = list(range(env.action_space.n))  # type: ignore
 
-    assert policy_reward > random_reward
+        while not terminated and not truncated:
+            arm_id = policy.pull(arm_ids)  # type: ignore
+            observation, reward, terminated, truncated, info = env.step(arm_id)
+            policy.update(arm_id, reward)
+            policy_reward += reward
+
+            random_arm_id = random_policy.pull(arm_ids)  # type: ignore
+            (
+                observation,
+                reward,
+                terminated,
+                truncated,
+                info,
+            ) = random_env.step(random_arm_id)
+            random_policy.update(random_arm_id, reward)
+            random_reward += reward
+
+        n_successes += policy_reward > random_reward
+
+    assert n_successes > n_trials * 0.8

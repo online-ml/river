@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import copy
 import itertools
 import math
@@ -10,9 +12,8 @@ from sklearn import linear_model as sklm
 from sklearn.datasets import make_classification, make_regression
 from sklearn.metrics import log_loss
 
-from river import datasets
+from river import datasets, optim, preprocessing, stream, utils
 from river import linear_model as lm
-from river import optim, preprocessing, stream, utils
 
 
 def iter_perturbations(keys, n=10):

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from river import metrics, utils
 
 from .efficient_rollingrocauc import EfficientRollingROCAUC

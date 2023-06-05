@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import abc
 import inspect
 import itertools
@@ -39,12 +41,13 @@ class Dataset(abc.ABC):
     Parameters
     ----------
     task
-        Type of task the dataset is meant for. Should be one of:
-        - "Regression"
-        - "Binary classification"
-        - "Multi-class classification"
-        - "Multi-output binary classification"
-        - "Multi-output regression"
+        Type of task the dataset is meant for. Should be one of the following:
+
+            - "Regression"
+            - "Binary classification"
+            - "Multi-class classification"
+            - "Multi-output binary classification"
+            - "Multi-output regression"
     n_features
         Number of features in the dataset.
     n_samples
@@ -177,7 +180,7 @@ class SyntheticDataset(Dataset):
 
         return out
 
-    def _get_params(self) -> typing.Dict[str, typing.Any]:
+    def _get_params(self) -> dict[str, typing.Any]:
         """Return the parameters that were used during initialization."""
         return {
             name: getattr(self, name)

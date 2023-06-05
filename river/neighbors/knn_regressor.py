@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import functools
 import statistics
 
@@ -73,7 +75,7 @@ class KNNRegressor(base.Regressor):
         window_size: int = 1000,
         aggregation_method: str = "mean",
         min_distance_keep: float = 0.0,
-        distance_func: DistanceFunc = None,
+        distance_func: DistanceFunc | None = None,
     ):
         self.n_neighbors = n_neighbors
         self.window_size = window_size

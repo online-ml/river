@@ -1,6 +1,7 @@
+from __future__ import annotations
+
 import collections
 import math
-import typing
 
 from river import base, drift, linear_model, utils
 
@@ -22,13 +23,6 @@ class AdaBoostClassifier(base.WrapperEnsemble, base.Classifier):
         The number of models in the ensemble.
     seed
         Random number generator seed for reproducibility.
-
-    Attributes
-    ----------
-    wrong_weight : collections.defaultdict
-        Number of times a model has made a mistake when making predictions.
-    correct_weight : collections.defaultdict
-        Number of times a model has predicted the right label when making predictions.
 
     Examples
     --------
@@ -70,10 +64,10 @@ class AdaBoostClassifier(base.WrapperEnsemble, base.Classifier):
 
     """
 
-    def __init__(self, model: base.Classifier, n_models=10, seed: int = None):
+    def __init__(self, model: base.Classifier, n_models=10, seed: int | None = None):
         super().__init__(model, n_models, seed)
-        self.wrong_weight: typing.DefaultDict = collections.defaultdict(int)
-        self.correct_weight: typing.DefaultDict = collections.defaultdict(int)
+        self.wrong_weight: collections.defaultdict = collections.defaultdict(int)
+        self.correct_weight: collections.defaultdict = collections.defaultdict(int)
 
     @classmethod
     def _unit_test_params(cls):
@@ -171,7 +165,7 @@ class ADWINBoostingClassifier(AdaBoostClassifier):
 
     """
 
-    def __init__(self, model: base.Classifier, n_models=10, seed: int = None):
+    def __init__(self, model: base.Classifier, n_models=10, seed: int | None = None):
         super().__init__(model, n_models, seed)
         self._drift_detectors = [drift.ADWIN() for _ in range(self.n_models)]
 
@@ -235,17 +229,6 @@ class BOLEClassifier(AdaBoostClassifier):
     error_bound
         Error bound percentage for allowing models to vote.
 
-    Attributes
-    ----------
-    wrong_weight : collections.defaultdict
-        Number of times a model has made a mistake when making predictions.
-    correct_weight : collections.defaultdict
-        Number of times a model has predicted the right label when making predictions.
-    order_position : list
-        Array with the index of the models with best (correct_weight / correct_weight + wrong_weight) in descending order.
-    instances_seen : int
-        Number of instances that the ensemble trained with.
-
     Examples
     --------
 
@@ -279,7 +262,9 @@ class BOLEClassifier(AdaBoostClassifier):
 
     """
 
-    def __init__(self, model: base.Classifier, n_models=10, seed: int = None, error_bound=0.5):
+    def __init__(
+        self, model: base.Classifier, n_models=10, seed: int | None = None, error_bound=0.5
+    ):
         super().__init__(model=model, n_models=n_models, seed=seed)
         self.error_bound = error_bound
         self.order_position = [i for i in range(n_models)]

@@ -1,16 +1,25 @@
 ## cluster
 - Added `cluster.HierarchicalClustering`.
 
-## metrics
+## bandit
 
-- Added `metrics.MAPE`.
-- Added `metrics.RollingROCAUC`.
+- Added `bandit.BayesUCB`.
+- Added `bandit.evaluate_offline`, for evaluating bandits on historical (logged) data.
+
+## compat
+
+- The `predict_many` method scikit-learn models wrapped with `compat.convert_sklearn_to_river` raised an exception if the model had been fitted on any data yet. Instead, default predictions will be produced, which is consistent with the rest of River.
+
+## compose
+
+- `compose.TransformerProduct` will now preserve the density of sparse columns.
+- Added a `transform_many` method to `compose.FuncTransformer`, allowing it to be used in mini-batch pipelines.
 
 ## preprocessing
 
-- Added `preprocessing.GaussianRandomProjector`.
-- Added `preprocessing.SparseRandomProjector`.
+- Rename `sparse` parameter to `drop_zeros` in `preprocessing.OneHotEncoder`.
+- The `transform_many` method of `preprocessing.OneHotEncoder` will now return a sparse dataframe, rather than a dense one, which will consume much less memory.
 
-## stats
+## proba
 
-- Fixed randomness issue with the first few outputs of `stats.Quantile`.
+- Added a `cdf` method to `proba.Beta`.

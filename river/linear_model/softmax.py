@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import collections
 import copy
 import functools
@@ -57,8 +59,8 @@ class SoftmaxRegression(base.Classifier):
 
     def __init__(
         self,
-        optimizer: optim.base.Optimizer = None,
-        loss: optim.losses.MultiClassLoss = None,
+        optimizer: optim.base.Optimizer | None = None,
+        loss: optim.losses.MultiClassLoss | None = None,
         l2=0,
     ):
         if optimizer is None:

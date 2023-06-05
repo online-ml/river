@@ -12,7 +12,7 @@ from river import base
 __all__ = ["convert_sklearn_to_river", "SKL2RiverClassifier", "SKL2RiverRegressor"]
 
 
-def convert_sklearn_to_river(estimator: sklearn_base.BaseEstimator, classes: list = None):
+def convert_sklearn_to_river(estimator: sklearn_base.BaseEstimator, classes: list | None = None):
     """Wraps a scikit-learn estimator to make it compatible with river.
 
     Parameters
@@ -90,7 +90,7 @@ class SKL2RiverRegressor(SKL2RiverBase, base.Regressor):
         return self
 
     def learn_many(self, X, y):
-        self.estimator.partial_fit(X=X.values, y=y.values)
+        self.estimator.partial_fit(X=X, y=y)
         return self
 
     def predict_one(self, x):
@@ -100,7 +100,10 @@ class SKL2RiverRegressor(SKL2RiverBase, base.Regressor):
             return 0
 
     def predict_many(self, X):
-        return pd.Series(self.estimator.predict(X))
+        try:
+            return pd.Series(self.estimator.predict(X))
+        except exceptions.NotFittedError:
+            return pd.Series([0] * len(X), index=X.index)
 
 
 class SKL2RiverClassifier(SKL2RiverBase, base.Classifier):
@@ -159,7 +162,7 @@ class SKL2RiverClassifier(SKL2RiverBase, base.Classifier):
         return self
 
     def learn_many(self, X, y):
-        self.estimator.partial_fit(X=X.values, y=y.values, classes=self.classes)
+        self.estimator.partial_fit(X=X, y=y, classes=self.classes)
         return self
 
     def predict_proba_one(self, x):
@@ -170,7 +173,14 @@ class SKL2RiverClassifier(SKL2RiverBase, base.Classifier):
             return {c: 1 / len(self.classes) for c in self.classes}
 
     def predict_proba_many(self, X):
-        return pd.Series(self.estimator.predict_proba(X), columns=self.classes)
+        try:
+            return pd.Series(self.estimator.predict_proba(X), columns=self.classes)
+        except exceptions.NotFittedError:
+            return pd.DataFrame(
+                [[1 / len(self.classes)] * len(self.classes)] * len(X),
+                columns=self.classes,
+                index=X.index,
+            )
 
     def predict_one(self, x):
         try:
@@ -180,4 +190,7 @@ class SKL2RiverClassifier(SKL2RiverBase, base.Classifier):
             return self.classes[0]
 
     def predict_many(self, X):
-        return pd.Series(self.estimator.predict(X))
+        try:
+            return pd.Series(self.estimator.predict(X))
+        except exceptions.NotFittedError:
+            return pd.Series([self.classes[0]] * len(X), index=X.index)

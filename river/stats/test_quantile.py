@@ -1,12 +1,14 @@
+from __future__ import annotations
+
 import random
 
 from river import stats
 
 
-def issue_1178():
+def test_issue_1178():
     """
 
-    Test for issue #1178 (https://github.com/online-ml/river/issues/1178)
+    https://github.com/online-ml/river/issues/1178
 
     >>> from river import stats
 

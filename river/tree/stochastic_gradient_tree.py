@@ -1,6 +1,7 @@
+from __future__ import annotations
+
 import abc
 import math
-import typing
 
 from scipy.stats import f as f_dist
 
@@ -52,7 +53,7 @@ class StochasticGradientTree(base.Estimator, abc.ABC):
             feature_quantizer if feature_quantizer is not None else tree.splitter.StaticQuantizer()
         )
 
-        self._root: typing.Union[SGTLeaf, DTBranch] = SGTLeaf(prediction=self.init_pred)
+        self._root: SGTLeaf | DTBranch = SGTLeaf(prediction=self.init_pred)
 
         # set used to check whether categorical feature has been already split
         self._split_features = set()
@@ -93,7 +94,7 @@ class StochasticGradientTree(base.Estimator, abc.ABC):
             node = self._root
 
         # A leaf could not be reached in a single attempt let's deal with that
-        if isinstance(node, (NumericBinaryBranch, NominalMultiwayBranch)):
+        if isinstance(node, NumericBinaryBranch) or isinstance(node, NominalMultiwayBranch):
             while True:
                 # Split node encountered a previously unseen categorical value (in a multi-way
                 #  test), so there is no branch to sort the instance to
@@ -271,11 +272,11 @@ class SGTClassifier(StochasticGradientTree, base.Classifier):
         delta: float = 1e-7,
         grace_period: int = 200,
         init_pred: float = 0.0,
-        max_depth: typing.Optional[int] = None,
+        max_depth: int | None = None,
         lambda_value: float = 0.1,
         gamma: float = 1.0,
-        nominal_attributes: typing.Optional[typing.List] = None,
-        feature_quantizer: tree.splitter.Quantizer = None,
+        nominal_attributes: list | None = None,
+        feature_quantizer: tree.splitter.Quantizer | None = None,
     ):
         super().__init__(
             loss_func=BinaryCrossEntropyLoss(),
@@ -292,7 +293,7 @@ class SGTClassifier(StochasticGradientTree, base.Classifier):
     def _target_transform(self, y):
         return float(y)
 
-    def predict_proba_one(self, x: dict) -> typing.Dict[base.typing.ClfTarget, float]:
+    def predict_proba_one(self, x: dict) -> dict[base.typing.ClfTarget, float]:
         if isinstance(self._root, DTBranch):
             leaf = self._root.traverse(x, until_leaf=True)
         else:
@@ -386,11 +387,11 @@ class SGTRegressor(StochasticGradientTree, base.Regressor):
         delta: float = 1e-7,
         grace_period: int = 200,
         init_pred: float = 0.0,
-        max_depth: typing.Optional[int] = None,
+        max_depth: int | None = None,
         lambda_value: float = 0.1,
         gamma: float = 1.0,
-        nominal_attributes: typing.Optional[typing.List] = None,
-        feature_quantizer: tree.splitter.Quantizer = None,
+        nominal_attributes: list | None = None,
+        feature_quantizer: tree.splitter.Quantizer | None = None,
     ):
         super().__init__(
             loss_func=SquaredErrorLoss(),

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import collections
 import copy
 import random
@@ -14,7 +16,7 @@ __all__ = [
 
 
 class BaseChain(base.Wrapper, collections.UserDict):
-    def __init__(self, model, order: list = None):
+    def __init__(self, model, order: list | None = None):
         super().__init__()
         self.model = model
         self.order = order or []
@@ -59,7 +61,7 @@ class ClassifierChain(BaseChain, base.MultiLabelClassifier):
     >>> from sklearn import datasets
 
     >>> dataset = stream.iter_sklearn_dataset(
-    ...     dataset=datasets.fetch_openml('yeast', version=4, as_frame=False),
+    ...     dataset=datasets.fetch_openml('yeast', version=4, parser='auto', as_frame=False),
     ...     shuffle=True,
     ...     seed=42
     ... )
@@ -89,7 +91,7 @@ class ClassifierChain(BaseChain, base.MultiLabelClassifier):
 
     """
 
-    def __init__(self, model: base.Classifier, order: list = None):
+    def __init__(self, model: base.Classifier, order: list | None = None):
         super().__init__(model, order)
 
     @classmethod
@@ -208,7 +210,7 @@ class RegressorChain(BaseChain, base.MultiTargetRegressor):
 
     """
 
-    def __init__(self, model: base.Regressor, order: list = None):
+    def __init__(self, model: base.Regressor, order: list | None = None):
         super().__init__(model, order)
 
     @classmethod
@@ -295,11 +297,12 @@ class ProbabilisticClassifierChain(ClassifierChain):
 
     >>> for x, y in dataset:
     ...    y_pred = model.predict_one(x)
+    ...    y_pred = {k: y_pred.get(k, 0) for k in y}
     ...    metric = metric.update(y, y_pred)
     ...    model = model.learn_one(x, y)
 
     >>> metric
-    MicroAverage(Jaccard): 51.97%
+    MicroAverage(Jaccard): 51.84%
 
     References
     ----------
@@ -389,11 +392,12 @@ class MonteCarloClassifierChain(ProbabilisticClassifierChain):
 
     >>> for x, y in dataset:
     ...    y_pred = model.predict_one(x)
+    ...    y_pred = {k: y_pred.get(k, 0) for k in y}
     ...    metric = metric.update(y, y_pred)
     ...    model = model.learn_one(x, y)
 
     >>> metric
-    MicroAverage(Jaccard): 51.92%
+    MicroAverage(Jaccard): 51.79%
 
     References
     ----------
@@ -403,7 +407,7 @@ class MonteCarloClassifierChain(ProbabilisticClassifierChain):
 
     """
 
-    def __init__(self, model: base.Classifier, m: int = 10, seed: int = None):
+    def __init__(self, model: base.Classifier, m: int = 10, seed: int | None = None):
         ClassifierChain.__init__(self, model=model, order=None)
         self.seed = seed
         self._rng = random.Random(seed)

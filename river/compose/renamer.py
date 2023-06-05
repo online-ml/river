@@ -1,4 +1,4 @@
-from typing import Dict
+from __future__ import annotations
 
 from river import base
 
@@ -25,7 +25,7 @@ class Renamer(base.Transformer):
 
     """
 
-    def __init__(self, mapping: Dict[str, str]):
+    def __init__(self, mapping: dict[str, str]):
         self.mapping = mapping
 
     def transform_one(self, x):

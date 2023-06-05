@@ -1,7 +1,8 @@
+from __future__ import annotations
+
 import bisect
 import collections
 import functools
-import typing
 
 from river import sketch
 from river.sketch.histogram import Bin  # noqa
@@ -28,7 +29,7 @@ class HistogramSplitter(Splitter):
         super().__init__()
         self.n_bins = n_bins
         self.n_splits = n_splits
-        self.hists: typing.DefaultDict = collections.defaultdict(
+        self.hists: collections.defaultdict = collections.defaultdict(
             functools.partial(sketch.Histogram, max_bins=self.n_bins)
         )
 

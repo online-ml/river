@@ -265,8 +265,8 @@ class TreeNode:
 
     def __init__(
         self,
-        class_label: int = None,
-        split_feature_idx: int = None,
+        class_label: int | None = None,
+        split_feature_idx: int | None = None,
         split_feature_val: int | float | None = None,
     ):
         self.class_label = class_label

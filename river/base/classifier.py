@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import abc
 import typing
 
@@ -13,7 +15,7 @@ class Classifier(estimator.Estimator):
     """A classifier."""
 
     @abc.abstractmethod
-    def learn_one(self, x: dict, y: base.typing.ClfTarget) -> "Classifier":
+    def learn_one(self, x: dict, y: base.typing.ClfTarget) -> Classifier:
         """Update the model with a set of features `x` and a label `y`.
 
         Parameters
@@ -29,7 +31,7 @@ class Classifier(estimator.Estimator):
 
         """
 
-    def predict_proba_one(self, x: dict) -> typing.Dict[base.typing.ClfTarget, float]:
+    def predict_proba_one(self, x: dict) -> dict[base.typing.ClfTarget, float]:
         """Predict the probability of each label for a dictionary of features `x`.
 
         Parameters
@@ -49,7 +51,7 @@ class Classifier(estimator.Estimator):
         # that a classifier does not support predict_proba_one.
         raise NotImplementedError
 
-    def predict_one(self, x: dict, **kwargs) -> typing.Optional[base.typing.ClfTarget]:
+    def predict_one(self, x: dict, **kwargs) -> base.typing.ClfTarget | None:
         """Predict the label of a set of features `x`.
 
         Parameters
@@ -83,7 +85,7 @@ class MiniBatchClassifier(Classifier):
     """A classifier that can operate on mini-batches."""
 
     @abc.abstractmethod
-    def learn_many(self, X: "pd.DataFrame", y: "pd.Series") -> "MiniBatchClassifier":
+    def learn_many(self, X: pd.DataFrame, y: pd.Series) -> MiniBatchClassifier:
         """Update the model with a mini-batch of features `X` and boolean targets `y`.
 
         Parameters
@@ -99,7 +101,7 @@ class MiniBatchClassifier(Classifier):
 
         """
 
-    def predict_proba_many(self, X: "pd.DataFrame") -> "pd.DataFrame":
+    def predict_proba_many(self, X: pd.DataFrame) -> pd.DataFrame:
         """Predict the outcome probabilities for each given sample.
 
         Parameters
@@ -119,7 +121,7 @@ class MiniBatchClassifier(Classifier):
         # that a classifier does not support predict_proba_many.
         raise NotImplementedError
 
-    def predict_many(self, X: "pd.DataFrame") -> "pd.Series":
+    def predict_many(self, X: pd.DataFrame) -> pd.Series:
         """Predict the outcome for each given sample.
 
         Parameters

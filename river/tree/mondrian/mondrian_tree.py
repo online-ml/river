@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import abc
 import random
 
@@ -33,7 +35,7 @@ class MondrianTree(abc.ABC):
         use_aggregation: bool = True,
         split_pure: bool = False,
         iteration: int = 0,
-        seed: int = None,
+        seed: int | None = None,
     ):
         # Properties common to all the Mondrian Trees
         self.step = step

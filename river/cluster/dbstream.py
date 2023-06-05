@@ -1,7 +1,8 @@
+from __future__ import annotations
+
 import collections
 import copy
 import math
-import typing
 from abc import ABCMeta
 
 from river import base, utils
@@ -147,12 +148,12 @@ class DBSTREAM(base.Clusterer):
         self.intersection_factor = intersection_factor
 
         self.n_clusters = 0
-        self.clusters: typing.Dict[int, "DBSTREAMMicroCluster"] = {}
-        self.centers: typing.Dict = {}
-        self.micro_clusters: typing.Dict[int, "DBSTREAMMicroCluster"] = {}
+        self.clusters: dict[int, DBSTREAMMicroCluster] = {}
+        self.centers: dict = {}
+        self.micro_clusters: dict[int, DBSTREAMMicroCluster] = {}
 
-        self.s: typing.Dict[int, typing.Dict[int, float]] = {}
-        self.s_t: typing.Dict[int, typing.Dict[int, float]] = {}
+        self.s: dict[int, dict[int, float]] = {}
+        self.s_t: dict[int, dict[int, float]] = {}
 
     @staticmethod
     def _distance(point_a, point_b):

@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 import abc
-import typing
 
 from . import base
 
@@ -34,11 +35,20 @@ class Estimator(base.Base, abc.ABC):
             return other.__or__(self)
         return compose.Pipeline(other, self)
 
+    def _repr_html_(self):
+        from xml.etree import ElementTree as ET
+
+        from river.base import viz
+
+        div = viz.to_html(self)
+        div_str = ET.tostring(div, encoding="unicode")
+        return f"<div>{div_str}<style scoped>{viz.CSS}</style></div>"
+
     def _more_tags(self):
         return set()
 
     @property
-    def _tags(self) -> typing.Dict[str, bool]:
+    def _tags(self) -> dict[str, bool]:
         """Return the estimator's tags.
 
         Tags can be used to specify what kind of inputs an estimator is able to process. For

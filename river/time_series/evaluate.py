@@ -3,16 +3,15 @@ from __future__ import annotations
 import collections
 import numbers
 import typing
-from typing import Iterator, List, Optional, Tuple
 
 from river import base, metrics, time_series
 
-TimeSeries = Iterator[
-    Tuple[
-        Optional[dict],  # x
-        numbers.Number,  # y
-        Optional[List[dict]],  # x_horizon
-        List[numbers.Number],  # y_horizon
+TimeSeries = typing.Iterator[
+    typing.Tuple[  # noqa: UP006
+        typing.Union[dict, None],  # noqa: UP007
+        numbers.Number,
+        typing.Union[typing.List[dict], None],  # noqa: UP006, UP007
+        typing.List[numbers.Number],  # noqa: UP006
     ]
 ]
 
@@ -56,8 +55,8 @@ def _iter_with_horizon(dataset: base.typing.Dataset, horizon: int) -> TimeSeries
 
     """
 
-    x_horizon: typing.Deque[dict] = collections.deque(maxlen=horizon)
-    y_horizon: typing.Deque = collections.deque(maxlen=horizon)
+    x_horizon: collections.deque[dict] = collections.deque(maxlen=horizon)
+    y_horizon: collections.deque = collections.deque(maxlen=horizon)
 
     stream = iter(dataset)
 
@@ -79,8 +78,8 @@ def iter_evaluate(
     model: time_series.base.Forecaster,
     metric: metrics.base.RegressionMetric,
     horizon: int,
-    agg_func: typing.Callable[[list[float]], float] = None,
-    grace_period: int = None,
+    agg_func: typing.Callable[[list[float]], float] | None = None,
+    grace_period: int | None = None,
 ):
     """Evaluates the performance of a forecaster on a time series dataset and yields results.
 
@@ -130,8 +129,8 @@ def evaluate(
     model: time_series.base.Forecaster,
     metric: metrics.base.RegressionMetric,
     horizon: int,
-    agg_func: typing.Callable[[list[float]], float] = None,
-    grace_period: int = None,
+    agg_func: typing.Callable[[list[float]], float] | None = None,
+    grace_period: int | None = None,
 ) -> time_series.HorizonMetric:
     """Evaluates the performance of a forecaster on a time series dataset.
 

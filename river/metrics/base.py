@@ -1,8 +1,9 @@
+from __future__ import annotations
+
 import abc
 import collections
 import numbers
 import operator
-import typing
 
 from river import base, stats, utils
 
@@ -23,11 +24,11 @@ class Metric(base.Base, abc.ABC):
     """Mother class for all metrics."""
 
     @abc.abstractmethod
-    def update(self, y_true, y_pred) -> "Metric":
+    def update(self, y_true, y_pred) -> Metric:
         """Update the metric."""
 
     @abc.abstractmethod
-    def revert(self, y_true, y_pred) -> "Metric":
+    def revert(self, y_true, y_pred) -> Metric:
         """Revert the metric."""
 
     @abc.abstractmethod
@@ -49,6 +50,7 @@ class Metric(base.Base, abc.ABC):
         return True
 
     def is_better_than(self, other) -> bool:
+        """Indicate if the current metric is better than another one."""
         op = operator.gt if self.bigger_is_better else operator.lt
         return op(self.get(), other.get())
 
@@ -77,7 +79,7 @@ class ClassificationMetric(Metric):
 
     _fmt = ".2%"  # output a percentage, e.g. 0.427 becomes "42,7%"
 
-    def __init__(self, cm: confusion.ConfusionMatrix = None):
+    def __init__(self, cm: confusion.ConfusionMatrix | None = None):
         if cm is None:
             cm = confusion.ConfusionMatrix()
         self.cm = cm
@@ -115,7 +117,7 @@ class ClassificationMetric(Metric):
         """Clamp a number in between the (0, 1) interval."""
         return utils.math.clamp(p, minimum=1e-15, maximum=1 - 1e-15)
 
-    def __add__(self, other) -> "Metrics":
+    def __add__(self, other) -> Metrics:
         if not isinstance(other, ClassificationMetric):
             raise ValueError(
                 f"{self.__class__.__name__} and {other.__class__.__name__} metrics "
@@ -145,9 +147,9 @@ class BinaryMetric(ClassificationMetric):
     def update(
         self,
         y_true: bool,
-        y_pred: typing.Union[bool, float, typing.Dict[bool, float]],
+        y_pred: bool | float | dict[bool, float],
         sample_weight=1.0,
-    ) -> "BinaryMetric":
+    ) -> BinaryMetric:
         if self.requires_labels:
             y_pred = y_pred == self.pos_val
         return super().update(y_true == self.pos_val, y_pred, sample_weight)
@@ -155,9 +157,9 @@ class BinaryMetric(ClassificationMetric):
     def revert(
         self,
         y_true: bool,
-        y_pred: typing.Union[bool, float, typing.Dict[bool, float]],
+        y_pred: bool | float | dict[bool, float],
         sample_weight=1.0,
-    ) -> "BinaryMetric":
+    ) -> BinaryMetric:
         if self.requires_labels:
             y_pred = y_pred == self.pos_val
         return super().revert(y_true == self.pos_val, y_pred, sample_weight)
@@ -185,11 +187,11 @@ class RegressionMetric(Metric):
     _fmt = ",.6f"  # use commas to separate big numbers and show 6 decimals
 
     @abc.abstractmethod
-    def update(self, y_true: numbers.Number, y_pred: numbers.Number) -> "RegressionMetric":
+    def update(self, y_true: numbers.Number, y_pred: numbers.Number) -> RegressionMetric:
         """Update the metric."""
 
     @abc.abstractmethod
-    def revert(self, y_true: numbers.Number, y_pred: numbers.Number) -> "RegressionMetric":
+    def revert(self, y_true: numbers.Number, y_pred: numbers.Number) -> RegressionMetric:
         """Revert the metric."""
 
     @property
@@ -199,7 +201,7 @@ class RegressionMetric(Metric):
     def works_with(self, model) -> bool:
         return utils.inspect.isregressor(model)
 
-    def __add__(self, other) -> "Metrics":
+    def __add__(self, other) -> Metrics:
         if not isinstance(other, RegressionMetric):
             raise ValueError(
                 f"{self.__class__.__name__} and {other.__class__.__name__} metrics "
@@ -282,7 +284,7 @@ class Metrics(Metric, collections.UserList):
         return self
 
     def clone(self):
-        return Metrics([m.clone() for m in self])
+        return self.__class__([m.clone() for m in self])
 
 
 class WrapperMetric(Metric):
@@ -352,11 +354,11 @@ class ClusteringMetric(base.Base, abc.ABC):
     _fmt = ",.6f"  # Use commas to separate big numbers and show 6 decimals
 
     @abc.abstractmethod
-    def update(self, x, y_pred, centers, sample_weight=1.0) -> "ClusteringMetric":
+    def update(self, x, y_pred, centers, sample_weight=1.0) -> ClusteringMetric:
         """Update the metric."""
 
     @abc.abstractmethod
-    def revert(self, x, y_pred, centers, sample_weight=1.0) -> "ClusteringMetric":
+    def revert(self, x, y_pred, centers, sample_weight=1.0) -> ClusteringMetric:
         """Revert the metric."""
 
     @abc.abstractmethod

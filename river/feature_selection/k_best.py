@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import collections
 import copy
 import functools
@@ -66,7 +68,7 @@ class SelectKBest(base.SupervisedTransformer):
     def __init__(self, similarity: stats.base.Bivariate, k=10):
         self.k = k
         self.similarity = similarity
-        self.similarities: typing.DefaultDict = collections.defaultdict(
+        self.similarities: collections.defaultdict = collections.defaultdict(
             functools.partial(copy.deepcopy, similarity)
         )
         self.leaderboard: typing.Counter = collections.Counter()

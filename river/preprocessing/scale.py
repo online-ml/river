@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import collections
 import functools
 import itertools
@@ -6,7 +8,7 @@ import numbers
 import numpy as np
 import pandas as pd
 
-from river import base, compose, stats, utils
+from river import base, stats, utils
 
 __all__ = [
     "AdaptiveStandardScaler",
@@ -16,7 +18,6 @@ __all__ = [
     "Normalizer",
     "RobustScaler",
     "StandardScaler",
-    "TargetStandardScaler",
 ]
 
 
@@ -543,52 +544,3 @@ class AdaptiveStandardScaler(base.Transformer):
             i: safe_div(x[i] - m, s2**0.5 if s2 > 0 else 0)
             for i, m, s2 in ((i, self.means[i].get(), self.vars[i].get()) for i in x)
         }
-
-
-class TargetStandardScaler(compose.TargetTransformRegressor):
-    """Applies standard scaling to the target.
-
-    Parameters
-    ----------
-    regressor
-        Regression model to wrap.
-
-    Examples
-    --------
-
-    >>> from river import datasets
-    >>> from river import evaluate
-    >>> from river import linear_model
-    >>> from river import metrics
-    >>> from river import preprocessing
-
-    >>> dataset = datasets.TrumpApproval()
-    >>> model = (
-    ...     preprocessing.StandardScaler() |
-    ...     preprocessing.TargetStandardScaler(
-    ...         regressor=linear_model.LinearRegression(intercept_lr=0.15)
-    ...     )
-    ... )
-    >>> metric = metrics.MSE()
-
-    >>> evaluate.progressive_val_score(dataset, model, metric)
-    MSE: 2.003724
-
-    """
-
-    def __init__(self, regressor: base.Regressor):
-        self.var = stats.Var()
-        super().__init__(regressor=regressor, func=self._scale, inverse_func=self._unscale)
-
-    def learn_one(self, x, y):
-        self.var.update(y)
-        return super().learn_one(x, y)
-
-    def _scale(self, y):
-        try:
-            return (y - self.var.mean.get()) / self.var.get() ** 0.5
-        except ZeroDivisionError:
-            return 0.0
-
-    def _unscale(self, y):
-        return y * self.var.get() ** 0.5 + self.var.mean.get()

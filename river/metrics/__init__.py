@@ -6,21 +6,28 @@ predictive methods over time.
 Note that all metrics have a `revert` method, enabling them to be wrapped in `utils.Rolling`.
 This allows computirng rolling metrics:
 
->>> from river import metrics, utils
+```py
+from river import metrics, utils
 
->>> y_true = [True, False, True, True]
->>> y_pred = [False, False, True, True]
+y_true = [True, False, True, True]
+y_pred = [False, False, True, True]
 
->>> metric = utils.Rolling(metrics.Accuracy(), window_size=3)
+metric = utils.Rolling(metrics.Accuracy(), window_size=3)
 
->>> for yt, yp in zip(y_true, y_pred):
-...     print(metric.update(yt, yp))
+for yt, yp in zip(y_true, y_pred):
+    print(metric.update(yt, yp))
+```
+
+```
 Accuracy: 0.00%
 Accuracy: 50.00%
 Accuracy: 66.67%
 Accuracy: 100.00%
+```
 
 """
+from __future__ import annotations
+
 from . import base, multioutput
 from .accuracy import Accuracy
 from .balanced_accuracy import BalancedAccuracy

@@ -17,12 +17,6 @@ repos:
         types: [python]
         entry: black
 
-      - id: isort
-        name: isort
-        language: python
-        types: [python]
-        entry: isort
-
       - id: ruff
         name: ruff
         language: python
@@ -34,9 +28,3 @@ repos:
         language: python
         types: [python]
         entry: mypy --implicit-optional
-
-      - id: pyupgrade
-        name: pyupgrade
-        language: python
-        types: [python]
-        entry: pyupgrade --py38-plus

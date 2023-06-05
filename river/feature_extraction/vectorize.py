@@ -17,7 +17,7 @@ from river import base
 __all__ = ["BagOfWords", "TFIDF"]
 
 
-N_GRAM = typing.Union[str, typing.Tuple[str, ...]]  # unigram  # n-gram
+N_GRAM = typing.Union[str, typing.Tuple[str, ...]]  # noqa: UP006, UP007
 
 
 def strip_accents_unicode(s: str) -> str:
@@ -158,13 +158,13 @@ class VectorizerMixin:
 
     def __init__(
         self,
-        on: str = None,
+        on: str | None = None,
         strip_accents=True,
         lowercase=True,
-        preprocessor: typing.Callable = None,
-        stop_words: set[str] = None,
+        preprocessor: typing.Callable | None = None,
+        stop_words: set[str] | None = None,
         tokenizer_pattern=r"(?u)\b\w[\w\-]+\b",
-        tokenizer: typing.Callable = None,
+        tokenizer: typing.Callable | None = None,
         ngram_range=(1, 1),
     ):
         self.on = on
@@ -447,11 +447,11 @@ class TFIDF(BagOfWords):
     def __init__(
         self,
         normalize=True,
-        on: str = None,
+        on: str | None = None,
         strip_accents=True,
         lowercase=True,
-        preprocessor: typing.Callable = None,
-        tokenizer: typing.Callable = None,
+        preprocessor: typing.Callable | None = None,
+        tokenizer: typing.Callable | None = None,
         ngram_range=(1, 1),
     ):
         super().__init__(

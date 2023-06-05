@@ -1,4 +1,6 @@
 """Multi-output models."""
+from __future__ import annotations
+
 from .chain import (
     ClassifierChain,
     MonteCarloClassifierChain,

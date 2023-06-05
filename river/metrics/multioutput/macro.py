@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import statistics
 from collections import defaultdict
 from copy import deepcopy
@@ -36,12 +38,12 @@ class MacroAverage(MultiOutputMetric, metrics.base.WrapperMetric):
         return utils.inspect.ismoregressor(model)
 
     def update(self, y_true, y_pred, sample_weight=1.0):
-        for i in y_pred:
+        for i in y_true:
             self.metrics[i].update(y_true[i], y_pred[i], sample_weight)
         return self
 
     def revert(self, y_true, y_pred, sample_weight=1.0):
-        for i in y_pred:
+        for i in y_true:
             self.metrics[i].revert(y_true[i], y_pred[i], sample_weight)
         return self
 

@@ -1,4 +1,6 @@
 """Metrics for multi-output learning."""
+from __future__ import annotations
+
 from . import base
 from .confusion import MultiLabelConfusionMatrix
 from .exact_match import ExactMatch

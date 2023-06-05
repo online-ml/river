@@ -1,6 +1,7 @@
 name: pypi
 
 on:
+  workflow_dispatch:
   push:
     tags:
       - "*"
@@ -18,9 +19,6 @@ jobs:
             platform: linux
           - os: windows-latest
             ls: dir
-          - os: ubuntu-latest
-            arch: alt
-            alt_arch_name: aarch64
           - os: macos-latest
             arch: alt
             alt_arch_name: arm64
@@ -28,6 +26,8 @@ jobs:
           - os: windows-latest
             arch: alt
           - os: macos-latest
+            arch: alt
+          - os: ubuntu-latest
             arch: alt
 
     steps:
@@ -57,10 +57,9 @@ jobs:
           platforms: all
 
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.3.0
+        uses: pypa/cibuildwheel@v2.12.3
         env:
           CIBW_BUILD: "cp38-* cp39-* cp310-* cp311-*"
-          # CIBW_BUILD: "cp38-*"
           CIBW_BEFORE_BUILD: >
             pip install setuptools-rust cython &&
             rustup default nightly &&

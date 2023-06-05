@@ -1,14 +1,14 @@
 """Compatibility tools.
 
-This module contains adapters for making `river` estimators compatible with other libraries, and
+This module contains adapters for making River estimators compatible with other libraries, and
 vice-versa whenever possible. The relevant adapters will only be usable if you have installed the
 necessary library. For instance, you have to install scikit-learn in order to use the
 `compat.convert_sklearn_to_river` function.
 
 """
-import typing
+from __future__ import annotations
 
-__all__: typing.List[str] = []
+__all__: list[str] = []
 
 try:
     from .river_to_sklearn import (

@@ -1,7 +1,9 @@
+from __future__ import annotations
+
 import abc
 import collections
 import numbers
-from typing import Iterable
+from collections.abc import Iterable
 
 import numpy as np
 

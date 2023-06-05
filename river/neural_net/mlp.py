@@ -3,7 +3,6 @@ from __future__ import annotations
 import collections
 import copy
 import functools
-import typing
 
 import numpy as np
 import pandas as pd
@@ -13,7 +12,7 @@ from river import base, optim
 __all__ = ["MLPRegressor"]
 
 
-def xavier_init(dims: tuple[int, ...], seed: int = None):
+def xavier_init(dims: tuple[int, ...], seed: int | None = None):
     """Xavier weight initialization.
 
     References
@@ -51,14 +50,14 @@ class MLP:
         activations,
         loss: optim.losses.Loss,
         optimizer: optim.base.Optimizer,
-        seed: int = None,
+        seed: int | None = None,
     ):
         self.activations = activations
         self.hidden_dims = hidden_dims
         self.loss = loss
         self.optimizer = optimizer
         self.seed = seed
-        self._optimizers: typing.DefaultDict = collections.defaultdict(
+        self._optimizers: collections.defaultdict = collections.defaultdict(
             functools.partial(copy.deepcopy, optimizer)
         )
 
@@ -204,7 +203,7 @@ class MLPRegressor(base.Regressor, MLP):
     loss
         Loss function. Defaults to `optim.losses.Squared`.
     optimizer
-        Optimizer. Defaults to `optim.SGD(.01)`.
+        Optimizer. Defaults to `optim.SGD` with the learning rate set to `0.01`.
     seed
         Random number generation seed. Set this for reproducibility.
 
@@ -282,9 +281,9 @@ class MLPRegressor(base.Regressor, MLP):
         self,
         hidden_dims,
         activations,
-        loss: optim.losses.Loss = None,
-        optimizer: optim.base.Optimizer = None,
-        seed: int = None,
+        loss: optim.losses.Loss | None = None,
+        optimizer: optim.base.Optimizer | None = None,
+        seed: int | None = None,
     ):
         super().__init__(
             hidden_dims=hidden_dims,

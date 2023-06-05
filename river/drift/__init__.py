@@ -6,6 +6,7 @@ an alarm if the data distribution changes. A good drift detector method is the o
 the true positives while keeping the number of false positives to a minimum.
 
 """
+from __future__ import annotations
 
 from . import binary
 from .adwin import ADWIN

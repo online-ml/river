@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import dataclasses
 
 import gym
@@ -32,8 +34,8 @@ class CandyCaneContest(gym.Env):
 
     >>> metric = stats.Sum()
     >>> while True:
-    ...     action = env.action_space.sample()
-    ...     observation, reward, terminated, truncated, info = env.step(action)
+    ...     arm = env.action_space.sample()
+    ...     observation, reward, terminated, truncated, info = env.step(arm)
     ...     metric = metric.update(reward)
     ...     if terminated or truncated:
     ...         break
@@ -83,8 +85,8 @@ class CandyCaneContest(gym.Env):
         info = self._get_info()
         return observation, info
 
-    def step(self, action):
-        machine = self._machines[action]
+    def step(self, machine_index):
+        machine = self._machines[machine_index]
         reward = float(self.np_random.uniform() < machine.threshold)
         machine.threshold *= 1 - self.reward_decay
 

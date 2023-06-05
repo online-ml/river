@@ -7,7 +7,6 @@ import io
 import itertools
 import types
 import typing
-from xml.etree import ElementTree as ET
 
 import pandas as pd
 
@@ -173,7 +172,7 @@ class Pipeline(base.Estimator):
 
     Pipelines allow you to chain different steps into a sequence. Typically, when doing supervised
     learning, a pipeline contains one ore more transformation steps, whilst it's is a regressor or
-    a classifier. It is highly recommended to use pipelines with `river`. Indeed, in an online
+    a classifier. It is highly recommended to use pipelines with River. Indeed, in an online
     learning setting, it is very practical to have a model defined as a single object. Take a look
     at the [user guide](/recipes/pipelines) for further information and
     practical examples.
@@ -359,7 +358,7 @@ class Pipeline(base.Estimator):
     def __mul__(self, other):
         from river import compose
 
-        if isinstance(other, (base.Transformer, Pipeline)):
+        if isinstance(other, base.Transformer) or isinstance(other, Pipeline):
             return compose.TransformerProduct(self, other)
 
         return compose.Grouper(transformer=self, by=other)
@@ -377,20 +376,14 @@ class Pipeline(base.Estimator):
             + "\n)"
         ).expandtabs(2)
 
-    def _repr_html_(self):
-        from river.compose import viz
-
-        div = viz.pipeline_to_html(self)
-        return f"<div>{ET.tostring(div, encoding='unicode')}<style scoped>{viz.CSS}</style></div>"
-
     def _get_params(self):
         return {name: step._get_params() for name, step in self.steps.items()}
 
-    def clone(self, new_params: dict = None, include_attributes=False):
+    def clone(self, new_params: dict | None = None, include_attributes=False):
         if new_params is None:
             new_params = {}
 
-        return Pipeline(
+        return self.__class__(
             *[
                 (name, new_params[name])
                 if isinstance(new_params.get(name), base.Estimator)
@@ -431,7 +424,7 @@ class Pipeline(base.Estimator):
             name, obj = obj
 
         def _coerce_to_estimator(obj: typing.Any) -> base.Estimator:
-            if isinstance(obj, (types.FunctionType, types.LambdaType)):
+            if isinstance(obj, types.FunctionType) or isinstance(obj, types.LambdaType):
                 return func.FuncTransformer(obj)
             if isinstance(obj, list):
                 return union.TransformerUnion(*[_coerce_to_estimator(part) for part in obj])
@@ -442,8 +435,8 @@ class Pipeline(base.Estimator):
         def infer_name(estimator: base.Estimator | typing.Callable) -> str:
             if isinstance(estimator, func.FuncTransformer):
                 return infer_name(estimator.func)
-            if isinstance(estimator, (types.FunctionType, types.LambdaType)):
-                return estimator.__name__
+            if isinstance(estimator, types.FunctionType) or isinstance(obj, types.LambdaType):
+                return estimator.__name__  # type: ignore
             if hasattr(estimator, "__class__"):
                 return estimator.__class__.__name__
             return str(estimator)
@@ -613,7 +606,7 @@ class Pipeline(base.Estimator):
         x, last_step = self._transform_one(x)
         return last_step.score_one(x, **params)
 
-    def forecast(self, horizon: int, xs: list[dict] = None):
+    def forecast(self, horizon: int, xs: list[dict] | None = None):
         """Return a forecast.
 
         Only works if each estimator has a `transform_one` method and the final estimator has a
@@ -716,7 +709,7 @@ class Pipeline(base.Estimator):
 
     # Mini-batch methods
 
-    def learn_many(self, X: pd.DataFrame, y: pd.Series = None, **params):
+    def learn_many(self, X: pd.DataFrame, y: pd.Series | None = None, **params):
         """Fit to a mini-batch.
 
         Parameters
@@ -800,9 +793,11 @@ class Pipeline(base.Estimator):
         return X
 
     def predict_many(self, X: pd.DataFrame):
+        """Call transform_many, and then predict_many on the final step."""
         X, last_step = self._transform_many(X=X)
         return last_step.predict_many(X=X)
 
     def predict_proba_many(self, X: pd.DataFrame):
+        """Call transform_many, and then predict_proba_many on the final step."""
         X, last_step = self._transform_many(X=X)
         return last_step.predict_proba_many(X=X)

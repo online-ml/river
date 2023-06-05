@@ -1,4 +1,6 @@
 """Shared utility classes and functions"""
+from __future__ import annotations
+
 from . import inspect, math, norm, pretty, random
 from .context_managers import log_method_calls
 from .data_conversion import dict2numpy, numpy2dict

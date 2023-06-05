@@ -1,6 +1,7 @@
+from __future__ import annotations
+
 import random
 import statistics
-import typing
 from copy import deepcopy
 
 from river import base, drift
@@ -144,18 +145,18 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
     def __init__(
         self,
         grace_period: int = 200,
-        max_depth: int = None,
+        max_depth: int | None = None,
         delta: float = 1e-7,
         tau: float = 0.05,
         leaf_prediction: str = "adaptive",
-        leaf_model: base.Regressor = None,
+        leaf_model: base.Regressor | None = None,
         model_selector_decay: float = 0.95,
-        nominal_attributes: list = None,
-        splitter: Splitter = None,
+        nominal_attributes: list | None = None,
+        splitter: Splitter | None = None,
         min_samples_split: int = 5,
         bootstrap_sampling: bool = True,
         drift_window_threshold: int = 300,
-        drift_detector: typing.Optional[base.DriftDetector] = None,
+        drift_detector: base.DriftDetector | None = None,
         switch_significance: float = 0.05,
         binary_split: bool = False,
         max_size: float = 500.0,
@@ -163,7 +164,7 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
         stop_mem_management: bool = False,
         remove_poor_attrs: bool = False,
         merit_preprune: bool = True,
-        seed: int = None,
+        seed: int | None = None,
     ):
         super().__init__(
             grace_period=grace_period,
@@ -305,7 +306,7 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
 
     def _branch_selector(
         self, numerical_feature=True, multiway_split=False
-    ) -> typing.Type[AdaBranchRegressor]:
+    ) -> type[AdaBranchRegressor]:
         """Create a new split node."""
         if numerical_feature:
             if not multiway_split:

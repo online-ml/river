@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import abc
 import numbers
 import typing
@@ -106,7 +108,7 @@ class HTLeaf(Leaf, abc.ABC):
                 self.splitters[att_id] = splitter
             splitter.update(att_val, y, sample_weight)
 
-    def best_split_suggestions(self, criterion, tree) -> typing.List[BranchFactory]:
+    def best_split_suggestions(self, criterion, tree) -> list[BranchFactory]:
         """Find possible split candidates.
 
         Parameters

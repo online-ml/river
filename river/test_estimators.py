@@ -1,4 +1,6 @@
 """General tests that all estimators need to pass."""
+from __future__ import annotations
+
 import importlib
 import inspect
 

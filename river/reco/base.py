@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import abc
 import numbers
 import random
@@ -5,8 +7,8 @@ import typing
 
 from river import base
 
-ID = typing.Union[str, int]
-Reward = typing.Union[numbers.Number, bool]
+ID = typing.Union[str, int]  # noqa: UP007
+Reward = typing.Union[numbers.Number, bool]  # noqa: UP007
 
 
 __all__ = ["Ranker"]
@@ -22,7 +24,7 @@ class Ranker(base.Estimator):
 
     """
 
-    def __init__(self, seed: int = None):
+    def __init__(self, seed: int | None = None):
         self.seed = seed
         self._rng = random.Random(seed)
 
@@ -31,7 +33,7 @@ class Ranker(base.Estimator):
         return False
 
     @abc.abstractmethod
-    def learn_one(self, user: ID, item: ID, y: Reward, x: dict = None):
+    def learn_one(self, user: ID, item: ID, y: Reward, x: dict | None = None):
         """Fits a `user`-`item` pair and a real-valued target `y`.
 
         Parameters
@@ -48,7 +50,7 @@ class Ranker(base.Estimator):
         """
 
     @abc.abstractmethod
-    def predict_one(self, user: ID, item: ID, x: dict = None) -> Reward:
+    def predict_one(self, user: ID, item: ID, x: dict | None = None) -> Reward:
         """Predicts the target value of a set of features `x`.
 
         Parameters
@@ -66,7 +68,7 @@ class Ranker(base.Estimator):
 
         """
 
-    def rank(self, user: ID, items: typing.Set[ID], x: dict = None) -> typing.List[ID]:
+    def rank(self, user: ID, items: set[ID], x: dict | None = None) -> list[ID]:
         """Rank models by decreasing order of preference for a given user.
 
         Parameters

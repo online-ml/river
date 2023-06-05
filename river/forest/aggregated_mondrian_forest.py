@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import abc
 import random
 
@@ -39,7 +41,7 @@ class AMFLearner(base.Ensemble, abc.ABC):
         loss: str = "log",
         use_aggregation: bool = True,
         split_pure: bool = False,
-        seed: int = None,
+        seed: int | None = None,
     ):
         super().__init__([])  # type: ignore
 
@@ -152,7 +154,7 @@ class AMFClassifier(AMFLearner, base.Classifier):
         use_aggregation: bool = True,
         dirichlet: float = 0.5,
         split_pure: bool = False,
-        seed: int = None,
+        seed: int | None = None,
     ):
         super().__init__(
             n_estimators=n_estimators,

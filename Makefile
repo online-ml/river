@@ -4,16 +4,20 @@ format:
 	pre-commit run --all-files
 
 execute-notebooks:
-	jupyter nbconvert --execute --to notebook --inplace docs/*/*.ipynb --ExecutePreprocessor.timeout=-1
+	jupyter nbconvert --execute --to notebook --inplace docs/introduction/*/*.ipynb --ExecutePreprocessor.timeout=-1
+	jupyter nbconvert --execute --to notebook --inplace docs/recipes/*.ipynb --ExecutePreprocessor.timeout=-1
+	jupyter nbconvert --execute --to notebook --inplace docs/examples/*.ipynb --ExecutePreprocessor.timeout=-1
+	jupyter nbconvert --execute --to notebook --inplace docs/examples/*/*.ipynb --ExecutePreprocessor.timeout=-1
 
 render-notebooks:
 	jupyter nbconvert --to markdown docs/introduction/*/*.ipynb
-	jupyter nbconvert --to markdown docs/recipes/**.ipynb
-	jupyter nbconvert --to markdown docs/examples/**.ipynb
+	jupyter nbconvert --to markdown docs/recipes/*.ipynb
+	jupyter nbconvert --to markdown docs/examples/*.ipynb
+	jupyter nbconvert --to markdown docs/examples/*/*.ipynb
 
 doc: render-notebooks
 	(cd benchmarks && python render.py)
-	yamp river --out docs/api --verbose
+	python docs/parse river --out docs --verbose
 	mkdocs build
 
 livedoc: doc

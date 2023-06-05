@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import collections
 import statistics
 
@@ -77,7 +79,7 @@ class BaggingClassifier(BaseBagging, base.Classifier):
 
     """
 
-    def __init__(self, model: base.Classifier, n_models=10, seed: int = None):
+    def __init__(self, model: base.Classifier, n_models=10, seed: int | None = None):
         super().__init__(model, n_models, seed)
 
     @classmethod
@@ -149,7 +151,7 @@ class BaggingRegressor(BaseBagging, base.Regressor):
 
     """
 
-    def __init__(self, model: base.Regressor, n_models=10, seed: int = None):
+    def __init__(self, model: base.Regressor, n_models=10, seed: int | None = None):
         super().__init__(model, n_models, seed)
 
     @classmethod
@@ -217,7 +219,7 @@ class ADWINBaggingClassifier(BaggingClassifier):
 
     """
 
-    def __init__(self, model: base.Classifier, n_models=10, seed: int = None):
+    def __init__(self, model: base.Classifier, n_models=10, seed: int | None = None):
         super().__init__(model=model, n_models=n_models, seed=seed)
         self._drift_detectors = [drift.ADWIN() for _ in range(self.n_models)]
 
@@ -321,7 +323,7 @@ class LeveragingBaggingClassifier(BaggingClassifier):
         w: float = 6,
         adwin_delta: float = 0.002,
         bagging_method: str = "bag",
-        seed: int = None,
+        seed: int | None = None,
     ):
         super().__init__(model=model, n_models=n_models, seed=seed)
         self.n_detected_changes = 0

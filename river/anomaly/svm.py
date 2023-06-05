@@ -1,4 +1,4 @@
-import typing
+from __future__ import annotations
 
 import pandas as pd
 
@@ -78,10 +78,10 @@ class OneClassSVM(linear_model.base.GLM, anomaly.base.AnomalyDetector):
     def __init__(
         self,
         nu=0.1,
-        optimizer: optim.base.Optimizer = None,
-        intercept_lr: typing.Union[optim.base.Scheduler, float] = 0.01,
+        optimizer: optim.base.Optimizer | None = None,
+        intercept_lr: optim.base.Scheduler | float = 0.01,
         clip_gradient=1e12,
-        initializer: optim.base.Initializer = None,
+        initializer: optim.base.Initializer | None = None,
     ):
         super().__init__(
             optimizer=optim.SGD(0.01) if optimizer is None else optimizer,

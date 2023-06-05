@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import collections
 import heapq
 import itertools
@@ -87,7 +89,6 @@ class Histogram(collections.UserList, base.Base):
     --------
 
     >>> from river import sketch
-    >>> import matplotlib.pyplot as plt
     >>> import numpy as np
 
     >>> np.random.seed(42)
@@ -97,19 +98,28 @@ class Histogram(collections.UserList, base.Base):
     ...     np.random.normal(3, 1, 1000),
     ... ))
 
-    >>> hist = sketch.Histogram(max_bins=60)
+    >>> hist = sketch.Histogram(max_bins=15)
 
     >>> for x in values:
     ...     hist = hist.update(x)
 
-    >>> ax = plt.bar(
-    ...     x=[(b.left + b.right) / 2 for b in hist],
-    ...     height=[b.count for b in hist],
-    ...     width=[(b.right - b.left) / 2 for b in hist]
-    ... )
-
-    .. image:: ../../docs/img/histogram_docstring.svg
-        :align: center
+    >>> for bin in hist:
+    ...     print(bin)
+    [-6.24127, -6.24127]: 1
+    [-5.69689, -5.19881]: 8
+    [-5.12390, -4.43014]: 57
+    [-4.42475, -3.72574]: 158
+    [-3.71984, -3.01642]: 262
+    [-3.01350, -2.50668]: 206
+    [-2.50329, -0.81020]: 294
+    [-0.80954, 0.29677]: 19
+    [0.40896, 0.82733]: 7
+    [0.84661, 1.25147]: 24
+    [1.26029, 2.30758]: 178
+    [2.31081, 3.05701]: 284
+    [3.05963, 3.69695]: 242
+    [3.69822, 5.64434]: 258
+    [6.13775, 6.19311]: 2
 
     References
     ----------

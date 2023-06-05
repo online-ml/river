@@ -10,7 +10,7 @@ __all__ = ["humanize_bytes", "print_table"]
 def print_table(
     headers: list[str],
     columns: list[list[str]],
-    order: list[int] = None,
+    order: list[int] | None = None,
 ):
     """Pretty-prints a table.
 

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import collections
 import hashlib
 
@@ -46,7 +48,7 @@ class FeatureHasher(base.Transformer):
 
     """
 
-    def __init__(self, n_features=1048576, seed: int = None):
+    def __init__(self, n_features=1048576, seed: int | None = None):
         self.n_features = n_features
         self.seed = seed
         self._salt = np.random.RandomState(seed).bytes(hashlib.blake2s.SALT_SIZE)

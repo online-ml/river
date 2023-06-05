@@ -6,6 +6,7 @@ Note that this module is not exposed in the tree module, and is instead used by 
 AMFClassifier class in the ensemble module.
 
 """
+from __future__ import annotations
 
 from .mondrian_tree import MondrianTree
 from .mondrian_tree_classifier import MondrianTreeClassifier
