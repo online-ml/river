@@ -245,6 +245,6 @@ class OneHotEncoder(base.MiniBatchTransformer):
                 oh[col] = pd.arrays.SparseArray([0] * len(oh), dtype="uint8")
 
         if self.drop_first:
-            oh.drop(columns=min(X.columns), inplace=True)
+            oh.drop(columns=min(oh.columns), inplace=True)
 
         return oh
