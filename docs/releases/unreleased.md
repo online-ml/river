@@ -3,6 +3,7 @@
 ## bandit
 
 - Added `bandit.BayesUCB`.
+- Added `bandit.evaluate_offline`, for evaluating bandits on historical (logged) data.
 
 ## compat
 
@@ -11,7 +12,11 @@
 ## neighbors
 
 - Add `neighbors.SWINN` to power-up approximate nearest neighbor search. SWINN uses graphs to speed up nearest neighbor search in large sliding windows of data.
-- Add classes `neighbors.ANNClassifier` and `neighbors.ANNRegressor` to perform approximate nearest neighbor search in classification and regression tasks.
+
+## compose
+
+- `compose.TransformerProduct` will now preserve the density of sparse columns.
+- Added a `transform_many` method to `compose.FuncTransformer`, allowing it to be used in mini-batch pipelines.
 
 ## preprocessing
 

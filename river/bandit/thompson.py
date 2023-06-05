@@ -55,9 +55,9 @@ class ThompsonSampling(bandit.base.Policy):
 
     >>> metric = stats.Sum()
     >>> while True:
-    ...     action = policy.pull(range(env.action_space.n))
-    ...     observation, reward, terminated, truncated, info = env.step(action)
-    ...     policy = policy.update(action, reward)
+    ...     arm = policy.pull(range(env.action_space.n))
+    ...     observation, reward, terminated, truncated, info = env.step(arm)
+    ...     policy = policy.update(arm, reward)
     ...     metric = metric.update(reward)
     ...     if terminated or truncated:
     ...         break
