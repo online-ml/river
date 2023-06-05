@@ -7,16 +7,15 @@ until a query is received.
 from __future__ import annotations
 
 from .ann import SWINN
-from .approx_neighbors import ANNClassifier, ANNRegressor
-from .base import NearestNeighbors
+from .base import FunctionWrapper
 from .knn_classifier import KNNClassifier
 from .knn_regressor import KNNRegressor
+from .lazy import LazyNN
 
 __all__ = [
-    "NearestNeighbors",
+    "FunctionWrapper",
+    "LazyNN",
     "KNNClassifier",
     "KNNRegressor",
     "SWINN",
-    "ANNClassifier",
-    "ANNRegressor",
 ]

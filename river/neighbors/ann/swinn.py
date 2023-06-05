@@ -1,19 +1,21 @@
 from __future__ import annotations
 
 import collections
+import functools
 import heapq
 import itertools
 import math
 import operator
 import random
+import typing
 
-from river import base
-from river.neighbors.base import DistanceFunc, FunctionWrapper
+from river import utils
+from river.neighbors.base import BaseNN, DistanceFunc, FunctionWrapper
 
 from .nn_vertex import Vertex
 
 
-class SWINN(base.Base):
+class SWINN(BaseNN):
     """Sliding WIndow-based Nearest Neighbor (SWINN) search using Graphs.
 
     Extends the NNDescent algorithm[^1] to handle vertex addition and removal in a FIFO data
@@ -38,21 +40,22 @@ class SWINN(base.Base):
 
     Parameters
     ----------
-    n_neighbors
+    graph_k
         The maximum number of direct nearest neighbors each node has.
     maxlen
         The maximum size of the data buffer.
     warm_up
         How many data instances to observe before starting the search graph.
     dist_func
-        The distance function used to compare two items.
+        The distance function used to compare two items. If not set, use the Minkowski distance
+        with `p=2`.
     max_candidates
         The maximum number of vertices to consider when performing local neighborhood joins. If not set
-        SWINN will use `min(50, max(50, self.n_neighbors))`.
+        SWINN will use `min(50, max(50, self.graph_k))`.
     delta
         Early stop parameter for the neighborhood refinement procedure. NNDescent will stop running
         if the maximum number of iterations is reached or the number of edge changes after an iteration
-        is smaller than or equal to `delta * n_neighbors * n_nodes`. In the last expression, `n_nodes`
+        is smaller than or equal to `delta * graph_k * n_nodes`. In the last expression, `n_nodes`
         refers to the number of graph nodes involved in the (local) neighborhood refinement.
     prune_prob
         The probability of removing redundant edges. Must be between `0` and `1`. If set to zero,
@@ -64,8 +67,8 @@ class SWINN(base.Base):
 
     Notes
     -----
-    There is an accuracy/speed trade-off between `n_neighbors` and `sample_rate`. To ensure a single
-    connected component, and thus an effective search index, one can increase `n_neighbors`. The
+    There is an accuracy/speed trade-off between `graph_k` and `sample_rate`. To ensure a single
+    connected component, and thus an effective search index, one can increase `graph_k`. The
     `connectivity` method is a helper to determine whether the search index has a single connected component.
     However, search accuracy might come at the cost of increased memory usage and slow processing. To alleviate
     that, one can rely on decreasing the `sample_rate` to avoid exploring all the undirected edges of a node
@@ -82,8 +85,8 @@ class SWINN(base.Base):
 
     def __init__(
         self,
-        n_neighbors: int,
-        dist_func: DistanceFunc | FunctionWrapper,
+        graph_k: int = 20,
+        dist_func: DistanceFunc | FunctionWrapper | None = None,
         maxlen: int = 1000,
         warm_up: int = 500,
         max_candidates: int = None,
@@ -92,12 +95,15 @@ class SWINN(base.Base):
         n_iters: int = 10,
         seed: int = None,
     ):
-        self.n_neighbors = n_neighbors
+        self.graph_k = graph_k
+        if dist_func is None:
+            dist_func = functools.partial(utils.math.minkowski_distance, p=2)
+
         self.dist_func = dist_func
         self.maxlen = maxlen
         self.warm_up = warm_up
         if max_candidates is None:
-            self.max_candidates = min(50, max(50, self.n_neighbors))
+            self.max_candidates = min(50, max(50, self.graph_k))
         else:
             self.max_candidates = max_candidates
 
@@ -128,8 +134,8 @@ class SWINN(base.Base):
         nodes = set([i for i in range(n_nodes)])
         for nid in range(n_nodes):
             nodes.remove(nid)
-            ns = self._rng.sample(tuple(nodes), self.n_neighbors)
-            dists = [math.inf for _ in range(self.n_neighbors)]
+            ns = self._rng.sample(tuple(nodes), self.graph_k)
+            dists = [math.inf for _ in range(self.graph_k)]
             self[nid].fill([self[n] for n in ns], dists)
             nodes.add(nid)
 
@@ -139,7 +145,7 @@ class SWINN(base.Base):
         for node in list(Vertex._isolated):
             if not node.is_isolated():
                 continue
-            neighbors, dists = self._search(node.item, self.n_neighbors)
+            neighbors, dists = self._search(node.item, self.graph_k)
             node.fill(neighbors, dists)
 
         # Update class property
@@ -169,7 +175,7 @@ class SWINN(base.Base):
 
         # First we handle the unreachable nodes
         for al in isolated:
-            neighbors, dists = self._search(al.item, self.n_neighbors)
+            neighbors, dists = self._search(al.item, self.graph_k)
             al.fill(neighbors, dists)
 
         rns -= isolated
@@ -185,7 +191,7 @@ class SWINN(base.Base):
                 seed = self._rng.choice(ns)
 
             # Use the search index to create new connections
-            neighbors, dists = self._search(rn.item, self.n_neighbors, seed=seed, exclude=rn)
+            neighbors, dists = self._search(rn.item, self.graph_k, seed=seed, exclude=rn)
             rn.fill(neighbors, dists)
 
         self._refine(affected)
@@ -203,7 +209,7 @@ class SWINN(base.Base):
         if nodes is None:
             nodes = [n for n in self]
 
-        min_changes = self.delta * self.n_neighbors * len(nodes)
+        min_changes = self.delta * self.graph_k * len(nodes)
 
         tried = set()
         for _ in range(self.n_iters):
@@ -254,8 +260,8 @@ class SWINN(base.Base):
                             continue
 
                         dist = self.dist_func(n1.item, n2.item)
-                        total_changes += n1.push_edge(n2, dist, self.n_neighbors)
-                        total_changes += n2.push_edge(n1, dist, self.n_neighbors)
+                        total_changes += n1.push_edge(n2, dist, self.graph_k)
+                        total_changes += n2.push_edge(n1, dist, self.graph_k)
 
                         tried.add((n1.uuid, n2.uuid))
 
@@ -268,8 +274,8 @@ class SWINN(base.Base):
                             continue
 
                         dist = self.dist_func(n1.item, n2.item)
-                        total_changes += n1.push_edge(n2, dist, self.n_neighbors)
-                        total_changes += n2.push_edge(n1, dist, self.n_neighbors)
+                        total_changes += n1.push_edge(n2, dist, self.graph_k)
+                        total_changes += n2.push_edge(n1, dist, self.graph_k)
 
                         tried.add((n1.uuid, n2.uuid))
 
@@ -284,7 +290,7 @@ class SWINN(base.Base):
         # Ensure that no node is isolated in the graph
         self._fix_graph()
 
-    def add(self, item):
+    def append(self, item: typing.Any, **kwargs):
         """Add a new item to the search index.
 
         Data is stored using the FIFO strategy. Both the data buffer and the search graph are updated. The
@@ -313,7 +319,7 @@ class SWINN(base.Base):
             self._safe_node_removal()
 
         # Assign the closest neighbors to the new item
-        neighbors, dists = self._search(node.item, self.n_neighbors)
+        neighbors, dists = self._search(node.item, self.graph_k)
 
         # Add the new element to the buffer
         self._data.append(node)
@@ -323,7 +329,10 @@ class SWINN(base.Base):
         # Lazy search while the warm-up period is not finished
         points = [(p.item, self.dist_func(item, p.item)) for p in self]
 
-        return tuple(map(list, zip(*sorted(points, key=operator.itemgetter(-1))[:k])))
+        if points:
+            return tuple(map(list, zip(*sorted(points, key=operator.itemgetter(-1))[:k])))
+
+        return None
 
     def _search(self, item, k, epsilon: float = 0.1, seed=None, exclude=None) -> tuple[list, list]:
         # Limiter for the distance bound
@@ -381,7 +390,9 @@ class SWINN(base.Base):
 
         return neighbors, dists
 
-    def search(self, item, k, epsilon) -> tuple[list, list]:
+    def search(
+        self, item: typing.Any, n_neighbors: int, epsilon: float = 0.1, **kwargs
+    ) -> tuple[list, list]:
         """Search the underlying nearest neighbor graph given a query item.
 
         In case not enough samples were observed, i.e., the number of stored samples is smaller than
@@ -391,7 +402,7 @@ class SWINN(base.Base):
         ----------
         item
             The query item to search for nearest neighbors.
-        k
+        n_neighbors
             The number of nearest neighbors to return.
         epsilon
             Distance bound to aid in avoiding local minima while traversing the search graph. Let $d_k$
@@ -408,9 +419,9 @@ class SWINN(base.Base):
         """
 
         if len(self) <= self.warm_up:
-            return self._linear_scan(item, k)
+            return self._linear_scan(item, n_neighbors)
 
-        neighbors, dists = self._search(item, k, epsilon)
+        neighbors, dists = self._search(item, n_neighbors, epsilon)
         return [n.item for n in neighbors], dists
 
     def connectivity(self) -> list[int]:
@@ -422,11 +433,11 @@ class SWINN(base.Base):
         We want our search index to have a single connected component, i.e., the case where we get
         a list containing a single number which is equal to `maxlen`. If that is not the case, not
         every node in the search graph can be reached from any given starting point. You may want to try
-        increasing `n_neighbors` to improve connectivity. However, keep in mind the following aspects:
+        increasing `graph_k` to improve connectivity. However, keep in mind the following aspects:
         1) computing this metric is a costly operation ($O(E\\log V)$), where $E$ and $V$ are, respectively,
         the number of edges and vertices in the search graph; 2) often, connectivity comes at the price of
         increased computational costs. Tweaking the `sample_rate` might help in such situations. The best
-        possible scenario is to decrease the value of `n_neighbors` while keeping a single connected
+        possible scenario is to decrease the value of `graph_k` while keeping a single connected
         component.
 
         Returns
