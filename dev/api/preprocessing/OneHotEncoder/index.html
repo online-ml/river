@@ -11819,8 +11819,6 @@ encode all of the entries individually.</p>
 2  i  h
 </code></pre></div></p>
 <p><div class="language-python highlight"><pre><span></span><code><span class="n">oh</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">OneHotEncoder</span><span class="p">(</span><span class="n">drop_zeros</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">oh</span> <span class="o">=</span> <span class="n">oh</span><span class="o">.</span><span class="n">learn_many</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
-
 <span class="n">df</span> <span class="o">=</span> <span class="n">oh</span><span class="o">.</span><span class="n">transform_many</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 <span class="n">df</span><span class="o">.</span><span class="n">sort_index</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">&quot;columns&quot;</span><span class="p">)</span>
 </code></pre></div>
@@ -11828,6 +11826,15 @@ encode all of the entries individually.</p>
 0     0     0     1     1     0     0
 1     1     0     0     0     0     1
 2     0     1     0     0     1     0
+</code></pre></div></p>
+<p><div class="language-python highlight"><pre><span></span><code><span class="n">oh</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">OneHotEncoder</span><span class="p">(</span><span class="n">drop_zeros</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">drop_first</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">oh</span><span class="o">.</span><span class="n">transform_many</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+<span class="n">df</span><span class="o">.</span><span class="n">sort_index</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">&quot;columns&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>   c1_i  c1_u  c2_d  c2_h  c2_x
+0     0     1     1     0     0
+1     0     0     0     0     1
+2     1     0     0     1     0
 </code></pre></div></p>
 <p>Here's an example where the zeros are kept:</p>
 <p><div class="language-python highlight"><pre><span></span><code><span class="n">oh</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">OneHotEncoder</span><span class="p">(</span><span class="n">drop_zeros</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
