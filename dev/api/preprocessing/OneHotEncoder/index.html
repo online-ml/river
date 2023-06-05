@@ -11689,6 +11689,11 @@
 <p><em>Default</em> → <code>False</code></p>
 <p>Whether or not 0s should be made explicit or not.</p>
 </li>
+<li>
+<p><strong>drop_first</strong></p>
+<p><em>Default</em> → <code>False</code></p>
+<p>Whether to get <code>k - 1</code> dummies out of <code>k</code> categorical levels by removing the first key. This is useful in some statistical models where perfectly collinear features cause problems.</p>
+</li>
 </ul>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
 <p>Let us first create an example dataset.</p>
@@ -11735,6 +11740,17 @@ in the output. Otherwise, all the past features will be included in the output.<
 {&#39;c1_a&#39;: 1, &#39;c2_x&#39;: 1}
 {&#39;c1_i&#39;: 1, &#39;c2_h&#39;: 1}
 {&#39;c1_h&#39;: 1, &#39;c2_e&#39;: 1}
+</code></pre></div></p>
+<p>You can encode only <code>k - 1</code> features out of <code>k</code> by setting <code>drop_first</code> to <code>True</code>.</p>
+<p><div class="language-python highlight"><pre><span></span><code><span class="n">oh</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">OneHotEncoder</span><span class="p">(</span><span class="n">drop_first</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">drop_zeros</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">X</span><span class="p">:</span>
+    <span class="n">oh</span> <span class="o">=</span> <span class="n">oh</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">pprint</span><span class="p">(</span><span class="n">oh</span><span class="o">.</span><span class="n">transform_one</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>{&#39;c2_d&#39;: 1}
+{&#39;c2_x&#39;: 1}
+{&#39;c2_h&#39;: 1}
+{&#39;c2_e&#39;: 1}
 </code></pre></div></p>
 <p>A subset of the features can be one-hot encoded by piping a <a href="../../compose/Select"><code>compose.Select</code></a> into the
 <code>OneHotEncoder</code>.</p>
