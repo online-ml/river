@@ -21,6 +21,10 @@ class OneHotEncoder(base.MiniBatchTransformer):
     ----------
     drop_zeros
         Whether or not 0s should be made explicit or not.
+    drop_first
+        Whether to get `k - 1` dummies out of `k` categorical levels by removing the first key.
+        This is useful in some statistical models where perfectly collinear features cause
+        problems.
 
     Examples
     --------
@@ -69,6 +73,17 @@ class OneHotEncoder(base.MiniBatchTransformer):
     {'c1_a': 1, 'c2_x': 1}
     {'c1_i': 1, 'c2_h': 1}
     {'c1_h': 1, 'c2_e': 1}
+
+    You can encode only `k - 1` features out of `k` by setting `drop_first` to `True`.
+
+    >>> oh = preprocessing.OneHotEncoder(drop_first=True, drop_zeros=True)
+    >>> for x in X:
+    ...     oh = oh.learn_one(x)
+    ...     pprint(oh.transform_one(x))
+    {'c2_d': 1}
+    {'c2_x': 1}
+    {'c2_h': 1}
+    {'c2_e': 1}
 
     A subset of the features can be one-hot encoded by piping a `compose.Select` into the
     `OneHotEncoder`.
@@ -173,8 +188,9 @@ class OneHotEncoder(base.MiniBatchTransformer):
 
     """
 
-    def __init__(self, drop_zeros=False):
+    def __init__(self, drop_zeros=False, drop_first=False):
         self.drop_zeros = drop_zeros
+        self.drop_first = drop_first
         self.values = collections.defaultdict(set)
 
     def learn_one(self, x):
@@ -205,6 +221,9 @@ class OneHotEncoder(base.MiniBatchTransformer):
             else:
                 oh[f"{i}_{xi}"] = 1
 
+        if self.drop_first:
+            oh.pop(min(oh.keys()))
+
         return oh
 
     def learn_many(self, X):
@@ -224,5 +243,8 @@ class OneHotEncoder(base.MiniBatchTransformer):
             to_add = seen_in_the_past - set(oh.columns)
             for col in to_add:
                 oh[col] = pd.arrays.SparseArray([0] * len(oh), dtype="uint8")
+
+        if self.drop_first:
+            oh.drop(columns=min(X.columns), inplace=True)
 
         return oh
