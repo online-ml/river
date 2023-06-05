@@ -31,9 +31,11 @@ class SWINN(BaseNN):
     The algorithm for creating and maintaining the search graph can be described
     in general lines as follows:
 
-    * Start with a random neighborhood graph;<\br>
+    * Start with a random neighborhood graph;
+
     * For each node in the search graph: refine the current neighborhood by checking if there
-    are better neighborhood options among the neighbors of the current neighbors;<\br>
+    are better neighborhood options among the neighbors of the current neighbors;
+
     * If the total number of neighborhood changes is smaller than a given stopping criterion, then stop.
 
     SWINN adds strategies to remove vertices from the search graph and pruning redundant edges.
@@ -303,6 +305,8 @@ class SWINN(BaseNN):
         ----------
         item
             Item to be added.
+        kwargs
+            Not used in this implementation.
 
         """
         node = Vertex(item, next(self._uuid))
@@ -410,6 +414,8 @@ class SWINN(BaseNN):
             moment, any point whose distance to the query item is smaller than or equal to
             $(1 + \\epsilon) * d_k$ is kept as a potential path. After every addition to the heap of
             candidate nodes, $d_k$ is updated.
+        kwargs
+            Not used in this implementation.
 
         Returns
         -------
