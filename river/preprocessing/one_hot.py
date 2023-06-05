@@ -152,14 +152,20 @@ class OneHotEncoder(base.MiniBatchTransformer):
     2  i  h
 
     >>> oh = preprocessing.OneHotEncoder(drop_zeros=True)
-    >>> oh = oh.learn_many(X)
-
     >>> df = oh.transform_many(X)
     >>> df.sort_index(axis="columns")
        c1_a  c1_i  c1_u  c2_d  c2_h  c2_x
     0     0     0     1     1     0     0
     1     1     0     0     0     0     1
     2     0     1     0     0     1     0
+
+    >>> oh = preprocessing.OneHotEncoder(drop_zeros=True, drop_first=True)
+    >>> df = oh.transform_many(X)
+    >>> df.sort_index(axis="columns")
+       c1_i  c1_u  c2_d  c2_h  c2_x
+    0     0     1     1     0     0
+    1     0     0     0     0     1
+    2     1     0     0     1     0
 
     Here's an example where the zeros are kept:
 
