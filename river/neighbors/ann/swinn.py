@@ -10,7 +10,7 @@ import random
 import typing
 
 from river import utils
-from river.neighbors.base import BaseNN, DistanceFunc, FunctionWrapper
+from river.neighbors.base import BaseNN, DistanceFunc
 
 from .nn_vertex import Vertex
 
@@ -88,7 +88,7 @@ class SWINN(BaseNN):
     def __init__(
         self,
         graph_k: int = 20,
-        dist_func: DistanceFunc | FunctionWrapper | None = None,
+        dist_func: DistanceFunc | None = None,
         maxlen: int = 1000,
         warm_up: int = 500,
         max_candidates: int = None,
