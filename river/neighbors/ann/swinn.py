@@ -10,7 +10,7 @@ import random
 import typing
 
 from river import utils
-from river.neighbors.base import BaseNN, DistanceFunc
+from river.neighbors.base import BaseNN, DistanceFunc, FunctionWrapper
 
 from .nn_vertex import Vertex
 
@@ -38,7 +38,9 @@ class SWINN(BaseNN):
 
     * If the total number of neighborhood changes is smaller than a given stopping criterion, then stop.
 
-    SWINN adds strategies to remove vertices from the search graph and pruning redundant edges.
+    SWINN adds strategies to remove vertices from the search graph and pruning redundant edges. SWINN is
+    more efficient when the selected `maxlen` is greater than 500. For small sized data windows, using
+    the lazy/exhaustive search, i.e., `neighbors.LazySearch` might be a better idea.
 
     Parameters
     ----------
@@ -88,7 +90,7 @@ class SWINN(BaseNN):
     def __init__(
         self,
         graph_k: int = 20,
-        dist_func: DistanceFunc | None = None,
+        dist_func: DistanceFunc | FunctionWrapper | None = None,
         maxlen: int = 1000,
         warm_up: int = 500,
         max_candidates: int = None,
@@ -100,8 +102,8 @@ class SWINN(BaseNN):
         self.graph_k = graph_k
         if dist_func is None:
             dist_func = functools.partial(utils.math.minkowski_distance, p=2)
-
         self.dist_func = dist_func
+
         self.maxlen = maxlen
         self.warm_up = warm_up
         if max_candidates is None:

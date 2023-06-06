@@ -7,11 +7,14 @@
 
 ## compat
 
-- The `predict_many` method scikit-learn models wrapped with `compat.convert_sklearn_to_river` raised an exception if the model had been fitted on any data yet. Instead, default predictions will be produced, which is consistent with the rest of River.
+- The `predict_many` method scikit-learn models wrapped with `compat.convert_sklearn_to_river` raised an exception if the model had not been fitted on any data yet. Instead, default predictions will be produced, which is consistent with the rest of River.
 
 ## neighbors
 
 - Add `neighbors.SWINN` to power-up approximate nearest neighbor search. SWINN uses graphs to speed up nearest neighbor search in large sliding windows of data.
+- Rename `neighbors.NearestNeighbors` to `neighbors.LazySearch`.
+- Standardize and create base classes for generic nearest neighbor search utilities.
+- The user can now select the nearest neighbor search engine to use in `neighbors.KNNClassifier` and `neighbors.KNNRegressor`.
 
 ## compose
 

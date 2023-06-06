@@ -5,7 +5,7 @@ import functools
 from river import base, utils
 from river.neighbors import SWINN
 
-from .base import BaseNN
+from .base import BaseNN, FunctionWrapper
 
 
 class KNNClassifier(base.Classifier):
@@ -82,19 +82,11 @@ class KNNClassifier(base.Classifier):
     ):
         self.n_neighbors = n_neighbors
 
-        dist_func = (
-            functools.partial(utils.math.minkowski_distance, p=2)
-            if engine is None
-            else engine.dist_func  # type: ignore
-        )
-
         if engine is None:
-            engine = SWINN(dist_func=dist_func)
+            engine = SWINN(dist_func=functools.partial(utils.math.minkowski_distance, p=2))
 
-        def _distance_func(a, b):
-            return dist_func(a[0], b[0])
-
-        engine.dist_func = _distance_func  # type: ignore
+        if not isinstance(engine.dist_func, FunctionWrapper):
+            engine.dist_func = FunctionWrapper(engine.dist_func)
 
         self.engine = engine
         self.weighted = weighted
@@ -104,7 +96,7 @@ class KNNClassifier(base.Classifier):
         self._cleanup_counter = cleanup_every
 
         # Create a fresh copy of the supplied search engine
-        self._nn: BaseNN = self.engine.clone()
+        self._nn: BaseNN = self.engine.clone(include_attributes=True)
 
     @property
     def _multiclass(self):
@@ -117,7 +109,7 @@ class KNNClassifier(base.Classifier):
         yield {
             "n_neighbors": 3,
             "engine": LazySearch(
-                window_size=50, distance_func=functools.partial(utils.math.minkowski_distance, p=2)
+                window_size=50, dist_func=functools.partial(utils.math.minkowski_distance, p=2)
             ),
         }
 

@@ -7,7 +7,7 @@ import typing
 
 from river import utils
 
-from .base import BaseNN, DistanceFunc
+from .base import BaseNN, DistanceFunc, FunctionWrapper
 
 
 class LazySearch(BaseNN):
@@ -20,7 +20,7 @@ class LazySearch(BaseNN):
     min_distance_keep
         The minimum distance (similarity) to consider adding a point to the window.
         E.g., a value of 0.0 will add even exact duplicates.
-    distance_func
+    dist_func
         A distance function which accepts two input items to compare. If not set,
         use the Minkowski distance with `p=2`.
 
@@ -43,7 +43,7 @@ class LazySearch(BaseNN):
         self,
         window_size: int = 50,
         min_distance_keep: float = 0.0,
-        distance_func: DistanceFunc | None = None,
+        dist_func: DistanceFunc | FunctionWrapper | None = None,
     ):
         self.window_size = window_size
 
@@ -52,10 +52,10 @@ class LazySearch(BaseNN):
         # Since the distance function can be anything, it could be < 0
         self.min_distance_keep = min_distance_keep
 
-        if distance_func is None:
-            distance_func = functools.partial(utils.math.minkowski_distance, p=2)
+        if dist_func is None:
+            dist_func = functools.partial(utils.math.minkowski_distance, p=2)
+        self.dist_func = dist_func
 
-        self.distance_func = distance_func
         self.window: collections.deque = collections.deque(maxlen=self.window_size)
 
     def append(self, item: typing.Any, extra: typing.Any | None = None, **kwargs):
@@ -119,7 +119,7 @@ class LazySearch(BaseNN):
         """Find the `n_neighbors` closest points to `item`, along with their distances."""
         # Compute the distances to each point in the window
         # The window is (item, <extra>, distance)
-        points = ((*p, self.distance_func(item, p[0])) for p in self.window)
+        points = ((*p, self.dist_func(item, p[0])) for p in self.window)
 
         # Return the k closest points
         return tuple(map(list, zip(*sorted(points, key=operator.itemgetter(-1))[:n_neighbors])))
