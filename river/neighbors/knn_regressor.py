@@ -4,35 +4,32 @@ import functools
 import statistics
 
 from river import base, utils
-from river.neighbors import NearestNeighbors
-from river.neighbors.base import DistanceFunc, FunctionWrapper
+from river.neighbors import SWINN
+
+from .base import BaseNN, FunctionWrapper
 
 
 class KNNRegressor(base.Regressor):
     """K-Nearest Neighbors regressor.
 
-    This non-parametric regression method keeps track of the last `window_size`
-    training samples. Predictions are obtained by aggregating the values of the
-    closest n_neighbors stored samples with respect to a query sample.
+    Samples are stored using a first-in, first-out strategy. The strategy to perform search
+    queries in the data buffer is defined by the `engine` parameter. Predictions are obtained by
+    aggregating the values of the closest n_neighbors stored samples with respect to a query sample.
 
     Parameters
     ----------
     n_neighbors
         The number of nearest neighbors to search for.
-    window_size
-        The maximum size of the window storing the last observed samples.
+    engine
+        The search engine used to store the instances and perform search queries. Depending
+        on the choose engine, search will be exact or approximate. Please, consult the
+        documentation of each available search engine for more details on its usage.
+        By default, use the `SWINN` search engine for approximate search queries.
     aggregation_method
         The method to aggregate the target values of neighbors.
             | 'mean'
             | 'median'
             | 'weighted_mean'
-    min_distance_keep
-        The minimum distance (similarity) to consider adding a point to the window.
-        E.g., a value of 0.0 will add even exact duplicates.
-    distance_func
-        An optional distance function that should accept an a=, b=, and any
-        custom set of kwargs. If not defined, the Minkowski distance is used with
-        p=2 (Euclidean distance). See the example section for more details.
 
     Examples
     --------
@@ -44,24 +41,9 @@ class KNNRegressor(base.Regressor):
 
     >>> dataset = datasets.TrumpApproval()
 
-    >>> model = neighbors.KNNRegressor(window_size=50)
+    >>> model = neighbors.KNNRegressor()
     >>> evaluate.progressive_val_score(dataset, model, metrics.RMSE())
-    RMSE: 1.427746
-
-    When defining a custom distance function you can rely on `functools.partial` to set default
-    parameter values. For instance, let's use the Manhattan function instead of the default Euclidean distance:
-
-    >>> import functools
-    >>> from river.utils.math import minkowski_distance
-    >>> model = (
-    ...     preprocessing.StandardScaler() |
-    ...     neighbors.KNNRegressor(
-    ...         window_size=50,
-    ...         distance_func=functools.partial(minkowski_distance, p=1)
-    ...     )
-    ... )
-    >>> evaluate.progressive_val_score(dataset, model, metrics.RMSE())
-    RMSE: 1.460385
+    RMSE: 1.427743
 
     """
 
@@ -72,28 +54,35 @@ class KNNRegressor(base.Regressor):
     def __init__(
         self,
         n_neighbors: int = 5,
-        window_size: int = 1000,
+        engine: BaseNN | None = None,
         aggregation_method: str = "mean",
-        min_distance_keep: float = 0.0,
-        distance_func: DistanceFunc | None = None,
     ):
         self.n_neighbors = n_neighbors
-        self.window_size = window_size
-        self.min_distance_keep = min_distance_keep
-        self.distance_func = (
-            distance_func
-            if distance_func is not None
-            else functools.partial(utils.math.minkowski_distance, p=2)
-        )
 
-        self._nn = NearestNeighbors(
-            window_size=self.window_size,
-            min_distance_keep=min_distance_keep,
-            distance_func=FunctionWrapper(self.distance_func),
-        )
+        if engine is None:
+            engine = SWINN(dist_func=functools.partial(utils.math.minkowski_distance, p=2))
+
+        if not isinstance(engine.dist_func, FunctionWrapper):
+            engine.dist_func = FunctionWrapper(engine.dist_func)
+
+        self.engine = engine
+
+        # Create a fresh copy of the supplied search engine
+        self._nn: BaseNN = self.engine.clone(include_attributes=True)
 
         self._check_aggregation_method(aggregation_method)
         self.aggregation_method = aggregation_method
+
+    @classmethod
+    def _unit_test_params(cls):
+        from river.neighbors import LazySearch
+
+        yield {
+            "n_neighbors": 3,
+            "engine": LazySearch(
+                window_size=50, dist_func=functools.partial(utils.math.minkowski_distance, p=2)
+            ),
+        }
 
     def _check_aggregation_method(self, method):
         """Ensure validation method is known to the model.
@@ -114,36 +103,30 @@ class KNNRegressor(base.Regressor):
             )
 
     def learn_one(self, x, y):
-        self._nn.update((x, y), n_neighbors=self.n_neighbors)
+        self._nn.append((x, y))
+
         return self
 
-    def predict_one(self, x):
+    def predict_one(self, x, **kwargs):
         # Find the nearest neighbors!
-        nearest = self._nn.find_nearest((x, None), n_neighbors=self.n_neighbors)
+        nearest = self._nn.search((x, None), n_neighbors=self.n_neighbors, **kwargs)
 
         if not nearest:
             return 0.0
 
-        # For each in nearest, call it 'item"
-        # item[0] is the original item (x, y)
-        # item[-1] is the distance
-
+        neighbors, distances = nearest
         # If the closest distance is 0 (it's the same) return it's output (y)
-        # BUT only if the output (y) is not None.
-        if nearest[0][-1] == 0 and nearest[0][0][1] is not None:
-            return nearest[0][0][1]
+        if distances[0] == 0:
+            return neighbors[0][1]
 
-        # Only include neighbors in the sum that are not None
-        neighbor_vals = [n[0][1] for n in nearest if n[0][1] is not None]
+        neighbor_vals = [n[1] for n in neighbors]
 
         if self.aggregation_method == self._MEDIAN:
             return statistics.median(neighbor_vals)
 
-        dists = [n[-1] for n in nearest if n[0][1] is not None]
-        sum_ = sum(1 / d for d in dists)
-
+        sum_ = sum(1 / d for d in distances)
         if self.aggregation_method == self._MEAN or sum_ == 0.0:
             return statistics.mean(neighbor_vals)
 
         # weighted mean based on distance
-        return sum(y / d for y, d in zip(neighbor_vals, dists)) / sum_
+        return sum(y / d for y, d in zip(neighbor_vals, distances)) / sum_

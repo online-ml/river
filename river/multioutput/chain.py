@@ -2,10 +2,11 @@ from __future__ import annotations
 
 import collections
 import copy
+import functools
 import random
 
 from river import base, linear_model
-from river.utils.math import prod
+from river.utils.math import minkowski_distance, prod
 
 __all__ = [
     "ClassifierChain",
@@ -101,7 +102,12 @@ class ClassifierChain(BaseChain, base.MultiLabelClassifier):
         yield {"model": linear_model.LogisticRegression()}  # binary classifier
         yield {"model": linear_model.SoftmaxRegression()}  # multi-class classifier
         yield {
-            "model": neighbors.KNNClassifier(n_neighbors=1, window_size=5)
+            "model": neighbors.KNNClassifier(
+                n_neighbors=1,
+                engine=neighbors.LazySearch(
+                    window_size=50, dist_func=functools.partial(minkowski_distance, p=2)
+                ),
+            )
         }  # multi-class classifier
 
     @property
