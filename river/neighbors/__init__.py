@@ -7,13 +7,11 @@ until a query is received.
 from __future__ import annotations
 
 from .ann import SWINN
-from .base import FunctionWrapper
 from .knn_classifier import KNNClassifier
 from .knn_regressor import KNNRegressor
 from .lazy import LazySearch
 
 __all__ = [
-    "FunctionWrapper",
     "LazySearch",
     "KNNClassifier",
     "KNNRegressor",

@@ -5,7 +5,7 @@ import statistics
 
 from river import base, utils
 from river.neighbors import SWINN
-from river.neighbors.base import BaseNN, FunctionWrapper
+from river.neighbors.base import BaseNN
 
 
 class KNNRegressor(base.Regressor):
@@ -57,12 +57,19 @@ class KNNRegressor(base.Regressor):
         aggregation_method: str = "mean",
     ):
         self.n_neighbors = n_neighbors
-        if engine is None:
-            engine = SWINN(
-                dist_func=FunctionWrapper(functools.partial(utils.math.minkowski_distance, p=2)),
-                seed=42,
-            )
+        dist_func = (
+            functools.partial(utils.math.minkowski_distance, p=2)
+            if engine is None
+            else engine.dist_func  # type: ignore
+        )
 
+        if engine is None:
+            engine = SWINN(dist_func=dist_func)
+
+        def _distance_func(a, b):
+            return dist_func(a[0], b[0])
+
+        engine.dist_func = _distance_func  # type: ignore
         self.engine = engine
 
         # Create a fresh copy of the supplied search engine
@@ -73,15 +80,12 @@ class KNNRegressor(base.Regressor):
 
     @classmethod
     def _unit_test_params(cls):
-        from river.neighbors import FunctionWrapper, LazySearch
+        from river.neighbors import LazySearch
 
         yield {
             "n_neighbors": 3,
             "engine": LazySearch(
-                window_size=50,
-                distance_func=FunctionWrapper(
-                    functools.partial(utils.math.minkowski_distance, p=2)
-                ),
+                window_size=50, distance_func=functools.partial(utils.math.minkowski_distance, p=2)
             ),
         }
 

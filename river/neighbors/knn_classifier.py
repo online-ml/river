@@ -4,7 +4,6 @@ import functools
 
 from river import base, utils
 from river.neighbors import SWINN
-from river.neighbors.base import FunctionWrapper
 
 from .base import BaseNN
 
@@ -53,19 +52,16 @@ class KNNClassifier(base.Classifier):
 
     >>> dataset = datasets.Phishing()
 
-    To select a custom distance metric, you can wrap your chosen distance using
-    the FunctionWrapper utility so that k-NN only consider `x` to calculate the distances:
+    To select a custom distance metric which takes one or several parameter, you can wrap your
+    chosen distance using `functools.partial`:
 
-    >>> # Manhattan distance
-    >>> dist_func = neighbors.FunctionWrapper(
-    ...     functools.partial(utils.math.minkowski_distance, p=1)
-    ... )
+    >>> l1_dist = functools.partial(utils.math.minkowski_distance, p=1)
 
     >>> model = (
     ...     preprocessing.StandardScaler() |
     ...     neighbors.KNNClassifier(
     ...         engine=neighbors.SWINN(
-    ...             dist_func=dist_func,
+    ...             dist_func=l1_dist,
     ...             seed=42
     ...         )
     ...     )
@@ -86,11 +82,19 @@ class KNNClassifier(base.Classifier):
     ):
         self.n_neighbors = n_neighbors
 
+        dist_func = (
+            functools.partial(utils.math.minkowski_distance, p=2)
+            if engine is None
+            else engine.dist_func  # type: ignore
+        )
+
         if engine is None:
-            engine = SWINN(
-                dist_func=FunctionWrapper(functools.partial(utils.math.minkowski_distance, p=2)),
-                seed=42,
-            )
+            engine = SWINN(dist_func=dist_func)
+
+        def _distance_func(a, b):
+            return dist_func(a[0], b[0])
+
+        engine.dist_func = _distance_func  # type: ignore
 
         self.engine = engine
         self.weighted = weighted
@@ -108,15 +112,12 @@ class KNNClassifier(base.Classifier):
 
     @classmethod
     def _unit_test_params(cls):
-        from river.neighbors import FunctionWrapper, LazySearch
+        from river.neighbors import LazySearch
 
         yield {
             "n_neighbors": 3,
             "engine": LazySearch(
-                window_size=50,
-                distance_func=FunctionWrapper(
-                    functools.partial(utils.math.minkowski_distance, p=2)
-                ),
+                window_size=50, distance_func=functools.partial(utils.math.minkowski_distance, p=2)
             ),
         }
 
