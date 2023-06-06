@@ -6,12 +6,14 @@ until a query is received.
 """
 from __future__ import annotations
 
-from .base import NearestNeighbors
+from .ann import SWINN
 from .knn_classifier import KNNClassifier
 from .knn_regressor import KNNRegressor
+from .lazy import LazySearch
 
 __all__ = [
-    "NearestNeighbors",
+    "LazySearch",
     "KNNClassifier",
     "KNNRegressor",
+    "SWINN",
 ]
