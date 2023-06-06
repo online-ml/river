@@ -80,15 +80,12 @@ class KNNRegressor(base.Regressor):
 
     @classmethod
     def _unit_test_params(cls):
-        from river.neighbors import FunctionWrapper, LazySearch
+        from river.neighbors import LazySearch
 
         yield {
             "n_neighbors": 3,
             "engine": LazySearch(
-                window_size=50,
-                distance_func=FunctionWrapper(
-                    functools.partial(utils.math.minkowski_distance, p=2)
-                ),
+                window_size=50, distance_func=functools.partial(utils.math.minkowski_distance, p=2)
             ),
         }
 
