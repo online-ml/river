@@ -9,6 +9,7 @@ import numpy as np
 import pandas as pd
 
 from river import base, optim
+from river import neural_net as nn
 
 __all__ = ["MLPRegressor", "MLPBinaryClassifier"]
 
