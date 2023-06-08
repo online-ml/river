@@ -29,7 +29,7 @@ class ThompsonSampling(bandit.base.Policy):
 
     Parameters
     ----------
-    dist
+    reward_obj
         A distribution to sample from.
     burn_in
         The number of steps to use for the burn-in phase. Each arm is given the chance to be pulled
@@ -51,7 +51,7 @@ class ThompsonSampling(bandit.base.Policy):
     >>> _ = env.reset(seed=42)
     >>> _ = env.action_space.seed(123)
 
-    >>> policy = bandit.ThompsonSampling(dist=proba.Beta(), seed=101)
+    >>> policy = bandit.ThompsonSampling(reward_obj=proba.Beta(), seed=101)
 
     >>> metric = stats.Sum()
     >>> while True:
