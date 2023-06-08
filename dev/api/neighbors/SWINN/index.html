@@ -12,10 +12,10 @@
         <meta name="author" content="The Fellowship of Online Machine Learning">
       
       
-        <link rel="canonical" href="https://riverml.xyz/dev/api/neighbors/NearestNeighbors/">
+        <link rel="canonical" href="https://riverml.xyz/dev/api/neighbors/SWINN/">
       
       
-        <link rel="prev" href="../KNNRegressor/">
+        <link rel="prev" href="../LazySearch/">
       
       
         <link rel="next" href="../../neural-net/MLPRegressor/">
@@ -25,7 +25,7 @@
     
     
       
-        <title>NearestNeighbors - River</title>
+        <title>SWINN - River</title>
       
     
     
@@ -82,7 +82,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#nearestneighbors" class="md-skip">
+        <a href="#swinn" class="md-skip">
           Skip to content
         </a>
       
@@ -118,7 +118,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              NearestNeighbors
+              SWINN
             
           </span>
         </div>
@@ -6655,6 +6655,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_3_28" id="__nav_3_28_label" tabindex="0">
@@ -6701,6 +6703,20 @@
               
   
   
+  
+    <li class="md-nav__item">
+      <a href="../LazySearch/" class="md-nav__link">
+        LazySearch
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
     
   
   
@@ -6713,12 +6729,12 @@
       
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
-          NearestNeighbors
+          SWINN
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <a href="./" class="md-nav__link md-nav__link--active">
-        NearestNeighbors
+        SWINN
       </a>
       
         
@@ -11679,71 +11695,132 @@
                   
 
 
-<h1 id="nearestneighbors">NearestNeighbors<a class="headerlink" href="#nearestneighbors" title="Permanent link">&para;</a></h1>
-<p>Exact nearest neighbors search data structure.</p>
+<h1 id="swinn">SWINN<a class="headerlink" href="#swinn" title="Permanent link">&para;</a></h1>
+<p>Sliding WIndow-based Nearest Neighbor (SWINN) search using Graphs.</p>
+<p>Extends the NNDescent algorithm<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> to handle vertex addition and removal in a FIFO data ingestion policy. SWINN builds and keeps a directed graph where edges connect the nearest neighbors. Any distance metric can be used to build the graph. By using a directed graph, the user must set the desired number of neighbors. More neighbors imply more accurate search queries at the cost of increased running time and memory usage. Note that although the number of directed neighbors is limited by the user, there is no direct control on the number of reverse neighbors, i.e., the number of vertices that have an edge to a given vertex. </p>
+<p>The basic idea of SWINN and NNDescent is that "the neighbor of my neighbors might as well be my neighbor". Hence, the connections are constantly revisited to improve the graph structure. The algorithm for creating and maintaining the search graph can be described in general lines as follows: </p>
+<ul>
+<li>
+<p>Start with a random neighborhood graph; </p>
+</li>
+<li>
+<p>For each node in the search graph: refine the current neighborhood by checking if there are better neighborhood options among the neighbors of the current neighbors; </p>
+</li>
+<li>
+<p>If the total number of neighborhood changes is smaller than a given stopping criterion, then stop. </p>
+</li>
+</ul>
+<p>SWINN adds strategies to remove vertices from the search graph and pruning redundant edges. SWINN is more efficient when the selected <code>maxlen</code> is greater than 500. For small sized data windows, using the lazy/exhaustive search, i.e., <a href="../../neighbors/LazySearch"><code>neighbors.LazySearch</code></a> might be a better idea.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
-<p><strong>window_size</strong></p>
+<p><strong>graph_k</strong></p>
 <p><em>Type</em> → <em>int</em></p>
-<p>Size of the sliding window use to search neighbors with.</p>
+<p><em>Default</em> → <code>20</code></p>
+<p>The maximum number of direct nearest neighbors each node has.</p>
 </li>
 <li>
-<p><strong>min_distance_keep</strong></p>
+<p><strong>dist_func</strong></p>
+<p><em>Type</em> → <em>DistanceFunc | FunctionWrapper | None</em></p>
+<p><em>Default</em> → <code>None</code></p>
+<p>The distance function used to compare two items. If not set, use the Minkowski distance with <code>p=2</code>.</p>
+</li>
+<li>
+<p><strong>maxlen</strong></p>
+<p><em>Type</em> → <em>int</em></p>
+<p><em>Default</em> → <code>1000</code></p>
+<p>The maximum size of the data buffer.</p>
+</li>
+<li>
+<p><strong>warm_up</strong></p>
+<p><em>Type</em> → <em>int</em></p>
+<p><em>Default</em> → <code>500</code></p>
+<p>How many data instances to observe before starting the search graph.</p>
+</li>
+<li>
+<p><strong>max_candidates</strong></p>
+<p><em>Type</em> → <em>int</em></p>
+<p><em>Default</em> → <code>None</code></p>
+<p>The maximum number of vertices to consider when performing local neighborhood joins. If not set SWINN will use <code>min(50, max(50, self.graph_k))</code>.</p>
+</li>
+<li>
+<p><strong>delta</strong></p>
 <p><em>Type</em> → <em>float</em></p>
-<p>The minimum distance (similarity) to consider adding a point to the window. E.g., a value of 0.0 will add even exact duplicates.</p>
+<p><em>Default</em> → <code>0.0001</code></p>
+<p>Early stop parameter for the neighborhood refinement procedure. NNDescent will stop running if the maximum number of iterations is reached or the number of edge changes after an iteration is smaller than or equal to <code>delta * graph_k * n_nodes</code>. In the last expression, <code>n_nodes</code> refers to the number of graph nodes involved in the (local) neighborhood refinement.</p>
 </li>
 <li>
-<p><strong>distance_func</strong></p>
-<p><em>Type</em> → <em>DistanceFunc | FunctionWrapper</em></p>
-<p>A distance function which accepts two input items to compare.</p>
+<p><strong>prune_prob</strong></p>
+<p><em>Type</em> → <em>float</em></p>
+<p><em>Default</em> → <code>0.0</code></p>
+<p>The probability of removing redundant edges. Must be between <code>0</code> and <code>1</code>. If set to zero, no edge will be pruned. When set to one, every potentially redundant edge will be dropped.</p>
+</li>
+<li>
+<p><strong>n_iters</strong></p>
+<p><em>Type</em> → <em>int</em></p>
+<p><em>Default</em> → <code>10</code></p>
+<p>The maximum number of NNDescent iterations to perform to refine the search index.</p>
+</li>
+<li>
+<p><strong>seed</strong></p>
+<p><em>Type</em> → <em>int</em></p>
+<p><em>Default</em> → <code>None</code></p>
+<p>Random seed for reproducibility.</p>
 </li>
 </ul>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <details class="- abstract">
 <summary>append</summary>
-<p>Add a point to the window, optionally with extra metadata.</p>
+<p>Add a new item to the search index.</p>
+<p>Data is stored using the FIFO strategy. Both the data buffer and the search graph are updated. The addition of a new item will trigger the removal of the oldest item, if the maximum size was reached. All edges of the removed node are also dropped and safety procedures are applied to ensure its neighbors keep accessible. The addition of a new item also trigger local neighborhood refinement procedures, to ensure the search index is effective and the node degree constraints are met.</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>item</strong>     — <em>'typing.Any'</em>    </li>
-<li><strong>extra</strong>     — <em>'typing.Any | None'</em>     — defaults to <code>None</code>    </li>
+<li><strong>kwargs</strong>    </li>
 </ul>
 </details>
 <p><span /></p>
 <details class="- abstract">
-<summary>find_nearest</summary>
-<p>Find the <code>n_neighbors</code> closest points to <code>item</code>, along with their distances.</p>
-<p><strong>Parameters</strong></p>
-<ul>
-<li><strong>item</strong>     — <em>'typing.Any'</em>    </li>
-<li><strong>n_neighbors</strong>     — <em>'int'</em>     — defaults to <code>1</code>    </li>
-</ul>
+<summary>connectivity</summary>
+<p>Get a list with the size of each connected component in the search graph.</p>
+<p>This metric provides an overview of reachability in the search index by using Kruskal's algorithm to build a forest of connected components.  We want our search index to have a single connected component, i.e., the case where we get a list containing a single number which is equal to <code>maxlen</code>. If that is not the case, not every node in the search graph can be reached from any given starting point. You may want to try increasing <code>graph_k</code> to improve connectivity. However, keep in mind the following aspects: 1) computing this metric is a costly operation (<span class="arithmatex">\(O(E\log V)\)</span>), where <span class="arithmatex">\(E\)</span> and <span class="arithmatex">\(V\)</span> are, respectively, the number of edges and vertices in the search graph; 2) often, connectivity comes at the price of increased computational costs. Tweaking the <code>sample_rate</code> might help in such situations. The best possible scenario is to decrease the value of <code>graph_k</code> while keeping a single connected component.</p>
+<p><strong>Returns</strong></p>
+<p><em>list[int]</em>:     A list of the number of elements in each connected component of the graph.</p>
 </details>
 <p><span /></p>
 <details class="- abstract">
-<summary>update</summary>
-<p>Update the window with a new point, only added if &gt; min distance.</p>
-<p>If min distance is 0, we do not need to do the calculation. The item (and extra metadata) will not be added to the window if it is too close to an existing point.</p>
+<summary>search</summary>
+<p>Search the underlying nearest neighbor graph given a query item.</p>
+<p>In case not enough samples were observed, i.e., the number of stored samples is smaller than <code>warm_up</code>, then the search switches to a brute force strategy.</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>item</strong>     — <em>'typing.Any'</em>    </li>
-<li><strong>n_neighbors</strong>     — <em>'int'</em>     — defaults to <code>1</code>    </li>
-<li><strong>extra</strong>     — <em>'typing.Any | None'</em>     — defaults to <code>None</code>    </li>
+<li><strong>n_neighbors</strong>     — <em>'int'</em>    </li>
+<li><strong>epsilon</strong>     — <em>'float'</em>     — defaults to <code>0.1</code>    </li>
+<li><strong>kwargs</strong>    </li>
 </ul>
 <p><strong>Returns</strong></p>
-<p>A boolean (true/false) to indicate if the point was added.</p>
+<p><em>tuple[list, list]</em>:     neighbors, dists</p>
 </details>
 <p><span /></p>
 <h2 id="notes">Notes<a class="headerlink" href="#notes" title="Permanent link">&para;</a></h2>
-<p>Updates are by default stored by the FIFO (first in first out) method,
-which means that when the size limit is reached, old samples are dumped to
-give room for new samples. This is circular, meaning that older points
-are dumped first. This also gives the implementation a temporal aspect,
-because older samples are replaced with newer ones.</p>
-<p>The parameter <code>min_dinstance_keep</code> controls the addition of new items to the
-window - items that are far enough away (&gt; min_distance_keep) are added to
-the window. Thus a value of 0 indicates that we add all points, and
-increasing from 0 makes it less likely we will keep a new item.</p>
+<p>There is an accuracy/speed trade-off between <code>graph_k</code> and <code>sample_rate</code>. To ensure a single
+connected component, and thus an effective search index, one can increase <code>graph_k</code>. The
+<code>connectivity</code> method is a helper to determine whether the search index has a single connected component.
+However, search accuracy might come at the cost of increased memory usage and slow processing. To alleviate
+that, one can rely on decreasing the <code>sample_rate</code> to avoid exploring all the undirected edges of a node
+during search queries and local graph refinements. Moreover, the edge pruning procedures also help
+decreasing the computational costs. Note that, anything that limits the number of explored neighbors or
+prunes edges might have a negative impact on search accuracy.</p>
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:1">
+<p>Dong, W., Moses, C., &amp; Li, K. (2011, March). Efficient k-nearest neighbor graph construction for
+generic similarity measures. In Proceedings of the 20th international conference on World wide web (pp. 577-586).&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
 
 
   

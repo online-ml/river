@@ -6655,6 +6655,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_3_28" id="__nav_3_28_label" tabindex="0">
@@ -6765,8 +6767,22 @@
   
   
     <li class="md-nav__item">
-      <a href="../NearestNeighbors/" class="md-nav__link">
-        NearestNeighbors
+      <a href="../LazySearch/" class="md-nav__link">
+        LazySearch
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SWINN/" class="md-nav__link">
+        SWINN
       </a>
     </li>
   
@@ -11695,7 +11711,7 @@
 
 <h1 id="knnclassifier">KNNClassifier<a class="headerlink" href="#knnclassifier" title="Permanent link">&para;</a></h1>
 <p>K-Nearest Neighbors (KNN) for classification.</p>
-<p>This works by storing a buffer with the <code>window_size</code> most recent observations. A brute-force search is used to find the <code>n_neighbors</code> nearest observations in the buffer to make a prediction. See the NearestNeighbors parent class for more details.</p>
+<p>Samples are stored using a first-in, first-out strategy. The strategy to perform search queries in the data buffer is defined by the <code>engine</code> parameter.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
@@ -11705,16 +11721,10 @@
 <p>The number of nearest neighbors to search for.</p>
 </li>
 <li>
-<p><strong>window_size</strong></p>
-<p><em>Type</em> → <em>int</em></p>
-<p><em>Default</em> → <code>1000</code></p>
-<p>The maximum size of the window storing the last observed samples.</p>
-</li>
-<li>
-<p><strong>min_distance_keep</strong></p>
-<p><em>Type</em> → <em>float</em></p>
-<p><em>Default</em> → <code>0.0</code></p>
-<p>The minimum distance (similarity) to consider adding a point to the window. E.g., a value of 0.0 will add even exact duplicates. Default is 0.05 to add similar but not exactly the same points.</p>
+<p><strong>engine</strong></p>
+<p><em>Type</em> → <em>BaseNN | None</em></p>
+<p><em>Default</em> → <code>None</code></p>
+<p>The search engine used to store the instances and perform search queries. Depending on the choose engine, search will be exact or approximate. Please, consult the documentation of each available search engine for more details on its usage. By default, use the <code>SWINN</code> search engine for approximate search queries.</p>
 </li>
 <li>
 <p><strong>weighted</strong></p>
@@ -11729,12 +11739,6 @@
 <p>This determines at which rate old classes are cleaned up. Classes that have been seen in the past but that are not present in the current window are dropped. Classes are never dropped when this is set to 0.</p>
 </li>
 <li>
-<p><strong>distance_func</strong></p>
-<p><em>Type</em> → <em>DistanceFunc | None</em></p>
-<p><em>Default</em> → <code>None</code></p>
-<p>An optional distance function that should accept an a=, b=, and any custom set of kwargs. If not defined, the Minkowski distance is used with p=2 (Euclidean distance). See the example section for more details.</p>
-</li>
-<li>
 <p><strong>softmax</strong></p>
 <p><em>Type</em> → <em>bool</em></p>
 <p><em>Default</em> → <code>False</code></p>
@@ -11742,37 +11746,33 @@
 </li>
 </ul>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
-<p><div class="language-python highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">datasets</span>
+<div class="language-python highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">functools</span>
+<span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">datasets</span>
 <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">evaluate</span>
 <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">metrics</span>
 <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">neighbors</span>
 <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">preprocessing</span>
+<span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">utils</span>
 
 <span class="n">dataset</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">Phishing</span><span class="p">()</span>
-
-<span class="n">model</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="n">preprocessing</span><span class="o">.</span><span class="n">StandardScaler</span><span class="p">()</span> <span class="o">|</span>
-    <span class="n">neighbors</span><span class="o">.</span><span class="n">KNNClassifier</span><span class="p">(</span><span class="n">window_size</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
-<span class="p">)</span>
-
-<span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">metrics</span><span class="o">.</span><span class="n">Accuracy</span><span class="p">())</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>Accuracy: 84.55%
-</code></pre></div></p>
-<p>When defining a custom distance function you can rely on <code>functools.partial</code> to set default
-parameter values. For instance, let's use the Manhattan function instead of the default Euclidean distance:</p>
-<p><div class="language-python highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">functools</span>
-<span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">utils</span>
+<p>To select a custom distance metric which takes one or several parameter, you can wrap your
+chosen distance using <code>functools.partial</code>:</p>
+<p><div class="language-python highlight"><pre><span></span><code><span class="n">l1_dist</span> <span class="o">=</span> <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">math</span><span class="o">.</span><span class="n">minkowski_distance</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
 <span class="n">model</span> <span class="o">=</span> <span class="p">(</span>
     <span class="n">preprocessing</span><span class="o">.</span><span class="n">StandardScaler</span><span class="p">()</span> <span class="o">|</span>
     <span class="n">neighbors</span><span class="o">.</span><span class="n">KNNClassifier</span><span class="p">(</span>
-        <span class="n">window_size</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
-        <span class="n">distance_func</span><span class="o">=</span><span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">math</span><span class="o">.</span><span class="n">minkowski_distance</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">engine</span><span class="o">=</span><span class="n">neighbors</span><span class="o">.</span><span class="n">SWINN</span><span class="p">(</span>
+            <span class="n">dist_func</span><span class="o">=</span><span class="n">l1_dist</span><span class="p">,</span>
+            <span class="n">seed</span><span class="o">=</span><span class="mi">42</span>
+        <span class="p">)</span>
     <span class="p">)</span>
 <span class="p">)</span>
+
 <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">metrics</span><span class="o">.</span><span class="n">Accuracy</span><span class="p">())</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>Accuracy: 86.87%
+<div class="language-text highlight"><pre><span></span><code>Accuracy: 89.75%
 </code></pre></div></p>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <details class="- abstract">
@@ -11811,6 +11811,7 @@ parameter values. For instance, let's use the Manhattan function instead of the 
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>x</strong>     — <em>'dict'</em>    </li>
+<li><strong>kwargs</strong>    </li>
 </ul>
 <p><strong>Returns</strong></p>
 <p><em>dict[base.typing.ClfTarget, float]</em>:     A dictionary that associates a probability which each label.</p>
