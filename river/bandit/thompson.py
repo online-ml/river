@@ -71,22 +71,20 @@ class ThompsonSampling(bandit.base.Policy):
 
     """
 
-    def __init__(self, dist: proba.base.Distribution, burn_in=0, seed: int | None = None):
-        super().__init__(reward_obj=dist, burn_in=burn_in)
+    def __init__(
+        self, reward_obj: proba.base.Distribution = None, burn_in=0, seed: int | None = None
+    ):
+        super().__init__(reward_obj=reward_obj, burn_in=burn_in)
         self.seed = seed
         self._rng = random.Random(seed)
-        self._rewards.default_factory = self._clone_dist_with_seed
+        self._rewards.default_factory = self._clone_reward_obj_with_seed
 
-    def _clone_dist_with_seed(self):
-        return self.dist.clone({"seed": self._rng.randint(0, 2**32)})
-
-    @property
-    def dist(self):
-        return self.reward_obj
+    def _clone_reward_obj_with_seed(self):
+        return self.reward_obj.clone({"seed": self._rng.randint(0, 2**32)})
 
     def _pull(self, arm_ids):
         return max(arm_ids, key=lambda arm_id: self._rewards[arm_id].sample())
 
     @classmethod
     def _unit_test_params(cls):
-        yield {"dist": proba.Beta()}
+        yield {"reward_obj": proba.Beta()}
