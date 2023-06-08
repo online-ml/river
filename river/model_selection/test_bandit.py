@@ -1,14 +1,20 @@
-import inspect
+from __future__ import annotations
+
 import importlib
+import inspect
+
 import pytest
-from river import bandit
-from river import datasets
-from river import evaluate
-from river import linear_model
-from river import metrics
-from river import model_selection
-from river import optim
-from river import preprocessing
+
+from river import (
+    bandit,
+    datasets,
+    evaluate,
+    linear_model,
+    metrics,
+    model_selection,
+    optim,
+    preprocessing,
+)
 
 
 def test_1259():
