@@ -98,6 +98,8 @@ class Exp3(bandit.base.Policy):
 
     @classmethod
     def _unit_test_params(cls):
-        yield {"gamma": 0.0}
+        yield {"gamma": 0}
+        yield {"gamma": 0.1}
         yield {"gamma": 0.5}
-        yield {"gamma": 1.0}
+        yield {"gamma": 0.9}
+        yield {"gamma": 1}
