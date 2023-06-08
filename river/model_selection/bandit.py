@@ -206,7 +206,7 @@ class BanditClassifier(BanditModelSection, model_selection.base.ModelSelectionCl
             y_pred = (
                 model.predict_one(x) if self.metric.requires_labels else model.predict_proba_one(x)
             )
-            self.policy.update(arm_id, y_true=y, y_pred=y_pred)
+            self.policy.update(arm_id, y, y_pred)
             model.learn_one(x, y)
 
         return self
