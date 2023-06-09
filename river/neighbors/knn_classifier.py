@@ -109,7 +109,7 @@ class KNNClassifier(base.Classifier):
         yield {
             "n_neighbors": 3,
             "engine": LazySearch(
-                window_size=50, dist_func=functools.partial(utils.math.minkowski_distance, p=2)
+                window_size=30, dist_func=functools.partial(utils.math.minkowski_distance, p=2)
             ),
         }
 

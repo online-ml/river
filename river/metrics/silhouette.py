@@ -47,7 +47,7 @@ class Silhouette(metrics.base.ClusteringMetric):
     ...     metric = metric.update(x, y_pred, k_means.centers)
 
     >>> metric
-    Silhouette: 0.32145
+    Silhouette: 0.568058
 
     References
     ----------
