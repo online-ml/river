@@ -11669,8 +11669,8 @@
 
 <h1 id="pure_inference_mode">pure_inference_mode<a class="headerlink" href="#pure_inference_mode" title="Permanent link">&para;</a></h1>
 <p>A context manager for making inferences with no side-effects.</p>
-<p>Calling <code>predict_one</code> with a pipeline will update the unsupervised steps of the pipeline. This is the expected behavior for online machine learning. However, in some cases you might just want to produce predictions without necessarily updating anything. </p>
-<p>This context manager allows you to override that behavior and make it so that unsupervised estimators are not updated when <code>predict_one</code> is called.</p>
+<p>Calling <code>predict_one</code> with a pipeline will update the unsupervised steps of the pipeline. This is the expected behavior for online machine learning. However, in some cases, you might just want to produce predictions without necessarily updating anything. </p>
+<p>This context manager allows you to override that behavior, by making it so that unsupervised estimators are not updated when <code>predict_one</code> is called.</p>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
 <p>Let's first see what methods are called if we just call <code>predict_one</code>.</p>
 <p><div class="language-python highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">io</span>
@@ -11722,6 +11722,34 @@ LinearRegression.predict_one
 LinearRegression.predict_one
 </code></pre></div></p>
 <p>We can see that the scaler did not get updated before transforming the data.</p>
+<p>This also works when working with mini-batches.</p>
+<p><div class="language-python highlight"><pre><span></span><code><span class="n">logs</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">()</span>
+<span class="n">sh</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">(</span><span class="n">logs</span><span class="p">)</span>
+<span class="n">sh</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">sh</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="n">utils</span><span class="o">.</span><span class="n">log_method_calls</span><span class="p">(</span><span class="n">class_condition</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">datasets</span><span class="o">.</span><span class="n">TrumpApproval</span><span class="p">()</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">_</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict_many</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span><span class="n">x</span><span class="p">]))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">logs</span><span class="o">.</span><span class="n">getvalue</span><span class="p">())</span>
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>StandardScaler.learn_many
+StandardScaler.transform_many
+LinearRegression.predict_many
+</code></pre></div></p>
+<p><div class="language-python highlight"><pre><span></span><code><span class="n">logs</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">()</span>
+<span class="n">sh</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">(</span><span class="n">logs</span><span class="p">)</span>
+<span class="n">sh</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">sh</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="n">utils</span><span class="o">.</span><span class="n">log_method_calls</span><span class="p">(</span><span class="n">class_condition</span><span class="p">),</span> <span class="n">compose</span><span class="o">.</span><span class="n">pure_inference_mode</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">datasets</span><span class="o">.</span><span class="n">TrumpApproval</span><span class="p">()</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">_</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict_many</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span><span class="n">x</span><span class="p">]))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">logs</span><span class="o">.</span><span class="n">getvalue</span><span class="p">())</span>
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>StandardScaler.transform_many
+LinearRegression.predict_many
+</code></pre></div></p>
 
 
   

@@ -11043,15 +11043,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#neighbors" class="md-nav__link">
-    neighbors
+  <a href="#compose" class="md-nav__link">
+    compose
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#compose" class="md-nav__link">
-    compose
+  <a href="#neighbors" class="md-nav__link">
+    neighbors
   </a>
   
 </li>
@@ -11700,15 +11700,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#neighbors" class="md-nav__link">
-    neighbors
+  <a href="#compose" class="md-nav__link">
+    compose
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#compose" class="md-nav__link">
-    compose
+  <a href="#neighbors" class="md-nav__link">
+    neighbors
   </a>
   
 </li>
@@ -11760,17 +11760,18 @@
 <li>The <code>predict_many</code> method scikit-learn models wrapped with <a href="../../api/compat/convert-sklearn-to-river"><code>compat.convert_sklearn_to_river</code></a> raised an exception if the model had not been fitted on any data yet. Instead, default predictions will be produced, which is consistent with the rest of River.</li>
 <li><a href="../../api/compat/SKL2RiverRegressor"><code>compat.SKL2RiverRegressor</code></a> and <a href="../../api/compat/SKL2RiverClassifier"><code>compat.SKL2RiverClassifier</code></a> didn't check whether features were ordered in the same way at each method call. They now store the list of feature names at the first function call, and align subsequent inputs in the same order.</li>
 </ul>
+<h2 id="compose">compose<a class="headerlink" href="#compose" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../../api/compose/TransformerProduct"><code>compose.TransformerProduct</code></a> will now preserve the density of sparse columns.</li>
+<li>Added a <code>transform_many</code> method to <a href="../../api/compose/FuncTransformer"><code>compose.FuncTransformer</code></a>, allowing it to be used in mini-batch pipelines.</li>
+<li>The <a href="../../api/compose/pure-inference-mode"><code>compose.pure_inference_mode</code></a> now works with mini-batching.</li>
+</ul>
 <h2 id="neighbors">neighbors<a class="headerlink" href="#neighbors" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Add <a href="../../api/neighbors/SWINN"><code>neighbors.SWINN</code></a> to power-up approximate nearest neighbor search. SWINN uses graphs to speed up nearest neighbor search in large sliding windows of data.</li>
 <li>Rename <code>neighbors.NearestNeighbors</code> to <a href="../../api/neighbors/LazySearch"><code>neighbors.LazySearch</code></a>.</li>
 <li>Standardize and create base classes for generic nearest neighbor search utilities.</li>
 <li>The user can now select the nearest neighbor search engine to use in <a href="../../api/neighbors/KNNClassifier"><code>neighbors.KNNClassifier</code></a> and <a href="../../api/neighbors/KNNRegressor"><code>neighbors.KNNRegressor</code></a>.</li>
-</ul>
-<h2 id="compose">compose<a class="headerlink" href="#compose" title="Permanent link">&para;</a></h2>
-<ul>
-<li><a href="../../api/compose/TransformerProduct"><code>compose.TransformerProduct</code></a> will now preserve the density of sparse columns.</li>
-<li>Added a <code>transform_many</code> method to <a href="../../api/compose/FuncTransformer"><code>compose.FuncTransformer</code></a>, allowing it to be used in mini-batch pipelines.</li>
 </ul>
 <h2 id="preprocessing">preprocessing<a class="headerlink" href="#preprocessing" title="Permanent link">&para;</a></h2>
 <ul>
