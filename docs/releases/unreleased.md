@@ -30,3 +30,7 @@
 ## proba
 
 - Added a `cdf` method to `proba.Beta`.
+
+## utils
+
+- Fixed `utils.math.minkowski_distance`.
