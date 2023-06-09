@@ -10,6 +10,7 @@ from river import (
     anomaly,
     base,
     checks,
+    compat,
     compose,
     facto,
     feature_extraction,
@@ -32,6 +33,7 @@ except ImportError:
     PYTORCH_INSTALLED = False
 from river.compat.river_to_sklearn import River2SKLBase
 from river.compat.sklearn_to_river import SKL2RiverBase
+from sklearn import linear_model as sk_linear_model
 
 
 def iter_estimators():
@@ -124,6 +126,10 @@ def iter_estimators_which_can_be_tested():
                 | linear_model.LinearRegression()
             ),
             preprocessing.MinMaxScaler() | anomaly.HalfSpaceTrees(),
+            (
+                preprocessing.StandardScaler()
+                | compat.convert_sklearn_to_river(sk_linear_model.SGDRegressor(tol=1e-10))
+            ),
         ]
         for check in checks.yield_checks(estimator)
         if check.__name__ not in estimator._unit_test_skips()

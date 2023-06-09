@@ -801,3 +801,6 @@ class Pipeline(base.Estimator):
         """Call transform_many, and then predict_proba_many on the final step."""
         X, last_step = self._transform_many(X=X)
         return last_step.predict_proba_many(X=X)
+
+    def _unit_test_skips(self):
+        return self[-1]._unit_test_skips()
