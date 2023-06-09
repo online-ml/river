@@ -31,9 +31,10 @@ try:
     PYTORCH_INSTALLED = True
 except ImportError:
     PYTORCH_INSTALLED = False
+from sklearn import linear_model as sk_linear_model
+
 from river.compat.river_to_sklearn import River2SKLBase
 from river.compat.sklearn_to_river import SKL2RiverBase
-from sklearn import linear_model as sk_linear_model
 
 
 def iter_estimators():

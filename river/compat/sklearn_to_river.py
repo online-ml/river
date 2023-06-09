@@ -6,7 +6,6 @@ import functools
 import pandas as pd
 from sklearn import base as sklearn_base
 from sklearn import exceptions as sklearn_exceptions
-from sklearn import utils as sklearn_utils
 
 from river import base
 
