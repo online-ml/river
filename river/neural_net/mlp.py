@@ -359,6 +359,36 @@ class MLPBinaryClassifier(base.Classifier, MLP):
     seed
         Random number generation seed. Set this for reproducibility.
 
+    Example
+    --------
+
+    >>> from river import datasets
+    >>> from river import metrics
+    >>> from river import preprocessing as pp
+    >>> from river import neural_net as nn
+    >>> from river import optim
+
+    >>> model = (
+    ... pp.StandardScaler() |
+    ...         nn.MLPBinaryClassifier(
+    ...         hidden_dims=((10,)),
+    ...         activations=(
+    ...             nn.activations.ReLU,
+    ...             nn.activations.ReLU,
+    ...             nn.activations.Identity
+    ...         ),
+    ...         optimizer=optim.Adam(1e-3),
+    ...         seed=42
+    ...     )
+    ...     )
+
+    >>> dataset = datasets.Elec2()
+
+    >>> metric = metrics.Accuracy()
+
+    >>> evaluate.progressive_val_score(dataset, mlp, metric)
+    Accuracy: 79.44%
+
     """
 
     def __init__(
@@ -399,7 +429,7 @@ class MLPBinaryClassifier(base.Classifier, MLP):
         # Single output
         return self.learn_many(X = pd.DataFrame([x]), y=pd.Series([y]))
 
-    def predict_proba_one(self, x):
+    def predict_prob_one(self, x):
         y_pred = self.predict_many(X = pd.DataFrame([x]))
         sigmoid = nn.activations.Sigmoid()
 
@@ -410,7 +440,7 @@ class MLPBinaryClassifier(base.Classifier, MLP):
         # Single output
         return sigmoid.apply(y_pred.iloc[0, 0])
 
-    def predict_one(self, x):
-        y_pred_label = self.predict_proba_one(x)
+    def predict_one(self, x, threshold = 0.5):
+        y_pred_label = self.predict_prob_one(x)
         
-        return y_pred_label > 0.5 # conventional threshold of 0.5 chosen
+        return y_pred_label > threshold # conventional threshold of 0.5 is the default value
