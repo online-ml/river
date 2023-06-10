@@ -399,7 +399,7 @@ class MLPBinaryClassifier(base.Classifier, MLP):
         # Single output
         return self.learn_many(X = pd.DataFrame([x]), y=pd.Series([y]))
 
-    def predict_prob_one(self, x):
+    def predict_proba_one(self, x):
         y_pred = self.predict_many(X = pd.DataFrame([x]))
         sigmoid = nn.activations.Sigmoid()
 
@@ -411,6 +411,6 @@ class MLPBinaryClassifier(base.Classifier, MLP):
         return sigmoid.apply(y_pred.iloc[0, 0])
 
     def predict_one(self, x):
-        y_pred_label = self.predict_prob_one(x)
+        y_pred_label = self.predict_proba_one(x)
         
         return y_pred_label > 0.5 # conventional threshold of 0.5 chosen
