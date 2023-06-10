@@ -22,11 +22,11 @@ def warm_up_mode():
     """A context manager for training pipelines during a warm-up phase.
 
     You don't have to worry about anything when you call `predict_one` and `learn_one` with a
-    pipeline during in a training loop. The methods at each step of the pipeline will be called in
+    pipeline during in training loop. At each step of the pipeline, the methods will be called in
     the correct order.
 
     However, during a warm-up phase, you might just be calling `learn_one` because you don't need
-    the out-of-sample predictions. In this case the unsupervised estimators in the pipeline won't
+    the out-of-sample predictions. In this case, the unsupervised estimators in the pipeline won't
     be updated, because they are usually updated when `predict_one` is called.
 
     This context manager allows you to override that behavior and make it so that unsupervised
@@ -99,10 +99,10 @@ def pure_inference_mode():
     """A context manager for making inferences with no side-effects.
 
     Calling `predict_one` with a pipeline will update the unsupervised steps of the pipeline. This
-    is the expected behavior for online machine learning. However, in some cases you might just
+    is the expected behavior for online machine learning. However, in some cases, you might just
     want to produce predictions without necessarily updating anything.
 
-    This context manager allows you to override that behavior and make it so that unsupervised
+    This context manager allows you to override that behavior, by making it so that unsupervised
     estimators are not updated when `predict_one` is called.
 
     Examples
@@ -158,6 +158,33 @@ def pure_inference_mode():
     LinearRegression.predict_one
 
     We can see that the scaler did not get updated before transforming the data.
+
+    This also works when working with mini-batches.
+
+    >>> logs = io.StringIO()
+    >>> sh = logging.StreamHandler(logs)
+    >>> sh.setLevel(logging.DEBUG)
+    >>> logger.addHandler(sh)
+
+    >>> with utils.log_method_calls(class_condition):
+    ...     for x, y in datasets.TrumpApproval().take(1):
+    ...         _ = model.predict_many(pd.DataFrame([x]))
+    >>> print(logs.getvalue())
+    StandardScaler.learn_many
+    StandardScaler.transform_many
+    LinearRegression.predict_many
+
+    >>> logs = io.StringIO()
+    >>> sh = logging.StreamHandler(logs)
+    >>> sh.setLevel(logging.DEBUG)
+    >>> logger.addHandler(sh)
+
+    >>> with utils.log_method_calls(class_condition), compose.pure_inference_mode():
+    ...     for x, y in datasets.TrumpApproval().take(1):
+    ...         _ = model.predict_many(pd.DataFrame([x]))
+    >>> print(logs.getvalue())
+    StandardScaler.transform_many
+    LinearRegression.predict_many
 
     """
     Pipeline._STATELESS = True
@@ -764,13 +791,14 @@ class Pipeline(base.Estimator):
         steps = iter(self.steps.values())
 
         for t in itertools.islice(steps, len(self) - 1):
-            if isinstance(t, union.TransformerUnion):
-                for sub_t in t.transformers.values():
-                    if not sub_t._supervised:
-                        sub_t.learn_many(X=X)
+            if not self._STATELESS:
+                if isinstance(t, union.TransformerUnion):
+                    for sub_t in t.transformers.values():
+                        if not sub_t._supervised:
+                            sub_t.learn_many(X=X)
 
-            elif not t._supervised:
-                t.learn_many(X=X)
+                elif not t._supervised:
+                    t.learn_many(X=X)
 
             X = t.transform_many(X=X)
 
@@ -801,3 +829,6 @@ class Pipeline(base.Estimator):
         """Call transform_many, and then predict_proba_many on the final step."""
         X, last_step = self._transform_many(X=X)
         return last_step.predict_proba_many(X=X)
+
+    def _unit_test_skips(self):
+        return self[-1]._unit_test_skips()

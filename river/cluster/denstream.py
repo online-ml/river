@@ -120,16 +120,16 @@ class DenStream(base.Clusterer):
     ...     denstream = denstream.learn_one(x)
 
     >>> denstream.predict_one({0: -1, 1: -2})
+    0
+
+    >>> denstream.predict_one({0: 5, 1: 4})
     1
 
-    >>> denstream.predict_one({0:5, 1:4})
-    2
-
-    >>> denstream.predict_one({0:1, 1:1})
+    >>> denstream.predict_one({0: 1, 1: 1})
     0
 
     >>> denstream.n_clusters
-    3
+    2
 
     """
 
