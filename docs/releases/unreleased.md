@@ -18,8 +18,8 @@
 
 ## neighbors
 
-- Add `neighbors.SWINN` to power-up approximate nearest neighbor search. SWINN uses graphs to speed up nearest neighbor search in large sliding windows of data.
-- Rename `neighbors.NearestNeighbors` to `neighbors.LazySearch`.
+- Added `neighbors.SWINN` to power-up approximate nearest neighbor search. SWINN uses graphs to speed up nearest neighbor search in large sliding windows of data.
+- Renamed `neighbors.NearestNeighbors` to `neighbors.LazySearch`.
 - Standardize and create base classes for generic nearest neighbor search utilities.
 - The user can now select the nearest neighbor search engine to use in `neighbors.KNNClassifier` and `neighbors.KNNRegressor`.
 
@@ -31,6 +31,13 @@
 ## proba
 
 - Added a `cdf` method to `proba.Beta`.
+
+## tree
+
+- Expose the `min_branch_fraction` parameter to avoid splits where most of the data goes to a single branch. Affects
+classification trees.
+- Added the `max_share_to_split` parameter to Hoeffding Tree classifiers. This parameters avoids splitting when the majority
+class has most of the data.
 
 ## utils
 
