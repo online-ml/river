@@ -48,6 +48,15 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
         By default, `tree.splitter.GaussianSplitter` is used if `splitter` is `None`.
     binary_split
         If True, only allow binary splits.
+    min_branch_fraction
+        The minimum percentage of observed data required for branches resulting from split
+        candidates. To validate a split candidate, at least two resulting branches must have
+        a percentage of samples greater than `min_branch_fraction`. This criterion prevents
+        unnecessary splits when the majority of instances are concentrated in a single branch.
+    max_share_to_split
+        Only perform a split in a leaf if the proportion of elements in the majority class is
+        smaller than this parameter value. This parameter avoids performing splits when most
+        of the data belongs to a single class.
     max_size
         The max size of the tree, in Megabytes (MB).
     memory_estimate_period
@@ -129,6 +138,8 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
         nominal_attributes: list | None = None,
         splitter: Splitter | None = None,
         binary_split: bool = False,
+        min_branch_fraction: float = 0.01,
+        max_share_to_split: float = 0.99,
         max_size: float = 100.0,
         memory_estimate_period: int = 1000000,
         stop_mem_management: bool = False,
@@ -158,6 +169,9 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
             if not splitter.is_target_class:
                 raise ValueError("The chosen splitter cannot be used in classification tasks.")
             self.splitter = splitter  # type: ignore
+
+        self.min_branch_fraction = min_branch_fraction
+        self.max_share_to_split = max_share_to_split
 
         # To keep track of the observed classes
         self.classes: set = set()
@@ -207,13 +221,13 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
 
     def _new_split_criterion(self):
         if self._split_criterion == self._GINI_SPLIT:
-            split_criterion = GiniSplitCriterion()
+            split_criterion = GiniSplitCriterion(self.min_branch_fraction)
         elif self._split_criterion == self._INFO_GAIN_SPLIT:
-            split_criterion = InfoGainSplitCriterion()
+            split_criterion = InfoGainSplitCriterion(self.min_branch_fraction)
         elif self._split_criterion == self._HELLINGER_SPLIT:
-            split_criterion = HellingerDistanceCriterion()
+            split_criterion = HellingerDistanceCriterion(self.min_branch_fraction)
         else:
-            split_criterion = InfoGainSplitCriterion()
+            split_criterion = InfoGainSplitCriterion(self.min_branch_fraction)
 
         return split_criterion
 
