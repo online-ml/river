@@ -192,6 +192,7 @@ def pure_inference_mode():
         yield
     finally:
         Pipeline._STATELESS = False
+        # pass
 
 
 class Pipeline(base.Estimator):
@@ -398,9 +399,7 @@ class Pipeline(base.Estimator):
 
     def __repr__(self):
         return (
-            "Pipeline (\n\t"
-            + "\t".join(",\n".join(map(repr, self.steps.values())).splitlines(True))
-            + "\n)"
+            "Pipeline (\n\t" + "\t".join(",\n".join(map(repr, self.steps.values())).splitlines(True)) + "\n)"
         ).expandtabs(2)
 
     def _get_params(self):
@@ -568,13 +567,17 @@ class Pipeline(base.Estimator):
             if utils.inspect.ischildobject(obj=t, class_name="AnomalyFilter"):
                 continue
 
+            print(f"{t=}")
             if not self._STATELESS:
+                # print("if not self._STATELESS:")
                 if isinstance(t, union.TransformerUnion):
+                    # print("if isinstance(t, union.TransformerUnion):")
                     for sub_t in t.transformers.values():
                         if not sub_t._supervised:
                             sub_t.learn_one(x)
 
                 elif not t._supervised:
+                    # print("elif not t._supervised:")
                     t.learn_one(x)
 
             x = t.transform_one(x)
@@ -590,10 +593,14 @@ class Pipeline(base.Estimator):
         that precede the final step are assumed to all be transformers.
 
         """
+        print(f"{self._STATELESS=}")
         x, last_step = self._transform_one(x)
+
         if isinstance(last_step, base.Transformer):
-            if not last_step._supervised:
-                last_step.learn_one(x)
+            if not self._STATELESS:
+                if not last_step._supervised:
+                    last_step.learn_one(x)
+
             return last_step.transform_one(x, **params)
         return x
 
@@ -815,8 +822,9 @@ class Pipeline(base.Estimator):
         """
         X, last_step = self._transform_many(X=X)
         if isinstance(last_step, base.MiniBatchTransformer):
-            if not last_step._supervised:
-                last_step.learn_many(X)
+            if not self._STATELESS:
+                if not last_step._supervised:
+                    last_step.learn_many(X)
             return last_step.transform_many(X)
         return X
 
