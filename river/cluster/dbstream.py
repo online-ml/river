@@ -3,7 +3,6 @@ from __future__ import annotations
 import collections
 import copy
 import math
-import typing
 from abc import ABCMeta
 
 from river import base, utils
@@ -151,9 +150,9 @@ class DBSTREAM(base.Clusterer):
         self.minimum_weight = minimum_weight
 
         self._n_clusters: int = 0
-        self._clusters: typing.Dict[int, DBSTREAMMicroCluster] = {}
-        self._centers: typing.Dict = {}
-        self._micro_clusters: typing.Dict[int, DBSTREAMMicroCluster] = {}
+        self._clusters: dict[int, DBSTREAMMicroCluster] = {}
+        self._centers: dict = {}
+        self._micro_clusters: dict[int, DBSTREAMMicroCluster] = {}
 
         self.s: dict[int, dict[int, float]] = {}
         self.s_t: dict[int, dict[int, float]] = {}
@@ -408,17 +407,17 @@ class DBSTREAM(base.Clusterer):
         return self._n_clusters
 
     @property
-    def clusters(self) -> typing.Dict[int, DBSTREAMMicroCluster]:
+    def clusters(self) -> dict[int, DBSTREAMMicroCluster]:
         self._recluster()
         return self._clusters
 
     @property
-    def centers(self) -> typing.Dict:
+    def centers(self) -> dict:
         self._recluster()
         return self._centers
 
     @property
-    def micro_clusters(self) -> typing.Dict[int, DBSTREAMMicroCluster]:
+    def micro_clusters(self) -> dict[int, DBSTREAMMicroCluster]:
         return self._micro_clusters
 
 
