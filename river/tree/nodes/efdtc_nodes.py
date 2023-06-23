@@ -1,6 +1,9 @@
+from __future__ import annotations
+
 import copy
 import numbers
 
+from river.tree.utils import BranchFactory
 from river.utils.norm import normalize_values_in_dict
 
 from ..splitter.nominal_splitter_classif import NominalSplitterClassif
@@ -54,6 +57,12 @@ class BaseEFDTLeaf(HTLeaf):
         -------
             The list of split candidates.
         """
+        maj_class = max(self.stats.values())
+        # Only perform split attempts when the majority class does not dominate
+        # the amount of observed instances
+        if maj_class and maj_class / self.total_weight > tree.max_share_to_split:
+            return [BranchFactory()]
+
         best_suggestions = []
         pre_split_dist = self.stats
 

@@ -15,6 +15,8 @@ specific to each and every recommendation task. Typically the reward is a number
 value. It is up to the user to determine how to translate a user session into training data.
 
 """
+from __future__ import annotations
+
 from . import base
 from .baseline import Baseline
 from .biased_mf import BiasedMF

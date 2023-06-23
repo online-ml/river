@@ -1,4 +1,6 @@
 """Unsupervised clustering."""
+from __future__ import annotations
+
 from .clustream import CluStream
 from .dbstream import DBSTREAM
 from .denstream import DenStream

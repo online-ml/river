@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import itertools
 import typing
 
@@ -8,7 +10,7 @@ from river import base
 __all__ = ["expand_param_grid"]
 
 
-def expand_param_grid(model: base.Estimator, grid: dict) -> typing.List[base.Estimator]:
+def expand_param_grid(model: base.Estimator, grid: dict) -> list[base.Estimator]:
     """Expands a grid of parameters.
 
     This method can be used to generate a list of model parametrizations from a dictionary where
@@ -124,7 +126,7 @@ def _expand_param_grid(grid: dict) -> typing.Iterator[dict]:
         # Example:
         # k = 'lr'
         # v = [0.001, 0.01, 0.1]
-        if isinstance(v, (list, set, np.ndarray)):
+        if isinstance(v, list) or isinstance(v, set) or isinstance(v, np.ndarray):
             combos = []
 
             for el in v:

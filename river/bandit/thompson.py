@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import random
 
 from river import bandit, proba
@@ -15,19 +17,19 @@ class ThompsonSampling(bandit.base.Policy):
     distribution, but should rather be defined in the policy parametrization. In other words, you
     should do this:
 
-    ```
-    policy = ThompsonSampling(dist=proba.Beta(1, 1), seed=42)
+    ```python\n
+    policy = ThompsonSampling(dist=proba.Beta(1, 1), seed=42)\n
     ```
 
     and not this:
 
-    ```
-    policy = ThompsonSampling(dist=proba.Beta(1, 1, seed=42))
+    ```python\n
+    policy = ThompsonSampling(dist=proba.Beta(1, 1, seed=42))\n
     ```
 
     Parameters
     ----------
-    dist
+    reward_obj
         A distribution to sample from.
     burn_in
         The number of steps to use for the burn-in phase. Each arm is given the chance to be pulled
@@ -49,13 +51,13 @@ class ThompsonSampling(bandit.base.Policy):
     >>> _ = env.reset(seed=42)
     >>> _ = env.action_space.seed(123)
 
-    >>> policy = bandit.ThompsonSampling(dist=proba.Beta(), seed=101)
+    >>> policy = bandit.ThompsonSampling(reward_obj=proba.Beta(), seed=101)
 
     >>> metric = stats.Sum()
     >>> while True:
-    ...     action = next(policy.pull(range(env.action_space.n)))
-    ...     observation, reward, terminated, truncated, info = env.step(action)
-    ...     policy = policy.update(action, reward)
+    ...     arm = policy.pull(range(env.action_space.n))
+    ...     observation, reward, terminated, truncated, info = env.step(arm)
+    ...     policy = policy.update(arm, reward)
     ...     metric = metric.update(reward)
     ...     if terminated or truncated:
     ...         break
@@ -69,22 +71,20 @@ class ThompsonSampling(bandit.base.Policy):
 
     """
 
-    def __init__(self, dist: proba.base.Distribution, burn_in=0, seed: int = None):
-        super().__init__(dist, burn_in)
+    def __init__(
+        self, reward_obj: proba.base.Distribution = None, burn_in=0, seed: int | None = None
+    ):
+        super().__init__(reward_obj=reward_obj, burn_in=burn_in)
         self.seed = seed
         self._rng = random.Random(seed)
-        self._rewards.default_factory = self._clone_dist_with_seed
+        self._rewards.default_factory = self._clone_reward_obj_with_seed
 
-    def _clone_dist_with_seed(self):
-        return self.dist.clone({"seed": self._rng.randint(0, 2**32)})
-
-    @property
-    def dist(self):
-        return self.reward_obj
+    def _clone_reward_obj_with_seed(self):
+        return self.reward_obj.clone({"seed": self._rng.randint(0, 2**32)})
 
     def _pull(self, arm_ids):
         return max(arm_ids, key=lambda arm_id: self._rewards[arm_id].sample())
 
     @classmethod
     def _unit_test_params(cls):
-        yield {"dist": proba.Beta()}
+        yield {"reward_obj": proba.Beta()}

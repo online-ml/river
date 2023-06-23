@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import copy
 import typing
 
@@ -24,7 +26,7 @@ __all__ = [
 
 
 # Define a streaming method for each kind of batch input
-STREAM_METHODS: typing.Dict[typing.Type, typing.Callable] = {np.ndarray: stream.iter_array}
+STREAM_METHODS: dict[type, typing.Callable] = {np.ndarray: stream.iter_array}
 
 if PANDAS_INSTALLED:
     STREAM_METHODS[pd.DataFrame] = stream.iter_pandas

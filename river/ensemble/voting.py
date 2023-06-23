@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 import collections
-from typing import List
 
 from river import base, linear_model, naive_bayes, tree
 
@@ -50,7 +51,7 @@ class VotingClassifier(base.Classifier, base.Ensemble):
 
     """
 
-    def __init__(self, models: List[base.Classifier], use_probabilities=True):
+    def __init__(self, models: list[base.Classifier], use_probabilities=True):
         super().__init__(models)  # type: ignore
         self.use_probabilities = use_probabilities
 

@@ -1,4 +1,4 @@
-import typing
+from __future__ import annotations
 
 from .hoeffding_tree_classifier import HoeffdingTreeClassifier
 from .nodes.branch import DTBranch
@@ -59,6 +59,15 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
         By default, `tree.splitter.GaussianSplitter` is used if `splitter` is `None`.
     binary_split
         If True, only allow binary splits.
+    min_branch_fraction
+        The minimum percentage of observed data required for branches resulting from split
+        candidates. To validate a split candidate, at least two resulting branches must have
+        a percentage of samples greater than `min_branch_fraction`. This criterion prevents
+        unnecessary splits when the majority of instances are concentrated in a single branch.
+    max_share_to_split
+        Only perform a split in a leaf if the proportion of elements in the majority class is
+        smaller than this parameter value. This parameter avoids performing splits when most
+        of the data belongs to a single class.
     max_size
         The max size of the tree, in Megabytes (MB).
     memory_estimate_period
@@ -112,16 +121,18 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
     def __init__(
         self,
         grace_period: int = 200,
-        max_depth: int = None,
+        max_depth: int | None = None,
         min_samples_reevaluate: int = 20,
         split_criterion: str = "info_gain",
         delta: float = 1e-7,
         tau: float = 0.05,
         leaf_prediction: str = "nba",
         nb_threshold: int = 0,
-        nominal_attributes: list = None,
-        splitter: Splitter = None,
+        nominal_attributes: list | None = None,
+        splitter: Splitter | None = None,
         binary_split: bool = False,
+        min_branch_fraction: float = 0.01,
+        max_share_to_split: float = 0.99,
         max_size: float = 100.0,
         memory_estimate_period: int = 1000000,
         stop_mem_management: bool = False,
@@ -139,6 +150,8 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
             nominal_attributes=nominal_attributes,
             splitter=splitter,
             binary_split=binary_split,
+            min_branch_fraction=min_branch_fraction,
+            max_share_to_split=max_share_to_split,
             max_size=max_size,
             memory_estimate_period=memory_estimate_period,
             stop_mem_management=stop_mem_management,
@@ -167,9 +180,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
         else:  # NAIVE BAYES ADAPTIVE (default)
             return EFDTLeafNaiveBayesAdaptive(initial_stats, depth, self.splitter)
 
-    def _branch_selector(
-        self, numerical_feature=True, multiway_split=False
-    ) -> typing.Type[DTBranch]:
+    def _branch_selector(self, numerical_feature=True, multiway_split=False) -> type[DTBranch]:
         """Create a new split node."""
         if numerical_feature:
             if not multiway_split:

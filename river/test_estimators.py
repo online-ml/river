@@ -1,4 +1,6 @@
 """General tests that all estimators need to pass."""
+from __future__ import annotations
+
 import importlib
 import inspect
 
@@ -8,6 +10,7 @@ from river import (
     anomaly,
     base,
     checks,
+    compat,
     compose,
     facto,
     feature_extraction,
@@ -28,6 +31,8 @@ try:
     PYTORCH_INSTALLED = True
 except ImportError:
     PYTORCH_INSTALLED = False
+from sklearn import linear_model as sk_linear_model
+
 from river.compat.river_to_sklearn import River2SKLBase
 from river.compat.sklearn_to_river import SKL2RiverBase
 
@@ -70,7 +75,7 @@ def iter_estimators_which_can_be_tested():
         imblearn.RandomUnderSampler,
         imblearn.RandomSampler,
         model_selection.SuccessiveHalvingClassifier,
-        neighbors.NearestNeighbors,
+        neighbors.LazySearch,
         neural_net.MLPRegressor,
         preprocessing.PreviousImputer,
         preprocessing.OneHotEncoder,
@@ -122,6 +127,10 @@ def iter_estimators_which_can_be_tested():
                 | linear_model.LinearRegression()
             ),
             preprocessing.MinMaxScaler() | anomaly.HalfSpaceTrees(),
+            (
+                preprocessing.StandardScaler()
+                | compat.convert_sklearn_to_river(sk_linear_model.SGDRegressor(tol=1e-10))
+            ),
         ]
         for check in checks.yield_checks(estimator)
         if check.__name__ not in estimator._unit_test_skips()

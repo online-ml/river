@@ -1,6 +1,7 @@
+from __future__ import annotations
+
 import abc
 import numbers
-from typing import Optional
 
 from river import base
 
@@ -14,7 +15,7 @@ class Statistic(abc.ABC, base.Base):
     _fmt = ",.6f"  # Use commas to separate big numbers and show 6 decimals
 
     @abc.abstractmethod
-    def get(self) -> Optional[float]:
+    def get(self) -> float | None:
         """Return the current value of the statistic."""
 
     def __repr__(self):

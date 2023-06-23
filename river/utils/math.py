@@ -3,6 +3,8 @@
 A lot of this is experimental and has a high probability of changing in the future.
 
 """
+from __future__ import annotations
+
 import functools
 import itertools
 import math
@@ -160,7 +162,7 @@ def minkowski_distance(a: dict, b: dict, p: int):
         Manhattan distance. When `p=2`, this is equivalent to using the Euclidean distance.
 
     """
-    return sum((abs(a.get(k, 0.0) - b.get(k, 0.0))) ** p for k in {*a.keys(), *b.keys()})
+    return sum((abs(a.get(k, 0.0) - b.get(k, 0.0))) ** p for k in {*a.keys(), *b.keys()}) ** (1 / p)
 
 
 def softmax(y_pred: dict):

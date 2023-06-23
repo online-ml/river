@@ -1,7 +1,8 @@
+from __future__ import annotations
+
 import collections
 import functools
 import itertools
-import typing
 
 import numpy as np
 
@@ -219,20 +220,20 @@ class FFMRegressor(FFM, base.Regressor):
     def __init__(
         self,
         n_factors=10,
-        weight_optimizer: optim.base.Optimizer = None,
-        latent_optimizer: optim.base.Optimizer = None,
-        loss: optim.losses.RegressionLoss = None,
+        weight_optimizer: optim.base.Optimizer | None = None,
+        latent_optimizer: optim.base.Optimizer | None = None,
+        loss: optim.losses.RegressionLoss | None = None,
         sample_normalization=False,
         l1_weight=0.0,
         l2_weight=0.0,
         l1_latent=0.0,
         l2_latent=0.0,
         intercept=0.0,
-        intercept_lr: typing.Union[optim.base.Scheduler, float] = 0.01,
-        weight_initializer: optim.initializers.Initializer = None,
-        latent_initializer: optim.initializers.Initializer = None,
+        intercept_lr: optim.base.Scheduler | float = 0.01,
+        weight_initializer: optim.initializers.Initializer | None = None,
+        latent_initializer: optim.initializers.Initializer | None = None,
         clip_gradient=1e12,
-        seed: int = None,
+        seed: int | None = None,
     ):
         super().__init__(
             n_factors=n_factors,
@@ -347,27 +348,27 @@ class FFMClassifier(FFM, base.Classifier):
 
     References
     ----------
-    1. [Juan, Y., Zhuang, Y., Chin, W.S. and Lin, C.J., 2016, September. Field-aware factorization machines for CTR prediction. In Proceedings of the 10th ACM Conference on Recommender Systems (pp. 43-50).](https://www.csie.ntu.edu.tw/~cjlin/papers/ffm.pdf)
+    [^1]: [Juan, Y., Zhuang, Y., Chin, W.S. and Lin, C.J., 2016, September. Field-aware factorization machines for CTR prediction. In Proceedings of the 10th ACM Conference on Recommender Systems (pp. 43-50).](https://www.csie.ntu.edu.tw/~cjlin/papers/ffm.pdf)
 
     """
 
     def __init__(
         self,
         n_factors=10,
-        weight_optimizer: optim.base.Optimizer = None,
-        latent_optimizer: optim.base.Optimizer = None,
-        loss: optim.losses.BinaryLoss = None,
+        weight_optimizer: optim.base.Optimizer | None = None,
+        latent_optimizer: optim.base.Optimizer | None = None,
+        loss: optim.losses.BinaryLoss | None = None,
         sample_normalization=False,
         l1_weight=0.0,
         l2_weight=0.0,
         l1_latent=0.0,
         l2_latent=0.0,
         intercept=0.0,
-        intercept_lr: typing.Union[optim.base.Scheduler, float] = 0.01,
-        weight_initializer: optim.initializers.Initializer = None,
-        latent_initializer: optim.initializers.Initializer = None,
+        intercept_lr: optim.base.Scheduler | float = 0.01,
+        weight_initializer: optim.initializers.Initializer | None = None,
+        latent_initializer: optim.initializers.Initializer | None = None,
         clip_gradient=1e12,
-        seed: int = None,
+        seed: int | None = None,
     ):
         super().__init__(
             n_factors=n_factors,

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import collections
 import copy
 import dataclasses
@@ -75,22 +77,18 @@ class BranchFactory:
     """
 
     merit: float = -math.inf
-    feature: typing.Optional[FeatureName] = None
-    split_info: typing.Optional[
-        typing.Union[
-            typing.Hashable,
-            typing.List[typing.Hashable],
-            typing.Tuple[typing.Hashable, typing.List[typing.Hashable]],
-        ]
-    ] = None
-    children_stats: typing.Optional[typing.List] = None
+    feature: FeatureName | None = None
+    split_info: typing.Hashable | list[typing.Hashable] | tuple[
+        typing.Hashable, list[typing.Hashable]
+    ] | None = None
+    children_stats: list | None = None
     numerical_feature: bool = True
     multiway_split: bool = False
 
     def assemble(
         self,
         branch,  # typing.Type[DTBranch],
-        stats: typing.Union[typing.Dict, Var],
+        stats: dict | Var,
         depth: int,
         *children,
         **kwargs,
@@ -154,7 +152,7 @@ class GradHessMerit:
 
     loss_mean: float = 0.0
     loss_var: float = 0.0
-    delta_pred: typing.Optional[typing.Union[float, typing.Dict]] = None
+    delta_pred: float | dict | None = None
 
     def __lt__(self, other):
         return self.loss_mean < other.loss_mean
@@ -261,7 +259,7 @@ def calculate_object_size(obj: typing.Any, unit: str = "byte") -> int:
 
     """
     seen = set()
-    to_visit: typing.Deque = collections.deque()
+    to_visit: collections.deque = collections.deque()
     byte_size = 0
 
     to_visit.append(obj)
@@ -291,7 +289,9 @@ def calculate_object_size(obj: typing.Any, unit: str = "byte") -> int:
                 to_visit.append(k)
         elif hasattr(obj, "__dict__"):
             to_visit.append(obj.__dict__)
-        elif hasattr(obj, "__iter__") and not isinstance(obj, (str, bytes, bytearray)):
+        elif hasattr(obj, "__iter__") and not (
+            isinstance(obj, str) or isinstance(obj, bytes) or isinstance(obj, bytearray)
+        ):
             for i in obj:
                 to_visit.append(i)
 

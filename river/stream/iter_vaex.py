@@ -1,4 +1,4 @@
-import typing
+from __future__ import annotations
 
 import vaex
 from vaex.utils import _ensure_list, _ensure_strings_from_expressions
@@ -8,8 +8,8 @@ from river import base
 
 def iter_vaex(
     X: vaex.dataframe.DataFrame,
-    y: typing.Union[str, vaex.expression.Expression] = None,
-    features: typing.Union[typing.List[str], vaex.expression.Expression] = None,
+    y: str | vaex.expression.Expression | None = None,
+    features: list[str] | vaex.expression.Expression | None = None,
 ) -> base.typing.Stream:
     """Yields rows from a ``vaex.DataFrame``.
 

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import copy
 import inspect
 import pickle
@@ -145,6 +147,10 @@ def check_str(model):
 def check_tags(model):
     """Checks that the `_tags` property works."""
     assert isinstance(model._tags, set)
+
+
+def check_clone_same_class(model):
+    assert isinstance(model.clone(), model.__class__)
 
 
 def check_clone_is_idempotent(model):

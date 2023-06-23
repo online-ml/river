@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import bisect
 import collections
 import datetime as dt
@@ -68,7 +70,7 @@ class Rolling(BaseRolling):
 
     def __init__(self, obj: Rollable, window_size: int):
         super().__init__(obj)
-        self.window: typing.Deque = collections.deque(maxlen=window_size)
+        self.window: collections.deque = collections.deque(maxlen=window_size)
 
     @property
     def window_size(self):
@@ -123,7 +125,7 @@ class TimeRolling(BaseRolling):
     def __init__(self, obj: Rollable, period: dt.timedelta):
         super().__init__(obj)
         self.period = period
-        self._events: typing.List[typing.Tuple[dt.datetime, typing.Any]] = []
+        self._events: list[tuple[dt.datetime, typing.Any]] = []
         self._latest = dt.datetime(1, 1, 1)
 
     def update(self, *args, t: dt.datetime, **kwargs):

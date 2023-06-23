@@ -11,7 +11,7 @@ No, they don't. Although binary classification can be seen as a special case of 
 
 ## How do I know if a classifier supports multi-class classification?
 
-Each classifier in `river` inherits from the `base.Classifier` class. Each classifier therefore has a `_multiclass` property which indicates whether or not it can process a non-boolean target value.
+Each classifier in River inherits from the `base.Classifier` class. Each classifier therefore has a `_multiclass` property which indicates whether or not it can process a non-boolean target value.
 
 ```python
 >>> from river import linear_model
@@ -31,7 +31,7 @@ Reinforcement learning works in an online manner because of the nature of the ta
 
 ## What are the differences between scikit-learn's online learning algorithm which have a partial_fit method and their equivalents in river?
 
-The algorithms from `sklearn` that support incremental learning are mostly meant for mini-batch learning. In a pure streaming context where the observations arrive one by one, then `river` is much faster than `sklearn`. This is mostly because `sklearn` incurs a lot of overhead by performing data checks. Also, sklearn assumes that you're always using the same number of features. This is not the case with `river` because it use dictionaries which allows you to drop and add features as you wish.
+The algorithms from `sklearn` that support incremental learning are mostly meant for mini-batch learning. In a pure streaming context where the observations arrive one by one, then River is much faster than `sklearn`. This is mostly because `sklearn` incurs a lot of overhead by performing data checks. Also, sklearn assumes that you're always using the same number of features. This is not the case with River because it use dictionaries which allows you to drop and add features as you wish.
 
 ## How do I save and load models?
 

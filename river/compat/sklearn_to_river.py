@@ -5,14 +5,14 @@ import functools
 
 import pandas as pd
 from sklearn import base as sklearn_base
-from sklearn import exceptions
+from sklearn import exceptions as sklearn_exceptions
 
 from river import base
 
 __all__ = ["convert_sklearn_to_river", "SKL2RiverClassifier", "SKL2RiverRegressor"]
 
 
-def convert_sklearn_to_river(estimator: sklearn_base.BaseEstimator, classes: list = None):
+def convert_sklearn_to_river(estimator: sklearn_base.BaseEstimator, classes: list | None = None):
     """Wraps a scikit-learn estimator to make it compatible with river.
 
     Parameters
@@ -47,6 +47,23 @@ def convert_sklearn_to_river(estimator: sklearn_base.BaseEstimator, classes: lis
 class SKL2RiverBase:
     def __init__(self, estimator: sklearn_base.BaseEstimator):
         self.estimator = estimator
+        self._feature_names: list | None = None
+
+    def _align_dict(self, x: dict) -> list:
+        if self._feature_names is None:
+            self._feature_names = list(x.keys())
+        return [x[k] for k in self._feature_names]
+
+    def _align_df(self, X: pd.DataFrame) -> pd.DataFrame:
+        if self._feature_names is None:
+            self._feature_names = list(X.columns)
+        return X[self._feature_names]
+
+    def _unit_test_skips(self):  # noqa
+        return {
+            "check_emerging_features",
+            "check_disappearing_features",
+        }
 
 
 class SKL2RiverRegressor(SKL2RiverBase, base.Regressor):
@@ -86,21 +103,24 @@ class SKL2RiverRegressor(SKL2RiverBase, base.Regressor):
     """
 
     def learn_one(self, x, y):
-        self.estimator.partial_fit(X=[list(x.values())], y=[y])
+        self.estimator.partial_fit(X=[self._align_dict(x)], y=[y])
         return self
 
     def learn_many(self, X, y):
-        self.estimator.partial_fit(X=X.values, y=y.values)
+        self.estimator.partial_fit(X=self._align_df(X), y=y)
         return self
 
     def predict_one(self, x):
         try:
-            return self.estimator.predict(X=[list(x.values())])[0]
-        except exceptions.NotFittedError:
+            return self.estimator.predict(X=[self._align_dict(x)])[0]
+        except sklearn_exceptions.NotFittedError:
             return 0
 
     def predict_many(self, X):
-        return pd.Series(self.estimator.predict(X))
+        try:
+            return pd.Series(self.estimator.predict(self._align_df(X)))
+        except sklearn_exceptions.NotFittedError:
+            return pd.Series([0] * len(X), index=X.index)
 
 
 class SKL2RiverClassifier(SKL2RiverBase, base.Classifier):
@@ -155,29 +175,39 @@ class SKL2RiverClassifier(SKL2RiverBase, base.Classifier):
         return True
 
     def learn_one(self, x, y):
-        self.estimator.partial_fit(X=[list(x.values())], y=[y], classes=self.classes)
+        self.estimator.partial_fit(X=[self._align_dict(x)], y=[y], classes=self.classes)
         return self
 
     def learn_many(self, X, y):
-        self.estimator.partial_fit(X=X.values, y=y.values, classes=self.classes)
+        self.estimator.partial_fit(X=self._align_df(X), y=y, classes=self.classes)
         return self
 
     def predict_proba_one(self, x):
         try:
-            y_pred = self.estimator.predict_proba([list(x.values())])[0]
+            y_pred = self.estimator.predict_proba([self._align_dict(x)])[0]
             return {self.classes[i]: p for i, p in enumerate(y_pred)}
-        except exceptions.NotFittedError:
+        except sklearn_exceptions.NotFittedError:
             return {c: 1 / len(self.classes) for c in self.classes}
 
     def predict_proba_many(self, X):
-        return pd.Series(self.estimator.predict_proba(X), columns=self.classes)
+        try:
+            return pd.Series(self.estimator.predict_proba(self._align_df(X)), columns=self.classes)
+        except sklearn_exceptions.NotFittedError:
+            return pd.DataFrame(
+                [[1 / len(self.classes)] * len(self.classes)] * len(X),
+                columns=self.classes,
+                index=X.index,
+            )
 
     def predict_one(self, x):
         try:
-            y_pred = self.estimator.predict(X=[list(x.values())])[0]
+            y_pred = self.estimator.predict(X=[self._align_dict(x)])[0]
             return y_pred
-        except exceptions.NotFittedError:
+        except sklearn_exceptions.NotFittedError:
             return self.classes[0]
 
     def predict_many(self, X):
-        return pd.Series(self.estimator.predict(X))
+        try:
+            return pd.Series(self.estimator.predict(self._align_df(X)))
+        except sklearn_exceptions.NotFittedError:
+            return pd.Series([self.classes[0]] * len(X), index=X.index)

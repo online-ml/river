@@ -1,7 +1,8 @@
+from __future__ import annotations
+
 import collections
 import copy
 import functools
-import typing
 
 import numpy as np
 
@@ -114,13 +115,13 @@ class BiasedMF(Ranker):
     def __init__(
         self,
         n_factors=10,
-        bias_optimizer: optim.base.Optimizer = None,
-        latent_optimizer: optim.base.Optimizer = None,
-        loss: optim.losses.Loss = None,
+        bias_optimizer: optim.base.Optimizer | None = None,
+        latent_optimizer: optim.base.Optimizer | None = None,
+        loss: optim.losses.Loss | None = None,
         l2_bias=0.0,
         l2_latent=0.0,
-        weight_initializer: optim.initializers.Initializer = None,
-        latent_initializer: optim.initializers.Initializer = None,
+        weight_initializer: optim.initializers.Initializer | None = None,
+        latent_initializer: optim.initializers.Initializer | None = None,
         clip_gradient=1e12,
         seed=None,
     ):
@@ -157,18 +158,18 @@ class BiasedMF(Ranker):
         self.clip_gradient = clip_gradient
         self.global_mean = stats.Mean()
 
-        self.u_biases: typing.DefaultDict[
+        self.u_biases: collections.defaultdict[
             int, optim.initializers.Initializer
         ] = collections.defaultdict(weight_initializer)
-        self.i_biases: typing.DefaultDict[
+        self.i_biases: collections.defaultdict[
             int, optim.initializers.Initializer
         ] = collections.defaultdict(weight_initializer)
 
         random_latents = functools.partial(self.latent_initializer, shape=self.n_factors)
-        self.u_latents: typing.DefaultDict[
+        self.u_latents: collections.defaultdict[
             int, optim.initializers.Initializer
         ] = collections.defaultdict(random_latents)
-        self.i_latents: typing.DefaultDict[
+        self.i_latents: collections.defaultdict[
             int, optim.initializers.Initializer
         ] = collections.defaultdict(random_latents)
 

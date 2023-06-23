@@ -11,6 +11,8 @@ distribution of a target variable, and optionally include the distribution of th
 model.
 
 """
+from __future__ import annotations
+
 from . import base
 from .filter import QuantileFilter, ThresholdFilter
 from .gaussian import GaussianScorer

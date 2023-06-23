@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import hashlib
 import math
 
@@ -63,7 +65,7 @@ class NUnique(stats.base.Univariate):
 
     P32 = 2**32
 
-    def __init__(self, error_rate=0.01, seed: int = None):
+    def __init__(self, error_rate=0.01, seed: int | None = None):
         self.error_rate = error_rate
         self.seed = seed
 

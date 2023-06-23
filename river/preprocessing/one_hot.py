@@ -1,6 +1,7 @@
+from __future__ import annotations
+
 import collections
 
-import numpy as np
 import pandas as pd
 
 from river import base
@@ -18,8 +19,12 @@ class OneHotEncoder(base.MiniBatchTransformer):
 
     Parameters
     ----------
-    sparse
+    drop_zeros
         Whether or not 0s should be made explicit or not.
+    drop_first
+        Whether to get `k - 1` dummies out of `k` categorical levels by removing the first key.
+        This is useful in some statistical models where perfectly collinear features cause
+        problems.
 
     Examples
     --------
@@ -45,12 +50,22 @@ class OneHotEncoder(base.MiniBatchTransformer):
         {'c1': 'i', 'c2': 'h'},
         {'c1': 'h', 'c2': 'e'}]
 
-    We can now apply one-hot encoding. All the provided are one-hot encoded, there is therefore
+    e can now apply one-hot encoding. All the provided are one-hot encoded, there is therefore
     no need to specify which features to encode.
 
     >>> from river import preprocessing
 
-    >>> oh = preprocessing.OneHotEncoder(sparse=True)
+    >>> oh = preprocessing.OneHotEncoder()
+    >>> for x in X[:2]:
+    ...     oh = oh.learn_one(x)
+    ...     pprint(oh.transform_one(x))
+    {'c1_u': 1, 'c2_d': 1}
+    {'c1_a': 1, 'c1_u': 0, 'c2_d': 0, 'c2_x': 1}
+
+    The `drop_zeros` parameter can be set to `True` if you don't want the past features to be included
+    in the output. Otherwise, all the past features will be included in the output.
+
+    >>> oh = preprocessing.OneHotEncoder(drop_zeros=True)
     >>> for x in X:
     ...     oh = oh.learn_one(x)
     ...     pprint(oh.transform_one(x))
@@ -59,17 +74,19 @@ class OneHotEncoder(base.MiniBatchTransformer):
     {'c1_i': 1, 'c2_h': 1}
     {'c1_h': 1, 'c2_e': 1}
 
-    The `sparse` parameter can be set to `False` in order to include the values that are not
-    present in the output.
+    You can encode only `k - 1` features out of `k` by setting `drop_first` to `True`.
 
-    >>> oh = preprocessing.OneHotEncoder(sparse=False)
-    >>> for x in X[:2]:
+    >>> oh = preprocessing.OneHotEncoder(drop_first=True, drop_zeros=True)
+    >>> for x in X:
     ...     oh = oh.learn_one(x)
     ...     pprint(oh.transform_one(x))
-    {'c1_u': 1, 'c2_d': 1}
-    {'c1_a': 1, 'c1_u': 0, 'c2_d': 0, 'c2_x': 1}
+    {'c2_d': 1}
+    {'c2_x': 1}
+    {'c2_h': 1}
+    {'c2_e': 1}
 
-    A subset of the features can be one-hot encoded by using an instance of `compose.Select`.
+    A subset of the features can be one-hot encoded by piping a `compose.Select` into the
+    `OneHotEncoder`.
 
     >>> from river import compose
 
@@ -104,7 +121,7 @@ class OneHotEncoder(base.MiniBatchTransformer):
     ...     {'c1': ['i'], 'c2': ['h', 'z']},
     ...     {'c1': ['h', 'b'], 'c2': ['e']}]
 
-    >>> oh = preprocessing.OneHotEncoder(sparse=True)
+    >>> oh = preprocessing.OneHotEncoder(drop_zeros=True)
     >>> for x in X:
     ...     oh = oh.learn_one(x)
     ...     pprint(oh.transform_one(x))
@@ -126,53 +143,68 @@ class OneHotEncoder(base.MiniBatchTransformer):
     ...         'c1': random.choice(alphabet),
     ...         'c2': random.choice(alphabet),
     ...     }
-    ...     for _ in range(4)
+    ...     for _ in range(3)
     ... )
     >>> X
       c1 c2
     0  u  d
     1  a  x
     2  i  h
-    3  h  e
 
-    >>> oh = preprocessing.OneHotEncoder(sparse=True)
-    >>> oh = oh.learn_many(X)
-
+    >>> oh = preprocessing.OneHotEncoder(drop_zeros=True)
     >>> df = oh.transform_many(X)
-    >>> df.loc[:, sorted(df.columns)]
-        c1_a  c1_h  c1_i  c1_u  c2_d  c2_e  c2_h  c2_x
-    0     0     0     0     1     1     0     0     0
-    1     1     0     0     0     0     0     0     1
-    2     0     0     1     0     0     0     1     0
-    3     0     1     0     0     0     1     0     0
+    >>> df.sort_index(axis="columns")
+       c1_a  c1_i  c1_u  c2_d  c2_h  c2_x
+    0     0     0     1     1     0     0
+    1     1     0     0     0     0     1
+    2     0     1     0     0     1     0
 
-    Keep in mind that ability for sparse transformations is limited in mini-batch case,
-    which might affect speed/memory footprint of your training loop.
+    >>> oh = preprocessing.OneHotEncoder(drop_zeros=True, drop_first=True)
+    >>> df = oh.transform_many(X)
+    >>> df.sort_index(axis="columns")
+       c1_i  c1_u  c2_d  c2_h  c2_x
+    0     0     1     1     0     0
+    1     0     0     0     0     1
+    2     1     0     0     1     0
 
-    Here's a non-sparse example:
+    Here's an example where the zeros are kept:
 
-    >>> oh = preprocessing.OneHotEncoder(sparse=False)
-    >>> X_init = pd.DataFrame([{'c1': "Oranges", 'c2': "Apples"}])
+    >>> oh = preprocessing.OneHotEncoder(drop_zeros=False)
+    >>> X_init = pd.DataFrame([{"c1": "Oranges", "c2": "Apples"}])
     >>> oh = oh.learn_many(X_init)
     >>> oh = oh.learn_many(X)
 
     >>> df = oh.transform_many(X)
-    >>> df.loc[:, sorted(df.columns)]
-        c1_Oranges  c1_a  c1_h  c1_i  c1_u  c2_Apples  c2_d  c2_e  c2_h  c2_x
-    0           0     0     0     0     1          0     1     0     0     0
-    1           0     1     0     0     0          0     0     0     0     1
-    2           0     0     0     1     0          0     0     0     1     0
-    3           0     0     1     0     0          0     0     1     0     0
+    >>> df.sort_index(axis="columns")
+       c1_Oranges  c1_a  c1_i  c1_u  c2_Apples  c2_d  c2_h  c2_x
+    0           0     0     0     1          0     1     0     0
+    1           0     1     0     0          0     0     0     1
+    2           0     0     1     0          0     0     1     0
+
+    >>> df.dtypes.sort_index()
+    c1_Oranges    Sparse[uint8, 0]
+    c1_a          Sparse[uint8, 0]
+    c1_i          Sparse[uint8, 0]
+    c1_u          Sparse[uint8, 0]
+    c2_Apples     Sparse[uint8, 0]
+    c2_d          Sparse[uint8, 0]
+    c2_h          Sparse[uint8, 0]
+    c2_x          Sparse[uint8, 0]
+    dtype: object
 
     """
 
-    def __init__(self, sparse=False):
-        self.sparse = sparse
+    def __init__(self, drop_zeros=False, drop_first=False):
+        self.drop_zeros = drop_zeros
+        self.drop_first = drop_first
         self.values = collections.defaultdict(set)
 
     def learn_one(self, x):
+        if self.drop_zeros:
+            return self
+
         for i, xi in x.items():
-            if isinstance(xi, (list, set)):
+            if isinstance(xi, list) or isinstance(xi, set):
                 for xj in xi:
                     self.values[i].add(xj)
             else:
@@ -184,75 +216,41 @@ class OneHotEncoder(base.MiniBatchTransformer):
         oh = {}
 
         # Add 0s
-        if not self.sparse:
+        if not self.drop_zeros:
             oh = {f"{i}_{v}": 0 for i, values in self.values.items() for v in values}
 
         # Add 1s
         for i, xi in x.items():
-            if isinstance(xi, (list, set)):
+            if isinstance(xi, list) or isinstance(xi, set):
                 for xj in xi:
                     oh[f"{i}_{xj}"] = 1
             else:
                 oh[f"{i}_{xi}"] = 1
 
+        if self.drop_first:
+            oh.pop(min(oh.keys()))
+
         return oh
 
-    # Mini-batch methods
-
-    @staticmethod
-    def _encode_1d(data, prefix, categories=None, sparse=False):
-        # INFO: inspired by:
-        # https://github.com/pandas-dev/pandas/blob/66e3805b8cabe977f40c05259cc3fcf7ead5687d/pandas/core/reshape/reshape.py#L936
-
-        if categories is not None:
-            if type(categories) is not set:
-                categories = set(categories)
-
-            if sparse:
-                categories = categories & set(data)
-
-            cat = pd.Categorical(data, categories=categories, ordered=False)
-        else:
-            cat = pd.Categorical(data, ordered=False)
-        categories = cat.categories
-        # cat.add_categories INFO: look into this for learninig?
-
-        codes = cat.codes
-
-        number_of_cols = len(categories)
-        dummy_mat = np.eye(number_of_cols, dtype=np.int8).take(codes, axis=1).T
-        # reset NaN GH4446[pandas]
-        dummy_mat[codes == -1] = 0
-
-        columns = [f"{prefix}_{v}" for v in categories]
-        return dummy_mat, columns
-
     def learn_many(self, X):
+        if self.drop_zeros:
+            return self
+
         for col in X.columns:
-            self.values[col].update(set(X.loc[:, col]))
+            self.values[col].update(X[col].unique())
 
         return self
 
     def transform_many(self, X):
-        Xt = list()
-        Xt_columns = list()
+        oh = pd.get_dummies(X, columns=X.columns, sparse=True, dtype="uint8")
 
-        for col, values in self.values.items():
-            xt, xt_columns = self._encode_1d(
-                data=X.loc[:, col], prefix=col, categories=values, sparse=self.sparse
-            )
+        if not self.drop_zeros:
+            seen_in_the_past = {f"{col}_{val}" for col, vals in self.values.items() for val in vals}
+            to_add = seen_in_the_past - set(oh.columns)
+            for col in to_add:
+                oh[col] = pd.arrays.SparseArray([0] * len(oh), dtype="uint8")
 
-            Xt.append(xt)
-            Xt_columns.extend(xt_columns)
+        if self.drop_first:
+            oh = oh.drop(columns=min(oh.columns))
 
-        # INFO: otherwise throws error if nothing to concatenate
-        # (when inferring from blank state stansformer during learning, which is done inside `Pipeline`)
-        if len(Xt) == 0:
-            return pd.DataFrame(index=X.index, copy=False)
-        else:
-            return pd.DataFrame(
-                np.concatenate(Xt, axis=1),
-                columns=Xt_columns,
-                index=X.index,
-                copy=False,
-            )
+        return oh

@@ -1,6 +1,7 @@
+from __future__ import annotations
+
 import itertools
 import random
-import typing
 
 import numpy as np
 
@@ -9,11 +10,11 @@ from river import base
 
 def iter_array(
     X: np.ndarray,
-    y: np.ndarray = None,
-    feature_names: typing.List[base.typing.FeatureName] = None,
-    target_names: typing.List[base.typing.FeatureName] = None,
+    y: np.ndarray | None = None,
+    feature_names: list[base.typing.FeatureName] | None = None,
+    target_names: list[base.typing.FeatureName] | None = None,
     shuffle: bool = False,
-    seed: int = None,
+    seed: int | None = None,
 ) -> base.typing.Stream:
     """Iterates over the rows from an array of features and an array of targets.
 

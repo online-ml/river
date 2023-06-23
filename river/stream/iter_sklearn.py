@@ -1,10 +1,12 @@
+from __future__ import annotations
+
 import pandas as pd
 import sklearn.utils
 
 from river import base, stream
 
 
-def iter_sklearn_dataset(dataset: "sklearn.utils.Bunch", **kwargs) -> base.typing.Stream:
+def iter_sklearn_dataset(dataset: sklearn.utils.Bunch, **kwargs) -> base.typing.Stream:
     """Iterates rows from one of the datasets provided by scikit-learn.
 
     This allows you to use any dataset from [scikit-learn's `datasets` module](https://scikit-learn.org/stable/modules/classes.html#module-sklearn.datasets). For instance, you can use the `fetch_openml` function to get access to all of the

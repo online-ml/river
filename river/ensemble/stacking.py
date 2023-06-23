@@ -1,4 +1,4 @@
-import typing
+from __future__ import annotations
 
 from river import base, linear_model, naive_bayes, tree
 
@@ -54,7 +54,7 @@ class StackingClassifier(base.Ensemble, base.Classifier):
 
     def __init__(
         self,
-        models: typing.List[base.Classifier],
+        models: list[base.Classifier],
         meta_classifier: base.Classifier,
         include_features=True,
     ):

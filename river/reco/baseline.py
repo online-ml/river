@@ -1,6 +1,7 @@
+from __future__ import annotations
+
 import collections
 import copy
-import typing
 
 from river import optim, reco, stats, utils
 
@@ -81,10 +82,10 @@ class Baseline(reco.base.Ranker):
 
     def __init__(
         self,
-        optimizer: optim.base.Optimizer = None,
-        loss: optim.losses.Loss = None,
+        optimizer: optim.base.Optimizer | None = None,
+        loss: optim.losses.Loss | None = None,
         l2=0.0,
-        initializer: optim.initializers.Initializer = None,
+        initializer: optim.initializers.Initializer | None = None,
         clip_gradient=1e12,
         seed=None,
     ):
@@ -102,10 +103,10 @@ class Baseline(reco.base.Ranker):
 
         self.clip_gradient = clip_gradient
         self.global_mean = stats.Mean()
-        self.u_biases: typing.DefaultDict[
+        self.u_biases: collections.defaultdict[
             int, optim.initializers.Initializer
         ] = collections.defaultdict(initializer)
-        self.i_biases: typing.DefaultDict[
+        self.i_biases: collections.defaultdict[
             int, optim.initializers.Initializer
         ] = collections.defaultdict(initializer)
 

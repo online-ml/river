@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import abc
 import typing
 
@@ -12,22 +14,18 @@ class BaseTransformer:
         """Fuses with another Transformer into a TransformerUnion."""
         from river import compose
 
-        if isinstance(other, compose.TransformerUnion):
-            return other.__add__(self)
         return compose.TransformerUnion(self, other)
 
     def __radd__(self, other):
         """Fuses with another Transformer into a TransformerUnion."""
         from river import compose
 
-        if isinstance(other, compose.TransformerUnion):
-            return other.__add__(self)
         return compose.TransformerUnion(other, self)
 
     def __mul__(self, other):
         from river import compose
 
-        if isinstance(other, (Transformer, compose.Pipeline)):
+        if isinstance(other, Transformer) or isinstance(other, compose.Pipeline):
             return compose.TransformerProduct(self, other)
 
         return compose.Grouper(transformer=self, by=other)
@@ -59,7 +57,7 @@ class Transformer(base.Estimator, BaseTransformer):
     def _supervised(self):
         return False
 
-    def learn_one(self, x: dict) -> "Transformer":
+    def learn_one(self, x: dict) -> Transformer:
         """Update with a set of features `x`.
 
         A lot of transformers don't actually have to do anything during the `learn_one` step
@@ -87,7 +85,7 @@ class SupervisedTransformer(base.Estimator, BaseTransformer):
     def _supervised(self):
         return True
 
-    def learn_one(self, x: dict, y: base.typing.Target) -> "SupervisedTransformer":
+    def learn_one(self, x: dict, y: base.typing.Target) -> SupervisedTransformer:
         """Update with a set of features `x` and a target `y`.
 
         Parameters
@@ -109,7 +107,7 @@ class MiniBatchTransformer(Transformer):
     """A transform that can operate on mini-batches."""
 
     @abc.abstractmethod
-    def transform_many(self, X: "pd.DataFrame") -> "pd.DataFrame":
+    def transform_many(self, X: pd.DataFrame) -> pd.DataFrame:
         """Transform a mini-batch of features.
 
         Parameters
@@ -123,7 +121,7 @@ class MiniBatchTransformer(Transformer):
 
         """
 
-    def learn_many(self, X: "pd.DataFrame") -> "Transformer":
+    def learn_many(self, X: pd.DataFrame) -> Transformer:
         """Update with a mini-batch of features.
 
         A lot of transformers don't actually have to do anything during the `learn_many` step
@@ -152,7 +150,7 @@ class MiniBatchSupervisedTransformer(Transformer):
         return True
 
     @abc.abstractmethod
-    def learn_many(self, X: "pd.DataFrame", y: "pd.Series") -> "MiniBatchSupervisedTransformer":
+    def learn_many(self, X: pd.DataFrame, y: pd.Series) -> MiniBatchSupervisedTransformer:
         """Update the model with a mini-batch of features `X` and targets `y`.
 
         Parameters
@@ -170,7 +168,7 @@ class MiniBatchSupervisedTransformer(Transformer):
         return self
 
     @abc.abstractmethod
-    def transform_many(self, X: "pd.DataFrame") -> "pd.DataFrame":
+    def transform_many(self, X: pd.DataFrame) -> pd.DataFrame:
         """Transform a mini-batch of features.
 
         Parameters

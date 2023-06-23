@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import abc
 import copy
 import math
@@ -92,13 +94,13 @@ class HoeffdingRule(base.Estimator, metaclass=abc.ABCMeta):
     ):
         self.template_splitter = template_splitter
         self.split_criterion = split_criterion
-        self.literals: typing.List[Literal] = []
-        self.splitters: typing.Dict[typing.Hashable, tree.splitter.Splitter] = {}
+        self.literals: list[Literal] = []
+        self.splitters: dict[typing.Hashable, tree.splitter.Splitter] = {}
 
         self._total_weight = 0
         self._last_expansion_attempt_at = 0
 
-        self.nominal_features: typing.Set[typing.Hashable] = set()
+        self.nominal_features: set[typing.Hashable] = set()
 
         self.__dict__.update(attributes)
 

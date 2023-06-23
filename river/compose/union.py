@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import collections
 import types
 
@@ -157,7 +159,11 @@ class TransformerUnion(base.MiniBatchTransformer):
     def __init__(self, *transformers):
         self.transformers = {}
         for transformer in transformers:
-            self += transformer
+            if transformer.__class__ == self.__class__:
+                for t in transformer:
+                    self._add_step(t)
+            else:
+                self._add_step(transformer)
 
     def __getitem__(self, key):
         """Just for convenience."""
@@ -182,11 +188,11 @@ class TransformerUnion(base.MiniBatchTransformer):
     def _get_params(self):
         return {name: transformer._get_params() for name, transformer in self.transformers.items()}
 
-    def clone(self, new_params: dict = None, include_attributes=False):
+    def clone(self, new_params: dict | None = None, include_attributes=False):
         if new_params is None:
             new_params = {}
 
-        return TransformerUnion(
+        return self.__class__(
             *[
                 (name, new_params[name])
                 if isinstance(new_params.get(name), base.Estimator)
@@ -214,13 +220,15 @@ class TransformerUnion(base.MiniBatchTransformer):
             name, transformer = transformer
 
         # If the step is a function then wrap it in a FuncTransformer
-        if isinstance(transformer, (types.FunctionType, types.LambdaType)):
+        if isinstance(transformer, types.FunctionType) or isinstance(transformer, types.LambdaType):
             transformer = func.FuncTransformer(transformer)
 
         def infer_name(transformer):
             if isinstance(transformer, func.FuncTransformer):
                 return infer_name(transformer.func)
-            elif isinstance(transformer, (types.FunctionType, types.LambdaType)):
+            elif isinstance(transformer, types.FunctionType) or isinstance(
+                transformer, types.LambdaType
+            ):
                 return transformer.__name__
             elif hasattr(transformer, "__class__"):
                 return transformer.__class__.__name__
@@ -237,7 +245,7 @@ class TransformerUnion(base.MiniBatchTransformer):
             name = f"{name}{counter}"
 
         # Store the transformer
-        self.transformers[name] = transformer
+        self.transformers[name] = transformer.clone(include_attributes=True)
 
         return self
 
@@ -269,7 +277,7 @@ class TransformerUnion(base.MiniBatchTransformer):
 
     # Mini-batch methods
 
-    def learn_many(self, X: pd.DataFrame, y: pd.Series = None):
+    def learn_many(self, X: pd.DataFrame, y: pd.Series | None = None):
         """Update each transformer.
 
         Parameters
@@ -290,16 +298,7 @@ class TransformerUnion(base.MiniBatchTransformer):
 
     def transform_many(self, X):
         """Passes the data through each transformer and packs the results together."""
-        # INFO: not the most optimal but at least it works
-        # return pd.DataFrame(
-        #     dict(
-        #         collections.ChainMap(
-        #             *(t.transform_many(X) for t in self.transformers.values())
-        #         )
-        #     ),
-        #     copy=False,
-        # )
-        # INFO: likely more optimal and definitely more clean
+
         return pd.concat(
             (t.transform_many(X) for t in self.transformers.values()),
             copy=False,

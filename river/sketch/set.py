@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import math
 import random
 import typing
@@ -123,7 +125,7 @@ class Set(base.Base):
 
     """
 
-    def __init__(self, capacity: int = 2048, fp_rate: float = 0.01, seed: int = None):
+    def __init__(self, capacity: int = 2048, fp_rate: float = 0.01, seed: int | None = None):
         self.capacity = capacity
         self.fp_rate = fp_rate
         self.seed = seed
@@ -183,7 +185,7 @@ class Set(base.Base):
 
         return all(proj)
 
-    def _is_mergeable(self, other: "Set") -> bool:
+    def _is_mergeable(self, other: Set) -> bool:
         if len(self._masks) != len(other._masks):
             return False
 
@@ -199,30 +201,30 @@ class Set(base.Base):
                 "Ensure their 'capacity', 'fp_rate', and 'seed' match.",
             )
 
-    def __iand__(self, other: "Set"):
+    def __iand__(self, other: Set):
         self._check_mergeable(other)
 
         self._bloom &= other._bloom
         return self
 
-    def __and__(self, other: "Set"):
+    def __and__(self, other: Set):
         new = self.clone(include_attributes=True)
         new &= other
         return new
 
-    def __ior__(self, other: "Set"):
+    def __ior__(self, other: Set):
         self._check_mergeable(other)
 
         self._bloom |= other._bloom
         return self
 
-    def __or__(self, other: "Set"):
+    def __or__(self, other: Set):
         new = self.clone(include_attributes=True)
         new |= other
 
         return new
 
-    def intersection(self, other: "Set"):
+    def intersection(self, other: Set):
         """Set intersection.
 
         Return a new instance that results from the set intersection between the current `Set` object
@@ -242,7 +244,7 @@ class Set(base.Base):
         """
         return self & other
 
-    def union(self, other: "Set"):
+    def union(self, other: Set):
         """Set union.
 
         Return a new instance that results from the set union between the current `Set` object and `other`.

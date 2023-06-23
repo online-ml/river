@@ -18,7 +18,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.9"
+          python-version: "3.10"
 
       - run: curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain=nightly --profile=minimal -y && rustup show
         if: matrix.os == 'ubuntu-latest'
@@ -28,7 +28,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install wheel
           pip install -e ".[compat,dev,docs]"
-          pip install git+https://github.com/MaxHalford/yamp
           pip install rich
           python -m spacy download en_core_web_sm
 

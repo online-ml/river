@@ -7,7 +7,6 @@ import io
 import itertools
 import types
 import typing
-from xml.etree import ElementTree as ET
 
 import pandas as pd
 
@@ -23,11 +22,11 @@ def warm_up_mode():
     """A context manager for training pipelines during a warm-up phase.
 
     You don't have to worry about anything when you call `predict_one` and `learn_one` with a
-    pipeline during in a training loop. The methods at each step of the pipeline will be called in
+    pipeline during in training loop. At each step of the pipeline, the methods will be called in
     the correct order.
 
     However, during a warm-up phase, you might just be calling `learn_one` because you don't need
-    the out-of-sample predictions. In this case the unsupervised estimators in the pipeline won't
+    the out-of-sample predictions. In this case, the unsupervised estimators in the pipeline won't
     be updated, because they are usually updated when `predict_one` is called.
 
     This context manager allows you to override that behavior and make it so that unsupervised
@@ -100,10 +99,10 @@ def pure_inference_mode():
     """A context manager for making inferences with no side-effects.
 
     Calling `predict_one` with a pipeline will update the unsupervised steps of the pipeline. This
-    is the expected behavior for online machine learning. However, in some cases you might just
+    is the expected behavior for online machine learning. However, in some cases, you might just
     want to produce predictions without necessarily updating anything.
 
-    This context manager allows you to override that behavior and make it so that unsupervised
+    This context manager allows you to override that behavior, by making it so that unsupervised
     estimators are not updated when `predict_one` is called.
 
     Examples
@@ -160,6 +159,33 @@ def pure_inference_mode():
 
     We can see that the scaler did not get updated before transforming the data.
 
+    This also works when working with mini-batches.
+
+    >>> logs = io.StringIO()
+    >>> sh = logging.StreamHandler(logs)
+    >>> sh.setLevel(logging.DEBUG)
+    >>> logger.addHandler(sh)
+
+    >>> with utils.log_method_calls(class_condition):
+    ...     for x, y in datasets.TrumpApproval().take(1):
+    ...         _ = model.predict_many(pd.DataFrame([x]))
+    >>> print(logs.getvalue())
+    StandardScaler.learn_many
+    StandardScaler.transform_many
+    LinearRegression.predict_many
+
+    >>> logs = io.StringIO()
+    >>> sh = logging.StreamHandler(logs)
+    >>> sh.setLevel(logging.DEBUG)
+    >>> logger.addHandler(sh)
+
+    >>> with utils.log_method_calls(class_condition), compose.pure_inference_mode():
+    ...     for x, y in datasets.TrumpApproval().take(1):
+    ...         _ = model.predict_many(pd.DataFrame([x]))
+    >>> print(logs.getvalue())
+    StandardScaler.transform_many
+    LinearRegression.predict_many
+
     """
     Pipeline._STATELESS = True
     try:
@@ -173,7 +199,7 @@ class Pipeline(base.Estimator):
 
     Pipelines allow you to chain different steps into a sequence. Typically, when doing supervised
     learning, a pipeline contains one ore more transformation steps, whilst it's is a regressor or
-    a classifier. It is highly recommended to use pipelines with `river`. Indeed, in an online
+    a classifier. It is highly recommended to use pipelines with River. Indeed, in an online
     learning setting, it is very practical to have a model defined as a single object. Take a look
     at the [user guide](/recipes/pipelines) for further information and
     practical examples.
@@ -359,7 +385,7 @@ class Pipeline(base.Estimator):
     def __mul__(self, other):
         from river import compose
 
-        if isinstance(other, (base.Transformer, Pipeline)):
+        if isinstance(other, base.Transformer) or isinstance(other, Pipeline):
             return compose.TransformerProduct(self, other)
 
         return compose.Grouper(transformer=self, by=other)
@@ -377,20 +403,14 @@ class Pipeline(base.Estimator):
             + "\n)"
         ).expandtabs(2)
 
-    def _repr_html_(self):
-        from river.compose import viz
-
-        div = viz.pipeline_to_html(self)
-        return f"<div>{ET.tostring(div, encoding='unicode')}<style scoped>{viz.CSS}</style></div>"
-
     def _get_params(self):
         return {name: step._get_params() for name, step in self.steps.items()}
 
-    def clone(self, new_params: dict = None, include_attributes=False):
+    def clone(self, new_params: dict | None = None, include_attributes=False):
         if new_params is None:
             new_params = {}
 
-        return Pipeline(
+        return self.__class__(
             *[
                 (name, new_params[name])
                 if isinstance(new_params.get(name), base.Estimator)
@@ -431,7 +451,7 @@ class Pipeline(base.Estimator):
             name, obj = obj
 
         def _coerce_to_estimator(obj: typing.Any) -> base.Estimator:
-            if isinstance(obj, (types.FunctionType, types.LambdaType)):
+            if isinstance(obj, types.FunctionType) or isinstance(obj, types.LambdaType):
                 return func.FuncTransformer(obj)
             if isinstance(obj, list):
                 return union.TransformerUnion(*[_coerce_to_estimator(part) for part in obj])
@@ -442,8 +462,8 @@ class Pipeline(base.Estimator):
         def infer_name(estimator: base.Estimator | typing.Callable) -> str:
             if isinstance(estimator, func.FuncTransformer):
                 return infer_name(estimator.func)
-            if isinstance(estimator, (types.FunctionType, types.LambdaType)):
-                return estimator.__name__
+            if isinstance(estimator, types.FunctionType) or isinstance(obj, types.LambdaType):
+                return estimator.__name__  # type: ignore
             if hasattr(estimator, "__class__"):
                 return estimator.__class__.__name__
             return str(estimator)
@@ -613,7 +633,7 @@ class Pipeline(base.Estimator):
         x, last_step = self._transform_one(x)
         return last_step.score_one(x, **params)
 
-    def forecast(self, horizon: int, xs: list[dict] = None):
+    def forecast(self, horizon: int, xs: list[dict] | None = None):
         """Return a forecast.
 
         Only works if each estimator has a `transform_one` method and the final estimator has a
@@ -716,7 +736,7 @@ class Pipeline(base.Estimator):
 
     # Mini-batch methods
 
-    def learn_many(self, X: pd.DataFrame, y: pd.Series = None, **params):
+    def learn_many(self, X: pd.DataFrame, y: pd.Series | None = None, **params):
         """Fit to a mini-batch.
 
         Parameters
@@ -771,13 +791,14 @@ class Pipeline(base.Estimator):
         steps = iter(self.steps.values())
 
         for t in itertools.islice(steps, len(self) - 1):
-            if isinstance(t, union.TransformerUnion):
-                for sub_t in t.transformers.values():
-                    if not sub_t._supervised:
-                        sub_t.learn_many(X=X)
+            if not self._STATELESS:
+                if isinstance(t, union.TransformerUnion):
+                    for sub_t in t.transformers.values():
+                        if not sub_t._supervised:
+                            sub_t.learn_many(X=X)
 
-            elif not t._supervised:
-                t.learn_many(X=X)
+                elif not t._supervised:
+                    t.learn_many(X=X)
 
             X = t.transform_many(X=X)
 
@@ -800,9 +821,14 @@ class Pipeline(base.Estimator):
         return X
 
     def predict_many(self, X: pd.DataFrame):
+        """Call transform_many, and then predict_many on the final step."""
         X, last_step = self._transform_many(X=X)
         return last_step.predict_many(X=X)
 
     def predict_proba_many(self, X: pd.DataFrame):
+        """Call transform_many, and then predict_proba_many on the final step."""
         X, last_step = self._transform_many(X=X)
         return last_step.predict_proba_many(X=X)
+
+    def _unit_test_skips(self):
+        return self[-1]._unit_test_skips()

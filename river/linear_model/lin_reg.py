@@ -1,4 +1,4 @@
-import typing
+from __future__ import annotations
 
 import numpy as np
 import pandas as pd
@@ -108,14 +108,14 @@ class LinearRegression(linear_model.base.GLM, base.MiniBatchRegressor):
 
     def __init__(
         self,
-        optimizer: optim.base.Optimizer = None,
-        loss: optim.losses.RegressionLoss = None,
+        optimizer: optim.base.Optimizer | None = None,
+        loss: optim.losses.RegressionLoss | None = None,
         l2=0.0,
         l1=0.0,
         intercept_init=0.0,
-        intercept_lr: typing.Union[optim.base.Scheduler, float] = 0.01,
+        intercept_lr: optim.base.Scheduler | float = 0.01,
         clip_gradient=1e12,
-        initializer: optim.base.Initializer = None,
+        initializer: optim.base.Initializer | None = None,
     ):
         super().__init__(
             optimizer=optim.SGD(0.01) if optimizer is None else optimizer,

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import collections
 import contextlib
 import copy
@@ -14,9 +16,9 @@ class Base:
 
     This base class allows us to handle the following tasks in a uniform manner:
 
-    - Getting and setting parameters.
-    - Displaying information.
-    - Cloning.
+    - Getting and setting parameters
+    - Displaying information
+    - Mutating/cloning
 
     """
 
@@ -39,7 +41,7 @@ class Base:
         """
         yield {}
 
-    def _get_params(self) -> typing.Dict[str, typing.Any]:
+    def _get_params(self) -> dict[str, typing.Any]:
         """Return the parameters that were used during initialization."""
 
         params = {}
@@ -69,7 +71,7 @@ class Base:
 
         return params
 
-    def clone(self, new_params: dict = None, include_attributes=False):
+    def clone(self, new_params: dict | None = None, include_attributes=False):
         """Return a fresh estimator with the same parameters.
 
         The clone has the same parameters but has not been updated with any data.
@@ -373,9 +375,15 @@ class Base:
                 buffer.extend([v for v in contents.values()])
             elif isinstance(obj, np.ndarray):
                 size += obj.nbytes
-            elif isinstance(obj, (itertools.count, itertools.cycle, itertools.repeat)):
+            elif (
+                isinstance(obj, itertools.count)
+                or isinstance(obj, itertools.cycle)
+                or isinstance(obj, itertools.repeat)
+            ):
                 ...
-            elif hasattr(obj, "__iter__") and not isinstance(obj, (str, bytes, bytearray)):
+            elif hasattr(obj, "__iter__") and not (
+                isinstance(obj, str) or isinstance(obj, bytes) or isinstance(obj, bytearray)
+            ):
                 buffer.extend([i for i in obj])  # type: ignore
 
         return size
@@ -402,8 +410,8 @@ def _log_method_calls(self, name, class_condition, method_condition):
 
 @contextlib.contextmanager
 def log_method_calls(
-    class_condition: typing.Callable[[typing.Any], bool] = None,
-    method_condition: typing.Callable[[typing.Any], bool] = None,
+    class_condition: typing.Callable[[typing.Any], bool] | None = None,
+    method_condition: typing.Callable[[typing.Any], bool] | None = None,
 ):
     """A context manager to log method calls.
 

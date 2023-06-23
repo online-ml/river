@@ -1,9 +1,11 @@
+from __future__ import annotations
+
 import dataclasses
 import datetime as dt
 import enum
 import re
 import socket
-from typing import Iterator, List, Optional
+from collections.abc import Iterator
 
 SERVER = "irc.chat.twitch.tv"
 PORT = 6667
@@ -99,7 +101,7 @@ class TwitchChatStream:
         self,
         nickname: str,
         token: str,
-        channels: List[str],
+        channels: list[str],
         buffer_size: int = BUFFER_SIZE,
         timeout: int = TIMEOUT,
     ):
@@ -111,7 +113,7 @@ class TwitchChatStream:
         self.chat_item_pattern = re.compile(CHAT_ITEM_PATTERN)
         self.ping_pattern = re.compile(PING_PATTERN)
 
-    def _send(self, s: socket.socket, msg: IrcMessage, payload: Optional[str] = None) -> None:
+    def _send(self, s: socket.socket, msg: IrcMessage, payload: str | None = None) -> None:
         text = msg.name
         if payload:
             text += f" {payload}"

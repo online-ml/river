@@ -6,11 +6,28 @@ some models the model's type is only known at runtime. For instance, we can't do
 thus provides utilities for determining an arbitrary model's type.
 
 """
+from __future__ import annotations
+
 import inspect
 
 from river import base
 
 # TODO: maybe all of this could be done by monkeypatching isintance for pipelines?
+
+
+__all__ = [
+    "extract_relevant",
+    "isactivelearner",
+    "isanomalydetector",
+    "isanomalyfilter",
+    "isclassifier",
+    "isclusterer",
+    "isdriftdetector",
+    "ismoclassifier",
+    "ismoregressor",
+    "isregressor",
+    "istransformer",
+]
 
 
 def extract_relevant(model: base.Estimator):

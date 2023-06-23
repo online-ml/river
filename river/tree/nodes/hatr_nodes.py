@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 import math
-import typing
 
 from river import stats as st
 from river.utils.random import poisson
@@ -111,7 +112,7 @@ class AdaBranchRegressor(DTBranch):
 
         self._error_tracker = st.Var()
 
-    def traverse(self, x, until_leaf=True) -> typing.List[HTLeaf]:  # type: ignore
+    def traverse(self, x, until_leaf=True) -> list[HTLeaf]:  # type: ignore
         """Return the leaves corresponding to the given input.
 
         Alternate subtree leaves are also included.
@@ -124,7 +125,7 @@ class AdaBranchRegressor(DTBranch):
             Whether or not branch nodes can be returned in case of missing features or emerging
             feature categories.
         """
-        found_nodes: typing.List[HTLeaf] = []
+        found_nodes: list[HTLeaf] = []
         for node in self.walk(x, until_leaf=until_leaf):
             if isinstance(node, AdaBranchRegressor) and node._alternate_tree:
                 if isinstance(node._alternate_tree, AdaBranchRegressor):

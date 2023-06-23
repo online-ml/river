@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import collections
 import itertools
 import random
@@ -80,8 +82,8 @@ class KSWIN(DriftDetector):
         alpha: float = 0.005,
         window_size: int = 100,
         stat_size: int = 30,
-        seed: int = None,
-        window: typing.Iterable = None,
+        seed: int | None = None,
+        window: typing.Iterable | None = None,
     ):
         super().__init__()
         if alpha < 0 or alpha > 1:
@@ -107,7 +109,7 @@ class KSWIN(DriftDetector):
         super()._reset()
         self.p_value = 0
         self.n = 0
-        self.window: typing.Deque = collections.deque(maxlen=self.window_size)
+        self.window: collections.deque = collections.deque(maxlen=self.window_size)
         self._rng = random.Random(self.seed)
 
     def update(self, x):

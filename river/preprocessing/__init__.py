@@ -6,6 +6,8 @@ one-hot encoding categorical features. The difference with the `feature_extracti
 the latter extracts new information from the data
 
 """
+from __future__ import annotations
+
 from .feature_hasher import FeatureHasher
 from .impute import PreviousImputer, StatImputer
 from .lda import LDA
@@ -20,8 +22,8 @@ from .scale import (
     Normalizer,
     RobustScaler,
     StandardScaler,
-    TargetStandardScaler,
 )
+from .scale_target import TargetMinMaxScaler, TargetStandardScaler
 
 __all__ = [
     "AdaptiveStandardScaler",
@@ -39,5 +41,6 @@ __all__ = [
     "SparseRandomProjector",
     "StandardScaler",
     "StatImputer",
+    "TargetMinMaxScaler",
     "TargetStandardScaler",
 ]

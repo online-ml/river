@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from scipy import integrate
 
 from river import metrics, utils

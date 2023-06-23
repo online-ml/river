@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import collections
 import numbers
 import typing
@@ -110,8 +112,8 @@ class RollingMode(stats.base.RollingUnivariate):
     """
 
     def __init__(self, window_size: int):
-        self.window: typing.Deque[numbers.Number] = collections.deque(maxlen=window_size)
-        self.counts: typing.DefaultDict[typing.Any, int] = collections.defaultdict(int)
+        self.window: collections.deque[numbers.Number] = collections.deque(maxlen=window_size)
+        self.counts: collections.defaultdict[typing.Any, int] = collections.defaultdict(int)
 
     @property
     def window_size(self):

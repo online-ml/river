@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 from copy import deepcopy
-from typing import List
 
 from river import base, metrics
 from river.model_selection.base import ModelSelectionRegressor
@@ -48,7 +49,9 @@ class GreedyRegressor(ModelSelectionRegressor):
 
     """
 
-    def __init__(self, models: List[base.Regressor], metric: metrics.base.RegressionMetric = None):
+    def __init__(
+        self, models: list[base.Regressor], metric: metrics.base.RegressionMetric | None = None
+    ):
         if metric is None:
             metric = metrics.MAE()
         super().__init__(models, metric)  # type: ignore

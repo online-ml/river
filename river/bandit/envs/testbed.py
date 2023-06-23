@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import math
 
 import gym
@@ -29,16 +31,16 @@ class KArmedTestbed(gym.Env):
     def reset(self, seed=None, options=None):
         super().reset(seed=seed)
         self._actual_rewards = self.np_random.normal(loc=0, scale=1, size=self.k).tolist()
-        self._best_action = max(enumerate(self._actual_rewards), key=lambda x: x[1])[0]
-        observation = self._best_action
+        self._best_arm = max(enumerate(self._actual_rewards), key=lambda x: x[1])[0]
+        observation = self._best_arm
         info = {}
         return observation, info
 
-    def step(self, action):
-        arm_reward = self._actual_rewards[action]
+    def step(self, arm):
+        arm_reward = self._actual_rewards[arm]
         reward = self.np_random.normal(loc=arm_reward, scale=1)
 
-        observation = self._best_action
+        observation = self._best_arm
         info = {}
         terminated = False
         truncated = False

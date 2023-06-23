@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 import abc
-import typing
 
 from river import base, utils
 from river.metrics.base import Metric
@@ -26,39 +27,29 @@ class MultiOutputClassificationMetric(MultiOutputMetric):
 
     _fmt = ".2%"
 
-    def __init__(self, cm: MultiLabelConfusionMatrix = None):
+    def __init__(self, cm: MultiLabelConfusionMatrix | None = None):
         if cm is None:
             cm = MultiLabelConfusionMatrix()
         self.cm = cm
 
     def update(
         self,
-        y_true: typing.Dict[typing.Union[str, int], base.typing.ClfTarget],
-        y_pred: typing.Union[
-            typing.Dict[typing.Union[str, int], base.typing.ClfTarget],
-            typing.Dict[
-                typing.Union[str, int],
-                typing.Dict[base.typing.ClfTarget, float],
-            ],
-        ],
+        y_true: dict[str | int, base.typing.ClfTarget],
+        y_pred: dict[str | int, base.typing.ClfTarget]
+        | dict[str | int, dict[base.typing.ClfTarget, float]],
         sample_weight=1.0,
-    ) -> "MultiOutputClassificationMetric":
+    ) -> MultiOutputClassificationMetric:
         """Update the metric."""
         self.cm.update(y_true, y_pred, sample_weight)
         return self
 
     def revert(
         self,
-        y_true: typing.Dict[typing.Union[str, int], base.typing.ClfTarget],
-        y_pred: typing.Union[
-            typing.Dict[typing.Union[str, int], base.typing.ClfTarget],
-            typing.Dict[
-                typing.Union[str, int],
-                typing.Dict[base.typing.ClfTarget, float],
-            ],
-        ],
+        y_true: dict[str | int, base.typing.ClfTarget],
+        y_pred: dict[str | int, base.typing.ClfTarget]
+        | dict[str | int, dict[base.typing.ClfTarget, float]],
         sample_weight=1.0,
-    ) -> "MultiOutputClassificationMetric":
+    ) -> MultiOutputClassificationMetric:
         """Revert the metric."""
         self.cm.revert(y_true, y_pred, sample_weight)
         return self
@@ -81,17 +72,17 @@ class MultiOutputRegressionMetric(Metric):
     @abc.abstractmethod
     def update(
         self,
-        y_true: typing.Dict[typing.Union[str, int], typing.Union[float, int]],
-        y_pred: typing.Dict[typing.Union[str, int], typing.Union[float, int]],
-    ) -> "MultiOutputRegressionMetric":
+        y_true: dict[str | int, float | int],
+        y_pred: dict[str | int, float | int],
+    ) -> MultiOutputRegressionMetric:
         """Update the metric."""
 
     @abc.abstractmethod
     def revert(
         self,
-        y_true: typing.Dict[typing.Union[str, int], typing.Union[float, int]],
-        y_pred: typing.Dict[typing.Union[str, int], typing.Union[float, int]],
-    ) -> "MultiOutputRegressionMetric":
+        y_true: dict[str | int, float | int],
+        y_pred: dict[str | int, float | int],
+    ) -> MultiOutputRegressionMetric:
         """Revert the metric."""
 
     def works_with(self, model) -> bool:

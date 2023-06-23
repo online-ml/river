@@ -1,8 +1,9 @@
+from __future__ import annotations
+
 import collections
 import functools
 import io
 import math
-import typing
 from abc import ABC, abstractmethod
 
 from river import base
@@ -47,7 +48,7 @@ class HoeffdingTree(ABC):
 
     def __init__(
         self,
-        max_depth: int = None,
+        max_depth: int | None = None,
         binary_split: bool = False,
         max_size: float = 100.0,
         memory_estimate_period: int = 1000000,
@@ -68,7 +69,7 @@ class HoeffdingTree(ABC):
         self.remove_poor_attrs: bool = remove_poor_attrs
         self.merit_preprune: bool = merit_preprune
 
-        self._root: typing.Union[DTBranch, HTLeaf] = None  # type: ignore
+        self._root: DTBranch | HTLeaf = None  # type: ignore
         self._n_active_leaves: int = 0
         self._n_inactive_leaves: int = 0
         self._inactive_leaf_size_estimate: float = 0.0
@@ -177,9 +178,7 @@ class HoeffdingTree(ABC):
         if self._root is not None and isinstance(self._root, DTBranch):
             return self._root.to_dataframe()
 
-    def _branch_selector(
-        self, numerical_feature=True, multiway_split=False
-    ) -> typing.Type[DTBranch]:
+    def _branch_selector(self, numerical_feature=True, multiway_split=False) -> type[DTBranch]:
         """Create a new split node."""
         if numerical_feature:
             if not multiway_split:
@@ -194,7 +193,7 @@ class HoeffdingTree(ABC):
 
     @abstractmethod
     def _new_leaf(
-        self, initial_stats: dict = None, parent: typing.Union[HTLeaf, DTBranch] = None
+        self, initial_stats: dict | None = None, parent: HTLeaf | DTBranch | None = None
     ) -> HTLeaf:
         """Create a new learning node.
 
@@ -316,7 +315,7 @@ class HoeffdingTree(ABC):
             self._n_inactive_leaves += 1
             self._n_active_leaves -= 1
 
-    def _find_leaves(self) -> typing.List[HTLeaf]:
+    def _find_leaves(self) -> list[HTLeaf]:
         """Find learning nodes in the tree.
 
         Returns
@@ -326,7 +325,7 @@ class HoeffdingTree(ABC):
         return [leaf for leaf in self._root.iter_leaves()]
 
     # Adapted from creme's original implementation
-    def debug_one(self, x: dict) -> typing.Union[str, None]:
+    def debug_one(self, x: dict) -> str | None:
         """Print an explanation of how `x` is predicted.
 
         Parameters
@@ -365,7 +364,7 @@ class HoeffdingTree(ABC):
 
         return buffer.getvalue()
 
-    def draw(self, max_depth: int = None):
+    def draw(self, max_depth: int | None = None):
         """Draw the tree using the `graphviz` library.
 
         Since the tree is drawn without passing incoming samples, classification trees
@@ -444,7 +443,7 @@ class HoeffdingTree(ABC):
 
         # Pick a color palette which maps classes to colors
         new_color = functools.partial(next, iter(_color_brew(n_colors)))
-        palette: typing.DefaultDict = collections.defaultdict(new_color)
+        palette: collections.defaultdict = collections.defaultdict(new_color)
 
         for parent_no, parent, child, child_no, branch_index in iterate():
             if child.depth > max_depth and max_depth != -1:
@@ -481,7 +480,7 @@ class HoeffdingTree(ABC):
 
 
 # Utility adapted from the original creme's implementation
-def _color_brew(n: int) -> typing.List[typing.Tuple[int, int, int]]:
+def _color_brew(n: int) -> list[tuple[int, int, int]]:
     """Generate n colors with equally spaced hues.
 
     Parameters
@@ -527,6 +526,8 @@ def _color_brew(n: int) -> typing.List[typing.Tuple[int, int, int]]:
 
 
 # Utility adapted from the original creme's implementation
-def transparency_hex(color: typing.Tuple[int, int, int], alpha: float) -> str:
+def transparency_hex(color: tuple[int, int, int], alpha: float) -> str:
     """Apply alpha coefficient on hexadecimal color."""
-    return "#%02x%02x%02x" % tuple([int(round(alpha * c + (1 - alpha) * 255, 0)) for c in color])
+    return "#{:02x}{:02x}{:02x}".format(
+        *tuple([int(round(alpha * c + (1 - alpha) * 255, 0)) for c in color])
+    )

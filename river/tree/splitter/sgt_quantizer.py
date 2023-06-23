@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 import math
-import typing
 
 from river import stats
 
@@ -36,7 +37,7 @@ class DynamicQuantizer(Quantizer):
         self.std_prop = std_prop
 
         self.feat_var = stats.Var()
-        self.hash: typing.Dict[int, GradHessStats] = {}
+        self.hash: dict[int, GradHessStats] = {}
 
     def update(self, x_val, gh: GradHess, w: float):
         self.feat_var.update(x_val, w)
@@ -95,7 +96,7 @@ class StaticQuantizer(Quantizer):
 
     """
 
-    def __init__(self, n_bins: int = 64, warm_start: int = 100, *, buckets: typing.List = None):
+    def __init__(self, n_bins: int = 64, warm_start: int = 100, *, buckets: list | None = None):
         super().__init__()
 
         self.n_bins = n_bins
@@ -103,7 +104,7 @@ class StaticQuantizer(Quantizer):
         self.buckets = buckets
 
         if self.buckets is None:
-            self._buffer: typing.List[typing.Tuple] = []
+            self._buffer: list[tuple] = []
             self._min = None
             self._radius = None
         else:

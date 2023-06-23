@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+
 def check_roc_auc(anomaly_detector, dataset):
     """The ROC AUC should always be above 50%."""
 

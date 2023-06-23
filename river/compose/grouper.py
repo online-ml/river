@@ -1,7 +1,8 @@
+from __future__ import annotations
+
 import collections
 import copy
 import functools
-import typing
 
 from river import base
 
@@ -28,11 +29,11 @@ class Grouper(base.Transformer):
     def __init__(
         self,
         transformer: base.Transformer,
-        by: typing.Union[base.typing.FeatureName, typing.List[base.typing.FeatureName]],
+        by: base.typing.FeatureName | list[base.typing.FeatureName],
     ):
         self.transformer = transformer
         self.by = by if isinstance(by, list) else [by]
-        self.transformers: typing.DefaultDict = collections.defaultdict(
+        self.transformers: collections.defaultdict = collections.defaultdict(
             functools.partial(copy.deepcopy, transformer)
         )
 

@@ -3,6 +3,8 @@
 The module includes tools to iterate over data streams.
 
 """
+from __future__ import annotations
+
 from .cache import Cache
 from .iter_arff import iter_arff
 from .iter_array import iter_array

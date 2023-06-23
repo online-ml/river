@@ -1,7 +1,8 @@
+from __future__ import annotations
+
 import collections
 import copy
 import math
-import typing
 from abc import ABCMeta
 
 from river import base, utils
@@ -151,8 +152,8 @@ class DBSTREAM(base.Clusterer):
         self._centers: typing.Dict = {}
         self._micro_clusters: typing.Dict[int, "DBSTREAMMicroCluster"] = {}
 
-        self.s: typing.Dict[int, typing.Dict[int, float]] = {}
-        self.s_t: typing.Dict[int, typing.Dict[int, float]] = {}
+        self.s: dict[int, dict[int, float]] = {}
+        self.s_t: dict[int, dict[int, float]] = {}
 
         self.clustering_is_up_to_date = False
 

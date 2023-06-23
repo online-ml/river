@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from numpy.distutils.misc_util import Configuration
 
 

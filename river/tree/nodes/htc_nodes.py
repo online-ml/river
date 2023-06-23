@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+from river.tree.utils import BranchFactory
 from river.utils.norm import normalize_values_in_dict
 
 from ..splitter.nominal_splitter_classif import NominalSplitterClassif
@@ -47,6 +50,15 @@ class LeafMajorityClass(HTLeaf):
 
         """
         return sum(self.stats.values()) if self.stats else 0
+
+    def best_split_suggestions(self, criterion, tree) -> list[BranchFactory]:
+        maj_class = max(self.stats.values())
+        # Only perform split attempts when the majority class does not dominate
+        # the amount of observed instances
+        if maj_class and maj_class / self.total_weight > tree.max_share_to_split:
+            return [BranchFactory()]
+
+        return super().best_split_suggestions(criterion, tree)
 
     def calculate_promise(self):
         """Calculate how likely a node is going to be split.

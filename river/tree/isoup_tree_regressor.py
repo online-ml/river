@@ -1,4 +1,5 @@
-import typing
+from __future__ import annotations
+
 from copy import deepcopy
 
 from river import base, tree
@@ -91,7 +92,7 @@ class iSOUPTreeRegressor(tree.HoeffdingTreeRegressor, base.MultiTargetRegressor)
     >>> dataset = datasets.SolarFlare()
 
     >>> num = compose.SelectType(numbers.Number) | preprocessing.MinMaxScaler()
-    >>> cat = compose.SelectType(str) | preprocessing.OneHotEncoder(sparse=False)
+    >>> cat = compose.SelectType(str) | preprocessing.OneHotEncoder()
 
     >>> model = tree.iSOUPTreeRegressor(
     ...     grace_period=100,
@@ -114,14 +115,14 @@ class iSOUPTreeRegressor(tree.HoeffdingTreeRegressor, base.MultiTargetRegressor)
     def __init__(
         self,
         grace_period: int = 200,
-        max_depth: int = None,
+        max_depth: int | None = None,
         delta: float = 1e-7,
         tau: float = 0.05,
         leaf_prediction: str = "adaptive",
-        leaf_model: typing.Union[base.Regressor, typing.Dict] = None,
+        leaf_model: base.Regressor | dict | None = None,
         model_selector_decay: float = 0.95,
-        nominal_attributes: list = None,
-        splitter: Splitter = None,
+        nominal_attributes: list | None = None,
+        splitter: Splitter | None = None,
         min_samples_split: int = 5,
         binary_split: bool = False,
         max_size: float = 500.0,
@@ -206,7 +207,7 @@ class iSOUPTreeRegressor(tree.HoeffdingTreeRegressor, base.MultiTargetRegressor)
 
             return new_adaptive
 
-    def learn_one(self, x, y, *, sample_weight: float = 1.0) -> "iSOUPTreeRegressor":  # type: ignore
+    def learn_one(self, x, y, *, sample_weight: float = 1.0) -> iSOUPTreeRegressor:  # type: ignore
         """Incrementally train the model with one sample.
 
         Training tasks:

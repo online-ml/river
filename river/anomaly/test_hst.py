@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+
 def test_missing_features():
     """Checks that HalfSpaceTrees works even if a feature is missing.
 

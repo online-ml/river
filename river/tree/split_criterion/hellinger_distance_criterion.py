@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import math
 
 from .base import SplitCriterion
@@ -17,14 +19,12 @@ class HellingerDistanceCriterion(SplitCriterion):
     and Knowledge Discovery 24, no. 1 (2012): 136-158.
     """
 
-    def __init__(self, min_branch_frac_option=0.01):
+    def __init__(self, min_branch_fraction):
         super().__init__()
-        self.min_branch_frac_option = min_branch_frac_option
-        self.lowest_entropy = None
-        self.best_idx = 0
+        self.min_branch_fraction = min_branch_fraction
 
     def merit_of_split(self, pre_split_dist, post_split_dist):
-        if self.num_subsets_greater_than_frac(post_split_dist, self.min_branch_frac_option) < 2:
+        if self.num_subsets_greater_than_frac(post_split_dist, self.min_branch_fraction) < 2:
             return -math.inf
         return self.compute_hellinger(post_split_dist)
 

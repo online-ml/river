@@ -1,7 +1,8 @@
+from __future__ import annotations
+
 import collections
 import functools
 import random
-import typing
 
 from river import base
 
@@ -86,7 +87,7 @@ class KMeans(base.Clusterer):
 
     """
 
-    def __init__(self, n_clusters=5, halflife=0.5, mu=0, sigma=1, p=2, seed: int = None):
+    def __init__(self, n_clusters=5, halflife=0.5, mu=0, sigma=1, p=2, seed: int | None = None):
         self.n_clusters = n_clusters
         self.halflife = halflife
         self.mu = mu
@@ -95,7 +96,7 @@ class KMeans(base.Clusterer):
         self.seed = seed
         self._rng = random.Random(seed)
         rand_gauss = functools.partial(self._rng.gauss, self.mu, self.sigma)
-        self.centers: typing.Dict[int, typing.DefaultDict] = {
+        self.centers: dict[int, collections.defaultdict] = {
             i: collections.defaultdict(rand_gauss) for i in range(n_clusters)
         }
 

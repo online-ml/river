@@ -1,4 +1,5 @@
 """Utilities for unit testing and sanity checking estimators."""
+from __future__ import annotations
 
 import functools
 import typing
@@ -123,6 +124,7 @@ def yield_checks(model: Estimator) -> typing.Iterator[typing.Callable]:
     yield common.check_repr
     yield common.check_str
     yield common.check_tags
+    yield common.check_clone_same_class
     yield common.check_clone_is_idempotent
     yield common.check_init_has_default_params_for_tests
     yield common.check_init_default_params_are_not_mutable
@@ -174,7 +176,7 @@ def yield_checks(model: Estimator) -> typing.Iterator[typing.Callable]:
 
 
 def check_estimator(model: Estimator):
-    """Check if a model adheres to `river`'s conventions.
+    """Check if a model adheres to River's conventions.
 
     This will run a series of unit tests. The nature of the unit tests depends on the type of
     model.

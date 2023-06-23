@@ -27,6 +27,10 @@
   <a href="https://pepy.tech/project/river">
     <img src="https://static.pepy.tech/badge/river?style=flat-square" alt="pepy">
   </a>
+  <!-- Black -->
+  <a href="https://github.com/psf/black">
+    <img src="https://img.shields.io/badge/code%20style-black-000000.svg" alt="black">
+  </a>
   <!-- Mypy -->
   <a href="http://mypy-lang.org/">
     <img src="http://www.mypy-lang.org/static/mypy_badge.svg" alt="mypy">
@@ -121,20 +125,32 @@ pip install git+ssh://git@github.com/online-ml/river.git --upgrade
 
 ## 🔮 Features
 
-- Linear models with a wide array of optimizers
-- Nearest neighbors, decision trees, naïve Bayes
+River provides online implementations of the following family of algorithms:
+
+- Linear models, with a wide array of optimizers
+- Decision trees and random forests
+- (Approximate) nearest neighbors
 - Anomaly detection
 - Drift detection
 - Recommender systems
 - Time series forecasting
+- Bandits
+- Factorization machines
 - Imbalanced learning
 - Clustering
+- Bagging/boosting/stacking
+- Active learning
+
+River also provides other online utilities:
+
 - Feature extraction and selection
 - Online statistics and metrics
+- Preprocessing
 - Built-in datasets
 - Progressive model validation
-- Model pipelines as a first-class citizen
-- Check out [the API](https://riverml.xyz/latest/api/overview/) for a comprehensive overview
+- Model pipelines
+
+Check out [the API](https://riverml.xyz/latest/api/overview/) for a comprehensive overview
 
 ## 🤔 Should I be using River?
 
@@ -176,7 +192,7 @@ Please check out the [contribution guidelines](https://github.com/online-ml/rive
 
 ## 💬 Citation
 
-If River has been useful to you and you would like to cite it in an scientific publication, please refer to the [paper](https://www.jmlr.org/papers/volume22/20-1380/20-1380.pdf) published at JMLR:
+If River has been useful to you, and you would like to cite it in a scientific publication, please refer to the [paper](https://www.jmlr.org/papers/volume22/20-1380/20-1380.pdf) published at JMLR:
 
 ```bibtex
 @article{montiel2021river,
