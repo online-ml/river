@@ -5,6 +5,10 @@
 - Added `bandit.BayesUCB`.
 - Added `bandit.evaluate_offline`, for evaluating bandits on historical (logged) data.
 
+## cluster
+
+- `DBStream` will now only recluster on demand, rather than at every call to `learn_one`.
+
 ## compat
 
 - The `predict_many` method scikit-learn models wrapped with `compat.convert_sklearn_to_river` raised an exception if the model had not been fitted on any data yet. Instead, default predictions will be produced, which is consistent with the rest of River.
@@ -35,9 +39,9 @@
 ## tree
 
 - Expose the `min_branch_fraction` parameter to avoid splits where most of the data goes to a single branch. Affects
-classification trees.
+  classification trees.
 - Added the `max_share_to_split` parameter to Hoeffding Tree classifiers. This parameters avoids splitting when the majority
-class has most of the data.
+  class has most of the data.
 
 ## utils
 

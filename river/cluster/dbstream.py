@@ -75,7 +75,6 @@ class DBSTREAM(base.Clusterer):
         relative to the area cover by micro clusters. This parameter is used to determine
         whether a micro cluster or a shared density is weak.
 
-
     Attributes
     ----------
     n_clusters
@@ -111,11 +110,13 @@ class DBSTREAM(base.Clusterer):
     ...     [4, 1.5], [4, 2.25], [4, 2.5], [4, 3], [4, 3.25], [4, 3.5]
     ... ]
 
-    >>> dbstream = cluster.DBSTREAM(clustering_threshold = 1.5,
-    ...                             fading_factor = 0.05,
-    ...                             cleanup_interval = 4,
-    ...                             intersection_factor = 0.5,
-    ...                             minimum_weight = 1)
+    >>> dbstream = cluster.DBSTREAM(
+    ...     clustering_threshold=1.5,
+    ...     fading_factor=0.05,
+    ...     cleanup_interval=4,
+    ...     intersection_factor=0.5,
+    ...     minimum_weight=1
+    ... )
 
     >>> for x, _ in stream.iter_array(X):
     ...     dbstream = dbstream.learn_one(x)
@@ -128,6 +129,7 @@ class DBSTREAM(base.Clusterer):
 
     >>> dbstream._n_clusters
     2
+
     """
 
     def __init__(
@@ -148,9 +150,9 @@ class DBSTREAM(base.Clusterer):
         self.minimum_weight = minimum_weight
 
         self._n_clusters: int = 0
-        self._clusters: typing.Dict[int, "DBSTREAMMicroCluster"] = {}
+        self._clusters: typing.Dict[int, DBSTREAMMicroCluster] = {}
         self._centers: typing.Dict = {}
-        self._micro_clusters: typing.Dict[int, "DBSTREAMMicroCluster"] = {}
+        self._micro_clusters: typing.Dict[int, DBSTREAMMicroCluster] = {}
 
         self.s: dict[int, dict[int, float]] = {}
         self.s_t: dict[int, dict[int, float]] = {}
@@ -405,7 +407,7 @@ class DBSTREAM(base.Clusterer):
         return self._n_clusters
 
     @property
-    def clusters(self) -> typing.Dict[int, "DBSTREAMMicroCluster"]:
+    def clusters(self) -> typing.Dict[int, DBSTREAMMicroCluster]:
         self._recluster()
         return self._clusters
 
@@ -415,7 +417,7 @@ class DBSTREAM(base.Clusterer):
         return self._centers
 
     @property
-    def micro_clusters(self) -> typing.Dict[int, "DBSTREAMMicroCluster"]:
+    def micro_clusters(self) -> typing.Dict[int, DBSTREAMMicroCluster]:
         return self._micro_clusters
 
 
