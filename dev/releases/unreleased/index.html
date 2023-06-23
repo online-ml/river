@@ -21,7 +21,7 @@
         <link rel="next" href="../0.17.0/">
       
       <link rel="icon" href="../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.15">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.16">
     
     
       
@@ -11036,6 +11036,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#cluster" class="md-nav__link">
+    cluster
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#compat" class="md-nav__link">
     compat
   </a>
@@ -11066,6 +11073,13 @@
         <li class="md-nav__item">
   <a href="#proba" class="md-nav__link">
     proba
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tree" class="md-nav__link">
+    tree
   </a>
   
 </li>
@@ -11693,6 +11707,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#cluster" class="md-nav__link">
+    cluster
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#compat" class="md-nav__link">
     compat
   </a>
@@ -11728,6 +11749,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#tree" class="md-nav__link">
+    tree
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#utils" class="md-nav__link">
     utils
   </a>
@@ -11755,6 +11783,10 @@
 <li>Added <a href="../../api/bandit/BayesUCB"><code>bandit.BayesUCB</code></a>.</li>
 <li>Added <a href="../../api/bandit/evaluate-offline"><code>bandit.evaluate_offline</code></a>, for evaluating bandits on historical (logged) data.</li>
 </ul>
+<h2 id="cluster">cluster<a class="headerlink" href="#cluster" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>DBStream</code> will now only recluster on demand, rather than at every call to <code>learn_one</code>.</li>
+</ul>
 <h2 id="compat">compat<a class="headerlink" href="#compat" title="Permanent link">&para;</a></h2>
 <ul>
 <li>The <code>predict_many</code> method scikit-learn models wrapped with <a href="../../api/compat/convert-sklearn-to-river"><code>compat.convert_sklearn_to_river</code></a> raised an exception if the model had not been fitted on any data yet. Instead, default predictions will be produced, which is consistent with the rest of River.</li>
@@ -11768,8 +11800,8 @@
 </ul>
 <h2 id="neighbors">neighbors<a class="headerlink" href="#neighbors" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Add <a href="../../api/neighbors/SWINN"><code>neighbors.SWINN</code></a> to power-up approximate nearest neighbor search. SWINN uses graphs to speed up nearest neighbor search in large sliding windows of data.</li>
-<li>Rename <code>neighbors.NearestNeighbors</code> to <a href="../../api/neighbors/LazySearch"><code>neighbors.LazySearch</code></a>.</li>
+<li>Added <a href="../../api/neighbors/SWINN"><code>neighbors.SWINN</code></a> to power-up approximate nearest neighbor search. SWINN uses graphs to speed up nearest neighbor search in large sliding windows of data.</li>
+<li>Renamed <code>neighbors.NearestNeighbors</code> to <a href="../../api/neighbors/LazySearch"><code>neighbors.LazySearch</code></a>.</li>
 <li>Standardize and create base classes for generic nearest neighbor search utilities.</li>
 <li>The user can now select the nearest neighbor search engine to use in <a href="../../api/neighbors/KNNClassifier"><code>neighbors.KNNClassifier</code></a> and <a href="../../api/neighbors/KNNRegressor"><code>neighbors.KNNRegressor</code></a>.</li>
 </ul>
@@ -11781,6 +11813,13 @@
 <h2 id="proba">proba<a class="headerlink" href="#proba" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Added a <code>cdf</code> method to <a href="../../api/proba/Beta"><code>proba.Beta</code></a>.</li>
+</ul>
+<h2 id="tree">tree<a class="headerlink" href="#tree" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Expose the <code>min_branch_fraction</code> parameter to avoid splits where most of the data goes to a single branch. Affects
+  classification trees.</li>
+<li>Added the <code>max_share_to_split</code> parameter to Hoeffding Tree classifiers. This parameters avoids splitting when the majority
+  class has most of the data.</li>
 </ul>
 <h2 id="utils">utils<a class="headerlink" href="#utils" title="Permanent link">&para;</a></h2>
 <ul>
@@ -11854,25 +11893,43 @@
     <script id="__config" type="application/json">{"base": "../..", "features": ["content.code.copy", "navigation.tabs", "navigation.instant", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.b4d07000.min.js"></script>
+      <script src="../../assets/javascripts/bundle.a51614de.min.js"></script>
       
-        <script src="../../js/mkdocs-charts-plugin.js"></script>
+        
+          <script src="../../js/mkdocs-charts-plugin.js"></script>
+        
       
-        <script src="../../javascripts/config.js"></script>
+        
+          <script src="../../javascripts/config.js"></script>
+        
       
-        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+        
+          <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+        
       
-        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        
+          <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        
       
-        <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+        
+          <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+        
       
-        <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
+        
+          <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
+        
       
-        <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+        
+          <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+        
       
-        <script src="https://unpkg.com/tablesort@5.3.0/dist/tablesort.min.js"></script>
+        
+          <script src="https://unpkg.com/tablesort@5.3.0/dist/tablesort.min.js"></script>
+        
       
-        <script src="../../javascripts/tablesort.js"></script>
+        
+          <script src="../../javascripts/tablesort.js"></script>
+        
       
     
   </body>

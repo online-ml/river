@@ -21,7 +21,7 @@
         <link rel="next" href="../ARFRegressor/">
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.15">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.16">
     
     
       
@@ -11828,6 +11828,18 @@
 <p>[<em>Tree parameter</em>] If True, only allow binary splits.</p>
 </li>
 <li>
+<p><strong>min_branch_fraction</strong></p>
+<p><em>Type</em> → <em>float</em></p>
+<p><em>Default</em> → <code>0.01</code></p>
+<p>[<em>Tree parameter</em>] The minimum percentage of observed data required for branches resulting from split candidates. To validate a split candidate, at least two resulting branches must have a percentage of samples greater than <code>min_branch_fraction</code>. This criterion prevents unnecessary splits when the majority of instances are concentrated in a single branch.</p>
+</li>
+<li>
+<p><strong>max_share_to_split</strong></p>
+<p><em>Type</em> → <em>float</em></p>
+<p><em>Default</em> → <code>0.99</code></p>
+<p>[<em>Tree parameter</em>] Only perform a split in a leaf if the proportion of elements in the majority class is smaller than this parameter value. This parameter avoids performing splits when most of the data belongs to a single class.</p>
+</li>
+<li>
 <p><strong>max_size</strong></p>
 <p><em>Type</em> → <em>float</em></p>
 <p><em>Default</em> → <code>100.0</code></p>
@@ -11994,25 +12006,43 @@
     <script id="__config" type="application/json">{"base": "../../..", "features": ["content.code.copy", "navigation.tabs", "navigation.instant", "navigation.indexes"], "search": "../../../assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.b4d07000.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.a51614de.min.js"></script>
       
-        <script src="../../../js/mkdocs-charts-plugin.js"></script>
+        
+          <script src="../../../js/mkdocs-charts-plugin.js"></script>
+        
       
-        <script src="../../../javascripts/config.js"></script>
+        
+          <script src="../../../javascripts/config.js"></script>
+        
       
-        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+        
+          <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+        
       
-        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        
+          <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        
       
-        <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+        
+          <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+        
       
-        <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
+        
+          <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
+        
       
-        <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+        
+          <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+        
       
-        <script src="https://unpkg.com/tablesort@5.3.0/dist/tablesort.min.js"></script>
+        
+          <script src="https://unpkg.com/tablesort@5.3.0/dist/tablesort.min.js"></script>
+        
       
-        <script src="../../../javascripts/tablesort.js"></script>
+        
+          <script src="../../../javascripts/tablesort.js"></script>
+        
       
     
   </body>
