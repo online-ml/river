@@ -3,6 +3,7 @@ from __future__ import annotations
 import collections
 import copy
 import math
+import typing
 from abc import ABCMeta
 
 from river import base, utils
