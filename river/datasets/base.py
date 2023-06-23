@@ -276,7 +276,7 @@ class RemoteDataset(FileDataset):
                 try:
                     n_bytes = int(meta["Content-Length"])
                     msg = f"Downloading {self.url} ({utils.pretty.humanize_bytes(n_bytes)})"
-                except KeyError:
+                except (KeyError, TypeError):
                     msg = f"Downloading {self.url}"
                 print(msg)
 
