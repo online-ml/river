@@ -597,8 +597,7 @@ class Pipeline(base.Estimator):
         x, last_step = self._transform_one(x)
 
         if isinstance(last_step, base.Transformer):
-            if not self._STATELESS:
-                if not last_step._supervised:
+            if not self._STATELESS and not last_step._supervised:
                     last_step.learn_one(x)
 
             return last_step.transform_one(x, **params)
