@@ -821,8 +821,7 @@ class Pipeline(base.Estimator):
         """
         X, last_step = self._transform_many(X=X)
         if isinstance(last_step, base.MiniBatchTransformer):
-            if not self._STATELESS:
-                if not last_step._supervised:
+            if not self._STATELESS and not last_step._supervised:
                     last_step.learn_many(X)
             return last_step.transform_many(X)
         return X
