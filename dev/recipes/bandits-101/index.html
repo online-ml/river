@@ -21,7 +21,7 @@
         <link rel="next" href="../cloning-and-mutating/">
       
       <link rel="icon" href="../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.16">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.17">
     
     
       
@@ -304,7 +304,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../releases/unreleased/" class="md-tabs__link">
+      <a href="../../releases/0.18.0/" class="md-tabs__link">
         Releases
       </a>
     </li>
@@ -11043,8 +11043,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../../releases/unreleased/" class="md-nav__link">
-        Unreleased
+      <a href="../../releases/0.18.0/" class="md-nav__link">
+        0.17.0 - 2023-06-26
       </a>
     </li>
   
@@ -11723,9 +11723,9 @@
 <span class="p">))</span>
 <span class="n">trace_df</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>  0%|          | 0/6000000 [00:00&lt;?, ?it/s]/Users/max/.pyenv/versions/3.10/envs/river310/lib/python3.10/site-packages/gym/utils/passive_env_checker.py:233: DeprecationWarning: `np.bool8` is a deprecated alias for `np.bool_`.  (Deprecated NumPy 1.24)
+<div class="language-text highlight"><pre><span></span><code>  0%|                                                                                         | 0/6000000 [00:00&lt;?, ?it/s]/Users/max/.pyenv/versions/3.10/envs/river310/lib/python3.10/site-packages/gym/utils/passive_env_checker.py:233: DeprecationWarning: `np.bool8` is a deprecated alias for `np.bool_`.  (Deprecated NumPy 1.24)
   if not isinstance(terminated, (bool, np.bool8)):
-100%|██████████| 6000000/6000000 [00:36&lt;00:00, 163866.33it/s]
+100%|███████████████████████████████████████████████████████████████████████| 6000000/6000000 [00:35&lt;00:00, 168154.90it/s]
 </code></pre></div>
 <div>
 <style scoped>
@@ -11748,7 +11748,7 @@
       <th>episode</th>
       <th>step</th>
       <th>policy_idx</th>
-      <th>action</th>
+      <th>arm</th>
       <th>reward</th>
       <th>reward_stat</th>
     </tr>
@@ -11759,18 +11759,18 @@
       <td>441</td>
       <td>632</td>
       <td>0</td>
-      <td>4</td>
-      <td>1.215703</td>
-      <td>1.798879</td>
+      <td>2</td>
+      <td>2.080471</td>
+      <td>2.007966</td>
     </tr>
     <tr>
       <th>3566176</th>
       <td>1188</td>
       <td>725</td>
       <td>1</td>
-      <td>8</td>
-      <td>-0.427939</td>
-      <td>0.757612</td>
+      <td>0</td>
+      <td>1.386654</td>
+      <td>1.694128</td>
     </tr>
     <tr>
       <th>1109043</th>
@@ -11778,26 +11778,26 @@
       <td>681</td>
       <td>0</td>
       <td>7</td>
-      <td>0.256075</td>
-      <td>0.908808</td>
+      <td>1.620536</td>
+      <td>1.508527</td>
     </tr>
     <tr>
       <th>4286042</th>
       <td>1428</td>
       <td>680</td>
       <td>2</td>
-      <td>2</td>
-      <td>2.794259</td>
-      <td>1.435460</td>
+      <td>3</td>
+      <td>2.540870</td>
+      <td>1.542765</td>
     </tr>
     <tr>
       <th>5395174</th>
       <td>1798</td>
       <td>391</td>
       <td>1</td>
-      <td>1</td>
-      <td>-0.206970</td>
-      <td>0.709420</td>
+      <td>8</td>
+      <td>2.210705</td>
+      <td>0.575857</td>
     </tr>
   </tbody>
 </table>
@@ -11875,9 +11875,9 @@
 
 <span class="n">trace_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">trace</span><span class="p">)</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>  0%|          | 0/6000000 [00:00&lt;?, ?it/s]/Users/max/.pyenv/versions/3.10/envs/river310/lib/python3.10/site-packages/gym/utils/passive_env_checker.py:233: DeprecationWarning: `np.bool8` is a deprecated alias for `np.bool_`.  (Deprecated NumPy 1.24)
+<div class="language-text highlight"><pre><span></span><code>  0%|                                                                                         | 0/6000000 [00:00&lt;?, ?it/s]/Users/max/.pyenv/versions/3.10/envs/river310/lib/python3.10/site-packages/gym/utils/passive_env_checker.py:233: DeprecationWarning: `np.bool8` is a deprecated alias for `np.bool_`.  (Deprecated NumPy 1.24)
   if not isinstance(terminated, (bool, np.bool8)):
-100%|██████████| 6000000/6000000 [00:36&lt;00:00, 163521.24it/s]
+100%|███████████████████████████████████████████████████████████████████████| 6000000/6000000 [00:35&lt;00:00, 170715.33it/s]
 </code></pre></div>
 <div class="language-python highlight"><pre><span></span><code><span class="n">colors</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s1">&#39;ε = 0.1&#39;</span><span class="p">:</span> <span class="s1">&#39;tab:blue&#39;</span><span class="p">,</span>
@@ -11913,7 +11913,7 @@
         <span class="n">seed</span><span class="o">=</span><span class="mi">42</span>
     <span class="p">),</span>
     <span class="n">bandit</span><span class="o">.</span><span class="n">ThompsonSampling</span><span class="p">(</span>
-        <span class="n">dist</span><span class="o">=</span><span class="n">proba</span><span class="o">.</span><span class="n">Beta</span><span class="p">(),</span>
+        <span class="n">reward_obj</span><span class="o">=</span><span class="n">proba</span><span class="o">.</span><span class="n">Beta</span><span class="p">(),</span>
         <span class="n">seed</span><span class="o">=</span><span class="mi">42</span>
     <span class="p">)</span>
 <span class="p">]</span>
@@ -11935,9 +11935,9 @@
     <span class="p">)</span>
 <span class="p">))</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>  0%|          | 0/180000 [00:00&lt;?, ?it/s]/Users/max/.pyenv/versions/3.10/envs/river310/lib/python3.10/site-packages/gym/utils/passive_env_checker.py:233: DeprecationWarning: `np.bool8` is a deprecated alias for `np.bool_`.  (Deprecated NumPy 1.24)
+<div class="language-text highlight"><pre><span></span><code>  0%|                                                                                          | 0/180000 [00:00&lt;?, ?it/s]/Users/max/.pyenv/versions/3.10/envs/river310/lib/python3.10/site-packages/gym/utils/passive_env_checker.py:233: DeprecationWarning: `np.bool8` is a deprecated alias for `np.bool_`.  (Deprecated NumPy 1.24)
   if not isinstance(terminated, (bool, np.bool8)):
-100%|██████████| 180000/180000 [00:15&lt;00:00, 11881.36it/s]
+100%|██████████████████████████████████████████████████████████████████████████| 180000/180000 [00:14&lt;00:00, 12259.98it/s]
 </code></pre></div>
 <p>We can compare the performance of each policy by checking the average reward at the end of each episode.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="p">(</span>
@@ -11956,7 +11956,7 @@ Name: reward_stat, dtype: float64
 </code></pre></div>
 <p>We see that using a rolling average gives a boost to the epsilon greedy strategy. However, we see that the <a href="../../api/bandit/ThompsonSampling"><code>bandit.ThompsonSampling</code></a> policy performs even better, even though no particular care was given to drift. A natural next step would thus be to see how it could be improved to handle drift. For instance, its <code>dist</code> parameter could be wrapped with a <a href="../../api/utils/Rolling"><code>utils.Rolling</code></a>:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">policy</span> <span class="o">=</span> <span class="n">bandit</span><span class="o">.</span><span class="n">ThompsonSampling</span><span class="p">(</span>
-    <span class="n">dist</span><span class="o">=</span><span class="n">utils</span><span class="o">.</span><span class="n">Rolling</span><span class="p">(</span><span class="n">proba</span><span class="o">.</span><span class="n">Beta</span><span class="p">(),</span> <span class="n">window_size</span><span class="o">=</span><span class="mi">50</span><span class="p">),</span>
+    <span class="n">reward_obj</span><span class="o">=</span><span class="n">utils</span><span class="o">.</span><span class="n">Rolling</span><span class="p">(</span><span class="n">proba</span><span class="o">.</span><span class="n">Beta</span><span class="p">(),</span> <span class="n">window_size</span><span class="o">=</span><span class="mi">50</span><span class="p">),</span>
     <span class="n">seed</span><span class="o">=</span><span class="mi">42</span>
 <span class="p">)</span>
 </code></pre></div>
@@ -12029,7 +12029,7 @@ Name: reward_stat, dtype: float64
     <script id="__config" type="application/json">{"base": "../..", "features": ["content.code.copy", "navigation.tabs", "navigation.instant", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.a51614de.min.js"></script>
+      <script src="../../assets/javascripts/bundle.b425cdc4.min.js"></script>
       
         
           <script src="../../js/mkdocs-charts-plugin.js"></script>

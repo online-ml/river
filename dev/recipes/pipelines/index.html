@@ -21,7 +21,7 @@
         <link rel="next" href="../feature-extraction/">
       
       <link rel="icon" href="../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.16">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.17">
     
     
       
@@ -304,7 +304,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../releases/unreleased/" class="md-tabs__link">
+      <a href="../../releases/0.18.0/" class="md-tabs__link">
         Releases
       </a>
     </li>
@@ -11005,8 +11005,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../../releases/unreleased/" class="md-nav__link">
-        Unreleased
+      <a href="../../releases/0.18.0/" class="md-nav__link">
+        0.17.0 - 2023-06-26
       </a>
     </li>
   
@@ -11648,18 +11648,16 @@
 <p>A pipeline has a <code>draw</code> method that can be used to visualize it:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">model</span>
 </code></pre></div>
-<div><div class="river-component river-pipeline"><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">StandardScaler</pre></summary><code class="river-estimator-params">(
+<div><div class="river-component river-pipeline"><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">StandardScaler</pre></summary><code class="river-estimator-params">StandardScaler (
   with_std=True
 )
-
-</code></details><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">PolynomialExtender</pre></summary><code class="river-estimator-params">(
+</code></details><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">PolynomialExtender</pre></summary><code class="river-estimator-params">PolynomialExtender (
   degree=2
   interaction_only=False
   include_bias=False
   bias_name="bias"
 )
-
-</code></details><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">LinearRegression</pre></summary><code class="river-estimator-params">(
+</code></details><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">LinearRegression</pre></summary><code class="river-estimator-params">LinearRegression (
   optimizer=SGD (
     lr=Constant (
       learning_rate=0.01
@@ -11675,19 +11673,19 @@
   clip_gradient=1e+12
   initializer=Zeros ()
 )
-
 </code></details></div><style scoped>
 .river-estimator {
     padding: 1em;
     border-style: solid;
     background: white;
+    max-width: max-content;
 }
 
 .river-pipeline {
     display: flex;
     flex-direction: column;
     align-items: center;
-    background: linear-gradient(#000, #000) no-repeat center / 3px 100%;
+    background: linear-gradient(#000, #000) no-repeat center / 1.5px 100%;
 }
 
 .river-union {
@@ -11724,6 +11722,10 @@
     margin-top: 0;
 }
 
+.river-union > .river-component {
+    margin-top: 0;
+}
+
 .river-union > .pipeline {
     margin-top: 0;
 }
@@ -11739,8 +11741,8 @@
 .river-estimator-params {
     display: block;
     white-space: pre-wrap;
-    font-size: 120%;
-    margin-bottom: -1em;
+    font-size: 110%;
+    margin-top: 1em;
 }
 
 .river-estimator > .river-estimator-params,
@@ -11748,10 +11750,14 @@
     background-color: white !important;
 }
 
+.river-wrapper > .river-details {
+    margin-bottom: 1em;
+}
+
 .river-estimator-name {
     display: inline;
     margin: 0;
-    font-size: 130%;
+    font-size: 110%;
 }
 
 /* Toggle */
@@ -11775,76 +11781,62 @@
 <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">dataset</span><span class="p">))</span>
 <span class="n">x</span><span class="p">,</span> <span class="n">y</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">
-<span style="font-weight: bold">(</span>
-    <span style="font-weight: bold">{</span>
-        <span style="color: #008000; text-decoration-color: #008000">'ordinal_date'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">736389</span>,
-        <span style="color: #008000; text-decoration-color: #008000">'gallup'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">43.843213</span>,
-        <span style="color: #008000; text-decoration-color: #008000">'ipsos'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">46.19925042857143</span>,
-        <span style="color: #008000; text-decoration-color: #008000">'morning_consult'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">48.318749</span>,
-        <span style="color: #008000; text-decoration-color: #008000">'rasmussen'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">44.104692</span>,
-        <span style="color: #008000; text-decoration-color: #008000">'you_gov'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">43.636914000000004</span>
-    <span style="font-weight: bold">}</span>,
-    <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">43.75505</span>
-<span style="font-weight: bold">)</span>
-</pre>
-
+<div class="language-text highlight"><pre><span></span><code>({&#39;ordinal_date&#39;: 736389,
+  &#39;gallup&#39;: 43.843213,
+  &#39;ipsos&#39;: 46.19925042857143,
+  &#39;morning_consult&#39;: 48.318749,
+  &#39;rasmussen&#39;: 44.104692,
+  &#39;you_gov&#39;: 43.636914000000004},
+ 43.75505)
+</code></pre></div>
 <p>Let us call <code>predict_one</code>, which will update each transformer, but won't update the linear regression.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">model</span><span class="o">.</span><span class="n">predict_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>
-</pre>
-
+<div class="language-text highlight"><pre><span></span><code>0.0
+</code></pre></div>
 <p>The prediction is nil because each weight of the linear regression is equal to 0.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">model</span><span class="p">[</span><span class="s1">&#39;StandardScaler&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">means</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">
-<span style="color: #800080; text-decoration-color: #800080; font-weight: bold">defaultdict</span><span style="font-weight: bold">(&lt;</span><span style="color: #ff00ff; text-decoration-color: #ff00ff; font-weight: bold">class</span><span style="color: #000000; text-decoration-color: #000000"> </span><span style="color: #008000; text-decoration-color: #008000">'float'</span><span style="font-weight: bold">&gt;</span>, <span style="font-weight: bold">{</span>
-    <span style="color: #008000; text-decoration-color: #008000">'ordinal_date'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">736389.0</span>,
-    <span style="color: #008000; text-decoration-color: #008000">'gallup'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">43.843213</span>,
-    <span style="color: #008000; text-decoration-color: #008000">'ipsos'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">46.19925042857143</span>,
-    <span style="color: #008000; text-decoration-color: #008000">'morning_consult'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">48.318749</span>,
-    <span style="color: #008000; text-decoration-color: #008000">'rasmussen'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">44.104692</span>,
-    <span style="color: #008000; text-decoration-color: #008000">'you_gov'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">43.636914000000004</span>
-<span style="font-weight: bold">})</span>
-</pre>
-
+<div class="language-text highlight"><pre><span></span><code>defaultdict(float,
+            {&#39;ordinal_date&#39;: 736389.0,
+             &#39;gallup&#39;: 43.843213,
+             &#39;ipsos&#39;: 46.19925042857143,
+             &#39;morning_consult&#39;: 48.318749,
+             &#39;rasmussen&#39;: 44.104692,
+             &#39;you_gov&#39;: 43.636914000000004})
+</code></pre></div>
 <p>As we can see, the means of each feature have been updated, even though we called <code>predict_one</code> and not <code>learn_one</code>.</p>
 <p>Note that if you call <code>transform_one</code> with a pipeline who's last step is not a transformer, then the output from the last transformer (which is thus the penultimate step) will be returned:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">model</span><span class="o">.</span><span class="n">transform_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">
-<span style="font-weight: bold">{</span>
-    <span style="color: #008000; text-decoration-color: #008000">'ordinal_date'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>,
-    <span style="color: #008000; text-decoration-color: #008000">'gallup'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>,
-    <span style="color: #008000; text-decoration-color: #008000">'ipsos'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>,
-    <span style="color: #008000; text-decoration-color: #008000">'morning_consult'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>,
-    <span style="color: #008000; text-decoration-color: #008000">'rasmussen'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>,
-    <span style="color: #008000; text-decoration-color: #008000">'you_gov'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>,
-    <span style="color: #008000; text-decoration-color: #008000">'ordinal_date*ordinal_date'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>,
-    <span style="color: #008000; text-decoration-color: #008000">'gallup*ordinal_date'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>,
-    <span style="color: #008000; text-decoration-color: #008000">'ipsos*ordinal_date'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>,
-    <span style="color: #008000; text-decoration-color: #008000">'morning_consult*ordinal_date'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>,
-    <span style="color: #008000; text-decoration-color: #008000">'ordinal_date*rasmussen'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>,
-    <span style="color: #008000; text-decoration-color: #008000">'ordinal_date*you_gov'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>,
-    <span style="color: #008000; text-decoration-color: #008000">'gallup*gallup'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>,
-    <span style="color: #008000; text-decoration-color: #008000">'gallup*ipsos'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>,
-    <span style="color: #008000; text-decoration-color: #008000">'gallup*morning_consult'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>,
-    <span style="color: #008000; text-decoration-color: #008000">'gallup*rasmussen'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>,
-    <span style="color: #008000; text-decoration-color: #008000">'gallup*you_gov'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>,
-    <span style="color: #008000; text-decoration-color: #008000">'ipsos*ipsos'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>,
-    <span style="color: #008000; text-decoration-color: #008000">'ipsos*morning_consult'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>,
-    <span style="color: #008000; text-decoration-color: #008000">'ipsos*rasmussen'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>,
-    <span style="color: #008000; text-decoration-color: #008000">'ipsos*you_gov'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>,
-    <span style="color: #008000; text-decoration-color: #008000">'morning_consult*morning_consult'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>,
-    <span style="color: #008000; text-decoration-color: #008000">'morning_consult*rasmussen'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>,
-    <span style="color: #008000; text-decoration-color: #008000">'morning_consult*you_gov'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>,
-    <span style="color: #008000; text-decoration-color: #008000">'rasmussen*rasmussen'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>,
-    <span style="color: #008000; text-decoration-color: #008000">'rasmussen*you_gov'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>,
-    <span style="color: #008000; text-decoration-color: #008000">'you_gov*you_gov'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.0</span>
-<span style="font-weight: bold">}</span>
-</pre>
-
+<div class="language-text highlight"><pre><span></span><code>{&#39;ordinal_date&#39;: 0.0,
+ &#39;gallup&#39;: 0.0,
+ &#39;ipsos&#39;: 0.0,
+ &#39;morning_consult&#39;: 0.0,
+ &#39;rasmussen&#39;: 0.0,
+ &#39;you_gov&#39;: 0.0,
+ &#39;ordinal_date*ordinal_date&#39;: 0.0,
+ &#39;gallup*ordinal_date&#39;: 0.0,
+ &#39;ipsos*ordinal_date&#39;: 0.0,
+ &#39;morning_consult*ordinal_date&#39;: 0.0,
+ &#39;ordinal_date*rasmussen&#39;: 0.0,
+ &#39;ordinal_date*you_gov&#39;: 0.0,
+ &#39;gallup*gallup&#39;: 0.0,
+ &#39;gallup*ipsos&#39;: 0.0,
+ &#39;gallup*morning_consult&#39;: 0.0,
+ &#39;gallup*rasmussen&#39;: 0.0,
+ &#39;gallup*you_gov&#39;: 0.0,
+ &#39;ipsos*ipsos&#39;: 0.0,
+ &#39;ipsos*morning_consult&#39;: 0.0,
+ &#39;ipsos*rasmussen&#39;: 0.0,
+ &#39;ipsos*you_gov&#39;: 0.0,
+ &#39;morning_consult*morning_consult&#39;: 0.0,
+ &#39;morning_consult*rasmussen&#39;: 0.0,
+ &#39;morning_consult*you_gov&#39;: 0.0,
+ &#39;rasmussen*rasmussen&#39;: 0.0,
+ &#39;rasmussen*you_gov&#39;: 0.0,
+ &#39;you_gov*you_gov&#39;: 0.0}
+</code></pre></div>
 <p>In many cases, you might want to connect a step to multiple steps. For instance, you might to extract different kinds of features from a single input. An elegant way to do this is to use a <a href="../../api/compose/TransformerUnion"><code>compose.TransformerUnion</code></a>. Essentially, the latter is a list of transformers who's results will be merged into a single <code>dict</code> when <code>transform_one</code> is called. As an example let's say that we want to apply a <a href="../../api/feature-extraction/RBFSampler"><code>feature_extraction.RBFSampler</code></a> as well as the <a href="../../api/feature-extraction/PolynomialExtender"><code>feature_extraction.PolynomialExtender</code></a>. This may be done as so:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="p">(</span>
     <span class="n">preprocessing</span><span class="o">.</span><span class="n">StandardScaler</span><span class="p">()</span> <span class="o">|</span>
@@ -11854,24 +11846,21 @@
 
 <span class="n">model</span>
 </code></pre></div>
-<div><div class="river-component river-pipeline"><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">StandardScaler</pre></summary><code class="river-estimator-params">(
+<div><div class="river-component river-pipeline"><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">StandardScaler</pre></summary><code class="river-estimator-params">StandardScaler (
   with_std=True
 )
-
-</code></details><div class="river-component river-union"><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">PolynomialExtender</pre></summary><code class="river-estimator-params">(
+</code></details><div class="river-component river-union"><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">PolynomialExtender</pre></summary><code class="river-estimator-params">PolynomialExtender (
   degree=2
   interaction_only=False
   include_bias=False
   bias_name="bias"
 )
-
-</code></details><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">RBFSampler</pre></summary><code class="river-estimator-params">(
+</code></details><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">RBFSampler</pre></summary><code class="river-estimator-params">RBFSampler (
   gamma=1.
   n_components=100
   seed=None
 )
-
-</code></details></div><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">LinearRegression</pre></summary><code class="river-estimator-params">(
+</code></details></div><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">LinearRegression</pre></summary><code class="river-estimator-params">LinearRegression (
   optimizer=SGD (
     lr=Constant (
       learning_rate=0.01
@@ -11887,19 +11876,19 @@
   clip_gradient=1e+12
   initializer=Zeros ()
 )
-
 </code></details></div><style scoped>
 .river-estimator {
     padding: 1em;
     border-style: solid;
     background: white;
+    max-width: max-content;
 }
 
 .river-pipeline {
     display: flex;
     flex-direction: column;
     align-items: center;
-    background: linear-gradient(#000, #000) no-repeat center / 3px 100%;
+    background: linear-gradient(#000, #000) no-repeat center / 1.5px 100%;
 }
 
 .river-union {
@@ -11936,6 +11925,10 @@
     margin-top: 0;
 }
 
+.river-union > .river-component {
+    margin-top: 0;
+}
+
 .river-union > .pipeline {
     margin-top: 0;
 }
@@ -11951,8 +11944,8 @@
 .river-estimator-params {
     display: block;
     white-space: pre-wrap;
-    font-size: 120%;
-    margin-bottom: -1em;
+    font-size: 110%;
+    margin-top: 1em;
 }
 
 .river-estimator > .river-estimator-params,
@@ -11960,10 +11953,14 @@
     background-color: white !important;
 }
 
+.river-wrapper > .river-details {
+    margin-bottom: 1em;
+}
+
 .river-estimator-name {
     display: inline;
     margin: 0;
-    font-size: 130%;
+    font-size: 110%;
 }
 
 /* Toggle */
@@ -12058,7 +12055,7 @@
     <script id="__config" type="application/json">{"base": "../..", "features": ["content.code.copy", "navigation.tabs", "navigation.instant", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.a51614de.min.js"></script>
+      <script src="../../assets/javascripts/bundle.b425cdc4.min.js"></script>
       
         
           <script src="../../js/mkdocs-charts-plugin.js"></script>

@@ -21,7 +21,7 @@
         <link rel="next" href="../rolling-computations/">
       
       <link rel="icon" href="../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.16">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.17">
     
     
       
@@ -304,7 +304,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../releases/unreleased/" class="md-tabs__link">
+      <a href="../../releases/0.18.0/" class="md-tabs__link">
         Releases
       </a>
     </li>
@@ -11043,8 +11043,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../../releases/unreleased/" class="md-nav__link">
-        Unreleased
+      <a href="../../releases/0.18.0/" class="md-nav__link">
+        0.17.0 - 2023-06-26
       </a>
     </li>
   
@@ -11700,37 +11700,30 @@
 
 <span class="n">model</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">weights</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">
-<span style="font-weight: bold">{</span>
-    <span style="color: #008000; text-decoration-color: #008000">'ordinal_date'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">20.59955380229643</span>,
-    <span style="color: #008000; text-decoration-color: #008000">'gallup'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.39114944304212645</span>,
-    <span style="color: #008000; text-decoration-color: #008000">'ipsos'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.4101918314868111</span>,
-    <span style="color: #008000; text-decoration-color: #008000">'morning_consult'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.12042970179504908</span>,
-    <span style="color: #008000; text-decoration-color: #008000">'rasmussen'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.18951231512561392</span>,
-    <span style="color: #008000; text-decoration-color: #008000">'you_gov'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.04991712783831687</span>
-<span style="font-weight: bold">}</span>
-</pre>
-
+<div class="language-text highlight"><pre><span></span><code>{&#39;ordinal_date&#39;: 20.59955380229643,
+ &#39;gallup&#39;: 0.39114944304212645,
+ &#39;ipsos&#39;: 0.4101918314868111,
+ &#39;morning_consult&#39;: 0.12042970179504908,
+ &#39;rasmussen&#39;: 0.18951231512561392,
+ &#39;you_gov&#39;: 0.04991712783831687}
+</code></pre></div>
 <p>For whatever reason, we may want to clone this model. This can be done with the <code>clone</code> method.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">clone</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
 <span class="n">clone</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">weights</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="font-weight: bold">{}</span>
-</pre>
-
+<div class="language-text highlight"><pre><span></span><code>{}
+</code></pre></div>
 <p>As we can see, there are no weights because the clone is fresh copy that has not seen any data. However, the learning rate we specified is preserved.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">clone</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">learning_rate</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.03</span>
-</pre>
-
+<div class="language-text highlight"><pre><span></span><code>0.03
+</code></pre></div>
 <p>You may also specify parameters you want changed. For instance, let's say we want to clone the model, but we want to change the optimizer:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">clone</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">clone</span><span class="p">({</span><span class="s2">&quot;LinearRegression&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;optimizer&quot;</span><span class="p">:</span> <span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">()}})</span>
 <span class="n">clone</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">optimizer</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #800080; text-decoration-color: #800080; font-weight: bold">Adam</span><span style="font-weight: bold">({</span><span style="color: #008000; text-decoration-color: #008000">'lr'</span>: <span style="color: #800080; text-decoration-color: #800080; font-weight: bold">Constant</span><span style="font-weight: bold">({</span><span style="color: #008000; text-decoration-color: #008000">'learning_rate'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.1</span><span style="font-weight: bold">})</span>, <span style="color: #008000; text-decoration-color: #008000">'n_iterations'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0</span>, <span style="color: #008000; text-decoration-color: #008000">'beta_1'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.9</span>, <span style="color: #008000; text-decoration-color: #008000">'beta_2'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.999</span>, <span style="color: #008000; text-decoration-color: #008000">'eps'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1e-08</span>, <span style="color: #008000; text-decoration-color: #008000">'m'</span>: <span style="color: #800080; text-decoration-color: #800080; font-style: italic">None</span>, <span style="color: #008000; text-decoration-color: #008000">'v'</span>: <span style="color: #800080; text-decoration-color: #800080; font-style: italic">None</span><span style="font-weight: bold">})</span>
-</pre>
-
+<div class="language-text highlight"><pre><span></span><code>Adam({&#39;lr&#39;: Constant({&#39;learning_rate&#39;: 0.1}), &#39;n_iterations&#39;: 0, &#39;beta_1&#39;: 0.9, &#39;beta_2&#39;: 0.999, &#39;eps&#39;: 1e-08, &#39;m&#39;: None, &#39;v&#39;: None})
+</code></pre></div>
 <p>The first key indicates that we want to specify a different parameter for the <code>LinearRegression</code> part of the pipeline. Then the second key accesses the linear regression's <code>optimizer</code> parameter.</p>
 <p>Finally, note that the <code>clone</code> method isn't reserved to models. Indeed, every object in River has it. That's because they all inherit from the <code>Base</code> class in the <code>base</code> module.</p>
 <h2 id="mutating-attributes">Mutating attributes<a class="headerlink" href="#mutating-attributes" title="Permanent link">&para;</a></h2>
@@ -11746,43 +11739,38 @@
 
 <span class="nb">print</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">model</span><span class="p">))</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">Pipeline <span style="font-weight: bold">(</span>
-  StandardScaler <span style="font-weight: bold">(</span>
-    <span style="color: #808000; text-decoration-color: #808000">with_std</span>=<span style="color: #00ff00; text-decoration-color: #00ff00; font-style: italic">True</span>
-  <span style="font-weight: bold">)</span>,
-  LinearRegression <span style="font-weight: bold">(</span>
-    <span style="color: #808000; text-decoration-color: #808000">optimizer</span>=<span style="color: #800080; text-decoration-color: #800080">SGD</span> <span style="font-weight: bold">(</span>
-      <span style="color: #808000; text-decoration-color: #808000">lr</span>=<span style="color: #800080; text-decoration-color: #800080">Constant</span> <span style="font-weight: bold">(</span>
-        <span style="color: #808000; text-decoration-color: #808000">learning_rate</span>=<span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.025</span>
-      <span style="font-weight: bold">)</span>
-    <span style="font-weight: bold">)</span>
-    <span style="color: #808000; text-decoration-color: #808000">loss</span>=<span style="color: #800080; text-decoration-color: #800080">Squared</span> <span style="font-weight: bold">()</span>
-    <span style="color: #808000; text-decoration-color: #808000">l2</span>=<span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.1</span>
-    <span style="color: #808000; text-decoration-color: #808000">l1</span>=<span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0</span>.
-    <span style="color: #808000; text-decoration-color: #808000">intercept_init</span>=<span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0</span>.
-    <span style="color: #808000; text-decoration-color: #808000">intercept_lr</span>=<span style="color: #800080; text-decoration-color: #800080">Constant</span> <span style="font-weight: bold">(</span>
-      <span style="color: #808000; text-decoration-color: #808000">learning_rate</span>=<span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.01</span>
-    <span style="font-weight: bold">)</span>
-    <span style="color: #808000; text-decoration-color: #808000">clip_gradient</span>=<span style="color: #008080; text-decoration-color: #008080; font-weight: bold">1e+12</span>
-    <span style="color: #808000; text-decoration-color: #808000">initializer</span>=<span style="color: #800080; text-decoration-color: #800080">Zeros</span> <span style="font-weight: bold">()</span>
-  <span style="font-weight: bold">)</span>
-<span style="font-weight: bold">)</span>
-</pre>
-
+<div class="language-text highlight"><pre><span></span><code>Pipeline (
+  StandardScaler (
+    with_std=True
+  ),
+  LinearRegression (
+    optimizer=SGD (
+      lr=Constant (
+        learning_rate=0.025
+      )
+    )
+    loss=Squared ()
+    l2=0.1
+    l1=0.
+    intercept_init=0.
+    intercept_lr=Constant (
+      learning_rate=0.01
+    )
+    clip_gradient=1e+12
+    initializer=Zeros ()
+  )
+)
+</code></pre></div>
 <p>We can see the attributes we specified have changed. However, the model's state is preserved:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">model</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">weights</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">
-<span style="font-weight: bold">{</span>
-    <span style="color: #008000; text-decoration-color: #008000">'ordinal_date'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">20.59955380229643</span>,
-    <span style="color: #008000; text-decoration-color: #008000">'gallup'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.39114944304212645</span>,
-    <span style="color: #008000; text-decoration-color: #008000">'ipsos'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.4101918314868111</span>,
-    <span style="color: #008000; text-decoration-color: #008000">'morning_consult'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.12042970179504908</span>,
-    <span style="color: #008000; text-decoration-color: #008000">'rasmussen'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.18951231512561392</span>,
-    <span style="color: #008000; text-decoration-color: #008000">'you_gov'</span>: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.04991712783831687</span>
-<span style="font-weight: bold">}</span>
-</pre>
-
+<div class="language-text highlight"><pre><span></span><code>{&#39;ordinal_date&#39;: 20.59955380229643,
+ &#39;gallup&#39;: 0.39114944304212645,
+ &#39;ipsos&#39;: 0.4101918314868111,
+ &#39;morning_consult&#39;: 0.12042970179504908,
+ &#39;rasmussen&#39;: 0.18951231512561392,
+ &#39;you_gov&#39;: 0.04991712783831687}
+</code></pre></div>
 <p>In other words, the <code>mutate</code> method does not create a deep copy of the model. It just sets attributes. At this point you may ask:</p>
 <blockquote>
 <p><em>Why can't I just change the attribute directly, without calling <code>mutate</code>?</em></p>
@@ -11797,9 +11785,8 @@
 <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #008000; text-decoration-color: #008000">'weights'</span> is not a mutable attribute of LinearRegression
-</pre>
-
+<div class="language-text highlight"><pre><span></span><code>&#39;weights&#39; is not a mutable attribute of LinearRegression
+</code></pre></div>
 <p>All attributes are immutable by default. Under the hood, each model can specify a set of mutable attributes via the <code>_mutable_attributes</code> property. In theory this can be overriden. But the general idea is that we will progressively add more and more mutable attributes with time.</p>
 <p>And that concludes this recipe. Arguably, this recipe caters to advanced users, and in particular users who are developping their own models. And yet, one could also argue that modifying parameters of a model on-the-fly is a great tool to have at your disposal when you're doing online machine learning.</p>
 
@@ -11870,7 +11857,7 @@
     <script id="__config" type="application/json">{"base": "../..", "features": ["content.code.copy", "navigation.tabs", "navigation.instant", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.a51614de.min.js"></script>
+      <script src="../../assets/javascripts/bundle.b425cdc4.min.js"></script>
       
         
           <script src="../../js/mkdocs-charts-plugin.js"></script>

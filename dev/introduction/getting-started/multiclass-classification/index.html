@@ -21,7 +21,7 @@
         <link rel="next" href="../regression/">
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.16">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.17">
     
     
       
@@ -304,7 +304,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../../releases/unreleased/" class="md-tabs__link">
+      <a href="../../../releases/0.18.0/" class="md-tabs__link">
         Releases
       </a>
     </li>
@@ -11007,8 +11007,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../releases/unreleased/" class="md-nav__link">
-        Unreleased
+      <a href="../../../releases/0.18.0/" class="md-nav__link">
+        0.17.0 - 2023-06-26
       </a>
     </li>
   
@@ -11634,12 +11634,13 @@
 This dataset contains features that describe image segments into 7 classes: brickface, sky,
 foliage, cement, window, path, and grass.
 
-    Name  ImageSegments                                                   
-    Task  Multi-class classification                                      
- Samples  2,310                                                           
-Features  18                                                              
-  Sparse  False                                                           
-    Path  /Users/max.halford/projects/river/river/datasets/segment.csv.zip
+    Name  ImageSegments                                                     
+    Task  Multi-class classification                                        
+ Samples  2,310                                                             
+Features  18                                                                
+ Classes  7                                                                 
+  Sparse  False                                                             
+    Path  /Users/max/projects/online-ml/river/river/datasets/segment.csv.zip
 </code></pre></div>
 <p>This dataset is a streaming dataset which can be looped over.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">dataset</span><span class="p">:</span>
@@ -11710,19 +11711,19 @@ Features  18
 </code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>            Precision   Recall   F1       Support
 
-brickface      77.13%   84.85%   80.81%        33  
-   cement      78.92%   83.94%   81.35%        33  
-  foliage      67.00%   20.30%   31.16%        33  
-    grass     100.00%   96.97%   98.46%        33  
-     path      90.39%   91.49%   90.94%       329  
-      sky      99.08%   98.18%   98.63%        33  
-   window      43.50%   67.88%   53.02%        33
+brickface      77.13%   84.85%   80.81%       330  
+   cement      78.92%   83.94%   81.35%       330  
+  foliage      65.69%   20.30%   31.02%       330  
+    grass     100.00%   96.97%   98.46%       330  
+     path      90.63%   91.19%   90.91%       329  
+      sky      99.08%   98.18%   98.63%       330  
+   window      43.50%   67.88%   53.02%       330
 
-    Macro      79.43%   77.66%   76.34%            
-    Micro      77.65%   77.65%   77.65%            
- Weighted      79.43%   77.65%   76.33%
+    Macro      79.28%   77.62%   76.31%            
+    Micro      77.61%   77.61%   77.61%            
+ Weighted      79.27%   77.61%   76.31%
 
-                  77.65% accuracy
+                  77.61% accuracy
 </code></pre></div>
 <p>This is a common way to evaluate an online model. In fact, there is a dedicated <a href="../../../api/evaluate/progressive-val-score"><code>evaluate.progressive_val_score</code></a> function that does this for you.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">evaluate</span>
@@ -11734,19 +11735,19 @@ brickface      77.13%   84.85%   80.81%        33
 </code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>            Precision   Recall   F1       Support
 
-brickface      77.13%   84.85%   80.81%        33  
-   cement      78.92%   83.94%   81.35%        33  
-  foliage      67.00%   20.30%   31.16%        33  
-    grass     100.00%   96.97%   98.46%        33  
-     path      90.39%   91.49%   90.94%       329  
-      sky      99.08%   98.18%   98.63%        33  
-   window      43.50%   67.88%   53.02%        33
+brickface      77.13%   84.85%   80.81%       330  
+   cement      78.92%   83.94%   81.35%       330  
+  foliage      65.69%   20.30%   31.02%       330  
+    grass     100.00%   96.97%   98.46%       330  
+     path      90.63%   91.19%   90.91%       329  
+      sky      99.08%   98.18%   98.63%       330  
+   window      43.50%   67.88%   53.02%       330
 
-    Macro      79.43%   77.66%   76.34%            
-    Micro      77.65%   77.65%   77.65%            
- Weighted      79.43%   77.65%   76.33%
+    Macro      79.28%   77.62%   76.31%            
+    Micro      77.61%   77.61%   77.61%            
+ Weighted      79.27%   77.61%   76.31%
 
-                  77.65% accuracy
+                  77.61% accuracy
 </code></pre></div>
 <p>That concludes the getting started introduction to multiclass classification! You can now move on to the <a href="/introduction/next-steps">next steps</a>.</p>
 
@@ -11817,7 +11818,7 @@ brickface      77.13%   84.85%   80.81%        33
     <script id="__config" type="application/json">{"base": "../../..", "features": ["content.code.copy", "navigation.tabs", "navigation.instant", "navigation.indexes"], "search": "../../../assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.a51614de.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.b425cdc4.min.js"></script>
       
         
           <script src="../../../js/mkdocs-charts-plugin.js"></script>

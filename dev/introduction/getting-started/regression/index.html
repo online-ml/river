@@ -21,7 +21,7 @@
         <link rel="next" href="../../why-use-river/">
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.16">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.17">
     
     
       
@@ -304,7 +304,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../../releases/unreleased/" class="md-tabs__link">
+      <a href="../../../releases/0.18.0/" class="md-tabs__link">
         Releases
       </a>
     </li>
@@ -11007,8 +11007,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../releases/unreleased/" class="md-nav__link">
-        Unreleased
+      <a href="../../../releases/0.18.0/" class="md-nav__link">
+        0.17.0 - 2023-06-26
       </a>
     </li>
   
@@ -11635,12 +11635,12 @@ Trump&#39;s approval ratings. It contains 5 features, which are approval ratings
 5 polling agencies. The target is the approval rating from FiveThirtyEight&#39;s model. The goal of
 this task is to see if we can reproduce FiveThirtyEight&#39;s model.
 
-    Name  TrumpApproval                                                         
-    Task  Regression                                                            
- Samples  1,001                                                                 
-Features  6                                                                     
-  Sparse  False                                                                 
-    Path  /Users/max.halford/projects/river/river/datasets/trump_approval.csv.gz
+    Name  TrumpApproval                                                           
+    Task  Regression                                                              
+ Samples  1,001                                                                   
+Features  6                                                                       
+  Sparse  False                                                                   
+    Path  /Users/max/projects/online-ml/river/river/datasets/trump_approval.csv.gz
 </code></pre></div>
 <p>This dataset is a streaming dataset which can be looped over.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">dataset</span><span class="p">:</span>
@@ -11688,7 +11688,7 @@ Features  6
 
 <span class="n">metric</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>MAE: 0.31039
+<div class="language-text highlight"><pre><span></span><code>MAE: 0.310353
 </code></pre></div>
 <p>This is a common way to evaluate an online model. In fact, there is a dedicated <a href="../../../api/evaluate/progressive-val-score"><code>evaluate.progressive_val_score</code></a> function that does this for you.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">evaluate</span>
@@ -11698,7 +11698,7 @@ Features  6
 
 <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">metric</span><span class="p">)</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>MAE: 0.31039
+<div class="language-text highlight"><pre><span></span><code>MAE: 0.310353
 </code></pre></div>
 <p>That concludes the getting started introduction to regression! You can now move on to the <a href="/introduction/next-steps">next steps</a>.</p>
 
@@ -11769,7 +11769,7 @@ Features  6
     <script id="__config" type="application/json">{"base": "../../..", "features": ["content.code.copy", "navigation.tabs", "navigation.instant", "navigation.indexes"], "search": "../../../assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.a51614de.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.b425cdc4.min.js"></script>
       
         
           <script src="../../../js/mkdocs-charts-plugin.js"></script>
