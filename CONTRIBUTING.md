@@ -43,7 +43,6 @@ You need a `Rust` compiler you can install it by following this [link](https://w
 
 Then, navigate to your cloned fork and install River and the required dependencies in [development mode](https://stackoverflow.com/questions/19048732/python-setup-py-develop-vs-install):
 
-
 ```sh
 pip install -e ".[dev]"
 ```
@@ -66,12 +65,15 @@ You're now ready to make some changes. We strongly recommend that you to check o
 
 - Create and open a Jupyter notebook at the root of the directory.
 - Add the following in the code cell:
+
 ```py
 %load_ext autoreload
 %autoreload 2
 ```
+
 - The previous code will automatically reimport River for you whenever you make changes.
 - For instance, if a change is made to `linear_model.LinearRegression`, then rerunning the following code doesn't require rebooting the notebook:
+
 ```py
 from river import linear_model
 
