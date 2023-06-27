@@ -62,7 +62,7 @@ def snake_to_kebab(text: str) -> str:
     return text.replace("_", "-")
 
 
-def find_method_docstring(klass, method: str) -> str | None:
+def find_method_docstring(klass, method: str) -> str:
     """Look through a class' ancestors for the first non-empty method docstring.
 
     Since Python 3.5, inspect.getdoc is supposed to do exactly this. However, it doesn't seem to
@@ -95,7 +95,7 @@ def find_method_docstring(klass, method: str) -> str | None:
             return doc
 
 
-def find_method_signature(klass, method: str) -> inspect.Signature | None:
+def find_method_signature(klass, method: str) -> inspect.Signature:
     """Look through a class' ancestors and fill out the methods signature.
 
     A class method has a signature. But it might now always be complete. When a parameter is not
