@@ -11779,13 +11779,13 @@
 <div class="language-python highlight"><pre><span></span><code><span class="n">model</span><span class="o">.</span><span class="n">i_biases</span>
 </code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>defaultdict(Zeros (),
-            {&#39;politics&#39;: 0.0705754422774087,
-             &#39;music&#39;: -0.037183485013932496,
-             &#39;camping&#39;: -0.03648626640209432,
-             &#39;sports&#39;: -0.039708144989247955,
-             &#39;health&#39;: -0.03873860066029714,
-             &#39;food&#39;: -0.03668470146816211,
-             &#39;finance&#39;: -0.038730297969974126})
+            {&#39;camping&#39;: 0.0,
+             &#39;politics&#39;: 0.0,
+             &#39;finance&#39;: 0.0,
+             &#39;music&#39;: 0.0,
+             &#39;food&#39;: 0.0,
+             &#39;health&#39;: 0.0,
+             &#39;sports&#39;: 0.0})
 </code></pre></div>
 <p>The model is not as performant if we use a reward function where both users have different preferences.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">simulate</span><span class="p">(</span>
@@ -11886,33 +11886,30 @@
         <span class="k">for</span> <span class="n">user</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">u_latents</span>
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">i_latents</span>
     <span class="p">)</span>
-    <span class="o">.</span><span class="n">pivot</span><span class="p">(</span><span class="s1">&#39;user&#39;</span><span class="p">,</span> <span class="s1">&#39;item&#39;</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">pivot</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="s1">&#39;user&#39;</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="s1">&#39;item&#39;</span><span class="p">)</span>
     <span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">highlight_max</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s1">&#39;lightgreen&#39;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s1">&#39;columns&#39;</span><span class="p">)</span>
 <span class="p">)</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>/var/folders/8q/xqx16rw14bl7rqyybl7zk8sh0000gn/T/ipykernel_52697/1851263114.py:13: FutureWarning: In a future version of pandas all arguments of DataFrame.pivot will be keyword-only.
-  .pivot(&#39;user&#39;, &#39;item&#39;)
-</code></pre></div>
 <style type="text/css">
-#T_37b93_row0_col5, #T_37b93_row1_col2, #T_37b93_row2_col4, #T_37b93_row3_col5 {
+#T_84556_row0_col5, #T_84556_row1_col6, #T_84556_row2_col0, #T_84556_row3_col5 {
   background-color: lightgreen;
 }
 </style>
-<table id="T_37b93">
+<table id="T_84556">
   <thead>
     <tr>
       <th class="blank level0" >&nbsp;</th>
-      <th id="T_37b93_level0_col0" class="col_heading level0 col0" colspan="7">preference</th>
+      <th id="T_84556_level0_col0" class="col_heading level0 col0" colspan="7">preference</th>
     </tr>
     <tr>
       <th class="index_name level1" >item</th>
-      <th id="T_37b93_level1_col0" class="col_heading level1 col0" >camping</th>
-      <th id="T_37b93_level1_col1" class="col_heading level1 col1" >finance</th>
-      <th id="T_37b93_level1_col2" class="col_heading level1 col2" >food</th>
-      <th id="T_37b93_level1_col3" class="col_heading level1 col3" >health</th>
-      <th id="T_37b93_level1_col4" class="col_heading level1 col4" >music</th>
-      <th id="T_37b93_level1_col5" class="col_heading level1 col5" >politics</th>
-      <th id="T_37b93_level1_col6" class="col_heading level1 col6" >sports</th>
+      <th id="T_84556_level1_col0" class="col_heading level1 col0" >camping</th>
+      <th id="T_84556_level1_col1" class="col_heading level1 col1" >finance</th>
+      <th id="T_84556_level1_col2" class="col_heading level1 col2" >food</th>
+      <th id="T_84556_level1_col3" class="col_heading level1 col3" >health</th>
+      <th id="T_84556_level1_col4" class="col_heading level1 col4" >music</th>
+      <th id="T_84556_level1_col5" class="col_heading level1 col5" >politics</th>
+      <th id="T_84556_level1_col6" class="col_heading level1 col6" >sports</th>
     </tr>
     <tr>
       <th class="index_name level0" >user</th>
@@ -11927,44 +11924,44 @@
   </thead>
   <tbody>
     <tr>
-      <th id="T_37b93_level0_row0" class="row_heading level0 row0" >Anna@afternoon</th>
-      <td id="T_37b93_row0_col0" class="data row0 col0" >-0.018105</td>
-      <td id="T_37b93_row0_col1" class="data row0 col1" >0.109751</td>
-      <td id="T_37b93_row0_col2" class="data row0 col2" >0.035563</td>
-      <td id="T_37b93_row0_col3" class="data row0 col3" >0.069222</td>
-      <td id="T_37b93_row0_col4" class="data row0 col4" >0.168885</td>
-      <td id="T_37b93_row0_col5" class="data row0 col5" >1.000000</td>
-      <td id="T_37b93_row0_col6" class="data row0 col6" >-0.059041</td>
+      <th id="T_84556_level0_row0" class="row_heading level0 row0" >Anna@afternoon</th>
+      <td id="T_84556_row0_col0" class="data row0 col0" >0.046338</td>
+      <td id="T_84556_row0_col1" class="data row0 col1" >-0.045078</td>
+      <td id="T_84556_row0_col2" class="data row0 col2" >-0.113483</td>
+      <td id="T_84556_row0_col3" class="data row0 col3" >0.010867</td>
+      <td id="T_84556_row0_col4" class="data row0 col4" >-0.093169</td>
+      <td id="T_84556_row0_col5" class="data row0 col5" >1.000000</td>
+      <td id="T_84556_row0_col6" class="data row0 col6" >0.024078</td>
     </tr>
     <tr>
-      <th id="T_37b93_level0_row1" class="row_heading level0 row1" >Anna@morning</th>
-      <td id="T_37b93_row1_col0" class="data row1 col0" >-0.050296</td>
-      <td id="T_37b93_row1_col1" class="data row1 col1" >0.000000</td>
-      <td id="T_37b93_row1_col2" class="data row1 col2" >0.000000</td>
-      <td id="T_37b93_row1_col3" class="data row1 col3" >-0.011807</td>
-      <td id="T_37b93_row1_col4" class="data row1 col4" >-0.007567</td>
-      <td id="T_37b93_row1_col5" class="data row1 col5" >-0.038986</td>
-      <td id="T_37b93_row1_col6" class="data row1 col6" >-0.045754</td>
+      <th id="T_84556_level0_row1" class="row_heading level0 row1" >Anna@morning</th>
+      <td id="T_84556_row1_col0" class="data row1 col0" >0.160048</td>
+      <td id="T_84556_row1_col1" class="data row1 col1" >-0.112390</td>
+      <td id="T_84556_row1_col2" class="data row1 col2" >0.076300</td>
+      <td id="T_84556_row1_col3" class="data row1 col3" >0.081779</td>
+      <td id="T_84556_row1_col4" class="data row1 col4" >-0.134904</td>
+      <td id="T_84556_row1_col5" class="data row1 col5" >0.067114</td>
+      <td id="T_84556_row1_col6" class="data row1 col6" >1.000000</td>
     </tr>
     <tr>
-      <th id="T_37b93_level0_row2" class="row_heading level0 row2" >Tom@afternoon</th>
-      <td id="T_37b93_row2_col0" class="data row2 col0" >0.060644</td>
-      <td id="T_37b93_row2_col1" class="data row2 col1" >0.070561</td>
-      <td id="T_37b93_row2_col2" class="data row2 col2" >-0.026601</td>
-      <td id="T_37b93_row2_col3" class="data row2 col3" >-0.074328</td>
-      <td id="T_37b93_row2_col4" class="data row2 col4" >1.000000</td>
-      <td id="T_37b93_row2_col5" class="data row2 col5" >0.164659</td>
-      <td id="T_37b93_row2_col6" class="data row2 col6" >-0.229550</td>
+      <th id="T_84556_level0_row2" class="row_heading level0 row2" >Tom@afternoon</th>
+      <td id="T_84556_row2_col0" class="data row2 col0" >0.000000</td>
+      <td id="T_84556_row2_col1" class="data row2 col1" >0.000000</td>
+      <td id="T_84556_row2_col2" class="data row2 col2" >-0.027919</td>
+      <td id="T_84556_row2_col3" class="data row2 col3" >-0.021783</td>
+      <td id="T_84556_row2_col4" class="data row2 col4" >-0.035434</td>
+      <td id="T_84556_row2_col5" class="data row2 col5" >-0.029329</td>
+      <td id="T_84556_row2_col6" class="data row2 col6" >-0.021462</td>
     </tr>
     <tr>
-      <th id="T_37b93_level0_row3" class="row_heading level0 row3" >Tom@morning</th>
-      <td id="T_37b93_row3_col0" class="data row3 col0" >-0.028562</td>
-      <td id="T_37b93_row3_col1" class="data row3 col1" >0.090628</td>
-      <td id="T_37b93_row3_col2" class="data row3 col2" >-0.000407</td>
-      <td id="T_37b93_row3_col3" class="data row3 col3" >0.061163</td>
-      <td id="T_37b93_row3_col4" class="data row3 col4" >0.065313</td>
-      <td id="T_37b93_row3_col5" class="data row3 col5" >1.000000</td>
-      <td id="T_37b93_row3_col6" class="data row3 col6" >-0.050107</td>
+      <th id="T_84556_level0_row3" class="row_heading level0 row3" >Tom@morning</th>
+      <td id="T_84556_row3_col0" class="data row3 col0" >0.027675</td>
+      <td id="T_84556_row3_col1" class="data row3 col1" >-0.036132</td>
+      <td id="T_84556_row3_col2" class="data row3 col2" >-0.096759</td>
+      <td id="T_84556_row3_col3" class="data row3 col3" >-0.020550</td>
+      <td id="T_84556_row3_col4" class="data row3 col4" >-0.118837</td>
+      <td id="T_84556_row3_col5" class="data row3 col5" >1.000000</td>
+      <td id="T_84556_row3_col6" class="data row3 col6" >0.023644</td>
     </tr>
   </tbody>
 </table>
