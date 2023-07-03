@@ -72,7 +72,12 @@ class BaseForest(base.Ensemble):
 
         for model in self:
             # Get prediction for instance
-            y_pred = model.predict_one(x)
+            y_pred = (
+                model.predict_proba_one(x)
+                if isinstance(model.metric, metrics.base.ClassificationMetric)
+                and not model.metric.requires_labels
+                else model.predict_one(x)
+            )
 
             # Update performance evaluator
             model.metric.update(y_true=y, y_pred=y_pred)
