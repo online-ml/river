@@ -74,7 +74,7 @@ class OutputCodeClassifier(base.Wrapper, base.Classifier):
     >>> metric = metrics.MacroF1()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    MacroF1: 79.32%
+    MacroF1: 79.58%
 
     References
     ----------

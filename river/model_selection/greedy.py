@@ -45,7 +45,7 @@ class GreedyRegressor(ModelSelectionRegressor):
     ... )
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    MAE: 1.35
+    MAE: 1.319678
 
     """
 

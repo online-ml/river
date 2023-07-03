@@ -151,7 +151,7 @@ class ADWINBoostingClassifier(AdaBoostClassifier):
     >>> metric = metrics.F1()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    F1: 87.41%
+    F1: 87.61%
 
     References
     ----------

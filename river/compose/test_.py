@@ -55,7 +55,7 @@ def test_union_funcs():
         assert str(pipeline) == "a + b"
 
 
-def test_learn_one_warm_up_mode():
+def test_learn_one_with_learn_during_predict():
     pipeline = compose.Pipeline(
         ("scale", preprocessing.StandardScaler()),
         ("log_reg", linear_model.LogisticRegression()),
@@ -65,17 +65,17 @@ def test_learn_one_warm_up_mode():
 
     for x, y in dataset:
         counts_pre = dict(pipeline["scale"].counts)
-        with compose.warm_up_mode():
+        with compose.learn_during_predict():
             pipeline.learn_one(x, y)
-        counts_post = dict(pipeline["scale"].counts)
-        pipeline.learn_one(x, y)
         counts_no_learn = dict(pipeline["scale"].counts)
+        pipeline.learn_one(x, y)
+        counts_post = dict(pipeline["scale"].counts)
 
         assert counts_pre != counts_post
-        assert counts_post == counts_no_learn
+        assert counts_pre == counts_no_learn
 
 
-def test_learn_many_warm_up_mode():
+def test_learn_many_with_learn_during_predict():
     pipeline = compose.Pipeline(
         ("scale", preprocessing.StandardScaler()),
         ("log_reg", linear_model.LogisticRegression()),
@@ -88,14 +88,14 @@ def test_learn_many_warm_up_mode():
         y = pd.Series([bool(y % 2) for _, y in dataset][i : i + 5])
 
         counts_pre = dict(pipeline["scale"].counts)
-        with compose.warm_up_mode():
+        with compose.learn_during_predict():
             pipeline.learn_many(X, y)
-        counts_post = dict(pipeline["scale"].counts)
-        pipeline.learn_many(X, y)
         counts_no_learn = dict(pipeline["scale"].counts)
+        pipeline.learn_many(X, y)
+        counts_post = dict(pipeline["scale"].counts)
 
         assert counts_pre != counts_post
-        assert counts_post == counts_no_learn
+        assert counts_pre == counts_no_learn
 
 
 def test_list_of_funcs():

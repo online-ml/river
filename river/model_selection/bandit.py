@@ -88,7 +88,7 @@ class BanditRegressor(BanditModelSection, model_selection.base.ModelSelectionReg
     >>> metric = metrics.MAE()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    MAE: 3.13815
+    MAE: 3.134089
 
     Here's another example using the UCB policy. The latter is more sensitive to the target scale,
     and usually works better when the target is rescaled.
@@ -114,7 +114,7 @@ class BanditRegressor(BanditModelSection, model_selection.base.ModelSelectionReg
     >>> metric = metrics.MAE()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    MAE: 0.875457
+    MAE: 0.875333
 
     """
 

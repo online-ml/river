@@ -44,7 +44,7 @@ class AMSGrad(optim.base.Optimizer):
     >>> metric = metrics.F1()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    F1: 86.57%
+    F1: 86.60%
 
     References
     ----------

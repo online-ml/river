@@ -198,11 +198,11 @@ class SuccessiveHalvingRegressor(SuccessiveHalving, ModelSelectionRegressor):
     ...     model=sh,
     ...     metric=metrics.MAE()
     ... )
-    [1]	5 removed	5 left	50 iterations	budget used: 500	budget left: 1500	best MAE: 4.540491
-    [2]	2 removed	3 left	100 iterations	budget used: 1000	budget left: 1000	best MAE: 2.458765
-    [3]	1 removed	2 left	166 iterations	budget used: 1498	budget left: 502	best MAE: 1.583751
-    [4]	1 removed	1 left	250 iterations	budget used: 1998	budget left: 2	best MAE: 1.147296
-    MAE: 0.488387
+    [1]	5 removed	5 left	50 iterations	budget used: 500	budget left: 1500	best MAE: 4.419643
+    [2]	2 removed	3 left	100 iterations	budget used: 1000	budget left: 1000	best MAE: 2.392266
+    [3]	1 removed	2 left	166 iterations	budget used: 1498	budget left: 502	best MAE: 1.541383
+    [4]	1 removed	1 left	250 iterations	budget used: 1998	budget left: 2	best MAE: 1.112122
+    MAE: 0.490688
 
     We can now view the best model.
 
@@ -359,7 +359,7 @@ class SuccessiveHalvingClassifier(SuccessiveHalving, ModelSelectionClassifier):
     [2] 2 removed       3 left  100 iterations  budget used: 1000       budget left: 1000       best Accuracy: 84.00%
     [3] 1 removed       2 left  166 iterations  budget used: 1498       budget left: 502        best Accuracy: 86.14%
     [4] 1 removed       1 left  250 iterations  budget used: 1998       budget left: 2  best Accuracy: 84.80%
-    ROCAUC: 95.29%
+    ROCAUC: 95.22%
 
     We can now view the best model.
 

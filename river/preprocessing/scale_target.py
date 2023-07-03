@@ -47,9 +47,7 @@ class TargetStandardScaler(compose.TargetTransformRegressor):
     >>> metric = metrics.MSE()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    MSE: 2.003724
-
-
+    MSE: 2.005999
 
     """
 
@@ -94,7 +92,7 @@ class TargetMinMaxScaler(compose.TargetTransformRegressor):
     >>> metric = metrics.MSE()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    MSE: 2.01689
+    MSE: 2.018905
 
     """
 

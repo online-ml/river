@@ -172,13 +172,13 @@ def iter_progressive_val_score(
 
     >>> for step in steps:
     ...     print(step)
-    {'ROCAUC': ROCAUC: 89.80%, 'Step': 200}
-    {'ROCAUC': ROCAUC: 92.09%, 'Step': 400}
-    {'ROCAUC': ROCAUC: 93.13%, 'Step': 600}
-    {'ROCAUC': ROCAUC: 93.99%, 'Step': 800}
-    {'ROCAUC': ROCAUC: 94.74%, 'Step': 1000}
-    {'ROCAUC': ROCAUC: 95.03%, 'Step': 1200}
-    {'ROCAUC': ROCAUC: 95.04%, 'Step': 1250}
+    {'ROCAUC': ROCAUC: 90.20%, 'Step': 200}
+    {'ROCAUC': ROCAUC: 92.25%, 'Step': 400}
+    {'ROCAUC': ROCAUC: 93.23%, 'Step': 600}
+    {'ROCAUC': ROCAUC: 94.05%, 'Step': 800}
+    {'ROCAUC': ROCAUC: 94.79%, 'Step': 1000}
+    {'ROCAUC': ROCAUC: 95.07%, 'Step': 1200}
+    {'ROCAUC': ROCAUC: 95.07%, 'Step': 1250}
 
     References
     ----------
@@ -287,14 +287,14 @@ def progressive_val_score(
     ...     metric=metrics.ROCAUC(),
     ...     print_every=200
     ... )
-    [200] ROCAUC: 89.80%
-    [400] ROCAUC: 92.09%
-    [600] ROCAUC: 93.13%
-    [800] ROCAUC: 93.99%
-    [1,000] ROCAUC: 94.74%
-    [1,200] ROCAUC: 95.03%
-    [1,250] ROCAUC: 95.04%
-    ROCAUC: 95.04%
+    [200] ROCAUC: 90.20%
+    [400] ROCAUC: 92.25%
+    [600] ROCAUC: 93.23%
+    [800] ROCAUC: 94.05%
+    [1,000] ROCAUC: 94.79%
+    [1,200] ROCAUC: 95.07%
+    [1,250] ROCAUC: 95.07%
+    ROCAUC: 95.07%
 
     We haven't specified a delay, therefore this is strictly equivalent to the following piece
     of code:
@@ -312,7 +312,7 @@ def progressive_val_score(
     ...     model = model.learn_one(x, y)
 
     >>> metric
-    ROCAUC: 95.04%
+    ROCAUC: 95.07%
 
     When `print_every` is specified, the current state is printed at regular intervals. Under
     the hood, Python's `print` method is being used. You can pass extra keyword arguments to

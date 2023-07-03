@@ -236,7 +236,7 @@ class MLPRegressor(base.Regressor, MLP):
     >>> metric = metrics.MAE()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    MAE: 1.589827
+    MAE: 1.580578
 
     You can also use this to process mini-batches of data.
 
@@ -265,15 +265,15 @@ class MLPRegressor(base.Regressor, MLP):
 
     >>> model.predict_many(xb)
           five_thirty_eight
-    992           39.361609
-    993           46.398536
-    994           42.094086
-    995           40.195802
-    996           40.782954
-    997           40.839678
-    998           40.896403
-    999           48.362659
-    1000          42.021849
+    992           39.405231
+    993           46.447481
+    994           42.121865
+    995           40.251148
+    996           40.836378
+    997           40.893153
+    998           40.949927
+    999           48.416504
+    1000          42.077830
 
     """
 

@@ -84,7 +84,7 @@ class ClassifierChain(BaseChain, base.MultiLabelClassifier):
     ...     model = model.learn_one(x, y)
 
     >>> metric
-    MicroAverage(Jaccard): 41.95%
+    MicroAverage(Jaccard): 41.81%
 
     References
     ----------
@@ -105,7 +105,7 @@ class ClassifierChain(BaseChain, base.MultiLabelClassifier):
             "model": neighbors.KNNClassifier(
                 n_neighbors=1,
                 engine=neighbors.LazySearch(
-                    window_size=50, dist_func=functools.partial(minkowski_distance, p=2)
+                    window_size=10, dist_func=functools.partial(minkowski_distance, p=2)
                 ),
             )
         }  # multi-class classifier
@@ -212,7 +212,7 @@ class RegressorChain(BaseChain, base.MultiTargetRegressor):
     >>> metric = metrics.multioutput.MicroAverage(metrics.MAE())
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    MicroAverage(MAE): 12.649592
+    MicroAverage(MAE): 12.733525
 
     """
 

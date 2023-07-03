@@ -43,7 +43,7 @@ class Adam(optim.base.Optimizer):
     >>> metric = metrics.F1()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    F1: 86.50%
+    F1: 86.52%
 
     References
     ----------

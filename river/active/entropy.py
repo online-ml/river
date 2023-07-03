@@ -56,10 +56,10 @@ class EntropySampler(ActiveLearningClassifier):
     Accuracy: 86.60%
 
     >>> dataset.n_samples, n_samples_used
-    (5574, 1922)
+    (5574, 1921)
 
     >>> print(f"{n_samples_used / dataset.n_samples:.2%}")
-    34.48%
+    34.46%
 
     """
 

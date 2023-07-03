@@ -98,7 +98,7 @@ class SKL2RiverRegressor(SKL2RiverBase, base.Regressor):
     >>> metric = metrics.MAE()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    MAE: 84.519485
+    MAE: 84.501421
 
     """
 
@@ -162,7 +162,7 @@ class SKL2RiverClassifier(SKL2RiverBase, base.Classifier):
     >>> metric = metrics.LogLoss()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    LogLoss: 0.199554
+    LogLoss: 0.198029
 
     """
 

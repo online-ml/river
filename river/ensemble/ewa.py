@@ -52,9 +52,9 @@ class EWARegressor(base.Ensemble, base.Regressor):
     ...     )
     ...
     ...     print(optimizer, evaluate.progressive_val_score(dataset, model, metric))
-    SGD MAE: 0.555971
-    RMSProp MAE: 0.528284
-    AdaGrad MAE: 0.481461
+    SGD MAE: 0.558735
+    RMSProp MAE: 0.522449
+    AdaGrad MAE: 0.477289
 
     >>> dataset = datasets.TrumpApproval()
     >>> metric = metrics.MAE()
@@ -70,7 +70,7 @@ class EWARegressor(base.Ensemble, base.Regressor):
     ... )
 
     >>> evaluate.progressive_val_score(dataset, hedge, metric)
-    MAE: 0.494832
+    MAE: 0.496298
 
     References
     ----------

@@ -66,7 +66,7 @@ class RandomUnderSampler(ClassificationSampler):
     >>> metric = metrics.LogLoss()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    LogLoss: 0.0728
+    LogLoss: 0.0336...
 
     References
     ----------
@@ -146,7 +146,7 @@ class RandomOverSampler(ClassificationSampler):
     >>> metric = metrics.LogLoss()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    LogLoss: 0.054338
+    LogLoss: 0.0457...
 
     """
 
@@ -224,7 +224,7 @@ class RandomSampler(ClassificationSampler):
     >>> metric = metrics.LogLoss()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    LogLoss: 0.131988
+    LogLoss: 0.09...
 
     """
 

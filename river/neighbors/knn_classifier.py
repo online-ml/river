@@ -68,7 +68,7 @@ class KNNClassifier(base.Classifier):
     ... )
 
     >>> evaluate.progressive_val_score(dataset, model, metrics.Accuracy())
-    Accuracy: 89.75%
+    Accuracy: 89.67%
 
     """
 

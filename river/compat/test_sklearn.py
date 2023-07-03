@@ -63,12 +63,12 @@ def test_not_fitted_still_works_regression(estimator):
         for n_classes in [2, 3]
         for estimator in [
             compat.convert_sklearn_to_river(
-                sk_linear_model.SGDClassifier(loss="log"), classes=list(range(n_classes))
+                sk_linear_model.SGDClassifier(loss="log_loss"), classes=list(range(n_classes))
             ),
             (
                 preprocessing.StandardScaler()
                 | compat.convert_sklearn_to_river(
-                    sk_linear_model.SGDClassifier(loss="log"), classes=list(range(n_classes))
+                    sk_linear_model.SGDClassifier(loss="log_loss"), classes=list(range(n_classes))
                 )
             ),
         ]
