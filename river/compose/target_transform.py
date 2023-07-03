@@ -42,7 +42,7 @@ class TargetTransformRegressor(base.Wrapper, base.Regressor):
     >>> metric = metrics.MSE()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    MSE: 8.759624
+    MSE: 10.999752
 
     """
 

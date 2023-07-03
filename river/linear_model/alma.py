@@ -44,7 +44,7 @@ class ALMAClassifier(base.Classifier):
     >>> metric = metrics.Accuracy()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    Accuracy: 82.64%
+    Accuracy: 82.56%
 
     References
     ----------

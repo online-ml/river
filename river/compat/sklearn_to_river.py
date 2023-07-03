@@ -162,7 +162,7 @@ class SKL2RiverClassifier(SKL2RiverBase, base.Classifier):
     >>> metric = metrics.LogLoss()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    LogLoss: 0.199554
+    LogLoss: 0.198029
 
     """
 

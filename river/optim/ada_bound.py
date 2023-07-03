@@ -45,7 +45,7 @@ class AdaBound(optim.base.Optimizer):
     >>> metric = metrics.F1()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    F1: 87.90%
+    F1: 88.06%
 
     References
     ----------

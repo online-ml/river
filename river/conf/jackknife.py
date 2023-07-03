@@ -64,7 +64,7 @@ class RegressionJackknife(base.Wrapper, base.Regressor):
     specified a confidence level of 90%, so we expect the validity to be around 90%.
 
     >>> validity
-    Mean: 0.903097
+    Mean: 0.939061
 
     The interval's efficiency is the average width of the intervals.
 

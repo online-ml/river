@@ -18,84 +18,7 @@ __all__ = ["Pipeline"]
 
 
 @contextlib.contextmanager
-def warm_up_mode():
-    """A context manager for training pipelines during a warm-up phase.
-
-    You don't have to worry about anything when you call `predict_one` and `learn_one` with a
-    pipeline during in training loop. At each step of the pipeline, the methods will be called in
-    the correct order.
-
-    However, during a warm-up phase, you might just be calling `learn_one` because you don't need
-    the out-of-sample predictions. In this case, the unsupervised estimators in the pipeline won't
-    be updated, because they are usually updated when `predict_one` is called.
-
-    This context manager allows you to override that behavior and make it so that unsupervised
-    estimators are updated when `learn_one` is called.
-
-    Examples
-    --------
-
-    Let's first see what methods are called if we just call `learn_one`.
-
-    >>> import io
-    >>> import logging
-    >>> from river import anomaly
-    >>> from river import compose
-    >>> from river import datasets
-    >>> from river import preprocessing
-    >>> from river import utils
-
-    >>> model = compose.Pipeline(
-    ...     preprocessing.MinMaxScaler(),
-    ...     anomaly.HalfSpaceTrees()
-    ... )
-
-    >>> class_condition = lambda x: x.__class__.__name__ in ('MinMaxScaler', 'HalfSpaceTrees')
-
-    >>> logger = logging.getLogger()
-    >>> logger.setLevel(logging.DEBUG)
-
-    >>> logs = io.StringIO()
-    >>> sh = logging.StreamHandler(logs)
-    >>> sh.setLevel(logging.DEBUG)
-    >>> logger.addHandler(sh)
-
-    >>> with utils.log_method_calls(class_condition):
-    ...     for x, y in datasets.CreditCard().take(1):
-    ...         model = model.learn_one(x)
-
-    >>> print(logs.getvalue())
-    MinMaxScaler.transform_one
-    HalfSpaceTrees.learn_one
-
-    Now let's use the context manager and see what methods get called.
-
-    >>> logs = io.StringIO()
-    >>> sh = logging.StreamHandler(logs)
-    >>> sh.setLevel(logging.DEBUG)
-    >>> logger.addHandler(sh)
-
-    >>> with utils.log_method_calls(class_condition), compose.warm_up_mode():
-    ...     for x, y in datasets.CreditCard().take(1):
-    ...         model = model.learn_one(x)
-
-    >>> print(logs.getvalue())
-    MinMaxScaler.learn_one
-    MinMaxScaler.transform_one
-    HalfSpaceTrees.learn_one
-
-    We can see that the scaler got updated before transforming the data.
-
-    """
-    Pipeline._WARM_UP = True
-    try:
-        yield
-    finally:
-        Pipeline._WARM_UP = False
-
-
-@contextlib.contextmanager
-def pure_inference_mode():
+def learn_during_predict():
     """A context manager for making inferences with no side-effects.
 
     Calling `predict_one` with a pipeline will update the unsupervised steps of the pipeline. This
@@ -138,7 +61,6 @@ def pure_inference_mode():
     ...         _ = model.predict_one(x)
 
     >>> print(logs.getvalue())
-    StandardScaler.learn_one
     StandardScaler.transform_one
     LinearRegression.predict_one
 
@@ -149,11 +71,12 @@ def pure_inference_mode():
     >>> sh.setLevel(logging.DEBUG)
     >>> logger.addHandler(sh)
 
-    >>> with utils.log_method_calls(class_condition), compose.pure_inference_mode():
+    >>> with utils.log_method_calls(class_condition), compose.learn_during_predict():
     ...     for x, y in datasets.TrumpApproval().take(1):
     ...         _ = model.predict_one(x)
 
     >>> print(logs.getvalue())
+    StandardScaler.learn_one
     StandardScaler.transform_one
     LinearRegression.predict_one
 
@@ -170,7 +93,6 @@ def pure_inference_mode():
     ...     for x, y in datasets.TrumpApproval().take(1):
     ...         _ = model.predict_many(pd.DataFrame([x]))
     >>> print(logs.getvalue())
-    StandardScaler.learn_many
     StandardScaler.transform_many
     LinearRegression.predict_many
 
@@ -179,19 +101,20 @@ def pure_inference_mode():
     >>> sh.setLevel(logging.DEBUG)
     >>> logger.addHandler(sh)
 
-    >>> with utils.log_method_calls(class_condition), compose.pure_inference_mode():
+    >>> with utils.log_method_calls(class_condition), compose.learn_during_predict():
     ...     for x, y in datasets.TrumpApproval().take(1):
     ...         _ = model.predict_many(pd.DataFrame([x]))
     >>> print(logs.getvalue())
+    StandardScaler.learn_many
     StandardScaler.transform_many
     LinearRegression.predict_many
 
     """
-    Pipeline._STATELESS = True
+    Pipeline._LEARN_UNSUPERVISED_DURING_PREDICT = True
     try:
         yield
     finally:
-        Pipeline._STATELESS = False
+        Pipeline._LEARN_UNSUPERVISED_DURING_PREDICT = False
 
 
 class Pipeline(base.Estimator):
@@ -331,25 +254,24 @@ class Pipeline(base.Estimator):
     --------------------
         1.0 TFIDF | Prefixer
         --------------------
-        tfidf_comment: 0.47606 (float)
-        tfidf_positive: 0.87942 (float)
+        tfidf_comment: 0.43017 (float)
+        tfidf_positive: 0.90275 (float)
         1.1 BagOfWords | Prefixer
         -------------------------
         count_comment: 1 (int)
         count_positive: 1 (int)
     count_comment: 1 (int)
     count_positive: 1 (int)
-    tfidf_comment: 0.50854 (float)
-    tfidf_positive: 0.86104 (float)
+    tfidf_comment: 0.43017 (float)
+    tfidf_positive: 0.90275 (float)
     2. MultinomialNB
     ----------------
-    False: 0.19313
-    True: 0.80687
+    False: 0.19221
+    True: 0.80779
 
     """
 
-    _WARM_UP = False
-    _STATELESS = False
+    _LEARN_UNSUPERVISED_DURING_PREDICT = False
 
     def __init__(self, *steps):
         self.steps = collections.OrderedDict()
@@ -524,7 +446,7 @@ class Pipeline(base.Estimator):
                     break
                 continue
 
-            if self._WARM_UP:
+            if not self._LEARN_UNSUPERVISED_DURING_PREDICT:
                 if isinstance(t, union.TransformerUnion):
                     for sub_t in t.transformers.values():
                         if not sub_t._supervised:
@@ -568,12 +490,11 @@ class Pipeline(base.Estimator):
             if utils.inspect.ischildobject(obj=t, class_name="AnomalyFilter"):
                 continue
 
-            if not self._STATELESS:
+            if self._LEARN_UNSUPERVISED_DURING_PREDICT:
                 if isinstance(t, union.TransformerUnion):
                     for sub_t in t.transformers.values():
                         if not sub_t._supervised:
                             sub_t.learn_one(x)
-
                 elif not t._supervised:
                     t.learn_one(x)
 
@@ -752,7 +673,7 @@ class Pipeline(base.Estimator):
 
         # Loop over the first n - 1 steps, which should all be transformers
         for t in itertools.islice(steps, len(self) - 1):
-            if self._WARM_UP:
+            if not self._LEARN_UNSUPERVISED_DURING_PREDICT:
                 if isinstance(t, union.TransformerUnion):
                     for sub_t in t.transformers.values():
                         if not sub_t._supervised:
@@ -791,7 +712,7 @@ class Pipeline(base.Estimator):
         steps = iter(self.steps.values())
 
         for t in itertools.islice(steps, len(self) - 1):
-            if not self._STATELESS:
+            if self._LEARN_UNSUPERVISED_DURING_PREDICT:
                 if isinstance(t, union.TransformerUnion):
                     for sub_t in t.transformers.values():
                         if not sub_t._supervised:

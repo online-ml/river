@@ -62,7 +62,7 @@ class LinearRegression(linear_model.base.GLM, base.MiniBatchRegressor):
     >>> metric = metrics.MAE()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    MAE: 0.555971
+    MAE: 0.558735
 
     >>> model['LinearRegression'].intercept
     35.617670

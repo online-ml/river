@@ -95,7 +95,7 @@ Now let's run the model on the dataset in a streaming fashion. We sequentially i
 ...     model = model.learn_one(x, y)      # make the model learn
 
 >>> metric
-Accuracy: 89.20%
+Accuracy: 89.28%
 
 ```
 

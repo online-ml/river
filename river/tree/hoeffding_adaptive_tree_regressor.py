@@ -139,7 +139,8 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
     >>> metric = metrics.MAE()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    MAE: 0.809874
+    MAE: 0.823026
+
     """
 
     def __init__(

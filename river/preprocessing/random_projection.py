@@ -50,7 +50,7 @@ class GaussianRandomProjector(base.Transformer):
     ...     linear_model.LinearRegression()
     ... )
     >>> evaluate.progressive_val_score(dataset, model, metrics.MAE())
-    MAE: 0.860464
+    MAE: 0.933502
 
     References
     ----------
@@ -126,7 +126,7 @@ class SparseRandomProjector(base.Transformer):
     ...     linear_model.LinearRegression()
     ... )
     >>> evaluate.progressive_val_score(dataset, model, metrics.MAE())
-    MAE: 1.296503
+    MAE: 1.292572
 
     References
     ----------

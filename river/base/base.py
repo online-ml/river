@@ -456,9 +456,9 @@ def log_method_calls(
     ...         model = model.learn_one(x)
 
     >>> print(logs.getvalue())
-    MinMaxScaler.learn_one
     MinMaxScaler.transform_one
     HalfSpaceTrees.score_one
+    MinMaxScaler.learn_one
     MinMaxScaler.transform_one
     HalfSpaceTrees.learn_one
 
