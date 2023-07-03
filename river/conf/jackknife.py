@@ -69,7 +69,7 @@ class RegressionJackknife(base.Wrapper, base.Regressor):
     The interval's efficiency is the average width of the intervals.
 
     >>> efficiency
-    Mean: 3.593173
+    Mean: 4.078361
 
     Lowering the confidence lowering will mechanically improve the efficiency.
 

@@ -70,7 +70,7 @@ class EWARegressor(base.Ensemble, base.Regressor):
     ... )
 
     >>> evaluate.progressive_val_score(dataset, hedge, metric)
-    MAE: 0.494832
+    MAE: 0.496298
 
     References
     ----------

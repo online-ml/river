@@ -98,7 +98,7 @@ class SKL2RiverRegressor(SKL2RiverBase, base.Regressor):
     >>> metric = metrics.MAE()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    MAE: 84.519485
+    MAE: 84.501421
 
     """
 

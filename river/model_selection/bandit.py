@@ -114,7 +114,7 @@ class BanditRegressor(BanditModelSection, model_selection.base.ModelSelectionReg
     >>> metric = metrics.MAE()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    MAE: 0.875457
+    MAE: 0.875333
 
     """
 

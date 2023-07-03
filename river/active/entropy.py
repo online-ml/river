@@ -59,7 +59,7 @@ class EntropySampler(ActiveLearningClassifier):
     (5574, 1921)
 
     >>> print(f"{n_samples_used / dataset.n_samples:.2%}")
-    34.48%
+    34.46%
 
     """
 

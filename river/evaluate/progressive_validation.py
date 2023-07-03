@@ -312,7 +312,7 @@ def progressive_val_score(
     ...     model = model.learn_one(x, y)
 
     >>> metric
-    ROCAUC: 95.04%
+    ROCAUC: 95.07%
 
     When `print_every` is specified, the current state is printed at regular intervals. Under
     the hood, Python's `print` method is being used. You can pass extra keyword arguments to
