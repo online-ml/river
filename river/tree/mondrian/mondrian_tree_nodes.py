@@ -288,9 +288,9 @@ class MondrianNodeClassifier(MondrianNode):
         Parameters
         ----------
         x
-            Sample to proceed (as a list).
+            Sample to proceed.
         y
-            Class of the sample x_t.
+            Class of the sample x.
         dirichlet
             Dirichlet parameter of the tree.
         use_aggregation
@@ -347,6 +347,153 @@ class MondrianLeafClassifier(MondrianNodeClassifier, MondrianLeaf):
 
 class MondrianBranchClassifier(MondrianNodeClassifier, MondrianBranch):
     """Mondrian Tree Classifier branch node.
+
+    Parameters
+    ----------
+    parent
+        Parent node of the branch.
+    time
+        Split time characterizing the branch.
+    depth
+        Depth of the branch in the tree.
+    feature
+        Feature of the branch.
+    threshold
+        Acceptation threshold of the branch.
+    *children
+        Children nodes of the branch.
+    """
+
+    def __init__(self, parent, time, depth, feature, threshold, *children):
+        super().__init__(parent, time, depth, feature, threshold, *children)
+
+
+class MondrianNodeRegressor(MondrianNode):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.n_samples = 0
+        self.mean = 0.0
+
+    def replant(self, leaf: MondrianNodeRegressor, copy_all: bool = False):
+        """Transfer information from a leaf to a new branch."""
+        self.weight = leaf.weight  # type: ignore
+        self.log_weight_tree = leaf.log_weight_tree  # type: ignore
+        self.mean = leaf.mean
+
+        if copy_all:
+            self.memory_range_min = leaf.memory_range_min
+            self.memory_range_max = leaf.memory_range_max
+            self.n_samples = leaf.n_samples
+
+    def predict(self) -> base.typing.RegTarget:
+        """Return the prediction of the node."""
+        return self.mean
+
+    def loss(self, sample_value: base.typing.RegTarget) -> float:
+        """Compute the loss of the node.
+
+        Parameters
+        ----------
+        sample_value
+            A given value.
+        """
+
+        r = self.predict() - sample_value
+        return r * r / 2
+
+    def update_weight(
+        self,
+        sample_value: base.typing.RegTarget,
+        use_aggregation: bool,
+        step: float,
+    ) -> float:
+        """Update the weight of the node given a label and the method used.
+
+        Parameters
+        ----------
+        sample_value
+            Label of a given sample.
+        use_aggregation
+            Whether to use aggregation or not during computation (given by the tree).
+        step
+            Step parameter of the tree.
+        """
+
+        loss_t = self.loss(sample_value)
+        if use_aggregation:
+            self.weight -= step * loss_t
+        return loss_t
+
+    def update_downwards(
+        self,
+        x,
+        sample_value: base.typing.RegTarget,
+        use_aggregation: bool,
+        step: float,
+        do_update_weight: bool,
+    ):
+        """Update the node when running a downward procedure updating the tree.
+
+        Parameters
+        ----------
+        x
+            Sample to proceed (as a list).
+        sample_value
+            Label of the sample x.
+        use_aggregation
+            Should it use the aggregation or not
+        step
+            Step of the tree.
+        do_update_weight
+            Should we update the weights of the node as well.
+        """
+
+        # Updating the range of the feature values known by the node
+        # If it is the first sample, we copy the features vector into the min and max range
+        if self.n_samples == 0:
+            for feature in x:
+                x_f = x[feature]
+                self.memory_range_min[feature] = x_f
+                self.memory_range_max[feature] = x_f
+        # Otherwise, we update the range
+        else:
+            for feature in x:
+                x_f = x[feature]
+                if x_f < self.memory_range_min[feature]:
+                    self.memory_range_min[feature] = x_f
+                if x_f > self.memory_range_max[feature]:
+                    self.memory_range_max[feature] = x_f
+
+        # One more sample in the node
+        self.n_samples += 1
+
+        if do_update_weight:
+            self.update_weight(sample_value, use_aggregation, step)
+
+        # Update the mean of the labels in the node online
+        self.mean = (self.n_samples * self.mean + sample_value) / (self.n_samples + 1)
+
+
+class MondrianLeafRegressor(MondrianNodeRegressor, MondrianLeaf):
+    """Mondrian Tree Regressor leaf node.
+
+    Parameters
+    ----------
+    parent
+        Parent node.
+    time
+        Split time of the node.
+    depth
+        The depth of the leaf.
+    """
+
+    def __init__(self, parent, time, depth):
+        super().__init__(parent, time, depth)
+
+
+class MondrianBranchRegressor(MondrianNodeRegressor, MondrianBranch):
+    """Mondrian Tree Regressor branch node.
 
     Parameters
     ----------
