@@ -12,20 +12,20 @@
         <meta name="author" content="The Fellowship of Online Machine Learning">
       
       
-        <link rel="canonical" href="https://riverml.xyz/dev/api/compose/warm-up-mode/">
+        <link rel="canonical" href="https://riverml.xyz/dev/api/compose/learn-during-predict/">
       
       
-        <link rel="prev" href="../pure-inference-mode/">
+        <link rel="prev" href="../TransformerUnion/">
       
       
         <link rel="next" href="../../conf/Interval/">
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.17">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.18">
     
     
       
-        <title>warm_up_mode - River</title>
+        <title>learn_during_predict - River</title>
       
     
     
@@ -82,7 +82,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#warm_up_mode" class="md-skip">
+        <a href="#learn_during_predict" class="md-skip">
           Skip to content
         </a>
       
@@ -118,7 +118,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              warm_up_mode
+              learn_during_predict
             
           </span>
         </div>
@@ -304,7 +304,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../../releases/0.18.0/" class="md-tabs__link">
+      <a href="../../../releases/unreleased/" class="md-tabs__link">
         Releases
       </a>
     </li>
@@ -2211,8 +2211,6 @@
         
           
         
-          
-        
       
       
         <label class="md-nav__link" for="__nav_3_8" id="__nav_3_8_label" tabindex="0">
@@ -2399,20 +2397,6 @@
               
   
   
-  
-    <li class="md-nav__item">
-      <a href="../pure-inference-mode/" class="md-nav__link">
-        pure_inference_mode
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
     
   
   
@@ -2425,12 +2409,12 @@
       
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
-          warm_up_mode
+          learn_during_predict
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <a href="./" class="md-nav__link md-nav__link--active">
-        warm_up_mode
+        learn_during_predict
       </a>
       
         
@@ -11018,6 +11002,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
@@ -11031,6 +11017,20 @@
           Releases
         </label>
         <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../releases/unreleased/" class="md-nav__link">
+        Unreleased
+      </a>
+    </li>
+  
+
+            
           
             
               
@@ -11667,27 +11667,26 @@
                   
 
 
-<h1 id="warm_up_mode">warm_up_mode<a class="headerlink" href="#warm_up_mode" title="Permanent link">&para;</a></h1>
-<p>A context manager for training pipelines during a warm-up phase.</p>
-<p>You don't have to worry about anything when you call <code>predict_one</code> and <code>learn_one</code> with a pipeline during in training loop. At each step of the pipeline, the methods will be called in the correct order. </p>
-<p>However, during a warm-up phase, you might just be calling <code>learn_one</code> because you don't need the out-of-sample predictions. In this case, the unsupervised estimators in the pipeline won't be updated, because they are usually updated when <code>predict_one</code> is called. </p>
-<p>This context manager allows you to override that behavior and make it so that unsupervised estimators are updated when <code>learn_one</code> is called.</p>
+<h1 id="learn_during_predict">learn_during_predict<a class="headerlink" href="#learn_during_predict" title="Permanent link">&para;</a></h1>
+<p>A context manager for making inferences with no side-effects.</p>
+<p>Calling <code>predict_one</code> with a pipeline will update the unsupervised steps of the pipeline. This is the expected behavior for online machine learning. However, in some cases, you might just want to produce predictions without necessarily updating anything. </p>
+<p>This context manager allows you to override that behavior, by making it so that unsupervised estimators are not updated when <code>predict_one</code> is called.</p>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
-<p>Let's first see what methods are called if we just call <code>learn_one</code>.</p>
+<p>Let's first see what methods are called if we just call <code>predict_one</code>.</p>
 <p><div class="language-python highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">io</span>
 <span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">anomaly</span>
 <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">compose</span>
 <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">datasets</span>
+<span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">linear_model</span>
 <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">preprocessing</span>
 <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">utils</span>
 
 <span class="n">model</span> <span class="o">=</span> <span class="n">compose</span><span class="o">.</span><span class="n">Pipeline</span><span class="p">(</span>
-    <span class="n">preprocessing</span><span class="o">.</span><span class="n">MinMaxScaler</span><span class="p">(),</span>
-    <span class="n">anomaly</span><span class="o">.</span><span class="n">HalfSpaceTrees</span><span class="p">()</span>
+    <span class="n">preprocessing</span><span class="o">.</span><span class="n">StandardScaler</span><span class="p">(),</span>
+    <span class="n">linear_model</span><span class="o">.</span><span class="n">LinearRegression</span><span class="p">()</span>
 <span class="p">)</span>
 
-<span class="n">class_condition</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;MinMaxScaler&#39;</span><span class="p">,</span> <span class="s1">&#39;HalfSpaceTrees&#39;</span><span class="p">)</span>
+<span class="n">class_condition</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;StandardScaler&#39;</span><span class="p">,</span> <span class="s1">&#39;LinearRegression&#39;</span><span class="p">)</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span>
 <span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
@@ -11698,13 +11697,13 @@
 <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">sh</span><span class="p">)</span>
 
 <span class="k">with</span> <span class="n">utils</span><span class="o">.</span><span class="n">log_method_calls</span><span class="p">(</span><span class="n">class_condition</span><span class="p">):</span>
-    <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">datasets</span><span class="o">.</span><span class="n">CreditCard</span><span class="p">()</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="mi">1</span><span class="p">):</span>
-        <span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">datasets</span><span class="o">.</span><span class="n">TrumpApproval</span><span class="p">()</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">_</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="n">logs</span><span class="o">.</span><span class="n">getvalue</span><span class="p">())</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>MinMaxScaler.transform_one
-HalfSpaceTrees.learn_one
+<div class="language-text highlight"><pre><span></span><code>StandardScaler.transform_one
+LinearRegression.predict_one
 </code></pre></div></p>
 <p>Now let's use the context manager and see what methods get called.</p>
 <p><div class="language-python highlight"><pre><span></span><code><span class="n">logs</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">()</span>
@@ -11712,17 +11711,45 @@ HalfSpaceTrees.learn_one
 <span class="n">sh</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
 <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">sh</span><span class="p">)</span>
 
-<span class="k">with</span> <span class="n">utils</span><span class="o">.</span><span class="n">log_method_calls</span><span class="p">(</span><span class="n">class_condition</span><span class="p">),</span> <span class="n">compose</span><span class="o">.</span><span class="n">warm_up_mode</span><span class="p">():</span>
-    <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">datasets</span><span class="o">.</span><span class="n">CreditCard</span><span class="p">()</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="mi">1</span><span class="p">):</span>
-        <span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="k">with</span> <span class="n">utils</span><span class="o">.</span><span class="n">log_method_calls</span><span class="p">(</span><span class="n">class_condition</span><span class="p">),</span> <span class="n">compose</span><span class="o">.</span><span class="n">learn_during_predict</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">datasets</span><span class="o">.</span><span class="n">TrumpApproval</span><span class="p">()</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">_</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="n">logs</span><span class="o">.</span><span class="n">getvalue</span><span class="p">())</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>MinMaxScaler.learn_one
-MinMaxScaler.transform_one
-HalfSpaceTrees.learn_one
+<div class="language-text highlight"><pre><span></span><code>StandardScaler.learn_one
+StandardScaler.transform_one
+LinearRegression.predict_one
 </code></pre></div></p>
-<p>We can see that the scaler got updated before transforming the data.</p>
+<p>We can see that the scaler did not get updated before transforming the data.</p>
+<p>This also works when working with mini-batches.</p>
+<p><div class="language-python highlight"><pre><span></span><code><span class="n">logs</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">()</span>
+<span class="n">sh</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">(</span><span class="n">logs</span><span class="p">)</span>
+<span class="n">sh</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">sh</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="n">utils</span><span class="o">.</span><span class="n">log_method_calls</span><span class="p">(</span><span class="n">class_condition</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">datasets</span><span class="o">.</span><span class="n">TrumpApproval</span><span class="p">()</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">_</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict_many</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span><span class="n">x</span><span class="p">]))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">logs</span><span class="o">.</span><span class="n">getvalue</span><span class="p">())</span>
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>StandardScaler.transform_many
+LinearRegression.predict_many
+</code></pre></div></p>
+<p><div class="language-python highlight"><pre><span></span><code><span class="n">logs</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">()</span>
+<span class="n">sh</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">(</span><span class="n">logs</span><span class="p">)</span>
+<span class="n">sh</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">sh</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="n">utils</span><span class="o">.</span><span class="n">log_method_calls</span><span class="p">(</span><span class="n">class_condition</span><span class="p">),</span> <span class="n">compose</span><span class="o">.</span><span class="n">learn_during_predict</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">datasets</span><span class="o">.</span><span class="n">TrumpApproval</span><span class="p">()</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">_</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict_many</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span><span class="n">x</span><span class="p">]))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">logs</span><span class="o">.</span><span class="n">getvalue</span><span class="p">())</span>
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>StandardScaler.learn_many
+StandardScaler.transform_many
+LinearRegression.predict_many
+</code></pre></div></p>
 
 
   
@@ -11788,10 +11815,10 @@ HalfSpaceTrees.learn_one
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": "../../..", "features": ["content.code.copy", "navigation.tabs", "navigation.instant", "navigation.indexes"], "search": "../../../assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["content.code.copy", "navigation.tabs", "navigation.instant", "navigation.indexes"], "search": "../../../assets/javascripts/workers/search.74e28a9f.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.b425cdc4.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.220ee61c.min.js"></script>
       
         
           <script src="../../../js/mkdocs-charts-plugin.js"></script>
