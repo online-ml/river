@@ -426,53 +426,55 @@ class Pipeline(base.Estimator):
 
         """
 
-        steps = iter(self.steps.values())
-        is_anomaly = False
-
         # Loop over the first n - 1 steps, which should all be transformers
-        for t in itertools.islice(steps, len(self) - 1):
+        for step in self.steps.values():
             # There might be an anomaly filter in the pipeline. Its purpose is to prevent anomalous
             # data from being learned by the subsequent parts of the pipeline.
-            if utils.inspect.ischildobject(obj=t, class_name="AnomalyFilter"):
-                if t._supervised:
-                    t.learn_one(x, y)
-                    score = t.score_one(x, y)
+            if utils.inspect.ischildobject(obj=step, class_name="AnomalyFilter"):
+                if step._supervised:
+                    step.learn_one(x, y)
+                    score = step.score_one(x, y)
                 else:
-                    t.learn_one(x)
-                    score = t.score_one(x)
+                    step.learn_one(x)
+                    score = step.score_one(x)
                 # Skip the next parts of the pipeline if the score is classified as anomalous
-                if t.classify(score):
-                    is_anomaly = True
+                if step.classify(score):
                     break
                 continue
 
-            if not self._LEARN_UNSUPERVISED_DURING_PREDICT:
-                if isinstance(t, union.TransformerUnion):
-                    for sub_t in t.transformers.values():
-                        if not sub_t._supervised:
-                            sub_t.learn_one(x)
-                elif not t._supervised:
-                    t.learn_one(x)
-
             x_pre = x
-            x = t.transform_one(x)
+            if isinstance(step, base.Transformer):
+                # In case of _LEARN_UNSUPERVISED_DURING_PREDICT, then the unsupervised transformers
+                # are updated before transforming.
+                if not self._LEARN_UNSUPERVISED_DURING_PREDICT:
+                    if isinstance(step, union.TransformerUnion):
+                        for sub_step in step.transformers.values():
+                            if not sub_step._supervised:
+                                sub_step.learn_one(x)
+                    elif not step._supervised:
+                        step.learn_one(x)
+                # Transform the data
+                x = step.transform_one(x)
 
             # The supervised transformers have to be updated.
             # Note that this is done after transforming in order to avoid target leakage.
-            if isinstance(t, union.TransformerUnion):
-                for sub_t in t.transformers.values():
-                    if sub_t._supervised:
-                        sub_t.learn_one(x_pre, y)
-
-            elif t._supervised:
-                t.learn_one(x_pre, y)
-
-        if not is_anomaly:
-            last_step = next(steps)
-            if last_step._supervised:
-                last_step.learn_one(x=x, y=y, **params)
+            if isinstance(step, base.Transformer):
+                if isinstance(step, union.TransformerUnion):
+                    for sub_step in step.transformers.values():
+                        if sub_step._supervised:
+                            sub_step.learn_one(x=x_pre, y=y)
+                # Here the step is a supervised transformer, such as a TargetAgg. It's important
+                # to pass the original features to the transformer, not the transformed ones.
+                elif step._supervised:
+                    step.learn_one(x=x_pre, y=y)  # type: ignore
+            # Here the step is not a transformer, and it's supervised, such as a LinearRegression.
+            # This is usually the last step of the pipeline.
+            elif step._supervised:
+                step.learn_one(x=x, y=y)
+            # Here the step is not a transformer, and it's unsupervised, such as a KMeans. This
+            # is also usually the last step of the pipeline.
             else:
-                last_step.learn_one(x, **params)
+                step.learn_one(x=x)
 
         return self
 
@@ -490,6 +492,8 @@ class Pipeline(base.Estimator):
             if utils.inspect.ischildobject(obj=t, class_name="AnomalyFilter"):
                 continue
 
+            # In case of _LEARN_UNSUPERVISED_DURING_PREDICT, then the unsupervised transformers
+            # are updated during the inference phase.
             if self._LEARN_UNSUPERVISED_DURING_PREDICT:
                 if isinstance(t, union.TransformerUnion):
                     for sub_t in t.transformers.values():
@@ -513,7 +517,7 @@ class Pipeline(base.Estimator):
         """
         x, last_step = self._transform_one(x)
         if isinstance(last_step, base.Transformer):
-            if not last_step._supervised:
+            if not last_step._supervised and self._LEARN_UNSUPERVISED_DURING_PREDICT:
                 last_step.learn_one(x)
             return last_step.transform_one(x, **params)
         return x
@@ -736,7 +740,7 @@ class Pipeline(base.Estimator):
         """
         X, last_step = self._transform_many(X=X)
         if isinstance(last_step, base.MiniBatchTransformer):
-            if not last_step._supervised:
+            if not last_step._supervised and not self._LEARN_UNSUPERVISED_DURING_PREDICT:
                 last_step.learn_many(X)
             return last_step.transform_many(X)
         return X
