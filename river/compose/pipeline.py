@@ -466,7 +466,7 @@ class Pipeline(base.Estimator):
                 # Here the step is a supervised transformer, such as a TargetAgg. It's important
                 # to pass the original features to the transformer, not the transformed ones.
                 elif step._supervised:
-                    step.learn_one(x=x_pre, y=y)
+                    step.learn_one(x=x_pre, y=y)  # type: ignore
             # Here the step is not a transformer, and it's supervised, such as a LinearRegression.
             # This is usually the last step of the pipeline.
             elif step._supervised:
