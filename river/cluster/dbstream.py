@@ -350,7 +350,7 @@ class DBSTREAM(base.Clusterer):
 
             # generate a final macro-cluster from clusters with the same label using the
             # merge function of DBStreamMicroCluster
-            macro_cluster = mcs_with_label_i[0]
+            macro_cluster = copy.deepcopy(mcs_with_label_i[0])
             for m in range(1, len(mcs_with_label_i)):
                 macro_cluster.merge(mcs_with_label_i[m])
 
