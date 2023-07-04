@@ -1,8 +1,8 @@
+from __future__ import annotations
+
 import collections
 import functools
 import itertools
-import math
-import numbers
 
 import numpy as np
 import pandas as pd
@@ -95,13 +95,13 @@ class OrdinalEncoder(base.MiniBatchTransformer):
 
         # We're going to have one auto-incrementing counter per feature. This counter will generate
         # the category codes for each feature.
-        self._counters = collections.defaultdict(
+        self._counters: collections.defaultdict = collections.defaultdict(
             functools.partial(make_counter, {unknown_value, none_value})
         )
 
         # We're going to store the categories in a dict of dicts. The outer dict will map each
         # feature to its inner dict. The inner dict will map each category to its code.
-        self.categories = collections.defaultdict(dict)
+        self.categories: collections.defaultdict = collections.defaultdict(dict)
 
     def transform_one(self, x):
         return {
