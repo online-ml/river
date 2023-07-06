@@ -29,3 +29,24 @@ def poisson(rate: float, rng=random) -> int:
         p *= rng.random()
 
     return k - 1
+
+
+def exponential(rate: float = 1.0, rng=random) -> int:
+    """Sample a random value from a Poisson distribution.
+
+    Parameters
+    ----------
+    rate
+    rng
+
+    References
+    ----------
+    [^1] [Wikipedia article](https://www.wikiwand.com/en/Exponential_distribution#Random_variate_generation)
+
+    """
+
+    u = rng.random()
+
+    # Retrive the λ value from the rate (β): β = 1 / λ
+    lmbda = 1.0 / rate
+    return -math.log(1 - u) / lmbda

@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import math
-import sys
 
 from river import base, utils
 from river.tree.mondrian.mondrian_tree import MondrianTree
@@ -10,6 +9,7 @@ from river.tree.mondrian.mondrian_tree_nodes import (
     MondrianLeafClassifier,
     MondrianNodeClassifier,
 )
+from river import utils
 
 
 class MondrianTreeClassifier(MondrianTree, base.Classifier):
@@ -54,7 +54,7 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
     >>> metric = metrics.Accuracy()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    Accuracy: 57.52%
+    Accuracy: 58.52%
 
     References
     ----------
@@ -202,11 +202,7 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
         # If x_t extends the current range of the node
         if extensions_sum > 0:
             # Sample an exponential with intensity = extensions_sum
-            # try catch to handle the Overflow situation in the exponential
-            try:
-                T = math.exp(1 / extensions_sum)
-            except OverflowError:
-                T = sys.float_info.max  # we get the largest possible output instead
+            T = utils.random.exponential(1 / extensions_sum, rng=self._rng)
 
             time = node.time
             # Splitting time of the node (if splitting occurs)

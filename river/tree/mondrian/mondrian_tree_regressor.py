@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import math
-import sys
 
 from river import base, utils
 from river.tree.mondrian.mondrian_tree import MondrianTree
@@ -10,6 +9,7 @@ from river.tree.mondrian.mondrian_tree_nodes import (
     MondrianLeafRegressor,
     MondrianNodeRegressor,
 )
+from river import utils
 
 
 class MondrianTreeRegressor(MondrianTree, base.Regressor):
@@ -137,11 +137,7 @@ class MondrianTreeRegressor(MondrianTree, base.Regressor):
         # TODO: what do we do here ? Zero variance ?
         if extensions_sum > 0:
             # Sample an exponential with intensity = extensions_sum
-            # try catch to handle the Overflow situation in the exponential
-            try:
-                T = math.exp(1 / extensions_sum)
-            except OverflowError:
-                T = sys.float_info.max  # we get the largest possible output instead
+            T = utils.random.exponential(1 / extensions_sum, rng=self._rng)
 
             time = node.time
             # Splitting time of the node (if splitting occurs)
