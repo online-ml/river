@@ -3,7 +3,7 @@ from __future__ import annotations
 import math
 import random
 
-__all__ = ["poisson"]
+__all__ = ["poisson", "exponential"]
 
 
 def poisson(rate: float, rng=random) -> int:
