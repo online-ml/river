@@ -1,16 +1,17 @@
+from __future__ import annotations
+
 import collections
-import math
-import numbers
 
 import numpy as np
-import pandas as pd
 
 from river import base
 
 
 class OrdinalEncoder(base.MiniBatchTransformer):
     # INFO: makes sense to add None initially? so it'll be easier to spot
-    def __init__(self, handle_unknown="use_reserved_value", unknown_value=1, encoded_missing_value=0):
+    def __init__(
+        self, handle_unknown="use_reserved_value", unknown_value=1, encoded_missing_value=0
+    ):
         # self.categories = categories
         # self.dtype = dtype
         self.handle_unknown = handle_unknown
@@ -86,6 +87,8 @@ class OrdinalEncoder(base.MiniBatchTransformer):
     def transform_many(self, X):
         X_encoded = X.copy()
         for col in X_encoded.columns:
-            X_encoded[col] = X_encoded[col].transform(lambda x: self.categories_[col].get(x, self.unknown_value))
+            X_encoded[col] = X_encoded[col].transform(
+                lambda x: self.categories_[col].get(x, self.unknown_value)
+            )
 
         return X_encoded
