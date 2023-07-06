@@ -71,7 +71,7 @@ class AMFLearner(base.Ensemble, abc.ABC):
 class AMFClassifier(AMFLearner, base.Classifier):
     """Aggregated Mondrian Forest classifier for online learning.
 
-    This implementation is truly online, in the sense that a single pass is performed, and that
+    This implementation is truly online[^1], in the sense that a single pass is performed, and that
     predictions can be produced anytime.
 
     Each node in a tree predicts according to the distribution of the labels
@@ -143,7 +143,8 @@ class AMFClassifier(AMFLearner, base.Classifier):
 
     References
     ----------
-    J. Mourtada, S. Gaiffas and E. Scornet, *AMF: Aggregated Mondrian Forests for Online Learning*, arXiv:1906.10529, 2019.
+    [^1]: Mourtada, J., Gaïffas, S., & Scornet, E. (2021). AMF: Aggregated Mondrian forests for online
+    learning. Journal of the Royal Statistical Society Series B: Statistical Methodology, 83(3), 505-533.
 
     """
 
