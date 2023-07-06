@@ -47,7 +47,6 @@ class MondrianTreeRegressor(MondrianTree, base.Regressor):
         iteration: int = 0,
         seed: int = None,
     ):
-
         super().__init__(
             step=step,
             loss="least-squares",

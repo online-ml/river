@@ -272,7 +272,6 @@ class AMFRegressor(AMFLearner, base.Regressor):
         split_pure: bool = False,
         seed: int = None,
     ):
-
         super().__init__(
             n_estimators=n_estimators,
             step=step,
@@ -316,7 +315,6 @@ class AMFRegressor(AMFLearner, base.Regressor):
         return self
 
     def predict_one(self, x):
-
         # Checking that the model has been trained once at least
         if not self.is_trained():
             return None

@@ -31,7 +31,7 @@ def poisson(rate: float, rng=random) -> int:
     return k - 1
 
 
-def exponential(rate: float = 1.0, rng=random) -> int:
+def exponential(rate: float = 1.0, rng=random) -> float:
     """Sample a random value from a Poisson distribution.
 
     Parameters
