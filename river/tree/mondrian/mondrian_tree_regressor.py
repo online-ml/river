@@ -9,7 +9,6 @@ from river.tree.mondrian.mondrian_tree_nodes import (
     MondrianLeafRegressor,
     MondrianNodeRegressor,
 )
-from river import utils
 
 
 class MondrianTreeRegressor(MondrianTree, base.Regressor):
@@ -80,7 +79,7 @@ class MondrianTreeRegressor(MondrianTree, base.Regressor):
             Node to make predictions.
         """
 
-        return node.predict()
+        return node.predict()  # type: ignore
 
     def _loss(self, node: MondrianNodeRegressor) -> float:
         """Compute the loss for the given node regarding the current label.

@@ -399,7 +399,7 @@ class MondrianNodeRegressor(MondrianNode):
             A given value.
         """
 
-        r = self.predict() - sample_value
+        r = self.predict() - sample_value  # type: ignore
         return r * r / 2
 
     def update_weight(

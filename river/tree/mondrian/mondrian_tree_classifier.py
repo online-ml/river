@@ -9,7 +9,6 @@ from river.tree.mondrian.mondrian_tree_nodes import (
     MondrianLeafClassifier,
     MondrianNodeClassifier,
 )
-from river import utils
 
 
 class MondrianTreeClassifier(MondrianTree, base.Classifier):
