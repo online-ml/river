@@ -75,11 +75,12 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
             step=step,
             loss="log",
             use_aggregation=use_aggregation,
-            split_pure=split_pure,
             iteration=iteration,
             seed=seed,
         )
+
         self.dirichlet = dirichlet
+        self.split_pure = split_pure
 
         # Training attributes
         # The previously observed classes set

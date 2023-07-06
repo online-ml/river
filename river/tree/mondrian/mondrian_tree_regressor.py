@@ -20,8 +20,6 @@ class MondrianTreeRegressor(MondrianTree, base.Regressor):
         Step of the tree.
     use_aggregation
         Whether to use aggregation weighting techniques or not.
-    split_pure
-        Whether the tree should split pure leafs during training or not.
     iteration
         Number iterations to do during training.
     seed
@@ -42,7 +40,6 @@ class MondrianTreeRegressor(MondrianTree, base.Regressor):
         self,
         step: float = 0.1,
         use_aggregation: bool = True,
-        split_pure: bool = False,
         iteration: int = 0,
         seed: int = None,
     ):
@@ -50,7 +47,6 @@ class MondrianTreeRegressor(MondrianTree, base.Regressor):
             step=step,
             loss="least-squares",
             use_aggregation=use_aggregation,
-            split_pure=split_pure,
             iteration=iteration,
             seed=seed,
         )
@@ -131,8 +127,6 @@ class MondrianTreeRegressor(MondrianTree, base.Regressor):
             Target node.
         """
 
-        #  Don't split if the node is pure: all labels are equal to the one of y_t
-        # TODO: what do we do here ? Zero variance ?
         if extensions_sum > 0:
             # Sample an exponential with intensity = extensions_sum
             T = utils.random.exponential(1 / extensions_sum, rng=self._rng)

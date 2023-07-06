@@ -225,14 +225,14 @@ class AMFRegressor(AMFLearner, base.Regressor):
     This algorithm is truly online, in the sense that a single pass is performed, and that
     predictions can be produced anytime.
 
-    Each node in a tree predicts according to the average of the labels
-    it contains. The prediction for a sample is computed as the aggregated predictions
-    of all the subtrees along the path leading to the leaf node containing the sample.
-    The aggregation weights are exponential weights with learning rate ``step`` and loss
-    ``loss`` when ``use_aggregation`` is ``True``.
+    Each node in a tree predicts according to the average of the labels it contains.
+    The prediction for a sample is computed as the aggregated predictions of all the subtrees
+    along the path leading to the leaf node containing the sample. The aggregation weights are
+    exponential weights with learning rate ``step`` using a squared loss when ``use_aggregation``
+    is ``True``.
 
     This computation is performed exactly thanks to a context tree weighting algorithm.
-    More details can be found in the paper cited in references below.
+    More details can be found in the original paper[^1].
 
     The final predictions are the average of the predictions of each of the
     ``n_estimators`` trees in the forest.
@@ -246,21 +246,28 @@ class AMFRegressor(AMFLearner, base.Regressor):
     use_aggregation
         Controls if aggregation is used in the trees. It is highly recommended to
         leave it as `True`.
-    split_pure
-        Controls if nodes that contains only sample of the same class should be
-        split ("pure" nodes). Default is `False`, namely pure nodes are not split,
-        but `True` can be sometimes better.
     seed
         Random seed for reproducibility.
 
-    Note
-    ----
-    All the parameters of ``AMFRegressor`` become **read-only** after the first call
-    to ``partial_fit``.
+    Examples
+    --------
+
+    >>> from river import datasets
+    >>> from river import evaluate
+    >>> from river import forest
+    >>> from river import metrics
+
+    >>> dataset = datasets.TrumpApproval()
+    >>> model = forest.AMFRegressor(seed=42)
+    >>> metric = metrics.MAE()
+
+    >>> evaluate.progressive_val_score(dataset, model, metric)
+    MAE: 0.268533
 
     References
     ----------
-    [^1]: J. Mourtada, S. Gaiffas and E. Scornet, *AMF: Aggregated Mondrian Forests for Online Learning*, arXiv:1906.10529, 2019
+    [^1]: Mourtada, J., Gaïffas, S., & Scornet, E. (2021). AMF: Aggregated Mondrian forests for online
+    learning. Journal of the Royal Statistical Society Series B: Statistical Methodology, 83(3), 505-533.
 
     """
 
@@ -269,7 +276,6 @@ class AMFRegressor(AMFLearner, base.Regressor):
         n_estimators: int = 10,
         step: float = 1.0,
         use_aggregation: bool = True,
-        split_pure: bool = False,
         seed: int = None,
     ):
         super().__init__(
@@ -277,7 +283,6 @@ class AMFRegressor(AMFLearner, base.Regressor):
             step=step,
             loss="least-squares",
             use_aggregation=use_aggregation,
-            split_pure=split_pure,
             seed=seed,
         )
 
@@ -295,7 +300,6 @@ class AMFRegressor(AMFLearner, base.Regressor):
             tree = MondrianTreeRegressor(
                 self.step,
                 self.use_aggregation,
-                self.split_pure,
                 self.iteration,
                 seed,
             )
@@ -303,7 +307,7 @@ class AMFRegressor(AMFLearner, base.Regressor):
 
     def learn_one(self, x, y):
         # Checking if the forest has been created
-        if not self.is_trained():
+        if not self._is_initialized:
             self._initialize_trees()
 
         # we fit all the trees using the new sample
@@ -316,7 +320,7 @@ class AMFRegressor(AMFLearner, base.Regressor):
 
     def predict_one(self, x):
         # Checking that the model has been trained once at least
-        if not self.is_trained():
+        if not self._is_initialized:
             return None
 
         prediction = 0

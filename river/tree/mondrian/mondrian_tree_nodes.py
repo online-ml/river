@@ -3,7 +3,7 @@ from __future__ import annotations
 import collections
 import math
 
-from river import base
+from river import base, stats
 from river.tree.base import Branch, Leaf
 from river.utils.math import log_sum_2_exp
 
@@ -373,7 +373,7 @@ class MondrianNodeRegressor(MondrianNode):
         super().__init__(*args, **kwargs)
 
         self.n_samples = 0
-        self.mean = 0.0
+        self.mean = stats.Mean()
 
     def replant(self, leaf: MondrianNodeRegressor, copy_all: bool = False):
         """Transfer information from a leaf to a new branch."""
@@ -388,7 +388,7 @@ class MondrianNodeRegressor(MondrianNode):
 
     def predict(self) -> base.typing.RegTarget:
         """Return the prediction of the node."""
-        return self.mean
+        return self.mean.get()
 
     def loss(self, sample_value: base.typing.RegTarget) -> float:
         """Compute the loss of the node.
@@ -472,7 +472,7 @@ class MondrianNodeRegressor(MondrianNode):
             self.update_weight(sample_value, use_aggregation, step)
 
         # Update the mean of the labels in the node online
-        self.mean = (self.n_samples * self.mean + sample_value) / (self.n_samples + 1)
+        self.mean.update(sample_value)
 
 
 class MondrianLeafRegressor(MondrianNodeRegressor, MondrianLeaf):
