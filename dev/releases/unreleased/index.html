@@ -7681,6 +7681,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_3_31" id="__nav_3_31_label" tabindex="0">
@@ -7815,6 +7817,20 @@
     <li class="md-nav__item">
       <a href="../../api/preprocessing/OneHotEncoder/" class="md-nav__link">
         OneHotEncoder
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/preprocessing/OrdinalEncoder/" class="md-nav__link">
+        OrdinalEncoder
       </a>
     </li>
   
@@ -11022,8 +11038,22 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#linear_model" class="md-nav__link">
+    linear_model
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#forest" class="md-nav__link">
     forest
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#preprocessing" class="md-nav__link">
+    preprocessing
   </a>
   
 </li>
@@ -11658,8 +11688,22 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#linear_model" class="md-nav__link">
+    linear_model
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#forest" class="md-nav__link">
     forest
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#preprocessing" class="md-nav__link">
+    preprocessing
   </a>
   
 </li>
@@ -11687,9 +11731,17 @@
 <li>Removed the <code>compose.pure_inference_mode</code> context manager.</li>
 <li>The last step of a pipeline will be correctly updated if it is unsupervised, which wasn't the case before.</li>
 </ul>
+<h2 id="linear_model">linear_model<a class="headerlink" href="#linear_model" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Added a <code>predict_many</code> method to <a href="../../api/linear-model/BayesianLinearRegression"><code>linear_model.BayesianLinearRegression</code></a>.</li>
+</ul>
 <h2 id="forest">forest<a class="headerlink" href="#forest" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Fixed issue with <a href="../../api/forest/ARFClassifier"><code>forest.ARFClassifier</code></a> which couldn't be passed a <code>CrossEntropy</code> metric.</li>
+</ul>
+<h2 id="preprocessing">preprocessing<a class="headerlink" href="#preprocessing" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Added <a href="../../api/preprocessing/OrdinalEncoder"><code>preprocessing.OrdinalEncoder</code></a>, to map string features to integers.</li>
 </ul>
 
 
