@@ -12,6 +12,7 @@ from .feature_hasher import FeatureHasher
 from .impute import PreviousImputer, StatImputer
 from .lda import LDA
 from .one_hot import OneHotEncoder
+from .ordinal import OrdinalEncoder
 from .pred_clipper import PredClipper
 from .random_projection import GaussianRandomProjector, SparseRandomProjector
 from .scale import (
@@ -35,6 +36,7 @@ __all__ = [
     "MinMaxScaler",
     "Normalizer",
     "OneHotEncoder",
+    "OrdinalEncoder",
     "PredClipper",
     "PreviousImputer",
     "RobustScaler",
