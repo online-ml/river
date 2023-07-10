@@ -19,14 +19,15 @@ __all__ = ["Pipeline"]
 
 @contextlib.contextmanager
 def learn_during_predict():
-    """A context manager for making inferences with no side-effects.
+    """A context manager for fitting unsupervised steps during prediction.
 
-    Calling `predict_one` with a pipeline will update the unsupervised steps of the pipeline. This
-    is the expected behavior for online machine learning. However, in some cases, you might just
-    want to produce predictions without necessarily updating anything.
+    Usually, unsupervised parts of a pipeline are updated during `learn_one`. However, in the case
+    of online learning, it is possible to update them before, during the prediction step. This
+    context manager allows you to do so.
 
-    This context manager allows you to override that behavior, by making it so that unsupervised
-    estimators are not updated when `predict_one` is called.
+    This usually brings a slight performance improvement. But it is not done by default because it
+    is not intuitive and is more difficult to test. It also means that you have to call
+    `predict_one` before `learn_one` in order for the whole pipeline to be updated.
 
     Examples
     --------
