@@ -229,8 +229,8 @@ class AMFRegressor(AMFLearner, base.Regressor):
     Each node in a tree predicts according to the average of the labels it contains.
     The prediction for a sample is computed as the aggregated predictions of all the subtrees
     along the path leading to the leaf node containing the sample. The aggregation weights are
-    exponential weights with learning rate ``step`` using a squared loss when ``use_aggregation``
-    is ``True``.
+    exponential weights with learning rate `step` using a squared loss when `use_aggregation`
+    is `True`.
 
     This computation is performed exactly thanks to a context tree weighting algorithm.
     More details can be found in the original paper[^1].
