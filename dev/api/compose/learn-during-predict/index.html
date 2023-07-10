@@ -11684,9 +11684,9 @@
 
 
 <h1 id="learn_during_predict">learn_during_predict<a class="headerlink" href="#learn_during_predict" title="Permanent link">&para;</a></h1>
-<p>A context manager for making inferences with no side-effects.</p>
-<p>Calling <code>predict_one</code> with a pipeline will update the unsupervised steps of the pipeline. This is the expected behavior for online machine learning. However, in some cases, you might just want to produce predictions without necessarily updating anything. </p>
-<p>This context manager allows you to override that behavior, by making it so that unsupervised estimators are not updated when <code>predict_one</code> is called.</p>
+<p>A context manager for fitting unsupervised steps during prediction.</p>
+<p>Usually, unsupervised parts of a pipeline are updated during <code>learn_one</code>. However, in the case of online learning, it is possible to update them before, during the prediction step. This context manager allows you to do so. </p>
+<p>This usually brings a slight performance improvement. But it is not done by default because it is not intuitive and is more difficult to test. It also means that you have to call <code>predict_one</code> before <code>learn_one</code> in order for the whole pipeline to be updated.</p>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
 <p>Let's first see what methods are called if we just call <code>predict_one</code>.</p>
 <p><div class="language-python highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">io</span>
