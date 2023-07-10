@@ -11,7 +11,7 @@ Calling `learn_one` in a pipeline will now update each part of the pipeline in t
 ## forest
 
 - Fixed issue with `forest.ARFClassifier` which couldn't be passed a `CrossEntropy` metric.
-- Fixed bug in `forest.AMFClassifier`.
+- Fixed a bug in `forest.AMFClassifier` which slightly improves predictive accurary.
 - Added `forest.AMFRegressor`.
 
 ## utils
