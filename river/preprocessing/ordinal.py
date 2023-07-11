@@ -5,6 +5,7 @@ import functools
 import itertools
 
 import numpy as np
+import pandas as pd
 
 from river import base
 
