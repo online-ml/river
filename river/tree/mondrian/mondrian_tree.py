@@ -16,16 +16,15 @@ class MondrianTree(abc.ABC):
     step
         Step parameter of the tree.
     loss
-        Loss to minimize for each node of the tree
-        Pick between: "log", ...
+        Loss to minimize for each node of the tree. At the moment it is a placeholder.
+        In the future, different optimization metrics might become available.
     use_aggregation
         Whether or not the tree should it use aggregation.
-    split_pure
-        Whether or not the tree should split pure leaves when training.
     iteration
         Number of iterations to run when training.
     seed
         Random seed for reproducibility.
+
     """
 
     def __init__(
@@ -33,7 +32,6 @@ class MondrianTree(abc.ABC):
         step: float = 0.1,
         loss: str = "log",
         use_aggregation: bool = True,
-        split_pure: bool = False,
         iteration: int = 0,
         seed: int | None = None,
     ):
@@ -41,7 +39,6 @@ class MondrianTree(abc.ABC):
         self.step = step
         self.loss = loss
         self.use_aggregation = use_aggregation
-        self.split_pure = split_pure
         self.iteration = iteration
 
         # Controls the randomness in the tree
