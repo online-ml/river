@@ -4459,6 +4459,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_3_19" id="__nav_3_19_label" tabindex="0">
@@ -4481,6 +4483,20 @@
     <li class="md-nav__item">
       <a href="../../api/forest/AMFClassifier/" class="md-nav__link">
         AMFClassifier
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/forest/AMFRegressor/" class="md-nav__link">
+        AMFRegressor
       </a>
     </li>
   
@@ -10538,6 +10554,8 @@
         
           
         
+          
+        
       
       
         <label class="md-nav__link" for="__nav_3_40_12" id="__nav_3_40_12_label" tabindex="0">
@@ -10551,6 +10569,20 @@
           random
         </label>
         <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/utils/random/exponential/" class="md-nav__link">
+        exponential
+      </a>
+    </li>
+  
+
+            
           
             
               
@@ -11054,6 +11086,13 @@
         <li class="md-nav__item">
   <a href="#preprocessing" class="md-nav__link">
     preprocessing
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#utils" class="md-nav__link">
+    utils
   </a>
   
 </li>
@@ -11708,6 +11747,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#utils" class="md-nav__link">
+    utils
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -11724,7 +11770,7 @@
 
 
 <h1 id="unreleased">Unreleased<a class="headerlink" href="#unreleased" title="Permanent link">&para;</a></h1>
-<p>Calling <code>learn_one</code> in a pipeline will now update each part of the pipeline in turn. Before the unsupervised parts of the pipeline were updated during <code>predict_one</code>. This is more intuitive for new users. The old behavior, which yields better results, can be restored by calling <code>learn_one</code> with the new <code>compose.pure_inference_mode</code> context manager.</p>
+<p>Calling <code>learn_one</code> in a pipeline will now update each part of the pipeline in turn. Before the unsupervised parts of the pipeline were updated during <code>predict_one</code>. This is more intuitive for new users. The old behavior, which yields better results, can be restored by calling <code>learn_one</code> with the new <a href="../../api/compose/learn-during-predict"><code>compose.learn_during_predict</code></a> context manager.</p>
 <h2 id="compose">compose<a class="headerlink" href="#compose" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Removed the <code>compose.warm_up_mode</code> context manager.</li>
@@ -11738,10 +11784,16 @@
 <h2 id="forest">forest<a class="headerlink" href="#forest" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Fixed issue with <a href="../../api/forest/ARFClassifier"><code>forest.ARFClassifier</code></a> which couldn't be passed a <code>CrossEntropy</code> metric.</li>
+<li>Fixed a bug in <a href="../../api/forest/AMFClassifier"><code>forest.AMFClassifier</code></a> which slightly improves predictive accurary.</li>
+<li>Added <a href="../../api/forest/AMFRegressor"><code>forest.AMFRegressor</code></a>.</li>
 </ul>
 <h2 id="preprocessing">preprocessing<a class="headerlink" href="#preprocessing" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Added <a href="../../api/preprocessing/OrdinalEncoder"><code>preprocessing.OrdinalEncoder</code></a>, to map string features to integers.</li>
+</ul>
+<h2 id="utils">utils<a class="headerlink" href="#utils" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Added <a href="../../api/utils/random/exponential"><code>utils.random.exponential</code></a> to retrieve random samples following an exponential distribution.</li>
 </ul>
 
 
