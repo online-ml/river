@@ -32,8 +32,9 @@ class MondrianTreeRegressor(MondrianTree, base.Regressor):
 
     References
     ----------
-    [^1] Balaji Lakshminarayanan, Daniel M. Roy, Yee Whye Teh. Mondrian Forests: Efficient Online Random Forests.
-        arXiv:1406.2673, pages 2-4
+    [^1]: Balaji Lakshminarayanan, Daniel M. Roy, Yee Whye Teh. Mondrian Forests: Efficient Online Random Forests.
+        arXiv:1406.2673, pages 2-4.
+
     """
 
     def __init__(
@@ -73,6 +74,7 @@ class MondrianTreeRegressor(MondrianTree, base.Regressor):
         ----------
         node
             Node to make predictions.
+
         """
 
         return node.predict()  # type: ignore
@@ -84,6 +86,7 @@ class MondrianTreeRegressor(MondrianTree, base.Regressor):
         ----------
         node
             Node to evaluate the loss.
+
         """
 
         return node.loss(self._y)
@@ -95,6 +98,7 @@ class MondrianTreeRegressor(MondrianTree, base.Regressor):
         ----------
         node
             Node to update the weight.
+
         """
 
         return node.update_weight(self._y, self.use_aggregation, self.step)
@@ -108,6 +112,7 @@ class MondrianTreeRegressor(MondrianTree, base.Regressor):
             Target node.
         do_update_weight
             Whether we should update the weights or not.
+
         """
 
         return node.update_downwards(
@@ -125,6 +130,7 @@ class MondrianTreeRegressor(MondrianTree, base.Regressor):
         ----------
         node
             Target node.
+
         """
 
         if extensions_sum > 0:
@@ -169,6 +175,7 @@ class MondrianTreeRegressor(MondrianTree, base.Regressor):
             Feature index of the node.
         is_right_extension
             Should we extend the tree in the right or left direction.
+
         """
 
         new_depth = node.depth + 1
@@ -378,7 +385,8 @@ class MondrianTreeRegressor(MondrianTree, base.Regressor):
         Parameters
         ----------
         x
-            Feature vector
+            Feature vector.
+
         """
 
         # If the tree hasn't seen any sample, then it should return

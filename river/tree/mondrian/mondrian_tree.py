@@ -24,6 +24,7 @@ class MondrianTree(abc.ABC):
         Number of iterations to run when training.
     seed
         Random seed for reproducibility.
+
     """
 
     def __init__(

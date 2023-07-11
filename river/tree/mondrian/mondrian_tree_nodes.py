@@ -19,6 +19,7 @@ class MondrianLeaf(Leaf):
         Split time of the node for Mondrian process.
     depth
         Depth of the leaf.
+
     """
 
     def __init__(self, parent, time, depth):
@@ -81,6 +82,7 @@ class MondrianNode(base.Base):
         ----------
         depth
             Depth of the node.
+
         """
 
         self.depth = depth
@@ -112,6 +114,7 @@ class MondrianNode(base.Base):
         ----------
         feature
             Feature for which you want to know the range.
+
         """
 
         return (
@@ -126,6 +129,7 @@ class MondrianNode(base.Base):
         ----------
         x
             Sample to deal with.
+
         """
 
         extensions: dict[base.typing.ClfTarget, float] = {}
@@ -176,6 +180,7 @@ class MondrianNodeClassifier(MondrianNode):
         Notes
         -----
         This uses Jeffreys prior with Dirichlet parameter for smoothing.
+
         """
 
         count = self.counts[y]
@@ -197,6 +202,7 @@ class MondrianNodeClassifier(MondrianNode):
             The set of classes seen so far
         n_classes
             The total number of classes of the problem.
+
         """
 
         scores = {}
@@ -215,6 +221,7 @@ class MondrianNodeClassifier(MondrianNode):
             Dirichlet parameter of the problem.
         n_classes
             The total number of classes of the problem.
+
         """
 
         sc = self.score(y, dirichlet, n_classes)
@@ -242,6 +249,7 @@ class MondrianNodeClassifier(MondrianNode):
             Step parameter of the tree.
         n_classes
             The total number of classes of the problem.
+
         """
 
         loss_t = self.loss(y, dirichlet, n_classes)
@@ -257,6 +265,7 @@ class MondrianNodeClassifier(MondrianNode):
         ----------
         y
             Class of a given sample.
+
         """
 
         self.counts[y] += 1
@@ -269,6 +278,7 @@ class MondrianNodeClassifier(MondrianNode):
         ----------
         y
             Class of a given sample.
+
         """
 
         return self.n_samples == self.counts[y]
@@ -301,6 +311,7 @@ class MondrianNodeClassifier(MondrianNode):
             Should we update the weights of the node as well.
         n_classes
             The total number of classes of the problem.
+
         """
 
         # Updating the range of the feature values known by the node
@@ -339,6 +350,7 @@ class MondrianLeafClassifier(MondrianNodeClassifier, MondrianLeaf):
         Split time of the node.
     depth
         The depth of the leaf.
+
     """
 
     def __init__(self, parent, time, depth):
@@ -362,6 +374,7 @@ class MondrianBranchClassifier(MondrianNodeClassifier, MondrianBranch):
         Acceptation threshold of the branch.
     *children
         Children nodes of the branch.
+
     """
 
     def __init__(self, parent, time, depth, feature, threshold, *children):
@@ -397,6 +410,7 @@ class MondrianNodeRegressor(MondrianNode):
         ----------
         sample_value
             A given value.
+
         """
 
         r = self.predict() - sample_value  # type: ignore
@@ -418,6 +432,7 @@ class MondrianNodeRegressor(MondrianNode):
             Whether to use aggregation or not during computation (given by the tree).
         step
             Step parameter of the tree.
+
         """
 
         loss_t = self.loss(sample_value)
@@ -447,6 +462,7 @@ class MondrianNodeRegressor(MondrianNode):
             Step of the tree.
         do_update_weight
             Should we update the weights of the node as well.
+
         """
 
         # Updating the range of the feature values known by the node
@@ -486,6 +502,7 @@ class MondrianLeafRegressor(MondrianNodeRegressor, MondrianLeaf):
         Split time of the node.
     depth
         The depth of the leaf.
+
     """
 
     def __init__(self, parent, time, depth):
@@ -509,6 +526,7 @@ class MondrianBranchRegressor(MondrianNodeRegressor, MondrianBranch):
         Acceptation threshold of the branch.
     *children
         Children nodes of the branch.
+
     """
 
     def __init__(self, parent, time, depth, feature, threshold, *children):
