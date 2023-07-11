@@ -41,7 +41,7 @@ def exponential(rate: float = 1.0, rng=random) -> float:
 
     References
     ----------
-    [^1] [Wikipedia article](https://www.wikiwand.com/en/Exponential_distribution#Random_variate_generation)
+    [^1]: [Wikipedia article](https://www.wikiwand.com/en/Exponential_distribution#Random_variate_generation)
 
     """
 
