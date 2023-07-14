@@ -8,10 +8,6 @@ Calling `learn_one` in a pipeline will now update each part of the pipeline in t
 - Removed the `compose.pure_inference_mode` context manager.
 - The last step of a pipeline will be correctly updated if it is unsupervised, which wasn't the case before.
 
-## feature_extraction
-
-- The `by` parameter of `Agg` and `TargetAgg` can now be set to `None` in order to compute aggregates on the whole data.
-
 ## linear_model
 
 - Added a `predict_many` method to `linear_model.BayesianLinearRegression`.

@@ -169,8 +169,8 @@ class Agg(base.Transformer):
     def __init__(
         self,
         on: str,
+        by: str | list[str] | None,
         how: stats.base.Univariate | utils.Rolling | utils.TimeRolling,
-        by: str | list[str] | None = None,
     ):
         self.on = on
         self.by = (by if isinstance(by, list) else [by]) if by is not None else by
@@ -338,8 +338,8 @@ class TargetAgg(base.SupervisedTransformer, Agg):
 
     def __init__(
         self,
+        by: str | list[str] | None,
         how: stats.base.Univariate | utils.Rolling | utils.TimeRolling,
-        by: str | list[str] | None = None,
         target_name="y",
     ):
         super().__init__(on=target_name, by=by, how=how)
