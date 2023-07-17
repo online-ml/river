@@ -16,6 +16,7 @@ class Bitcoin(ChangePointDataset):
     References
     ----------
     [^1]: https://www.blockchain.com/fr/explorer/charts/market-price?timespan=all
+
     """
 
     def __init__(self):
