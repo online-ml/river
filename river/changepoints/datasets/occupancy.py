@@ -14,6 +14,7 @@ class Occupancy(ChangePointDataset):
         The data is sampled at every 16 observations to reduce the length of the series.
         ----------
         Candanedo, Luis M., and Véronique Feldheim. "Accurate occupancy detection of an office room from light, temperature, humidity and CO2 measurements using statistical learning models." Energy and Buildings 112 (2016): 28-39.
+
     """
 
     def __init__(self):
