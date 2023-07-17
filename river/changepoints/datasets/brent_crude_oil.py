@@ -22,6 +22,7 @@ class BrentSpotPrice(ChangePointDataset):
     ----------
     [^1]: U.S. Energy Information Administration (Sep. 2019)
 	[^2]: https://www.eia.gov/opendata/v1/qb.php?sdid=PET.RBRTE.D
+    
     """
 
     def __init__(self):
