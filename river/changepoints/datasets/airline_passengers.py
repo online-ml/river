@@ -14,6 +14,7 @@ class AirlinePassengers(ChangePointDataset):
     References
     ----------
     [^1]: https://www.kaggle.com/new-york-state/nys-air-passenger-traffic,-port-authority-of-ny-nj#air-passenger-traffic-per-month-port-authority-of-ny-nj-beginning-1977.csv
+    
     """
 
     def __init__(self):
