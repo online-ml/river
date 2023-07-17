@@ -27,6 +27,20 @@ class ChangePointDataset(base.FileDataset, ABC):
         return self._annotations
 
     def annotations_aggregated(self, annotator_aggregation):
+        """The function `annotations_aggregated` takes an annotator aggregation method as input and returns
+        the aggregated annotations based on that method.
+        
+        Parameters
+        ----------
+        annotator_aggregation
+            The parameter "annotator_aggregation" is a string that specifies the method of aggregating
+        annotations from different annotators. It can take one of the following values:
+        
+        Returns
+        -------
+            the aggregated annotations based on the specified annotator aggregation method.
+        
+        """
         if annotator_aggregation == "union":
             annotations = set()
             for annotator in self._annotations:
