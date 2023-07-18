@@ -43,6 +43,7 @@ theme:
     - navigation.tabs
     - navigation.instant
     - navigation.indexes
+    - navigation.prune
 
 # Extras
 extra:
