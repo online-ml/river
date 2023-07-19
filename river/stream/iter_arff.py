@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from scipy.io.arff import arffread
+import scipy.io.arff
+from scipy.io.arff._arffread import read_header
 
 from river import base
 
@@ -24,6 +25,40 @@ def iter_arff(
         `filepath_or_buffer` is a path, then the decompression method is inferred for the
         following extensions: '.gz', '.zip'.
 
+    Examples
+    --------
+
+    >>> cars = '''
+    ... @relation CarData
+    ... @attribute make {Toyota, Honda, Ford, Chevrolet}
+    ... @attribute model string
+    ... @attribute year numeric
+    ... @attribute price numeric
+    ... @attribute mpg numeric
+    ... @data
+    ... Toyota, Corolla, 2018, 15000, 30.5
+    ... Honda, Civic, 2019, 16000, 32.2
+    ... Ford, Mustang, 2020, 25000, 25.0
+    ... Chevrolet, Malibu, 2017, 18000, 28.9
+    ... Toyota, Camry, 2019, 22000, 29.8
+    ... '''
+    >>> with open('cars.arff', mode='w') as f:
+    ...     _ = f.write(cars)
+
+    >>> from river import stream
+
+    >>> for x, y in stream.iter_arff('cars.arff', target='price'):
+    ...     print(x, y)
+    {'make': 'Toyota', 'model': ' Corolla', 'year': 2018.0, 'mpg': 30.5} 15000.0
+    {'make': 'Honda', 'model': ' Civic', 'year': 2019.0, 'mpg': 32.2} 16000.0
+    {'make': 'Ford', 'model': ' Mustang', 'year': 2020.0, 'mpg': 25.0} 25000.0
+    {'make': 'Chevrolet', 'model': ' Malibu', 'year': 2017.0, 'mpg': 28.9} 18000.0
+    {'make': 'Toyota', 'model': ' Camry', 'year': 2019.0, 'mpg': 29.8} 22000.0
+
+    Finally, let's delete the example file.
+
+    >>> import os; os.remove('cars.arff')
+
     """
 
     # If a file is not opened, then we open it
@@ -32,20 +67,21 @@ def iter_arff(
         buffer = utils.open_filepath(buffer, compression)
 
     try:
-        rel, attrs = arffread.read_header(buffer)
+        rel, attrs = read_header(buffer)
     except ValueError as e:
         msg = f"Error while parsing header, error was: {e}"
-        raise arffread.ParseArffError(msg)
+        raise scipy.io.arff.ParseArffError(msg)
 
     names = [attr.name for attr in attrs]
-    types = [float if isinstance(attr, arffread.NumericAttribute) else None for attr in attrs]
+    # HACK
+    casts = [float if attr.__class__.__name__ == "NumericAttribute" else None for attr in attrs]
 
     for r in buffer:
         if len(r) == 0:
             continue
         x = {
-            name: typ(val) if typ else val
-            for name, typ, val in zip(names, types, r.rstrip().split(","))
+            name: cast(val) if cast else val
+            for name, cast, val in zip(names, casts, r.rstrip().split(","))
         }
         try:
             y = x.pop(target) if target else None
