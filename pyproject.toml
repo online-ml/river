@@ -1,5 +1,5 @@
 [build-system]
-requires = ["cython==0.29.36", "numpy", "setuptools", "wheel", "setuptools-rust"]
+requires = ["cython", "numpy", "setuptools", "wheel", "setuptools-rust"]
 
 [tool.pytest.ini_options]
 addopts = [

@@ -1,3 +1,5 @@
+# cython: c_api_binop_methods=True
+
 cimport cython
 
 import itertools

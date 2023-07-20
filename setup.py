@@ -20,7 +20,7 @@ except ImportError:
 try:
     from Cython.Build import cythonize
 except ImportError:
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "Cython==0.29.36"])
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "Cython"])
     from Cython.Build import cythonize  # type: ignore
 
 NAME = "river"
