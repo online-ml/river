@@ -7,6 +7,7 @@ from .exact_match import ExactMatch
 from .macro import MacroAverage
 from .micro import MicroAverage
 from .per_output import PerOutput
+from .accuracy_moa_jaccard import Accuracy_MOA_Jaccard
 
 __all__ = [
     "base",
@@ -15,4 +16,5 @@ __all__ = [
     "ExactMatch",
     "MicroAverage",
     "PerOutput",
+    "Accuracy_MOA_Jaccard",
 ]
