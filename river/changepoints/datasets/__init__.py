@@ -9,4 +9,13 @@ from .occupancy import Occupancy
 from .run_log import RunLog
 from .uk_coal_employment import UKCoalEmploy
 
-__all__ = ["base", "Bitcoin", "BrentSpotPrice", "UKCoalEmploy", "AirlinePassengers", "RunLog", "Occupancy","Apple"]
+__all__ = [
+    "base",
+    "Bitcoin",
+    "BrentSpotPrice",
+    "UKCoalEmploy",
+    "AirlinePassengers",
+    "RunLog",
+    "Occupancy",
+    "Apple",
+]
