@@ -3,11 +3,10 @@ description: Retrieves Python
 
 inputs:
   python:
-    description: 'Python version'
+    description: "Python version"
 
 runs:
   using: "composite"
-
 
   steps:
     - name: Retrieve the Python environment
@@ -15,7 +14,7 @@ runs:
       id: retrieve-venv
       with:
         path: ~/.venv
-        key: ${{ github.run_id }}-venv-${{ runner.os }}-${{ inputs.python }}
+        key: venv-${{ runner.os }}-${{ inputs.python }}
         restore-keys: |
           ${{ runner.os }}-${{ inputs.python }}-venv
 
@@ -24,4 +23,4 @@ runs:
       id: retrieve-river
       with:
         path: ${{ github.workspace }}
-        key: river-build-${{ github.run_id }}-${{ runner.os }}-${{ inputs.python }}
+        key: river-build-${{ runner.os }}-${{ inputs.python }}
