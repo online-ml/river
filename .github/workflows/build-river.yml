@@ -41,7 +41,7 @@ jobs:
           path: ~/.venv
           key: ${{ runner.os }}-${{ inputs.python }}-venv-${{ hashFiles('**/setup.py') }}
           restore-keys: |
-            ${{ github.run_id }}-venv-${{ runner.os }}-${{ inputs.python }}
+            venv-${{ runner.os }}-${{ inputs.python }}
             ${{ runner.os }}-${{ inputs.python }}-venv-
 
       - name: Install Python dependencies
@@ -68,4 +68,4 @@ jobs:
         id: cache-river
         with:
           path: ${{ github.workspace }}
-          key: river-build-${{ github.run_id }}-${{ runner.os }}-${{ inputs.python }}
+          key: river-build-${{ runner.os }}-${{ inputs.python }}
