@@ -1,7 +1,10 @@
+from __future__ import annotations
+
 from river import stream
 
 # from . import base
 from river.datasets import base
+
 from .base import ChangePointDataset
 
 

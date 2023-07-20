@@ -1,11 +1,6 @@
 from __future__ import annotations
 
-import statistics
-from collections import defaultdict
-from copy import deepcopy
-from functools import partial
-
-from river import metrics, utils, stats
+from river import metrics, stats, utils
 from river.metrics.multioutput.base import MultiOutputMetric
 
 __all__ = ["SampleAverage"]

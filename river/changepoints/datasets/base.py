@@ -1,4 +1,6 @@
 # imports
+from __future__ import annotations
+
 from abc import ABC
 
 from river.datasets import base
