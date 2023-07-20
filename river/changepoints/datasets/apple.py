@@ -1,7 +1,10 @@
+from __future__ import annotations
+
 from river import stream
 
 # from . import base
 from river.datasets import base
+
 from .base import ChangePointDataset
 
 
@@ -10,11 +13,11 @@ class Apple(ChangePointDataset):
 
     This dataset concerns the daily close price and volume of Apple stock around the year 2000. The dataset is sampled every 3 observations to reduce the length of the time series.
     This dataset is retrieved from Yahoo Finance.
-    
+
     References
     ----------
     [^1]: https://finance.yahoo.com/quote/AAPL/history?period1=850348800&period2=1084579200&interval=1d&filter=history&frequency=1d
-       
+
     """
 
     def __init__(self):

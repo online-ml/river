@@ -18,6 +18,10 @@ Calling `learn_one` in a pipeline will now update each part of the pipeline in t
 - Fixed a bug in `forest.AMFClassifier` which slightly improves predictive accurary.
 - Added `forest.AMFRegressor`.
 
+## multioutput
+
+- Added `metrics.multioutput.SampleAverage`, which is equivalent to using `average='samples'` in scikit-learn.
+
 ## preprocessing
 
 - Added `preprocessing.OrdinalEncoder`, to map string features to integers.

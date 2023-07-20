@@ -35,6 +35,10 @@ from river import metrics
                 functools.partial(sk_metrics.precision_score, average="micro", zero_division=0),
             ),
             (
+                metrics.multioutput.SampleAverage(metrics.Precision()),
+                functools.partial(sk_metrics.precision_score, average="samples", zero_division=0),
+            ),
+            (
                 metrics.multioutput.MacroAverage(metrics.Recall()),
                 functools.partial(sk_metrics.recall_score, average="macro", zero_division=0),
             ),
@@ -43,12 +47,20 @@ from river import metrics
                 functools.partial(sk_metrics.recall_score, average="micro", zero_division=0),
             ),
             (
+                metrics.multioutput.SampleAverage(metrics.Recall()),
+                functools.partial(sk_metrics.recall_score, average="samples", zero_division=0),
+            ),
+            (
                 metrics.multioutput.MacroAverage(metrics.F1()),
                 functools.partial(sk_metrics.f1_score, average="macro", zero_division=0),
             ),
             (
                 metrics.multioutput.MicroAverage(metrics.F1()),
                 functools.partial(sk_metrics.f1_score, average="micro", zero_division=0),
+            ),
+            (
+                metrics.multioutput.SampleAverage(metrics.F1()),
+                functools.partial(sk_metrics.f1_score, average="samples", zero_division=0),
             ),
         ]
     ],
