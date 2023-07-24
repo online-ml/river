@@ -92,7 +92,7 @@ class DBSTREAM(base.Clusterer):
 
     References
     ----------
-    [^1]: Michael Hahsler and Matthew Bolanos (2016, pp 1449-1461). Clsutering Data Streams Based on
+    [^1]: Michael Hahsler and Matthew Bolanos (2016, pp 1449-1461). Clustering Data Streams Based on
           Shared Density between Micro-Clusters, IEEE Transactions on Knowledge and Data Engineering 28(6) .
           In Proceedings of the Sixth SIAM International Conference on Data Mining,
           April 20–22, 2006, Bethesda, MD, USA.
