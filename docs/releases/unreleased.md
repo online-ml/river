@@ -26,6 +26,10 @@ Calling `learn_one` in a pipeline will now update each part of the pipeline in t
 
 - Added `preprocessing.OrdinalEncoder`, to map string features to integers.
 
+## proba
+
+- Added `proba.MultivariateGaussian`.
+
 ## utils
 
 - Added `utils.random.exponential` to retrieve random samples following an exponential distribution.
