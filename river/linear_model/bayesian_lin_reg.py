@@ -113,9 +113,9 @@ class BayesianLinearRegression(base.Regressor):
         self.alpha = alpha
         self.beta = beta
         self.smoothing = smoothing
-        self._ss: dict[[base.typing.FeatureName, base.typing.FeatureName], float] = {}
-        self._ss_inv: dict[[base.typing.FeatureName, base.typing.FeatureName], float] = {}
-        self._m: dict[[base.typing.FeatureName], float] = {}
+        self._ss: dict[tuple[base.typing.FeatureName, base.typing.FeatureName], float] = {}
+        self._ss_inv: dict[tuple[base.typing.FeatureName, base.typing.FeatureName], float] = {}
+        self._m: dict[base.typing.FeatureName, float] = {}
         self._n = 1
 
     def _unit_test_skips(self):
