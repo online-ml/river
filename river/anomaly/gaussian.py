@@ -57,11 +57,11 @@ class GaussianScorer(anomaly.base.SupervisedAnomalyDetector):
         )
         self.grace_period = grace_period
 
-    def learn_one(self, _, y):
+    def learn_one(self, x, y):
         self.gaussian.update(y)
         return self
 
-    def score_one(self, _, y):
+    def score_one(self, x, y):
         if self.gaussian.n_samples < self.grace_period:
             return 0
         return 2 * abs(self.gaussian.cdf(y) - 0.5)
