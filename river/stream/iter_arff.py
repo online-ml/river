@@ -9,7 +9,7 @@ from . import utils
 
 
 def iter_arff(
-    filepath_or_buffer, target: str | None = None, compression="infer"
+    filepath_or_buffer, target: str | list[str] | None = None, compression="infer", sparse=False
 ) -> base.typing.Stream:
     """Iterates over rows from an ARFF file.
 
@@ -19,11 +19,14 @@ def iter_arff(
         Either a string indicating the location of a file, or a buffer object that has a
         `read` method.
     target
-        Name of the target field.
+        Name(s) of the target field. If `None`, then the target field is ignored. If a list of
+        names is passed, then a dictionary is returned instead of a single value.
     compression
         For on-the-fly decompression of on-disk data. If this is set to 'infer' and
         `filepath_or_buffer` is a path, then the decompression method is inferred for the
         following extensions: '.gz', '.zip'.
+    sparse
+        Whether the data is sparse or not.
 
     Examples
     --------
@@ -59,6 +62,54 @@ def iter_arff(
 
     >>> import os; os.remove('cars.arff')
 
+    ARFF files support sparse data. Let's create a sparse ARFF file.
+
+    >>> sparse = '''
+    ... % traindata
+    ... @RELATION "traindata: -C 6"
+    ... @ATTRIBUTE y0 {0, 1}
+    ... @ATTRIBUTE y1 {0, 1}
+    ... @ATTRIBUTE y2 {0, 1}
+    ... @ATTRIBUTE y3 {0, 1}
+    ... @ATTRIBUTE y4 {0, 1}
+    ... @ATTRIBUTE y5 {0, 1}
+    ... @ATTRIBUTE X0 NUMERIC
+    ... @ATTRIBUTE X1 NUMERIC
+    ... @ATTRIBUTE X2 NUMERIC
+    ... @DATA
+    ... { 3 1,6 0.863382,8 0.820094 }
+    ... { 2 1,6 0.659761 }
+    ... { 0 1,3 1,6 0.437881,8 0.818882 }
+    ... { 2 1,6 0.676477,7 0.724635,8 0.755123 }
+    ... '''
+
+    >>> with open('sparse.arff', mode='w') as f:
+    ...     _ = f.write(sparse)
+
+    In addition, we'll specify that there are several target fields.
+
+    >>> arff_stream = stream.iter_arff(
+    ...     'sparse.arff',
+    ...     target=['y0', 'y1', 'y2', 'y3', 'y4', 'y5'],
+    ...     sparse=True
+    ... )
+
+    >>> for x, y in arff_stream:
+    ...     print(x)
+    ...     print(y)
+    {'X0': '0.863382', 'X2': '0.820094'}
+    {'y0': 0, 'y1': 0, 'y2': 0, 'y3': '1', 'y4': 0, 'y5': 0}
+    {'X0': '0.659761'}
+    {'y0': 0, 'y1': 0, 'y2': '1', 'y3': 0, 'y4': 0, 'y5': 0}
+    {'X0': '0.437881', 'X2': '0.818882'}
+    {'y0': '1', 'y1': 0, 'y2': 0, 'y3': '1', 'y4': 0, 'y5': 0}
+    {'X0': '0.676477', 'X1': '0.724635', 'X2': '0.755123'}
+    {'y0': 0, 'y1': 0, 'y2': '1', 'y3': 0, 'y4': 0, 'y5': 0}
+
+    References
+    ----------
+    [^1]: [ARFF format description from Weka](https://waikato.github.io/weka-wiki/formats_and_processing/arff_stable/)
+
     """
 
     # If a file is not opened, then we open it
@@ -73,21 +124,32 @@ def iter_arff(
         raise scipy.io.arff.ParseArffError(msg)
 
     names = [attr.name for attr in attrs]
-    # HACK
+    # HACK: it's a bit hacky to rely on class name to determine what casting to apply
     casts = [float if attr.__class__.__name__ == "NumericAttribute" else None for attr in attrs]
 
     for r in buffer:
         if len(r) == 0:
             continue
-        x = {
-            name: cast(val) if cast else val
-            for name, cast, val in zip(names, casts, r.rstrip().split(","))
-        }
-        try:
-            y = x.pop(target) if target else None
-        except KeyError as e:
-            print(r)
-            raise e
+
+        # Read row
+        if sparse:
+            x = {}
+            for s in r.rstrip()[1:-1].strip().split(","):
+                name_index, val = s.split(" ", 1)
+                x[names[int(name_index)]] = val
+        else:
+            x = {
+                name: cast(val) if cast else val
+                for name, cast, val in zip(names, casts, r.rstrip().split(","))
+            }
+
+        # Handle target
+        y = None
+        if target is not None:
+            if isinstance(target, list):
+                y = {name: x.pop(name, 0) for name in target}
+            else:
+                y = x.pop(target) if target else None
 
         yield x, y
 

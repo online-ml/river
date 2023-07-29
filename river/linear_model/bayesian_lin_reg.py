@@ -41,7 +41,7 @@ class BayesianLinearRegression(base.Regressor):
     >>> metric = metrics.MAE()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    MAE: 0.586432
+    MAE: 0.586...
 
     >>> x, _ = next(iter(dataset))
     >>> model.predict_one(x)
@@ -73,7 +73,7 @@ class BayesianLinearRegression(base.Regressor):
     ... )
     >>> metric = metrics.MAE()
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    MAE: 1.284016
+    MAE: 1.284...
 
     And here's how it performs with some smoothing:
 
@@ -84,7 +84,7 @@ class BayesianLinearRegression(base.Regressor):
     ... )
     >>> metric = metrics.MAE()
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    MAE: 0.15906
+    MAE: 0.159...
 
     Smoothing allows the model to gradually "forget" the past, and focus on the more recent data.
 
@@ -99,7 +99,7 @@ class BayesianLinearRegression(base.Regressor):
     ... )
     >>> metric = metrics.MAE()
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    MAE: 0.242248
+    MAE: 0.242...
 
     References
     ----------

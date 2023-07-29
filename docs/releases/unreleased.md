@@ -27,6 +27,11 @@ Calling `learn_one` in a pipeline will now update each part of the pipeline in t
 
 - Added `preprocessing.OrdinalEncoder`, to map string features to integers.
 
+## stream
+
+- `stream.iter_arff` now supports sparse data.
+- `stream.iter_arff` now supports multi-output targets.
+
 ## utils
 
 - Added `utils.random.exponential` to retrieve random samples following an exponential distribution.
