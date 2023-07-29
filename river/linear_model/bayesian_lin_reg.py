@@ -23,6 +23,10 @@ class BayesianLinearRegression(base.Regressor):
         Prior parameter.
     beta
         Noise parameter.
+    smoothing
+        Smoothing allows the model to gradually "forget" the past, and focus on the more recent
+        data. It thus enables the model to deal with concept drift. Due to the current
+        implementation, activating smoothing may slow down the model.
 
     Examples
     --------
@@ -36,15 +40,66 @@ class BayesianLinearRegression(base.Regressor):
     >>> model = linear_model.BayesianLinearRegression()
     >>> metric = metrics.MAE()
 
-    >>> evaluate.progressive_val_score(dataset, model, metric).get()
-    0.5818
+    >>> evaluate.progressive_val_score(dataset, model, metric)
+    MAE: 0.586432
 
     >>> x, _ = next(iter(dataset))
     >>> model.predict_one(x)
-    43.61
+    43.852...
 
     >>> model.predict_one(x, with_dist=True)
-    𝒩(μ=43.616, σ=1.003)
+    𝒩(μ=43.853, σ=1.003)
+
+    The `smoothing` parameter can be set to make the model robust to drift. The parameter is
+    expected to be between 0 and 1. To exemplify, let's generate some simulation data with an
+    abrupt concept drift right in the middle.
+
+    >>> import itertools
+    >>> import random
+
+    >>> def random_data(coefs, n, seed=42):
+    ...     rng = random.Random(seed)
+    ...     for _ in range(n):
+    ...         x = {i: rng.random() for i, c in enumerate(coefs)}
+    ...         y = sum(c * xi for c, xi in zip(coefs, x.values()))
+    ...         yield x, y
+
+    Here's how the model performs without any smoothing:
+
+    >>> model = linear_model.BayesianLinearRegression()
+    >>> dataset = itertools.chain(
+    ...     random_data([0.1, 3], 100),
+    ...     random_data([10, -2], 100)
+    ... )
+    >>> metric = metrics.MAE()
+    >>> evaluate.progressive_val_score(dataset, model, metric)
+    MAE: 1.284016
+
+    And here's how it performs with some smoothing:
+
+    >>> model = linear_model.BayesianLinearRegression(smoothing=0.8)
+    >>> dataset = itertools.chain(
+    ...     random_data([0.1, 3], 100),
+    ...     random_data([10, -2], 100)
+    ... )
+    >>> metric = metrics.MAE()
+    >>> evaluate.progressive_val_score(dataset, model, metric)
+    MAE: 0.15906
+
+    Smoothing allows the model to gradually "forget" the past, and focus on the more recent data.
+
+    Note how this works better than standard linear regression, even when using an aggressive
+    learning rate.
+
+    >>> from river import optim
+    >>> model = linear_model.LinearRegression(optimizer=optim.SGD(0.5))
+    >>> dataset = itertools.chain(
+    ...     random_data([0.1, 3], 100),
+    ...     random_data([10, -2], 100)
+    ... )
+    >>> metric = metrics.MAE()
+    >>> evaluate.progressive_val_score(dataset, model, metric)
+    MAE: 0.242248
 
     References
     ----------
@@ -54,9 +109,10 @@ class BayesianLinearRegression(base.Regressor):
 
     """
 
-    def __init__(self, alpha=1, beta=1):
+    def __init__(self, alpha=1, beta=1, smoothing: float = None):
         self.alpha = alpha
         self.beta = beta
+        self.smoothing = smoothing
         self._ss = {}
         self._ss_inv = {}
         self._m = {}
@@ -68,7 +124,20 @@ class BayesianLinearRegression(base.Regressor):
     def _get_arrays(self, features, m=True, ss=True, ss_inv=True):
         m_arr = np.array([self._m.get(i, 0.0) for i in features]) if m else None
         ss_arr = (
-            np.array([[self._ss.get(min((i, j), (j, i)), 0.0) for j in features] for i in features])
+            np.array(
+                [
+                    [
+                        self._ss.get(
+                            # Get value if it exists
+                            min((i, j), (j, i)),
+                            # Initialize to eye matrix
+                            1.0 / self.alpha if i == j else 0.0,
+                        )
+                        for j in features
+                    ]
+                    for i in features
+                ]
+            )
             if ss
             else None
         )
@@ -76,7 +145,12 @@ class BayesianLinearRegression(base.Regressor):
             np.array(
                 [
                     [
-                        self._ss_inv.get(min((i, j), (j, i)), 1.0 / self.alpha if i == j else 0.0)
+                        self._ss_inv.get(
+                            # Get value if it exists
+                            min((i, j), (j, i)),
+                            # Initialize to eye matrix
+                            1.0 / self.alpha if i == j else 0.0,
+                        )
                         for j in features
                     ]
                     for i in features
@@ -102,11 +176,21 @@ class BayesianLinearRegression(base.Regressor):
         m_arr, ss_arr, ss_inv_arr = self._get_arrays(x.keys())
 
         bx = self.beta * x_arr
-        utils.math.sherman_morrison(A=ss_inv_arr, u=bx, v=x_arr)
-        # Bishop equation 3.50
-        m_arr = ss_inv_arr @ (ss_arr @ m_arr + bx * y)
-        # Bishop equation 3.51
-        ss_arr += np.outer(bx, x_arr)
+
+        if self.smoothing is None:
+            utils.math.sherman_morrison(A=ss_inv_arr, u=bx, v=x_arr)
+            # Bishop equation 3.50
+            m_arr = ss_inv_arr @ (ss_arr @ m_arr + bx * y)
+            # Bishop equation 3.51
+            ss_arr += np.outer(bx, x_arr)
+        else:
+            new_ss_arr = self.smoothing * ss_arr + (1 - self.smoothing) * np.outer(bx, x_arr)
+            # TODO: we use standard matrix inversion. This is not very efficient. However, we don't
+            # yet have a formula for the Sherman-Morrison approximation when a smoothing factor is
+            # involved. This is an interesting research direction!
+            ss_inv_arr = np.linalg.inv(new_ss_arr)
+            m_arr = ss_inv_arr @ (self.smoothing * ss_arr @ m_arr + (1 - self.smoothing) * bx * y)
+            ss_arr = new_ss_arr
 
         self._set_arrays(x.keys(), m_arr, ss_arr, ss_inv_arr)
 

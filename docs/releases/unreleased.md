@@ -11,6 +11,7 @@ Calling `learn_one` in a pipeline will now update each part of the pipeline in t
 ## linear_model
 
 - Added a `predict_many` method to `linear_model.BayesianLinearRegression`.
+- Added a `smoothing` parameter to `linear_model.BayesianLinearRegression`, which allows it to cope with concept drift.
 
 ## forest
 
