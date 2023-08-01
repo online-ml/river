@@ -144,7 +144,7 @@ class Policy(base.Base, abc.ABC):
 
 class ContextualPolicy(Policy):
     @abc.abstractmethod
-    def _pull(self, arm_ids: list[ArmID], context: dict) -> ArmID:
+    def _pull(self, arm_ids: list[ArmID], context: dict) -> ArmID:  # type: ignore[override]
         ...
 
     def pull(self, arm_ids: list[ArmID], context: dict = None) -> ArmID:
@@ -172,7 +172,7 @@ class ContextualPolicy(Policy):
         for arm_id in arm_ids:
             if self._counts[arm_id] < self.burn_in:
                 return arm_id
-        return self._pull(arm_ids, context=context)
+        return self._pull(arm_ids, context=context)  # type: ignore[arg-type]
 
     def update(self, arm_id, context, *reward_args, **reward_kwargs):
         """Update an arm's state.
