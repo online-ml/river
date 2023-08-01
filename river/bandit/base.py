@@ -7,7 +7,7 @@ from collections import Counter
 
 from river import base, compose, metrics, proba, stats, utils
 
-__all__ = ["ArmID", "Policy", "RewardObj"]
+__all__ = ["ArmID", "Policy", "ContextualPolicy", "RewardObj"]
 
 ArmID = typing.Union[int, str]  # noqa: UP007
 RewardObj = typing.Union[  # noqa: UP007
@@ -137,6 +137,65 @@ class Policy(base.Base, abc.ABC):
                 list(map(str, ranking)),
                 [str(self._rewards[arm_id]) for arm_id in ranking],
                 [f"{self._counts[arm_id]:,d}" for arm_id in ranking],
-                [f"{self._counts[arm_id] / self._n:.2%}" for arm_id in ranking],
+                [f"{(self._counts[arm_id] / self._n) if self._n else 0:.2%}" for arm_id in ranking],
             ],
         )
+
+
+class ContextualPolicy(Policy):
+    @abc.abstractmethod
+    def _pull(self, arm_ids: list[ArmID]) -> ArmID:
+        ...
+
+    def pull(self, arm_ids: list[ArmID], context: dict = None) -> ArmID:
+        """Pull arm(s).
+
+        This method is a generator that yields the arm(s) that should be pulled. During the burn-in
+        phase, all the arms that have not been pulled enough times are yielded. Once the burn-in
+        phase is over, the policy is allowed to choose the arm(s) that should be pulled. If you
+        only want to pull one arm at a time during the burn-in phase, simply call
+        `next(policy.pull(arms))`.
+
+        Parameters
+        ----------
+        arm_ids
+            The list of arms that can be pulled.
+        context
+            The context associated with the arm. Doesn't have to be provided if the policy is not
+            contextual.
+
+        Returns
+        -------
+        A single arm.
+
+        """
+        for arm_id in arm_ids:
+            if self._counts[arm_id] < self.burn_in:
+                return arm_id
+        return self._pull(arm_ids, context=context)
+
+    def update(self, arm_id, context, *reward_args, **reward_kwargs):
+        """Update an arm's state.
+
+        Parameters
+        ----------
+        arm_id
+            The arm to update.
+        context
+            The context associated with the arm. Doesn't have to be provided if the policy is not
+            contextual.
+        reward_kwargs
+            Keyword arguments to pass to the reward object.
+
+        """
+
+        if self.reward_scaler:
+            reward = reward_args[0]
+            self.reward_scaler._update(y=reward)
+            reward = self.reward_scaler.func(reward)
+            reward_args = (reward,)
+
+        self._rewards[arm_id].update(*reward_args, **reward_kwargs)
+        self._counts[arm_id] += 1
+        self._n += 1
+        return self
