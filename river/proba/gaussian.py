@@ -289,10 +289,10 @@ class MultivariateGaussian(base.ContinuousDistribution):
         return multivariate_normal(self.mu, self.var, allow_singular=True).cdf(x)
 
     def sample(self):
-        return float(multivariate_normal(
+        return multivariate_normal(
             self.mu,
             self.var,
-        ).rvs())
+        ).rvs().tolist()
 
     @property
     def mode(self):
