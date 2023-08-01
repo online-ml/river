@@ -135,25 +135,22 @@ class MultivariateGaussian(base.ContinuousDistribution):
            [ 0.02029152,  0.11293148, -0.05326768],
            [-0.01012815, -0.05326768,  0.0789612 ]])
 
-    Weighted samples are currently not implemented. Updates with default w = 1.
-    >>> p = p.update(x, w=2)
-
     Retrieving current state in nice format is simple
     >>> p
     𝒩(
-        μ=(0.385, 0.376, 0.501),
+        μ=(0.416, 0.387, 0.518),
         σ^2=(
-            [0.069, 0.019, -0.004]
-            [0.019, 0.100, -0.044]
-            [-0.004, -0.044, 0.078]
+            [0.076, 0.020, -0.010]
+            [0.020, 0.113, -0.053]
+            [-0.010, -0.053, 0.079]
         )
     )
 
     To retrieve pdf and cdf
     >>> p(x)  # doctest: +ELLIPSIS
-    1.70399123552737...
+    1.26921953490694...
     >>> p.cdf(x)  # doctest: +ELLIPSIS
-    0.01421620021072799...
+    0.00787141517849810...
 
     MultivariateGaussian works with `utils.Rolling`
     
@@ -178,9 +175,6 @@ class MultivariateGaussian(base.ContinuousDistribution):
            [-0.02287347,  0.01427901, -0.02518146],
            [ 0.00776493, -0.02518146,  0.09506639]])
 
-    Weighted samples are currently not implemented. Updates with default w = 1.
-    >>> p = p.update(x.to_dict(), t=t + td(seconds=1), **{"w":2})
-
     >>> from river.proba import Gaussian
     >>> p = MultivariateGaussian()
     >>> p_ = Gaussian()
@@ -189,14 +183,6 @@ class MultivariateGaussian(base.ContinuousDistribution):
     ...     p_ = p_.update(x['blue'])
     >>> p.sigma[0][0] == p_.sigma
     True
-
-    Initiation of class from state is currently not implemented
-    >>> p = MultivariateGaussian()._from_state(
-    ...     0, 0, 0, 0)  # doctest: +IGNORE_EXCEPTION_DETAIL
-    Traceback (most recent call last):
-    ...
-    NotImplementedError: from_state_ not implemented yet.
-
     """  # noqa: W291
 
     def __init__(self, seed=None):
@@ -204,9 +190,7 @@ class MultivariateGaussian(base.ContinuousDistribution):
         self._var = covariance.EmpiricalCovariance(ddof=1)
         self.feature_names_in_ = None
 
-    @classmethod
-    def _from_state(cls, n, m, sig, ddof):
-        raise NotImplementedError("_from_state not implemented yet.")
+    # TODO: add method _from_state to initialize model (for warm starting)
 
     @property
     def n_samples(self):
@@ -259,15 +243,12 @@ class MultivariateGaussian(base.ContinuousDistribution):
         return f"𝒩(\n    μ=({mu_str}),\n    σ^2=(\n{var_str}\n    )\n)"
 
     def update(self, x, w=1.0):
-        if w != 1.0:
-            warnings.warn("Weights not implemented yet.", RuntimeWarning)
+        # TODO: add support for weigthed samples
         self._var.update(x)
         return self
 
     def revert(self, x, w=1.0):
-        if w != 1.0:
-            # TODO: find out why not called during TimeRolling usage test
-            warnings.warn("Weights not implemented yet.", RuntimeWarning)  # pragma: no cover
+        # TODO: add support for weigthed samples
         self._var.revert(x)
         return self
 
