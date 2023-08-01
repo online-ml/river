@@ -4,6 +4,7 @@ import math
 import warnings
 
 import numpy as np
+import pandas as pd
 from scipy.stats import multivariate_normal
 
 from river import covariance
@@ -131,18 +132,19 @@ class MultivariateGaussian(base.ContinuousDistribution):
     >>> for x in X.to_dict(orient="records"):
     ...     p = p.update(x)
     >>> p.var
-    array([[ 0.07611911,  0.02029152, -0.01012815],
-           [ 0.02029152,  0.11293148, -0.05326768],
-           [-0.01012815, -0.05326768,  0.0789612 ]])
+               blue     green       red
+    blue   0.076119  0.020292 -0.010128
+    green  0.020292  0.112931 -0.053268
+    red   -0.010128 -0.053268  0.078961
 
     Retrieving current state in nice format is simple
     >>> p
     𝒩(
         μ=(0.416, 0.387, 0.518),
         σ^2=(
-            [0.076, 0.020, -0.010]
-            [0.020, 0.113, -0.053]
-            [-0.010, -0.053, 0.079]
+            [ 0.076  0.020 -0.010]
+            [ 0.020  0.113 -0.053]
+            [-0.010 -0.053  0.079]
         )
     )
 
@@ -150,7 +152,7 @@ class MultivariateGaussian(base.ContinuousDistribution):
     >>> p.n_samples
     8.0
     >>> p.mode  # doctest: +ELLIPSIS
-    [0.415..., 0.386..., 0.517...]
+    {'red': 0.415..., 'green': 0.386..., 'blue': 0.517...}
 
     To retrieve pdf and cdf
     >>> p(x)  # doctest: +ELLIPSIS
@@ -169,9 +171,10 @@ class MultivariateGaussian(base.ContinuousDistribution):
     >>> for x in X.to_dict(orient="records"):
     ...     p = p.update(x)
     >>> p.var
-    array([[ 0.08706173, -0.02287347,  0.00776493],
-           [-0.02287347,  0.01427901, -0.02518146],
-           [ 0.00776493, -0.02518146,  0.09506639]])
+               blue     green       red
+    blue   0.087062 -0.022873  0.007765
+    green -0.022873  0.014279 -0.025181
+    red    0.007765 -0.025181  0.095066
 
     MultivariateGaussian works with `utils.TimeRolling`
     
@@ -181,9 +184,10 @@ class MultivariateGaussian(base.ContinuousDistribution):
     >>> for t, x in X.iterrows():
     ...     p = p.update(x.to_dict(), t=t)
     >>> p.var
-    array([[ 0.08706173, -0.02287347,  0.00776493],
-           [-0.02287347,  0.01427901, -0.02518146],
-           [ 0.00776493, -0.02518146,  0.09506639]])
+               blue     green       red
+    blue   0.087062 -0.022873  0.007765
+    green -0.022873  0.014279 -0.025181
+    red    0.007765 -0.025181  0.095066
 
     Singlevariate usage is consistent with Gaussian
 
@@ -214,13 +218,11 @@ class MultivariateGaussian(base.ContinuousDistribution):
     @property
     def mu(self):
         """The mean value of the distribution."""
-        return list(
-            {
-                key1: values.mean.get()
-                for (key1, key2), values in self._var.matrix.items()
-                if key1 == key2
-            }.values()
-        )
+        return {
+                    key1: values.mean.get()
+                    for (key1, key2), values in self._var.matrix.items()
+                    if key1 == key2
+                }
 
     @property
     def var(self):
@@ -239,19 +241,21 @@ class MultivariateGaussian(base.ContinuousDistribution):
                     # Fill in the off-diagonal with covariances
                     cov_array[i, j] = self._var[(variables[i], variables[j])].get()
                     cov_array[j, i] = self._var[(variables[i], variables[j])].get()
+        
+        cov_array = pd.DataFrame(cov_array, index=variables, columns=variables)
         return cov_array
 
     @property
     def sigma(self):
         """The standard deviation of the distribution."""
-        cov_array = self.var
+        cov_array = self.var.values
         return [[x**0.5 if x > 0 else float("nan") for x in row] for row in cov_array]
 
     def __repr__(self):
-        mu_str = ", ".join(f"{m:.3f}" for m in self.mu)
-        var_str = "\n".join(
-            "        [" + ", ".join(f"{s:.3f}" for s in row) + "]" 
-            for row in self.var)
+        mu_str = ", ".join(f"{m:.3f}" for m in self.mu.values())
+        var_str = self.var.to_string(
+            float_format="{:0.3f}".format, header=False, index=False)
+        var_str = "        [" + var_str.replace("\n", "]\n        [") + "]"
         return f"𝒩(\n    μ=({mu_str}),\n    σ^2=(\n{var_str}\n    )\n)"
 
     def update(self, x, w=1.0):
@@ -270,7 +274,7 @@ class MultivariateGaussian(base.ContinuousDistribution):
         var = self.var
         if var is not None:
             try:
-                return multivariate_normal(self.mu, var).pdf(x)
+                return multivariate_normal([*self.mu.values()], var).pdf(x)
             # TODO: validate occurence of ValueError
             # The input matrix must be symmetric positive semidefinite.
             except ValueError:  # pragma: no cover
@@ -282,11 +286,15 @@ class MultivariateGaussian(base.ContinuousDistribution):
 
     def cdf(self, x):
         x = list(x.values())
-        return multivariate_normal(self.mu, self.var, allow_singular=True).cdf(x)
+        return multivariate_normal(
+            [*self.mu.values()],
+            self.var,
+            allow_singular=True
+            ).cdf(x)
 
     def sample(self):
         return multivariate_normal(
-            self.mu,
+            [*self.mu.values()],
             self.var,
         ).rvs().tolist()
 
