@@ -128,7 +128,7 @@ class MultivariateGaussian(base.ContinuousDistribution):
     >>> p = MultivariateGaussian()
     >>> p.n_samples
     0.0
-    
+
     >>> for x in X.to_dict(orient="records"):
     ...     p = p.update(x)
     >>> p.var
@@ -165,7 +165,7 @@ class MultivariateGaussian(base.ContinuousDistribution):
     [0.203..., -0.0532..., 0.840...]
 
     MultivariateGaussian works with `utils.Rolling`
-    
+
     >>> from river import utils
     >>> p = utils.Rolling(MultivariateGaussian(), window_size=5)
     >>> for x in X.to_dict(orient="records"):
@@ -177,7 +177,7 @@ class MultivariateGaussian(base.ContinuousDistribution):
     red    0.007765 -0.025181  0.095066
 
     MultivariateGaussian works with `utils.TimeRolling`
-    
+
     >>> from datetime import datetime as dt, timedelta as td
     >>> X.index = [dt(2023, 3, 28, 0, 0, 0) + td(seconds=x) for x in range(8)]
     >>> p = utils.TimeRolling(MultivariateGaussian(), period=td(seconds=5))
@@ -219,10 +219,10 @@ class MultivariateGaussian(base.ContinuousDistribution):
     def mu(self):
         """The mean value of the distribution."""
         return {
-                    key1: values.mean.get()
-                    for (key1, key2), values in self._var.matrix.items()
-                    if key1 == key2
-                }
+            key1: values.mean.get()
+            for (key1, key2), values in self._var.matrix.items()
+            if key1 == key2
+        }
 
     @property
     def var(self):
@@ -241,7 +241,7 @@ class MultivariateGaussian(base.ContinuousDistribution):
                     # Fill in the off-diagonal with covariances
                     cov_array[i, j] = self._var[(variables[i], variables[j])].get()
                     cov_array[j, i] = self._var[(variables[i], variables[j])].get()
-        
+
         cov_array = pd.DataFrame(cov_array, index=variables, columns=variables)
         return cov_array
 
@@ -253,8 +253,7 @@ class MultivariateGaussian(base.ContinuousDistribution):
 
     def __repr__(self):
         mu_str = ", ".join(f"{m:.3f}" for m in self.mu.values())
-        var_str = self.var.to_string(
-            float_format="{:0.3f}".format, header=False, index=False)
+        var_str = self.var.to_string(float_format="{:0.3f}".format, header=False, index=False)
         var_str = "        [" + var_str.replace("\n", "]\n        [") + "]"
         return f"𝒩(\n    μ=({mu_str}),\n    σ^2=(\n{var_str}\n    )\n)"
 
@@ -286,17 +285,17 @@ class MultivariateGaussian(base.ContinuousDistribution):
 
     def cdf(self, x):
         x = list(x.values())
-        return multivariate_normal(
-            [*self.mu.values()],
-            self.var,
-            allow_singular=True
-            ).cdf(x)
+        return multivariate_normal([*self.mu.values()], self.var, allow_singular=True).cdf(x)
 
     def sample(self):
-        return multivariate_normal(
-            [*self.mu.values()],
-            self.var,
-        ).rvs().tolist()
+        return (
+            multivariate_normal(
+                [*self.mu.values()],
+                self.var,
+            )
+            .rvs()
+            .tolist()
+        )
 
     @property
     def mode(self):
