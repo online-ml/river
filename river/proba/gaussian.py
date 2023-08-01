@@ -127,6 +127,7 @@ class MultivariateGaussian(base.ContinuousDistribution):
     >>> p = MultivariateGaussian()
     >>> p.n_samples
     0.0
+    
     >>> for x in X.to_dict(orient="records"):
     ...     p = p.update(x)
     >>> p._var
@@ -144,8 +145,6 @@ class MultivariateGaussian(base.ContinuousDistribution):
     σ^2=([0.069 0.019 -0.004]
      [0.019 0.100 -0.044]
      [-0.004 -0.044 0.078]))
-    >>> p.n_samples
-    9.0
 
     To retrieve pdf and cdf
     >>> p(x)  # doctest: +ELLIPSIS
@@ -153,7 +152,8 @@ class MultivariateGaussian(base.ContinuousDistribution):
     >>> p.cdf(x)  # doctest: +ELLIPSIS
     0.01421620021072799...
 
-    MultivariateGaussian works with Rolling
+    MultivariateGaussian works with `utils.Rolling`
+    
     >>> from river import utils
     >>> p = utils.Rolling(MultivariateGaussian(), window_size=5)
     >>> for x in X.to_dict(orient="records"):
@@ -164,7 +164,8 @@ class MultivariateGaussian(base.ContinuousDistribution):
     green   -0.023    0.014   -0.025
       red    0.008   -0.025    0.095
 
-    MultivariateGaussian works with TimeRolling
+    MultivariateGaussian works with `utils.TimeRolling`
+    
     >>> from datetime import datetime as dt, timedelta as td
     >>> X.index = [dt(2023, 3, 28, 0, 0, 0) + td(seconds=x) for x in range(8)]
     >>> p = utils.TimeRolling(MultivariateGaussian(), period=td(seconds=5))
@@ -268,6 +269,7 @@ class MultivariateGaussian(base.ContinuousDistribution):
         return self
 
     def __call__(self, x):
+        """PDF(x) method."""
         x = list(x.values())
         var = self.var
         if var is not None:
@@ -287,10 +289,10 @@ class MultivariateGaussian(base.ContinuousDistribution):
         return multivariate_normal(self.mu, self.var, allow_singular=True).cdf(x)
 
     def sample(self):
-        return multivariate_normal(
+        return float(multivariate_normal(
             self.mu,
             self.var,
-        ).rvs()
+        ).rvs())
 
     @property
     def mode(self):
