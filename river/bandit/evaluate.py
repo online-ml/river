@@ -259,7 +259,7 @@ def evaluate_offline(
     for arms_available, context, chosen_arm, reward in history:
         probability = 1  # TODO: use inverse propensity scoring
         arm = (
-            policy.pull(arms_available, context=context)
+            policy.pull(arms_available, context=context)  # type: ignore[call-arg]
             if is_contextual
             else policy.pull(arms_available)
         )

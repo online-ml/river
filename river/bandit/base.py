@@ -144,7 +144,7 @@ class Policy(base.Base, abc.ABC):
 
 class ContextualPolicy(Policy):
     @abc.abstractmethod
-    def _pull(self, arm_ids: list[ArmID]) -> ArmID:
+    def _pull(self, arm_ids: list[ArmID], context: dict) -> ArmID:
         ...
 
     def pull(self, arm_ids: list[ArmID], context: dict = None) -> ArmID:
