@@ -46,7 +46,7 @@ class LinUCBDisjoint(bandit.base.ContextualPolicy):
         self,
         alpha: float = 1.0,
         beta: float = 1.0,
-        smoothing: float = None,
+        smoothing: float | None = None,
         reward_obj=None,
         burn_in=0,
         seed: int | None = None,
