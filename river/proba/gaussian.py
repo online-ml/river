@@ -140,10 +140,14 @@ class MultivariateGaussian(base.ContinuousDistribution):
 
     Retrieving current state in nice format is simple
     >>> p
-    𝒩(μ=(0.385, 0.376, 0.501),
-    σ^2=([0.069 0.019 -0.004]
-     [0.019 0.100 -0.044]
-     [-0.004 -0.044 0.078]))
+    𝒩(
+        μ=(0.385, 0.376, 0.501),
+        σ^2=(
+            [0.069, 0.019, -0.004]
+            [0.019, 0.100, -0.044]
+            [-0.004, -0.044, 0.078]
+        )
+    )
 
     To retrieve pdf and cdf
     >>> p(x)  # doctest: +ELLIPSIS
