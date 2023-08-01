@@ -249,8 +249,10 @@ class MultivariateGaussian(base.ContinuousDistribution):
 
     def __repr__(self):
         mu_str = ", ".join(f"{m:.3f}" for m in self.mu)
-        var_str = "\n ".join("[" + " ".join(f"{s:.3f}" for s in row) + "]" for row in self.var)
-        return f"𝒩(μ=({mu_str}),\nσ^2=({var_str}))"
+        var_str = "\n".join(
+            "        [" + ", ".join(f"{s:.3f}" for s in row) + "]" 
+            for row in self.var)
+        return f"𝒩(\n    μ=({mu_str}),\n    σ^2=(\n{var_str}\n    )\n)"
 
     def update(self, x, w=1.0):
         if w != 1.0:
