@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import math
+import random
 
 from river import bandit, proba
 
@@ -44,7 +45,8 @@ class UCB(bandit.base.Policy):
 
     >>> policy = bandit.UCB(
     ...     delta=100,
-    ...     reward_scaler=preprocessing.TargetStandardScaler(None)
+    ...     reward_scaler=preprocessing.TargetStandardScaler(None),
+    ...     seed=42
     ... )
 
     >>> metric = stats.Sum()
@@ -57,7 +59,7 @@ class UCB(bandit.base.Policy):
     ...         break
 
     >>> metric
-    Sum: 737.
+    Sum: 744.
 
     References
     ----------
@@ -67,9 +69,13 @@ class UCB(bandit.base.Policy):
 
     """
 
-    def __init__(self, delta: float, reward_obj=None, reward_scaler=None, burn_in=0):
+    def __init__(
+        self, delta: float, reward_obj=None, reward_scaler=None, burn_in=0, seed: int = None
+    ):
         super().__init__(reward_obj=reward_obj, reward_scaler=reward_scaler, burn_in=burn_in)
         self.delta = delta
+        self.seed = seed
+        self._rng = random.Random(seed)
 
     def _pull(self, arm_ids):
         upper_bounds = {
@@ -83,7 +89,13 @@ class UCB(bandit.base.Policy):
             else math.inf
             for arm_id in arm_ids
         }
-        return max(arm_ids, key=lambda arm_id: upper_bounds[arm_id])
+        biggest_upper_bound = max(upper_bounds.values())
+        candidates = [
+            arm_id
+            for arm_id, upper_bound in upper_bounds.items()
+            if upper_bound == biggest_upper_bound
+        ]
+        return self._rng.choice(candidates) if len(candidates) > 1 else candidates[0]
 
     @classmethod
     def _unit_test_params(cls):

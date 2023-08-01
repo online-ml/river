@@ -40,6 +40,7 @@ jobs:
         run: |
           source ~/.venv/bin/activate
           python -c "from river import datasets; datasets.CreditCard().download(); datasets.Elec2().download(); datasets.SMSSpam().download()"
+          python -c "from river import bandit; bandit.datasets.NewsArticles().download()"
 
       - name: pytest [Branch]
         if: github.event_name == 'pull_request'

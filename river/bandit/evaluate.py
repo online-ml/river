@@ -57,7 +57,7 @@ def evaluate(
 
     >>> trace = bandit.evaluate(
     ...     policies=[
-    ...         bandit.UCB(delta=1),
+    ...         bandit.UCB(delta=1, seed=42),
     ...         bandit.EpsilonGreedy(epsilon=0.1, seed=42),
     ...     ],
     ...     env=gym.make(
@@ -71,7 +71,7 @@ def evaluate(
     >>> for step in trace:
     ...     print(step)
     ...     break
-    {'episode': 0, 'step': 0, 'policy_idx': 0, 'arm': 0, 'reward': 0.0, 'reward_stat': 0.0}
+    {'episode': 0, 'step': 0, 'policy_idx': 0, 'arm': 81, 'reward': 0.0, 'reward_stat': 0.0}
 
     The return type of this function is a generator. Each step of the generator is a dictionary.
     You can pass the generator to a `pandas.DataFrame` to get a nice representation of the results.
@@ -80,7 +80,7 @@ def evaluate(
 
     >>> trace = bandit.evaluate(
     ...     policies=[
-    ...         bandit.UCB(delta=1),
+    ...         bandit.UCB(delta=1, seed=42),
     ...         bandit.EpsilonGreedy(epsilon=0.1, seed=42),
     ...     ],
     ...     env=gym.make(
@@ -96,8 +96,8 @@ def evaluate(
          episode  step  policy_idx  arm  reward  reward_stat
     521        2    60           1   25     0.0         36.0
     737        3    68           1   40     1.0         20.0
-    740        3    70           0   70     1.0         33.0
-    660        3    30           0   30     1.0         13.0
+    740        3    70           0   58     0.0         36.0
+    660        3    30           0   31     1.0         16.0
     411        2     5           1   35     1.0          5.0
 
     The length of the dataframe is the number of policies times the number of episodes times the
@@ -157,15 +157,17 @@ def evaluate(
 History = typing.Iterator[
     tuple[
         list[ArmID],  # arms available to pull from
+        dict,  # context
         ArmID,  # arm that was pulled
-        typing.Union[float, None],  # noqa: UP007, probability of pulling the arm
         float,  # reward
     ]
 ]
 
 
 def evaluate_offline(
-    policy: bandit.base.Policy, history: History, reward_stat: stats.base.Univariate = None
+    policy: bandit.base.Policy,
+    history: History | bandit.datasets.BanditDataset,
+    reward_stat: stats.base.Univariate = None,
 ) -> tuple[stats.base.Univariate, int]:
     """Evaluate a policy on historical logs using replay.
 
@@ -183,9 +185,7 @@ def evaluate_offline(
         The policy to evaluate.
     history
         The history of the bandit problem. This is a generator that yields tuples of the form
-        `(context, arm, probability, reward)`. The probability is optional, and is the probability
-        the policy had of picking the arm. If provided, this probability is used to unbias the
-        final score via inverse propensity scoring.
+        `(arms, context, arm, reward)`.
     reward_stat
         The reward statistic to use. Defaults to `stats.Sum`.
 
@@ -201,14 +201,16 @@ def evaluate_offline(
     >>> from river import bandit
 
     >>> rng = random.Random(42)
-
     >>> arms = ['A', 'B', 'C']
     >>> clicks = [
     ...     (
     ...         arms,
+    ...         # no context
+    ...         None,
+    ...         # random arm
     ...         rng.choice(arms),
-    ...         (p := rng.random()),
-    ...         p > 0.9
+    ...         # reward
+    ...         rng.random() > 0.5
     ...     )
     ...     for _ in range(1000)
     ... ]
@@ -219,10 +221,24 @@ def evaluate_offline(
     ... )
 
     >>> total_reward
-    Sum: 33.626211
+    Sum: 172.
 
     >>> n_samples_used
-    323
+    321
+
+    This also works out of the box with datasets that inherit from `river.bandit.BanditDataset`.
+
+    >>> news = bandit.datasets.NewsArticles()
+    >>> total_reward, n_samples_used = bandit.evaluate_offline(
+    ...     policy=bandit.RandomPolicy(seed=42),
+    ...     history=news,
+    ... )
+
+    >>> total_reward, n_samples_used
+    (Sum: 105., 1027)
+
+    As expected, the policy succeeds in roughly 10% of cases. Indeed, there are 10 arms and 10000
+    samples, so the expected number of successes is 1000.
 
     References
     ----------
@@ -232,17 +248,30 @@ def evaluate_offline(
 
     """
 
+    if isinstance(history, bandit.datasets.BanditDataset):
+        arms = history.arms
+        history = ((arms, context, arm, reward) for context, arm, reward in history)
+
     reward_stat = reward_stat or stats.Sum()
 
-    for arms_available, arm_pulled, probability, reward in history:
-        probability = 1 if probability is None else probability
-        arm = policy.pull(arms_available)
+    is_contextual = isinstance(policy, bandit.base.ContextualPolicy)
+
+    for arms_available, context, chosen_arm, reward in history:
+        probability = 1  # TODO: use inverse propensity scoring
+        arm = (
+            policy.pull(arms_available, context=context)  # type: ignore[call-arg]
+            if is_contextual
+            else policy.pull(arms_available)
+        )
 
         # Do nothing if the chosen arm differs from the arm in the historical data
-        if arm_pulled != arm:
+        if chosen_arm != arm:
             continue
 
-        policy.update(arm, reward)
+        if is_contextual:
+            policy.update(arm, context, reward)
+        else:
+            policy.update(arm, reward)
         reward_stat.update(reward / probability)  # type: ignore
 
     # Normalize the reward statistic by the number of times the policy pulled the same arm as what
