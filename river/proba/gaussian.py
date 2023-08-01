@@ -146,11 +146,21 @@ class MultivariateGaussian(base.ContinuousDistribution):
         )
     )
 
+    To retrieve number of samples and mode
+    >>> p.n_samples
+    8.0
+    >>> p.mode  # doctest: +ELLIPSIS
+    [0.415..., 0.386..., 0.517...]
+
     To retrieve pdf and cdf
     >>> p(x)  # doctest: +ELLIPSIS
     1.26921953490694...
     >>> p.cdf(x)  # doctest: +ELLIPSIS
     0.00787141517849810...
+
+    To sample data from distribution
+    >>> p.sample()  # doctest: +ELLIPSIS
+    [0.203..., -0.0532..., 0.840...]
 
     MultivariateGaussian works with `utils.Rolling`
     
@@ -174,6 +184,8 @@ class MultivariateGaussian(base.ContinuousDistribution):
     array([[ 0.08706173, -0.02287347,  0.00776493],
            [-0.02287347,  0.01427901, -0.02518146],
            [ 0.00776493, -0.02518146,  0.09506639]])
+
+    Singlevariate usage is consistent with Gaussian
 
     >>> from river.proba import Gaussian
     >>> p = MultivariateGaussian()
