@@ -3,8 +3,6 @@ from __future__ import annotations
 import collections
 import random
 
-import scipy.special
-
 from river import bandit, proba
 
 

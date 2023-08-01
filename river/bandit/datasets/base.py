@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 import abc
-from river import bandit
-from river import datasets
+
+from river import bandit, datasets
 
 
 class BanditDataset(datasets.base.Dataset):

@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 import pathlib
+
 from river import datasets
 
 from .base import BanditDataset

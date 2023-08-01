@@ -1,8 +1,10 @@
+from __future__ import annotations
+
 import collections
 import functools
 import random
-from river import bandit
-from river import linear_model
+
+from river import bandit, linear_model
 
 
 class LinUCBDisjoint(bandit.base.ContextualPolicy):
