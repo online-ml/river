@@ -130,11 +130,10 @@ class MultivariateGaussian(base.ContinuousDistribution):
     
     >>> for x in X.to_dict(orient="records"):
     ...     p = p.update(x)
-    >>> p._var
-            blue     green    red
-     blue    0.076    0.020   -0.010
-    green    0.020    0.113   -0.053
-      red   -0.010   -0.053    0.079
+    >>> p.var
+    array([[ 0.07611911,  0.02029152, -0.01012815],
+           [ 0.02029152,  0.11293148, -0.05326768],
+           [-0.01012815, -0.05326768,  0.0789612 ]])
 
     Weighted samples are currently not implemented. Updates with default w = 1.
     >>> p = p.update(x, w=2)
@@ -158,11 +157,10 @@ class MultivariateGaussian(base.ContinuousDistribution):
     >>> p = utils.Rolling(MultivariateGaussian(), window_size=5)
     >>> for x in X.to_dict(orient="records"):
     ...     p = p.update(x)
-    >>> p._var
-            blue     green    red
-     blue    0.087   -0.023    0.008
-    green   -0.023    0.014   -0.025
-      red    0.008   -0.025    0.095
+    >>> p.var
+    array([[ 0.08706173, -0.02287347,  0.00776493],
+           [-0.02287347,  0.01427901, -0.02518146],
+           [ 0.00776493, -0.02518146,  0.09506639]])
 
     MultivariateGaussian works with `utils.TimeRolling`
     
@@ -171,11 +169,10 @@ class MultivariateGaussian(base.ContinuousDistribution):
     >>> p = utils.TimeRolling(MultivariateGaussian(), period=td(seconds=5))
     >>> for t, x in X.iterrows():
     ...     p = p.update(x.to_dict(), t=t)
-    >>> p._var
-            blue     green    red
-     blue    0.087   -0.023    0.008
-    green   -0.023    0.014   -0.025
-      red    0.008   -0.025    0.095
+    >>> p.var
+    array([[ 0.08706173, -0.02287347,  0.00776493],
+           [-0.02287347,  0.01427901, -0.02518146],
+           [ 0.00776493, -0.02518146,  0.09506639]])
 
     Weighted samples are currently not implemented. Updates with default w = 1.
     >>> p = p.update(x.to_dict(), t=t + td(seconds=1), **{"w":2})
