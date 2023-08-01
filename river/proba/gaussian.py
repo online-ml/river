@@ -189,7 +189,7 @@ class MultivariateGaussian(base.ContinuousDistribution):
     green -0.022873  0.014279 -0.025181
     red    0.007765 -0.025181  0.095066
 
-    Singlevariate usage is consistent with Gaussian
+    Variance on diagonal is consistent with Gaussian
 
     >>> from river.proba import Gaussian
     >>> p = MultivariateGaussian()
@@ -197,7 +197,7 @@ class MultivariateGaussian(base.ContinuousDistribution):
     >>> for t, x in X.iterrows():
     ...     p = p.update(x.to_dict())
     ...     p_ = p_.update(x['blue'])
-    >>> p.sigma[0][0] == p_.sigma
+    >>> p.sigma['blue']['blue'] == p_.sigma
     True
     """  # noqa: W291
 
@@ -248,8 +248,7 @@ class MultivariateGaussian(base.ContinuousDistribution):
     @property
     def sigma(self):
         """The standard deviation of the distribution."""
-        cov_array = self.var.values
-        return [[x**0.5 if x > 0 else float("nan") for x in row] for row in cov_array]
+        return self.var**0.5
 
     def __repr__(self):
         mu_str = ", ".join(f"{m:.3f}" for m in self.mu.values())
