@@ -208,14 +208,14 @@ class MultivariateGaussian(base.ContinuousDistribution):
     # TODO: add method _from_state to initialize model (for warm starting)
 
     @property
-    def n_samples(self):
+    def n_samples(self) -> float:
         if not self._var.matrix:
             return 0.0
         else:
             return list(self._var.matrix.values())[-1].mean.n
 
     @property
-    def mu(self):
+    def mu(self) -> dict:
         """The mean value of the distribution."""
         return {
             key1: values.mean.get()
@@ -224,7 +224,7 @@ class MultivariateGaussian(base.ContinuousDistribution):
         }
 
     @property
-    def var(self):
+    def var(self) -> pd.DataFrame:
         """The variance of the distribution."""
         variables = sorted(list({var for cov in self._var.matrix.keys() for var in cov}))
         # Initialize the covariance matrix array
@@ -245,7 +245,7 @@ class MultivariateGaussian(base.ContinuousDistribution):
         return cov_array
 
     @property
-    def sigma(self):
+    def sigma(self) -> pd.DataFrame:
         """The standard deviation of the distribution."""
         return self.var**0.5
 
@@ -255,23 +255,24 @@ class MultivariateGaussian(base.ContinuousDistribution):
         var_str = "        [" + var_str.replace("\n", "]\n        [") + "]"
         return f"𝒩(\n    μ=({mu_str}),\n    σ^2=(\n{var_str}\n    )\n)"
 
-    def update(self, x):
+    def update(self, x: dict):
         # TODO: add support for weigthed samples
         self._var.update(x)
         return self
 
-    def revert(self, x):
+    def revert(self, x: dict):
         # TODO: add support for weigthed samples
         self._var.revert(x)
         return self
 
-    def __call__(self, x):
+    def __call__(self, x: dict) -> float:
         """PDF(x) method."""
         x = [x[i] for i in self.mu]
         var = self.var
         if var is not None:
             try:
-                return multivariate_normal([*self.mu.values()], var).pdf(x)
+                pdf_ = multivariate_normal([*self.mu.values()], var).pdf(x)
+                return float(pdf_)
             # TODO: validate occurence of ValueError
             # The input matrix must be symmetric positive semidefinite.
             except ValueError:  # pragma: no cover
@@ -281,11 +282,12 @@ class MultivariateGaussian(base.ContinuousDistribution):
                 return 0.0
         return 0.0  # pragma: no cover
 
-    def cdf(self, x):
+    def cdf(self, x: dict) -> float:
         x = [x[i] for i in self.mu]
-        return multivariate_normal([*self.mu.values()], self.var, allow_singular=True).cdf(x)
+        cdf_ = multivariate_normal([*self.mu.values()], self.var, allow_singular=True).cdf(x)
+        return float(cdf_)
 
-    def sample(self):
+    def sample(self) -> list[float]:
         return (
             multivariate_normal(
                 [*self.mu.values()],
@@ -296,5 +298,5 @@ class MultivariateGaussian(base.ContinuousDistribution):
         )
 
     @property
-    def mode(self):
+    def mode(self) -> dict:
         return self.mu
