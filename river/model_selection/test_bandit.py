@@ -65,10 +65,12 @@ def test_1259():
         )
         for _, policy in inspect.getmembers(
             importlib.import_module("river.bandit"),
-            lambda obj: inspect.isclass(obj) and issubclass(obj, bandit.base.Policy),
+            lambda obj: inspect.isclass(obj)
+            and issubclass(obj, bandit.base.Policy)
+            and not issubclass(obj, bandit.base.ContextualPolicy)
+            and obj.__name__ not in {"ThompsonSampling"},
         )
         for params in policy._unit_test_params()
-        if policy.__name__ != "ThompsonSampling"
     ],
 )
 def test_bandit_classifier_with_each_policy(policy):
@@ -96,10 +98,12 @@ def test_bandit_classifier_with_each_policy(policy):
         )
         for _, policy in inspect.getmembers(
             importlib.import_module("river.bandit"),
-            lambda obj: inspect.isclass(obj) and issubclass(obj, bandit.base.Policy),
+            lambda obj: inspect.isclass(obj)
+            and issubclass(obj, bandit.base.Policy)
+            and not issubclass(obj, bandit.base.ContextualPolicy)
+            and obj.__name__ not in {"ThompsonSampling", "Exp3"},
         )
         for params in policy._unit_test_params()
-        if policy.__name__ not in {"ThompsonSampling", "Exp3"}
     ],
 )
 def test_bandit_regressor_with_each_policy(policy):
