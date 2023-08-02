@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import math
+import pytest
 import warnings
 
 import numpy as np
@@ -108,12 +109,16 @@ class MultivariateGaussian(base.MultivariateContinuousDistribution):
 
     Examples
     --------
+
     >>> import numpy as np
     >>> import pandas as pd
+    >>> from river import proba
 
     >>> np.random.seed(42)
-    >>> X = pd.DataFrame(np.random.random((8, 3)),
-    ...                  columns=["red", "green", "blue"])
+    >>> X = pd.DataFrame(
+    ...     np.random.random((8, 3)),
+    ...     columns=["red", "green", "blue"]
+    ... )
     >>> X
             red     green      blue
     0  0.374540  0.950714  0.731994
@@ -125,7 +130,8 @@ class MultivariateGaussian(base.MultivariateContinuousDistribution):
     6  0.431945  0.291229  0.611853
     7  0.139494  0.292145  0.366362
 
-    >>> p = MultivariateGaussian()
+
+    >>> p = proba.MultivariateGaussian(seed=42)
     >>> p.n_samples
     0.0
 
@@ -148,25 +154,29 @@ class MultivariateGaussian(base.MultivariateContinuousDistribution):
         )
     )
 
-    To retrieve number of samples and mode
+    To retrieve number of samples and mode:
+
     >>> p.n_samples
     8.0
-    >>> p.mode  # doctest: +ELLIPSIS
+    >>> p.mode
     {'blue': 0.5179..., 'green': 0.3866..., 'red': 0.4158...}
 
-    To retrieve pdf and cdf
-    >>> p(x)  # doctest: +ELLIPSIS
-    0.97967086129734...
-    >>> p.cdf(x)  # doctest: +ELLIPSIS
-    0.00509653891791713...
+    To retrieve the PDF and CDF:
 
-    To sample data from distribution
-    >>> p.sample()  # doctest: +ELLIPSIS
-    {'blue': 0.3053..., 'green': -0.0532..., 'red': 0.7388...}
+    >>> p(x)
+    0.97967...
+    >>> p.cdf(x)
+    0.00787...
 
-    MultivariateGaussian works with `utils.Rolling`
+    To sample data from distribution:
+
+    >>> p.sample()
+    {'blue': -0.179..., 'green': -0.051..., 'red': 0.376...}
+
+    MultivariateGaussian works with `utils.Rolling`:
 
     >>> from river import utils
+
     >>> p = utils.Rolling(MultivariateGaussian(), window_size=5)
     >>> for x in X.to_dict(orient="records"):
     ...     p = p.update(x)
@@ -176,7 +186,7 @@ class MultivariateGaussian(base.MultivariateContinuousDistribution):
     green -0.022873  0.014279 -0.025181
     red    0.007765 -0.025181  0.095066
 
-    MultivariateGaussian works with `utils.TimeRolling`
+    MultivariateGaussian works with `utils.TimeRolling`:
 
     >>> from datetime import datetime as dt, timedelta as td
     >>> X.index = [dt(2023, 3, 28, 0, 0, 0) + td(seconds=x) for x in range(8)]
@@ -189,16 +199,18 @@ class MultivariateGaussian(base.MultivariateContinuousDistribution):
     green -0.022873  0.014279 -0.025181
     red    0.007765 -0.025181  0.095066
 
-    Variance on diagonal is consistent with Gaussian
+    Variance on diagonal is consistent with `proba.Gaussian`.
 
-    >>> from river.proba import Gaussian
-    >>> p = MultivariateGaussian()
-    >>> p_ = Gaussian()
-    >>> for t, x in X.iterrows():
-    ...     p = p.update(x.to_dict())
-    ...     p_ = p_.update(x['blue'])
-    >>> p.sigma['blue']['blue'] == p_.sigma
+    >>> multi = proba.MultivariateGaussian()
+    >>> single = proba.Gaussian()
+    >>> for x in X.to_dict(orient='records'):
+    ...     multi = multi.update(x)
+    ...     single = single.update(x['blue'])
+    >>> multi.mu['blue'] == single.mu
     True
+    >>> multi.sigma['blue']['blue'] == single.sigma
+    True
+
     """
 
     def __init__(self, seed=None):
@@ -283,14 +295,49 @@ class MultivariateGaussian(base.MultivariateContinuousDistribution):
         return 0.0  # pragma: no cover
 
     def cdf(self, x: dict[str, float]):
-        x_ = [x[i] for i in self.mu]
-        cdf_ = multivariate_normal([*self.mu.values()], self.var, allow_singular=True).cdf(x_)
+        x_ = list(x.values())
+        cdf_ = multivariate_normal(
+            [self.mu[i] for i in x],
+            self.var,
+            allow_singular=True,
+        ).cdf(x_)
         return float(cdf_)
 
     def sample(self) -> dict[str, float]:
-        sample_ = multivariate_normal([*self.mu.values()], self.var).rvs().tolist()
+        sample_ = map(
+            float,
+            multivariate_normal(
+                [*self.mu.values()], self.var, seed=self._rng.randint(0, 2**10)
+            ).rvs(),
+        )
         return dict(zip(self.mu.keys(), sample_))
 
     @property
     def mode(self) -> dict:
         return self.mu
+
+
+@pytest.mark.parametrize(
+    "p",
+    [
+        pytest.param(
+            p,
+            id=f"{p=}",
+        )
+        for p in [1, 3, 5]
+    ],
+)
+def test_univariate_multivariate_consistency(p):
+    X = pd.DataFrame(np.random.random((30, p)), columns=range(p))
+
+    multi = MultivariateGaussian()
+    single = {c: Gaussian() for c in X.columns}
+
+    for x in X.to_dict(orient="records"):
+        multi = multi.update(x)
+        for c, s in single.items():
+            s.update(x[c])
+
+    for c in X.columns:
+        assert math.isclose(multi.mu[c], single[c].mu)
+        assert math.isclose(multi.sigma[c][c], single[c].sigma)
