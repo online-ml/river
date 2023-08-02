@@ -1,15 +1,13 @@
 from __future__ import annotations
 
 import math
-import pytest
-import warnings
 
 import numpy as np
 import pandas as pd
+import pytest
 from scipy.stats import multivariate_normal
 
-from river import covariance
-from river import stats
+from river import covariance, stats
 from river.proba import base
 
 __all__ = ["Gaussian", "MultivariateGaussian"]
