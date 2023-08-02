@@ -162,7 +162,7 @@ class MultivariateGaussian(base.MultivariateContinuousDistribution):
 
     To sample data from distribution
     >>> p.sample()  # doctest: +ELLIPSIS
-    [0.3053..., -0.0532..., 0.7388...]
+    {'blue': 0.3053..., 'green': -0.0532..., 'red': 0.7388...}
 
     MultivariateGaussian works with `utils.Rolling`
 
@@ -287,15 +287,9 @@ class MultivariateGaussian(base.MultivariateContinuousDistribution):
         cdf_ = multivariate_normal([*self.mu.values()], self.var, allow_singular=True).cdf(x_)
         return float(cdf_)
 
-    def sample(self) -> list[float]:
-        return (
-            multivariate_normal(
-                [*self.mu.values()],
-                self.var,
-            )
-            .rvs()
-            .tolist()
-        )
+    def sample(self) -> dict[str, float]:
+        sample_ = multivariate_normal([*self.mu.values()], self.var).rvs().tolist()
+        return dict(zip(self.mu.keys(), sample_))
 
     @property
     def mode(self) -> dict:
