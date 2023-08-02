@@ -52,14 +52,17 @@ class LinUCBDisjoint(bandit.base.ContextualPolicy):
         seed: int | None = None,
     ):
         super().__init__(reward_obj, burn_in)
+        self.alpha = alpha
+        self.beta = beta
+        self.smoothing = smoothing
         self._bayes_lin_regs: collections.defaultdict[
             bandit.base.ArmID, linear_model.BayesianLinearRegression
         ] = collections.defaultdict(
             functools.partial(
                 linear_model.BayesianLinearRegression,
-                alpha=alpha,
-                beta=beta,
-                smoothing=smoothing,
+                alpha=self.alpha,
+                beta=self.beta,
+                smoothing=self.smoothing,
             )
         )
         self.seed = seed
