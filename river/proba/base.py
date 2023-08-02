@@ -104,3 +104,26 @@ class ContinuousDistribution(Distribution):
     @abc.abstractmethod
     def cdf(self, x: float):
         """Cumulative density function, i.e. P(X <= x)."""
+
+
+class MultivariateContinuousDistribution(Distribution):
+    """A probability distribution for multivariate continuous values.
+
+    Parameters
+    ----------
+    seed
+        Random number generator seed for reproducibility.
+
+    """
+
+    @abc.abstractmethod
+    def update(self, x: dict[str, float]):
+        """Updates the parameters of the distribution given a new observation."""
+
+    @abc.abstractmethod
+    def revert(self, x: dict[str, float]):
+        """Reverts the parameters of the distribution for a given observation."""
+
+    @abc.abstractmethod
+    def cdf(self, x: dict[str, float]) -> float:
+        """Cumulative density function, i.e. P(X <= x)."""
