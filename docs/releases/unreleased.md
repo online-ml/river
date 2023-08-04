@@ -43,6 +43,7 @@ Calling `learn_one` in a pipeline will now update each part of the pipeline in t
 
 - `stream.iter_arff` now supports sparse data.
 - `stream.iter_arff` now supports multi-output targets.
+- `stream.iter_arff` now supports missing values indicated with question marks.
 
 ## utils
 
