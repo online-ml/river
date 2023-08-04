@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-from river import datasets
-from river import stream
+from river import datasets, stream
 
 from .base import ChangePointFileDataset
 

@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-from abc import ABC
+import abc
 import pathlib
 
 from river.datasets import base
 
 
-class ChangePointFileDataset(base.FileDataset, ABC):
+class ChangePointFileDataset(base.FileDataset, abc.ABC):
     """Base class for change point datasets that are stored in a local file.
 
     Datasets that are part of the Alan Turing Institute Change Point Detection project.
