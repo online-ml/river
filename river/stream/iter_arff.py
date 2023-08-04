@@ -106,6 +106,41 @@ def iter_arff(
     {'X0': '0.676477', 'X1': '0.724635', 'X2': '0.755123'}
     {'y0': 0, 'y1': 0, 'y2': '1', 'y3': 0, 'y4': 0, 'y5': 0}
 
+    This function can also deal with missing features in non-sparse data. These are indicated with
+    a question mark.
+
+    >>> data = '''
+    ... @relation giveMeLoan-weka.filters.unsupervised.attribute.Remove-R1
+    ... @attribute RevolvingUtilizationOfUnsecuredLines numeric
+    ... @attribute age numeric
+    ... @attribute NumberOfTime30-59DaysPastDueNotWorse numeric
+    ... @attribute DebtRatio numeric
+    ... @attribute MonthlyIncome numeric
+    ... @attribute NumberOfOpenCreditLinesAndLoans numeric
+    ... @attribute NumberOfTimes90DaysLate numeric
+    ... @attribute NumberRealEstateLoansOrLines numeric
+    ... @attribute NumberOfTime60-89DaysPastDueNotWorse numeric
+    ... @attribute NumberOfDependents numeric
+    ... @attribute isFraud {0,1}
+    ... @data
+    ... 0.213179,74,0,0.375607,3500,3,0,1,0,1,0
+    ... 0.305682,57,0,5710,?,8,0,3,0,0,0
+    ... 0.754464,39,0,0.20994,3500,8,0,0,0,0,0
+    ... 0.116951,27,0,46,?,2,0,0,0,0,0
+    ... 0.189169,57,0,0.606291,23684,9,0,4,0,2,0
+    ... '''
+
+    >>> with open('data.arff', mode='w') as f:
+    ...     _ = f.write(data)
+
+    >>> for x, y in stream.iter_arff('data.arff', target='isFraud'):
+    ...     print(len(x))
+    10
+    9
+    10
+    9
+    10
+
     References
     ----------
     [^1]: [ARFF format description from Weka](https://waikato.github.io/weka-wiki/formats_and_processing/arff_stable/)
@@ -141,6 +176,7 @@ def iter_arff(
             x = {
                 name: cast(val) if cast else val
                 for name, cast, val in zip(names, casts, r.rstrip().split(","))
+                if val != "?"
             }
 
         # Handle target
