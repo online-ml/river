@@ -1,14 +1,11 @@
 from __future__ import annotations
 
-from river import stream
+from river import datasets, stream
 
-# from . import base
-from river.datasets import base
-
-from .base import ChangePointDataset
+from .base import ChangePointFileDataset
 
 
-class Bitcoin(ChangePointDataset):
+class Bitcoin(ChangePointFileDataset):
     """Bitcoin Market Price
 
     This is a regression task, where the goal is to predict the average USD market price across
@@ -32,15 +29,14 @@ class Bitcoin(ChangePointDataset):
                 "14": [93, 522, 540, 701, 747, 760, 772],
             },
             filename="bitcoin.csv",
-            task=base.REG,
+            task=datasets.base.REG,
             n_samples=822,
             n_features=1,
         )
-        self._path = "./datasets/bitcoin.csv"
 
     def __iter__(self):
         return stream.iter_csv(
-            self._path,  # TODO: Must be changed for integration into river
+            self.path,
             target="price",
             converters={
                 "price": float,

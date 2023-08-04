@@ -1,20 +1,19 @@
 from __future__ import annotations
 
-from river import stream
+from river import datasets, stream
 
-# from . import base
-from river.datasets import base
-
-from .base import ChangePointDataset
+from .base import ChangePointFileDataset
 
 
-class Occupancy(ChangePointDataset):
-    """Room occupancy data
-    Dataset on detecting room occupancy based on several variables. For our dataset we use the Temperature, Humidity, Light, and CO2 variables from the training dataset.
+class Occupancy(ChangePointFileDataset):
+    """Room occupancy data.
 
-    This dataset is obtained from the UCI repository on 2019-06-10. As it is unclear whether the data can be redistributed as part of this repository, we download it locally instead.
+    Dataset on detecting room occupancy based on several variables. The dataset contains
+    temperature, humidity, light, and CO2 variables.
 
     The data is sampled at every 16 observations to reduce the length of the series.
+
+    References
     ----------
     Candanedo, Luis M., and Véronique Feldheim. "Accurate occupancy detection of an office room from light, temperature, humidity and CO2 measurements using statistical learning models." Energy and Buildings 112 (2016): 28-39.
 
@@ -30,15 +29,14 @@ class Occupancy(ChangePointDataset):
                 "12": [234, 415],
             },
             filename="occupancy.csv",
-            task=base.REG,
+            task=datasets.base.REG,
             n_samples=509,
             n_features=4,
         )
-        self._path = "./datasets/occupancy.csv"
 
     def __iter__(self):
         return stream.iter_csv(
-            self._path,  # TODO: Must be changed for integration into river
+            self.path,
             target=["V1", "V2", "V3", "V4"],
             converters={
                 "V1": float,

@@ -1,18 +1,16 @@
 from __future__ import annotations
 
-from river import stream
+from river import datasets, stream
 
-# from . import base
-from river.datasets import base
-
-from .base import ChangePointDataset
+from .base import ChangePointFileDataset
 
 
-class RunLog(ChangePointDataset):
-    """Interval Training Running Pace
+class RunLog(ChangePointFileDataset):
+    """Interval Training Running Pace.
 
-    This dataset shows the pace of a runner during an interval training session, where a mobile application provides instructions on when to run and when to walk.
-    Data obtained from the authors' RunDouble account for a run on 2018-07-31.
+    This dataset shows the pace of a runner during an interval training session, where a mobile
+    application provides instructions on when to run and when to walk.
+
     """
 
     def __init__(self):
@@ -25,15 +23,14 @@ class RunLog(ChangePointDataset):
                 "12": [],
             },
             filename="run_log.csv",
-            task=base.REG,
+            task=datasets.base.REG,
             n_samples=376,
             n_features=2,
         )
-        self._path = "./datasets/run_log.csv"
 
     def __iter__(self):
         return stream.iter_csv(
-            self._path,  # TODO: Must be changed for integration into river
+            self.path,
             target=["Pace", "Distance"],
             converters={"Pace": float, "Distance": float},
             parse_dates={"time": "%Y-%m-%d %H:%M:%S"},

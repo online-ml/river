@@ -1,14 +1,11 @@
 from __future__ import annotations
 
-from river import stream
+from river import datasets, stream
 
-# from . import base
-from river.datasets import base
-
-from .base import ChangePointDataset
+from .base import ChangePointFileDataset
 
 
-class BrentSpotPrice(ChangePointDataset):
+class BrentSpotPrice(ChangePointFileDataset):
     """Brent Spot Price
 
     This is the USD price for Brent Crude oil, measured daily. We include the time series
@@ -24,7 +21,7 @@ class BrentSpotPrice(ChangePointDataset):
     References
     ----------
     [^1]: U.S. Energy Information Administration (Sep. 2019)
-        [^2]: https://www.eia.gov/opendata/v1/qb.php?sdid=PET.RBRTE.D
+    [^2]: https://www.eia.gov/opendata/v1/qb.php?sdid=PET.RBRTE.D
 
     """
 
@@ -38,15 +35,14 @@ class BrentSpotPrice(ChangePointDataset):
                 "13": [170, 180, 219, 229, 246, 271, 286, 379, 409, 444, 483],
             },
             filename="brent_crude_oil.csv",
-            task=base.REG,
+            task=datasets.base.REG,
             n_samples=8_195,
             n_features=1,
         )
-        self._path = "./datasets/brent_crude_oil.csv"
 
     def __iter__(self):
         return stream.iter_csv(
-            self._path,  # TODO: Must be changed for integration into river
+            self.path,
             target="DPB",
             converters={
                 "DPB": float,

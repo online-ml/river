@@ -1,12 +1,12 @@
-# imports
 from __future__ import annotations
 
-from abc import ABC
+import abc
+import pathlib
 
 from river.datasets import base
 
 
-class ChangePointDataset(base.FileDataset, ABC):
+class ChangePointFileDataset(base.FileDataset, abc.ABC):
     """Base class for change point datasets that are stored in a local file.
 
     Datasets that are part of the Alan Turing Institute Change Point Detection project.
@@ -21,15 +21,17 @@ class ChangePointDataset(base.FileDataset, ABC):
     """
 
     def __init__(self, annotations, **desc):
-        super().__init__(**desc)
-        self._annotations = annotations
+        super().__init__(**desc, directory=pathlib.Path(__file__).parent)
+        self.annotations = annotations
 
     @property
-    def annotations(self):
-        """Returns the annotations of the dataset"""
-        return self._annotations
+    def _repr_content(self):
+        repr_content = super()._repr_content
+        repr_content["Annotators"] = f"{len(self.annotations):,d}"
+        repr_content["Annotations"] = f"{sum(map(len, self.annotations.values())):,d}"
+        return repr_content
 
-    def annotations_aggregated(self, annotator_aggregation):
+    def _annotations_aggregated(self, annotator_aggregation):
         """The function `annotations_aggregated` takes an annotator aggregation method as input and returns
         the aggregated annotations based on that method.
 
@@ -68,6 +70,3 @@ class ChangePointDataset(base.FileDataset, ABC):
         else:
             raise ValueError("Unknown annotator aggregation method.")
         return annotations
-
-    def __repr__(self):
-        return f"{self.__class__.__name__}"

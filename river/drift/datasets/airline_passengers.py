@@ -1,14 +1,11 @@
 from __future__ import annotations
 
-from river import stream
+from river import datasets, stream
 
-# from . import base
-from river.datasets import base
-
-from .base import ChangePointDataset
+from .base import ChangePointFileDataset
 
 
-class AirlinePassengers(ChangePointDataset):
+class AirlinePassengers(ChangePointFileDataset):
     """JFK Airline Passengers
 
     This dataset gives the number of passengers arriving and departing at JFK.
@@ -24,15 +21,14 @@ class AirlinePassengers(ChangePointDataset):
         super().__init__(
             annotations={"6": [299], "7": [], "8": [302], "9": [326, 382], "10": [296]},
             filename="airline_passengers.csv",
-            task=base.REG,
+            task=datasets.base.REG,
             n_samples=468,
             n_features=1,
         )
-        self._path = "./datasets/airline_passengers.csv"
 
     def __iter__(self):
         return stream.iter_csv(
-            self._path,
+            self.path,
             target="Total Passengers",
             converters={
                 "Total Passengers": int,

@@ -1,14 +1,11 @@
 from __future__ import annotations
 
-from river import stream
+from river import datasets, stream
 
-# from . import base
-from river.datasets import base
-
-from .base import ChangePointDataset
+from .base import ChangePointFileDataset
 
 
-class Apple(ChangePointDataset):
+class Apple(ChangePointFileDataset):
     """Apple Stock
 
     This dataset concerns the daily close price and volume of Apple stock around the year 2000. The dataset is sampled every 3 observations to reduce the length of the time series.
@@ -30,15 +27,14 @@ class Apple(ChangePointDataset):
                 "10": [319],
             },
             filename="apple.csv",
-            task=base.REG,
+            task=datasets.base.REG,
             n_samples=1867,
             n_features=6,
         )
-        self._path = "./datasets/apple.csv"
 
     def __iter__(self):
         return stream.iter_csv(
-            self._path,  # TODO: Must be changed for integration into river
+            self.path,
             target=["Open", "High", "Low", "Close", "Adj Close", "Volume"],
             converters={
                 "Open": float,

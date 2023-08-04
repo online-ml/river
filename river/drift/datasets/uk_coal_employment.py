@@ -1,14 +1,11 @@
 from __future__ import annotations
 
-from river import stream
+from river import datasets, stream
 
-# from . import base
-from river.datasets import base
-
-from .base import ChangePointDataset
+from .base import ChangePointFileDataset
 
 
-class UKCoalEmploy(ChangePointDataset):
+class UKCoalEmploy(ChangePointFileDataset):
     """Historic Employment in UK Coal Mines
 
     This is historic data obtained from the UK government.
@@ -30,15 +27,14 @@ class UKCoalEmploy(ChangePointDataset):
                 "13": [19, 28, 45, 68, 80],
             },
             filename="uk_coal_employment.csv",
-            task=base.REG,
+            task=datasets.base.REG,
             n_samples=105,
             n_features=1,
         )
-        self._path = "./datasets/uk_coal_employment.csv"
 
     def __iter__(self):
         return stream.iter_csv(
-            self._path,  # TODO: Must be changed for integration into river
+            self.path,
             target="Employment",
             converters={
                 "Employment": int,
