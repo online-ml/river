@@ -9,6 +9,7 @@ the true positives while keeping the number of false positives to a minimum.
 from __future__ import annotations
 
 from . import binary
+from . import datasets
 from .adwin import ADWIN
 from .dummy import DummyDriftDetector
 from .kswin import KSWIN
@@ -17,6 +18,7 @@ from .retrain import DriftRetrainingClassifier
 
 __all__ = [
     "binary",
+    "datasets",
     "ADWIN",
     "DriftRetrainingClassifier",
     "DummyDriftDetector",
