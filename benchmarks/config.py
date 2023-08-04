@@ -18,6 +18,7 @@ from river import (
     dummy,
     ensemble,
     evaluate,
+    forest,
     linear_model,
     naive_bayes,
     neighbors,
@@ -38,6 +39,7 @@ TRACKS = [
     evaluate.MultiClassClassificationTrack(),
     evaluate.RegressionTrack(),
 ]
+import river
 
 MODELS = {
     "Binary classification": {
@@ -45,6 +47,7 @@ MODELS = {
             preprocessing.StandardScaler()
             | linear_model.LogisticRegression(optimizer=optim.SGD(LEARNING_RATE))
         ),
+        "Aggregated Mondrian Forest": forest.AMFClassifier(seed=42),
         "ALMA": preprocessing.StandardScaler() | linear_model.ALMAClassifier(),
         "sklearn SGDClassifier": (
             preprocessing.StandardScaler()
@@ -73,10 +76,10 @@ MODELS = {
         "Naive Bayes": naive_bayes.GaussianNB(),
         "Hoeffding Tree": tree.HoeffdingTreeClassifier(),
         "Hoeffding Adaptive Tree": tree.HoeffdingAdaptiveTreeClassifier(seed=42),
-        "Adaptive Random Forest": ensemble.AdaptiveRandomForestClassifier(seed=42),
+        "Adaptive Random Forest": forest.ARFClassifier(seed=42),
+        "Aggregated Mondrian Forest": forest.AMFClassifier(seed=42),
         "Streaming Random Patches": ensemble.SRPClassifier(),
-        "k-Nearest Neighbors": preprocessing.StandardScaler()
-        | neighbors.KNNClassifier(window_size=100),
+        "k-Nearest Neighbors": preprocessing.StandardScaler() | neighbors.KNNClassifier(),
         "ADWIN Bagging": ensemble.ADWINBaggingClassifier(tree.HoeffdingTreeClassifier(), seed=42),
         "AdaBoost": ensemble.AdaBoostClassifier(tree.HoeffdingTreeClassifier(), seed=42),
         "Bagging": ensemble.BaggingClassifier(
@@ -90,16 +93,16 @@ MODELS = {
                 preprocessing.StandardScaler() | linear_model.SoftmaxRegression(),
                 naive_bayes.GaussianNB(),
                 tree.HoeffdingTreeClassifier(),
-                preprocessing.StandardScaler() | neighbors.KNNClassifier(window_size=100),
+                preprocessing.StandardScaler() | neighbors.KNNClassifier(),
             ],
-            meta_classifier=ensemble.AdaptiveRandomForestClassifier(seed=42),
+            meta_classifier=forest.ARFClassifier(seed=42),
         ),
         "Voting": ensemble.VotingClassifier(
             [
                 preprocessing.StandardScaler() | linear_model.SoftmaxRegression(),
                 naive_bayes.GaussianNB(),
                 tree.HoeffdingTreeClassifier(),
-                preprocessing.StandardScaler() | neighbors.KNNClassifier(window_size=100),
+                preprocessing.StandardScaler() | neighbors.KNNClassifier(),
             ]
         ),
         "Torch Logistic Regression": (
@@ -147,14 +150,13 @@ MODELS = {
         | linear_model.PARegressor(mode=1),
         "Passive-Aggressive Regressor, mode 2": preprocessing.StandardScaler()
         | linear_model.PARegressor(mode=2),
-        "k-Nearest Neighbors": preprocessing.StandardScaler()
-        | neighbors.KNNRegressor(window_size=100),
+        "k-Nearest Neighbors": preprocessing.StandardScaler() | neighbors.KNNRegressor(),
         "Hoeffding Tree": preprocessing.StandardScaler() | tree.HoeffdingTreeRegressor(),
         "Hoeffding Adaptive Tree": preprocessing.StandardScaler()
         | tree.HoeffdingAdaptiveTreeRegressor(seed=42),
         "Stochastic Gradient Tree": tree.SGTRegressor(),
-        "Adaptive Random Forest": preprocessing.StandardScaler()
-        | ensemble.AdaptiveRandomForestRegressor(seed=42),
+        "Adaptive Random Forest": preprocessing.StandardScaler() | forest.ARFRegressor(seed=42),
+        "Aggregated Mondrian Forest": forest.AMFRegressor(seed=42),
         "Adaptive Model Rules": preprocessing.StandardScaler() | rules.AMRules(),
         "Streaming Random Patches": preprocessing.StandardScaler() | ensemble.SRPRegressor(seed=42),
         "Bagging": preprocessing.StandardScaler()
@@ -166,7 +168,7 @@ MODELS = {
             models=[
                 linear_model.LinearRegression(),
                 tree.HoeffdingAdaptiveTreeRegressor(),
-                neighbors.KNNRegressor(window_size=100),
+                neighbors.KNNRegressor(),
                 rules.AMRules(),
             ],
         ),
