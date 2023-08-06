@@ -37,6 +37,11 @@ class BaseForest(base.Ensemble):
         metric: metrics.base.MultiClassMetric | metrics.base.RegressionMetric,
         disable_weighted_vote,
         seed,
+        activate_msts : bool = False,
+        sliding_window_max_size : int = 10,
+        mass_control_size : int = 3,
+        selection_threshold : int = 5,
+        selection_threshold_option : str = 'mode',
     ):
         super().__init__([])  # type: ignore
         self.n_models = n_models
@@ -52,6 +57,21 @@ class BaseForest(base.Ensemble):
         # Internal parameters
         self._n_samples_seen = 0
         self._base_member_class: ForestMemberClassifier | ForestMemberRegressor | None = None
+
+        self.activate_msts = activate_msts
+        self.sliding_window_max_size = 0
+        #activate dynamic selection of clasifiers
+        if activate_msts:
+            #selection of classifiers parameters
+            self.sliding_window_max_size = sliding_window_max_size
+            self.mass_control_size = mass_control_size * self.n_models
+            self.selection_threshold = selection_threshold
+            self.selection_threshold_option = selection_threshold_option
+            #selection of classifiers windows and variables
+            self.mass = [0] * (self.sliding_window_max_size + 1)
+            self.results = [0] * n_models
+            self.mass_control : typing.List[int] = []
+            self.classification_threshold = 0
 
     @property
     def _min_number_of_models(self):
@@ -70,7 +90,7 @@ class BaseForest(base.Ensemble):
         if len(self) == 0:
             self._init_ensemble(sorted(x.keys()))
 
-        for model in self:
+        for i, model in enumerate(self):
             # Get prediction for instance
             y_pred = (
                 model.predict_proba_one(x)
@@ -85,6 +105,51 @@ class BaseForest(base.Ensemble):
             k = poisson(rate=self.lambda_value, rng=self._rng)
             if k > 0:
                 model.learn_one(x=x, y=y, sample_weight=k, n_samples_seen=self._n_samples_seen)
+            if self.activate_msts:
+                #update metrics and sliding windows
+                correctly_classifies = 1 if self.results[i] == y else 0
+                model.right_pred += correctly_classifies
+                model.sliding_window.append(correctly_classifies)
+                if len(model.sliding_window) == self.sliding_window_max_size + 1:
+                    rmv = model.sliding_window.pop(0)
+                    model.right_pred -= rmv
+                self.mass_control.append(model.right_pred)
+                self.mass[model.right_pred] += 1
+                
+                if len(self.mass_control) == self.mass_control_size + 1:
+                    rmv = self.mass_control.pop(0)
+                    self.mass[rmv] -= 1
+
+        if self.activate_msts:
+            #get classification threshold for dynamic selection in predict_proba_one
+            if self.selection_threshold_option == 'fixed':
+                n_voting_classifiers = 0
+                for i in range(self.selection_threshold, len(self.mass)):
+                    n_voting_classifiers += self.mass[i]
+                if n_voting_classifiers == 0:
+                    self.classification_threshold = 0
+                else:
+                    self.classification_threshold = self.selection_threshold
+            elif self.selection_threshold_option == 'mean':
+                mean = 0.0
+                total = 0
+                for model in self:
+                    if model.right_pred >= self.selection_threshold:
+                        mean += self.mass[i]
+                        total += 1
+                mean = mean / total if total != 0 else 0
+                self.classification_threshold = int(mean) if self.classification_threshold > mean else self.selection_threshold
+            else:
+                most_recurrent = 0
+                n_voting_classifiers = 0
+                for i in range(self.selection_threshold, len(self.mass)):
+                    n_voting_classifiers += self.mass[i]
+                    if self.mass[i] >= most_recurrent:
+                        self.classification_threshold = i
+                        most_recurrent =  self.mass[i]
+
+                if n_voting_classifiers == 0:
+                    self.classification_threshold = 0
 
         return self
 
@@ -100,6 +165,8 @@ class BaseForest(base.Ensemble):
                 warning_detector=self.warning_detector,
                 is_background_learner=False,
                 metric=self.metric,
+                activate_msts = self.activate_msts,
+                sliding_window_max_size = self.sliding_window_max_size
             )
             for i in range(self.n_models)
         ]
@@ -450,6 +517,23 @@ class ARFClassifier(BaseForest, base.Classifier):
         [*Tree parameter*] If True, disable poor attributes to reduce memory usage.
     merit_preprune
         [*Tree parameter*] If True, enable merit-based tree pre-pruning.
+    activate_msts
+        [*MSTS parameter*] If True, activate dynamic selecion of classifiers method from [^2]
+    sliding_window_max_size
+        [*MSTS parameter*] size of the sliding window
+        defaults to 10
+    mass_control_size
+        [*MSTS parameter*] the number of last instances the mass function will sum  
+        defaults to 3
+    selection_threshold
+        [*MSTS parameter*] minimum threshold value for selection of classifiers
+        defaults to 5
+    selection_threshold_option
+        [*MSTS parameter*] type of threshold to use<br/>
+        -fixed<br/>
+        -mean<br/>
+        -mode<br/>
+        defaults to mode
     seed
         Random seed for reproducibility.
 
@@ -480,7 +564,9 @@ class ARFClassifier(BaseForest, base.Classifier):
          Fabricio Enembreck, Bernhard Pfharinger, Geoff Holmes, Talel Abdessalem.
          Adaptive random forests for evolving data stream classification.
          In Machine Learning, DOI: 10.1007/s10994-017-5642-8, Springer, 2017.
-
+    [^2]: D. N. Assis, F. Enembreck and J. P. Barddal, "Mass-Based Short Term Selection of Classifiers in Data Streams", 
+          2023 International Joint Conference on Neural Networks (IJCNN), Gold Coast, Australia, 2023, 
+          pp. 1-8, doi: 10.1109/IJCNN54540.2023.10191423.
     """
 
     def __init__(
@@ -510,6 +596,11 @@ class ARFClassifier(BaseForest, base.Classifier):
         stop_mem_management: bool = False,
         remove_poor_attrs: bool = False,
         merit_preprune: bool = True,
+        activate_msts : bool = False,
+        sliding_window_max_size : int = 10,
+        mass_control_size : int = 3,
+        selection_threshold : int = 5,
+        selection_threshold_option : str = 'mode',
         seed: int | None = None,
     ):
         super().__init__(
@@ -520,6 +611,11 @@ class ARFClassifier(BaseForest, base.Classifier):
             disable_weighted_vote=disable_weighted_vote,
             drift_detector=drift_detector or ADWIN(delta=0.001),
             warning_detector=warning_detector or ADWIN(delta=0.01),
+            activate_msts = activate_msts,
+            sliding_window_max_size = sliding_window_max_size,
+            mass_control_size = mass_control_size,
+            selection_threshold = selection_threshold,
+            selection_threshold_option = selection_threshold_option,
             seed=seed,
         )
 
@@ -566,13 +662,21 @@ class ARFClassifier(BaseForest, base.Classifier):
             self._init_ensemble(sorted(x.keys()))
             return y_pred  # type: ignore
 
-        for model in self:
+        for i, model in enumerate(self):
             y_proba_temp = model.predict_proba_one(x)
+            if self.activate_msts:
+                self.results[i] =  max(y_proba_temp, key=y_proba_temp.get) if y_proba_temp else -1
             metric_value = model.metric.get()
             if not self.disable_weighted_vote and metric_value > 0.0:
                 y_proba_temp = {k: val * metric_value for k, val in y_proba_temp.items()}
-            y_pred.update(y_proba_temp)
-
+                
+            #Select only classifiers that has the number of right predictions in the sliding window 
+            # higher than the classification threshold extracted in learn_one 
+            if self.activate_msts and model.right_pred >= self.classification_threshold:
+                y_pred.update(y_proba_temp)
+            elif not self.activate_msts:
+                y_pred.update(y_proba_temp)
+        
         total = sum(y_pred.values())
         if total > 0:
             return {label: proba / total for label, proba in y_pred.items()}
@@ -919,7 +1023,6 @@ class BaseForestMember:
         True if the tree is a background learner.
     metric
         Metric to track performance.
-
     """
 
     def __init__(
@@ -931,6 +1034,8 @@ class BaseForestMember:
         warning_detector: base.DriftDetector,
         is_background_learner,
         metric: metrics.base.MultiClassMetric | metrics.base.RegressionMetric,
+        activate_msts : bool,
+        sliding_window_max_size : int
     ):
         self.index_original = index_original
         self.model = model
@@ -944,6 +1049,14 @@ class BaseForestMember:
         self.last_warning_on = 0
         self.n_drifts_detected = 0
         self.n_warnings_detected = 0
+
+        self.activate_msts = activate_msts
+        self.sliding_window_max_size = 0 # pass sliding_window_max_size as parameter
+        if self.activate_msts:
+            #selection of classifiers parameters
+            self.right_pred = 0
+            self.sliding_window : typing.List[int] = []
+            self.sliding_window_max_size = sliding_window_max_size
 
         # Initialize drift and warning detectors
         if drift_detector is not None:
@@ -962,6 +1075,12 @@ class BaseForestMember:
 
     def reset(self, n_samples_seen):
         if self._use_background_learner and self.background_learner is not None:
+            
+            if self.activate_msts:
+                self.right_pred = self.background_learner.right_pred
+                self.sliding_window = copy.deepcopy(self.background_learner.sliding_window)
+
+
             # Replace foreground model with background model
             self.model = self.background_learner.model
             self.warning_detector = self.background_learner.warning_detector
@@ -970,6 +1089,10 @@ class BaseForestMember:
             self.created_on = self.background_learner.created_on
             self.background_learner = None
         else:
+            if self.activate_msts:
+                # Reset model
+                self.right_pred = 0
+                self.sliding_window = []
             # Reset model
             self.model = self.model.new_instance()
             self.metric = self.metric.clone()
@@ -980,6 +1103,15 @@ class BaseForestMember:
         self.model.learn_one(x, y, sample_weight=sample_weight)
 
         if self.background_learner:
+            if self.activate_msts:
+                # Train the background learner
+                #selection of classifiers
+                correctly_classifiers = 1 if self.background_learner.model.predict_one(x=x) == y else 0 
+                self.background_learner.right_pred += correctly_classifiers
+                self.background_learner.sliding_window.append(correctly_classifiers)
+                if len(self.background_learner.sliding_window) == self.sliding_window_max_size:
+                    rmv = self.background_learner.sliding_window.pop(0)
+                    self.background_learner.right_pred -= rmv
             # Train the background learner
             self.background_learner.model.learn_one(x=x, y=y, sample_weight=sample_weight)
 
@@ -1004,6 +1136,8 @@ class BaseForestMember:
                         warning_detector=self.warning_detector,
                         is_background_learner=True,
                         metric=self.metric,
+                        activate_msts=self.activate_msts,
+                        sliding_window_max_size=self.sliding_window_max_size
                     )
                     # Reset the warning detector for the current object
                     self.warning_detector = self.warning_detector.clone()
@@ -1038,6 +1172,8 @@ class ForestMemberClassifier(BaseForestMember, base.Classifier):  # type: ignore
         warning_detector: base.DriftDetector,
         is_background_learner,
         metric: metrics.base.MultiClassMetric,
+        activate_msts : bool,
+        sliding_window_max_size : int
     ):
         super().__init__(
             index_original=index_original,
@@ -1047,6 +1183,8 @@ class ForestMemberClassifier(BaseForestMember, base.Classifier):  # type: ignore
             warning_detector=warning_detector,
             is_background_learner=is_background_learner,
             metric=metric,
+            activate_msts = activate_msts,
+            sliding_window_max_size = sliding_window_max_size
         )
 
     def _drift_detector_input(  # type: ignore

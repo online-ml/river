@@ -15,7 +15,6 @@ from .bagging import (
     LeveragingBaggingClassifier,
 )
 from .boosting import AdaBoostClassifier, ADWINBoostingClassifier, BOLEClassifier
-from .classifier_selection.MSTS_arf import MSTSARFClassifier
 from .ewa import EWARegressor
 from .stacking import StackingClassifier
 from .streaming_random_patches import SRPClassifier, SRPRegressor
@@ -30,7 +29,6 @@ __all__ = [
     "BOLEClassifier",
     "EWARegressor",
     "LeveragingBaggingClassifier",
-    "MSTSARFClassifier",
     "SRPClassifier",
     "SRPRegressor",
     "StackingClassifier",
