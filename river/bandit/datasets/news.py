@@ -41,7 +41,6 @@ class NewsArticles(datasets.base.RemoteDataset, BanditDataset):
             filename="dataset.txt",
             unpack=False,
             directory=pathlib.Path(__file__).parent,
-            task="BANDIT",
             n_features=100,
             n_samples=10_000,
         )
