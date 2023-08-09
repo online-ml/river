@@ -15,6 +15,7 @@ Calling `learn_one` in a pipeline will now update each part of the pipeline in t
 - Removed the `compose.warm_up_mode` context manager.
 - Removed the `compose.pure_inference_mode` context manager.
 - The last step of a pipeline will be correctly updated if it is unsupervised, which wasn't the case before.
+- Fixed an edge-case where `compose.TransformerProduct` would not work when chained more than twice.
 
 ## drift
 

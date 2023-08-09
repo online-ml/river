@@ -88,21 +88,27 @@ class TransformerProduct(union.TransformerUnion):
     def transform_many(self, X):
         outputs = [t.transform_many(X) for t in self.transformers.values()]
 
+        def get_fill_value(a):
+            if isinstance(a, pd.arrays.SparseArray):
+                return a.fill_value
+            return a.sparse.fill_value
+
         def multiply(a, b):
             # Fast-track for sparse[uint8] * sparse[uint8]
             if a.dtype == pd.SparseDtype("uint8") and b.dtype == pd.SparseDtype("uint8"):
                 return a & b
+
             # Fast-track for sparse * sparse
             if pd.api.types.is_sparse(a) and pd.api.types.is_sparse(b):
                 return pd.arrays.SparseArray(
-                    a * b, fill_value=a.sparse.fill_value * b.sparse.fill_value
+                    a * b, fill_value=get_fill_value(a) * get_fill_value(b)
                 )
             # Fast-track for sparse * numeric
             if pd.api.types.is_sparse(a):
-                return pd.arrays.SparseArray(a * b, fill_value=a.sparse.fill_value)
+                return pd.arrays.SparseArray(a * b, fill_value=get_fill_value(a))
             # Fast-track for numeric * sparse
             if pd.api.types.is_sparse(b):
-                return pd.arrays.SparseArray(a * b, fill_value=b.sparse.fill_value)
+                return pd.arrays.SparseArray(a * b, fill_value=get_fill_value(b))
             # Default
             return np.multiply(a, b)
 
