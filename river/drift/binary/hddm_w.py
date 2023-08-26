@@ -123,11 +123,14 @@ class HDDM_W(base.BinaryDriftAndWarningDetector):
 
         self._update_incr_stats(x, self.drift_confidence)
         if self._detect_mean_incr(self.drift_confidence):
+            self._warning_detected = False
             self._drift_detected = True
         elif self._detect_mean_incr(self.warning_confidence):
             self._warning_detected = True
+            self._drift_detected = False
         else:
             self._warning_detected = False
+            self._drift_detected = False
 
         self._update_decr_stats(x, self.drift_confidence)
         if self.two_sided_test:

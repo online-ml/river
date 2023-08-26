@@ -80,9 +80,9 @@ class HDDM_A(base.BinaryDriftAndWarningDetector):
         super()._reset()
 
         # To check if the global mean increased
-        self._x_mn = stats.Mean()
+        self._x_min = stats.Mean()
         # To check if the global mean decreased
-        self._x_mx = stats.Mean()
+        self._x_max = stats.Mean()
         # Global mean
         self._z = stats.Mean()
 
@@ -108,29 +108,32 @@ class HDDM_A(base.BinaryDriftAndWarningDetector):
             self._reset()
 
         self._z.update(x)
-        if self._x_mn.n == 0:
-            self._x_mn += self._z
-        if self._x_mx.n == 0:
-            self._x_mx += self._z
+        if self._x_min.n == 0:
+            self._x_min = self._z.clone(include_attributes=True)
+        if self._x_max.n == 0:
+            self._x_max = self._z.clone(include_attributes=True)
 
         # Bound the data
         eps_z = self._hoeffding_bound(self._z.n)
-        eps_x = self._hoeffding_bound(self._x_mn.n)
+        eps_x = self._hoeffding_bound(self._x_min.n)
         # Update the cut point for tracking mean increase
-        if self._x_mn.get() + eps_x >= self._z.get() + eps_z:
-            self._x_mn = stats.Mean._from_state(n=self._z.n, mean=self._z.get())
+        if self._x_min.get() + eps_x >= self._z.get() + eps_z:
+            self._x_min = self._z.clone(include_attributes=True)
 
-        eps_x = self._hoeffding_bound(self._x_mx.n)
+        eps_x = self._hoeffding_bound(self._x_max.n)
         # Update the cut point for tracking mean decrease
-        if self._x_mx.get() - eps_x <= self._z.get() - eps_z:
-            self._x_mx = stats.Mean._from_state(n=self._z.n, mean=self._z.get())
+        if self._x_max.get() - eps_x <= self._z.get() - eps_z:
+            self._x_max = self._z.clone(include_attributes=True)
 
         if self._mean_incr(self.drift_confidence):
+            self._warning_detected = False
             self._drift_detected = True
         elif self._mean_incr(self.warning_confidence):
             self._warning_detected = True
+            self._drift_detected = False
         else:
             self._warning_detected = False
+            self._drift_detected = False
 
         if self.two_sided_test:
             if self._mean_decr(self.drift_confidence):
@@ -142,18 +145,18 @@ class HDDM_A(base.BinaryDriftAndWarningDetector):
 
     # Check if the global mean increased
     def _mean_incr(self, confidence: float):
-        if self._x_mn.n == self._z.n:
+        if self._x_min.n == self._z.n:
             return False
 
-        m = (self._z.n - self._x_mn.n) / self._x_mn.n * (1.0 / self._z.n)
+        m = (self._z.n - self._x_min.n) / self._x_min.n * (1.0 / self._z.n)
         eps = math.sqrt(m / 2 * math.log(2.0 / confidence))
-        return self._z.get() - self._x_mn.get() >= eps
+        return self._z.get() - self._x_min.get() >= eps
 
     # Check if the global mean decreased
     def _mean_decr(self, confidence: float):
-        if self._x_mx.n == self._z.n:
+        if self._x_max.n == self._z.n:
             return False
 
-        m = (self._z.n - self._x_mx.n) / self._x_mx.n * (1.0 / self._z.n)
+        m = (self._z.n - self._x_max.n) / self._x_max.n * (1.0 / self._z.n)
         eps = math.sqrt(m / 2 * math.log(2.0 / confidence))
-        return self._x_mx.get() - self._z.get() >= eps
+        return self._x_max.get() - self._z.get() >= eps

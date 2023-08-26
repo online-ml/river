@@ -65,11 +65,11 @@ class DriftRetrainingClassifier(base.Wrapper, base.Classifier):
         return self.model.predict_proba_one(x, **kwargs)
 
     def learn_one(self, x, y, **kwargs):
-        self._update_ddm(x, y)
+        self._update_detector(x, y)
         self.model.learn_one(x, y, **kwargs)
         return self
 
-    def _update_ddm(self, x, y):
+    def _update_detector(self, x, y):
         y_pred = self.model.predict_one(x)
         if y_pred is None:
             return
