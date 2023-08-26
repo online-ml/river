@@ -20,6 +20,7 @@ Calling `learn_one` in a pipeline will now update each part of the pipeline in t
 ## drift
 
 - Added a `datasets` submodule, which contains datasets that are useful for concept drift experiments.
+- Fix bugs in `drift.binary.HDDM_A` and `drift.binary.HDDM_W`.
 
 ## linear_model
 
