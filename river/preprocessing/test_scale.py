@@ -58,3 +58,32 @@ def test_standard_scaler_add_remove_columns():
         # Pick half of the columns at random
         cols = np.random.choice(X.columns, len(X.columns) // 2, replace=False)
         ss.learn_many(xb[cols])
+
+
+def test_issue_1313():
+    """
+
+    >>> import numpy as np
+    >>> import pandas as pd
+    >>> from sklearn import datasets
+    >>> from river import preprocessing
+    >>> from river.compose import Select
+
+    >>> X, y = datasets.make_regression(n_samples=6, n_features=2)
+    >>> X = pd.DataFrame(X)
+    >>> X.columns = ['feat_1','feat_2']
+
+    >>> model = Select('feat_1') | preprocessing.StandardScaler()
+    >>> X = X.astype('float32')
+    >>> X.dtypes
+    feat_1    float32
+    feat_2    float32
+    dtype: object
+
+    >>> model = model.learn_many(X)
+    >>> X1 = model.transform_many(X)
+    >>> X1.dtypes
+    feat_1    float32
+    dtype: object
+
+    """
