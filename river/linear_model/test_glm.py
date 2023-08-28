@@ -420,10 +420,7 @@ def test_lin_reg_sklearn_l1_non_regression():
 def test_log_reg_sklearn_l1_non_regression():
     """Checks that the river L1 implementation results are no worse than sklearn L1."""
 
-    (
-        X,
-        y,
-    ) = make_classification(
+    (X, y,) = make_classification(
         n_samples=1000,
         n_features=20,
         n_informative=4,
