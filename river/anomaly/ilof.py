@@ -9,10 +9,10 @@ from river.neighbors.base import DistanceFunc
 from river.utils import VectorDict
 
 
-class ILOF(anomaly.base.AnomalyDetector):
-    """Incremental Local Outlier Factor (ILOF).
+class IncrementalLOF(anomaly.base.AnomalyDetector):
+    """Incremental Local Outlier Factor (Incremental LOF).
 
-    ILOF Algorithm as described in the reference paper
+    Incremental LOF Algorithm as described in the reference paper
     ----------
 
     The Incremental Local Outlier Factor (ILOF) is an online version of the Local Outlier Factor (LOF) used to identify outliers based on density of local neighbors.
@@ -71,19 +71,27 @@ class ILOF(anomaly.base.AnomalyDetector):
 
     Example
     ----------
-    from river import datasets
-    import pandas as pd
-    import ilof as ilof
-    dataset = pd.DataFrame(datasets.CreditCard())
-    #Define model
-    k = 20 #k-neighboors
-    ilof_river = ilof.ILOF(k, verbose=False)
-    ilof_river.learn_many(dataset[0:30])
-    for i in dataset[0][40:90]:
-        ilof_river.learn_one(i)
-    lof_score = []
-    for x in dataset[0][100:120]:
-        lof_score.append(ilof_river.score_one(x))
+
+    >>> from river import anomaly
+    >>> from river import datasets
+    >>> import pandas as pd
+
+    >>> dataset = pd.DataFrame(datasets.CreditCard())
+
+    >>> k = 20 # Define number of nearest neighbors
+    >>> incremental_lof = anomaly.IncrementalLOF(k, verbose=False)
+
+    >>> incremental_lof.learn_many(dataset[0:50]) # learn_many for the first 30 observations
+
+    >>> for i in dataset[0][50:100]:
+    ...    incremental_lof.learn_one(i)
+
+    >>> ilof_scores = []
+    >>> for x in dataset[0][101:120]:
+    ...   ilof_scores.append(incremental_lof.score_one(x))
+
+    >>> [[round(ilof_score, 3) for ilof_score in ilof_scores[:5][i]] for i in range(5)]
+    [[1.207], [1.278], [1.721], [1.271], [1.167]]
 
     References
     ----------
@@ -310,7 +318,7 @@ class ILOF(anomaly.base.AnomalyDetector):
         dist_dict: dict,
     ):
         """
-        Perform initial calculations on the incoming data before applying the ILOF algorithm.
+        Perform initial calculations on the incoming data before applying the Incremental LOF algorithm.
         Taking the new data, it updates the neighborhoods, reverse neighborhoods, k-distances and distances between particles.
 
         Parameters
@@ -415,7 +423,7 @@ class ILOF(anomaly.base.AnomalyDetector):
         )
 
     def define_sets(self, nm, neighborhoods: dict, rev_neighborhoods: dict):
-        """Define sets of points for the ILOF algorithm"""
+        """Define sets of points for the incremental LOF algorithm"""
         # Define set of new points from batch
         Set_new_points = set(range(nm[0], nm[0] + nm[1]))
         Set_neighbors: set = set()
