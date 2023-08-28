@@ -225,9 +225,9 @@ class IncrementalLOF(anomaly.base.AnomalyDetector):
             # Calculate new Local Outlier Factor of all affected points
             self.lof = self.calc_lof(Set_upd_lof, self.neighborhoods, self.local_reach, self.lof)
 
-    def score_one(self, x: VectorDict, window_score=1):
+    def score_one(self, x: VectorDict):
         """
-        Score incoming observations based on model constructed previously.
+        Score an incoming observation based on model constructed previously.
         Perform same calculations as 'learn_one' function but doesn't add the new calculations to the atributes
         Data samples that are equal to samples stored by the model are not considered.
 
@@ -235,8 +235,6 @@ class IncrementalLOF(anomaly.base.AnomalyDetector):
         ----------
         x
             A dictionary of feature values.
-        window_score
-            The size of the batch of data to be taken in at once for the model to score
 
         Returns
         -------
@@ -246,67 +244,66 @@ class IncrementalLOF(anomaly.base.AnomalyDetector):
 
         self.X_score.append(x)
 
-        if len(self.X_score) >= window_score:
-            self.X_score, equal = self.check_equal(self.X_score, self.X)
-            if equal != 0 and self.verbose:
-                print("%i samples are equal to previous data" % equal)
+        self.X_score, equal = self.check_equal(self.X_score, self.X)
+        if equal != 0 and self.verbose:
+            print("The new observation is the same to one of the previously observed instances.")
 
-            if len(self.X_score) == 0:
-                if self.verbose:
-                    print("No new data was added")
-            else:
-                Xs = self.X.copy()
-                (
-                    nm,
-                    Xs,
-                    neighborhoods,
-                    rev_neighborhoods,
-                    k_dist,
-                    reach_dist,
-                    dist_dict,
-                    local_reach,
-                    lof,
-                ) = self.expand_objects(
-                    self.X_score,
-                    Xs,
-                    self.neighborhoods,
-                    self.rev_neighborhoods,
-                    self.k_dist,
-                    self.reach_dist,
-                    self.dist_dict,
-                    self.local_reach,
-                    self.lof,
-                )
+        if len(self.X_score) == 0:
+            if self.verbose:
+                print("No new data was added.")
+        else:
+            Xs = self.X.copy()
+            (
+                nm,
+                Xs,
+                neighborhoods,
+                rev_neighborhoods,
+                k_dist,
+                reach_dist,
+                dist_dict,
+                local_reach,
+                lof,
+            ) = self.expand_objects(
+                self.X_score,
+                Xs,
+                self.neighborhoods,
+                self.rev_neighborhoods,
+                self.k_dist,
+                self.reach_dist,
+                self.dist_dict,
+                self.local_reach,
+                self.lof,
+            )
 
-                neighborhoods, rev_neighborhoods, k_dist, dist_dict = self.initial_calculations(
-                    Xs, nm, neighborhoods, rev_neighborhoods, k_dist, dist_dict
-                )
-                (
-                    Set_new_points,
-                    Set_neighbors,
-                    Set_rev_neighbors,
-                    Set_upd_lrd,
-                    Set_upd_lof,
-                ) = self.define_sets(nm, neighborhoods, rev_neighborhoods)
-                reach_dist = self.calc_reach_dist_newpoints(
-                    Set_new_points, neighborhoods, rev_neighborhoods, reach_dist, dist_dict, k_dist
-                )
-                reach_dist = self.calc_reach_dist_otherpoints(
-                    Set_rev_neighbors,
-                    neighborhoods,
-                    rev_neighborhoods,
-                    reach_dist,
-                    dist_dict,
-                    k_dist,
-                )
-                local_reach = self.calc_local_reach_dist(
-                    Set_upd_lrd, neighborhoods, reach_dist, local_reach
-                )
-                lof = self.calc_lof(Set_upd_lof, neighborhoods, local_reach, lof)
-                self.X_score = []
+            neighborhoods, rev_neighborhoods, k_dist, dist_dict = self.initial_calculations(
+                Xs, nm, neighborhoods, rev_neighborhoods, k_dist, dist_dict
+            )
+            (
+                Set_new_points,
+                Set_neighbors,
+                Set_rev_neighbors,
+                Set_upd_lrd,
+                Set_upd_lof,
+            ) = self.define_sets(nm, neighborhoods, rev_neighborhoods)
+            reach_dist = self.calc_reach_dist_newpoints(
+                Set_new_points, neighborhoods, rev_neighborhoods, reach_dist, dist_dict, k_dist
+            )
+            reach_dist = self.calc_reach_dist_otherpoints(
+                Set_rev_neighbors,
+                neighborhoods,
+                rev_neighborhoods,
+                reach_dist,
+                dist_dict,
+                k_dist,
+            )
+            local_reach = self.calc_local_reach_dist(
+                Set_upd_lrd, neighborhoods, reach_dist, local_reach
+            )
+            lof = self.calc_lof(Set_upd_lof, neighborhoods, local_reach, lof)
+            self.X_score = []
 
-                score_keys = list(range(nm[0], nm[0] + nm[1]))
-                return [lof[i] for i in score_keys]
+            score_keys = list(range(nm[0], nm[0] + nm[1]))
+            return [lof[i] for i in score_keys]
 
     def initial_calculations(
         self,
@@ -325,15 +322,15 @@ class IncrementalLOF(anomaly.base.AnomalyDetector):
         ----------
         X
             A list of stored observations.
-        nm : tuple of ints, (n, m)
+        nm
             A tuple representing the current size of the dataset.
-        neighborhoods : dict
+        neighborhoods
             A dictionary of particle neighborhoods.
-        rev_neighborhoods : dict
+        rev_neighborhoods
             A dictionary of reverse particle neighborhoods.
-        k_distances : dict
+        k_distances
             A dictionary to hold k-distances for each observation.
-        dist_dict : dict of dicts
+        dist_dict
             A dictionary of dictionaries storing distances between particles
 
         Returns
