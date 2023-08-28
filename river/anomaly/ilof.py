@@ -76,22 +76,20 @@ class IncrementalLOF(anomaly.base.AnomalyDetector):
     >>> from river import datasets
     >>> import pandas as pd
 
-    >>> dataset = pd.DataFrame(datasets.CreditCard())
+    >>> cc_df = pd.DataFrame(datasets.CreditCard())
 
     >>> k = 20 # Define number of nearest neighbors
     >>> incremental_lof = anomaly.IncrementalLOF(k, verbose=False)
 
-    >>> incremental_lof.learn_many(dataset[0:50]) # learn_many for the first 30 observations
-
-    >>> for i in dataset[0][50:100]:
-    ...    incremental_lof.learn_one(i)
+    >>> for x, _ in datasets.CreditCard().take(200):
+    ...    incremental_lof.learn_one(x)
 
     >>> ilof_scores = []
-    >>> for x in dataset[0][101:120]:
-    ...   ilof_scores.append(incremental_lof.score_one(x))
+    >>> for x in cc_df[0][201:206]:
+    ...    ilof_scores.append(incremental_lof.score_one(x))
 
-    >>> [[round(ilof_score, 3) for ilof_score in ilof_scores[:5][i]] for i in range(5)]
-    [[1.207], [1.278], [1.721], [1.271], [1.167]]
+    >>> [[round(ilof_score, 3) for ilof_score in ilof_scores[i]] for i in range(len(ilof_scores))]
+    [[1.149], [1.098], [1.158], [1.101], [1.092]]
 
     References
     ----------
@@ -121,18 +119,6 @@ class IncrementalLOF(anomaly.base.AnomalyDetector):
             if distance_func is not None
             else functools.partial(utils.math.minkowski_distance, p=2)
         )
-
-    def learn_many(self, X_batch: pd.Series):
-        """
-        Update the model with many incoming observations
-
-        Parameters
-        ----------
-        X_batch
-            A Panda Series
-        """
-        X_batch = X_batch[0].tolist()
-        self.learn(X_batch)
 
     def learn_one(self, x: dict):
         """
