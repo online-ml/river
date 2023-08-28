@@ -2,8 +2,6 @@ from __future__ import annotations
 
 import functools
 
-import pandas as pd
-
 from river import anomaly, utils
 from river.neighbors.base import DistanceFunc
 from river.utils import VectorDict
