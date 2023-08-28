@@ -230,11 +230,14 @@ class StandardScaler(base.MiniBatchTransformer):
 
         """
 
-        means = np.array([self.means[c] for c in X.columns])
+        dtypes = X.dtypes.unique()
+        dtype = dtypes[0] if len(dtypes) == 1 else np.float64
+
+        means = np.array([self.means[c] for c in X.columns], dtype=dtype)
         Xt = X.values - means
 
         if self.with_std:
-            stds = np.array([self.vars[c] ** 0.5 for c in X.columns])
+            stds = np.array([self.vars[c] ** 0.5 for c in X.columns], dtype=dtype)
             np.divide(Xt, stds, where=stds > 0, out=Xt)
 
         return pd.DataFrame(Xt, index=X.index, columns=X.columns, copy=False)
