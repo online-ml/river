@@ -40,6 +40,7 @@ Calling `learn_one` in a pipeline will now update each part of the pipeline in t
 ## preprocessing
 
 - Added `preprocessing.OrdinalEncoder`, to map string features to integers.
+- The `transform_many` method of `preprocessing.StandardScaler` now uses the dtype of the input for the output.
 
 ## proba
 
