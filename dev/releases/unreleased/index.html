@@ -22,7 +22,7 @@
       
       
       <link rel="icon" href="../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.5.2, mkdocs-material-9.2.4">
+      <meta name="generator" content="mkdocs-1.5.2, mkdocs-material-9.2.5">
     
     
       
@@ -1712,6 +1712,7 @@
 <h2 id="drift">drift<a class="headerlink" href="#drift" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Added a <code>datasets</code> submodule, which contains datasets that are useful for concept drift experiments.</li>
+<li>Fix bugs in <a href="../../api/drift/binary/HDDM-A"><code>drift.binary.HDDM_A</code></a> and <a href="../../api/drift/binary/HDDM-W"><code>drift.binary.HDDM_W</code></a>.</li>
 </ul>
 <h2 id="linear_model">linear_model<a class="headerlink" href="#linear_model" title="Permanent link">&para;</a></h2>
 <ul>
@@ -1731,6 +1732,7 @@
 <h2 id="preprocessing">preprocessing<a class="headerlink" href="#preprocessing" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Added <a href="../../api/preprocessing/OrdinalEncoder"><code>preprocessing.OrdinalEncoder</code></a>, to map string features to integers.</li>
+<li>The <code>transform_many</code> method of <a href="../../api/preprocessing/StandardScaler"><code>preprocessing.StandardScaler</code></a> now uses the dtype of the input for the output.</li>
 </ul>
 <h2 id="proba">proba<a class="headerlink" href="#proba" title="Permanent link">&para;</a></h2>
 <ul>
