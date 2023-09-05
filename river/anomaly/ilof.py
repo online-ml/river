@@ -286,8 +286,7 @@ class IncrementalLOF(anomaly.base.AnomalyDetector):
             lof = self.calc_lof(Set_upd_lof, neighborhoods, local_reach, lof)
             self.X_score = []
 
-            score_keys = list(range(nm[0], nm[0] + nm[1]))
-            return [lof[i] for i in score_keys]
+            return lof[nm[0]]
 
     def initial_calculations(
         self,
