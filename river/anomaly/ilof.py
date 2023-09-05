@@ -86,8 +86,8 @@ class IncrementalLOF(anomaly.base.AnomalyDetector):
     >>> for x in cc_df[0][201:206]:
     ...    ilof_scores.append(incremental_lof.score_one(x))
 
-    >>> [[round(ilof_score, 3) for ilof_score in ilof_scores[i]] for i in range(len(ilof_scores))]
-    [[1.149], [1.098], [1.158], [1.101], [1.092]]
+    >>> [round(ilof_score, 3) for ilof_score in ilof_scores]
+    [1.149, 1.098, 1.158, 1.101, 1.092]
 
     References
     ----------
