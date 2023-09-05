@@ -139,7 +139,7 @@ class IncrementalLOF(anomaly.base.AnomalyDetector):
 
         if len(X_batch) == 0:
             if self.verbose:
-                print("No new data was added")
+                print("No new data was added.")
         else:
             # Increase size of objects to acomodate new data
             (
@@ -209,9 +209,9 @@ class IncrementalLOF(anomaly.base.AnomalyDetector):
             # Calculate new Local Outlier Factor of all affected points
             self.lof = self.calc_lof(Set_upd_lof, self.neighborhoods, self.local_reach, self.lof)
 
-    def score_one(self, x: VectorDict):
+    def score_one(self, x: dict):
         """
-        Score an incoming observation based on model constructed previously.
+        Score a new incoming observation based on model constructed previously.
         Perform same calculations as 'learn_one' function but doesn't add the new calculations to the atributes
         Data samples that are equal to samples stored by the model are not considered.
 
