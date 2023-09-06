@@ -45,7 +45,7 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
     ----------
     X
         A list of stored observations.
-    X_batch
+    x_batch
         A buffer to hold incoming observations until it's time to update the model.
     X_score
         A buffer to hold incoming observations until it's time to score them.
@@ -101,7 +101,7 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
     ):
         self.n_neighbors = n_neighbors
         self.X: list = []
-        self.X_batch: list = []
+        self.x_batch: list = []
         self.X_score: list = []
         self.dist_dict: dict = {}
         self.neighborhoods: dict = {}
@@ -126,17 +126,17 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
         x
             A dictionary of feature values.
         """
-        self.X_batch.append(x)
-        if len(self.X) or len(self.X_batch) > 1:
-            self.learn(self.X_batch)
-            self.X_batch = []
+        self.x_batch.append(x)
+        if len(self.X) or len(self.x_batch) > 1:
+            self.learn(self.x_batch)
+            self.x_batch = []
 
-    def learn(self, X_batch: list):
-        X_batch, equal = self.check_equal(X_batch, self.X)
+    def learn(self, x_batch: list):
+        x_batch, equal = self.check_equal(x_batch, self.X)
         if equal != 0 and self.verbose:
             print("%i samples are equal to previous data" % equal)
 
-        if len(X_batch) == 0:
+        if len(x_batch) == 0:
             if self.verbose:
                 print("No new data was added.")
         else:
@@ -152,7 +152,7 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
                 self.local_reach,
                 self.lof,
             ) = self.expand_objects(
-                X_batch,
+                x_batch,
                 self.X,
                 self.neighborhoods,
                 self.rev_neighborhoods,
