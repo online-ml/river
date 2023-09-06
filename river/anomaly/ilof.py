@@ -134,7 +134,7 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
     def learn(self, x_batch: list):
         x_batch, equal = self.check_equal(x_batch, self.X)
         if equal != 0 and self.verbose:
-            print("%i samples are equal to previous data" % equal)
+            print("At least one sample is equal to previously observed instances.")
 
         if len(x_batch) == 0:
             if self.verbose:
