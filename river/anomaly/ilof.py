@@ -47,7 +47,7 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
         A list of stored observations.
     x_batch
         A buffer to hold incoming observations until it's time to update the model.
-    X_score
+    x_scores
         A buffer to hold incoming observations until it's time to score them.
     dist_dict
         A dictionary to hold distances between observations.
@@ -102,7 +102,7 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
         self.n_neighbors = n_neighbors
         self.X: list = []
         self.x_batch: list = []
-        self.X_score: list = []
+        self.x_scores: list = []
         self.dist_dict: dict = {}
         self.neighborhoods: dict = {}
         self.rev_neighborhoods: dict = {}
@@ -225,13 +225,13 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
             List of LOF calculated for incoming data
         """
 
-        self.X_score.append(x)
+        self.x_scores.append(x)
 
-        self.X_score, equal = self.check_equal(self.X_score, self.X)
+        self.x_scores, equal = self.check_equal(self.x_scores, self.X)
         if equal != 0 and self.verbose:
             print("The new observation is the same to one of the previously observed instances.")
 
-        if len(self.X_score) == 0:
+        if len(self.x_scores) == 0:
             if self.verbose:
                 print("No new data was added.")
         else:
@@ -247,7 +247,7 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
                 local_reach,
                 lof,
             ) = self.expand_objects(
-                self.X_score,
+                self.x_scores,
                 Xs,
                 self.neighborhoods,
                 self.rev_neighborhoods,
@@ -283,7 +283,7 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
                 Set_upd_lrd, neighborhoods, reach_dist, local_reach
             )
             lof = self.calc_lof(Set_upd_lof, neighborhoods, local_reach, lof)
-            self.X_score = []
+            self.x_scores = []
 
             return lof[nm[0]]
 
