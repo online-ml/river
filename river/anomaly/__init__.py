@@ -17,7 +17,7 @@ from . import base
 from .filter import QuantileFilter, ThresholdFilter
 from .gaussian import GaussianScorer
 from .hst import HalfSpaceTrees
-from .ilof import IncrementalLOF
+from .ilof import LocalOutlierFactor
 from .svm import OneClassSVM
 
 __all__ = [
@@ -28,5 +28,5 @@ __all__ = [
     "OneClassSVM",
     "QuantileFilter",
     "ThresholdFilter",
-    "IncrementalLOF",
+    "LocalOutlierFactor",
 ]

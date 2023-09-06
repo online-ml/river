@@ -7,7 +7,7 @@ from river.neighbors.base import DistanceFunc
 from river.utils import VectorDict
 
 
-class IncrementalLOF(anomaly.base.AnomalyDetector):
+class LocalOutlierFactor(anomaly.base.AnomalyDetector):
     """Incremental Local Outlier Factor (Incremental LOF).
 
     Incremental LOF Algorithm as described in the reference paper
@@ -77,7 +77,7 @@ class IncrementalLOF(anomaly.base.AnomalyDetector):
     >>> cc_df = pd.DataFrame(datasets.CreditCard())
 
     >>> k = 20 # Define number of nearest neighbors
-    >>> incremental_lof = anomaly.IncrementalLOF(k, verbose=False)
+    >>> incremental_lof = anomaly.LocalOutlierFactor(k, verbose=False)
 
     >>> for x, _ in datasets.CreditCard().take(200):
     ...    incremental_lof.learn_one(x)
