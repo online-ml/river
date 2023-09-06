@@ -11,7 +11,6 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
     """Incremental Local Outlier Factor (Incremental LOF).
 
     Incremental LOF Algorithm as described in the reference paper
-    ----------
 
     The Incremental Local Outlier Factor (ILOF) is an online version of the Local Outlier Factor (LOF) used to identify outliers based on density of local neighbors.
 
@@ -33,13 +32,13 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
 
     Parameters
     ----------
-    n_neighbors : int
+    n_neighbors
         The number of nearest neighbors to use for density estimation.
-    window_size : int
+    window_size
         The size of the batch of data to be taken in at once for the model to learn
-    distance_func : function that takes in dictionaries
-        A distance function to use. By default, the Euclidean distance is used.
-    verbose: boolean
+    distance_func
+        Distance function to be used. By default, the Euclidean distance is used.
+    verbose
         Whether or not to print messages
 
     Attributes
