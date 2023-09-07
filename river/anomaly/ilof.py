@@ -17,7 +17,7 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
 
     We consider:
         - NewPoints: new points;
-        - kNN(p): the neighboors of p (the k closest points to p)
+        - kNN(p): the neighboors of p (the k-closest points to p)
         - RkNN(p): the rev-neighboors of p (points that have p as one of their neighboors)
         - Set_upd_lrd: Set of points that need to update the local reachability distance
         - Set_upd_lof: Set of points that need to update the local outlier factor
