@@ -170,7 +170,12 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
                 self.k_dist,
                 self.dist_dict,
             ) = self.initial_calculations(
-                self.x_list, nm, self.neighborhoods, self.rev_neighborhoods, self.k_dist, self.dist_dict
+                self.x_list,
+                nm,
+                self.neighborhoods,
+                self.rev_neighborhoods,
+                self.k_dist,
+                self.dist_dict,
             )
 
             # Define sets of particles
@@ -333,7 +338,10 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
 
         # Calculate distances all particles considering new and old ones
         new_distances = [
-            [i, j, self.distance(x_list[i], x_list[j])] for i in range(n + m) for j in range(i) if i >= n
+            [i, j, self.distance(x_list[i], x_list[j])]
+            for i in range(n + m)
+            for j in range(i)
+            if i >= n
         ]
         # Add new distances to distance dictionary
         for i in range(len(new_distances)):
@@ -364,7 +372,7 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
     @staticmethod
     def check_equal(x_list: list, y_list: list):
         """Check if new list of observations (x_list) has any data sample that is equal to
-           any previous data recorded (y_list)."""
+        any previous data recorded (y_list)."""
         result = [x for x in x_list if not any(x == y for y in y_list)]
         return result, len(x_list) - len(result)
 
