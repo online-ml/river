@@ -178,7 +178,7 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
                 self.lof,
             )
 
-            # Calculate neighborhoods, reverse neighborhoods, k-distances and distances between neighboors
+            # Calculate neighborhoods, reverse neighborhoods, k-distances and distances between neighbors
             (
                 self.neighborhoods,
                 self.rev_neighborhoods,
