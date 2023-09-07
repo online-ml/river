@@ -34,8 +34,6 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
     ----------
     n_neighbors
         The number of nearest neighbors to use for density estimation.
-    window_size
-        The size of the batch of data to be taken in at once for the model to learn
     distance_func
         Distance function to be used. By default, the Euclidean distance is used.
     verbose
