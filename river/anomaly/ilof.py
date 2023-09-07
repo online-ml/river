@@ -361,10 +361,12 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
 
         return neighborhoods, rev_neighborhoods, k_distances, dist_dict
 
-    def check_equal(self, X: list, Y: list):
-        """Check if new batch X has some data samples equal to previous data recorded Y"""
-        result = [x for x in X if not any(x == y for y in Y)]
-        return result, len(X) - len(result)
+    @staticmethod
+    def check_equal(x_list: list, y_list: list):
+        """Check if new list of observations (x_list) has any data sample that is equal to
+           any previous data recorded (y_list)."""
+        result = [x for x in x_list if not any(x == y for y in y_list)]
+        return result, len(x_list) - len(result)
 
     def expand_objects(
         self,
