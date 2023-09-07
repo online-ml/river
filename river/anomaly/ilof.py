@@ -386,8 +386,9 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
 
     @staticmethod
     def check_equal(x_list: list, y_list: list):
-        """Check if new list of observations (x_list) has any data sample that is equal to
-        any previous data recorded (y_list)."""
+        """
+        Check if new list of observations (x_list) has any data sample that is equal to any previous data recorded (y_list).
+        """
         result = [x for x in x_list if not any(x == y for y in y_list)]
         return result, len(x_list) - len(result)
 
