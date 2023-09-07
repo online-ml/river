@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import functools
 
+import pandas as pd
+
 from river import anomaly, utils
 from river.neighbors.base import DistanceFunc
 from river.utils import VectorDict
@@ -79,12 +81,14 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
     >>> for x, _ in datasets.CreditCard().take(200):
     ...    incremental_lof.learn_one(x)
 
+    >>> incremental_lof.learn_many(cc_df[201:401])
+
     >>> ilof_scores = []
-    >>> for x in cc_df[0][201:206]:
+    >>> for x in cc_df[0][401:406]:
     ...    ilof_scores.append(incremental_lof.score_one(x))
 
     >>> [round(ilof_score, 3) for ilof_score in ilof_scores]
-    [1.149, 1.098, 1.158, 1.101, 1.092]
+    [1.802, 1.937, 1.567, 1.181, 1.28]
 
     References
     ----------
@@ -116,6 +120,19 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
             if distance_func is not None
             else functools.partial(utils.math.minkowski_distance, p=2)
         )
+
+    def learn_many(self, x: pd.DataFrame):
+        """
+        Update the model with multiple incoming observations simultaneously.
+        This function assumes that the observations are stored in the first column of the dataset.
+
+        Parameters
+        ----------
+        x
+            A Pandas DataFrame including multiple instances to be learned at the same time
+        """
+        x = x[0].tolist()
+        self.learn(x)
 
     def learn_one(self, x: dict):
         """
