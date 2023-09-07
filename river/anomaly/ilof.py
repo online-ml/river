@@ -317,13 +317,13 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
 
         Returns
         -------
-        neighborhoods : dict
+        neighborhoods
             Updated dictionary of particle neighborhoods
-        rev_neighborhoods : dict
+        rev_neighborhoods
             Updated dictionary of reverse particle neighborhoods
-        k_distances : dict
+        k_distances
             Updated dictionary to hold k-distances for each observation
-        dist_dict : dict of dicts
+        dist_dict
             Updated dictionary of dictionaries storing distances between particles
         """
 
