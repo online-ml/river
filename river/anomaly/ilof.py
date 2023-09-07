@@ -63,8 +63,6 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
         A dictionary to hold Local Outlier Factors for each observation.
     local_reach
         A dictionary to hold local reachability distances for each observation.
-    skip_first
-        A boolean value indicating whether to skip the first window of data.
 
     Example
     ----------
