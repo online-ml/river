@@ -37,7 +37,7 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
     distance_func
         Distance function to be used. By default, the Euclidean distance is used.
     verbose
-        Whether or not to print messages
+        Whether to print warning/messages
 
     Attributes
     ----------
