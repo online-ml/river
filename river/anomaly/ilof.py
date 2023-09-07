@@ -88,7 +88,9 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
 
     References
     ----------
-    Pokrajac, David & Lazarevic, Aleksandar & Latecki, Longin Jan. (2007). Incremental Local Outlier Detection for Data Streams. Proceedings of the 2007 IEEE Symposium on Computational Intelligence and Data Mining, CIDM 2007. 504-515. 10.1109/CIDM.2007.368917.
+    Pokrajac, David & Lazarevic, Aleksandar & Latecki, Longin Jan. (2007). Incremental Local Outlier Detection for Data Streams.
+    In: Proceedings of the 2007 IEEE Symposium on Computational Intelligence and Data Mining (CIDM 2007). 504-515.
+    DOI: 10.1109/CIDM.2007.368917.
     """
 
     def __init__(
