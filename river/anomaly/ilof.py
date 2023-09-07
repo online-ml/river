@@ -475,18 +475,20 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
                 reach_dist[j][c] = max(dist_dict[j][c], k_dist[c])
         return reach_dist
 
+    @staticmethod
     def calc_reach_dist_otherpoints(
-        self,
-        Set: set,
+        set_index: set,
         neighborhoods: dict,
         rev_neighborhoods: dict,
         reach_dist: dict,
         dist_dict: dict,
         k_dist: dict,
     ):
-        """Calculate reachability distance from reverse neighbors of reverse neighbors ( RkNN(RkNN(NewPoints)) ) to reverse neighbors ( RkNN(NewPoints) )
-        These values change because of the insertion of new points"""
-        for j in Set:
+        """
+        Calculate reachability distance from reverse neighbors of reverse neighbors ( RkNN(RkNN(NewPoints)) )
+        to reverse neighbors ( RkNN(NewPoints) ). These values change due to the insertion of new points.
+        """
+        for j in set_index:
             for i in set(rev_neighborhoods[j]):
                 reach_dist[i][j] = max(dist_dict[i][j], k_dist[j])
         return reach_dist
