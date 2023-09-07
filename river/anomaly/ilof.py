@@ -427,8 +427,11 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
             lof,
         )
 
-    def define_sets(self, nm, neighborhoods: dict, rev_neighborhoods: dict):
-        """Define sets of points for the incremental LOF algorithm"""
+    @staticmethod
+    def define_sets(nm, neighborhoods: dict, rev_neighborhoods: dict):
+        """
+        Define sets of points for the incremental LOF algorithm.
+        """
         # Define set of new points from batch
         set_new_points = set(range(nm[0], nm[0] + nm[1]))
         set_neighbors: set = set()
