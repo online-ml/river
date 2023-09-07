@@ -391,8 +391,8 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
         result = [x for x in x_list if not any(x == y for y in y_list)]
         return result, len(x_list) - len(result)
 
+    @staticmethod
     def expand_objects(
-        self,
         new_particles: list,
         x_list: list,
         neighborhoods: dict,
