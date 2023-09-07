@@ -456,17 +456,19 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
 
         return set_new_points, set_neighbors, set_rev_neighbors, set_upd_lrd, set_upd_lof
 
+    @staticmethod
     def calc_reach_dist_newpoints(
-        self,
-        Set: set,
+        set_index: set,
         neighborhoods: dict,
         rev_neighborhoods: dict,
         reach_dist: dict,
         dist_dict: dict,
         k_dist: dict,
     ):
-        """Calculate reachability distance from new points to neighbors and from neighbors to new points"""
-        for c in Set:
+        """
+        Calculate reachability distance from new points to neighbors and from neighbors to new points.
+        """
+        for c in set_index:
             for j in set(neighborhoods[c]):
                 reach_dist[c][j] = max(dist_dict[c][j], k_dist[j])
             for j in set(rev_neighborhoods[c]):
