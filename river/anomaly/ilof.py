@@ -90,8 +90,8 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
 
     References
     ----------
-    Pokrajac, David & Lazarevic, Aleksandar & Latecki, Longin Jan. (2007). Incremental Local Outlier Detection for Data Streams.
-    In: Proceedings of the 2007 IEEE Symposium on Computational Intelligence and Data Mining (CIDM 2007). 504-515.
+    David Pokrajac, Aleksandar Lazarevic, and Longin Jan Latecki (2007). Incremental Local Outlier Detection for Data
+    Streams. In: Proceedings of the 2007 IEEE Symposium on Computational Intelligence and Data Mining (CIDM 2007). 504-515.
     DOI: 10.1109/CIDM.2007.368917.
     """
 
@@ -231,7 +231,7 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
     def score_one(self, x: dict):
         """
         Score a new incoming observation based on model constructed previously.
-        Perform same calculations as 'learn_one' function but doesn't add the new calculations to the atributes
+        Perform same calculations as 'learn_one' function but doesn't add the new calculations to the attributes
         Data samples that are equal to samples stored by the model are not considered.
 
         Parameters
