@@ -43,7 +43,7 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
 
     Attributes
     ----------
-    X
+    x_list
         A list of stored observations.
     x_batch
         A buffer to hold incoming observations until it's time to update the model.
@@ -100,7 +100,7 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
         distance_func: DistanceFunc = None,
     ):
         self.n_neighbors = n_neighbors
-        self.X: list = []
+        self.x_list: list = []
         self.x_batch: list = []
         self.x_scores: list = []
         self.dist_dict: dict = {}
@@ -127,12 +127,12 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
             A dictionary of feature values.
         """
         self.x_batch.append(x)
-        if len(self.X) or len(self.x_batch) > 1:
+        if len(self.x_list) or len(self.x_batch) > 1:
             self.learn(self.x_batch)
             self.x_batch = []
 
     def learn(self, x_batch: list):
-        x_batch, equal = self.check_equal(x_batch, self.X)
+        x_batch, equal = self.check_equal(x_batch, self.x_list)
         if equal != 0 and self.verbose:
             print("At least one sample is equal to previously observed instances.")
 
@@ -140,10 +140,10 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
             if self.verbose:
                 print("No new data was added.")
         else:
-            # Increase size of objects to acomodate new data
+            # Increase size of objects to accommodate new data
             (
                 nm,
-                self.X,
+                self.x_list,
                 self.neighborhoods,
                 self.rev_neighborhoods,
                 self.k_dist,
@@ -153,7 +153,7 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
                 self.lof,
             ) = self.expand_objects(
                 x_batch,
-                self.X,
+                self.x_list,
                 self.neighborhoods,
                 self.rev_neighborhoods,
                 self.k_dist,
@@ -170,7 +170,7 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
                 self.k_dist,
                 self.dist_dict,
             ) = self.initial_calculations(
-                self.X, nm, self.neighborhoods, self.rev_neighborhoods, self.k_dist, self.dist_dict
+                self.x_list, nm, self.neighborhoods, self.rev_neighborhoods, self.k_dist, self.dist_dict
             )
 
             # Define sets of particles
@@ -227,7 +227,7 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
 
         self.x_scores.append(x)
 
-        self.x_scores, equal = self.check_equal(self.x_scores, self.X)
+        self.x_scores, equal = self.check_equal(self.x_scores, self.x_list)
         if equal != 0 and self.verbose:
             print("The new observation is the same to one of the previously observed instances.")
 
@@ -235,10 +235,10 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
             if self.verbose:
                 print("No new data was added.")
         else:
-            Xs = self.X.copy()
+            x_list_copy = self.x_list.copy()
             (
                 nm,
-                Xs,
+                x_list_copy,
                 neighborhoods,
                 rev_neighborhoods,
                 k_dist,
@@ -248,7 +248,7 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
                 lof,
             ) = self.expand_objects(
                 self.x_scores,
-                Xs,
+                x_list_copy,
                 self.neighborhoods,
                 self.rev_neighborhoods,
                 self.k_dist,
@@ -259,7 +259,7 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
             )
 
             neighborhoods, rev_neighborhoods, k_dist, dist_dict = self.initial_calculations(
-                Xs, nm, neighborhoods, rev_neighborhoods, k_dist, dist_dict
+                x_list_copy, nm, neighborhoods, rev_neighborhoods, k_dist, dist_dict
             )
             (
                 Set_new_points,
@@ -289,7 +289,7 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
 
     def initial_calculations(
         self,
-        X: list,
+        x_list: list,
         nm: tuple,
         neighborhoods: dict,
         rev_neighborhoods: dict,
@@ -302,7 +302,7 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
 
         Parameters
         ----------
-        X
+        x_list
             A list of stored observations.
         nm
             A tuple representing the current size of the dataset.
@@ -331,9 +331,9 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
         m = nm[1]
         k = self.n_neighbors
 
-        # Calculate distances all particles consdering new and old ones
+        # Calculate distances all particles considering new and old ones
         new_distances = [
-            [i, j, self.distance(X[i], X[j])] for i in range(n + m) for j in range(i) if i >= n
+            [i, j, self.distance(x_list[i], x_list[j])] for i in range(n + m) for j in range(i) if i >= n
         ]
         # Add new distances to distance dictionary
         for i in range(len(new_distances)):
@@ -371,7 +371,7 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
     def expand_objects(
         self,
         new_particles: list,
-        X: list,
+        x_list: list,
         neighborhoods: dict,
         rev_neighborhoods: dict,
         k_dist: dict,
@@ -381,9 +381,9 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
         lof: dict,
     ):
         """Expand size of dictionaries and lists to fit new data"""
-        n = len(X)
+        n = len(x_list)
         m = len(new_particles)
-        X.extend(new_particles)
+        x_list.extend(new_particles)
         neighborhoods.update({i: [] for i in range(n + m)})
         rev_neighborhoods.update({i: [] for i in range(n + m)})
         k_dist.update({i: float("inf") for i in range(n + m)})
@@ -393,7 +393,7 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
         lof.update({i + n: [] for i in range(m)})
         return (
             (n, m),
-            X,
+            x_list,
             neighborhoods,
             rev_neighborhoods,
             k_dist,
