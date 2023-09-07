@@ -195,16 +195,16 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
 
             # Define sets of particles
             (
-                Set_new_points,
-                Set_neighbors,
-                Set_rev_neighbors,
-                Set_upd_lrd,
-                Set_upd_lof,
+                set_new_points,
+                set_neighbors,
+                set_rev_neighbors,
+                set_upd_lrd,
+                set_upd_lof,
             ) = self.define_sets(nm, self.neighborhoods, self.rev_neighborhoods)
 
             # Calculate new reachability distance of all affected points
             self.reach_dist = self.calc_reach_dist_newpoints(
-                Set_new_points,
+                set_new_points,
                 self.neighborhoods,
                 self.rev_neighborhoods,
                 self.reach_dist,
@@ -212,7 +212,7 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
                 self.k_dist,
             )
             self.reach_dist = self.calc_reach_dist_otherpoints(
-                Set_rev_neighbors,
+                set_rev_neighbors,
                 self.neighborhoods,
                 self.rev_neighborhoods,
                 self.reach_dist,
@@ -222,11 +222,11 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
 
             # Calculate new local reachability distance of all affected points
             self.local_reach = self.calc_local_reach_dist(
-                Set_upd_lrd, self.neighborhoods, self.reach_dist, self.local_reach
+                set_upd_lrd, self.neighborhoods, self.reach_dist, self.local_reach
             )
 
             # Calculate new Local Outlier Factor of all affected points
-            self.lof = self.calc_lof(Set_upd_lof, self.neighborhoods, self.local_reach, self.lof)
+            self.lof = self.calc_lof(set_upd_lof, self.neighborhoods, self.local_reach, self.lof)
 
     def score_one(self, x: dict):
         """
@@ -282,17 +282,17 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
                 x_list_copy, nm, neighborhoods, rev_neighborhoods, k_dist, dist_dict
             )
             (
-                Set_new_points,
-                Set_neighbors,
-                Set_rev_neighbors,
-                Set_upd_lrd,
-                Set_upd_lof,
+                set_new_points,
+                set_neighbors,
+                set_rev_neighbors,
+                set_upd_lrd,
+                set_upd_lof,
             ) = self.define_sets(nm, neighborhoods, rev_neighborhoods)
             reach_dist = self.calc_reach_dist_newpoints(
-                Set_new_points, neighborhoods, rev_neighborhoods, reach_dist, dist_dict, k_dist
+                set_new_points, neighborhoods, rev_neighborhoods, reach_dist, dist_dict, k_dist
             )
             reach_dist = self.calc_reach_dist_otherpoints(
-                Set_rev_neighbors,
+                set_rev_neighbors,
                 neighborhoods,
                 rev_neighborhoods,
                 reach_dist,
@@ -300,9 +300,9 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
                 k_dist,
             )
             local_reach = self.calc_local_reach_dist(
-                Set_upd_lrd, neighborhoods, reach_dist, local_reach
+                set_upd_lrd, neighborhoods, reach_dist, local_reach
             )
-            lof = self.calc_lof(Set_upd_lof, neighborhoods, local_reach, lof)
+            lof = self.calc_lof(set_upd_lof, neighborhoods, local_reach, lof)
             self.x_scores = []
 
             return lof[nm[0]]
@@ -429,28 +429,28 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
     def define_sets(self, nm, neighborhoods: dict, rev_neighborhoods: dict):
         """Define sets of points for the incremental LOF algorithm"""
         # Define set of new points from batch
-        Set_new_points = set(range(nm[0], nm[0] + nm[1]))
-        Set_neighbors: set = set()
-        Set_rev_neighbors: set = set()
+        set_new_points = set(range(nm[0], nm[0] + nm[1]))
+        set_neighbors: set = set()
+        set_rev_neighbors: set = set()
 
         # Define neighbors and reverse neighbors of new data points
-        for i in Set_new_points:
-            Set_neighbors = set(Set_neighbors) | set(neighborhoods[i])
-            Set_rev_neighbors = set(Set_rev_neighbors) | set(rev_neighborhoods[i])
+        for i in set_new_points:
+            set_neighbors = set(set_neighbors) | set(neighborhoods[i])
+            set_rev_neighbors = set(set_rev_neighbors) | set(rev_neighborhoods[i])
 
         # Define points that need to update their local reachability distance because of new data points
-        Set_upd_lrd = Set_rev_neighbors
-        for j in Set_rev_neighbors:
-            Set_upd_lrd = Set_upd_lrd | set(rev_neighborhoods[j])
-        Set_upd_lrd = Set_upd_lrd | Set_new_points
+        set_upd_lrd = set_rev_neighbors
+        for j in set_rev_neighbors:
+            set_upd_lrd = set_upd_lrd | set(rev_neighborhoods[j])
+        set_upd_lrd = set_upd_lrd | set_new_points
 
         # Define points that need to update their lof because of new data points
-        Set_upd_lof = Set_upd_lrd
-        for m in Set_upd_lrd:
-            Set_upd_lof = Set_upd_lof | set(rev_neighborhoods[m])
-        Set_upd_lof = Set_upd_lof
+        set_upd_lof = set_upd_lrd
+        for m in set_upd_lrd:
+            set_upd_lof = set_upd_lof | set(rev_neighborhoods[m])
+        set_upd_lof = set_upd_lof
 
-        return Set_new_points, Set_neighbors, Set_rev_neighbors, Set_upd_lrd, Set_upd_lof
+        return set_new_points, set_neighbors, set_rev_neighbors, set_upd_lrd, set_upd_lof
 
     def calc_reach_dist_newpoints(
         self,
