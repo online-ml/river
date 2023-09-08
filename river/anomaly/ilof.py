@@ -212,7 +212,6 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
             )
             self.reach_dist = self.calc_reach_dist_other_points(
                 set_rev_neighbors,
-                self.neighborhoods,
                 self.rev_neighborhoods,
                 self.reach_dist,
                 self.dist_dict,
@@ -292,7 +291,6 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
             )
             reach_dist = self.calc_reach_dist_other_points(
                 set_rev_neighbors,
-                neighborhoods,
                 rev_neighborhoods,
                 reach_dist,
                 dist_dict,
@@ -479,7 +477,6 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
     @staticmethod
     def calc_reach_dist_other_points(
         set_index: set,
-        neighborhoods: dict,
         rev_neighborhoods: dict,
         reach_dist: dict,
         dist_dict: dict,
