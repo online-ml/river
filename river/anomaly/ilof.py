@@ -11,25 +11,31 @@ from river.neighbors.base import DistanceFunc
 class LocalOutlierFactor(anomaly.base.AnomalyDetector):
     """Incremental Local Outlier Factor (Incremental LOF).
 
-    Incremental LOF Algorithm as described in the reference paper
+    The Incremental Local Outlier Factor (ILOF) is an online version of the Local Outlier Factor (LOF), proposed by
+    Pokrajac et al. (2017),  and is used to identify outliers based on density of local neighbors.
 
-    The Incremental Local Outlier Factor (ILOF) is an online version of the Local Outlier Factor (LOF) used to identify outliers based on density of local neighbors.
+    The algorithm take into account the following elements:
+        - `NewPoints`: new points;
+        - `kNN(p)`: the k-nearest neighboors of `p` (the k-closest points to `p`);
+        - `RkNN(p)`: the reverse-k-nearest neighboors of `p` (points that have `p` as one of their neighboors);
+        - `set_upd_lrd`: Set of points that need to have the local reachability distance updated;
+        - `set_upd_lof`: Set of points that need to have the local outlier factor updated.
 
-    We consider:
-        - NewPoints: new points;
-        - kNN(p): the neighboors of p (the k-closest points to p)
-        - RkNN(p): the rev-neighboors of p (points that have p as one of their neighboors)
-        - Set_upd_lrd: Set of points that need to update the local reachability distance
-        - Set_upd_lof: Set of points that need to update the local outlier factor
+    This current implementation within `River`, based on the original one in the paper, follows the following steps:
+        1) Insert new data points (`NewPoints`) and calculate its distance to existing points;
+        2) Update the nreaest neighboors and reverse nearest neighboors of all the points;
+        3) Define sets of affected points that required updates;
+        4) Calculate the reachability-distance from new point to neighboors (`NewPoints` -> `kNN(NewPoints)`)
+           and from rev-neighboors to new point (`RkNN(NewPoints)` -> `NewPoints`);
+        5) Update the reachability-distance for affected points: `RkNN(RkNN(NewPoints))` -> `RkNN(NewPoints)`
+        6) Update local reachability distance of affected points: `lrd(set_upd_lrd)`;
+        7) Update local outlier factor: `lof(set_upd_lof)`.
 
-    The algorithm here implemented based on the original one in the paper is:
-        1) Insert NewPoints and calculate its distance to existing points
-        2) Update the neighboors and reverse-neighboors of all the points
-        3) Define sets of affected points that required update
-        4) Calculate the reachability-distance from new point to neighboors (NewPoints -> kNN(NewPoints)) and from rev-neighboors to new point (RkNN(NewPoints) -> NewPoints)
-        5) Update the reachability-distance for affected points: RkNN(RkNN(NewPoints)) -> RkNN(NewPoints)
-        6) Update local reachability distance of affected points: lrd(Set_upd_lrd)
-        7) Update local outlier factor: lof(Set_upd_lof)
+    The incremental LOF algorithm is expected to provide equivalent detection performance as the iterated static
+    LOF algroithm (applied after insertion of each data record), while requiring significantly less computational time.
+    Moreover, the insertion of a new data point as well as deletion of an old data point influence only a limited number
+    of their closest neighbors, which means that the number of updates per such insertion/deletion does not depend
+    on the total number of instances learned/in the data set.
 
     Parameters
     ----------
