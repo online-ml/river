@@ -403,7 +403,9 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
         local_reach: dict,
         lof: dict,
     ):
-        """Expand size of dictionaries and lists to fit new data"""
+        """
+        Expand size of dictionaries and lists to take into account new data points.
+        """
         n = len(x_list)
         m = len(new_particles)
         x_list.extend(new_particles)
@@ -496,7 +498,9 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
     def calc_local_reach_dist(
         set_index: set, neighborhoods: dict, reach_dist: dict, local_reach_dist: dict
     ):
-        """Calculate local reachability distance of affected points."""
+        """
+        Calculate local reachability distance of affected points.
+        """
         for i in set_index:
             local_reach_dist[i] = len(neighborhoods[i]) / sum(
                 [reach_dist[i][j] for j in neighborhoods[i]]
@@ -505,7 +509,9 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
 
     @staticmethod
     def calc_lof(set_index: set, neighborhoods: dict, local_reach: dict, lof: dict):
-        """Calculate local outlier factor (LOF) of affected points."""
+        """
+        Calculate local outlier factor (LOF) of affected points.
+        """
         for i in set_index:
             lof[i] = sum([local_reach[j] for j in neighborhoods[i]]) / (
                 len(neighborhoods[i]) * local_reach[i]
