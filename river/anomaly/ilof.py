@@ -308,6 +308,7 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
             lof = self.calc_lof(set_upd_lof, neighborhoods, local_reach, lof)
             self.x_scores = []
 
+            # Use nm[0] as index since upon this configuration nm[1] is expected to be 1.
             return lof[nm[0]]
 
     def initial_calculations(
