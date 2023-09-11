@@ -144,7 +144,7 @@ class HierarchicalClustering(base.Clusterer):
         # Max number of leaves
         self.window_size = window_size
         # Dict : x data (str(array of size m)) -> key of the node
-        self.X: dict[np.ndarray, int] = {}
+        self.X: dict[str, int] = {}
         # Dict : key -> node
         self.nodes: dict[int, BinaryTreeNode] = {}
         # First node of the tree
@@ -185,27 +185,27 @@ class HierarchicalClustering(base.Clusterer):
             self.otd_clustering(tree.left, x)
 
     def merge_nodes(self, tree, added_node):
-        # Merge a new node (added node) to the tree T
-        # We create the node that will be the parent of T and the added node
+        # Merge a new node (added node) to the tree
+        # We create the node that will be the parent of the tree and the added node
         self.n += 1
         new_node = BinaryTreeNode(self.n)
-        # We add T and the added node as its children
+        # We add the tree and the added node as its children
         new_node.left = tree
         new_node.right = added_node
-        # The parent of the new node is the parent of T
+        # The parent of the new node is the parent of the tree
         new_node.parent = tree.parent
-        # If T is not the root, we set the child of its parent as new node (instead of T)
+        # If the tree is not the root, we set the child of its parent as new node (instead of T)
         if tree.parent is not None:
             if tree.parent.left.key == tree.key:
                 tree.parent.left = new_node
             else:
                 tree.parent.right = new_node
-        # We add the new node as the parent of T and the added node
+        # We add the new node as the parent of the tree and the added node
         tree.parent = new_node
         added_node.parent = new_node
         # We add the new node to the dict
         self.nodes[self.n] = new_node
-        # If T was the root, the new node become the root
+        # If the tree was the root, the new node become the root
         if self.root.key == tree.key:
             self.root = self.nodes[self.n]
 
