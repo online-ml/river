@@ -74,11 +74,7 @@ class HierarchicalClustering(base.Clusterer):
     ...     HC = HC.learn_one(x)
 
     >>> HC.X
-    {'[1 1 1]': 1,
-    '[1 1 0]': 2,
-    '[20 20 20]': 4,
-    '[20.  20.  20.1]': 6,
-    '[0 1 1]': 8}
+    {'[1 1 1]': 1, '[1 1 0]': 2, '[20 20 20]': 4, '[20.  20.  20.1]': 6, '[0 1 1]': 8}
 
     >>> HC.n
     9
@@ -93,24 +89,13 @@ class HierarchicalClustering(base.Clusterer):
                 -> 2
             -> 3
                 -> 1
+    Printed Hierarchical Clustering Tree.
 
     >>> HC.get_all_clusters()
-    [(1, [array([1, 1, 1])]),
-    (2, [array([1, 1, 0])]),
-    (4, [array([20, 20, 20])]),
-    (6, [array([20. , 20. , 20.1])]),
-    (8, [array([0, 1, 1])]),
-    (3, [1, 2]),
-    (5, [9, 7]),
-    (7, [4, 6]),
-    (9, [3, 8])]
+    [(1, [array([1, 1, 1])]), (2, [array([1, 1, 0])]), (4, [array([20, 20, 20])]), (6, [array([20. , 20. , 20.1])]), (8, [array([0, 1, 1])]), (3, [1, 2]), (5, [9, 7]), (7, [4, 6]), (9, [3, 8])]
 
     >>> HC.get_clusters_by_point()
-    {'[1 1 1]': [1, 3, 9, 5],
-    '[1 1 0]': [2, 3, 9, 5],
-    '[20 20 20]': [4, 7, 5],
-    '[20.  20.  20.1]': [6, 7, 5],
-    '[0 1 1]': [8, 9, 5]}
+    {'[1 1 1]': [1, 3, 9, 5], '[1 1 0]': [2, 3, 9, 5], '[20 20 20]': [4, 7, 5], '[20.  20.  20.1]': [6, 7, 5], '[0 1 1]': [8, 9, 5]}
 
     >>> HC.predict_one({0 : 20.1, 1 : 20, 2 : 20 })
     ([10, 11, 5], 7)
@@ -129,7 +114,7 @@ class HierarchicalClustering(base.Clusterer):
                 -> 2
             -> 3
                 -> 1
-
+    Printed Hierarchical Clustering Tree.
 
     >>> HC = cluster.HierarchicalClustering(window_size=2)
 
@@ -146,7 +131,7 @@ class HierarchicalClustering(base.Clusterer):
         -> 2
     -> 3
         -> 1
-
+    Printed Hierarchical Clustering Tree.
     """
 
     def __init__(
