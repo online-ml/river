@@ -10,9 +10,7 @@ from river import base, utils
 # Node of a binary tree for Hierarchical Clustering
 class BinaryTreeNode:
     def __init__(self, key: int, data: np.ndarray = None):
-        # If it's a leaf : x data, else : None
         self.data = data
-        # Key of the node
         self.key = key
         # Children and parent
         self.left = None
