@@ -358,8 +358,8 @@ class HierarchicalClustering(base.Clusterer):
         return r / nb
 
     def __str__(self):
-        self.printTree(self.root)
-        return ""
+        self.print_tree(self.root)
+        return "Printed Hierarchical Clustering Tree."
 
     def printTree(self, node, level=0):
         # print node and its children, from https://stackoverflow.com/questions/34012886/print-binary-tree-level-by-level-in-python
