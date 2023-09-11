@@ -46,7 +46,7 @@ class HierarchicalClustering(base.Clusterer):
     ----------
     window_size
         number of data points to use
-    distance
+    distance_func
         distance function to use to compare the nodes
 
     Attributes
@@ -154,7 +154,7 @@ class HierarchicalClustering(base.Clusterer):
     def __init__(
         self,
         window_size: int = 100,
-        distance: Callable[[BinaryTreeNode, BinaryTreeNode], float] = None,
+        distance_func: Callable[[BinaryTreeNode, BinaryTreeNode], float] = None,
     ):
         # Number of nodes
         self.n = 0
@@ -167,9 +167,7 @@ class HierarchicalClustering(base.Clusterer):
         # First node of the tree
         self.root = None
         # Distance function
-        self.distance = distance
-        if self.distance is None:
-            self.distance = euclidean_distance
+        self.distance = distance_func if distance_func is not None else euclidean_distance
 
     def OTD(self, T, x):
         # OTD algorithm from
