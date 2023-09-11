@@ -51,9 +51,9 @@ class HierarchicalClustering(base.Clusterer):
 
     Attributes
     ----------
-    n : int
+    n
         number of nodes
-    X : dict (data point (str(np.ndarray)) : key (int))
+    X
         data points used by the algorithm with the key of the node representing them
 
     References
