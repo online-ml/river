@@ -247,7 +247,7 @@ class HierarchicalClustering(base.Clusterer):
             self.X[np.array2string(x)] = self.n
             self.nodes[self.n] = BinaryTreeNode(self.n, x)
         # We add it to the tree
-        self.OTD(self.root, x)
+        self.otd_clustering(self.root, x)
         return self
 
     def predict_OTD(self, x, node, clusters):
