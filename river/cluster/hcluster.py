@@ -26,19 +26,18 @@ def euclidean_distance(w_i, w_j):
 class HierarchicalClustering(base.Clusterer):
     """Hierarchical Clustering.
 
-    HierarchicalClustering is a stream hierarchical clustering algorithm.
-    The algorithm [^1] inserts new nodes near the nodes it is similar to, but without breaking clusters of very similar nodes.
-    It will (begining with the whole tree T) :
+    HierarchicalClustering is a stream hierarchical clustering algorithm. This algorithm [^1] inserts new nodes
+    near the nodes it is similar to without breaking clusters of very similar nodes.
 
-    * Compare the new node to the tree T :
-        * if T is just a leaf : merge
-        * else if the nodes of T are more similar between them than with the new node : merge
-        * else if the new node is more similar to the left subtree than to the right subtree : redo from the first point with T = left subtree
-        * else (the new node is more similar to the right subtree than to the left subtree) redo from the first point with T = right subtree
+    Beginning with the whole tree `T`, it will compare the new node to this respective tree:
+        * If `T` is just a leaf : merge
+        * else if the nodes of T are more similar between them than with the new node: merge
+        * else if the new node is more similar to the left subtree than to the right subtree:
+          redo from the first point with T = left subtree
+        * else (the new node is more similar to the right subtree than to the left subtree):
+          redo from the first point with T = right subtree
 
-    You can choose a window size to use only the recent points and not overload the tree. (default : 100)
-
-    You can also choose a distance function to compare the nodes. (default : euclidean distance)
+    A certain window size can be chosen to use only the most recent points to make sure that the tree is not overloaded.
 
     Parameters
     ----------
@@ -56,7 +55,8 @@ class HierarchicalClustering(base.Clusterer):
 
     References
     ----------
-    [^1]: Menon, Aditya & Rajagopalan, Anand & Sumengen, Baris & Citovsky, Gui & Cao, Qin & Kumar, Sanjiv. (2019). Online Hierarchical Clustering Approximations.
+    [^1]: Anand Rajagopalan, Aditya Krishna Menon, Qin Cao, Gui Citovsky, Baris Sumengen and Sanjiv Kumar (2019). Online
+    Hierarchical Clustering Approximations. arXiV:1909.09667. Available at: https://doi.org/10.48550/arXiv.1909.09667
 
     Examples
     --------
