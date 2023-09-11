@@ -213,7 +213,7 @@ class HierarchicalClustering(base.Clusterer):
         x = utils.dict2numpy(x)
         # We create the node for x and add it to the tree
         if len(self.X.keys()) >= self.window_size:
-            # If we have reached the maximum of data points, we delete the oldest one and add a node with the same key as the one we deleted
+            # Delete the oldest data point and add a node with the same key as the one deleted
             oldest_key = self.X[list(self.X.keys())[0]]
             oldest = self.nodes[oldest_key]
             if oldest.parent.left.key == oldest_key:
@@ -239,13 +239,13 @@ class HierarchicalClustering(base.Clusterer):
             # If there is still no node in the tree
             return [1], -1
         if node.data is not None:
-            # If we compare x to a leaf, then we add itself (n+1) and the key of the node that would merge x and node (n+2)
+            # Add itself (n+1) and the key of the node that would merge x and node (n+2)
             clusters.extend([self.n + 2, self.n + 1])
             return clusters, node.key
         if self.intra_subtree_similarity(node) < self.inter_subtree_similarity(
             node, BinaryTreeNode(self.n + 1, x)
         ):
-            # If the nodes in the tree 'node' are closer betweem them than with x, then we add itself (n+1) and the key of the node that would merge x and node (n+2)
+            # Add itself (n+1) and the key of the node that would merge x and node (n+2)
             clusters.extend([self.n + 2, self.n + 1])
             return clusters, node.key
         else:
