@@ -274,8 +274,8 @@ class HierarchicalClustering(base.Clusterer):
 
         """
         x = utils.dict2numpy(x)
-        # We predict to which cluster x would be if we added it in the tree
-        r, merged = self.predict_OTD(x, self.root, [])
+        # We predict to which cluster x would be if we added in the tree
+        r, merged = self.predict_otd(x, self.root, [])
         r.reverse()
         return r, merged
 
