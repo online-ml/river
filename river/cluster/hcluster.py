@@ -50,7 +50,7 @@ class HierarchicalClustering(base.Clusterer):
     ----------
     n
         number of nodes
-    X
+    x_clusters
         data points used by the algorithm with the key of the node representing them
 
     References
@@ -73,7 +73,7 @@ class HierarchicalClustering(base.Clusterer):
     >>> for x, _ in stream.iter_array(X):
     ...     HC = HC.learn_one(x)
 
-    >>> HC.X
+    >>> HC.x_clusters
     {'[1 1 1]': 1, '[1 1 0]': 2, '[20 20 20]': 4, '[20.  20.  20.1]': 6, '[0 1 1]': 8}
 
     >>> HC.n
@@ -121,7 +121,7 @@ class HierarchicalClustering(base.Clusterer):
     >>> for x, _ in stream.iter_array(X):
     ...     HC = HC.learn_one(x)
 
-    >>> HC.X
+    >>> HC.x_clusters
     {'[20.  20.  20.1]': 2, '[0 1 1]': 1}
 
     >>> HC.n
@@ -144,7 +144,7 @@ class HierarchicalClustering(base.Clusterer):
         # Max number of leaves
         self.window_size = window_size
         # Dict : x data (str(array of size m)) -> key of the node
-        self.X: dict[str, int] = {}
+        self.x_clusters: dict[str, int] = {}
         # Dict : key -> node
         self.nodes: dict[int, BinaryTreeNode] = {}
         # First node of the tree
@@ -161,23 +161,23 @@ class HierarchicalClustering(base.Clusterer):
             self.root = self.nodes[1]
         elif tree.data is not None:
             # If T is a leaf, we merge the two nodes together
-            self.merge_nodes(tree, self.nodes[self.X[x_string]])
+            self.merge_nodes(tree, self.nodes[self.x_clusters[x_string]])
         elif tree.left is None:
             # If there is no node at the left of the intermediate node, we add it there
-            tree.left = self.nodes[self.X[x_string]]
-            self.nodes[self.X[x_string]].parent = tree
+            tree.left = self.nodes[self.x_clusters[x_string]]
+            self.nodes[self.x_clusters[x_string]].parent = tree
         elif tree.right is None:
             # If there is no node at the right of the intermediate node, we add it there
-            tree.right = self.nodes[self.X[x_string]]
-            self.nodes[self.X[x_string]].parent = tree
+            tree.right = self.nodes[self.x_clusters[x_string]]
+            self.nodes[self.x_clusters[x_string]].parent = tree
         elif self.intra_subtree_similarity(tree) < self.inter_subtree_similarity(
-            tree, self.nodes[self.X[x_string]]
+            tree, self.nodes[self.x_clusters[x_string]]
         ):
             # If the nodes in T are closer between them than with the new node, we merge T and the new node
-            self.merge_nodes(tree, self.nodes[self.X[x_string]])
+            self.merge_nodes(tree, self.nodes[self.x_clusters[x_string]])
         elif self.inter_subtree_similarity(
-            tree.left, self.nodes[self.X[x_string]]
-        ) > self.inter_subtree_similarity(tree.right, self.nodes[self.X[x_string]]):
+            tree.left, self.nodes[self.x_clusters[x_string]]
+        ) > self.inter_subtree_similarity(tree.right, self.nodes[self.x_clusters[x_string]]):
             # Continue to search where to merge the new node in the right part of T
             self.otd_clustering(tree.right, x)
         else:
@@ -212,22 +212,22 @@ class HierarchicalClustering(base.Clusterer):
     def learn_one(self, x):
         x = utils.dict2numpy(x)
         # We create the node for x and add it to the tree
-        if len(self.X.keys()) >= self.window_size:
+        if len(self.x_clusters.keys()) >= self.window_size:
             # Delete the oldest data point and add a node with the same key as the one deleted
-            oldest_key = self.X[list(self.X.keys())[0]]
+            oldest_key = self.x_clusters[list(self.x_clusters.keys())[0]]
             oldest = self.nodes[oldest_key]
             if oldest.parent.left.key == oldest_key:
                 oldest.parent.left = None
             else:
                 oldest.parent.right = None
             del self.nodes[oldest_key]
-            del self.X[list(self.X.keys())[0]]
-            self.X[np.array2string(x)] = oldest_key
+            del self.x_clusters[list(self.x_clusters.keys())[0]]
+            self.x_clusters[np.array2string(x)] = oldest_key
             self.nodes[oldest_key] = BinaryTreeNode(oldest_key, x)
         else:
             # Else we just add a node
             self.n += 1
-            self.X[np.array2string(x)] = self.n
+            self.x_clusters[np.array2string(x)] = self.n
             self.nodes[self.n] = BinaryTreeNode(self.n, x)
         # We add it to the tree
         self.otd_clustering(self.root, x)
@@ -390,8 +390,8 @@ class HierarchicalClustering(base.Clusterer):
         """
         # Get all the clusters each data point belong to
         clusters = {}
-        for x in self.X.keys():
-            clusters[x] = self.get_parents(self.nodes[self.X[x]])
+        for x in self.x_clusters.keys():
+            clusters[x] = self.get_parents(self.nodes[self.x_clusters[x]])
         return clusters
 
     def get_all_clusters(self):
