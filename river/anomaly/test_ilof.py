@@ -1,9 +1,11 @@
+from __future__ import annotations
+
 import numpy as np
 import pandas as pd
+from sklearn import neighbors
 
 from river import anomaly, datasets
 from river.utils import dict2numpy
-from sklearn import neighbors
 
 np.random.seed(42)
 
