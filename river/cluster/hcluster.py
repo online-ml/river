@@ -284,7 +284,6 @@ class HierarchicalClustering(base.Clusterer):
         # Adapted from https://www.geeksforgeeks.org/lowest-common-ancestor-binary-tree-set-1/
 
         if root is None:
-            # No path
             return False
 
         path.append(root)
@@ -322,13 +321,12 @@ class HierarchicalClustering(base.Clusterer):
 
     def leaves(self, v):
         # find all the leaves from node v
+
         if v is None:
-            # No leaves
             return -1
         if v.data is not None:
-            # If v is a leaf, returns itself
             return [v]
-        # Else, returns leaves from its children
+
         leave_list = []
         leave_list.extend(self.leaves(v.left))
         leave_list.extend(self.leaves(v.right))
