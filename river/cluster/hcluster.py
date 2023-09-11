@@ -249,7 +249,7 @@ class HierarchicalClustering(base.Clusterer):
             clusters.extend([self.n + 2, self.n + 1])
             return clusters, node.key
         else:
-            # Else, x wouls be added in the tree, we add the key of node
+            # Else, x would be added in the tree, we add the key of node
             clusters.extend([node.key])
             if self.inter_subtree_similarity(
                 node.left, BinaryTreeNode(self.n + 1, x)
@@ -381,7 +381,7 @@ class HierarchicalClustering(base.Clusterer):
         return clusters
 
     def get_clusters_by_point(self):
-        """Returns the list of clusters (from the data point node to the root) for all of the data points.
+        """Returns the list of clusters (from the data point node to the root) for all data points.
 
         Returns
         -------
