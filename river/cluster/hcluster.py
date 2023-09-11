@@ -346,14 +346,14 @@ class HierarchicalClustering(base.Clusterer):
         leavesList.extend(self.leaves(v.right))
         return leavesList
 
-    def inter_subtree_similarity(self, A, B):
-        # compute the mean distance between tree A and tree B (mean of distances between nodes from tree A and tree B)
-        leavesA = self.leaves(A)
-        leavesB = self.leaves(B)
+    def inter_subtree_similarity(self, tree_a, tree_b):
+        # compute the mean distance (mean of distances) between two trees
+        leaves_a = self.leaves(tree_a)
+        leaves_b = self.leaves(tree_b)
         r = 0
         nb = 0
-        for i, w_i in enumerate(leavesA):
-            for j, w_j in enumerate(leavesB):
+        for i, w_i in enumerate(leaves_a):
+            for j, w_j in enumerate(leaves_b):
                 nb += 1
                 r += self.distance(w_i, w_j)
         return r / nb
