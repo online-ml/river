@@ -280,7 +280,8 @@ class HierarchicalClustering(base.Clusterer):
         return r, merged
 
     def find_path(self, root, path, k):
-        # find the path from root to k, from https://www.geeksforgeeks.org/lowest-common-ancestor-binary-tree-set-1/
+        # find the path from root to k
+        # Adapted from https://www.geeksforgeeks.org/lowest-common-ancestor-binary-tree-set-1/
 
         if root is None:
             # No path
@@ -300,7 +301,9 @@ class HierarchicalClustering(base.Clusterer):
         return False
 
     def lca(self, i, j):
-        # find the least common ancestor, from https://www.geeksforgeeks.org/lowest-common-ancestor-binary-tree-set-1/
+        # Find the least common ancestor
+        # Adapted from https://www.geeksforgeeks.org/lowest-common-ancestor-binary-tree-set-1/
+
         if self.root is None:
             return -1
 
@@ -361,12 +364,13 @@ class HierarchicalClustering(base.Clusterer):
         self.print_tree(self.root)
         return "Printed Hierarchical Clustering Tree."
 
-    def printTree(self, node, level=0):
-        # print node and its children, from https://stackoverflow.com/questions/34012886/print-binary-tree-level-by-level-in-python
+    def print_tree(self, node, level=0):
+        # Print node and its children
+        # Adapted from https://stackoverflow.com/questions/34012886/print-binary-tree-level-by-level-in-python
         if node is not None:
-            self.printTree(node.right, level + 1)
+            self.print_tree(node.right, level + 1)
             print(" " * 4 * level + "-> " + str(node.key))
-            self.printTree(node.left, level + 1)
+            self.print_tree(node.left, level + 1)
 
     def get_parents(self, node):
         # Get all the parents of the node (the clusters it belongs to)
