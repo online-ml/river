@@ -341,10 +341,10 @@ class HierarchicalClustering(base.Clusterer):
             # If v is a leaf, returns itself
             return [v]
         # Else, returns leaves from its children
-        leavesList = []
-        leavesList.extend(self.leaves(v.left))
-        leavesList.extend(self.leaves(v.right))
-        return leavesList
+        leave_list = []
+        leave_list.extend(self.leaves(v.left))
+        leave_list.extend(self.leaves(v.right))
+        return leave_list
 
     def inter_subtree_similarity(self, tree_a, tree_b):
         # compute the mean distance (mean of distances) between two trees
