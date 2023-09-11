@@ -358,9 +358,9 @@ class HierarchicalClustering(base.Clusterer):
                 r += self.distance(w_i, w_j)
         return r / nb
 
-    def intra_subtree_similarity(self, A):
-        # compute mean of distances between the node from tree A
-        leaves = self.leaves(A)
+    def intra_subtree_similarity(self, tree):
+        # compute mean of distances between the nodes from a certain tree
+        leaves = self.leaves(tree)
         r = 0
         nb = 0
         if len(leaves) == 1:
