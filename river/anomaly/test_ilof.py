@@ -32,7 +32,7 @@ def test_incremental_lof_scores():
     df_train = pd.DataFrame({"observations": x_train_dict, "ground_truth": ground_truth})
     x_pred = np.random.uniform(low=-5, high=5, size=(30, 2))
     x_pred_dict = [{f"feature_{i + 1}": elem[i] for i in range(2)} for elem in x_pred]
-    incremental_lof = anomaly.LocalOutlierFactor(n_neighbors=20, verbose=False)
+    incremental_lof = anomaly.LocalOutlierFactor(n_neighbors=20)
 
     for x in df_train["observations"]:
         incremental_lof.learn_one(x)
@@ -62,7 +62,7 @@ def test_batch_lof_scores():
     batch_sizes = [20, 50, 100]
 
     for batch_size in batch_sizes:
-        ilof_river_batch = anomaly.LocalOutlierFactor(n_neighbors=20, verbose=False)
+        ilof_river_batch = anomaly.LocalOutlierFactor(n_neighbors=20)
         ilof_river_batch.learn_many(cc_df[0:batch_size])
         ilof_scores_river_batch = np.array([v for v in ilof_river_batch.lof.values()])
 
