@@ -172,28 +172,29 @@ class HierarchicalClustering(base.Clusterer):
     def otd_clustering(self, tree, x):
         # Online top down clustering (OTD), the first algorithm for online hierarchical clustering.
         # The algorithm performs highly efficient online updates and provably approximates Moseley-Wang revenue.
+        x_string = np.array2string(x)
         if self.n == 1:
             # First node in the tree
             self.root = self.nodes[1]
         elif tree.data is not None:
             # If T is a leaf, we merge the two nodes together
-            self.merge_nodes(tree, self.nodes[self.X[np.array2string(x)]])
+            self.merge_nodes(tree, self.nodes[self.X[x_string]])
         elif tree.left is None:
             # If there is no node at the left of the intermediate node, we add it there
-            tree.left = self.nodes[self.X[np.array2string(x)]]
-            self.nodes[self.X[np.array2string(x)]].parent = tree
+            tree.left = self.nodes[self.X[x_string]]
+            self.nodes[self.X[x_string]].parent = tree
         elif tree.right is None:
             # If there is no node at the right of the intermediate node, we add it there
-            tree.right = self.nodes[self.X[np.array2string(x)]]
-            self.nodes[self.X[np.array2string(x)]].parent = tree
+            tree.right = self.nodes[self.X[x_string]]
+            self.nodes[self.X[x_string]].parent = tree
         elif self.intra_subtree_similarity(tree) < self.inter_subtree_similarity(
-            tree, self.nodes[self.X[np.array2string(x)]]
+            tree, self.nodes[self.X[x_string]]
         ):
             # If the nodes in T are closer between them than with the new node, we merge T and the new node
-            self.merge_nodes(tree, self.nodes[self.X[np.array2string(x)]])
+            self.merge_nodes(tree, self.nodes[self.X[x_string]])
         elif self.inter_subtree_similarity(
-            tree.left, self.nodes[self.X[np.array2string(x)]]
-        ) > self.inter_subtree_similarity(tree.right, self.nodes[self.X[np.array2string(x)]]):
+            tree.left, self.nodes[self.X[x_string]]
+        ) > self.inter_subtree_similarity(tree.right, self.nodes[self.X[x_string]]):
             # Continue to search where to merge the new node in the right part of T
             self.otd_clustering(tree.right, x)
         else:
