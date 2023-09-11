@@ -233,7 +233,7 @@ class HierarchicalClustering(base.Clusterer):
         self.otd_clustering(self.root, x)
         return self
 
-    def predict_OTD(self, x, node, clusters):
+    def predict_otd(self, x, node, clusters):
         # get the list of predicted clusters for x
         if node is None:
             # If there is still no node in the tree
@@ -255,10 +255,10 @@ class HierarchicalClustering(base.Clusterer):
                 node.left, BinaryTreeNode(self.n + 1, x)
             ) > self.inter_subtree_similarity(node.right, BinaryTreeNode(self.n + 1, x)):
                 # If  the right part of the tree is closer to x than the left part, we continue in the right part
-                return self.predict_OTD(x, node.right, clusters)
+                return self.predict_otd(x, node.right, clusters)
             else:
                 # If  the left part of the tree is closer to x than the right part, we continue in the left part
-                return self.predict_OTD(x, node.left, clusters)
+                return self.predict_otd(x, node.left, clusters)
 
     def predict_one(self, x):
         """Predicts the clusters for a set of features `x`.
