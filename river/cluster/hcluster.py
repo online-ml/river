@@ -225,7 +225,7 @@ class HierarchicalClustering(base.Clusterer):
             self.x_clusters[np.array2string(x)] = oldest_key
             self.nodes[oldest_key] = BinaryTreeNode(oldest_key, x)
         else:
-            # Else we just add a node
+            # Else, add a node
             self.n += 1
             self.x_clusters[np.array2string(x)] = self.n
             self.nodes[self.n] = BinaryTreeNode(self.n, x)
