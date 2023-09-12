@@ -22,7 +22,7 @@
       
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.5.2, mkdocs-material-9.2.5">
+      <meta name="generator" content="mkdocs-1.5.2, mkdocs-material-9.3.1">
     
     
       
@@ -30,7 +30,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.0e669242.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.046329b4.min.css">
       
         
         <link rel="stylesheet" href="../../../assets/stylesheets/palette.85d0ee34.min.css">
@@ -1058,6 +1058,8 @@
       
         
       
+        
+      
     
     
       
@@ -1256,21 +1258,21 @@ Features  18
 
 <span class="n">metric</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>            Precision   Recall   F1       Support
+<div class="language-text highlight"><pre><span></span><code>               Precision      Recall         F1             Support
 
-brickface      77.13%   84.85%   80.81%       330  
-   cement      78.92%   83.94%   81.35%       330  
-  foliage      65.69%   20.30%   31.02%       330  
-    grass     100.00%   96.97%   98.46%       330  
-     path      90.63%   91.19%   90.91%       329  
-      sky      99.08%   98.18%   98.63%       330  
-   window      43.50%   67.88%   53.02%       330
+   brickface         77.13%         84.85%         80.81%            330  
+      cement         78.92%         83.94%         81.35%            330  
+     foliage         65.69%         20.30%         31.02%            330  
+       grass        100.00%         96.97%         98.46%            330  
+        path         90.63%         91.19%         90.91%            329  
+         sky         99.08%         98.18%         98.63%            330  
+      window         43.50%         67.88%         53.02%            330
 
-    Macro      79.28%   77.62%   76.31%            
-    Micro      77.61%   77.61%   77.61%            
- Weighted      79.27%   77.61%   76.31%
+       Macro         79.28%         77.62%         76.31%                 
+       Micro         77.61%         77.61%         77.61%                 
+    Weighted         79.27%         77.61%         76.31%
 
-                  77.61% accuracy
+                             77.61% accuracy
 </code></pre></div>
 <p>This is a common way to evaluate an online model. In fact, there is a dedicated <a href="../../../api/evaluate/progressive-val-score"><code>evaluate.progressive_val_score</code></a> function that does this for you.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">evaluate</span>
@@ -1280,21 +1282,21 @@ brickface      77.13%   84.85%   80.81%       330
 
 <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">metric</span><span class="p">)</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>            Precision   Recall   F1       Support
+<div class="language-text highlight"><pre><span></span><code>               Precision      Recall         F1             Support
 
-brickface      77.13%   84.85%   80.81%       330  
-   cement      78.92%   83.94%   81.35%       330  
-  foliage      65.69%   20.30%   31.02%       330  
-    grass     100.00%   96.97%   98.46%       330  
-     path      90.63%   91.19%   90.91%       329  
-      sky      99.08%   98.18%   98.63%       330  
-   window      43.50%   67.88%   53.02%       330
+   brickface         77.13%         84.85%         80.81%            330  
+      cement         78.92%         83.94%         81.35%            330  
+     foliage         65.69%         20.30%         31.02%            330  
+       grass        100.00%         96.97%         98.46%            330  
+        path         90.63%         91.19%         90.91%            329  
+         sky         99.08%         98.18%         98.63%            330  
+      window         43.50%         67.88%         53.02%            330
 
-    Macro      79.28%   77.62%   76.31%            
-    Micro      77.61%   77.61%   77.61%            
- Weighted      79.27%   77.61%   76.31%
+       Macro         79.28%         77.62%         76.31%                 
+       Micro         77.61%         77.61%         77.61%                 
+    Weighted         79.27%         77.61%         76.31%
 
-                  77.61% accuracy
+                             77.61% accuracy
 </code></pre></div>
 
 
@@ -1364,7 +1366,7 @@ brickface      77.13%   84.85%   80.81%       330
     <script id="__config" type="application/json">{"base": "../../..", "features": ["content.code.copy", "navigation.tabs", "navigation.instant", "navigation.indexes", "navigation.prune"], "search": "../../../assets/javascripts/workers/search.dfff1995.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.78eede0e.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.dff1b7c8.min.js"></script>
       
         <script src="../../../js/mkdocs-charts-plugin.js"></script>
       

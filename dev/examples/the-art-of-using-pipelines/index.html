@@ -22,7 +22,7 @@
       
       
       <link rel="icon" href="../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.5.2, mkdocs-material-9.2.5">
+      <meta name="generator" content="mkdocs-1.5.2, mkdocs-material-9.3.1">
     
     
       
@@ -30,7 +30,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.0e669242.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.046329b4.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.85d0ee34.min.css">
@@ -1048,6 +1048,8 @@
       
         
       
+        
+      
     
     
       
@@ -1171,7 +1173,9 @@
     <span class="n">pprint</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
     <span class="k">break</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>{&#39;area_name&#39;: &#39;Tōkyō-to Nerima-ku Toyotamakita&#39;,
+<div class="language-text highlight"><pre><span></span><code>Downloading https://maxhalford.github.io/files/datasets/kaggle_recruit_restaurants.zip (4.28 MB)
+Uncompressing into /Users/max/river_data/Restaurants
+{&#39;area_name&#39;: &#39;Tōkyō-to Nerima-ku Toyotamakita&#39;,
  &#39;date&#39;: datetime.datetime(2016, 1, 1, 0, 0),
  &#39;genre_name&#39;: &#39;Izakaya&#39;,
  &#39;is_holiday&#39;: True,
@@ -1225,9 +1229,8 @@
 
 <span class="nb">print</span><span class="p">(</span><span class="n">metric</span><span class="p">)</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">MAE: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">8.316538</span>
-</pre>
-
+<div class="language-text highlight"><pre><span></span><code>MAE: 8.316538
+</code></pre></div>
 <p>We're not using many features. We can print the last <code>x</code> to get an idea of the features (don't forget they've been scaled!)</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">pprint</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 </code></pre></div>
@@ -1272,9 +1275,8 @@
 
 <span class="nb">print</span><span class="p">(</span><span class="n">metric</span><span class="p">)</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">MAE: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">8.41379</span>
-</pre>
-
+<div class="language-text highlight"><pre><span></span><code>MAE: 8.413859
+</code></pre></div>
 <p>We use a <code>Pipeline</code> to arrange each step in a sequential order. A <code>TransformerUnion</code> is used to merge multiple feature extractors into a single transformer. The <code>for</code> loop is now much shorter and is thus easier to grok: we get the out-of-fold prediction, we fit the model, and finally we update the metric. This way of evaluating a model is typical of online learning, and so we put it wrapped it inside a function called <code>progressive_val_score</code> part of the <code>evaluate</code> module. We can use it to replace the <code>for</code> loop.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">evaluate</span>
 
@@ -1292,9 +1294,8 @@
 
 <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="n">datasets</span><span class="o">.</span><span class="n">Restaurants</span><span class="p">(),</span> <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="n">metrics</span><span class="o">.</span><span class="n">MAE</span><span class="p">())</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">MAE: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">8.41379</span>
-</pre>
-
+<div class="language-text highlight"><pre><span></span><code>MAE: 8.413859
+</code></pre></div>
 <p>Notice that you couldn't have used the <code>progressive_val_score</code> method if you wrote the model in a procedural manner.</p>
 <p>Our code is getting shorter, but it's still a bit difficult on the eyes. Indeed there is a lot of boilerplate code associated with pipelines that can get tedious to write. However River has some special tricks up it's sleeve to save you from a lot of pain.</p>
 <p>The first trick is that the name of each step in the pipeline can be omitted. If no name is given for a step then River automatically infers one.</p>
@@ -1312,25 +1313,17 @@
 
 <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">datasets</span><span class="o">.</span><span class="n">Restaurants</span><span class="p">(),</span> <span class="n">model</span><span class="p">,</span> <span class="n">metrics</span><span class="o">.</span><span class="n">MAE</span><span class="p">())</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">MAE: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">8.41379</span>
-</pre>
-
+<div class="language-text highlight"><pre><span></span><code>MAE: 8.413859
+</code></pre></div>
 <p>Under the hood a <code>Pipeline</code> inherits from <code>collections.OrderedDict</code>. Indeed this makes sense because if you think about it a <code>Pipeline</code> is simply a sequence of steps where each step has a name. The reason we mention this is because it means you can manipulate a <code>Pipeline</code> the same way you would manipulate an ordinary <code>dict</code>. For instance we can print the name of each step by using the <code>keys</code> method.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">steps</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">TransformerUnion
-</pre>
-
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">Discard
-</pre>
-
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">StandardScaler
-</pre>
-
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">LinearRegression
-</pre>
-
+<div class="language-text highlight"><pre><span></span><code>TransformerUnion
+Discard
+StandardScaler
+LinearRegression
+</code></pre></div>
 <p>The first step is a <code>FeatureUnion</code> and it's string representation contains the string representation of each of it's elements. Not having to write names saves up some time and space and is certainly less tedious.</p>
 <p>The next trick is that we can use mathematical operators to compose our pipeline. For example we can use the <code>+</code> operator to merge <code>Transformer</code>s into a <code>TransformerUnion</code>. </p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">compose</span><span class="o">.</span><span class="n">Pipeline</span><span class="p">(</span>
@@ -1346,9 +1339,8 @@
 
 <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">datasets</span><span class="o">.</span><span class="n">Restaurants</span><span class="p">(),</span> <span class="n">model</span><span class="p">,</span> <span class="n">metrics</span><span class="o">.</span><span class="n">MAE</span><span class="p">())</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">MAE: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">8.41379</span>
-</pre>
-
+<div class="language-text highlight"><pre><span></span><code>MAE: 8.413859
+</code></pre></div>
 <p>Likewhise we can use the <code>|</code> operator to assemble steps into a <code>Pipeline</code>. </p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="p">(</span>
     <span class="n">compose</span><span class="o">.</span><span class="n">FuncTransformer</span><span class="p">(</span><span class="n">get_date_features</span><span class="p">)</span> <span class="o">+</span>
@@ -1365,9 +1357,8 @@
 
 <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">datasets</span><span class="o">.</span><span class="n">Restaurants</span><span class="p">(),</span> <span class="n">model</span><span class="p">,</span> <span class="n">metrics</span><span class="o">.</span><span class="n">MAE</span><span class="p">())</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">MAE: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">8.41379</span>
-</pre>
-
+<div class="language-text highlight"><pre><span></span><code>MAE: 8.413859
+</code></pre></div>
 <p>Hopefully you'll agree that this is a powerful way to express machine learning pipelines. For some people this should be quite remeniscent of the UNIX pipe operator. One final trick we want to mention is that functions are automatically wrapped with a <code>FuncTransformer</code>, which can be quite handy.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">get_date_features</span>
 
@@ -1380,9 +1371,8 @@
 
 <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">datasets</span><span class="o">.</span><span class="n">Restaurants</span><span class="p">(),</span> <span class="n">model</span><span class="p">,</span> <span class="n">metrics</span><span class="o">.</span><span class="n">MAE</span><span class="p">())</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">MAE: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">8.41379</span>
-</pre>
-
+<div class="language-text highlight"><pre><span></span><code>MAE: 8.413859
+</code></pre></div>
 <p>Naturally some may prefer the procedural style we first used because they find it easier to work with. It all depends on your style and you should use what you feel comfortable with. However we encourage you to use operators because we believe that this will increase the readability of your code, which is very important. To each their own!</p>
 <p>Before finishing we can take an interactive look at our pipeline.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">model</span>
@@ -1392,7 +1382,7 @@ def get_date_features(x):
     weekday =  x['date'].weekday()
     return {'weekday': weekday, 'is_weekend': weekday in (5, 6)}
 
-</code></details><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">y_mean_by_store_id</pre></summary><code class="river-estimator-params">(
+</code></details><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">y_mean_by_store_id</pre></summary><code class="river-estimator-params">TargetAgg (
   by=['store_id']
   how=Rolling (
     obj=Mean ()
@@ -1400,8 +1390,7 @@ def get_date_features(x):
   )
   target_name="y"
 )
-
-</code></details><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">y_mean_by_store_id</pre></summary><code class="river-estimator-params">(
+</code></details><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">y_mean_by_store_id</pre></summary><code class="river-estimator-params">TargetAgg (
   by=['store_id']
   how=Rolling (
     obj=Mean ()
@@ -1409,8 +1398,7 @@ def get_date_features(x):
   )
   target_name="y"
 )
-
-</code></details><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">y_mean_by_store_id</pre></summary><code class="river-estimator-params">(
+</code></details><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">y_mean_by_store_id</pre></summary><code class="river-estimator-params">TargetAgg (
   by=['store_id']
   how=Rolling (
     obj=Mean ()
@@ -1418,8 +1406,7 @@ def get_date_features(x):
   )
   target_name="y"
 )
-
-</code></details></div><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">~['area_name', 'date', 'genre_name', 'latitude', 'longitude', 'store_id']</pre></summary><code class="river-estimator-params">(
+</code></details></div><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">~['area_name', [...]</pre></summary><code class="river-estimator-params">Discard (
   area_name
   date
   genre_name
@@ -1427,12 +1414,10 @@ def get_date_features(x):
   longitude
   store_id
 )
-
-</code></details><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">StandardScaler</pre></summary><code class="river-estimator-params">(
+</code></details><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">StandardScaler</pre></summary><code class="river-estimator-params">StandardScaler (
   with_std=True
 )
-
-</code></details><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">LinearRegression</pre></summary><code class="river-estimator-params">(
+</code></details><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">LinearRegression</pre></summary><code class="river-estimator-params">LinearRegression (
   optimizer=SGD (
     lr=Constant (
       learning_rate=0.01
@@ -1448,19 +1433,19 @@ def get_date_features(x):
   clip_gradient=1e+12
   initializer=Zeros ()
 )
-
 </code></details></div><style scoped>
 .river-estimator {
     padding: 1em;
     border-style: solid;
     background: white;
+    max-width: max-content;
 }
 
 .river-pipeline {
     display: flex;
     flex-direction: column;
     align-items: center;
-    background: linear-gradient(#000, #000) no-repeat center / 3px 100%;
+    background: linear-gradient(#000, #000) no-repeat center / 1.5px 100%;
 }
 
 .river-union {
@@ -1497,6 +1482,10 @@ def get_date_features(x):
     margin-top: 0;
 }
 
+.river-union > .river-component {
+    margin-top: 0;
+}
+
 .river-union > .pipeline {
     margin-top: 0;
 }
@@ -1512,8 +1501,8 @@ def get_date_features(x):
 .river-estimator-params {
     display: block;
     white-space: pre-wrap;
-    font-size: 120%;
-    margin-bottom: -1em;
+    font-size: 110%;
+    margin-top: 1em;
 }
 
 .river-estimator > .river-estimator-params,
@@ -1521,10 +1510,14 @@ def get_date_features(x):
     background-color: white !important;
 }
 
+.river-wrapper > .river-details {
+    margin-bottom: 1em;
+}
+
 .river-estimator-name {
     display: inline;
     margin: 0;
-    font-size: 130%;
+    font-size: 110%;
 }
 
 /* Toggle */
@@ -1607,7 +1600,7 @@ def get_date_features(x):
     <script id="__config" type="application/json">{"base": "../..", "features": ["content.code.copy", "navigation.tabs", "navigation.instant", "navigation.indexes", "navigation.prune"], "search": "../../assets/javascripts/workers/search.dfff1995.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.78eede0e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.dff1b7c8.min.js"></script>
       
         <script src="../../js/mkdocs-charts-plugin.js"></script>
       

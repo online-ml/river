@@ -18,11 +18,11 @@
         <link rel="prev" href="../../faq/">
       
       
-        <link rel="next" href="../0.18.0/">
+        <link rel="next" href="../0.19.0/">
       
       
       <link rel="icon" href="../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.5.2, mkdocs-material-9.2.5">
+      <meta name="generator" content="mkdocs-1.5.2, mkdocs-material-9.3.1">
     
     
       
@@ -30,7 +30,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.0e669242.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.046329b4.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.85d0ee34.min.css">
@@ -808,6 +808,8 @@
       
         
       
+        
+      
     
     
     <li class="md-nav__item md-nav__item--active md-nav__item--nested">
@@ -888,71 +890,8 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#bandit" class="md-nav__link">
-    bandit
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#compose" class="md-nav__link">
-    compose
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#drift" class="md-nav__link">
-    drift
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#linear_model" class="md-nav__link">
-    linear_model
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#forest" class="md-nav__link">
-    forest
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#multioutput" class="md-nav__link">
-    multioutput
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#preprocessing" class="md-nav__link">
-    preprocessing
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#proba" class="md-nav__link">
-    proba
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#stream" class="md-nav__link">
-    stream
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#utils" class="md-nav__link">
-    utils
+  <a href="#anomaly" class="md-nav__link">
+    anomaly
   </a>
   
 </li>
@@ -961,6 +900,26 @@
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../0.19.0/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    0.19.0 - 2023-08-02
+  </span>
+  
+
+      </a>
     </li>
   
 
@@ -1608,71 +1567,8 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#bandit" class="md-nav__link">
-    bandit
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#compose" class="md-nav__link">
-    compose
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#drift" class="md-nav__link">
-    drift
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#linear_model" class="md-nav__link">
-    linear_model
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#forest" class="md-nav__link">
-    forest
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#multioutput" class="md-nav__link">
-    multioutput
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#preprocessing" class="md-nav__link">
-    preprocessing
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#proba" class="md-nav__link">
-    proba
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#stream" class="md-nav__link">
-    stream
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#utils" class="md-nav__link">
-    utils
+  <a href="#anomaly" class="md-nav__link">
+    anomaly
   </a>
   
 </li>
@@ -1693,60 +1589,10 @@
 
 
 <h1 id="unreleased">Unreleased<a class="headerlink" href="#unreleased" title="Permanent link">&para;</a></h1>
-<p>Calling <code>learn_one</code> in a pipeline will now update each part of the pipeline in turn. Before the unsupervised parts of the pipeline were updated during <code>predict_one</code>. This is more intuitive for new users. The old behavior, which yields better results, can be restored by calling <code>learn_one</code> with the new <a href="../../api/compose/learn-during-predict"><code>compose.learn_during_predict</code></a> context manager.</p>
-<h2 id="bandit">bandit<a class="headerlink" href="#bandit" title="Permanent link">&para;</a></h2>
+<p>River's mini-batch methods now support pandas v2. In particular, River conforms to pandas' new sparse API.</p>
+<h2 id="anomaly">anomaly<a class="headerlink" href="#anomaly" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Added a <a href="../../api/bandit/datasets"><code>bandit.datasets</code></a> submodule, which is meant to contain contextual bandit datasets.</li>
-<li>Added <a href="../../api/bandit/base/ContextualPolicy"><code>bandit.base.ContextualPolicy</code></a>.</li>
-<li>Added <code>bandit.datasets.NewsDataset</code>.</li>
-<li>Added <a href="../../api/bandit/LinUCBDisjoint"><code>bandit.LinUCBDisjoint</code></a>, which is River's first contextual bandit policy.</li>
-<li>Added <a href="../../api/bandit/RandomPolicy"><code>bandit.RandomPolicy</code></a>.</li>
-</ul>
-<h2 id="compose">compose<a class="headerlink" href="#compose" title="Permanent link">&para;</a></h2>
-<ul>
-<li>Removed the <code>compose.warm_up_mode</code> context manager.</li>
-<li>Removed the <code>compose.pure_inference_mode</code> context manager.</li>
-<li>The last step of a pipeline will be correctly updated if it is unsupervised, which wasn't the case before.</li>
-<li>Fixed an edge-case where <a href="../../api/compose/TransformerProduct"><code>compose.TransformerProduct</code></a> would not work when chained more than twice.</li>
-</ul>
-<h2 id="drift">drift<a class="headerlink" href="#drift" title="Permanent link">&para;</a></h2>
-<ul>
-<li>Added a <code>datasets</code> submodule, which contains datasets that are useful for concept drift experiments.</li>
-<li>Fix bugs in <a href="../../api/drift/binary/HDDM-A"><code>drift.binary.HDDM_A</code></a> and <a href="../../api/drift/binary/HDDM-W"><code>drift.binary.HDDM_W</code></a>.</li>
-</ul>
-<h2 id="linear_model">linear_model<a class="headerlink" href="#linear_model" title="Permanent link">&para;</a></h2>
-<ul>
-<li>Added a <code>predict_many</code> method to <a href="../../api/linear-model/BayesianLinearRegression"><code>linear_model.BayesianLinearRegression</code></a>.</li>
-<li>Added a <code>smoothing</code> parameter to <a href="../../api/linear-model/BayesianLinearRegression"><code>linear_model.BayesianLinearRegression</code></a>, which allows it to cope with concept drift.</li>
-</ul>
-<h2 id="forest">forest<a class="headerlink" href="#forest" title="Permanent link">&para;</a></h2>
-<ul>
-<li>Fixed issue with <a href="../../api/forest/ARFClassifier"><code>forest.ARFClassifier</code></a> which couldn't be passed a <code>CrossEntropy</code> metric.</li>
-<li>Fixed a bug in <a href="../../api/forest/AMFClassifier"><code>forest.AMFClassifier</code></a> which slightly improves predictive accurary.</li>
-<li>Added <a href="../../api/forest/AMFRegressor"><code>forest.AMFRegressor</code></a>.</li>
-</ul>
-<h2 id="multioutput">multioutput<a class="headerlink" href="#multioutput" title="Permanent link">&para;</a></h2>
-<ul>
-<li>Added <a href="../../api/metrics/multioutput/SampleAverage"><code>metrics.multioutput.SampleAverage</code></a>, which is equivalent to using <code>average='samples'</code> in scikit-learn.</li>
-</ul>
-<h2 id="preprocessing">preprocessing<a class="headerlink" href="#preprocessing" title="Permanent link">&para;</a></h2>
-<ul>
-<li>Added <a href="../../api/preprocessing/OrdinalEncoder"><code>preprocessing.OrdinalEncoder</code></a>, to map string features to integers.</li>
-<li>The <code>transform_many</code> method of <a href="../../api/preprocessing/StandardScaler"><code>preprocessing.StandardScaler</code></a> now uses the dtype of the input for the output.</li>
-</ul>
-<h2 id="proba">proba<a class="headerlink" href="#proba" title="Permanent link">&para;</a></h2>
-<ul>
-<li>Added <a href="../../api/proba/MultivariateGaussian"><code>proba.MultivariateGaussian</code></a>.</li>
-</ul>
-<h2 id="stream">stream<a class="headerlink" href="#stream" title="Permanent link">&para;</a></h2>
-<ul>
-<li><a href="../../api/stream/iter-arff"><code>stream.iter_arff</code></a> now supports sparse data.</li>
-<li><a href="../../api/stream/iter-arff"><code>stream.iter_arff</code></a> now supports multi-output targets.</li>
-<li><a href="../../api/stream/iter-arff"><code>stream.iter_arff</code></a> now supports missing values indicated with question marks.</li>
-</ul>
-<h2 id="utils">utils<a class="headerlink" href="#utils" title="Permanent link">&para;</a></h2>
-<ul>
-<li>Added <a href="../../api/utils/random/exponential"><code>utils.random.exponential</code></a> to retrieve random samples following an exponential distribution.</li>
+<li>Added <a href="../../api/api/anomaly/LocalOutlierFactor"><code>api.anomaly.LocalOutlierFactor</code></a>, which is an online version of the LOF algorithm for anomaly detection that matches the scikit-learn implementation.</li>
 </ul>
 
 
@@ -1816,7 +1662,7 @@
     <script id="__config" type="application/json">{"base": "../..", "features": ["content.code.copy", "navigation.tabs", "navigation.instant", "navigation.indexes", "navigation.prune"], "search": "../../assets/javascripts/workers/search.dfff1995.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.78eede0e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.dff1b7c8.min.js"></script>
       
         <script src="../../js/mkdocs-charts-plugin.js"></script>
       

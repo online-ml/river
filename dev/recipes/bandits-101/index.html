@@ -22,7 +22,7 @@
       
       
       <link rel="icon" href="../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.5.2, mkdocs-material-9.2.5">
+      <meta name="generator" content="mkdocs-1.5.2, mkdocs-material-9.3.1">
     
     
       
@@ -30,7 +30,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.0e669242.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.046329b4.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.85d0ee34.min.css">
@@ -1088,6 +1088,8 @@
       
         
       
+        
+      
     
     
       
@@ -1264,9 +1266,9 @@
 <span class="p">))</span>
 <span class="n">trace_df</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>  0%|                                                                                         | 0/6000000 [00:00&lt;?, ?it/s]/Users/max/.pyenv/versions/3.10/envs/river310/lib/python3.10/site-packages/gym/utils/passive_env_checker.py:233: DeprecationWarning: `np.bool8` is a deprecated alias for `np.bool_`.  (Deprecated NumPy 1.24)
+<div class="language-text highlight"><pre><span></span><code>  0%|                                               | 0/6000000 [00:00&lt;?, ?it/s]/Users/max/.pyenv/versions/3.10/envs/river310/lib/python3.10/site-packages/gym/utils/passive_env_checker.py:233: DeprecationWarning: `np.bool8` is a deprecated alias for `np.bool_`.  (Deprecated NumPy 1.24)
   if not isinstance(terminated, (bool, np.bool8)):
-100%|███████████████████████████████████████████████████████████████████████| 6000000/6000000 [00:35&lt;00:00, 168154.90it/s]
+100%|█████████████████████████████| 6000000/6000000 [00:35&lt;00:00, 169408.20it/s]
 </code></pre></div>
 <div>
 <style scoped>
@@ -1300,27 +1302,27 @@
       <td>441</td>
       <td>632</td>
       <td>0</td>
-      <td>2</td>
-      <td>2.080471</td>
-      <td>2.007966</td>
+      <td>4</td>
+      <td>-0.036801</td>
+      <td>0.457068</td>
     </tr>
     <tr>
       <th>3566176</th>
       <td>1188</td>
       <td>725</td>
       <td>1</td>
-      <td>0</td>
-      <td>1.386654</td>
-      <td>1.694128</td>
+      <td>5</td>
+      <td>1.837321</td>
+      <td>2.220956</td>
     </tr>
     <tr>
       <th>1109043</th>
       <td>369</td>
       <td>681</td>
       <td>0</td>
-      <td>7</td>
-      <td>1.620536</td>
-      <td>1.508527</td>
+      <td>6</td>
+      <td>0.616991</td>
+      <td>1.324610</td>
     </tr>
     <tr>
       <th>4286042</th>
@@ -1328,17 +1330,17 @@
       <td>680</td>
       <td>2</td>
       <td>3</td>
-      <td>2.540870</td>
-      <td>1.542765</td>
+      <td>0.236458</td>
+      <td>0.570999</td>
     </tr>
     <tr>
       <th>5395174</th>
       <td>1798</td>
       <td>391</td>
       <td>1</td>
-      <td>8</td>
-      <td>2.210705</td>
-      <td>0.575857</td>
+      <td>1</td>
+      <td>-0.851223</td>
+      <td>0.446835</td>
     </tr>
   </tbody>
 </table>
@@ -1416,9 +1418,9 @@
 
 <span class="n">trace_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">trace</span><span class="p">)</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>  0%|                                                                                         | 0/6000000 [00:00&lt;?, ?it/s]/Users/max/.pyenv/versions/3.10/envs/river310/lib/python3.10/site-packages/gym/utils/passive_env_checker.py:233: DeprecationWarning: `np.bool8` is a deprecated alias for `np.bool_`.  (Deprecated NumPy 1.24)
+<div class="language-text highlight"><pre><span></span><code>  0%|                                               | 0/6000000 [00:00&lt;?, ?it/s]/Users/max/.pyenv/versions/3.10/envs/river310/lib/python3.10/site-packages/gym/utils/passive_env_checker.py:233: DeprecationWarning: `np.bool8` is a deprecated alias for `np.bool_`.  (Deprecated NumPy 1.24)
   if not isinstance(terminated, (bool, np.bool8)):
-100%|███████████████████████████████████████████████████████████████████████| 6000000/6000000 [00:35&lt;00:00, 170715.33it/s]
+100%|█████████████████████████████| 6000000/6000000 [00:34&lt;00:00, 172261.07it/s]
 </code></pre></div>
 <div class="language-python highlight"><pre><span></span><code><span class="n">colors</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s1">&#39;ε = 0.1&#39;</span><span class="p">:</span> <span class="s1">&#39;tab:blue&#39;</span><span class="p">,</span>
@@ -1476,9 +1478,7 @@
     <span class="p">)</span>
 <span class="p">))</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>  0%|                                                                                          | 0/180000 [00:00&lt;?, ?it/s]/Users/max/.pyenv/versions/3.10/envs/river310/lib/python3.10/site-packages/gym/utils/passive_env_checker.py:233: DeprecationWarning: `np.bool8` is a deprecated alias for `np.bool_`.  (Deprecated NumPy 1.24)
-  if not isinstance(terminated, (bool, np.bool8)):
-100%|██████████████████████████████████████████████████████████████████████████| 180000/180000 [00:14&lt;00:00, 12259.98it/s]
+<div class="language-text highlight"><pre><span></span><code>100%|████████████████████████████████| 180000/180000 [00:14&lt;00:00, 12305.42it/s]
 </code></pre></div>
 <p>We can compare the performance of each policy by checking the average reward at the end of each episode.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="p">(</span>
@@ -1570,7 +1570,7 @@ Name: reward_stat, dtype: float64
     <script id="__config" type="application/json">{"base": "../..", "features": ["content.code.copy", "navigation.tabs", "navigation.instant", "navigation.indexes", "navigation.prune"], "search": "../../assets/javascripts/workers/search.dfff1995.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.78eede0e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.dff1b7c8.min.js"></script>
       
         <script src="../../js/mkdocs-charts-plugin.js"></script>
       

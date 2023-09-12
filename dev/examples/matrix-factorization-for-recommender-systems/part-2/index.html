@@ -22,7 +22,7 @@
       
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.5.2, mkdocs-material-9.2.5">
+      <meta name="generator" content="mkdocs-1.5.2, mkdocs-material-9.3.1">
     
     
       
@@ -30,7 +30,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.0e669242.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.046329b4.min.css">
       
         
         <link rel="stylesheet" href="../../../assets/stylesheets/palette.85d0ee34.min.css">
@@ -1181,6 +1181,8 @@
       
         
       
+        
+      
     
     
       
@@ -1404,12 +1406,10 @@
 
 <span class="n">evaluate</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>Downloading https://maxhalford.github.io/files/datasets/ml_100k.zip (1.83 MB)
-Uncompressing into /Users/max/river_data/MovieLens100K
-[25,000] MAE: 0.761778, RMSE: 0.960803 – 00:00:02 – 818.86 KB
-[50,000] MAE: 0.751986, RMSE: 0.949941 – 00:00:04 – 948.77 KB
-[75,000] MAE: 0.750044, RMSE: 0.948911 – 00:00:05 – 1.07 MB
-[100,000] MAE: 0.748609, RMSE: 0.947994 – 00:00:07 – 1.19 MB
+<div class="language-text highlight"><pre><span></span><code>[25,000] MAE: 0.761761, RMSE: 0.960662 – 00:00:01 – 818.86 KB
+[50,000] MAE: 0.751922, RMSE: 0.949783 – 00:00:03 – 948.77 KB
+[75,000] MAE: 0.749822, RMSE: 0.948634 – 00:00:04 – 1.07 MB
+[100,000] MAE: 0.748393, RMSE: 0.94776 – 00:00:06 – 1.19 MB
 </code></pre></div>
 <p>Both MAE are very close to each other (0.7486 vs 0.7485) showing that we almost reproduced <a href="/api/reco/BiasedMF/">[reco.BiasedMF](../../../api/reco/BiasedMF)</a> algorithm. The cost is a naturally slower running time as FM implementation offers more flexibility.</p>
 <h2 id="feature-engineering-for-fm-models">Feature engineering for FM models<a class="headerlink" href="#feature-engineering-for-fm-models" title="Permanent link">&para;</a></h2>
@@ -1485,10 +1485,10 @@ y = 4.0
 
 <span class="n">evaluate</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>[25,000] MAE: 0.759838, RMSE: 0.961281 – 00:00:04 – 935.54 KB
-[50,000] MAE: 0.751307, RMSE: 0.951391 – 00:00:09 – 1.06 MB
-[75,000] MAE: 0.750361, RMSE: 0.951393 – 00:00:14 – 1.22 MB
-[100,000] MAE: 0.749994, RMSE: 0.951435 – 00:00:20 – 1.37 MB
+<div class="language-text highlight"><pre><span></span><code>[25,000] MAE: 0.760059, RMSE: 0.961415 – 00:00:04 – 935.54 KB
+[50,000] MAE: 0.751429, RMSE: 0.951504 – 00:00:08 – 1.06 MB
+[75,000] MAE: 0.750568, RMSE: 0.951592 – 00:00:13 – 1.22 MB
+[100,000] MAE: 0.75018, RMSE: 0.951622 – 00:00:17 – 1.37 MB
 </code></pre></div>
 <p>Note that using more variables involves factorizing a larger latent space, then increasing the number of latent factors <span class="arithmatex">\(k\)</span> often helps capturing more information.</p>
 <p>Some other feature engineering tips from <a href="https://www.kaggle.com/c/criteo-display-ad-challenge/discussion/10555">3 idiots' winning solution</a> for Kaggle <a href="https://www.kaggle.com/c/criteo-display-ad-challenge">Criteo display ads</a> competition in 2014:</p>
@@ -1530,10 +1530,10 @@ y = 4.0
 
 <span class="n">evaluate</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>[25,000] MAE: 0.761297, RMSE: 0.962054 – 0:00:51.632190 – 2.61 MB
-[50,000] MAE: 0.751865, RMSE: 0.951499 – 0:01:42.890329 – 3.08 MB
-[75,000] MAE: 0.750853, RMSE: 0.951526 – 0:02:34.207244 – 3.6 MB
-[100,000] MAE: 0.750607, RMSE: 0.951982 – 0:03:25.248686 – 4.07 MB
+<div class="language-text highlight"><pre><span></span><code>[25,000] MAE: 0.761379, RMSE: 0.96214 – 00:00:16 – 1.73 MB
+[50,000] MAE: 0.751998, RMSE: 0.951589 – 00:00:32 – 2.03 MB
+[75,000] MAE: 0.750994, RMSE: 0.951616 – 00:00:48 – 2.36 MB
+[100,000] MAE: 0.750849, RMSE: 0.952142 – 00:01:04 – 2.66 MB
 </code></pre></div>
 <p>As said previously, high-order interactions are often hard to estimate due to too much sparsity, that's why we won't spend too much time here.</p>
 <h2 id="field-aware-factorization-machines-ffm">Field-aware Factorization Machines (FFM)<a class="headerlink" href="#field-aware-factorization-machines-ffm" title="Permanent link">&para;</a></h2>
@@ -1572,10 +1572,10 @@ y = 4.0
 
 <span class="n">evaluate</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>[25,000] MAE: 0.757718, RMSE: 0.958158 – 0:00:15.781740 – 3.04 MB
-[50,000] MAE: 0.749502, RMSE: 0.948065 – 0:00:31.431484 – 3.59 MB
-[75,000] MAE: 0.749275, RMSE: 0.948918 – 0:00:47.079510 – 4.19 MB
-[100,000] MAE: 0.749542, RMSE: 0.949769 – 0:01:02.776969 – 4.75 MB
+<div class="language-text highlight"><pre><span></span><code>[25,000] MAE: 0.758339, RMSE: 0.959047 – 00:00:06 – 2.16 MB
+[50,000] MAE: 0.749833, RMSE: 0.948531 – 00:00:13 – 2.54 MB
+[75,000] MAE: 0.749631, RMSE: 0.949418 – 00:00:19 – 2.96 MB
+[100,000] MAE: 0.749776, RMSE: 0.950131 – 00:00:26 – 3.35 MB
 </code></pre></div>
 <p>Note that FFM usually needs to learn smaller number of latent factors <span class="arithmatex">\(k\)</span> than FM as each latent vector only deals with one field.</p>
 <h2 id="field-weighted-factorization-machines-fwfm">Field-weighted Factorization Machines (FwFM)<a class="headerlink" href="#field-weighted-factorization-machines-fwfm" title="Permanent link">&para;</a></h2>
@@ -1612,10 +1612,10 @@ y = 4.0
 
 <span class="n">evaluate</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>[25,000] MAE: 0.761539, RMSE: 0.962241 – 0:00:20.963815 – 1.18 MB
-[50,000] MAE: 0.754089, RMSE: 0.953181 – 0:00:42.057991 – 1.38 MB
-[75,000] MAE: 0.754806, RMSE: 0.954979 – 0:01:04.051777 – 1.6 MB
-[100,000] MAE: 0.755404, RMSE: 0.95604 – 0:01:25.823651 – 1.79 MB
+<div class="language-text highlight"><pre><span></span><code>[25,000] MAE: 0.761435, RMSE: 0.962211 – 00:00:08 – 834.1 KB
+[50,000] MAE: 0.754063, RMSE: 0.953248 – 00:00:17 – 964.01 KB
+[75,000] MAE: 0.754729, RMSE: 0.95507 – 00:00:25 – 1.08 MB
+[100,000] MAE: 0.755697, RMSE: 0.956542 – 00:00:34 – 1.21 MB
 </code></pre></div>
 
 
@@ -1685,7 +1685,7 @@ y = 4.0
     <script id="__config" type="application/json">{"base": "../../..", "features": ["content.code.copy", "navigation.tabs", "navigation.instant", "navigation.indexes", "navigation.prune"], "search": "../../../assets/javascripts/workers/search.dfff1995.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.78eede0e.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.dff1b7c8.min.js"></script>
       
         <script src="../../../js/mkdocs-charts-plugin.js"></script>
       

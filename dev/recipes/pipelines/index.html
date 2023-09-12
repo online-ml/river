@@ -22,7 +22,7 @@
       
       
       <link rel="icon" href="../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.5.2, mkdocs-material-9.2.5">
+      <meta name="generator" content="mkdocs-1.5.2, mkdocs-material-9.3.1">
     
     
       
@@ -30,7 +30,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.0e669242.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.046329b4.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.85d0ee34.min.css">
@@ -1044,6 +1044,8 @@
       
         
       
+        
+      
     
     
       
@@ -1333,12 +1335,12 @@
 <div class="language-python highlight"><pre><span></span><code><span class="n">model</span><span class="p">[</span><span class="s1">&#39;StandardScaler&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">means</span>
 </code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>defaultdict(float,
-            {&#39;ordinal_date&#39;: 736389.0,
-             &#39;gallup&#39;: 43.843213,
-             &#39;ipsos&#39;: 46.19925042857143,
-             &#39;morning_consult&#39;: 48.318749,
-             &#39;rasmussen&#39;: 44.104692,
-             &#39;you_gov&#39;: 43.636914000000004})
+            {&#39;ordinal_date&#39;: 0.0,
+             &#39;gallup&#39;: 0.0,
+             &#39;ipsos&#39;: 0.0,
+             &#39;morning_consult&#39;: 0.0,
+             &#39;rasmussen&#39;: 0.0,
+             &#39;you_gov&#39;: 0.0})
 </code></pre></div>
 <p>As we can see, the means of each feature have been updated, even though we called <code>predict_one</code> and not <code>learn_one</code>.</p>
 <p>Note that if you call <code>transform_one</code> with a pipeline who's last step is not a transformer, then the output from the last transformer (which is thus the penultimate step) will be returned:</p>
@@ -1590,7 +1592,7 @@
     <script id="__config" type="application/json">{"base": "../..", "features": ["content.code.copy", "navigation.tabs", "navigation.instant", "navigation.indexes", "navigation.prune"], "search": "../../assets/javascripts/workers/search.dfff1995.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.78eede0e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.dff1b7c8.min.js"></script>
       
         <script src="../../js/mkdocs-charts-plugin.js"></script>
       

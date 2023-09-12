@@ -22,7 +22,7 @@
       
       
       <link rel="icon" href="../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.5.2, mkdocs-material-9.2.5">
+      <meta name="generator" content="mkdocs-1.5.2, mkdocs-material-9.3.1">
     
     
       
@@ -30,7 +30,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.0e669242.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.046329b4.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.85d0ee34.min.css">
@@ -1088,6 +1088,8 @@
       
         
       
+        
+      
     
     
       
@@ -1260,7 +1262,7 @@
 <p>The performance is reasonable, even though all the dataset wasn't used for training. We can check how many samples were actually used.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">n_samples_used</span><span class="si">}</span><span class="s2"> / </span><span class="si">{</span><span class="n">dataset</span><span class="o">.</span><span class="n">n_samples</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">n_samples_used</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">dataset</span><span class="o">.</span><span class="n">n_samples</span><span class="si">:</span><span class="s2">.2%</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>1922 / 5574 = 34.48%
+<div class="language-text highlight"><pre><span></span><code>1921 / 5574 = 34.46%
 </code></pre></div>
 <p>Note that the above logic can be succinctly reproduced with the <code>progressive_val_score</code> function from the <code>evaluate</code> module. It recognises when an active learning model is provided, and will automatically display the number of samples used.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">evaluate</span>
@@ -1275,9 +1277,9 @@
 <div class="language-text highlight"><pre><span></span><code>[1,000] Accuracy: 86.32% – 661 samples used
 [2,000] Accuracy: 86.44% – 1,057 samples used
 [3,000] Accuracy: 86.52% – 1,339 samples used
-[4,000] Accuracy: 86.62% – 1,569 samples used
-[5,000] Accuracy: 86.57% – 1,791 samples used
-[5,574] Accuracy: 86.60% – 1,922 samples used
+[4,000] Accuracy: 86.62% – 1,568 samples used
+[5,000] Accuracy: 86.57% – 1,790 samples used
+[5,574] Accuracy: 86.60% – 1,921 samples used
 
 
 
@@ -1359,7 +1361,7 @@ Accuracy: 86.60%
     <script id="__config" type="application/json">{"base": "../..", "features": ["content.code.copy", "navigation.tabs", "navigation.instant", "navigation.indexes", "navigation.prune"], "search": "../../assets/javascripts/workers/search.dfff1995.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.78eede0e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.dff1b7c8.min.js"></script>
       
         <script src="../../js/mkdocs-charts-plugin.js"></script>
       

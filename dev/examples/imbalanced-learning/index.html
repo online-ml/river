@@ -22,7 +22,7 @@
       
       
       <link rel="icon" href="../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.5.2, mkdocs-material-9.2.5">
+      <meta name="generator" content="mkdocs-1.5.2, mkdocs-material-9.3.1">
     
     
       
@@ -30,7 +30,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.0e669242.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.046329b4.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.85d0ee34.min.css">
@@ -1127,6 +1127,8 @@
       
         
       
+        
+      
     
     
       
@@ -1329,9 +1331,8 @@
 
 <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">X_y</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">metric</span><span class="p">)</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">ROCAUC: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">89.11</span>%
-</pre>
-
+<div class="language-text highlight"><pre><span></span><code>ROCAUC: 89.11%
+</code></pre></div>
 <h2 id="importance-weighting">Importance weighting<a class="headerlink" href="#importance-weighting" title="Permanent link">&para;</a></h2>
 <p>The performance is already quite acceptable, but as we will now see we can do even better. The first thing we can do is to add weight to the 1s by using the <code>weight_pos</code> argument of the <code>Log</code> loss function.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">optim</span>
@@ -1347,9 +1348,8 @@
 
 <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">X_y</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">metric</span><span class="p">)</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">ROCAUC: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">91.43</span>%
-</pre>
-
+<div class="language-text highlight"><pre><span></span><code>ROCAUC: 91.43%
+</code></pre></div>
 <h2 id="focal-loss">Focal loss<a class="headerlink" href="#focal-loss" title="Permanent link">&para;</a></h2>
 <p>The deep learning for object detection community has produced a special loss function for imbalanced learning called <a href="https://arxiv.org/pdf/1708.02002.pdf">focal loss</a>. We are doing binary classification, so we can plug the binary version of focal loss into our logistic regression and see how well it fairs.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="p">(</span>
@@ -1361,9 +1361,8 @@
 
 <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">X_y</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">metric</span><span class="p">)</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">ROCAUC: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">91.31</span>%
-</pre>
-
+<div class="language-text highlight"><pre><span></span><code>ROCAUC: 91.31%
+</code></pre></div>
 <h2 id="under-sampling-the-majority-class">Under-sampling the majority class<a class="headerlink" href="#under-sampling-the-majority-class" title="Permanent link">&para;</a></h2>
 <p>Adding importance weights only works with gradient-based models (which includes neural networks). A more generic, and potentially more effective approach, is to use undersamplig and oversampling. As an example, we'll under-sample the stream so that our logistic regression encounter 20% of 1s and 80% of 0s. Under-sampling has the additional benefit of requiring less training steps, and thus reduces the total training time.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">imblearn</span>
@@ -1381,17 +1380,15 @@
 
 <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">X_y</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">metric</span><span class="p">)</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">ROCAUC: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">94.75</span>%
-</pre>
-
+<div class="language-text highlight"><pre><span></span><code>ROCAUC: 94.75%
+</code></pre></div>
 <p>The <code>RandomUnderSampler</code> class is a wrapper for classifiers. This is represented by a rectangle around the logistic regression bubble when we visualize the model.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">model</span>
 </code></pre></div>
-<div><div class="river-component river-pipeline"><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">StandardScaler</pre></summary><code class="river-estimator-params">(
+<div><div class="river-component river-pipeline"><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">StandardScaler</pre></summary><code class="river-estimator-params">StandardScaler (
   with_std=True
 )
-
-</code></details><div class="river-component river-wrapper"><details class="river-details"><summary class="river-summary"><pre class="river-estimator-name">RandomUnderSampler</pre></summary><code class="river-estimator-params">(
+</code></details><div class="river-component river-wrapper"><details class="river-details"><summary class="river-summary"><pre class="river-estimator-name">RandomUnderSampler</pre></summary><code class="river-estimator-params">RandomUnderSampler (
   classifier=LogisticRegression (
     optimizer=SGD (
       lr=Constant (
@@ -1414,8 +1411,7 @@
   desired_dist={0: 0.8, 1: 0.2}
   seed=42
 )
-
-</code></details><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">LogisticRegression</pre></summary><code class="river-estimator-params">(
+</code></details><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">LogisticRegression</pre></summary><code class="river-estimator-params">LogisticRegression (
   optimizer=SGD (
     lr=Constant (
       learning_rate=0.01
@@ -1434,19 +1430,19 @@
   clip_gradient=1e+12
   initializer=Zeros ()
 )
-
 </code></details></div></div><style scoped>
 .river-estimator {
     padding: 1em;
     border-style: solid;
     background: white;
+    max-width: max-content;
 }
 
 .river-pipeline {
     display: flex;
     flex-direction: column;
     align-items: center;
-    background: linear-gradient(#000, #000) no-repeat center / 3px 100%;
+    background: linear-gradient(#000, #000) no-repeat center / 1.5px 100%;
 }
 
 .river-union {
@@ -1483,6 +1479,10 @@
     margin-top: 0;
 }
 
+.river-union > .river-component {
+    margin-top: 0;
+}
+
 .river-union > .pipeline {
     margin-top: 0;
 }
@@ -1498,8 +1498,8 @@
 .river-estimator-params {
     display: block;
     white-space: pre-wrap;
-    font-size: 120%;
-    margin-bottom: -1em;
+    font-size: 110%;
+    margin-top: 1em;
 }
 
 .river-estimator > .river-estimator-params,
@@ -1507,10 +1507,14 @@
     background-color: white !important;
 }
 
+.river-wrapper > .river-details {
+    margin-bottom: 1em;
+}
+
 .river-estimator-name {
     display: inline;
     margin: 0;
-    font-size: 130%;
+    font-size: 110%;
 }
 
 /* Toggle */
@@ -1541,9 +1545,8 @@
 
 <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">X_y</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">metric</span><span class="p">)</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">ROCAUC: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">91.71</span>%
-</pre>
-
+<div class="language-text highlight"><pre><span></span><code>ROCAUC: 91.71%
+</code></pre></div>
 <h2 id="sampling-with-a-desired-sample-size">Sampling with a desired sample size<a class="headerlink" href="#sampling-with-a-desired-sample-size" title="Permanent link">&para;</a></h2>
 <p>The downside of both <code>RandomUnderSampler</code> and <code>RandomOverSampler</code> is that you don't have any control on the amount of data the classifier trains on. The number of samples is adjusted so that the target distribution can be attained, either by under-sampling or over-sampling. However, you can do both at the same time and choose how much data the classifier will see. To do so, we can use the <code>RandomSampler</code> class. In addition to the desired class distribution, we can specify how much data to train on. The samples will both be under-sampled and over-sampled in order to fit your constraints. This is powerful because it allows you to control both the class distribution and the size of the training data (and thus the training time). In the following example we'll set it so that the model will train with 1 percent of the data.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="p">(</span>
@@ -1560,9 +1563,8 @@
 
 <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">X_y</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">metric</span><span class="p">)</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">ROCAUC: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">94.71</span>%
-</pre>
-
+<div class="language-text highlight"><pre><span></span><code>ROCAUC: 94.71%
+</code></pre></div>
 <h2 id="hybrid-approach">Hybrid approach<a class="headerlink" href="#hybrid-approach" title="Permanent link">&para;</a></h2>
 <p>As you might have guessed by now, nothing is stopping you from mixing imbalanced learning methods together. As an example, let's combine <code>sampling.RandomUnderSampler</code> and the <code>weight_pos</code> parameter from the <a href="../../api/optim/losses/Log"><code>optim.losses.Log</code></a> loss function.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="p">(</span>
@@ -1580,8 +1582,8 @@
 
 <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">X_y</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">metric</span><span class="p">)</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">ROCAUC: <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">96.52</span>%
-</pre>
+<div class="language-text highlight"><pre><span></span><code>ROCAUC: 96.52%
+</code></pre></div>
 
 
   
@@ -1650,7 +1652,7 @@
     <script id="__config" type="application/json">{"base": "../..", "features": ["content.code.copy", "navigation.tabs", "navigation.instant", "navigation.indexes", "navigation.prune"], "search": "../../assets/javascripts/workers/search.dfff1995.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.78eede0e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.dff1b7c8.min.js"></script>
       
         <script src="../../js/mkdocs-charts-plugin.js"></script>
       

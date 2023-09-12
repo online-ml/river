@@ -22,7 +22,7 @@
       
       
       <link rel="icon" href="../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.5.2, mkdocs-material-9.2.5">
+      <meta name="generator" content="mkdocs-1.5.2, mkdocs-material-9.3.1">
     
     
       
@@ -30,7 +30,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.0e669242.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.046329b4.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.85d0ee34.min.css">
@@ -1048,6 +1048,8 @@
       
         
       
+        
+      
     
     
       
@@ -1210,12 +1212,12 @@
         <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="mi">30000</span> <span class="ow">and</span> <span class="n">i</span> <span class="o">%</span> <span class="mi">30000</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">metric</span><span class="p">)</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>30000 MAE: 2.220942
-60000 MAE: 2.270271
-90000 MAE: 2.301302
-120000 MAE: 2.275876
-150000 MAE: 2.275224
-180000 MAE: 2.289347
+<div class="language-text highlight"><pre><span></span><code>30000 MAE: 13.328051
+60000 MAE: 7.824087
+90000 MAE: 6.003909
+120000 MAE: 5.052855
+150000 MAE: 4.496826
+180000 MAE: 4.140702
 </code></pre></div>
 <p>Let's start by looking at the pipeline. You can click each cell to display the current state for each step of the pipeline.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">model</span>
@@ -1228,33 +1230,29 @@ def add_time_features(x):
         'day': x['moment'].weekday()
     }
 
-</code></details><div class="river-component river-union"><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">['clouds', 'humidity', 'pressure', 'temperature', 'wind']</pre></summary><code class="river-estimator-params">(
+</code></details><div class="river-component river-union"><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">['clouds', [...]</pre></summary><code class="river-estimator-params">Select (
   clouds
   humidity
   pressure
   temperature
   wind
 )
-
-</code></details><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">y_mean_by_station_and_hour</pre></summary><code class="river-estimator-params">(
+</code></details><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">y_mean_by_station_and_hour</pre></summary><code class="river-estimator-params">TargetAgg (
   by=['station', 'hour']
   how=Mean ()
   target_name="y"
 )
-
-</code></details><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">y_ewm_0.5_by_station</pre></summary><code class="river-estimator-params">(
+</code></details><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">y_ewm_0.5_by_station</pre></summary><code class="river-estimator-params">TargetAgg (
   by=['station']
   how=EWMean (
     fading_factor=0.5
   )
   target_name="y"
 )
-
-</code></details></div><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">StandardScaler</pre></summary><code class="river-estimator-params">(
+</code></details></div><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">StandardScaler</pre></summary><code class="river-estimator-params">StandardScaler (
   with_std=True
 )
-
-</code></details><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">LinearRegression</pre></summary><code class="river-estimator-params">(
+</code></details><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">LinearRegression</pre></summary><code class="river-estimator-params">LinearRegression (
   optimizer=SGD (
     lr=Constant (
       learning_rate=0.01
@@ -1270,19 +1268,19 @@ def add_time_features(x):
   clip_gradient=1e+12
   initializer=Zeros ()
 )
-
 </code></details></div><style scoped>
 .river-estimator {
     padding: 1em;
     border-style: solid;
     background: white;
+    max-width: max-content;
 }
 
 .river-pipeline {
     display: flex;
     flex-direction: column;
     align-items: center;
-    background: linear-gradient(#000, #000) no-repeat center / 3px 100%;
+    background: linear-gradient(#000, #000) no-repeat center / 1.5px 100%;
 }
 
 .river-union {
@@ -1319,6 +1317,10 @@ def add_time_features(x):
     margin-top: 0;
 }
 
+.river-union > .river-component {
+    margin-top: 0;
+}
+
 .river-union > .pipeline {
     margin-top: 0;
 }
@@ -1334,8 +1336,8 @@ def add_time_features(x):
 .river-estimator-params {
     display: block;
     white-space: pre-wrap;
-    font-size: 120%;
-    margin-bottom: -1em;
+    font-size: 110%;
+    margin-top: 1em;
 }
 
 .river-estimator > .river-estimator-params,
@@ -1343,10 +1345,14 @@ def add_time_features(x):
     background-color: white !important;
 }
 
+.river-wrapper > .river-details {
+    margin-bottom: 1em;
+}
+
 .river-estimator-name {
     display: inline;
     margin: 0;
-    font-size: 130%;
+    font-size: 110%;
 }
 
 /* Toggle */
@@ -1422,22 +1428,22 @@ humidity: 1.16366 (float)
 pressure: 0.04916 (float)
 temperature: -0.51938 (float)
 wind: -0.69426 (float)
-y_ewm_0.5_by_station: 0.19214 (float)
-y_mean_by_station_and_hour: -0.26013 (float)
+y_ewm_0.5_by_station: 0.19640 (float)
+y_mean_by_station_and_hour: -0.27110 (float)
 
 4. LinearRegression
 -------------------
-Name                         Value      Weight     Contribution  
-                 Intercept    1.00000    9.22316        9.22316  
-      y_ewm_0.5_by_station    0.19214    9.26418        1.78000  
-                  humidity    1.16366    1.01252        1.17823  
-               temperature   -0.51938   -0.42112        0.21872  
-                      wind   -0.69426   -0.04088        0.02838  
-                  pressure    0.04916    0.18137        0.00892  
-y_mean_by_station_and_hour   -0.26013    0.19801       -0.05151  
-                    clouds    1.54778   -0.32697       -0.50608
+Name       Value      Weight     Contribution  
+Intercept   1.00000    9.19960        9.19960  
+y_ewm_0.5_by_station  0.19640    9.19349        1.80562  
+humidity    1.16366    1.01680        1.18320  
+temperature -0.51938   -0.41575        0.21593  
+    wind   -0.69426   -0.03810        0.02645  
+pressure    0.04916    0.18321        0.00901  
+y_mean_by_station_and_hour -0.27110    0.19553       -0.05301  
+  clouds    1.54778   -0.32838       -0.50827
 
-Prediction: 11.87982
+Prediction: 11.87854
 </code></pre></div>
 <p>The pipeline does quite a few things, but using <code>debug_one</code> shows what happens step by step. This is really useful for checking that the pipeline is behaving as you're expecting it too. Remember that you can <code>debug_one</code> whenever you wish, be it before, during, or after training a model.</p>
 
@@ -1508,7 +1514,7 @@ Prediction: 11.87982
     <script id="__config" type="application/json">{"base": "../..", "features": ["content.code.copy", "navigation.tabs", "navigation.instant", "navigation.indexes", "navigation.prune"], "search": "../../assets/javascripts/workers/search.dfff1995.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.78eede0e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.dff1b7c8.min.js"></script>
       
         <script src="../../js/mkdocs-charts-plugin.js"></script>
       
