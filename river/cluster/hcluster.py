@@ -68,18 +68,18 @@ class HierarchicalClustering(base.Clusterer):
 
     >>> X = [[1, 1, 1], [1, 1, 0], [20, 20, 20], [20, 20, 20.1], [0 , 1, 1]]
 
-    >>> HC = cluster.HierarchicalClustering()
+    >>> hierarchical_clustering = cluster.HierarchicalClustering()
 
     >>> for x, _ in stream.iter_array(X):
-    ...     HC = HC.learn_one(x)
+    ...     hierarchical_clustering = hierarchical_clustering.learn_one(x)
 
-    >>> HC.x_clusters
+    >>> hierarchical_clustering.x_clusters
     {'[1 1 1]': 1, '[1 1 0]': 2, '[20 20 20]': 4, '[20.  20.  20.1]': 6, '[0 1 1]': 8}
 
-    >>> HC.n
+    >>> hierarchical_clustering.n
     9
 
-    >>> print(HC)
+    >>> print(hierarchical_clustering)
             -> 6
         -> 7
             -> 4
@@ -91,18 +91,18 @@ class HierarchicalClustering(base.Clusterer):
                 -> 1
     Printed Hierarchical Clustering Tree.
 
-    >>> HC.get_all_clusters()
+    >>> hierarchical_clustering.get_all_clusters()
     [(1, [array([1, 1, 1])]), (2, [array([1, 1, 0])]), (4, [array([20, 20, 20])]), (6, [array([20. , 20. , 20.1])]), (8, [array([0, 1, 1])]), (3, [1, 2]), (5, [9, 7]), (7, [4, 6]), (9, [3, 8])]
 
-    >>> HC.get_clusters_by_point()
+    >>> hierarchical_clustering.get_clusters_by_point()
     {'[1 1 1]': [1, 3, 9, 5], '[1 1 0]': [2, 3, 9, 5], '[20 20 20]': [4, 7, 5], '[20.  20.  20.1]': [6, 7, 5], '[0 1 1]': [8, 9, 5]}
 
-    >>> HC.predict_one({0 : 20.1, 1 : 20, 2 : 20 })
+    >>> hierarchical_clustering.predict_one({0 : 20.1, 1: 20, 2: 20 })
     ([10, 11, 5], 7)
 
-    >>> HC = HC.learn_one({0 : 20.1, 1 : 20, 2 : 20 })
+    >>> hierarchical_clustering = hierarchical_clustering.learn_one({0: 20.1, 1: 20, 2: 20})
 
-    >>> print(HC)
+    >>> print(hierarchical_clustering)
             -> 10
         -> 11
                 -> 6
@@ -116,18 +116,18 @@ class HierarchicalClustering(base.Clusterer):
                 -> 1
     Printed Hierarchical Clustering Tree.
 
-    >>> HC = cluster.HierarchicalClustering(window_size=2)
+    >>> hierarchical_clustering = cluster.HierarchicalClustering(window_size=2)
 
     >>> for x, _ in stream.iter_array(X):
-    ...     HC = HC.learn_one(x)
+    ...     hierarchical_clustering = hierarchical_clustering.learn_one(x)
 
-    >>> HC.x_clusters
+    >>> hierarchical_clustering.x_clusters
     {'[20.  20.  20.1]': 2, '[0 1 1]': 1}
 
-    >>> HC.n
+    >>> hierarchical_clustering.n
     3
 
-    >>> print(HC)
+    >>> print(hierarchical_clustering)
         -> 2
     -> 3
         -> 1
