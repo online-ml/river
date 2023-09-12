@@ -288,4 +288,5 @@ class BernoulliNB(base.BaseNB):
             X @ (flp - neg_p).T + (np.log(self.p_class_many()) + neg_p.sum(axis=1).T).values,
             index=index,
             columns=self.class_counts.keys(),
+            dtype=float,
         )
