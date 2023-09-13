@@ -150,7 +150,10 @@ class HierarchicalClustering(base.Clusterer):
         # First node of the tree
         self.root = None
         # Distance function
-        self.distance = distance_func if distance_func is not None else euclidean_distance
+        if distance_func is not None:
+            self.distance = distance_func
+        else:
+            self.distance = euclidean_distance
 
     def otd_clustering(self, tree, x):
         # Online top down clustering (OTD), the first algorithm for online hierarchical clustering.
