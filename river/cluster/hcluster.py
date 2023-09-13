@@ -39,7 +39,7 @@ class HierarchicalClustering(base.Clusterer):
     window_size
         number of data points to use
     dist_func
-        distance function to use to compare the nodes
+        A distance function to use to compare the nodes. The Minkowski distance with `p=2` is used as default.
 
     Attributes
     ----------
