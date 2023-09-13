@@ -1,10 +1,11 @@
 from __future__ import annotations
 
-from collections.abc import Callable
-
+import functools
+import math
 import numpy as np
 
 from river import base, utils
+from river.neighbors.base import DistanceFunc
 
 
 # Node of a binary tree for Hierarchical Clustering
@@ -137,7 +138,7 @@ class HierarchicalClustering(base.Clusterer):
     def __init__(
         self,
         window_size: int = 100,
-        distance_func: Callable[[BinaryTreeNode, BinaryTreeNode], float] = None,
+        distance_func: DistanceFunc = functools.partial(utils.math.minkowski_distance, p=2),
     ):
         # Number of nodes
         self.n = 0
@@ -150,10 +151,7 @@ class HierarchicalClustering(base.Clusterer):
         # First node of the tree
         self.root = None
         # Distance function
-        if distance_func is not None:
-            self.distance = distance_func
-        else:
-            self.distance = euclidean_distance
+        self.distance = distance_func
 
     def otd_clustering(self, tree, x):
         # Online top down clustering (OTD), the first algorithm for online hierarchical clustering.
@@ -347,7 +345,7 @@ class HierarchicalClustering(base.Clusterer):
         for i, w_i in enumerate(leaves_a):
             for j, w_j in enumerate(leaves_b):
                 nb += 1
-                r += self.distance(w_i, w_j)
+                r += self.distance(utils.numpy2dict(w_i.data), utils.numpy2dict(w_j.data))
         return r / nb
 
     def intra_subtree_similarity(self, tree):
@@ -361,7 +359,7 @@ class HierarchicalClustering(base.Clusterer):
             for j, w_j in enumerate(leaves):
                 if i < j:
                     nb += 1
-                    r += self.distance(w_i, w_j)
+                    r += self.distance(utils.numpy2dict(w_i.data), utils.numpy2dict(w_j.data))
         return r / nb
 
     def __str__(self):
