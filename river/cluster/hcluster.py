@@ -19,11 +19,6 @@ class BinaryTreeNode:
         self.parent = None
 
 
-def euclidean_distance(w_i, w_j):
-    # Euclidean distance between two nodes
-    return np.linalg.norm(w_i.data - w_j.data)
-
-
 class HierarchicalClustering(base.Clusterer):
     """Hierarchical Clustering.
 
