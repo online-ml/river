@@ -30,14 +30,14 @@ class HierarchicalClustering(base.Clusterer):
     near the nodes it is similar to without breaking clusters of very similar nodes.
 
     Beginning with the whole tree `T`, it will compare the new node to this respective tree:
-        * If `T` is just a leaf : merge
-        * else if the nodes of T are more similar between them than with the new node: merge
-        * else if the new node is more similar to the left subtree than to the right subtree:
-          redo from the first point with T = left subtree
-        * else (the new node is more similar to the right subtree than to the left subtree):
-          redo from the first point with T = right subtree
+        * If `T` is just a leaf: merge
+        * Else, if the nodes of `T` are more similar between them than with the new node: merge
+        * Else, if the new node is more similar to the left subtree than to the right subtree:
+          redo from the first point with `T` equal to left subtree
+        * Else, if the new node is more similar to the right subtree than to the left subtree:
+          redo from the first point with `T` right subtree
 
-    A certain window size can be chosen to use only the most recent points to make sure that the tree is not overloaded.
+    A window size can also be chosen to use only the most recent points to make sure that the tree is not overloaded.
 
     Parameters
     ----------
