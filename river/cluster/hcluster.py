@@ -279,7 +279,8 @@ class HierarchicalClustering(base.Clusterer):
         r.reverse()
         return r, merged
 
-    def find_path(self, root, path, k):
+    @staticmethod
+    def find_path(root, path, k):
         # find the path from root to k
         # Adapted from https://www.geeksforgeeks.org/lowest-common-ancestor-binary-tree-set-1/
 
@@ -291,8 +292,8 @@ class HierarchicalClustering(base.Clusterer):
         if root.key == k:
             return True
 
-        if (root.left is not None and self.find_path(root.left, path, k)) or (
-            root.right is not None and self.find_path(root.right, path, k)
+        if (root.left is not None and HierarchicalClustering.find_path(root.left, path, k)) or (
+            root.right is not None and HierarchicalClustering.find_path(root.right, path, k)
         ):
             return True
 
@@ -309,7 +310,9 @@ class HierarchicalClustering(base.Clusterer):
         path_i = []
         path_j = []
 
-        if not self.find_path(self.root, path_i, i) or not self.find_path(self.root, path_j, j):
+        if not HierarchicalClustering.find_path(
+            self.root, path_i, i
+        ) or not HierarchicalClustering.find_path(self.root, path_j, j):
             return -1
 
         k = 0
