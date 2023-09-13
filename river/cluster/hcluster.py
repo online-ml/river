@@ -365,13 +365,14 @@ class HierarchicalClustering(base.Clusterer):
         self.print_tree(self.root)
         return "Printed Hierarchical Clustering Tree."
 
-    def print_tree(self, node, level=0):
+    @staticmethod
+    def print_tree(node, level=0):
         # Print node and its children
         # Adapted from https://stackoverflow.com/questions/34012886/print-binary-tree-level-by-level-in-python
         if node is not None:
-            self.print_tree(node.right, level + 1)
+            HierarchicalClustering.print_tree(node.right, level + 1)
             print(" " * 4 * level + "-> " + str(node.key))
-            self.print_tree(node.left, level + 1)
+            HierarchicalClustering.print_tree(node.left, level + 1)
 
     def get_parents(self, node):
         # Get all the parents of the node (the clusters it belongs to)
