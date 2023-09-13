@@ -1,11 +1,10 @@
 from __future__ import annotations
 
 import functools
-import math
 import numpy as np
 
 from river import base, utils
-from river.neighbors.base import DistanceFunc
+from river.neighbors.base import DistanceFunc, FunctionWrapper
 
 
 # Node of a binary tree for Hierarchical Clustering
@@ -39,7 +38,7 @@ class HierarchicalClustering(base.Clusterer):
     ----------
     window_size
         number of data points to use
-    distance_func
+    dist_func
         distance function to use to compare the nodes
 
     Attributes
@@ -133,7 +132,7 @@ class HierarchicalClustering(base.Clusterer):
     def __init__(
         self,
         window_size: int = 100,
-        distance_func: DistanceFunc = functools.partial(utils.math.minkowski_distance, p=2),
+        dist_func: DistanceFunc | FunctionWrapper | None = None,
     ):
         # Number of nodes
         self.n = 0
@@ -146,7 +145,9 @@ class HierarchicalClustering(base.Clusterer):
         # First node of the tree
         self.root = None
         # Distance function
-        self.distance = distance_func
+        if dist_func is None:
+            dist_func = functools.partial(utils.math.minkowski_distance, p=2)
+        self.dist_func = dist_func
 
     def otd_clustering(self, tree, x):
         # Online top down clustering (OTD), the first algorithm for online hierarchical clustering.
@@ -340,7 +341,7 @@ class HierarchicalClustering(base.Clusterer):
         for i, w_i in enumerate(leaves_a):
             for j, w_j in enumerate(leaves_b):
                 nb += 1
-                r += self.distance(utils.numpy2dict(w_i.data), utils.numpy2dict(w_j.data))
+                r += self.dist_func(utils.numpy2dict(w_i.data), utils.numpy2dict(w_j.data))
         return r / nb
 
     def intra_subtree_similarity(self, tree):
@@ -354,7 +355,7 @@ class HierarchicalClustering(base.Clusterer):
             for j, w_j in enumerate(leaves):
                 if i < j:
                     nb += 1
-                    r += self.distance(utils.numpy2dict(w_i.data), utils.numpy2dict(w_j.data))
+                    r += self.dist_func(utils.numpy2dict(w_i.data), utils.numpy2dict(w_j.data))
         return r / nb
 
     def __str__(self):
