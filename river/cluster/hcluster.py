@@ -297,28 +297,6 @@ class HierarchicalClustering(base.Clusterer):
         path.pop()
         return False
 
-    def lca(self, i, j):
-        # Find the least common ancestor
-        # Adapted from https://www.geeksforgeeks.org/lowest-common-ancestor-binary-tree-set-1/
-
-        if self.root is None:
-            return -1
-
-        path_i = []
-        path_j = []
-
-        if not HierarchicalClustering.find_path(
-            self.root, path_i, i
-        ) or not HierarchicalClustering.find_path(self.root, path_j, j):
-            return -1
-
-        k = 0
-        while k < len(path_i) and k < len(path_j):
-            if path_i[k] != path_j[k]:
-                break
-            k += 1
-        return path_i[k - 1]
-
     def leaves(self, v):
         # find all the leaves from node v
 
