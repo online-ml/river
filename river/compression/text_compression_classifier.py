@@ -20,8 +20,10 @@ class TextCompressionClassifier(base.Classifier):
         self.label_documents[y] = self.label_documents.get(y, "") + x_str
 
         # Compress new document
-        zstd_compressor = zstandard.ZstdCompressor(level=self.compression_level).compress(x_str.encode("utf-8"))
-            
+        zstd_compressor = zstandard.ZstdCompressor(level=self.compression_level).compress(
+            x_str.encode("utf-8")
+        )
+
         # Create a dictionary using the compressed document
         if y not in self.compression_contexts:
             data_source = zstd_compressor
@@ -44,7 +46,9 @@ class TextCompressionClassifier(base.Classifier):
         for label, compressor in self.compression_contexts.items():
             # Concatenate and compress
             concatenated_doc = (self.label_documents[label] + x_str).encode("utf-8")
-            new_compressed_size = len(zstandard.ZstdCompressor(level=self.compression_level).compress(concatenated_doc))
+            new_compressed_size = len(
+                zstandard.ZstdCompressor(level=self.compression_level).compress(concatenated_doc)
+            )
 
             # Calculate size increase (you can define your own metric here)
             size_increase = new_compressed_size - len(compressor.as_bytes())
