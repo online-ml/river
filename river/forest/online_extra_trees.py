@@ -3,7 +3,6 @@ from __future__ import annotations
 import abc
 import collections
 import math
-import numbers
 import random
 import sys
 
@@ -221,7 +220,7 @@ class ExtraTrees(base.Ensemble, metaclass=abc.ABCMeta):
     def _detection_mode_all(
         drift_detector: base.DriftDetector,
         warning_detector: base.DriftDetector,
-        detector_input: numbers.Number,
+        detector_input: int | float,
     ) -> tuple[bool, bool]:
         in_warning = warning_detector.update(detector_input).drift_detected
         in_drift = drift_detector.update(detector_input).drift_detected
@@ -232,7 +231,7 @@ class ExtraTrees(base.Ensemble, metaclass=abc.ABCMeta):
     def _detection_mode_drop(
         drift_detector: base.DriftDetector,
         warning_detector: base.DriftDetector,
-        detector_input: numbers.Number,
+        detector_input: int | float,
     ) -> tuple[bool, bool]:
         in_drift = drift_detector.update(detector_input).drift_detected
 
@@ -242,7 +241,7 @@ class ExtraTrees(base.Ensemble, metaclass=abc.ABCMeta):
     def _detection_mode_off(
         drift_detector: base.DriftDetector,
         warning_detector: base.DriftDetector,
-        detector_input: numbers.Number,
+        detector_input: int | float,
     ) -> tuple[bool, bool]:
         return False, False
 

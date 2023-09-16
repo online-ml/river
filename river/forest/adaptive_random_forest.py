@@ -11,7 +11,6 @@ import numpy as np
 
 from river import base, metrics, stats
 from river.drift import ADWIN
-from river.tree.hoeffding_tree import HoeffdingTree
 from river.tree.hoeffding_tree_classifier import HoeffdingTreeClassifier
 from river.tree.hoeffding_tree_regressor import HoeffdingTreeRegressor
 from river.tree.nodes.arf_htc_nodes import (
@@ -53,19 +52,19 @@ class BaseForest(base.Ensemble):
 
         # Internal parameters
         self._n_samples_seen = 0
-        self._warning_detectors: list[base.DriftDetector] | None = (
-            None
+        self._warning_detectors: list[base.DriftDetector] = (
+            None  # type: ignore
             if self.warning_detector is None
             else [self.warning_detector.clone() for _ in range(self.n_models)]
         )
-        self._drift_detectors: list[base.DriftDetector] | None = (
-            None
+        self._drift_detectors: list[base.DriftDetector] = (
+            None  # type: ignore
             if self.drift_detector is None
             else [self.drift_detector.clone() for _ in range(self.n_models)]
         )
 
-        self._background: list[HoeffdingTree] | None = (
-            None if self.warning_detector is None else [None] * self.n_models
+        self._background: list[BaseTreeClassifier | BaseTreeRegressor | None] = (
+            None if self.warning_detector is None else [None] * self.n_models  # type: ignore
         )
         self._metrics = [self.metric.clone() for _ in range(self.n_models)]
 
@@ -80,18 +79,12 @@ class BaseForest(base.Ensemble):
     def _unit_test_skips(self):
         return {"check_shuffle_features_no_impact"}
 
-    def _get_prediction(self, model, x):
-        if isinstance(self, base.Classifier):
-            return model.predict_proba_one(x)
-
-        return model.predict_one(x)
-
     @abc.abstractmethod
     def _drift_detector_input(
         self,
         tree_id: int,
-        y_true: base.typing.ClfTarget | base.typing.RegTarget,
-        y_pred: base.typing.ClfTarget | base.typing.RegTarget,
+        y_true,
+        y_pred,
     ) -> int | float:
         raise NotImplementedError
 
@@ -107,7 +100,7 @@ class BaseForest(base.Ensemble):
 
         for i, model in enumerate(self):
             # Get prediction for instance
-            y_pred = self._get_prediction(model, x)
+            y_pred = model.predict_one(x)
 
             drift_input = None
             if self.warning_detector is not None:
@@ -115,12 +108,16 @@ class BaseForest(base.Ensemble):
                 self._warning_detectors[i].update(drift_input)
 
                 if self._warning_detectors[i].drift_detected:
-                    self._background[i] = self._new_base_model()
+                    self._background[i] = self._new_base_model()  # type: ignore
                     # Reset the warning detector for the current object
                     self._warning_detectors[i] = self.warning_detector.clone()
 
             if self.drift_detector is not None:
-                drift_input = self._drift_detector_input(i, y, y_pred)
+                drift_input = (
+                    drift_input
+                    if drift_input is not None
+                    else self._drift_detector_input(i, y, y_pred)
+                )
                 self._drift_detectors[i].update(drift_input)
 
                 if self._drift_detectors[i].drift_detected:
@@ -129,9 +126,11 @@ class BaseForest(base.Ensemble):
                         self._background[i] = None
                         self._warning_detectors[i] = self.warning_detector.clone()
                         self._drift_detectors[i] = self.drift_detector.clone()
+                        self._metrics[i] = self.metric.clone()
                     else:
                         self.data[i] = self._new_base_model()
                         self._drift_detectors[i] = self.drift_detector.clone()
+                        self._metrics[i] = self.metric.clone()
 
             # Update performance evaluator
             self._metrics[i].update(y_true=y, y_pred=y_pred)
@@ -139,7 +138,7 @@ class BaseForest(base.Ensemble):
             k = poisson(rate=self.lambda_value, rng=self._rng)
             if k > 0:
                 if self.warning_detector is not None and self._background[i] is not None:
-                    self._background[i].learn_one(x=x, y=y, sample_weight=k)
+                    self._background[i].learn_one(x=x, y=y, sample_weight=k)  # type: ignore
 
                 model.learn_one(x=x, y=y, sample_weight=k)
 
@@ -148,10 +147,6 @@ class BaseForest(base.Ensemble):
     def _init_ensemble(self, features: list):
         self._set_max_features(len(features))
         self.data = [self._new_base_model() for _ in range(self.n_models)]
-
-    @abc.abstractmethod
-    def _new_base_model(self):
-        raise NotImplementedError
 
     def _set_max_features(self, n_features):
         if self.max_features == "sqrt":
@@ -632,10 +627,7 @@ class ARFClassifier(BaseForest, base.Classifier):
         )
 
     def _drift_detector_input(
-        self,
-        tree_id: int,
-        y_true: base.typing.ClfTarget | base.typing.RegTarget,
-        y_pred: base.typing.ClfTarget | base.typing.RegTarget,
+        self, tree_id: int, y_true: base.typing.ClfTarget, y_pred: base.typing.ClfTarget
     ) -> int | float:
         return int(not y_true == y_pred)
 
@@ -659,7 +651,7 @@ class ARFRegressor(BaseForest, base.Regressor):
     predictions and check for concept drifts. The deviations of the predictions
     to the target are monitored and normalized in the [0, 1] range to fulfill ADWIN's
     requirements. We assume that the data subjected to the normalization follows
-    a normal distribution, and thus, lies within the interval of the mean $\pm3\sigma$.
+    a normal distribution, and thus, lies within the interval of the mean $\\pm3\\sigma$.
 
     Parameters
     ----------
@@ -926,8 +918,8 @@ class ARFRegressor(BaseForest, base.Regressor):
     def _drift_detector_input(
         self,
         tree_id: int,
-        y_true: base.typing.ClfTarget | base.typing.RegTarget,
-        y_pred: base.typing.ClfTarget | base.typing.RegTarget,
+        y_true: int | float,
+        y_pred: int | float,
     ) -> int | float:
         drift_input = y_true - y_pred
         self._drift_norm[tree_id].update(drift_input)
