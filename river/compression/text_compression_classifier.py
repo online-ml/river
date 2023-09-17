@@ -17,22 +17,18 @@ class TextCompressionClassifier(base.Classifier):
         x_str = str(x)
 
         # Concatenate the new example to the existing document for this label
-        self.label_documents[y] = self.label_documents.get(y, "") + x_str
+        self.label_documents[y] = self.label_documents.get(y, "") + " " + x_str
 
-        # Compress new document
-        zstd_compressor = zstandard.ZstdCompressor(level=self.compression_level).compress(
-            x_str.encode("utf-8")
+        # Create a dictionary with encoded concatenated text
+        compression_dict = zstandard.ZstdCompressionDict(self.label_documents[y].encode("utf-8"))
+
+        # Create a Zstandard compression context for this label using the dictionary
+        zstd_compressor = zstandard.ZstdCompressor(
+            level=self.compression_level, dict_data=compression_dict
         )
 
-        # Create a dictionary using the compressed document
-        if y not in self.compression_contexts:
-            data_source = zstd_compressor
-        else:
-            data_source = self.compression_contexts[y].as_bytes() + zstd_compressor
-        zstd_dict = zstandard.ZstdCompressionDict(data_source)
-
-        # Update the compression context for this label with the new dictionary
-        self.compression_contexts[y] = zstd_dict
+        # Update the compression context for this label with the new compressor
+        self.compression_contexts[y] = zstd_compressor
 
         return self
 
@@ -45,13 +41,13 @@ class TextCompressionClassifier(base.Classifier):
 
         for label, compressor in self.compression_contexts.items():
             # Concatenate and compress
-            concatenated_doc = (self.label_documents[label] + x_str).encode("utf-8")
-            new_compressed_size = len(
-                zstandard.ZstdCompressor(level=self.compression_level).compress(concatenated_doc)
-            )
+            concatenated_doc = (self.label_documents[label] + " " + x_str).encode("utf-8")
+            compressed_size = len(compressor.compress(concatenated_doc))
 
             # Calculate size increase (you can define your own metric here)
-            size_increase = new_compressed_size - len(compressor.as_bytes())
+            size_increase = compressed_size - len(
+                compressor.compress(self.label_documents[label].encode("utf-8"))
+            )
 
             if size_increase < min_size_increase:
                 min_size_increase = size_increase
