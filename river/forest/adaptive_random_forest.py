@@ -63,10 +63,23 @@ class BaseForest(base.Ensemble):
             else [self.drift_detector.clone() for _ in range(self.n_models)]
         )
 
+        # The background models
         self._background: list[BaseTreeClassifier | BaseTreeRegressor | None] = (
             None if self.warning_detector is None else [None] * self.n_models  # type: ignore
         )
+
+        # Performance metrics used for weighted voting/aggregation
         self._metrics = [self.metric.clone() for _ in range(self.n_models)]
+
+        # Drift and warning logging
+        self._warning_tracker: dict = (
+            collections.defaultdict(int) if self.warning_detector is not None else None  # type: ignore
+        )
+        self._drift_tracker: dict = (
+            collections.defaultdict(int) if self.drift_detector is not None else None  # type: ignore
+        )
+
+        self._aux = 0
 
     @property
     def _min_number_of_models(self):
@@ -91,6 +104,58 @@ class BaseForest(base.Ensemble):
     @abc.abstractmethod
     def _new_base_model(self) -> BaseTreeClassifier | BaseTreeRegressor:
         raise NotImplementedError
+
+    def n_warnings_detected(self, tree_id: int | None = None) -> int | None:
+        """ "Get the total number of concept drift warnings detected, or the number on an individual
+        tree basis (optionally).
+
+        If warning detection is disabled, will return `None`.
+
+        Parameters
+        ----------
+        tree_id
+            The number of the base learner in the ensemble: `[0, self.n_models - 1]. If `None`,
+            the total number of warnings is returned instead.
+
+        Returns
+        -------
+            The number of concept drift warnings detected.
+
+        """
+
+        if self.warning_detector is None:
+            return None
+
+        if tree_id is None:
+            return sum(self._warning_tracker.values())
+
+        return self._warning_tracker[tree_id]
+
+    def n_drifts_detected(self, tree_id: int | None = None) -> int | None:
+        """ "Get the total number of concept drifts detected, or such number on an individual
+        tree basis (optionally).
+
+        If drift detection is disabled, will return `None`.
+
+        Parameters
+        ----------
+        tree_id
+            The number of the base learner in the ensemble: `[0, self.n_models - 1]. If `None`,
+            the total number of warnings is returned instead.
+
+        Returns
+        -------
+            The number of concept drifts detected.
+
+        """
+
+        if self.drift_detector is None:
+            return None
+
+        if tree_id is None:
+            return sum(self._drift_tracker.values())
+
+        return self._drift_tracker[tree_id]
 
     def learn_one(self, x: dict, y: base.typing.Target, **kwargs):
         self._n_samples_seen += 1
@@ -127,6 +192,11 @@ class BaseForest(base.Ensemble):
                         # Reset the warning detector for the current object
                         self._warning_detectors[i] = self.warning_detector.clone()
 
+                        # Update warning tracker
+                        self._warning_tracker[i] += 1
+
+                        self._aux += 1
+
                 if self.drift_detector is not None:
                     drift_input = (
                         drift_input
@@ -146,6 +216,9 @@ class BaseForest(base.Ensemble):
                             self.data[i] = self._new_base_model()
                             self._drift_detectors[i] = self.drift_detector.clone()
                             self._metrics[i] = self.metric.clone()
+
+                        # Update warning tracker
+                        self._drift_tracker[i] += 1
 
         return self
 
@@ -505,7 +578,19 @@ class ARFClassifier(BaseForest, base.Classifier):
     >>> metric = metrics.Accuracy()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    Accuracy: 71.07%
+    Accuracy: 71.17%
+
+    # The total number of warnings and drifts detected, respectively
+    >>> model.n_warnings_detected(), model.n_drifts_detected()
+    (2, 1)
+
+    # The number of warnings detected by tree number 2
+    >>> model.n_warnings_detected(2)
+    1
+
+    # And the corresponding number of actual concept drift detected
+    >>> model.n_drifts_detected(2)
+    1
 
     References
     ----------
@@ -777,7 +862,7 @@ class ARFRegressor(BaseForest, base.Regressor):
     >>> metric = metrics.MAE()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    MAE: 0.800378
+    MAE: 0.788619
 
     """
 
