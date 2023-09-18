@@ -99,41 +99,16 @@ class BaseForest(base.Ensemble):
             self._init_ensemble(sorted(x.keys()))
 
         for i, model in enumerate(self):
-            # Get prediction for instance
             y_pred = model.predict_one(x)
 
-            drift_input = None
-            if self.warning_detector is not None:
-                drift_input = self._drift_detector_input(i, y, y_pred)
-                self._warning_detectors[i].update(drift_input)
-
-                if self._warning_detectors[i].drift_detected:
-                    self._background[i] = self._new_base_model()  # type: ignore
-                    # Reset the warning detector for the current object
-                    self._warning_detectors[i] = self.warning_detector.clone()
-
-            if self.drift_detector is not None:
-                drift_input = (
-                    drift_input
-                    if drift_input is not None
-                    else self._drift_detector_input(i, y, y_pred)
-                )
-                self._drift_detectors[i].update(drift_input)
-
-                if self._drift_detectors[i].drift_detected:
-                    if self.warning_detector is not None and self._background[i] is not None:
-                        self.data[i] = self._background[i]
-                        self._background[i] = None
-                        self._warning_detectors[i] = self.warning_detector.clone()
-                        self._drift_detectors[i] = self.drift_detector.clone()
-                        self._metrics[i] = self.metric.clone()
-                    else:
-                        self.data[i] = self._new_base_model()
-                        self._drift_detectors[i] = self.drift_detector.clone()
-                        self._metrics[i] = self.metric.clone()
-
             # Update performance evaluator
-            self._metrics[i].update(y_true=y, y_pred=y_pred)
+            self._metrics[i].update(
+                y_true=y,
+                y_pred=model.predict_proba_one(x)
+                if isinstance(self.metric, metrics.base.ClassificationMetric)
+                and not self.metric.requires_labels
+                else y_pred,
+            )
 
             k = poisson(rate=self.lambda_value, rng=self._rng)
             if k > 0:
@@ -141,6 +116,36 @@ class BaseForest(base.Ensemble):
                     self._background[i].learn_one(x=x, y=y, sample_weight=k)  # type: ignore
 
                 model.learn_one(x=x, y=y, sample_weight=k)
+
+                drift_input = None
+                if self.drift_detector is not None and self.warning_detector is not None:
+                    drift_input = self._drift_detector_input(i, y, y_pred)
+                    self._warning_detectors[i].update(drift_input)
+
+                    if self._warning_detectors[i].drift_detected:
+                        self._background[i] = self._new_base_model()  # type: ignore
+                        # Reset the warning detector for the current object
+                        self._warning_detectors[i] = self.warning_detector.clone()
+
+                if self.drift_detector is not None:
+                    drift_input = (
+                        drift_input
+                        if drift_input is not None
+                        else self._drift_detector_input(i, y, y_pred)
+                    )
+                    self._drift_detectors[i].update(drift_input)
+
+                    if self._drift_detectors[i].drift_detected:
+                        if self.warning_detector is not None and self._background[i] is not None:
+                            self.data[i] = self._background[i]
+                            self._background[i] = None
+                            self._warning_detectors[i] = self.warning_detector.clone()
+                            self._drift_detectors[i] = self.drift_detector.clone()
+                            self._metrics[i] = self.metric.clone()
+                        else:
+                            self.data[i] = self._new_base_model()
+                            self._drift_detectors[i] = self.drift_detector.clone()
+                            self._metrics[i] = self.metric.clone()
 
         return self
 
