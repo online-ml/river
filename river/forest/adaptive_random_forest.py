@@ -50,8 +50,6 @@ class BaseForest(base.Ensemble):
 
         self._rng = random.Random(self.seed)
 
-        # Internal parameters
-        self._n_samples_seen = 0
         self._warning_detectors: list[base.DriftDetector] = (
             None  # type: ignore
             if self.warning_detector is None
@@ -156,8 +154,6 @@ class BaseForest(base.Ensemble):
         return self._drift_tracker[tree_id]
 
     def learn_one(self, x: dict, y: base.typing.Target, **kwargs):
-        self._n_samples_seen += 1
-
         if len(self) == 0:
             self._init_ensemble(sorted(x.keys()))
 
