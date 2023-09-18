@@ -79,8 +79,6 @@ class BaseForest(base.Ensemble):
             collections.defaultdict(int) if self.drift_detector is not None else None  # type: ignore
         )
 
-        self._aux = 0
-
     @property
     def _min_number_of_models(self):
         return 0
@@ -194,8 +192,6 @@ class BaseForest(base.Ensemble):
 
                         # Update warning tracker
                         self._warning_tracker[i] += 1
-
-                        self._aux += 1
 
                 if self.drift_detector is not None:
                     drift_input = (
