@@ -22,7 +22,7 @@
       
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.5.2, mkdocs-material-9.3.1">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.3.1">
     
     
       
@@ -3559,12 +3559,51 @@
 
 <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">metric</span><span class="p">)</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>Accuracy: 71.07%
+<div class="language-text highlight"><pre><span></span><code>Accuracy: 71.17%
+</code></pre></div></p>
+<p>The total number of warnings and drifts detected, respectively
+<div class="language-python highlight"><pre><span></span><code><span class="n">model</span><span class="o">.</span><span class="n">n_warnings_detected</span><span class="p">(),</span> <span class="n">model</span><span class="o">.</span><span class="n">n_drifts_detected</span><span class="p">()</span>
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>(2, 1)
+</code></pre></div></p>
+<p>The number of warnings detected by tree number 2
+<div class="language-python highlight"><pre><span></span><code><span class="n">model</span><span class="o">.</span><span class="n">n_warnings_detected</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>1
+</code></pre></div></p>
+<p>And the corresponding number of actual concept drift detected
+<div class="language-python highlight"><pre><span></span><code><span class="n">model</span><span class="o">.</span><span class="n">n_drifts_detected</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>1
 </code></pre></div></p>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <details class="- abstract">
 <summary>learn_one</summary>
 </details>
+<details class="- abstract">
+<summary>n_drifts_detected</summary>
+<p>Get the total number of concept drifts detected, or such number on an individual tree basis (optionally).</p>
+<p>If drift detection is disabled, will return <code>None</code>.</p>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><strong>tree_id</strong>     — <em>'int | None'</em>     — defaults to <code>None</code>    </li>
+</ul>
+<p><strong>Returns</strong></p>
+<p><em>int | None</em>:     The number of concept drifts detected.</p>
+</details>
+<p><span /></p>
+<details class="- abstract">
+<summary>n_warnings_detected</summary>
+<p>Get the total number of concept drift warnings detected, or the number on an individual tree basis (optionally).</p>
+<p>If warning detection is disabled, will return <code>None</code>.</p>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><strong>tree_id</strong>     — <em>'int | None'</em>     — defaults to <code>None</code>    </li>
+</ul>
+<p><strong>Returns</strong></p>
+<p><em>int | None</em>:     The number of concept drift warnings detected.</p>
+</details>
+<p><span /></p>
 <details class="- abstract">
 <summary>predict_one</summary>
 <p>Predict the label of a set of features <code>x</code>.</p>
