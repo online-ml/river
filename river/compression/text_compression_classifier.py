@@ -33,6 +33,19 @@ class TextCompressionClassifier(base.Classifier):
         return self
 
     def predict_one(self, x):
+        """Predict the output label for the input `x`.
+
+        Parameters
+        ----------
+        x : any type that can be converted to string
+            The input to be classified.
+
+        Returns
+        -------
+        best_label: string
+            The label corresponding to the smallest increase in compressed size after
+            adding the new data `x`.
+        """
         min_size_increase = float("inf")
         best_label = None
 
@@ -54,6 +67,3 @@ class TextCompressionClassifier(base.Classifier):
                 best_label = label
 
         return best_label
-
-    def test(self, arg):
-        print("estou na classe !! ", arg)
