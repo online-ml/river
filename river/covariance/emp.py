@@ -108,6 +108,22 @@ class EmpiricalCovariance(SymmetricMatrix):
     >>> cov["blue", "blue"]
     Var: 0.076119
 
+    Start from a state:
+    >>> n = 8
+    >>> mean = {'red': 0.416, 'green': 0.387, 'blue': 0.518}
+    >>> cov_ = {('red', 'red'): 0.079,
+    ...     ('red', 'green'): -0.053,
+    ...     ('red', 'blue'): -0.010,
+    ...     ('green', 'green'): 0.113,
+    ...     ('green', 'blue'): 0.020,
+    ...     ('blue', 'blue'): 0.076}
+    >>> cov = covariance.EmpiricalCovariance._from_state(
+    ...    n=n, mean=mean, cov=cov_, ddof=1)
+    >>> cov
+            blue     green    red
+     blue    0.076    0.020   -0.010
+    green    0.020    0.113   -0.053
+      red   -0.010   -0.053    0.079
     """
 
     def __init__(self, ddof=1):
@@ -178,35 +194,63 @@ class EmpiricalCovariance(SymmetricMatrix):
         mean_arr = X_arr.mean(axis=0)
         cov_arr = np.cov(X_arr.T, ddof=self.ddof)
 
+        n = len(X)
         mean = dict(zip(X.columns, mean_arr))
         cov = {
             (i, j): cov_arr[r, c]
             for (r, i), (c, j) in itertools.combinations_with_replacement(enumerate(X.columns), r=2)
         }
 
-        for i, j in itertools.combinations(sorted(X.columns), r=2):
+        self = self._from_state(n=n, mean=mean, cov=cov, ddof=self.ddof)
+
+        return self
+
+    @classmethod
+    def _from_state(cls, n: int, mean: dict, cov: dict, *, ddof=1):
+        """Create a new instance from state information.
+
+        Parameters
+        ----------
+        cls
+            The class type.
+        n
+            The number of data points.
+        mean
+            A dictionary of variable means.
+        cov
+            A dictionary of covariance or variance values.
+        ddof
+            Degrees of freedom for covariance calculation. Defaults to 1.
+
+        Returns
+        ----------
+            cls: A new instance of the class with updated covariance matrix.
+
+        Raises
+        ----------
+            KeyError: If an element in `mean` or `cov` is missing.
+        """
+        new = cls(ddof=ddof)
+        for i, j in itertools.combinations(mean.keys(), r=2):
             try:
-                self[i, j]
+                new[i, j]
             except KeyError:
-                self._cov[i, j] = stats.Cov(self.ddof)
-            self._cov[i, j] += stats.Cov._from_state(
-                n=len(X),
+                new._cov[i, j] = stats.Cov(new.ddof)
+            new._cov[i, j] += stats.Cov._from_state(
+                n=n,
                 mean_x=mean[i],
                 mean_y=mean[j],
                 cov=cov.get((i, j), cov.get((j, i))),
-                ddof=self.ddof,
+                ddof=new.ddof,
             )
 
-        for i in X.columns:
+        for i in mean.keys():
             try:
-                self[i, i]
+                new[i, i]
             except KeyError:
-                self._cov[i, i] = stats.Var(self.ddof)
-            self._cov[i, i] += stats.Var._from_state(
-                n=len(X), m=mean[i], sig=cov[i, i], ddof=self.ddof
-            )
-
-        return self
+                new._cov[i, i] = stats.Var(new.ddof)
+            new._cov[i, i] += stats.Var._from_state(n=n, m=mean[i], sig=cov[i, i], ddof=new.ddof)
+        return new
 
 
 class EmpiricalPrecision(SymmetricMatrix):
