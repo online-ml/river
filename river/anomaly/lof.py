@@ -346,6 +346,7 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
             return 0.5
 
         x_list_copy = self.x_list.copy()
+        import copy
         (
             nm,
             x_list_copy,
@@ -359,13 +360,13 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
         ) = expand_objects(
             self.x_scores,
             x_list_copy,
-            self.neighborhoods,
-            self.rev_neighborhoods,
-            self.k_dist,
-            self.reach_dist,
-            self.dist_dict,
-            self.local_reach,
-            self.lof,
+            self.neighborhoods.copy(),
+            self.rev_neighborhoods.copy(),
+            self.k_dist.copy(),
+            copy.deepcopy(self.reach_dist),
+            copy.deepcopy(self.dist_dict),
+            self.local_reach.copy(),
+            self.lof.copy(),
         )
 
         neighborhoods, rev_neighborhoods, k_dist, dist_dict = self._initial_calculations(
