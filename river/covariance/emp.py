@@ -109,15 +109,15 @@ class EmpiricalCovariance(SymmetricMatrix):
     Var: 0.076119
 
     Start from a state:
-    n = 8
-    mean = {'red': 0.416, 'green': 0.387, 'blue': 0.518}
-    cov_ = {('red', 'red'): 0.079,
+    >>> n = 8
+    >>> mean = {'red': 0.416, 'green': 0.387, 'blue': 0.518}
+    >>> cov_ = {('red', 'red'): 0.079,
     ...     ('red', 'green'): -0.053,
     ...     ('red', 'blue'): -0.010,
     ...     ('green', 'green'): 0.113,
     ...     ('green', 'blue'): 0.020,
     ...     ('blue', 'blue'): 0.076}
-    cov = covariance.EmpiricalCovariance._from_state(
+    >>> cov = covariance.EmpiricalCovariance._from_state(
     ...    n=n, mean=mean, cov=cov_, ddof=1)
     >>> cov
             blue     green    red
@@ -211,15 +211,15 @@ class EmpiricalCovariance(SymmetricMatrix):
 
         Parameters
         ----------
-        cls (type)
+        cls
             The class type.
-        n (int)
+        n
             The number of data points.
-        mean (dict)
+        mean
             A dictionary of variable means.
-        cov (dict)
+        cov
             A dictionary of covariance or variance values.
-        ddof (int, optional)
+        ddof
             Degrees of freedom for covariance calculation. Defaults to 1.
 
         Returns
@@ -231,7 +231,7 @@ class EmpiricalCovariance(SymmetricMatrix):
             KeyError: If an element in `mean` or `cov` is missing.
         """
         new = cls(ddof=ddof)
-        for i, j in itertools.combinations(sorted(mean.keys()), r=2):
+        for i, j in itertools.combinations(mean.keys(), r=2):
             try:
                 new[i, j]
             except KeyError:
@@ -244,7 +244,7 @@ class EmpiricalCovariance(SymmetricMatrix):
                 ddof=new.ddof,
             )
 
-        for i in sorted(mean.keys()):
+        for i in mean.keys():
             try:
                 new[i, i]
             except KeyError:

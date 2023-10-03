@@ -215,8 +215,8 @@ class MultivariateGaussian(base.MultivariateContinuousDistribution):
         self._var = covariance.EmpiricalCovariance(ddof=1)
 
     @classmethod
-    def _from_state(cls, n, mean, cov, ddof):
-        new = cls()
+    def _from_state(cls, n, mean, cov, ddof, seed=None):
+        new = cls(seed)
         new._var = covariance.EmpiricalCovariance._from_state(n, mean, cov, ddof=ddof)
         return new
 

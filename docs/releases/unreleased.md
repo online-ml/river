@@ -12,8 +12,8 @@ River's mini-batch methods now support pandas v2. In particular, River conforms 
 
 ## covariance
 
-- Added `_from_state` method to `covariance.EmpiricalCovariance` to warm start from previous knowledge
+- Added `_from_state` method to `covariance.EmpiricalCovariance` to warm start from previous knowledge.
 
 ## proba
 
-- Added `_from_state` method to `proba.MultivariateGaussian` to warm start from previous knowledge
+- Added `_from_state` method to `proba.MultivariateGaussian` to warm start from previous knowledge.
