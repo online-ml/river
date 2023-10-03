@@ -384,8 +384,3 @@ class EmpiricalPrecision(SymmetricMatrix):
                 self._inv_cov[min((fi, fj), (fj, fi))] = row[j]
 
         return self
-
-if __name__ == "__main__":
-    import doctest
-
-    doctest.testmod()
