@@ -73,3 +73,10 @@ def test_batch_lof_scores():
         assert np.allclose(
             ilof_scores_river_batch, lof_scores_sklearn_batch, rtol=1e-02, atol=1e-02
         )
+
+
+def test_issue_1328():
+    lof = anomaly.LocalOutlierFactor()
+    X = [{"a": 1, "b": 1}, {"a": 1, "b": 1}]
+    for x in X:
+        lof.learn_one(x)

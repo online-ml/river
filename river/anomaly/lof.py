@@ -125,9 +125,8 @@ def calc_local_reach_dist(
     Calculate local reachability distance of affected points.
     """
     for i in set_index:
-        local_reach_dist[i] = len(neighborhoods[i]) / sum(
-            [reach_dist[i][j] for j in neighborhoods[i]]
-        )
+        denominator = sum(reach_dist[i][j] for j in neighborhoods[i])
+        local_reach_dist[i] = len(neighborhoods[i]) / denominator if denominator else 0
     return local_reach_dist
 
 
@@ -136,9 +135,8 @@ def calc_lof(set_index: set, neighborhoods: dict, local_reach: dict, lof: dict):
     Calculate local outlier factor (LOF) of affected points.
     """
     for i in set_index:
-        lof[i] = sum([local_reach[j] for j in neighborhoods[i]]) / (
-            len(neighborhoods[i]) * local_reach[i]
-        )
+        denominator = len(neighborhoods[i]) * local_reach[i]
+        lof[i] = sum(local_reach[j] for j in neighborhoods[i]) / denominator if denominator else 0
     return lof
 
 
