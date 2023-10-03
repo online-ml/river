@@ -190,7 +190,30 @@ class EmpiricalCovariance(SymmetricMatrix):
         return self
 
     @classmethod
-    def _from_state(cls, n, mean, cov, *, ddof=1):
+    def _from_state(cls, n: int, mean: dict, cov: dict, *, ddof=1):
+        """Create a new instance from state information.
+
+        Parameters
+        ----------
+        cls (type)
+            The class type.
+        n (int)
+            The number of data points.
+        mean (dict)
+            A dictionary of variable means.
+        cov (dict)
+            A dictionary of covariance or variance values.
+        ddof (int, optional)
+            Degrees of freedom for covariance calculation. Defaults to 1.
+
+        Returns
+        ----------
+            cls: A new instance of the class with updated covariance matrix.
+
+        Raises
+        ----------
+            KeyError: If an element in `mean` or `cov` is missing.
+        """
         new = cls(ddof=ddof)
         for i, j in itertools.combinations(sorted(mean.keys()), r=2):
             try:
