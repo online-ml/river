@@ -511,6 +511,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://riverml.xyz/dev/api/datasets/WebTraffic/</loc>
+         <lastmod>2023-10-03</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://riverml.xyz/dev/api/datasets/base/Dataset/</loc>
          <lastmod>2023-10-03</lastmod>
          <changefreq>daily</changefreq>
