@@ -215,7 +215,11 @@ class MultivariateGaussian(base.MultivariateContinuousDistribution):
         super().__init__(seed)
         self._var = covariance.EmpiricalCovariance(ddof=1)
 
-    # TODO: add method _from_state to initialize model (for warm starting)
+    @classmethod
+    def _from_state(cls, n, mean, cov, ddof):
+        new = cls()
+        new._var = covariance.EmpiricalCovariance._from_state(n, mean, cov, ddof=ddof)
+        return new
 
     @property
     def n_samples(self) -> float:
