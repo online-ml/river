@@ -5,7 +5,7 @@ from river import stream
 from . import base
 
 
-class WebTraffic(base.FileDataset):
+class WebTraffic(base.RemoteDataset):
     """Web sessions information from an events company based in South Africa.
 
     The goal is to predict the number of web sessions in 4 different regions in South Africa.
@@ -29,6 +29,7 @@ class WebTraffic(base.FileDataset):
 
     def __init__(self):
         super().__init__(
+            url="https://maxhalford.github.io/files/datasets/web-traffic.csv.zip",
             filename="web-traffic.csv",
             task=base.REG,
             n_features=2,
