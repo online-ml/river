@@ -32,6 +32,7 @@ from .taxis import Taxis
 from .trec07 import TREC07
 from .trump_approval import TrumpApproval
 from .water_flow import WaterFlow
+from .web_traffic import WebTraffic
 
 __all__ = [
     "AirlinePassengers",
@@ -59,6 +60,7 @@ __all__ = [
     "TREC07",
     "TrumpApproval",
     "WaterFlow",
+    "WebTraffic",
 ]
 
 
