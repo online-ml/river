@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import functools
 
 import pandas as pd
@@ -346,7 +347,7 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
             return 0.5
 
         x_list_copy = self.x_list.copy()
-        import copy
+
         (
             nm,
             x_list_copy,
