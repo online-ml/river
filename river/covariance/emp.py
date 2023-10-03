@@ -178,35 +178,40 @@ class EmpiricalCovariance(SymmetricMatrix):
         mean_arr = X_arr.mean(axis=0)
         cov_arr = np.cov(X_arr.T, ddof=self.ddof)
 
+        n = len(X)
         mean = dict(zip(X.columns, mean_arr))
         cov = {
             (i, j): cov_arr[r, c]
             for (r, i), (c, j) in itertools.combinations_with_replacement(enumerate(X.columns), r=2)
         }
 
-        for i, j in itertools.combinations(sorted(X.columns), r=2):
+        self = self._from_state(n=n, mean=mean, cov=cov, ddof=self.ddof)
+
+        return self
+
+    @classmethod
+    def _from_state(cls, n, mean, cov, *, ddof=1):
+        new = cls(ddof=ddof)
+        for i, j in itertools.combinations(sorted(mean.keys()), r=2):
             try:
-                self[i, j]
+                new[i, j]
             except KeyError:
-                self._cov[i, j] = stats.Cov(self.ddof)
-            self._cov[i, j] += stats.Cov._from_state(
-                n=len(X),
+                new._cov[i, j] = stats.Cov(new.ddof)
+            new._cov[i, j] += stats.Cov._from_state(
+                n=n,
                 mean_x=mean[i],
                 mean_y=mean[j],
                 cov=cov.get((i, j), cov.get((j, i))),
-                ddof=self.ddof,
+                ddof=new.ddof,
             )
 
-        for i in X.columns:
+        for i in sorted(mean.keys()):
             try:
-                self[i, i]
+                new[i, i]
             except KeyError:
-                self._cov[i, i] = stats.Var(self.ddof)
-            self._cov[i, i] += stats.Var._from_state(
-                n=len(X), m=mean[i], sig=cov[i, i], ddof=self.ddof
-            )
-
-        return self
+                new._cov[i, i] = stats.Var(new.ddof)
+            new._cov[i, i] += stats.Var._from_state(n=n, m=mean[i], sig=cov[i, i], ddof=new.ddof)
+        return new
 
 
 class EmpiricalPrecision(SymmetricMatrix):
