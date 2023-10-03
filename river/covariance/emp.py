@@ -108,6 +108,22 @@ class EmpiricalCovariance(SymmetricMatrix):
     >>> cov["blue", "blue"]
     Var: 0.076119
 
+    Start from a state:
+    n = 8
+    mean = {'red': 0.416, 'green': 0.387, 'blue': 0.518}
+    cov_ = {('red', 'red'): 0.079,
+    ...     ('red', 'green'): -0.053,
+    ...     ('red', 'blue'): -0.010,
+    ...     ('green', 'green'): 0.113,
+    ...     ('green', 'blue'): 0.020,
+    ...     ('blue', 'blue'): 0.076}
+    cov = covariance.EmpiricalCovariance._from_state(
+    ...    n=n, mean=mean, cov=cov_, ddof=1)
+    >>> cov
+            blue     green    red
+     blue    0.076    0.020   -0.010
+    green    0.020    0.113   -0.053
+      red   -0.010   -0.053    0.079
     """
 
     def __init__(self, ddof=1):
@@ -368,3 +384,8 @@ class EmpiricalPrecision(SymmetricMatrix):
                 self._inv_cov[min((fi, fj), (fj, fi))] = row[j]
 
         return self
+
+if __name__ == "__main__":
+    import doctest
+
+    doctest.testmod()
