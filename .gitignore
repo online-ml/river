@@ -130,3 +130,6 @@ benchmarks/.asv
 
 # Cargo file
 Cargo.lock
+
+# WASM
+/*.html
