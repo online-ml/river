@@ -6,7 +6,6 @@ import random
 import typing
 
 from river import base
-from river import utils
 
 ID = typing.Union[str, int]  # noqa: UP007
 Reward = typing.Union[numbers.Number, bool]  # noqa: UP007
