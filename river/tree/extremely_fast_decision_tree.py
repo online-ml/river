@@ -31,7 +31,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
     robust to concept drifts as it continually revisits and updates its internal
     decision tree structure. Still, in such cases, the Hoeffind Adaptive Tree might
     be a better option, as it was specifically designed to handle non-stationarity.
-    
+
 
     Parameters
     ----------
