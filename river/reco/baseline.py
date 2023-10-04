@@ -8,7 +8,7 @@ from river import optim, reco, stats, utils
 __all__ = ["Baseline"]
 
 
-class Baseline(reco.base.Ranker):
+class Baseline(reco.base.Recommender):
     """Baseline for recommender systems.
 
     A first-order approximation of the bias involved in target. The model equation is defined as:

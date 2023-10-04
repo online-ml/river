@@ -6,14 +6,12 @@ import functools
 
 import numpy as np
 
-from river import optim, stats, utils
-
-from .base import Ranker
+from river import optim, reco, stats, utils
 
 __all__ = ["BiasedMF"]
 
 
-class BiasedMF(Ranker):
+class BiasedMF(reco.base.Recommender):
     """Biased Matrix Factorization for recommender systems.
 
     The model equation is defined as:

@@ -11,7 +11,7 @@ from river import optim, reco, utils
 __all__ = ["FunkMF"]
 
 
-class FunkMF(reco.base.Ranker):
+class FunkMF(reco.base.Recommender):
     """Funk Matrix Factorization for recommender systems.
 
     The model equation is defined as:
@@ -131,7 +131,7 @@ class FunkMF(reco.base.Ranker):
 
     def learn_one(self, user, item, y, x=None):
         # Calculate the gradient of the loss with respect to the prediction
-        g_loss = self.loss.gradient(y, self.predict_one(user, item))
+        g_loss = self.loss.gradient(y, self.predict_one(user, item, x=x))
 
         # Clamp the gradient to avoid numerical instability
         g_loss = utils.math.clamp(g_loss, minimum=-self.clip_gradient, maximum=self.clip_gradient)

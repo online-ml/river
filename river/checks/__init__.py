@@ -8,7 +8,7 @@ import numpy as np
 
 from river.base import Estimator
 from river.model_selection.base import ModelSelector
-from river.reco.base import Ranker
+from river.reco.base import Recommender
 
 from . import anomaly, clf, common, model_selection, reco
 
@@ -54,7 +54,7 @@ def _yield_datasets(model: Estimator):
 
     # Recommendation models can be regressors or classifiers, but they have requirements as to the
     # structure of the data
-    if isinstance(utils.inspect.extract_relevant(model), Ranker):
+    if isinstance(utils.inspect.extract_relevant(model), Recommender):
         if utils.inspect.isregressor(model):
             yield _DummyDataset(
                 ("Alice", "Superman", 8),
@@ -164,7 +164,7 @@ def yield_checks(model: Estimator) -> typing.Iterator[typing.Callable]:
     if isinstance(utils.inspect.extract_relevant(model), ModelSelector):
         dataset_checks.append(model_selection.check_model_selection_order_does_not_matter)
 
-    if isinstance(utils.inspect.extract_relevant(model), Ranker):
+    if isinstance(utils.inspect.extract_relevant(model), Recommender):
         yield reco.check_reco_routine
 
     if utils.inspect.isanomalydetector(model):

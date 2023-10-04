@@ -36,7 +36,7 @@ class LinUCBDisjoint(bandit.base.ContextualPolicy):
     References
     ----------
     [^1]: [A Contextual-Bandit Approach to Personalized News Article Recommendation](https://arxiv.org/abs/1003.0146)
-    [^2:] [Contextual Bandits Analysis of LinUCB Disjoint Algorithm with Dataset](https://kfoofw.github.io/contextual-bandits-linear-ucb-disjoint/)
+    [^2]: [Contextual Bandits Analysis of LinUCB Disjoint Algorithm with Dataset](https://kfoofw.github.io/contextual-bandits-linear-ucb-disjoint/)
 
     """
 

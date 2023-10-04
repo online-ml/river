@@ -6,15 +6,16 @@ import random
 import typing
 
 from river import base
+from river import utils
 
 ID = typing.Union[str, int]  # noqa: UP007
 Reward = typing.Union[numbers.Number, bool]  # noqa: UP007
 
 
-__all__ = ["Ranker"]
+__all__ = ["Recommender"]
 
 
-class Ranker(base.Estimator):
+class Recommender(base.Estimator):
     """Base class for ranking models.
 
     Parameters
@@ -68,8 +69,24 @@ class Ranker(base.Estimator):
 
         """
 
+    def sample(self, user: ID, items: set[ID], x: dict | None = None):
+        """Sample an item at random, based on the preference of a given user.
+
+        Parameters
+        ----------
+        user
+            A user ID.
+        items
+            A set of items to rank.
+        x
+            Optional context to use.
+
+        """
+        preferences = [max(1e-10, self.predict_one(user, item, x)) for item in items]
+        return self._rng.choices(items, weights=preferences, k=1)[0]
+
     def rank(self, user: ID, items: set[ID], x: dict | None = None) -> list[ID]:
-        """Rank models by decreasing order of preference for a given user.
+        """Rank items by decreasing order of preference for a given user.
 
         Parameters
         ----------

@@ -5,7 +5,7 @@ from river import reco, stats
 __all__ = ["RandomNormal"]
 
 
-class RandomNormal(reco.base.Ranker):
+class RandomNormal(reco.base.Recommender):
     """Predicts random values sampled from a normal distribution.
 
     The parameters of the normal distribution are fitted with running statistics. They parameters
