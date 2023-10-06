@@ -1,19 +1,19 @@
+from __future__ import annotations
+
 import copy
 import itertools
 import json
 import logging
 import multiprocessing
-from datetime import timedelta
-from typing import List
 
 import pandas as pd
 from config import MODELS, N_CHECKPOINTS, TRACKS
+from tqdm import tqdm
 
 from river import metrics
 
 logging.basicConfig(level=logging.WARN)
 logger = logging.getLogger(__name__)
-from tqdm import tqdm
 
 
 def run_dataset(model_str, no_dataset, no_track):
@@ -48,7 +48,7 @@ def run_dataset(model_str, no_dataset, no_track):
     return results
 
 
-def run_track(models: List[str], no_track: int, n_workers: int = 50):
+def run_track(models: list[str], no_track: int, n_workers: int = 50):
     pool = multiprocessing.Pool(processes=n_workers)
     track = TRACKS[no_track]
     runs = list(itertools.product(models, range(len(track.datasets)), [no_track]))
@@ -61,7 +61,6 @@ def run_track(models: List[str], no_track: int, n_workers: int = 50):
 
 
 if __name__ == "__main__":
-
     MODELS["Binary classification"].update(MODELS["Multiclass classification"])
 
     details = {}
