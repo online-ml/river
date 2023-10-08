@@ -7,13 +7,42 @@ from river import base
 
 
 class TextCompressionClassifier(base.Classifier):
+    """Classifier based on text compression techniques.
+
+    The classifier utilizes the `zstandard` compression library to classify text by measuring
+    how well a new piece of data compresses with existing data of each class.
+
+    Attributes:
+        compression_level (int): The level of compression. Default is 3.
+        k (int): The maximum number of documents to be stored per label. Default is 150.
+        label_documents (dict): Stores concatenated documents for each label.
+        compression_contexts (dict): Stores Zstd compression contexts for each label.
+
+    """
     def __init__(self, compression_level=3, k=150):
+        """
+        Initializes the TextCompressionClassifier.
+
+        Args:
+            compression_level (int, optional): The desired compression level. Defaults to 3.
+            k (int, optional): The maximum number of documents to store per label. Defaults to 150.
+        """        
         self.compression_level = compression_level
         self.k = k
         self.label_documents = {}  # Concatenated documents for each label
         self.compression_contexts = {}  # Zstd compression contexts for each label
 
     def learn_one(self, x, y):
+        """Updates the classifier with a new sample.
+
+        Args:
+            x (dict): The input sample.
+            y (str): The label of the input sample.
+
+        Returns:
+            TextCompressionClassifier: The classifier instance (for chaining).
+
+        """
         # Convert your input 'x' to a string representation if it's not already
         # For the sake of example, let's assume 'x' is a dictionary of features
         x_str = str(x)
