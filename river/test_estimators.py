@@ -12,6 +12,7 @@ from river import (
     checks,
     compat,
     compose,
+    compression,
     facto,
     feature_extraction,
     feature_selection,
@@ -105,6 +106,7 @@ def iter_estimators_which_can_be_tested():
         )
         for estimator in list(iter_estimators_which_can_be_tested())
         + [
+            compression.TextCompressionClassifier(),
             preprocessing.StandardScaler() | linear_model.LinearRegression(),
             preprocessing.StandardScaler() | linear_model.PAClassifier(),
             (
