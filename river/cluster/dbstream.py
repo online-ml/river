@@ -182,9 +182,14 @@ class DBSTREAM(base.Clusterer):
 
         if len(neighbor_clusters) < 1:
             # create new micro cluster
-            self._micro_clusters[len(self._micro_clusters)] = DBSTREAMMicroCluster(
-                x=x, last_update=self._time_stamp, weight=1
-            )
+            if len(self._micro_clusters) > 0:
+                self._micro_clusters[max(self._micro_clusters.keys()) + 1] = DBSTREAMMicroCluster(
+                    x=x, last_update=self._time_stamp, weight=1
+                )
+            else:
+                self._micro_clusters[0] = DBSTREAMMicroCluster(
+                    x=x, last_update=self._time_stamp, weight=1
+                )
         else:
             # update existing micro clusters
             current_centers = {}
