@@ -182,9 +182,14 @@ class DBSTREAM(base.Clusterer):
 
         if len(neighbor_clusters) < 1:
             # create new micro cluster
-            self._micro_clusters[len(self._micro_clusters)] = DBSTREAMMicroCluster(
-                x=x, last_update=self._time_stamp, weight=1
-            )
+            if len(self._micro_clusters) > 0:
+                self._micro_clusters[max(self._micro_clusters.keys()) + 1] = DBSTREAMMicroCluster(
+                    x=x, last_update=self._time_stamp, weight=1
+                )
+            else:
+                self._micro_clusters[0] = DBSTREAMMicroCluster(
+                    x=x, last_update=self._time_stamp, weight=1
+                )
         else:
             # update existing micro clusters
             current_centers = {}
@@ -253,7 +258,9 @@ class DBSTREAM(base.Clusterer):
         micro_clusters = copy.deepcopy(self._micro_clusters)
         for i, micro_cluster_i in self._micro_clusters.items():
             try:
-                value = 2 ** (self.fading_factor * (self._time_stamp - micro_cluster_i.last_update))
+                value = 2 ** (
+                    -self.fading_factor * (self._time_stamp - micro_cluster_i.last_update)
+                )
             except OverflowError:
                 continue
 
@@ -266,7 +273,7 @@ class DBSTREAM(base.Clusterer):
         for i in self.s.keys():
             for j in self.s[i].keys():
                 try:
-                    value = 2 ** (self.fading_factor * (self._time_stamp - self.s_t[i][j]))
+                    value = 2 ** (-self.fading_factor * (self._time_stamp - self.s_t[i][j]))
                 except OverflowError:
                     continue
 
@@ -374,6 +381,8 @@ class DBSTREAM(base.Clusterer):
         if labels:
             self._n_clusters, self._clusters = self._generate_clusters_from_labels(labels)
             self._centers = {i: self._clusters[i].center for i in self._clusters.keys()}
+
+        self.clustering_is_up_to_date = True
 
     def learn_one(self, x, sample_weight=None):
         self._update(x)
