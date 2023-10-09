@@ -377,6 +377,8 @@ class DBSTREAM(base.Clusterer):
             self._n_clusters, self._clusters = self._generate_clusters_from_labels(labels)
             self._centers = {i: self._clusters[i].center for i in self._clusters.keys()}
 
+        self.clustering_is_up_to_date = True
+
     def learn_one(self, x, sample_weight=None):
         self._update(x)
 
