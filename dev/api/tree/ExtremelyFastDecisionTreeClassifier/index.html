@@ -22,7 +22,7 @@
       
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.4.3">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.4.4">
     
     
       
@@ -30,10 +30,10 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.79e020e9.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.bd3936ea.min.css">
       
         
-        <link rel="stylesheet" href="../../../assets/stylesheets/palette.a5377069.min.css">
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.356b1318.min.css">
       
       
 
@@ -5026,8 +5026,8 @@
 
 
 <h1 id="extremelyfastdecisiontreeclassifier">ExtremelyFastDecisionTreeClassifier<a class="headerlink" href="#extremelyfastdecisiontreeclassifier" title="Permanent link">&para;</a></h1>
-<p>Extremely Fast Decision Tree classifier.</p>
-<p>Also referred to as Hoeffding AnyTime Tree (HATT) classifier.</p>
+<p>Extremely Fast Decision Tree (EFDT) classifier.</p>
+<p>Also referred to as the Hoeffding AnyTime Tree (HATT) classifier. In practice, despite the name, EFDTs are typically slower than a vanilla Hoeffding Tree to process data. The speed differences come from the mechanism of split re-evaluation present in EFDT. Nonetheless, EFDT has theoretical properties that ensure it converges faster than the vanilla Hoeffding Tree to the structure that would be created by a batch decision tree model (such as Classification and Regression Trees - CART). Keep in mind that such propositions hold when processing a stationary data stream. When dealing with non-stationary data, EFDT is somewhat robust to concept drifts as it continually revisits and updates its internal decision tree structure. Still, in such cases, the Hoeffind Adaptive Tree might be a better option, as it was specifically designed to handle non-stationarity.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
@@ -5348,10 +5348,10 @@ DOI: https://doi.org/10.1145/3219819.3220005&#160;<a class="footnote-backref" hr
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "../../..", "features": ["content.code.copy", "navigation.tabs", "navigation.instant", "navigation.indexes", "navigation.prune"], "search": "../../../assets/javascripts/workers/search.a264c092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["content.code.copy", "navigation.tabs", "navigation.instant", "navigation.indexes", "navigation.prune"], "search": "../../../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.6eac0284.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.94c44541.min.js"></script>
       
         <script src="../../../js/mkdocs-charts-plugin.js"></script>
       
