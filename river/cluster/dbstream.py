@@ -253,7 +253,9 @@ class DBSTREAM(base.Clusterer):
         micro_clusters = copy.deepcopy(self._micro_clusters)
         for i, micro_cluster_i in self._micro_clusters.items():
             try:
-                value = 2 ** (self.fading_factor * (self._time_stamp - micro_cluster_i.last_update))
+                value = 2 ** (
+                    -self.fading_factor * (self._time_stamp - micro_cluster_i.last_update)
+                )
             except OverflowError:
                 continue
 
@@ -266,7 +268,7 @@ class DBSTREAM(base.Clusterer):
         for i in self.s.keys():
             for j in self.s[i].keys():
                 try:
-                    value = 2 ** (self.fading_factor * (self._time_stamp - self.s_t[i][j]))
+                    value = 2 ** (-self.fading_factor * (self._time_stamp - self.s_t[i][j]))
                 except OverflowError:
                     continue
 
