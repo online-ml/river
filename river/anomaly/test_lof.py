@@ -80,3 +80,33 @@ def test_issue_1328():
     X = [{"a": 1, "b": 1}, {"a": 1, "b": 1}]
     for x in X:
         lof.learn_one(x)
+
+
+def test_issue_1331():
+    import copy
+
+    from river import anomaly
+
+    lof = anomaly.LocalOutlierFactor()
+
+    X = [{"a": 1, "b": 1}, {"a": 1, "b": 1}]
+    for x in X:
+        lof.learn_one(x)
+
+    neighborhoods_ = lof.neighborhoods.copy()
+    rev_neighborhoods = lof.rev_neighborhoods.copy()
+    k_dist_ = lof.k_dist.copy()
+    reach_dist_ = copy.deepcopy(lof.reach_dist)
+    dist_dict_ = copy.deepcopy(lof.dist_dict)
+    local_reach_ = lof.local_reach.copy()
+    lof_ = lof.lof.copy()
+
+    lof.score_one({"a": 0.5, "b": 1})
+
+    assert neighborhoods_ == lof.neighborhoods
+    assert rev_neighborhoods == lof.rev_neighborhoods
+    assert k_dist_ == lof.k_dist
+    assert reach_dist_ == lof.reach_dist
+    assert dist_dict_ == lof.dist_dict
+    assert local_reach_ == lof.local_reach
+    assert lof_ == lof.lof

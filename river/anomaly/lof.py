@@ -221,7 +221,25 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
     ...     scores.append(lof.score_one(x))
 
     >>> [round(score, 3) for score in scores]
-    [1.802, 1.937, 1.567, 1.181, 1.28]
+    [1.802, 1.936, 1.566, 1.181, 1.272]
+
+    >>> X = [0.5, 0.45, 0.43, 0.44, 0.445, 0.45, 0.0]
+    >>> lof = anomaly.LocalOutlierFactor()
+
+    >>> for x in X[:3]:
+    ...     lof.learn_one({'x': x})  # Warming up
+
+    >>> for x in X:
+    ...     features = {'x': x}
+    ...     print(f'Anomaly score for x={x:.3f}: {lof.score_one(features):.3f}')
+    ...     lof.learn_one(features)
+    Anomaly score for x=0.500: 0.000
+    Anomaly score for x=0.450: 0.000
+    Anomaly score for x=0.430: 0.000
+    Anomaly score for x=0.440: 1.020
+    Anomaly score for x=0.445: 1.032
+    Anomaly score for x=0.450: 0.000
+    Anomaly score for x=0.000: 0.980
 
     References
     ----------
