@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import functools
 
 import pandas as pd
@@ -220,7 +221,26 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
     ...     scores.append(lof.score_one(x))
 
     >>> [round(score, 3) for score in scores]
-    [1.802, 1.937, 1.567, 1.181, 1.28]
+    [1.802, 1.936, 1.566, 1.181, 1.272]
+
+    >>> X = [0.5, 0.45, 0.43, 0.44, 0.445, 0.45, 0.0]
+    >>> lof = anomaly.LocalOutlierFactor()
+
+    >>> for x in X[:3]:
+    ...     lof.learn_one({'x': x})  # Warming up
+
+    >>> for x in X:
+    ...     features = {'x': x}
+    ...     print(
+    ...         f'Anomaly score for x={x:.3f}: {lof.score_one(features):.3f}')
+    ...     lof.learn_one(features)
+    Anomaly score for x=0.500: 0.000
+    Anomaly score for x=0.450: 0.000
+    Anomaly score for x=0.430: 0.000
+    Anomaly score for x=0.440: 1.020
+    Anomaly score for x=0.445: 1.032
+    Anomaly score for x=0.450: 0.000
+    Anomaly score for x=0.000: 0.980
 
     References
     ----------
@@ -342,10 +362,11 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
         self.x_scores.append(x)
         self.x_scores, equal = check_equal(self.x_scores, self.x_list)
 
-        if len(self.x_scores) == 0:
-            return None
+        if len(self.x_scores) == 0 or len(self.x_list) == 0:
+            return 0.0
 
         x_list_copy = self.x_list.copy()
+
         (
             nm,
             x_list_copy,
@@ -359,13 +380,13 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
         ) = expand_objects(
             self.x_scores,
             x_list_copy,
-            self.neighborhoods,
-            self.rev_neighborhoods,
-            self.k_dist,
-            self.reach_dist,
-            self.dist_dict,
-            self.local_reach,
-            self.lof,
+            self.neighborhoods.copy(),
+            self.rev_neighborhoods.copy(),
+            self.k_dist.copy(),
+            copy.deepcopy(self.reach_dist),
+            copy.deepcopy(self.dist_dict),
+            self.local_reach.copy(),
+            self.lof.copy(),
         )
 
         neighborhoods, rev_neighborhoods, k_dist, dist_dict = self._initial_calculations(
