@@ -231,7 +231,8 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
 
     >>> for x in X:
     ...     features = {'x': x}
-    ...     print(f'Anomaly score for x={x:.3f}: {lof.score_one(features):.3f}')
+    ...     print(
+    ...         f'Anomaly score for x={x:.3f}: {lof.score_one(features):.3f}')
     ...     lof.learn_one(features)
     Anomaly score for x=0.500: 0.000
     Anomaly score for x=0.450: 0.000
