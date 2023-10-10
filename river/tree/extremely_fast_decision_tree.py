@@ -18,9 +18,20 @@ from .utils import BranchFactory
 
 
 class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
-    """Extremely Fast Decision Tree classifier.
+    """Extremely Fast Decision Tree (EFDT) classifier.
 
-    Also referred to as Hoeffding AnyTime Tree (HATT) classifier.
+    Also referred to as the Hoeffding AnyTime Tree (HATT) classifier. In practice,
+    despite the name, EFDTs are typically slower than a vanilla Hoeffding Tree
+    to process data. The speed differences come from the mechanism of split
+    re-evaluation present in EFDT. Nonetheless, EFDT has theoretical properties
+    that ensure it converges faster than the vanilla Hoeffding Tree to the structure
+    that would be created by a batch decision tree model (such as Classification and
+    Regression Trees - CART). Keep in mind that such propositions hold when processing
+    a stationary data stream. When dealing with non-stationary data, EFDT is somewhat
+    robust to concept drifts as it continually revisits and updates its internal
+    decision tree structure. Still, in such cases, the Hoeffind Adaptive Tree might
+    be a better option, as it was specifically designed to handle non-stationarity.
+
 
     Parameters
     ----------

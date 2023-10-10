@@ -109,19 +109,16 @@ River is intended to work with **Python 3.8 and above**. Installation can be don
 pip install river
 ```
 
-There are [wheels available](https://pypi.org/project/river/#files) for Linux, MacOS, and Windows, which means that you most probably won't have to build River from source.
+There are [wheels available](https://pypi.org/project/river/#files) for Linux, MacOS, and Windows. This means you most probably won't have to build River from source.
 
 You can install the latest development version from GitHub as so:
 
 ```sh
 pip install git+https://github.com/online-ml/river --upgrade
+pip install git+ssh://git@github.com/online-ml/river.git --upgrade  # using SSH
 ```
 
-Or, through SSH:
-
-```sh
-pip install git+ssh://git@github.com/online-ml/river.git --upgrade
-```
+This method requires having Cython and Rust installed on your machine.
 
 ## 🔮 Features
 

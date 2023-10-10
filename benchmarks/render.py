@@ -1,8 +1,9 @@
+from __future__ import annotations
+
 import json
 import shutil
 import textwrap
 from pathlib import Path
-from typing import List
 
 import pandas as pd
 from dominate.tags import pre
@@ -77,7 +78,9 @@ if __name__ == "__main__":
         track_dir = Path(f"../docs/benchmarks/{track_name}")
         track_dir.mkdir(exist_ok=True)
         with open(f"../docs/benchmarks/{track_name}/index.md", "w", encoding="utf-8") as f:
-            print_ = lambda x: print(x, file=f, end="\n\n")
+
+            def print_(x):
+                return print(x, file=f, end="\n\n")
 
             print_(f"# {track_name}")
 
@@ -119,14 +122,14 @@ if __name__ == "__main__":
             for dataset_name, dataset_details in track_details["Dataset"].items():
                 print_(f'???- abstract "{dataset_name}"')
                 print_(textwrap.indent(dataset_details, "    "))
-                print_(f"<span />")
+                print_("<span />")
             print_("## Models")
             for model_name, model_details in track_details["Model"].items():
                 print_(f'???- example "{model_name}"')
                 print_(
                     f"    <pre>{textwrap.indent(model_details, '    ').replace('    ', '', 1)}</pre>"
                 )
-                print_(f"<span />")
+                print_("<span />")
 
             print_("## Environment")
             print_(

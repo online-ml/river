@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from vowpalwabbit import pyvw
 
 from river import base
@@ -13,7 +15,6 @@ class VW2RiverBase:
 
 class VW2RiverClassifier(VW2RiverBase, base.Classifier):
     def learn_one(self, x, y):
-
         # Convert {False, True} to {-1, 1}
         y = int(y)
         y_vw = 2 * y - 1

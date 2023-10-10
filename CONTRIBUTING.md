@@ -210,3 +210,5 @@ END
 brew update && brew install gh
 gh release create $RIVER_VERSION --notes $RELEASE_NOTES
 ```
+
+11. Pyodide needs to be told there is a new release. This can done by updating [`packages/river`](https://github.com/online-ml/pyodide/tree/main/packages/river) in [online-ml/pyodide](https://github.com/online-ml/pyodide)
