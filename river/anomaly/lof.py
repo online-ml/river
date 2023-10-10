@@ -344,7 +344,7 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
         self.x_scores, equal = check_equal(self.x_scores, self.x_list)
 
         if len(self.x_scores) == 0 or len(self.x_list) == 0:
-            return 0.5
+            return 0.0
 
         x_list_copy = self.x_list.copy()
 
