@@ -11,10 +11,9 @@ River's mini-batch methods now support pandas v2. In particular, River conforms 
 ## clustering
 
 - Add fixes to `cluster.DBSTREAM` algorithm, including:
-  - Addition of the `-` sign before the `fading_factor` in accordance with the algorithm 2 proposed by Hashler and Bolanos (2016) to allow clusters with low weights to be removed. 
-  - The new `micro_cluster` is added with the key derived from the maximum key of the existing micro clusters. If the set of micro clusters is still empty (`len = 0`), a new micro cluster is added with key 0. 
+  - Addition of the `-` sign before the `fading_factor` in accordance with the algorithm 2 proposed by Hashler and Bolanos (2016) to allow clusters with low weights to be removed.
+  - The new `micro_cluster` is added with the key derived from the maximum key of the existing micro clusters. If the set of micro clusters is still empty (`len = 0`), a new micro cluster is added with key 0.
   - `cluster_is_up_to_date` is set to `True` at the end of the `self._recluster()` function.
-
 
 ## datasets
 
@@ -31,3 +30,7 @@ River's mini-batch methods now support pandas v2. In particular, River conforms 
 ## proba
 
 - Added `_from_state` method to `proba.MultivariateGaussian` to warm start from previous knowledge.
+
+## tree
+
+- Fix a bug in `tree.splitter.NominalSplitterClassif` that generated a mismatch between the number of existing tree branches and the number of tracked branches.

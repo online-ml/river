@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import collections
-import functools
 
 from ..utils import BranchFactory
 from .base import Splitter
@@ -18,9 +17,7 @@ class NominalSplitterClassif(Splitter):
         super().__init__()
         self._total_weight_observed = 0.0
         self._missing_weight_observed = 0.0
-        self._att_dist_per_class = collections.defaultdict(
-            functools.partial(collections.defaultdict, float)
-        )
+        self._att_dist_per_class = collections.defaultdict(dict)
         self._att_values = set()
 
     @property
@@ -32,12 +29,20 @@ class NominalSplitterClassif(Splitter):
             self._missing_weight_observed += sample_weight
         else:
             self._att_values.add(att_val)
-            self._att_dist_per_class[target_val][att_val] += sample_weight
+
+            try:
+                self._att_dist_per_class[target_val][att_val] += sample_weight
+            except KeyError:
+                self._att_dist_per_class[target_val][att_val] = sample_weight
 
         self._total_weight_observed += sample_weight
 
     def cond_proba(self, att_val, target_val):
         class_dist = self._att_dist_per_class[target_val]
+
+        if att_val not in class_dist:
+            return 0.0
+
         value = class_dist[att_val]
         try:
             return value / sum(class_dist.values())

@@ -432,7 +432,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
 
                     # update EFDT
                     if parent is None:
-                        # Root case : replace the root node by a new split node
+                        # Root case : replace the root node by the new node
                         self._root = best_split
                     else:
                         parent.children[branch_index] = best_split
