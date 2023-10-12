@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import abc
 import itertools
+from typing import Union
 
 import numpy as np
 import pandas as pd
@@ -206,7 +207,7 @@ class EmpiricalCovariance(SymmetricMatrix):
         return self
 
     @classmethod
-    def _from_state(cls, n: int, mean: dict, cov: dict, *, ddof=1):
+    def _from_state(cls, n: int, mean: dict, cov: Union[int, dict], *, ddof=1):
         """Create a new instance from state information.
 
         Parameters
@@ -236,11 +237,15 @@ class EmpiricalCovariance(SymmetricMatrix):
                 new[i, j]
             except KeyError:
                 new._cov[i, j] = stats.Cov(new.ddof)
+                if isinstance(cov, dict):
+                    cov_ = cov.get((i, j), cov.get((j, i)))
+                else:
+                    cov_ = cov
             new._cov[i, j] += stats.Cov._from_state(
                 n=n,
                 mean_x=mean[i],
                 mean_y=mean[j],
-                cov=cov.get((i, j), cov.get((j, i))),
+                cov=cov_,
                 ddof=new.ddof,
             )
 
@@ -249,7 +254,12 @@ class EmpiricalCovariance(SymmetricMatrix):
                 new[i, i]
             except KeyError:
                 new._cov[i, i] = stats.Var(new.ddof)
-            new._cov[i, i] += stats.Var._from_state(n=n, m=mean[i], sig=cov[i, i], ddof=new.ddof)
+            if isinstance(cov, dict):
+                if isinstance(cov, dict):
+                    cov_ = cov[i, i]
+                else:
+                    cov_ = cov
+            new._cov[i, i] += stats.Var._from_state(n=n, m=mean[i], sig=cov_, ddof=new.ddof)
         return new
 
 
