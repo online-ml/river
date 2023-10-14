@@ -337,7 +337,7 @@ class DBSTREAM(base.Clusterer):
                         )
                         # add new neighbors to seed set
                         for neighbor_neighbor in neighbor_neighbors:
-                            if labels[neighbor_neighbor] is not None:
+                            if labels[neighbor_neighbor] is None:
                                 seed_set.append(neighbor_neighbor)
 
         return labels

@@ -14,7 +14,8 @@ River's mini-batch methods now support pandas v2. In particular, River conforms 
   - Addition of the `-` sign before the `fading_factor` in accordance with the algorithm 2 proposed by Hashler and Bolanos (2016) to allow clusters with low weights to be removed.
   - The new `micro_cluster` is added with the key derived from the maximum key of the existing micro clusters. If the set of micro clusters is still empty (`len = 0`), a new micro cluster is added with key 0.
   - `cluster_is_up_to_date` is set to `True` at the end of the `self._recluster()` function.
-  - shared density graph update timestamps are initialized with the current timestamp value
+  - Shared density graph update timestamps are initialized with the current timestamp value
+  - `neighbour_neighbours` are appended correctly to the `seed_set` when generating cluster labels
 
 ## datasets
 
