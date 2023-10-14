@@ -228,10 +228,10 @@ class DBSTREAM(base.Clusterer):
                         except KeyError:
                             try:
                                 self.s[i][j] = 0
-                                self.s_t[i][j] = 0
+                                self.s_t[i][j] = self._time_stamp
                             except KeyError:
                                 self.s[i] = {j: 0}
-                                self.s_t[i] = {j: 0}
+                                self.s_t[i] = {j: self._time_stamp}
 
             # prevent collapsing clusters
             for i in neighbor_clusters.keys():
