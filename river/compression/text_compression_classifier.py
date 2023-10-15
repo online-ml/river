@@ -34,10 +34,12 @@ class TextCompressionClassifier(base.Classifier):
 
     def __getstate__(self):
         return {'compression_level': self.compression_level, 
+                'k': self.k,
                 'label_documents': self.label_documents}
 
     def __setstate__(self, state):
         self.compression_level = state['compression_level']
+        self.k = state['k']
         self.label_documents = state['label_documents']
         self.compression_contexts = self.recreate_contexts(self.label_documents)
 
