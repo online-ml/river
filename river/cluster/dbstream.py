@@ -287,18 +287,23 @@ class DBSTREAM(base.Clusterer):
         weighted_adjacency_matrix = {}
         for i in list(self.s.keys()):
             for j in list(self.s[i].keys()):
-                if (
-                    self._micro_clusters[i].weight >= self.minimum_weight
-                    and self._micro_clusters[j].weight >= self.minimum_weight
-                ):
-                    value = self.s[i][j] / (
-                        (self._micro_clusters[i].weight + self._micro_clusters[j].weight) / 2
-                    )
-                    if value > self.intersection_factor:
-                        try:
-                            weighted_adjacency_matrix[i][j] = value
-                        except KeyError:
-                            weighted_adjacency_matrix[i] = {j: value}
+                try:
+                    if (
+                        self._micro_clusters[i].weight <= self.minimum_weight
+                        or self._micro_clusters[j].weight <= self.minimum_weight
+                    ):
+                        continue
+                except KeyError:
+                    continue
+
+                value = self.s[i][j] / (
+                    (self._micro_clusters[i].weight + self._micro_clusters[j].weight) / 2
+                )
+                if value > self.intersection_factor:
+                    try:
+                        weighted_adjacency_matrix[i][j] = value
+                    except KeyError:
+                        weighted_adjacency_matrix[i] = {j: value}
 
         return weighted_adjacency_matrix
 
