@@ -16,7 +16,7 @@ River's mini-batch methods now support pandas v2. In particular, River conforms 
   - `cluster_is_up_to_date` is set to `True` at the end of the `self._recluster()` function.
   - Shared density graph update timestamps are initialized with the current timestamp value
   - `neighbour_neighbours` are appended correctly to the `seed_set` when generating cluster labels
-  - When building weighted adjacency matrix the alhorithm accounts for possibly orphaned entries in shared density graph
+  - When building weighted adjacency matrix the algorithm accounts for possibly orphaned entries in shared density graph
 
 ## datasets
 
