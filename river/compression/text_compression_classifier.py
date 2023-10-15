@@ -32,6 +32,29 @@ class TextCompressionClassifier(base.Classifier):
         self.label_documents = {}  # Concatenated documents for each label
         self.compression_contexts = {}  # Zstd compression contexts for each label
 
+    def __getstate__(self):
+        return {'compression_level': self.compression_level, 
+                'label_documents': self.label_documents}
+
+    def __setstate__(self, state):
+        self.compression_level = state['compression_level']
+        self.label_documents = state['label_documents']
+        self.compression_contexts = self.recreate_contexts(self.label_documents)
+
+    def recreate_contexts(self, label_documents):
+        new_compression_contexts = {}
+        for label, documents in label_documents.items():
+            concatenated_documents = " ".join(documents).encode("utf-8")
+            compression_dict = zstandard.ZstdCompressionDict(concatenated_documents)
+            
+            zstd_compressor = zstandard.ZstdCompressor(
+                level=self.compression_level, dict_data=compression_dict
+            )
+            
+            new_compression_contexts[label] = zstd_compressor
+        
+        return new_compression_contexts
+
     def learn_one(self, x, y):
         """Updates the classifier with a new sample.
 
