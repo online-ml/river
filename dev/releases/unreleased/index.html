@@ -22,7 +22,7 @@
       
       
       <link rel="icon" href="../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.4.4">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.4.6">
     
     
       
@@ -30,7 +30,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.bd3936ea.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.35e1ed30.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.356b1318.min.css">
@@ -3902,6 +3902,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#tree" class="md-nav__link">
+    tree
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -4752,6 +4759,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#tree" class="md-nav__link">
+    tree
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -4772,13 +4786,18 @@
 <h2 id="anomaly">anomaly<a class="headerlink" href="#anomaly" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Added <a href="../../api/api/anomaly/LocalOutlierFactor"><code>api.anomaly.LocalOutlierFactor</code></a>, which is an online version of the LOF algorithm for anomaly detection that matches the scikit-learn implementation.</li>
+<li>Made <code>score_one</code> method of <a href="../../api/api/anomaly/LocalOutlierFactor"><code>api.anomaly.LocalOutlierFactor</code></a> stateless</li>
+<li>Defined default score for uninitialized detector</li>
 </ul>
 <h2 id="clustering">clustering<a class="headerlink" href="#clustering" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Add fixes to <a href="../../api/cluster/DBSTREAM"><code>cluster.DBSTREAM</code></a> algorithm, including:</li>
-<li>Addition of the <code>-</code> sign before the <code>fading_factor</code> in accordance with the algorithm 2 proposed by Hashler and Bolanos (2016) to allow clusters with low weights to be removed. </li>
-<li>The new <code>micro_cluster</code> is added with the key derived from the maximum key of the existing micro clusters. If the set of micro clusters is still empty (<code>len = 0</code>), a new micro cluster is added with key 0. </li>
+<li>Addition of the <code>-</code> sign before the <code>fading_factor</code> in accordance with the algorithm 2 proposed by Hashler and Bolanos (2016) to allow clusters with low weights to be removed.</li>
+<li>The new <code>micro_cluster</code> is added with the key derived from the maximum key of the existing micro clusters. If the set of micro clusters is still empty (<code>len = 0</code>), a new micro cluster is added with key 0.</li>
 <li><code>cluster_is_up_to_date</code> is set to <code>True</code> at the end of the <code>self._recluster()</code> function.</li>
+<li>Shared density graph update timestamps are initialized with the current timestamp value</li>
+<li><code>neighbour_neighbours</code> are appended correctly to the <code>seed_set</code> when generating cluster labels</li>
+<li>When building weighted adjacency matrix the algorithm accounts for possibly orphaned entries in shared density graph</li>
 </ul>
 <h2 id="datasets">datasets<a class="headerlink" href="#datasets" title="Permanent link">&para;</a></h2>
 <ul>
@@ -4795,6 +4814,10 @@
 <h2 id="proba">proba<a class="headerlink" href="#proba" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Added <code>_from_state</code> method to <a href="../../api/proba/MultivariateGaussian"><code>proba.MultivariateGaussian</code></a> to warm start from previous knowledge.</li>
+</ul>
+<h2 id="tree">tree<a class="headerlink" href="#tree" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Fix a bug in <code>tree.splitter.NominalSplitterClassif</code> that generated a mismatch between the number of existing tree branches and the number of tracked branches.</li>
 </ul>
 
 
@@ -4865,7 +4888,7 @@
     <script id="__config" type="application/json">{"base": "../..", "features": ["content.code.copy", "navigation.tabs", "navigation.instant", "navigation.indexes", "navigation.prune"], "search": "../../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.94c44541.min.js"></script>
+      <script src="../../assets/javascripts/bundle.aecac24b.min.js"></script>
       
         <script src="../../js/mkdocs-charts-plugin.js"></script>
       

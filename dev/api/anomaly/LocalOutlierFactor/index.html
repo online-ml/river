@@ -22,7 +22,7 @@
       
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.4.4">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.4.6">
     
     
       
@@ -30,7 +30,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.bd3936ea.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.35e1ed30.min.css">
       
         
         <link rel="stylesheet" href="../../../assets/stylesheets/palette.356b1318.min.css">
@@ -5005,7 +5005,27 @@
 
 <span class="p">[</span><span class="nb">round</span><span class="p">(</span><span class="n">score</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span> <span class="k">for</span> <span class="n">score</span> <span class="ow">in</span> <span class="n">scores</span><span class="p">]</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>[1.802, 1.937, 1.567, 1.181, 1.28]
+<div class="language-text highlight"><pre><span></span><code>[1.802, 1.936, 1.566, 1.181, 1.272]
+</code></pre></div></p>
+<p><div class="language-python highlight"><pre><span></span><code><span class="n">X</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.45</span><span class="p">,</span> <span class="mf">0.43</span><span class="p">,</span> <span class="mf">0.44</span><span class="p">,</span> <span class="mf">0.445</span><span class="p">,</span> <span class="mf">0.45</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span>
+<span class="n">lof</span> <span class="o">=</span> <span class="n">anomaly</span><span class="o">.</span><span class="n">LocalOutlierFactor</span><span class="p">()</span>
+
+<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">X</span><span class="p">[:</span><span class="mi">3</span><span class="p">]:</span>
+    <span class="n">lof</span><span class="o">.</span><span class="n">learn_one</span><span class="p">({</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="n">x</span><span class="p">})</span>  <span class="c1"># Warming up</span>
+
+<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">X</span><span class="p">:</span>
+    <span class="n">features</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="n">x</span><span class="p">}</span>
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s1">&#39;Anomaly score for x=</span><span class="si">{</span><span class="n">x</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">lof</span><span class="o">.</span><span class="n">score_one</span><span class="p">(</span><span class="n">features</span><span class="p">)</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">lof</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">features</span><span class="p">)</span>
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>Anomaly score for x=0.500: 0.000
+Anomaly score for x=0.450: 0.000
+Anomaly score for x=0.430: 0.000
+Anomaly score for x=0.440: 1.020
+Anomaly score for x=0.445: 1.032
+Anomaly score for x=0.450: 0.000
+Anomaly score for x=0.000: 0.980
 </code></pre></div></p>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <details class="- abstract">
@@ -5109,7 +5129,7 @@ DOI: 10.1109/CIDM.2007.368917.</p>
     <script id="__config" type="application/json">{"base": "../../..", "features": ["content.code.copy", "navigation.tabs", "navigation.instant", "navigation.indexes", "navigation.prune"], "search": "../../../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.94c44541.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.aecac24b.min.js"></script>
       
         <script src="../../../js/mkdocs-charts-plugin.js"></script>
       
