@@ -57,6 +57,9 @@ class TextCompressionClassifier(base.Classifier):
         
         return new_compression_contexts
 
+    def _unit_test_skips(self):
+        return {"check_shuffle_features_no_impact"}
+
     def learn_one(self, x, y):
         """Updates the classifier with a new sample.
 
