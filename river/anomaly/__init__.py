@@ -17,6 +17,7 @@ from . import base
 from .filter import QuantileFilter, ThresholdFilter
 from .gaussian import GaussianScorer
 from .hst import HalfSpaceTrees
+from .loda import LODA
 from .lof import LocalOutlierFactor
 from .svm import OneClassSVM
 
@@ -29,4 +30,5 @@ __all__ = [
     "QuantileFilter",
     "ThresholdFilter",
     "LocalOutlierFactor",
+    "LODA",
 ]
