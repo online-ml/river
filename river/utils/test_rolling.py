@@ -4,7 +4,7 @@ import datetime as dt
 
 import pytest
 
-from river import stats, utils
+from river import proba, stats, utils
 
 
 def test_with_counter():
@@ -38,3 +38,15 @@ def test_rolling_with_not_rollable():
 def test_time_rolling_with_not_rollable():
     with pytest.raises(ValueError):
         utils.TimeRolling(stats.Quantile(), period=dt.timedelta(seconds=10))
+
+
+def test_issue_1343():
+    """
+
+    https://github.com/online-ml/river/issues/1343
+
+    """
+    rmean = utils.TimeRolling(proba.MultivariateGaussian(), period=dt.timedelta(microseconds=1))
+    t = dt.datetime.utcnow()
+    rmean.update({"a": 0}, t=t)
+    rmean.update({"a": 1}, t=t)
