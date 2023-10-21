@@ -56,7 +56,7 @@ def test_batch_lof_scores():
     under different batch sizes.
     """
     cc_df = pd.DataFrame(datasets.CreditCard())
-    cc_df_np = [np.array(x.values()) for x in cc_df[0].to_dict().values()]
+    cc_df_np = [np.array(list(x.values())) for x in cc_df[0].to_dict().values()]
 
     batch_sizes = [20, 50, 100]
 
