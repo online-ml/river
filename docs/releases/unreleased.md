@@ -37,3 +37,8 @@ River's mini-batch methods now support pandas v2. In particular, River conforms 
 ## tree
 
 - Fix a bug in `tree.splitter.NominalSplitterClassif` that generated a mismatch between the number of existing tree branches and the number of tracked branches.
+
+## utils
+
+- Removed `utils.dict2numpy` and `utils.numpy2dict` functions. They were not used anywhere in the library.
+- `utils.TimeRolling` now works correctly if two samples with the same timestamp are added in a row.
