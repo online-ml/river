@@ -125,12 +125,15 @@ class TimeRolling(BaseRolling):
     def __init__(self, obj: Rollable, period: dt.timedelta):
         super().__init__(obj)
         self.period = period
-        self._events: list[tuple[dt.datetime, typing.Any]] = []
+        self._timestamps: list[dt.datetime] = []
+        self._datum: list[typing.Any] = []
         self._latest = dt.datetime(1, 1, 1)
 
     def update(self, *args, t: dt.datetime, **kwargs):
         self.obj.update(*args, **kwargs)
-        bisect.insort_left(self._events, (t, (args, kwargs)))
+        i = bisect.bisect_left(self._timestamps, t)
+        self._timestamps.insert(i, t)
+        self._datum.insert(i, (args, kwargs))
 
         # There will only be events to revert if the new event if younger than the previously seen
         # youngest event
@@ -138,7 +141,7 @@ class TimeRolling(BaseRolling):
             self._latest = t
 
             i = 0
-            for ti, (argsi, kwargsi) in self._events:
+            for ti, (argsi, kwargsi) in zip(self._timestamps, self._datum):
                 if ti > t - self.period:
                     break
                 self.obj.revert(*argsi, **kwargsi)
@@ -146,6 +149,7 @@ class TimeRolling(BaseRolling):
 
             # Remove expired events
             if i > 0:
-                self._events = self._events[i:]
+                self._timestamps = self._timestamps[i:]
+                self._datum = self._datum[i:]
 
         return self
