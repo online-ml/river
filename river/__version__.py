@@ -1,5 +1,4 @@
 from __future__ import annotations
+import importlib.metadata
 
-VERSION = (0, 19, 0)
-
-__version__ = ".".join(map(str, VERSION))  # noqa: F401
+__version__ = importlib.metadata.version("river")
