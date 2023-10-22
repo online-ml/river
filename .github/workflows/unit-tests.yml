@@ -17,7 +17,7 @@ jobs:
       - name: Retrieve the environment and the River build
         uses: ./.github/actions/install-env
         with:
-          python: "3.12"
+          python: "3.11"
 
       - name: Cache River datasets
         uses: actions/cache@v3
