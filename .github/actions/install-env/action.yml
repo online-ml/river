@@ -1,4 +1,10 @@
 name: Install env
+
+inputs:
+  python-version:
+    description: "Python version to use"
+    required: true
+
 runs:
   using: "composite"
   steps:
@@ -11,7 +17,7 @@ runs:
       id: set-up-python
       uses: actions/setup-python@v4
       with:
-        python-version: ${{ inputs.python }}
+        python-version: ${{ inputs.python-version }}
 
     - name: Load cached Poetry installation
       uses: actions/cache@v3

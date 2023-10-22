@@ -30,10 +30,16 @@ scikit-learn = "^1.0.1"
 sqlalchemy = "^2.0.0"
 sympy = "^1.10.1"
 
+[tool.poetry.group.compat]
+optional = true
+
 [tool.poetry.group.compat.dependencies]
 scikit-learn = "^1.0.1"
 sqlalchemy = "^2.0.0"
 vaex = "^4.0.0"
+
+[tool.poetry.group.docs]
+optional = true
 
 [tool.poetry.group.docs.dependencies]
 "dominate" = "*"
@@ -51,6 +57,9 @@ vaex = "^4.0.0"
 "spacy" = "*"
 "tabulate" = "*"
 "watermark" = "*"
+
+[tool.poetry.group.benchmark]
+optional = true
 
 [tool.poetry.group.benchmark.dependencies]
 "dominate" = "2.8.0"
