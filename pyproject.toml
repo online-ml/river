@@ -74,6 +74,7 @@ optional = true
 addopts = [
     "--doctest-modules",
     "--doctest-glob=README.md",
+    "--ignore=build.py",
     "--ignore=benchmarks",
     "--ignore=docs/scripts",
     "--verbose",
