@@ -31,10 +31,10 @@ jobs:
           path: ~/scikit_learn_data
           key: ${{ runner.os }}
 
-      - name: Download datasets
-        run: |
-          poetry run python -c "from river import datasets; datasets.CreditCard().download(); datasets.Elec2().download(); datasets.SMSSpam().download()"
-          poetry run python -c "from river import bandit; bandit.datasets.NewsArticles().download()"
+      #   - name: Download datasets
+      #     run: |
+      #       poetry run python -c "from river import datasets; datasets.CreditCard().download(); datasets.Elec2().download(); datasets.SMSSpam().download()"
+      #       poetry run python -c "from river import bandit; bandit.datasets.NewsArticles().download()"
 
       - name: pytest [Branch]
         if: github.event_name == 'pull_request'
