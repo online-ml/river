@@ -451,59 +451,67 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
 
                     # Manage memory
                     self._enforce_size_limit()
+                elif x_current is not None:
+                    if (
+                        x_best.merit - x_current.merit > hoeffding_bound
+                        or hoeffding_bound < self.tau
+                    ) and (id_current != id_best):
+                        # Create a new branch
+                        branch = self._branch_selector(
+                            x_best.numerical_feature, x_best.multiway_split
+                        )
+                        leaves = tuple(
+                            self._new_leaf(initial_stats, parent=node)
+                            for initial_stats in x_best.children_stats
+                        )
 
-                elif (
-                    x_best.merit - x_current.merit > hoeffding_bound or hoeffding_bound < self.tau
-                ) and (id_current != id_best):
-                    # Create a new branch
-                    branch = self._branch_selector(x_best.numerical_feature, x_best.multiway_split)
-                    leaves = tuple(
-                        self._new_leaf(initial_stats, parent=node)
-                        for initial_stats in x_best.children_stats
-                    )
+                        new_split = x_best.assemble(
+                            branch, node.stats, node.depth, *leaves, **kwargs
+                        )
+                        # Update weights in new_split
+                        new_split.last_split_reevaluation_at = node.total_weight
 
-                    new_split = x_best.assemble(branch, node.stats, node.depth, *leaves, **kwargs)
-                    # Update weights in new_split
-                    new_split.last_split_reevaluation_at = node.total_weight
+                        n_active = n_inactive = 0
+                        for leaf in node.iter_leaves():
+                            if leaf.is_active():
+                                n_active += 1
+                            else:
+                                n_inactive += 1
 
-                    n_active = n_inactive = 0
-                    for leaf in node.iter_leaves():
-                        if leaf.is_active():
-                            n_active += 1
+                        self._n_active_leaves -= n_active
+                        self._n_inactive_leaves -= n_inactive
+                        self._n_active_leaves += len(leaves)
+
+                        if parent is None:
+                            # Root case : replace the root node by a new split node
+                            self._root = new_split
                         else:
-                            n_inactive += 1
+                            parent.children[branch_index] = new_split
 
-                    self._n_active_leaves -= n_active
-                    self._n_inactive_leaves -= n_inactive
-                    self._n_active_leaves += len(leaves)
+                        stop_flag = True
 
-                    if parent is None:
-                        # Root case : replace the root node by a new split node
-                        self._root = new_split
-                    else:
-                        parent.children[branch_index] = new_split
+                        # Manage memory
+                        self._enforce_size_limit()
 
-                    stop_flag = True
+                    elif (
+                        x_best.merit - x_current.merit > hoeffding_bound
+                        or hoeffding_bound < self.tau
+                    ) and (id_current == id_best):
+                        branch = self._branch_selector(
+                            x_best.numerical_feature, x_best.multiway_split
+                        )
+                        # Change the branch but keep the existing children nodes
+                        new_split = x_best.assemble(
+                            branch, node.stats, node.depth, *tuple(node.children), **kwargs
+                        )
+                        # Update weights in new_split
+                        new_split.last_split_reevaluation_at = node.total_weight
 
-                    # Manage memory
-                    self._enforce_size_limit()
-
-                elif (
-                    x_best.merit - x_current.merit > hoeffding_bound or hoeffding_bound < self.tau
-                ) and (id_current == id_best):
-                    branch = self._branch_selector(x_best.numerical_feature, x_best.multiway_split)
-                    # Change the branch but keep the existing children nodes
-                    new_split = x_best.assemble(
-                        branch, node.stats, node.depth, *tuple(node.children), **kwargs
-                    )
-                    # Update weights in new_split
-                    new_split.last_split_reevaluation_at = node.total_weight
-
-                    if parent is None:
-                        # Root case : replace the root node by a new split node
-                        self._root = new_split
-                    else:
-                        parent.children[branch_index] = new_split
+                        if parent is None:
+                            # Root case : replace the root node by a new split node
+                            self._root = new_split
+                        else:
+                            parent.children[branch_index] = new_split
 
         return stop_flag
 
@@ -551,7 +559,12 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
                     node.total_weight,
                 )
 
-                if x_best.merit - x_null.merit > hoeffding_bound or hoeffding_bound < self.tau:
+                if x_best.feature is None:
+                    # Pre-pruning - null wins
+                    node.deactivate()
+                    self._n_inactive_leaves += 1
+                    self._n_active_leaves -= 1
+                elif x_best.merit - x_null.merit > hoeffding_bound or hoeffding_bound < self.tau:
                     # Create a new branch
                     branch = self._branch_selector(x_best.numerical_feature, x_best.multiway_split)
                     leaves = tuple(

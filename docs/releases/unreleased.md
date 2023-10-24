@@ -37,6 +37,7 @@ River's mini-batch methods now support pandas v2. In particular, River conforms 
 ## tree
 
 - Fix a bug in `tree.splitter.NominalSplitterClassif` that generated a mismatch between the number of existing tree branches and the number of tracked branches.
+- Fix a bug in `tree.ExtremelyFastDecisionTreeClassifier` where the split re-evaluation failed when the current branch's feature was not available as a split option. The fix also enables the tree to pre-prune a leaf via the tie-breaking mechanism.
 
 ## utils
 
