@@ -3312,10 +3312,6 @@
       
         
       
-        
-      
-        
-      
     
     
     
@@ -3905,6 +3901,13 @@
         <li class="md-nav__item">
   <a href="#tree" class="md-nav__link">
     tree
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#utils" class="md-nav__link">
+    utils
   </a>
   
 </li>
@@ -4766,6 +4769,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#utils" class="md-nav__link">
+    utils
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -4818,6 +4828,12 @@
 <h2 id="tree">tree<a class="headerlink" href="#tree" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Fix a bug in <code>tree.splitter.NominalSplitterClassif</code> that generated a mismatch between the number of existing tree branches and the number of tracked branches.</li>
+<li>Fix a bug in <a href="../../api/tree/ExtremelyFastDecisionTreeClassifier"><code>tree.ExtremelyFastDecisionTreeClassifier</code></a> where the split re-evaluation failed when the current branch's feature was not available as a split option. The fix also enables the tree to pre-prune a leaf via the tie-breaking mechanism.</li>
+</ul>
+<h2 id="utils">utils<a class="headerlink" href="#utils" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Removed <code>utils.dict2numpy</code> and <code>utils.numpy2dict</code> functions. They were not used anywhere in the library.</li>
+<li><a href="../../api/utils/TimeRolling"><code>utils.TimeRolling</code></a> now works correctly if two samples with the same timestamp are added in a row.</li>
 </ul>
 
 
