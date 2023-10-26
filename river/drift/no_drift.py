@@ -11,6 +11,7 @@ class NoDrift(base.DriftDetector):
 
     Examples
     --------
+    
     >>> from river import drift
     >>> from river import evaluate
     >>> from river import forest
