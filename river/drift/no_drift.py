@@ -7,8 +7,6 @@ from river.base.drift_detector import DriftDetector
 class NoDrift(base.DriftDetector):
     """Dummy class used to turn off concept drift detection capabilities of adaptive models.
     It always signals that no concept drift was detected.
-
-
     Examples
     --------
     
