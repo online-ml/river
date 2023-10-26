@@ -20,7 +20,7 @@ class NoDrift(base.DriftDetector):
     >>> from river.datasets import synth
 
     >>> dataset = synth.ConceptDriftStream(
-    ...     seed=93,
+    ...     seed=8,
     ...     position=500,
     ...     width=40,
     ... )
@@ -37,10 +37,10 @@ class NoDrift(base.DriftDetector):
     >>> metric = metrics.Accuracy()
 
     >>> evaluate.progressive_val_score(dataset.take(700), model, metric)
-    Accuracy: 69.96%
+    Accuracy: 76.25%
 
     >>> model.n_drifts_detected()
-    1
+    2
 
     >>> model.n_warnings_detected()
     0
@@ -56,7 +56,7 @@ class NoDrift(base.DriftDetector):
     >>> metric = metrics.Accuracy()
 
     >>> evaluate.progressive_val_score(dataset.take(700), stationary_model, metric)
-    Accuracy: 71.10%
+    Accuracy: 76.25%
 
     >>> stationary_model.n_drifts_detected()
     0
