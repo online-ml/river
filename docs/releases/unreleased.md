@@ -8,6 +8,10 @@ River's mini-batch methods now support pandas v2. In particular, River conforms 
   - Made `score_one` method of `anomaly.LocalOutlierFactor` stateless
   - Defined default score for uninitialized detector
 
+## covariance
+
+- Added `_from_state` method to `covariance.EmpiricalCovariance` to warm start from previous knowledge.
+
 ## clustering
 
 - Add fixes to `cluster.DBSTREAM` algorithm, including:
@@ -22,13 +26,13 @@ River's mini-batch methods now support pandas v2. In particular, River conforms 
 
 - Added `datasets.WebTraffic`, which is a dataset that counts the occurrences of events on a website. It is a multi-output regression dataset with two outputs.
 
+## drift
+
+- Add `drift.NoDrift` to allow disabling the drift detection capabilities of models. This detector does nothing and always returns `False` when queried whether or not a concept drift was detected.
+
 ## forest
 
 - Simplify inner the structures of `forest.ARFClassifier` and `forest.ARFRegressor` by removing redundant class hierarchy. Simplify how concept drift logging can be accessed in individual trees and in the forest as a whole.
-
-## covariance
-
-- Added `_from_state` method to `covariance.EmpiricalCovariance` to warm start from previous knowledge.
 
 ## proba
 
