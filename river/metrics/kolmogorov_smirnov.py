@@ -9,6 +9,8 @@ __all__ = ["KolmogorovSmirnov"]
 
 
 class Treap(base.Base):
+    """Class representing Treap (Cartesian Tree) used to calculate the Incremental KS statistics."""
+
     def __init__(self, key, value=0):
         self.key = key
         self.value = value
@@ -157,10 +159,37 @@ class Treap(base.Base):
 class KolmogorovSmirnov(metrics.base.Metric):
     """Incremental Kolmogorov-Smirnov statistics
 
+    The two-sample Kolmogorov-Smirnov test quantifies the distance between the empirical functions of two samples,
+    with the null distribution of this statistic is calculated under the null hypothesis that the samples are drawn from
+    the same distribution. The formula can be described as
+
+    $$
+    D_{n, m} = \sup_x \| F_{1, n}(x) - F_{2, m}(x) \|.
+    $$
+
+    This implementation is the incremental version of the previously mentioned statistics, with the change being in
+    the ability to insert and remove an observation thorugh time. This can be done using a randomized tree called
+    Treap (or Cartesian Tree) [^2] with bulk operation and lazy propagation.
+
     The implemented algorithm is able to perform the insertion and removal operations
     in O(logN) with high probability and calculate the Kolmogorov-Smirnov test in O(1),
     where N is the number of sample observations. This is a significant improvement compared
     to the O(N logN) cost of non-incremental implementation.
+
+    This implementation also supports the calculation of the Kuiper statistics. Different from the orginial
+    Kolmogorov-Smirnov statistics, Kuiper's test [^3] calculates the sum of the absolute sizes of the most positive and
+    most negative differences between the two cumulative distribution functions taken into account. As such,
+    Kuiper's test is very sensitive in the tails as at the median.
+
+    Last but not least, this implementation is also based on the original implementation within the supplementary
+    material of the authors of paper [^1], at
+    [the following Github repository](https://github.com/denismr/incremental-ks/tree/master).
+
+    Parameters
+    ----------
+    statistic
+        The method used to calculate the statistic, can be either "ks" or "kuiper".
+
     Examples
     --------
 
@@ -177,6 +206,15 @@ class KolmogorovSmirnov(metrics.base.Metric):
 
     >>> metric
     KolmogorovSmirnov: 0.5
+
+    References
+    ----------
+    [^1]: dos Reis, D.M. et al. (2016) ‘Fast unsupervised online drift detection using incremental Kolmogorov-Smirnov
+    test’, Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining.
+    doi:10.1145/2939672.2939836.
+    [^2]: C. R. Aragon and R. G. Seidel. Randomized search trees. In FOCS, pages 540–545. IEEE, 1989.
+    [^3]: Kuiper, N. H. (1960). "Tests concerning random points on a circle".
+    Proceedings of the Koninklijke Nederlandse Akademie van Wetenschappen, Series A. 63: 38–47.
     """
 
     _fmt = ".3f"
@@ -229,10 +267,14 @@ class KolmogorovSmirnov(metrics.base.Metric):
         self.treap = Treap.merge(left, right)
 
     def bigger_is_better(self):
+        """The higher the Kolmogorov-Smirnov/Kuiper statistics, the more the two distributions or the two samples
+        are different from each other."""
         return False
 
     def works_with(self, model):
-        return True
+        """This statistic is expected to work with any pairs of numerical distribution, regardless of
+        the original model."""
+        pass
 
     def get(self):
         assert self.n[0] == self.n[1]
