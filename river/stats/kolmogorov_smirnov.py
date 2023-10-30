@@ -189,6 +189,7 @@ class KolmogorovSmirnov(stats.base.Bivariate):
     ----------
     statistic
         The method used to calculate the statistic, can be either "ks" or "kuiper".
+        The default value is set as "ks".
 
     Examples
     --------
@@ -205,6 +206,9 @@ class KolmogorovSmirnov(stats.base.Bivariate):
 
     >>> incremental_ks
     KolmogorovSmirnov: 0.5
+
+    >>> incremental_ks.n_samples
+    8
 
     References
     ----------
@@ -274,3 +278,11 @@ class KolmogorovSmirnov(stats.base.Bivariate):
             return max(self.treap.max_value, -self.treap.min_value) / self.n_samples
         else:
             return max(self.treap.max_value - self.treap.min_value) / self.n_samples
+
+    def test_ks_threshold(self, ca):
+        """
+        Test whether the reference and sliding window follows the same or different probability distribution.
+        This test will return `True` if we **reject** the null hypothesis that
+        the two windows follow the same distribution.
+        """
+        return self.get() > ca * (2 * self.n_samples / self.n_samples ** 2) ** 0.5

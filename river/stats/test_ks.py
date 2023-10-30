@@ -8,11 +8,11 @@ from scipy.stats import ks_2samp
 
 
 def test_incremental_ks_statistics():
-    initial_a = np.random.normal(loc=0, scale=1, size=5)
-    initial_b = np.random.normal(loc=1, scale=1, size=5)
+    initial_a = np.random.normal(loc=0, scale=1, size=500)
+    initial_b = np.random.normal(loc=1, scale=1, size=500)
 
-    stream_a = np.random.normal(loc=0, scale=1, size=10)
-    stream_b = np.random.normal(loc=1, scale=1, size=10)
+    stream_a = np.random.normal(loc=0, scale=1, size=5000)
+    stream_b = np.random.normal(loc=1, scale=1, size=5000)
 
     incremental_ks_statistics = []
     incremental_ks = stats.KolmogorovSmirnov(statistic="ks")
@@ -40,3 +40,5 @@ def test_incremental_ks_statistics():
         ks_2samp_statistics.append(ks_2samp(sliding_a, sliding_b).statistic)
 
     assert np.all(np.isclose(np.array(incremental_ks_statistics), np.array(ks_2samp_statistics)))
+
+    assert incremental_ks.test_ks_threshold(ca=incremental_ks.ca(p_value=0.05)) is True
