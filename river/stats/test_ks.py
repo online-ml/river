@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-import numpy as np
-
 from collections import deque
+
+import numpy as np
 from river import stats
 from scipy.stats import ks_2samp
 
