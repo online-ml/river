@@ -3,7 +3,7 @@ from __future__ import annotations
 import math
 import random
 
-from river import base, metrics
+from river import base, stats
 
 __all__ = ["KolmogorovSmirnov"]
 
@@ -156,8 +156,8 @@ class Treap(base.Base):
         return 0 if node is None else node.height
 
 
-class KolmogorovSmirnov(metrics.base.Metric):
-    """Incremental Kolmogorov-Smirnov statistics
+class KolmogorovSmirnov(stats.base.Bivariate):
+    r"""Incremental Kolmogorov-Smirnov statistics.
 
     The two-sample Kolmogorov-Smirnov test quantifies the distance between the empirical functions of two samples,
     with the null distribution of this statistic is calculated under the null hypothesis that the samples are drawn from
@@ -194,17 +194,16 @@ class KolmogorovSmirnov(metrics.base.Metric):
     --------
 
     >>> import numpy as np
-    >>> from river import metrics
+    >>> from river import stats
 
     >>> stream_a = [1, 1, 2, 2, 3, 3, 4, 4]
     >>> stream_b = [1, 1, 1, 1, 2, 2, 2, 2]
 
-    >>> metric = metrics.KolmogorovSmirnov(statistic="ks")
+    >>> incremental_ks = stats.KolmogorovSmirnov(statistic="ks")
     >>> for a, b in zip(stream_a, stream_b):
-    ...     metric.update(a, 0)
-    ...     metric.update(b, 1)
+    ...     incremental_ks.update(a, b)
 
-    >>> metric
+    >>> incremental_ks
     KolmogorovSmirnov: 0.5
 
     References
@@ -217,11 +216,9 @@ class KolmogorovSmirnov(metrics.base.Metric):
     Proceedings of the Koninklijke Nederlandse Akademie van Wetenschappen, Series A. 63: 38–47.
     """
 
-    _fmt = ".3f"
-
     def __init__(self, statistic="ks"):
         self.treap = None
-        self.n = {0: 0, 1: 0}
+        self.n_samples = 0
         self.statistic = statistic
 
     @staticmethod
@@ -232,58 +229,48 @@ class KolmogorovSmirnov(metrics.base.Metric):
     def ks_threshold(cls, p_value, n_samples):
         return cls.ca(p_value) * (2.0 * n_samples / n_samples**2)
 
-    def update(self, obs, group):
-        assert group == 0 or group == 1
-        key = (obs, group)
+    def update(self, x, y):
+        keys = ((x, 0), (y, 1))
 
-        self.n[group] += 1
-        left, left_g, right, val = None, None, None, None
+        self.n_samples += 1
 
-        left, right = Treap.split_keep_right(self.treap, key)
-        left, left_g = Treap.split_greatest(left)
-        val = 0 if left_g is None else left_g.value
+        for key in keys:
+            left, left_g, right, val = None, None, None, None
 
-        left = Treap.merge(left, left_g)
-        right = Treap.merge(Treap(key, val), right)
-        Treap.sum_all(right, 1 if group == 0 else -1)
+            left, right = Treap.split_keep_right(self.treap, key)
+            left, left_g = Treap.split_greatest(left)
+            val = 0 if left_g is None else left_g.value
 
-        self.treap = Treap.merge(left, right)
+            left = Treap.merge(left, left_g)
+            right = Treap.merge(Treap(key, val), right)
+            Treap.sum_all(right, 1 if key[1] == 0 else -1)
 
-    def revert(self, obs, group):
-        assert group == 0 or group == 1
-        key = (obs, group)
+            self.treap = Treap.merge(left, right)
 
-        self.n[group] -= 1
-        left, right, right_l = None, None, None
+    def revert(self, x, y):
+        keys = ((x, 0), (y, 1))
 
-        left, right = Treap.split_keep_right(self.treap, key)
-        right_l, right = Treap.split_smallest(right)
+        self.n_samples -= 1
 
-        if right_l is not None and right_l.key == key:
-            Treap.sum_all(right, -1 if group == 0 else 1)
-        else:
-            right = Treap.merge(right_l, right)
+        for key in keys:
+            left, right, right_l = None, None, None
 
-        self.treap = Treap.merge(left, right)
+            left, right = Treap.split_keep_right(self.treap, key)
+            right_l, right = Treap.split_smallest(right)
 
-    def bigger_is_better(self):
-        """The higher the Kolmogorov-Smirnov/Kuiper statistics, the more the two distributions or the two samples
-        are different from each other."""
-        return False
+            if right_l is not None and right_l.key == key:
+                Treap.sum_all(right, -1 if key[1] == 0 else 1)
+            else:
+                right = Treap.merge(right_l, right)
 
-    def works_with(self, model):
-        """This statistic is expected to work with any pairs of numerical distribution, regardless of
-        the original model."""
-        pass
+            self.treap = Treap.merge(left, right)
 
     def get(self):
-        assert self.n[0] == self.n[1]
         assert self.statistic in ["ks", "kuiper"]
-        n_samples = self.n[0]
-        if n_samples == 0:
+        if self.n_samples == 0:
             return 0
 
         if self.statistic == "ks":
-            return max(self.treap.max_value, -self.treap.min_value) / n_samples
+            return max(self.treap.max_value, -self.treap.min_value) / self.n_samples
         else:
-            return max(self.treap.max_value - self.treap.min_value) / n_samples
+            return max(self.treap.max_value - self.treap.min_value) / self.n_samples

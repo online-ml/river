@@ -48,7 +48,6 @@ from .fowlkes_mallows import FowlkesMallows
 from .geometric_mean import GeometricMean
 from .jaccard import Jaccard, MacroJaccard, MicroJaccard, WeightedJaccard
 from .kappa import CohenKappa
-from .kolmogorov_smirnov import KolmogorovSmirnov
 from .log_loss import LogLoss
 from .mae import MAE
 from .mape import MAPE
@@ -85,7 +84,6 @@ __all__ = [
     "FBeta",
     "GeometricMean",
     "Homogeneity",
-    "KolmogorovSmirnov",
     "LogLoss",
     "MAE",
     "MAPE",

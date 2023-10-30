@@ -15,20 +15,17 @@ def test_incremental_ks_statistics():
     stream_b = np.random.normal(loc=1, scale=1, size=10)
 
     incremental_ks_statistics = []
-    incremental_ks = river.metrics.KolmogorovSmirnov(statistic="ks")
+    incremental_ks = river.stats.KolmogorovSmirnov(statistic="ks")
     sliding_a = deque(initial_a)
     sliding_b = deque(initial_b)
 
     for a, b in zip(initial_a, initial_b):
-        incremental_ks.update(a, 0)
-        incremental_ks.update(b, 1)
+        incremental_ks.update(a, b)
     for a, b in zip(stream_a, stream_b):
-        incremental_ks.revert(sliding_a.popleft(), 0)
-        incremental_ks.revert(sliding_b.popleft(), 1)
+        incremental_ks.revert(sliding_a.popleft(), sliding_b.popleft())
         sliding_a.append(a)
         sliding_b.append(b)
-        incremental_ks.update(a, 0)
-        incremental_ks.update(b, 1)
+        incremental_ks.update(a, b)
         incremental_ks_statistics.append(incremental_ks.get())
 
     ks_2samp_statistics = []
