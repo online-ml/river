@@ -9,6 +9,7 @@ from .entropy import Entropy
 from .ewmean import EWMean
 from .ewvar import EWVar
 from .iqr import IQR, RollingIQR
+from .kolmogorov_smirnov import KolmogorovSmirnov
 from .kurtosis import Kurtosis
 from .link import Link
 from .mad import MAD
@@ -37,6 +38,7 @@ __all__ = [
     "EWMean",
     "EWVar",
     "IQR",
+    "KolmogorovSmirnov",
     "Kurtosis",
     "Link",
     "MAD",
