@@ -10,7 +10,7 @@ import typing
 import numpy as np
 
 from river import base, metrics, stats
-from river.drift import ADWIN
+from river.drift import ADWIN, NoDrift
 from river.tree.hoeffding_tree_classifier import HoeffdingTreeClassifier
 from river.tree.hoeffding_tree_regressor import HoeffdingTreeRegressor
 from river.tree.nodes.arf_htc_nodes import (
@@ -32,8 +32,8 @@ class BaseForest(base.Ensemble):
         n_models: int,
         max_features: bool | str | int,
         lambda_value: int,
-        drift_detector: base.DriftDetector | None,
-        warning_detector: base.DriftDetector | None,
+        drift_detector: base.DriftDetector,
+        warning_detector: base.DriftDetector,
         metric: metrics.base.MultiClassMetric | metrics.base.RegressionMetric,
         disable_weighted_vote,
         seed,
@@ -50,20 +50,21 @@ class BaseForest(base.Ensemble):
 
         self._rng = random.Random(self.seed)
 
-        self._warning_detectors: list[base.DriftDetector] = (
-            None  # type: ignore
-            if self.warning_detector is None
-            else [self.warning_detector.clone() for _ in range(self.n_models)]
-        )
-        self._drift_detectors: list[base.DriftDetector] = (
-            None  # type: ignore
-            if self.drift_detector is None
-            else [self.drift_detector.clone() for _ in range(self.n_models)]
-        )
+        self._warning_detectors: list[base.DriftDetector]
+        self._warning_detection_disabled = True
+        if not isinstance(self.warning_detector, NoDrift):
+            self._warning_detectors = [self.warning_detector.clone() for _ in range(self.n_models)]
+            self._warning_detection_disabled = False
+
+        self._drift_detectors: list[base.DriftDetector]
+        self._drift_detection_disabled = True
+        if not isinstance(self.drift_detector, NoDrift):
+            self._drift_detectors = [self.drift_detector.clone() for _ in range(self.n_models)]
+            self._drift_detection_disabled = False
 
         # The background models
         self._background: list[BaseTreeClassifier | BaseTreeRegressor | None] = (
-            None if self.warning_detector is None else [None] * self.n_models  # type: ignore
+            None if self._warning_detection_disabled else [None] * self.n_models  # type: ignore
         )
 
         # Performance metrics used for weighted voting/aggregation
@@ -71,10 +72,10 @@ class BaseForest(base.Ensemble):
 
         # Drift and warning logging
         self._warning_tracker: dict = (
-            collections.defaultdict(int) if self.warning_detector is not None else None  # type: ignore
+            collections.defaultdict(int) if not self._warning_detection_disabled else None  # type: ignore
         )
         self._drift_tracker: dict = (
-            collections.defaultdict(int) if self.drift_detector is not None else None  # type: ignore
+            collections.defaultdict(int) if not self._drift_detection_disabled else None  # type: ignore
         )
 
     @property
@@ -101,11 +102,9 @@ class BaseForest(base.Ensemble):
     def _new_base_model(self) -> BaseTreeClassifier | BaseTreeRegressor:
         raise NotImplementedError
 
-    def n_warnings_detected(self, tree_id: int | None = None) -> int | None:
+    def n_warnings_detected(self, tree_id: int | None = None) -> int:
         """Get the total number of concept drift warnings detected, or the number on an individual
         tree basis (optionally).
-
-        If warning detection is disabled, will return `None`.
 
         Parameters
         ----------
@@ -119,19 +118,17 @@ class BaseForest(base.Ensemble):
 
         """
 
-        if self.warning_detector is None:
-            return None
+        if self._warning_detection_disabled:
+            return 0
 
         if tree_id is None:
             return sum(self._warning_tracker.values())
 
         return self._warning_tracker[tree_id]
 
-    def n_drifts_detected(self, tree_id: int | None = None) -> int | None:
+    def n_drifts_detected(self, tree_id: int | None = None) -> int:
         """Get the total number of concept drifts detected, or such number on an individual
         tree basis (optionally).
-
-        If drift detection is disabled, will return `None`.
 
         Parameters
         ----------
@@ -145,8 +142,8 @@ class BaseForest(base.Ensemble):
 
         """
 
-        if self.drift_detector is None:
-            return None
+        if self._drift_detection_disabled:
+            return 0
 
         if tree_id is None:
             return sum(self._drift_tracker.values())
@@ -171,13 +168,13 @@ class BaseForest(base.Ensemble):
 
             k = poisson(rate=self.lambda_value, rng=self._rng)
             if k > 0:
-                if self.warning_detector is not None and self._background[i] is not None:
+                if not self._warning_detection_disabled and self._background[i] is not None:
                     self._background[i].learn_one(x=x, y=y, sample_weight=k)  # type: ignore
 
                 model.learn_one(x=x, y=y, sample_weight=k)
 
                 drift_input = None
-                if self.drift_detector is not None and self.warning_detector is not None:
+                if not self._warning_detection_disabled:
                     drift_input = self._drift_detector_input(i, y, y_pred)
                     self._warning_detectors[i].update(drift_input)
 
@@ -189,7 +186,7 @@ class BaseForest(base.Ensemble):
                         # Update warning tracker
                         self._warning_tracker[i] += 1
 
-                if self.drift_detector is not None:
+                if not self._drift_detection_disabled:
                     drift_input = (
                         drift_input
                         if drift_input is not None
@@ -198,7 +195,7 @@ class BaseForest(base.Ensemble):
                     self._drift_detectors[i].update(drift_input)
 
                     if self._drift_detectors[i].drift_detected:
-                        if self.warning_detector is not None and self._background[i] is not None:
+                        if not self._warning_detection_disabled and self._background[i] is not None:
                             self.data[i] = self._background[i]
                             self._background[i] = None
                             self._warning_detectors[i] = self.warning_detector.clone()

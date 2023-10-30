@@ -8,6 +8,10 @@ River's mini-batch methods now support pandas v2. In particular, River conforms 
   - Made `score_one` method of `anomaly.LocalOutlierFactor` stateless
   - Defined default score for uninitialized detector
 
+## covariance
+
+- Added `_from_state` method to `covariance.EmpiricalCovariance` to warm start from previous knowledge.
+
 ## clustering
 
 - Add fixes to `cluster.DBSTREAM` algorithm, including:
@@ -22,6 +26,10 @@ River's mini-batch methods now support pandas v2. In particular, River conforms 
 
 - Added `datasets.WebTraffic`, which is a dataset that counts the occurrences of events on a website. It is a multi-output regression dataset with two outputs.
 
+## drift
+
+- Add `drift.NoDrift` to allow disabling the drift detection capabilities of models. This detector does nothing and always returns `False` when queried whether or not a concept drift was detected.
+
 ## evaluate
 
 - Added a `yield_predictions` parameter to `evaluate.iter_progressive_val_score`, which allows including predictions in the output.
@@ -30,10 +38,6 @@ River's mini-batch methods now support pandas v2. In particular, River conforms 
 
 - Simplify inner the structures of `forest.ARFClassifier` and `forest.ARFRegressor` by removing redundant class hierarchy. Simplify how concept drift logging can be accessed in individual trees and in the forest as a whole.
 
-## covariance
-
-- Added `_from_state` method to `covariance.EmpiricalCovariance` to warm start from previous knowledge.
-
 ## proba
 
 - Added `_from_state` method to `proba.MultivariateGaussian` to warm start from previous knowledge.
@@ -41,6 +45,7 @@ River's mini-batch methods now support pandas v2. In particular, River conforms 
 ## tree
 
 - Fix a bug in `tree.splitter.NominalSplitterClassif` that generated a mismatch between the number of existing tree branches and the number of tracked branches.
+- Fix a bug in `tree.ExtremelyFastDecisionTreeClassifier` where the split re-evaluation failed when the current branch's feature was not available as a split option. The fix also enables the tree to pre-prune a leaf via the tie-breaking mechanism.
 
 ## utils
 
