@@ -285,4 +285,4 @@ class KolmogorovSmirnov(stats.base.Bivariate):
         This test will return `True` if we **reject** the null hypothesis that
         the two windows follow the same distribution.
         """
-        return self.get() > ca * (2 * self.n_samples / self.n_samples ** 2) ** 0.5
+        return self.get() > ca * (2 * self.n_samples / self.n_samples**2) ** 0.5
