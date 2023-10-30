@@ -3,8 +3,9 @@ from __future__ import annotations
 from collections import deque
 
 import numpy as np
-from river import stats
 from scipy.stats import ks_2samp
+
+from river import stats
 
 
 def test_incremental_ks_statistics():
