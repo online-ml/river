@@ -22,6 +22,10 @@ River's mini-batch methods now support pandas v2. In particular, River conforms 
 
 - Added `datasets.WebTraffic`, which is a dataset that counts the occurrences of events on a website. It is a multi-output regression dataset with two outputs.
 
+## evaluate
+
+- Added a `yield_predictions` parameter to `evaluate.iter_progressive_val_score`, which allows including predictions in the output.
+
 ## forest
 
 - Simplify inner the structures of `forest.ARFClassifier` and `forest.ARFRegressor` by removing redundant class hierarchy. Simplify how concept drift logging can be accessed in individual trees and in the forest as a whole.
