@@ -43,6 +43,10 @@ River's mini-batch methods now support pandas v2. In particular, River conforms 
 - Fix a bug in `tree.splitter.NominalSplitterClassif` that generated a mismatch between the number of existing tree branches and the number of tracked branches.
 - Fix a bug in `tree.ExtremelyFastDecisionTreeClassifier` where the split re-evaluation failed when the current branch's feature was not available as a split option. The fix also enables the tree to pre-prune a leaf via the tie-breaking mechanism.
 
+## stats
+
+- Implementation of the incremental Kolmogorov-Smirnov statistics (at `stats.KolmogorovSmirnov`), with the option to calculate either the original KS or Kuiper's test.
+
 ## utils
 
 - Removed `utils.dict2numpy` and `utils.numpy2dict` functions. They were not used anywhere in the library.
