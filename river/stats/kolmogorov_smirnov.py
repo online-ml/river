@@ -218,6 +218,7 @@ class KolmogorovSmirnov(stats.base.Bivariate):
     [^2]: C. R. Aragon and R. G. Seidel. Randomized search trees. In FOCS, pages 540–545. IEEE, 1989.
     [^3]: Kuiper, N. H. (1960). "Tests concerning random points on a circle".
     Proceedings of the Koninklijke Nederlandse Akademie van Wetenschappen, Series A. 63: 38–47.
+    
     """
 
     def __init__(self, statistic="ks"):
