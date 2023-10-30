@@ -190,6 +190,8 @@ def iter_progressive_val_score(
 
     The `yield_predictions` parameter can be used to include the predictions in the results:
 
+    >>> import itertools
+
     >>> steps = evaluate.iter_progressive_val_score(
     ...     model=model,
     ...     dataset=datasets.Phishing(),
