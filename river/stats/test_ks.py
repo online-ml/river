@@ -40,6 +40,6 @@ def test_incremental_ks_statistics():
         sliding_b.append(b)
         ks_2samp_statistics.append(ks_2samp(sliding_a, sliding_b).statistic)
 
-    assert np.all(np.isclose(np.array(incremental_ks_statistics), np.array(ks_2samp_statistics)))
+    assert np.allclose(np.array(incremental_ks_statistics), np.array(ks_2samp_statistics))
 
     assert incremental_ks.test_ks_threshold(ca=incremental_ks.ca(p_value=0.05)) is True
