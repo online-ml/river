@@ -22,7 +22,7 @@
       
       
       <link rel="icon" href="../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.4.6">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.4.7">
     
     
       
@@ -30,7 +30,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.35e1ed30.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.4b4a2bd9.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.356b1318.min.css">
@@ -1659,6 +1659,8 @@
   
     
     
+      
+        
       
         
       
@@ -3864,6 +3866,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#covariance" class="md-nav__link">
+    covariance
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#clustering" class="md-nav__link">
     clustering
   </a>
@@ -3878,15 +3887,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#forest" class="md-nav__link">
-    forest
+  <a href="#drift" class="md-nav__link">
+    drift
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#covariance" class="md-nav__link">
-    covariance
+  <a href="#evaluate" class="md-nav__link">
+    evaluate
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#forest" class="md-nav__link">
+    forest
   </a>
   
 </li>
@@ -4728,6 +4744,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#covariance" class="md-nav__link">
+    covariance
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#clustering" class="md-nav__link">
     clustering
   </a>
@@ -4742,15 +4765,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#forest" class="md-nav__link">
-    forest
+  <a href="#drift" class="md-nav__link">
+    drift
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#covariance" class="md-nav__link">
-    covariance
+  <a href="#evaluate" class="md-nav__link">
+    evaluate
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#forest" class="md-nav__link">
+    forest
   </a>
   
 </li>
@@ -4799,6 +4829,10 @@
 <li>Made <code>score_one</code> method of <a href="../../api/api/anomaly/LocalOutlierFactor"><code>api.anomaly.LocalOutlierFactor</code></a> stateless</li>
 <li>Defined default score for uninitialized detector</li>
 </ul>
+<h2 id="covariance">covariance<a class="headerlink" href="#covariance" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Added <code>_from_state</code> method to <a href="../../api/covariance/EmpiricalCovariance"><code>covariance.EmpiricalCovariance</code></a> to warm start from previous knowledge.</li>
+</ul>
 <h2 id="clustering">clustering<a class="headerlink" href="#clustering" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Add fixes to <a href="../../api/cluster/DBSTREAM"><code>cluster.DBSTREAM</code></a> algorithm, including:</li>
@@ -4813,13 +4847,17 @@
 <ul>
 <li>Added <a href="../../api/datasets/WebTraffic"><code>datasets.WebTraffic</code></a>, which is a dataset that counts the occurrences of events on a website. It is a multi-output regression dataset with two outputs.</li>
 </ul>
+<h2 id="drift">drift<a class="headerlink" href="#drift" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Add <a href="../../api/drift/NoDrift"><code>drift.NoDrift</code></a> to allow disabling the drift detection capabilities of models. This detector does nothing and always returns <code>False</code> when queried whether or not a concept drift was detected.</li>
+</ul>
+<h2 id="evaluate">evaluate<a class="headerlink" href="#evaluate" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Added a <code>yield_predictions</code> parameter to <a href="../../api/evaluate/iter-progressive-val-score"><code>evaluate.iter_progressive_val_score</code></a>, which allows including predictions in the output.</li>
+</ul>
 <h2 id="forest">forest<a class="headerlink" href="#forest" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Simplify inner the structures of <a href="../../api/forest/ARFClassifier"><code>forest.ARFClassifier</code></a> and <a href="../../api/forest/ARFRegressor"><code>forest.ARFRegressor</code></a> by removing redundant class hierarchy. Simplify how concept drift logging can be accessed in individual trees and in the forest as a whole.</li>
-</ul>
-<h2 id="covariance">covariance<a class="headerlink" href="#covariance" title="Permanent link">&para;</a></h2>
-<ul>
-<li>Added <code>_from_state</code> method to <a href="../../api/covariance/EmpiricalCovariance"><code>covariance.EmpiricalCovariance</code></a> to warm start from previous knowledge.</li>
 </ul>
 <h2 id="proba">proba<a class="headerlink" href="#proba" title="Permanent link">&para;</a></h2>
 <ul>
