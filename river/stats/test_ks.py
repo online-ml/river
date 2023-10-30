@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 import numpy as np
-import river
+
+from scipy.stats import ks_2samp
 
 from collections import deque
-from scipy.stats import ks_2samp
+from river import stats
 
 
 def test_incremental_ks_statistics():
@@ -15,7 +16,7 @@ def test_incremental_ks_statistics():
     stream_b = np.random.normal(loc=1, scale=1, size=10)
 
     incremental_ks_statistics = []
-    incremental_ks = river.stats.KolmogorovSmirnov(statistic="ks")
+    incremental_ks = stats.KolmogorovSmirnov(statistic="ks")
     sliding_a = deque(initial_a)
     sliding_b = deque(initial_b)
 
