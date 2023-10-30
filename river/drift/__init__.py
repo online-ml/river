@@ -12,6 +12,7 @@ from . import binary, datasets
 from .adwin import ADWIN
 from .dummy import DummyDriftDetector
 from .kswin import KSWIN
+from .no_drift import NoDrift
 from .page_hinkley import PageHinkley
 from .retrain import DriftRetrainingClassifier
 
@@ -22,6 +23,7 @@ __all__ = [
     "DriftRetrainingClassifier",
     "DummyDriftDetector",
     "KSWIN",
+    "NoDrift",
     "PageHinkley",
     "PeriodicTrigger",
 ]
