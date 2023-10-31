@@ -61,7 +61,6 @@ class StandardAbsoluteDeviation(anomaly.base.AnomalyDetector):
     """
 
     def __init__(self, sub_stat="mean", **kwargs):
-        super().__init__()
         self.variance = stats.Var(**kwargs)
 
         if sub_stat == "mean":
