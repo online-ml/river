@@ -23,8 +23,6 @@ class StandardAbsoluteDeviation(anomaly.base.AnomalyDetector):
     sub_stat
         The statistic to be substracted, then divided by the standard deviation for scoring.
         This parameter must be either "mean" or "median".
-    kwargs
-        Other parameters passed to variance attribute, particularly the delta degree of freedom (`ddof`).
 
     References
     ----------
@@ -60,7 +58,7 @@ class StandardAbsoluteDeviation(anomaly.base.AnomalyDetector):
 
     """
 
-    def __init__(self, sub_stat="mean"):
+    def __init__(self, sub_stat: str = "mean"):
         if sub_stat == "mean":
             self.subtracted_statistic = stats.Mean()
         elif sub_stat == "median":
