@@ -20,7 +20,7 @@ class StandardAbsoluteDeviation(anomaly.base.AnomalyDetector):
 
     Parameters
     ----------
-    subtracted_statistic
+    sub_stat
         The statistic to be substracted, then divided by the standard deviation for scoring.
         This parameter must be either "mean" or "median".
     kwargs
@@ -44,7 +44,7 @@ class StandardAbsoluteDeviation(anomaly.base.AnomalyDetector):
 
     >>> X = np.random.randn(150, 1)
 
-    >>> model = anomaly.StandardAbsoluteDeviation(subtracted_statistic="mean", ddof=1)
+    >>> model = anomaly.StandardAbsoluteDeviation(sub_stat="mean", ddof=1)
 
     >>> for x, _ in stream.iter_array(X):
     ...     model.learn_one(x)
@@ -60,17 +60,17 @@ class StandardAbsoluteDeviation(anomaly.base.AnomalyDetector):
 
     """
 
-    def __init__(self, subtracted_statistic="mean", **kwargs):
+    def __init__(self, sub_stat="mean", **kwargs):
         super().__init__()
         self.variance = stats.Var(**kwargs)
 
-        if subtracted_statistic == "mean":
+        if sub_stat == "mean":
             self.subtracted_statistic = stats.Mean()
-        elif subtracted_statistic == "median":
+        elif sub_stat == "median":
             self.subtracted_statistic = stats.Quantile(q=0.5)
         else:
             raise ValueError(
-                f"Unknown subtracted statistic {subtracted_statistic}, expected one of median, mean."
+                f"Unknown subtracted statistic {sub_stat}, expected one of median, mean."
             )
 
     def learn_one(self, x):
