@@ -44,7 +44,7 @@ class StandardAbsoluteDeviation(anomaly.base.AnomalyDetector):
 
     >>> X = np.random.randn(150, 1)
 
-    >>> model = anomaly.StandardAbsoluteDeviation(sub_stat="mean", ddof=1)
+    >>> model = anomaly.StandardAbsoluteDeviation(sub_stat="mean")
 
     >>> for x, _ in stream.iter_array(X):
     ...     model.learn_one(x)
@@ -60,8 +60,7 @@ class StandardAbsoluteDeviation(anomaly.base.AnomalyDetector):
 
     """
 
-    def __init__(self, sub_stat="mean", **kwargs):
-        self.variance = stats.Var(**kwargs)
+    def __init__(self, sub_stat="mean"):
 
         if sub_stat == "mean":
             self.subtracted_statistic = stats.Mean()
@@ -71,6 +70,8 @@ class StandardAbsoluteDeviation(anomaly.base.AnomalyDetector):
             raise ValueError(
                 f"Unknown subtracted statistic {sub_stat}, expected one of median, mean."
             )
+
+        self.variance = stats.Var()
 
     def learn_one(self, x):
         assert len(x) == 1
