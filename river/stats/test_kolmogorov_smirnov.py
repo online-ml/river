@@ -42,4 +42,4 @@ def test_incremental_ks_statistics():
 
     assert np.allclose(np.array(incremental_ks_statistics), np.array(ks_2samp_statistics))
 
-    assert incremental_ks.test_ks_threshold(ca=incremental_ks.ca(p_value=0.05)) is True
+    assert incremental_ks._test_ks_threshold(ca=incremental_ks._ca(p_value=0.05)) is True

@@ -226,14 +226,6 @@ class KolmogorovSmirnov(stats.base.Bivariate):
         self.n_samples = 0
         self.statistic = statistic
 
-    @staticmethod
-    def ca(p_value):
-        return (-0.5 * math.log(p_value)) ** 0.5
-
-    @classmethod
-    def ks_threshold(cls, p_value, n_samples):
-        return cls.ca(p_value) * (2.0 * n_samples / n_samples**2)
-
     def update(self, x, y):
         keys = ((x, 0), (y, 1))
 
@@ -282,7 +274,11 @@ class KolmogorovSmirnov(stats.base.Bivariate):
         else:
             raise ValueError(f"Unknown statistic {self.statistic}, expected one of: ks, kuiper")
 
-    def test_ks_threshold(self, ca):
+    @staticmethod
+    def _ca(p_value):
+        return (-0.5 * math.log(p_value)) ** 0.5
+
+    def _test_ks_threshold(self, ca):
         """
         Test whether the reference and sliding window follows the same or different probability distribution.
         This test will return `True` if we **reject** the null hypothesis that
