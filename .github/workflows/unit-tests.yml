@@ -46,7 +46,7 @@ jobs:
         run: poetry install --no-interaction --no-ansi
 
       - name: See pyx
-        run: ls **/**.pyx
+        run: ls /home/runner/.cache/pypoetry/virtualenvs/*/lib/python3.11/site-packages/river-0.19.0.dist-info/RECORD river/stats/
 
       - name: Cache River datasets
         uses: actions/cache@v3
