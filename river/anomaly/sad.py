@@ -5,7 +5,7 @@ from river import anomaly, stats
 __all__ = ["StandardAbsoluteDeviation"]
 
 
-class StandardAbsoluteDeviation(anomaly.base.AnomalyDetector):
+class StandardAbsoluteDeviation(anomaly.base.SupervisedAnomalyDetector):
     r"""Standard Absolute Deviation (SAD).
 
     SAD is the model that calculates the anomaly score by using the deviation from the mean/median, divided by the
@@ -15,8 +15,9 @@ class StandardAbsoluteDeviation(anomaly.base.AnomalyDetector):
     This implementation is adapted from the [implementation](https://github.com/selimfirat/pysad/blob/master/pysad/models/standard_absolute_deviation.py)
     within PySAD (Python Streaming Anomaly Detection) [^2].
 
-    Despite the fact that this model only works with univariate distribution, the author maintains the required input
-    to be a dictionary (with length 1) to align with other anomaly detection algorithms implemented within `River`.
+    As a univariate anomaly detection algorithm, this implementation is adapted to `River` in a similar way as that of
+    the `GaussianScorer` algorithm, with the variable taken into the account at the learning phase and scoring phase
+    under variable `y`, ignoring `x`.
 
     Parameters
     ----------
@@ -40,25 +41,25 @@ class StandardAbsoluteDeviation(anomaly.base.AnomalyDetector):
 
     >>> np.random.seed(42)
 
-    >>> X = np.random.randn(150, 1)
+    >>> X = np.random.randn(150)
 
     >>> model = anomaly.StandardAbsoluteDeviation(sub_stat="mean")
 
-    >>> for x, _ in stream.iter_array(X):
-    ...     model.learn_one(x)
+    >>> for x in X:
+    ...     model = model.learn_one(None, x)
 
-    >>> model.score_one({0: 2})
+    >>> model.score_one(None, 2)
     2.209735291993561
 
-    >>> model.score_one({0: 0})
+    >>> model.score_one(None, 0)
     0.08736408615569183
 
-    >>> model.score_one({0: -1})
-    0.9738215167632427
+    >>> model.score_one(None, 1)
+    1.1485496890746263
 
     """
 
-    def __init__(self, sub_stat: str = "mean"):
+    def __init__(self, sub_stat=None):
         self.variance = stats.Var()
         self.sub_stat = sub_stat
 
@@ -71,18 +72,14 @@ class StandardAbsoluteDeviation(anomaly.base.AnomalyDetector):
                 f"Unknown subtracted statistic {self.sub_stat}, expected one of median, mean."
             )
 
-    def learn_one(self, x):
-        assert len(x) == 1
-        ((x_key, x_value),) = x.items()
+    def learn_one(self, x, y):
+        self.variance.update(y)
+        self.subtracted_statistic_estimator.update(y)
 
-        self.variance.update(x_value)
-        self.subtracted_statistic_estimator.update(x_value)
+        return self
 
-    def score_one(self, x):
-        assert len(x) == 1
-        ((x_key, x_value),) = x.items()
-
-        score = (x_value - self.subtracted_statistic_estimator.get()) / (
+    def score_one(self, x, y):
+        score = (y - self.subtracted_statistic_estimator.get()) / (
             self.variance.get() ** 0.5 + 1e-10
         )
 
