@@ -30,8 +30,8 @@ jobs:
         uses: snok/install-poetry@v1
         with:
           virtualenvs-create: true
-          virtualenvs-in-project: false
-          installer-parallel: false
+          virtualenvs-in-project: true
+          installer-parallel: true
 
       - name: Load cached virtual env
         id: cached_poetry_install
@@ -46,7 +46,7 @@ jobs:
         run: poetry install --no-interaction --no-ansi
 
       - name: See pyx
-        run: ls /home/runner/.cache/pypoetry/virtualenvs/*/lib/python3.11/site-packages/river-0.19.0.dist-info/RECORD river/stats/
+        run: ls /home/runner/work/river/river/.venv/lib/python3.11/site-packages/river-0.19.0.dist-info/RECORD river/utils/
 
       - name: Cache River datasets
         uses: actions/cache@v3
