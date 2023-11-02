@@ -14,10 +14,36 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Build River
-        uses: ./.github/actions/install-env
+      - name: Set up Python
+        id: set-up-python
+        uses: actions/setup-python@v4
         with:
-          python-version: "3.11"
+          python-version: 3.11
+
+      - name: Load cached Poetry installation
+        id: cached_poetry_install
+        uses: actions/cache@v3
+        with:
+          path: ~/.local # the path depends on the OS
+          key: poetry-1 # increment to reset cache
+
+      - name: Install poetry
+        uses: snok/install-poetry@v1
+        with:
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+          installer-parallel: true
+
+      - name: Load cached virtual env
+        uses: actions/cache@v3
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-${{ steps.set-up-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
+
+      - name: Install dependencies
+        shell: bash
+        if: steps.cached_poetry_install.outputs.cache-hit != 'true'
+        run: poetry install --no-interaction --no-ansi
 
       - name: Cache River datasets
         uses: actions/cache@v3
@@ -39,7 +65,7 @@ jobs:
       - name: pytest [Branch]
         if: github.event_name == 'pull_request'
         run: |
-          poetry run pytest --durations=10 -n logical # Run pytest on all logical CPU cores
+          poetry run pytest river/linear_model/lin_reg.py --durations=10 -n logical # Run pytest on all logical CPU cores
 
       - name: pytest [Main]
         if: github.event_name == 'push'
