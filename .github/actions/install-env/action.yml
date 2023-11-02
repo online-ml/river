@@ -14,9 +14,7 @@ runs:
   using: "composite"
   steps:
     - name: Check out repository
-      uses: actions/checkout@v4
-      with:
-        submodules: true
+      uses: actions/checkout@v3
 
     - name: Set up Python
       id: set-up-python
@@ -36,10 +34,6 @@ runs:
         virtualenvs-create: true
         virtualenvs-in-project: true
         installer-parallel: true
-
-    - name: Set path for MacOS
-      shell: bash
-      run: export PATH="$HOME/.local/bin:$PATH"
 
     - name: Load cached virtual env
       id: cached-poetry-dependencies
