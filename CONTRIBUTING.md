@@ -18,33 +18,29 @@ The typical workflow for contributing to River is:
 
 ## Local setup
 
-We encourage you to use a virtual environment. You'll want to activate it every time you want to work on River.
+Start by cloning the repository:
 
 ```sh
-python -m venv .venv
-source .venv/bin/activate
+git clone https://github.com/online-ml/river
 ```
 
-You can also create a virtual environment via `conda`:
+Next, you'll need a Python environment. A nice way to manage your Python versions is to use pyenv, which can installed [here](https://github.com/pyenv/pyenv-installer). Once you have pyenv, you can install the latest Python version River supports:
 
 ```sh
-conda create -n river -y python=3.9
-conda activate river
+pyenv install -v $(cat .python-version)
 ```
 
-Yet another option is to use `pyenv`:
+You need a `Rust` compiler you can install it by following this [link](https://www.rust-lang.org/fr/tools/install). You'll also need [Poetry](https://python-poetry.org/):
 
 ```sh
-pyenv virtualenv 3.10 river310
-pyenv activate river310
+curl -sSL https://install.python-poetry.org | python3 -
 ```
 
-You need a `Rust` compiler you can install it by following this [link](https://www.rust-lang.org/fr/tools/install)
-
-Then, navigate to your cloned fork and install River and the required dependencies in [development mode](https://stackoverflow.com/questions/19048732/python-setup-py-develop-vs-install):
+Now you're set to install River and activate the virtual environment:
 
 ```sh
-pip install -e ".[dev]"
+poetry install
+poetry shell
 ```
 
 Finally, install the [pre-commit](https://pre-commit.com/) push hooks. This will run some code quality checks every time you push to GitHub.
@@ -100,7 +96,7 @@ If you're adding a class or a function, then you'll need to add a docstring. We 
 To build the documentation, you need to install some extra dependencies:
 
 ```sh
-pip install -e ".[docs]"
+poetry install --with docs
 pip install git+https://github.com/MaxHalford/yamp
 ```
 

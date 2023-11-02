@@ -12,29 +12,13 @@ jobs:
   ubuntu:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - name: Build River
+        uses: ./.github/actions/install-env
         with:
-          python-version: 3.11
-
-      - run: curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain=nightly --profile=minimal -y && rustup show
-        if: matrix.os == 'ubuntu-latest'
-
-      - name: Cache Python dependencies
-        uses: actions/cache@v2
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/setup.py') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
-
-      - name: Install Python dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install wheel
-          pip install -e ".[dev]"
+          python-version: "3.12"
+          build-root: false
 
       - name: Run pre-commit on all files
-        run: pre-commit run --all-files
+        run: poetry run pre-commit run --all-files
