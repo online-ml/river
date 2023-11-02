@@ -35,27 +35,27 @@ class StandardAbsoluteDeviation(anomaly.base.SupervisedAnomalyDetector):
     Examples
     --------
 
-    >>> import numpy as np
+    >>> import random
     >>> from river import anomaly
+    >>> from river import stats
     >>> from river import stream
 
-    >>> np.random.seed(42)
+    >>> rng = random.Random(42)
 
-    >>> X = np.random.randn(150)
+    >>> model = anomaly.StandardAbsoluteDeviation(sub_stat=stats.Mean())
 
-    >>> model = anomaly.StandardAbsoluteDeviation(sub_stat="mean")
-
-    >>> for x in X:
-    ...     model = model.learn_one(None, x)
+    >>> for _ in range(150):
+    ...     y = rng.gauss(0, 1)
+    ...     model = model.learn_one(None, y)
 
     >>> model.score_one(None, 2)
-    2.209735291993561
+    2.057...
 
     >>> model.score_one(None, 0)
-    0.08736408615569183
+    0.084...
 
     >>> model.score_one(None, 1)
-    1.1485496890746263
+    0.986...
 
     """
 
