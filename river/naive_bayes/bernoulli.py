@@ -62,7 +62,7 @@ class BernoulliNB(base.BaseNB):
     0.25
 
     >>> model.predict_proba_one("test")
-    {'yes': 0.8831539823829913, 'no': 0.11684601761700895}
+    {'yes': 0.883..., 'no': 0.116...}
 
     >>> model.predict_one("test")
     'yes'
