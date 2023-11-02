@@ -18,6 +18,7 @@ from .filter import QuantileFilter, ThresholdFilter
 from .gaussian import GaussianScorer
 from .hst import HalfSpaceTrees
 from .lof import LocalOutlierFactor
+from .sad import StandardAbsoluteDeviation
 from .svm import OneClassSVM
 
 __all__ = [
@@ -27,6 +28,7 @@ __all__ = [
     "HalfSpaceTrees",
     "OneClassSVM",
     "QuantileFilter",
+    "StandardAbsoluteDeviation",
     "ThresholdFilter",
     "LocalOutlierFactor",
 ]

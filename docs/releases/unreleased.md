@@ -7,6 +7,7 @@ River's mini-batch methods now support pandas v2. In particular, River conforms 
 - Added `anomaly.LocalOutlierFactor`, which is an online version of the LOF algorithm for anomaly detection that matches the scikit-learn implementation.
   - Made `score_one` method of `anomaly.LocalOutlierFactor` stateless
   - Defined default score for uninitialized detector
+- Implementation of the `anomaly.StandardAbsoluteDeviation` algorithm, which is a uni-variate anomaly detection algorithm, based on the implementation in [PySAD](https://github.com/selimfirat/pysad/blob/master/pysad/models/knn_cad.py) (Python Streaming Anomaly Detection)
 
 ## covariance
 
