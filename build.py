@@ -67,6 +67,6 @@ def build(setup_kwargs):
             "cmdclass": {"build_ext": ExtBuilder},
             "rust_extensions": rust_extensions,
             "zip_safe": False,
-            # "include_package_data": True,
+            "include_package_data": True,
         }
     )
