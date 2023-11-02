@@ -22,13 +22,12 @@ runs:
     - name: Load cached Poetry installation
       uses: actions/cache@v3
       with:
-        path: ~/.local
-        key: poetry-1.3.4
+        path: ~/.local # the path depends on the OS
+        key: poetry-1 # increment to reset cache
 
     - name: Install poetry
       uses: snok/install-poetry@v1
       with:
-        version: 1.3.4
         virtualenvs-create: true
         virtualenvs-in-project: true
         installer-parallel: true
