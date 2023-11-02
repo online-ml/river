@@ -1,28 +1,29 @@
 name: unit-tests
 
 on:
-  workflow_call:
-    inputs:
-      python:
-        type: string
-      os:
-        type: string
+  pull_request:
+    branches:
+      - "*"
+  push:
+    branches:
+      - main
 
 jobs:
-  test:
-    runs-on: ${{ inputs.os }}
+  run:
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        python-version: [3.12, 3.11, 3.10]
 
-    # Instead of using two matrices in the calling Workflow, we can use conditionals here
-    # if: (inputs.os == 'ubuntu-latest' && inputs.python == '3.11') || github.event_name == 'push'
-    if: (inputs.python == '3.11') || github.event_name == 'push'
+    runs-on: ${{ matrix.os }}
 
     steps:
       - uses: actions/checkout@v3
 
-      - name: Retrieve the environment and the River build
-        uses: ./.github/actions/retrieve-env
+      - name: Build River
+        uses: ./.github/actions/install-env
         with:
-          python: ${{ inputs.python }}
+          python-version: "3.12"
 
       - name: Cache River datasets
         uses: actions/cache@v3
@@ -38,18 +39,9 @@ jobs:
 
       - name: Download datasets
         run: |
-          source ~/.venv/bin/activate
-          python -c "from river import datasets; datasets.CreditCard().download(); datasets.Elec2().download(); datasets.SMSSpam().download()"
-          python -c "from river import bandit; bandit.datasets.NewsArticles().download()"
+          poetry run python -c "from river import datasets; datasets.CreditCard().download(); datasets.Elec2().download(); datasets.SMSSpam().download()"
+          poetry run python -c "from river import bandit; bandit.datasets.NewsArticles().download()"
 
-      - name: pytest [Branch]
-        if: github.event_name == 'pull_request'
+      - name: pytest
         run: |
-          source ~/.venv/bin/activate
-          pytest --durations=10 -n logical # Run pytest on all logical CPU cores
-
-      - name: pytest [Main]
-        if: github.event_name == 'push'
-        run: |
-          source ~/.venv/bin/activate
-          pytest -m "not datasets" --durations=10 -n logical # Run pytest on all logical CPU cores
+          poetry run pytest -m "not datasets" --durations=10 -n logical # Run pytest on all logical CPU cores

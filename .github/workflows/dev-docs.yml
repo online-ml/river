@@ -1,7 +1,9 @@
 name: docs
 
 on:
-  workflow_call:
+  push:
+    branches:
+      - main
 
 jobs:
   docs:
@@ -10,13 +12,18 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Retrieve the environment and the River build
-        uses: ./.github/actions/retrieve-env
+      - name: Build River
+        uses: ./.github/actions/install-env
         with:
-          python: "3.11"
+          python-version: "3.12"
+          build-root: false
 
-      - name: Install Ubuntu dependencies
+      - name: Install extra Ubuntu dependencies
         run: sudo apt-get install graphviz pandoc
+
+      - name: Install extra Python dependencies
+        run: |
+          poetry install --with docs
 
       - name: Build docs
         run: |
@@ -24,7 +31,6 @@ jobs:
           make doc
 
       - name: Deploy docs
-        if: github.event_name == 'push'
         env:
           GH_TOKEN: ${{ secrets.GitHubToken }}
         run: |

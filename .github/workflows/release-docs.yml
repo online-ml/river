@@ -10,24 +10,20 @@ jobs:
   ubuntu:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-      - name: Install Ubuntu dependencies
+      - name: Build River
+        uses: ./.github/actions/install-env
+        with:
+          python-version: "3.12"
+
+      - name: Install extra Ubuntu dependencies
         run: sudo apt-get install graphviz pandoc
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.9"
-
-      - run: curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain=nightly --profile=minimal -y && rustup show
-        if: matrix.os == 'ubuntu-latest'
-
-      - name: Install Python dependencies
+      - name: Install extra Python dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install wheel
-          pip install -e ".[compat,dev,docs]"
+          poetry install --with compat --with docs
           pip install rich
           python -m spacy download en_core_web_sm
 

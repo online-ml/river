@@ -23,7 +23,7 @@ class StandardAbsoluteDeviation(anomaly.base.SupervisedAnomalyDetector):
     ----------
     sub_stat
         The statistic to be subtracted, then divided by the standard deviation for scoring.
-        This parameter must be either "mean" or "median".
+        Defaults to `stats.Mean()`.
 
     References
     ----------
@@ -35,52 +35,41 @@ class StandardAbsoluteDeviation(anomaly.base.SupervisedAnomalyDetector):
     Examples
     --------
 
-    >>> import numpy as np
+    >>> import random
     >>> from river import anomaly
+    >>> from river import stats
     >>> from river import stream
 
-    >>> np.random.seed(42)
+    >>> rng = random.Random(42)
 
-    >>> X = np.random.randn(150)
+    >>> model = anomaly.StandardAbsoluteDeviation(sub_stat=stats.Mean())
 
-    >>> model = anomaly.StandardAbsoluteDeviation(sub_stat="mean")
-
-    >>> for x in X:
-    ...     model = model.learn_one(None, x)
+    >>> for _ in range(150):
+    ...     y = rng.gauss(0, 1)
+    ...     model = model.learn_one(None, y)
 
     >>> model.score_one(None, 2)
-    2.209735291993561
+    2.057...
 
     >>> model.score_one(None, 0)
-    0.08736408615569183
+    0.084...
 
     >>> model.score_one(None, 1)
-    1.1485496890746263
+    0.986...
 
     """
 
-    def __init__(self, sub_stat=None):
+    def __init__(self, sub_stat: stats.base.Univariate = None):
         self.variance = stats.Var()
-        self.sub_stat = sub_stat
-
-        if self.sub_stat == "mean":
-            self.subtracted_statistic_estimator = stats.Mean()
-        elif self.sub_stat == "median":
-            self.subtracted_statistic_estimator = stats.Quantile(q=0.5)
-        else:
-            raise ValueError(
-                f"Unknown subtracted statistic {self.sub_stat}, expected one of median, mean."
-            )
+        self.sub_stat = sub_stat or stats.Mean()
 
     def learn_one(self, x, y):
         self.variance.update(y)
-        self.subtracted_statistic_estimator.update(y)
+        self.sub_stat.update(y)
 
         return self
 
     def score_one(self, x, y):
-        score = (y - self.subtracted_statistic_estimator.get()) / (
-            self.variance.get() ** 0.5 + 1e-10
-        )
+        score = (y - self.sub_stat.get()) / (self.variance.get() ** 0.5 + 1e-10)
 
         return abs(score)
