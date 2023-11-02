@@ -21,7 +21,6 @@ jobs:
           python-version: 3.11
 
       - name: Load cached Poetry installation
-        id: cached_poetry_install
         uses: actions/cache@v3
         with:
           path: ~/.local # the path depends on the OS
@@ -35,6 +34,7 @@ jobs:
           installer-parallel: true
 
       - name: Load cached virtual env
+        id: cached_poetry_install
         uses: actions/cache@v3
         with:
           path: .venv
@@ -44,6 +44,9 @@ jobs:
         shell: bash
         if: steps.cached_poetry_install.outputs.cache-hit != 'true'
         run: poetry install --no-interaction --no-ansi
+
+      - name: See pyx
+        run: ls **/**.pyx
 
       - name: Cache River datasets
         uses: actions/cache@v3
