@@ -5,11 +5,11 @@
 <p align="center">
   <!-- Tests -->
   <a href="https://github.com/online-ml/river/actions/workflows/unit-tests.yml">
-    <img src="https://github.com/online-ml/river/actions/workflows/unit-tests.svg" alt="unit-tests">
+    <img src="https://github.com/online-ml/river/actions/workflows/unit-tests.yml/badge.svg" alt="unit-tests">
   </a>
   <!-- Code quality -->
   <a href="https://github.com/online-ml/river/actions/workflows/code-quality.yml">
-    <img src="https://github.com/online-ml/river/actions/workflows/code-quality.svg" alt="code-quality">
+    <img src="https://github.com/online-ml/river/actions/workflows/code-quality.yml/badge.svg" alt="code-quality">
   </a>
   <!-- Documentation -->
   <a href="https://riverml.xyz">
