@@ -41,8 +41,7 @@ runs:
 
     - name: Install dependencies
       shell: bash
-      if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-      run: poetry install --no-interaction --no-ansi --no-root
+      run: poetry install --no-interaction --no-ansi --no-root --with dev
 
     - name: Build
       shell: bash
