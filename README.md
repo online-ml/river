@@ -4,8 +4,12 @@
 
 <p align="center">
   <!-- Tests -->
-  <a href="https://github.com/online-ml/river/actions/workflows/ci.yml">
-    <img src="https://github.com/online-ml/river/actions/workflows/ci.yml/badge.svg" alt="CI Pipeline">
+  <a href="https://github.com/online-ml/river/actions/workflows/unit-tests.yml">
+    <img src="https://github.com/online-ml/river/actions/workflows/unit-tests.svg" alt="unit-tests">
+  </a>
+  <!-- Code quality -->
+  <a href="https://github.com/online-ml/river/actions/workflows/code-quality.yml">
+    <img src="https://github.com/online-ml/river/actions/workflows/code-quality.svg" alt="code-quality">
   </a>
   <!-- Documentation -->
   <a href="https://riverml.xyz">
