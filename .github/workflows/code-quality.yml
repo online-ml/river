@@ -18,6 +18,7 @@ jobs:
         uses: ./.github/actions/install-env
         with:
           python-version: "3.12"
+          build-root: false
 
       - name: Run pre-commit on all files
-        run: pre-commit run --all-files
+        run: poetry run pre-commit run --all-files

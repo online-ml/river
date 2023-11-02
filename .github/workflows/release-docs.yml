@@ -16,6 +16,7 @@ jobs:
         uses: ./.github/actions/install-env
         with:
           python-version: "3.12"
+          build-root: true
 
       - name: Install extra Ubuntu dependencies
         run: sudo apt-get install graphviz pandoc

@@ -4,6 +4,8 @@ inputs:
   python-version:
     description: "Python version to use"
     required: true
+  build-root:
+    required: true
 
 runs:
   using: "composite"
@@ -41,8 +43,10 @@ runs:
 
     - name: Install dependencies
       shell: bash
-      run: poetry install --no-interaction --no-ansi --no-root --with dev
+      if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+      run: poetry install --no-interaction --no-ansi --no-root
 
     - name: Build
       shell: bash
+      if: inputs.build-root
       run: poetry install --no-interaction --no-ansi
