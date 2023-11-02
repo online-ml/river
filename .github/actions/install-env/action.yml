@@ -5,7 +5,10 @@ inputs:
     description: "Python version to use"
     required: true
   build-root:
-    required: true
+    default: "true"
+    options:
+      - true
+      - false
 
 runs:
   using: "composite"
@@ -48,5 +51,5 @@ runs:
 
     - name: Build
       shell: bash
-      if: inputs.build-root
+      if: ${{ inputs.build-root == 'true' }}
       run: poetry install --no-interaction --no-ansi

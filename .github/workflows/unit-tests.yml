@@ -18,7 +18,6 @@ jobs:
         uses: ./.github/actions/install-env
         with:
           python-version: "3.12"
-          build-root: true
 
       - name: Cache River datasets
         uses: actions/cache@v3
