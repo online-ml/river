@@ -38,6 +38,7 @@ runs:
         installer-parallel: true
 
     - name: Set path for MacOS
+      shell: bash
       run: export PATH="$HOME/.local/bin:$PATH"
 
     - name: Load cached virtual env
