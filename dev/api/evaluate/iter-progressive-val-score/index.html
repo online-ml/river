@@ -22,7 +22,7 @@
       
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.4.7">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.4.6">
     
     
       
@@ -30,7 +30,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.4b4a2bd9.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.35e1ed30.min.css">
       
         
         <link rel="stylesheet" href="../../../assets/stylesheets/palette.356b1318.min.css">
@@ -1109,6 +1109,8 @@
   
     
     
+      
+        
       
         
       
@@ -3258,6 +3260,8 @@
       
         
       
+        
+      
     
     
     
@@ -4923,7 +4927,9 @@
 {&#39;ROCAUC&#39;: ROCAUC: 95.07%, &#39;Step&#39;: 1250}
 </code></pre></div></p>
 <p>The <code>yield_predictions</code> parameter can be used to include the predictions in the results:</p>
-<p><div class="language-python highlight"><pre><span></span><code><span class="n">steps</span> <span class="o">=</span> <span class="n">evaluate</span><span class="o">.</span><span class="n">iter_progressive_val_score</span><span class="p">(</span>
+<p><div class="language-python highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">itertools</span>
+
+<span class="n">steps</span> <span class="o">=</span> <span class="n">evaluate</span><span class="o">.</span><span class="n">iter_progressive_val_score</span><span class="p">(</span>
     <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
     <span class="n">dataset</span><span class="o">=</span><span class="n">datasets</span><span class="o">.</span><span class="n">Phishing</span><span class="p">(),</span>
     <span class="n">metric</span><span class="o">=</span><span class="n">metrics</span><span class="o">.</span><span class="n">ROCAUC</span><span class="p">(),</span>
