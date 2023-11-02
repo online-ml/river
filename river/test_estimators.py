@@ -54,7 +54,6 @@ def iter_estimators_which_can_be_tested():
         River2SKLBase,
         SKL2RiverBase,
         anomaly.LocalOutlierFactor,  # needs warm-start to work correctly
-        anomaly.StandardAbsoluteDeviation,  # SAD only works with data points as dictionaries with length 1.
         compose.FuncTransformer,
         compose.Grouper,
         compose.Pipeline,
