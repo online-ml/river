@@ -9,8 +9,8 @@ description = "Online machine learning in Python"
 authors = ["Max Halford <maxhalford25@gmail.com>"]
 
 [tool.poetry.build]
-script = "build.py"
 generate-setup-file = true
+script = "build.py"
 
 [tool.poetry.dependencies]
 python = ">=3.9,<3.13"
