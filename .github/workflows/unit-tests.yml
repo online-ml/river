@@ -14,10 +14,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Retrieve the environment and the River build
+      - name: Build River
         uses: ./.github/actions/install-env
         with:
-          python-version: "3.12"
+          python-version: "3.11"
 
       - name: Cache River datasets
         uses: actions/cache@v3

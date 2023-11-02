@@ -23,11 +23,12 @@ runs:
       uses: actions/cache@v3
       with:
         path: ~/.local
-        key: poetry-0
+        key: poetry-1.3.4
 
     - name: Install poetry
       uses: snok/install-poetry@v1
       with:
+        version: 1.3.4
         virtualenvs-create: true
         virtualenvs-in-project: true
         installer-parallel: true
