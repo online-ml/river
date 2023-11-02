@@ -65,13 +65,11 @@ class StandardAbsoluteDeviation(anomaly.base.SupervisedAnomalyDetector):
 
     def learn_one(self, x, y):
         self.variance.update(y)
-        self.subtracted_statistic_estimator.update(y)
+        self.sub_stat.update(y)
 
         return self
 
     def score_one(self, x, y):
-        score = (y - self.subtracted_statistic_estimator.get()) / (
-            self.variance.get() ** 0.5 + 1e-10
-        )
+        score = (y - self.sub_stat.get()) / (self.variance.get() ** 0.5 + 1e-10)
 
         return abs(score)
