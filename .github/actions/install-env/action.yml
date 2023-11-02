@@ -37,6 +37,9 @@ runs:
         virtualenvs-in-project: true
         installer-parallel: true
 
+    - name: Set path for MacOS
+      run: export PATH="$HOME/.local/bin:$PATH"
+
     - name: Load cached virtual env
       id: cached-poetry-dependencies
       uses: actions/cache@v3
