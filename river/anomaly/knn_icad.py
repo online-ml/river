@@ -68,14 +68,14 @@ class KNNInductiveCAD(anomaly.base.SupervisedAnomalyDetector):
     >>> from river import anomaly
 
     >>> np.random.seed(42)
-    >>> Y = np.random.randn(1000)
+    >>> stream = np.random.randn(1000)
 
     >>> knn_cad = anomaly.KNNInductiveCAD(probationary_period=100, dim=20)
 
-    >>> for y in Y:
-    ...     knn_cad = knn_cad.learn_one(None, y)
+    >>> for elem in stream:
+    ...     knn_cad = knn_cad.learn_one(None, elem)
 
-    >>> knn_cad.score_one(None, Y[-1])
+    >>> knn_cad.score_one(None, stream[-1])
     0.2375
 
     # When the algorithm scores an observation that has already been seen, only the latest anomaly score is queried.
