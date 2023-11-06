@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Union, List
+
 import copy
 
 from river import anomaly
@@ -92,22 +94,18 @@ class KNNInductiveCAD(anomaly.base.SupervisedAnomalyDetector):
 
     """
 
-    def __init__(self,
-                 probationary_period: int = 10,
-                 dim: int = 5,
-                 partition_position: int = 27):
-
+    def __init__(self, probationary_period: int = 10, dim: int = 5, partition_position: int = 27):
         self.probationary_period = probationary_period
         self.dim = dim
         self.partition_position = partition_position
 
-        self.buffer = []
-        self.training = []
-        self.calibration = []
-        self.scores = []
+        self.buffer: List[Union[int, float]] = []
+        self.training: List[Union[int, float]] = []
+        self.calibration: List[Union[int, float]] = []
+        self.scores: List[Union[int, float]] = []
         self.sigma = np.diag(np.ones(self.dim))
 
-        self.new_score = []
+        self.new_score: List[Union[int, float]] = []
         self.latest_anomaly_score = 0.0
 
         self.record_count = 0
@@ -121,7 +119,11 @@ class KNNInductiveCAD(anomaly.base.SupervisedAnomalyDetector):
     def _non_conformity_measure(self, item, item_in_array=False):
         arr = [self._metric(x, item) for x in self.training]
 
-        return np.sum(np.partition(arr, kth=(self.partition_position + item_in_array))[:(self.partition_position + item_in_array)])
+        return np.sum(
+            np.partition(arr, kth=(self.partition_position + item_in_array))[
+                : (self.partition_position + item_in_array)
+            ]
+        )
 
     def handle_record(self, x, y):
         """
@@ -152,11 +154,9 @@ class KNNInductiveCAD(anomaly.base.SupervisedAnomalyDetector):
                 ost = self.record_count % self.probationary_period
                 if ost == 0 or ost == int(self.probationary_period / 2):
                     try:
-                        self.sigma = np.linalg.inv(
-                            np.dot(np.array(self.training).T, self.training)
-                        )
+                        self.sigma = np.linalg.inv(np.dot(np.array(self.training).T, self.training))
                     except np.linalg.linalg.LinAlgError:
-                        print('Singular, non-invertible matrix at record', self.record_count)
+                        print(f"Singular, non-invertible matrix at record {self.record_count}.")
 
                 if len(self.scores) == 0:
                     self.scores = [self._non_conformity_measure(v, True) for v in self.training]
@@ -177,28 +177,24 @@ class KNNInductiveCAD(anomaly.base.SupervisedAnomalyDetector):
                 elif self.latest_anomaly_score >= 0.9965:
                     self.pred = int(self.probationary_period / 5)
 
-                self.latest_anomaly_score = 1. * len(np.where(np.array(self.scores) < self.new_score)[0]) / len(self.scores)
+                self.latest_anomaly_score = (
+                    1.0
+                    * len(np.where(np.array(self.scores) < self.new_score)[0])
+                    / len(self.scores)
+                )
 
     def learn_one(self, x, y):
-
         self.handle_record(x, y)
 
         return self
 
     def score_one(self, x, y):
-
-        # Checks whether score_one is used to score the instance that has just been seen by learn_one.
-        # If yes, the part of handling record is skipped, since the latest anomaly score has already been computed.
-        # Else, the record is handled normally.
+        """
+        Checks whether score_one is used to score the instance that has just been seen by learn_one.
+        If yes, the part of handling record is skipped, since the latest anomaly score has already been computed.
+        Else, the record is handled normally.
+        """
         if y != self.buffer[-1]:
             self.handle_record(x, y)
 
         return self.latest_anomaly_score
-
-
-
-
-
-
-
-
