@@ -24,6 +24,20 @@ class KNNInductiveCAD(anomaly.base.SupervisedAnomalyDetector):
     will also have its NCM value calculated. The parameter $p$ will then be estimated by comparing the sets of NCM
     values.
 
+    Parameters
+    ----------
+    probationary_period
+        The probationary period of the model. Within this period, the anomaly detectior is allowed to learn the
+        data patterns without being tested.
+        The input of this parameter must be of type integer.
+    dim
+        The length of the buffer, which corresponds to the vertical dimension of the training and calibration set.
+        The input of this parameter must be of type integer.
+    partition_position
+        The position for the array to be partitioned within the function to calculate the NCM.
+        This parameter will be passed through the `np.partition` command within the previously siad function.
+        The input of this parameter must be of type integer.
+
     References
     ----------
     [^1]: Burnaev, E. and Ishimtsev, V. (2016) 'Conformalized density- and distance-based anomaly detection
