@@ -56,7 +56,7 @@ class KNNInductiveCAD(anomaly.base.SupervisedAnomalyDetector):
     >>> np.random.seed(42)
     >>> Y = np.random.randn(1000)
 
-    >>> knn_cad = anomaly.KNNICAD(probationary_period=100, dim=20)
+    >>> knn_cad = anomaly.KNNInductiveCAD(probationary_period=100, dim=20)
 
     >>> for y in Y:
     ...     knn_cad = knn_cad.learn_one(None, y)
@@ -82,10 +82,12 @@ class KNNInductiveCAD(anomaly.base.SupervisedAnomalyDetector):
 
     def __init__(self,
                  probationary_period: int = 10,
-                 dim: int = 5):
+                 dim: int = 5,
+                 partition_position: int = 27):
 
         self.probationary_period = probationary_period
         self.dim = dim
+        self.partition_position = partition_position
 
         self.buffer = []
         self.training = []
