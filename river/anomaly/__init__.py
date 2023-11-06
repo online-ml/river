@@ -17,6 +17,7 @@ from . import base
 from .filter import QuantileFilter, ThresholdFilter
 from .gaussian import GaussianScorer
 from .hst import HalfSpaceTrees
+from .knn_icad import KNNICAD
 from .lof import LocalOutlierFactor
 from .svm import OneClassSVM
 
@@ -25,6 +26,7 @@ __all__ = [
     "AnomalyDetector",
     "GaussianScorer",
     "HalfSpaceTrees",
+    "KNNICAD",
     "OneClassSVM",
     "QuantileFilter",
     "ThresholdFilter",
