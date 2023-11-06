@@ -1,12 +1,10 @@
 from __future__ import annotations
 
-from typing import Union, List
-
 import copy
 
-from river import anomaly
-
 import numpy as np
+
+from river import anomaly
 
 
 class KNNInductiveCAD(anomaly.base.SupervisedAnomalyDetector):
@@ -99,13 +97,13 @@ class KNNInductiveCAD(anomaly.base.SupervisedAnomalyDetector):
         self.dim = dim
         self.partition_position = partition_position
 
-        self.buffer: List[Union[int, float]] = []
-        self.training: List[Union[int, float]] = []
-        self.calibration: List[Union[int, float]] = []
-        self.scores: List[Union[int, float]] = []
+        self.buffer: list[int | float] = []
+        self.training: list[int | float] = []
+        self.calibration: list[int | float] = []
+        self.scores: list[int | float] = []
         self.sigma = np.diag(np.ones(self.dim))
 
-        self.new_score: List[Union[int, float]] = []
+        self.new_score: list[int | float] = []
         self.latest_anomaly_score = 0.0
 
         self.record_count = 0
