@@ -26,6 +26,16 @@ class KNNInductiveCAD(anomaly.base.SupervisedAnomalyDetector):
     will also have its NCM value calculated. The parameter $p$ will then be estimated by comparing the sets of NCM
     values.
 
+    As a univariate anomaly detection algorithm, this implementation is adapted to `River` in a similar way as that of
+    the `GaussianScorer` or `StandardAbsoluteDeviation` algorithms, with the variable taken into the account at the
+    learning phase and scoring phase under variable `y`, ignoring `x`.
+
+    This implementation is adapted from the implementation within
+    [PySAD](https://github.com/selimfirat/pysad/blob/master/pysad/models/knn_cad.py)
+    (Python Streaming Anomaly Detection) and
+    [NAB](https://github.com/numenta/NAB/blob/master/nab/detectors/knncad/knncad_detector.py)
+    (Numenta Anomaly Benchmark).
+
     Parameters
     ----------
     probationary_period
