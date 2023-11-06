@@ -5,10 +5,34 @@ from river import anomaly
 import numpy as np
 
 
-class KNNICAD(anomaly.base.SupervisedAnomalyDetector):
-    """ KNN - Inductive Conformal Anomaly Detection (KNN-ICAD)
+class KNNInductiveCAD(anomaly.base.SupervisedAnomalyDetector):
+    r"""KNN - Inductive Conformal Anomaly Detection (KNN-ICAD)
 
-    - Map the time-series realization
+    KNN-ICAD [^1] is a conformalized density- and distance-based anoaly detection algorithms for a
+    one-dimensional time-series data. This algorithm uses a combination of a feature extraction method, an approach to
+    assess a score whether a new observation differs significantly from a previously observed data, and a probabilistic
+    interpretation of this score based on the conformal paradigm.
+
+    The basic idea of conformal prediction is that: based on a training set $(x_1, x_2, ..., x_m)$ for a new observation
+    $x_{m+1}$, the parameter $p$ is computed. $p$ is defined as the probability that in the training set an observation
+    with a more extreme value of a Non-Conformity Measure (NCM) than that of the new observation can be found. CP method
+    is usually simple to be adjusted to anomaly detection problems, as Conformal Anomaly Detection - CAD.
+
+    However, due to a high level of complexity, this algorithm uses a modification of CAD - Inductive CAD (or ICAD). The
+    main idea of ICAD consists of two datasets - "proper training" and "calibration" sets. For each data point from the
+    calibration set. The NCM value is calculated using the proper training set, moroveor, each newly observed data point
+    will also have its NCM value calculated. The parameter $p$ will then be estimated by comparing the sets of NCM
+    values.
+
+    References
+    ----------
+    [^1]: Burnaev, E. and Ishimtsev, V. (2016) 'Conformalized density- and distance-based anomaly detection
+    in time-series data,' arXiv [Preprint]. https://doi.org/10.48550/arxiv.1608.04585.
+    [^2]: Glenn Shafer and Vladimir Vovk. A tutorial on conformal prediction. Journal of Machine Learning Research,
+    9(Mar):371–421, 2008.
+    [^3]: Rikard Laxhammar and Goran Falkman. Inductive conformal anomaly detection for sequential detection of
+    anomalous sub-trajectories. Annals of Mathematics and Artificial Intelligence, 74(1-2):67–94, 2015.
+
     Examples
     --------
 
@@ -16,24 +40,29 @@ class KNNICAD(anomaly.base.SupervisedAnomalyDetector):
     >>> from river import anomaly
 
     >>> np.random.seed(42)
-    >>> Y = np.random.randn(150)
+    >>> Y = np.random.randn(1000)
 
-    >>> knn_cad = anomaly.KNNICAD(probationary_period=50, dim=10)
+    >>> knn_cad = anomaly.KNNICAD(probationary_period=100, dim=20)
 
     >>> for y in Y:
     ...     knn_cad = knn_cad.learn_one(None, y)
 
     >>> knn_cad.score_one(None, Y[-1])
-    0.1
+    0.2375
+
+    # When the algorithm scores an observation that has already been seen, only the latest anomaly score is queried.
+    # No actual update on the model is conducted.
+    >>> knn_cad.record_count == 1000
+    True
 
     >>> knn_cad.score_one(None, -1)
-    0.35
+    0.25
 
     >>> knn_cad.score_one(None, 0)
-    0.075
+    0.1875
 
     >>> knn_cad.score_one(None, 3)
-    0.975
+    0.4375
 
     """
 
