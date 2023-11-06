@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import copy
+
 from river import anomaly
 
 import numpy as np
@@ -95,13 +97,11 @@ class KNNInductiveCAD(anomaly.base.SupervisedAnomalyDetector):
         self.scores = []
         self.sigma = np.diag(np.ones(self.dim))
 
-        self.new_item = []
         self.new_score = []
         self.latest_anomaly_score = 0.0
 
         self.record_count = 0
         self.pred = -1
-        self.k = 27
 
     def _metric(self, a, b):
         diff = a - np.array(b)
@@ -127,10 +127,13 @@ class KNNInductiveCAD(anomaly.base.SupervisedAnomalyDetector):
             self.latest_anomaly_score = 0.0
             return
         else:
-            self.new_item = self.buffer[-self.dim:]
+            # Remove one element from the buffer as a new element has already been appended to make sure that
+            # the number of elements within this buffer will always be equal to the dimension.
+            if len(self.buffer) != self.dim:
+                self.buffer.pop(0)
 
             if self.record_count < self.probationary_period:
-                self.training.append(self.new_item)
+                self.training.append(copy.deepcopy(self.buffer))
                 self.latest_anomaly_score = 0.0
                 return
             else:
@@ -146,14 +149,14 @@ class KNNInductiveCAD(anomaly.base.SupervisedAnomalyDetector):
                 if len(self.scores) == 0:
                     self.scores = [self._ncm(v, True) for v in self.training]
 
-                self.new_score = self._ncm(self.new_item)
+                self.new_score = self._non_conformity_measure(copy.deepcopy(self.buffer))
 
                 if self.record_count >= 2 * self.probationary_period:
                     self.training.pop(0)
                     self.training.append(self.calibration.pop(0))
 
                 self.scores.pop(0)
-                self.calibration.append(self.new_item)
+                self.calibration.append(copy.deepcopy(self.buffer))
                 self.scores.append(self.new_score)
 
                 if self.pred > 0:
