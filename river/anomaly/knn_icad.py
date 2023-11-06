@@ -108,16 +108,18 @@ class KNNInductiveCAD(anomaly.base.SupervisedAnomalyDetector):
 
         return np.dot(np.dot(diff, self.sigma), diff.T)
 
-    def _ncm(self, item, item_in_array=False):
+    def _non_conformity_measure(self, item, item_in_array=False):
         arr = [self._metric(x, item) for x in self.training]
 
-        return np.sum(np.partition(arr, self.k + item_in_array)[:self.k + item_in_array])
+        return np.sum(np.partition(arr, kth=(self.partition_position + item_in_array))[:(self.partition_position + item_in_array)])
 
     def handle_record(self, x, y):
         """
         Since the two functions `learn_one` and `predict_one` share a major part where a new instance is handled,
         the latest anomaly score is calculated, the buffer, training and scores are re-calculated, a common function,
         i.e `handle_record` is created.
+
+        This function only takes `y` into account, however, `x` is included as an argument for consistency.
         """
 
         self.buffer.append(y)
@@ -147,7 +149,7 @@ class KNNInductiveCAD(anomaly.base.SupervisedAnomalyDetector):
                         print('Singular, non-invertible matrix at record', self.record_count)
 
                 if len(self.scores) == 0:
-                    self.scores = [self._ncm(v, True) for v in self.training]
+                    self.scores = [self._non_conformity_measure(v, True) for v in self.training]
 
                 self.new_score = self._non_conformity_measure(copy.deepcopy(self.buffer))
 
@@ -177,6 +179,7 @@ class KNNInductiveCAD(anomaly.base.SupervisedAnomalyDetector):
 
         # Checks whether score_one is used to score the instance that has just been seen by learn_one.
         # If yes, the part of handling record is skipped, since the latest anomaly score has already been computed.
+        # Else, the record is handled normally.
         if y != self.buffer[-1]:
             self.handle_record(x, y)
 
