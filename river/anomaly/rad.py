@@ -1,6 +1,8 @@
 from __future__ import annotations
 
-from river import anomaly, base
+import math
+
+from river import anomaly, base, linear_model, preprocessing, stats, time_series
 
 __all__ = ["ReconstructionAnomalyDetecion"]
 
@@ -10,38 +12,54 @@ class ReconstructionAnomalyDetecion(anomaly.base.SupervisedAnomalyDetector):
     This is the place for documentation
     """
 
-    def __init__(self):
-        print("Success")
+    def __init__(
+        self,
+        reconstruction: base.Estimator | None = None,
+        horizon: int | None = None,
+        n_std: int | None = None,
+    ):
+        self.reconstruction = (
+            reconstruction
+            if reconstruction is not None
+            else preprocessing.MinMaxScaler() | linear_model.LinearRegression()
+        )
+
+        self.n_std = n_std if n_std is not None else 3
+
+        self.horizon = horizon if horizon is not None else 1
+
+        self.dynamic_mean_squared_error = stats.Mean()
+        self.dynamic_squared_error_variance = stats.Var()
+        self.predictions = []
+        self.squared_errors = []
+        self.thresholds = []
 
     def learn_one(self, x: dict, y: base.typing.Target):
-        """Update the model.
-
-        Parameters
-        ----------
-        x
-            A dictionary of features.
-
-        Returns
-        -------
-        self
-
-        """
+        self.reconstruction.learn_one(x, y)
         return self
 
     def score_one(self, x: dict, y: base.typing.Target):
-        """Return an outlier score.
+        if isinstance(self.reconstruction, time_series.base.Forecaster):
+            y_pred = self.reconstruction.forecast(self.horizon)[0]
+        else:
+            y_pred = self.reconstruction.predict_one(x)
+        self.predictions.append(y_pred)
 
-        A high score is indicative of an anomaly. A low score corresponds a normal observation.
+        abs_error = abs(y_pred - y)
+        squared_error = abs_error**2
+        self.squared_errors.append(squared_error)
 
-        Parameters
-        ----------
-        x
-            A dictionary of features.
+        threshold = self.dynamic_mean_squared_error.get() + (
+            self.n_std * math.sqrt(self.dynamic_squared_error_variance.get())
+        )
+        self.thresholds.append(threshold)
 
-        Returns
-        -------
-        An anomaly score. A high score is indicative of an anomaly. A low score corresponds a
-        normal observation.
+        self.dynamic_mean_squared_error.update(squared_error)
+        self.dynamic_squared_error_variance.update(squared_error)
 
-        """
-        return 1.0
+        self.reconstruction.learn_one(x, y)
+
+        if squared_error >= threshold:
+            return 1.0
+        else:
+            return squared_error / threshold
