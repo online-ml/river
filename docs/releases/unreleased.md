@@ -39,6 +39,10 @@ River's mini-batch methods now support pandas v2. In particular, River conforms 
 
 - Simplify inner the structures of `forest.ARFClassifier` and `forest.ARFRegressor` by removing redundant class hierarchy. Simplify how concept drift logging can be accessed in individual trees and in the forest as a whole.
 
+## metrics
+
+- `metrics.ConfusionMatrix` may now be used with `evaluate.progressive_val_score` and `evaluate.iter_progressive_val_score`.
+
 ## proba
 
 - Added `_from_state` method to `proba.MultivariateGaussian` to warm start from previous knowledge.
