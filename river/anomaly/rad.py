@@ -7,7 +7,7 @@ __all__ = ["ReconstructionAnomalyDetecion"]
 
 class ReconstructionAnomalyDetecion(anomaly.base.AnomalyDetector):
     """Reconstruction Anomaly-Detection (RAD).
-        This is the place for documentation
+    This is the place for documentation
     """
 
     def __init__(self):

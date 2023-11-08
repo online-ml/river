@@ -18,9 +18,10 @@ from .filter import QuantileFilter, ThresholdFilter
 from .gaussian import GaussianScorer
 from .hst import HalfSpaceTrees
 from .lof import LocalOutlierFactor
+from .rad import ReconstructionAnomalyDetecion
 from .sad import StandardAbsoluteDeviation
 from .svm import OneClassSVM
-from .rad import ReconstructionAnomalyDetecion
+
 
 __all__ = [
     "base",
@@ -29,8 +30,8 @@ __all__ = [
     "HalfSpaceTrees",
     "OneClassSVM",
     "QuantileFilter",
+    "ReconstructionAnomalyDetecion",
     "StandardAbsoluteDeviation",
     "ThresholdFilter",
     "LocalOutlierFactor",
-    "ReconstructionAnomalyDetecion"
 ]
