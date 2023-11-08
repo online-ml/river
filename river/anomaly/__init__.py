@@ -22,7 +22,6 @@ from .rad import ReconstructionAnomalyDetecion
 from .sad import StandardAbsoluteDeviation
 from .svm import OneClassSVM
 
-
 __all__ = [
     "base",
     "AnomalyDetector",
@@ -30,8 +29,8 @@ __all__ = [
     "HalfSpaceTrees",
     "OneClassSVM",
     "QuantileFilter",
-    "ReconstructionAnomalyDetecion",
     "StandardAbsoluteDeviation",
     "ThresholdFilter",
     "LocalOutlierFactor",
+    "ReconstructionAnomalyDetecion"
 ]
