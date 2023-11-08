@@ -20,6 +20,7 @@ from .hst import HalfSpaceTrees
 from .lof import LocalOutlierFactor
 from .sad import StandardAbsoluteDeviation
 from .svm import OneClassSVM
+from .rad import ReconstructionAnomalyDetecion
 
 __all__ = [
     "base",
@@ -31,4 +32,5 @@ __all__ = [
     "StandardAbsoluteDeviation",
     "ThresholdFilter",
     "LocalOutlierFactor",
+    "ReconstructionAnomalyDetecion"
 ]
