@@ -1,9 +1,6 @@
-from river import datasets
-from river import evaluate
-from river import linear_model
-from river import metrics
-from river import optim
-from river import preprocessing
+from __future__ import annotations
+
+from river import datasets, evaluate, linear_model, metrics, optim, preprocessing
 
 
 def test_issue_1443():
