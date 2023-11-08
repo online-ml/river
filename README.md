@@ -19,10 +19,6 @@
   <a href="https://discord.gg/qNmrKEZMAn">
     <img src="https://dcbadge.vercel.app/api/server/qNmrKEZMAn?style=flat-square" alt="discord">
   </a>
-  <!-- Roadmap -->
-  <a href="https://github.com/orgs/online-ml/projects/3/">
-    <img src="https://img.shields.io/website?label=roadmap&style=flat-square&url=https://github.com/orgs/online-ml/projects/3/" alt="roadmap">
-  </a>
   <!-- PyPI -->
   <a href="https://pypi.org/project/river">
     <img src="https://img.shields.io/pypi/v/river.svg?label=release&color=blue&style=flat-square" alt="pypi">
