@@ -30,9 +30,9 @@ class ReconstructionAnomalyDetecion(anomaly.base.SupervisedAnomalyDetector):
 
         self.dynamic_mean_squared_error = stats.Mean()
         self.dynamic_squared_error_variance = stats.Var()
-        self.predictions = []
-        self.squared_errors = []
-        self.thresholds = []
+        self.predictions: list[float] = []
+        self.squared_errors: list[float] = []
+        self.thresholds: list[float] = []
 
     def learn_one(self, x: dict, y: base.typing.Target):
         self.reconstruction.learn_one(x, y)
