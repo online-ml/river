@@ -32,5 +32,5 @@ __all__ = [
     "StandardAbsoluteDeviation",
     "ThresholdFilter",
     "LocalOutlierFactor",
-    "ReconstructionAnomalyDetecion"
+    "ReconstructionAnomalyDetecion",
 ]
