@@ -17,4 +17,4 @@ class ReconstructionAnomalyDetecion(anomaly.base.AnomalyDetector):
         return self
 
     def score_one(self, x):
-        return 1
+        return 2
