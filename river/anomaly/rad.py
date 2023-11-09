@@ -37,7 +37,7 @@ class ReconstructionAnomalyDetecion(anomaly.base.SupervisedAnomalyDetector):
         self.iterations: int = 0
         self.warmed_up: bool = self.iterations >= self.warmup_period
 
-    def learn_one(self, x: dict | None, y: float):
+    def learn_one(self, x: dict | None, y: base.typing.Target):
         self.iterations += 1
         self.warmed_up = self.iterations >= self.warmup_period
 
