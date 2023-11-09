@@ -32,6 +32,7 @@ jobs:
 
       - name: Execute notebooks
         run: |
+          poetry shell
           make execute-notebooks
 
       - name: Build docs
