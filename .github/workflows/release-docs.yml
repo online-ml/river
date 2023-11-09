@@ -15,7 +15,7 @@ jobs:
       - name: Build River
         uses: ./.github/actions/install-env
         with:
-          python-version: "3.11"
+          python-version: "3.10"
 
       - name: Install extra Ubuntu dependencies
         run: sudo apt-get install graphviz pandoc
