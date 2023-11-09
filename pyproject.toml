@@ -6,6 +6,9 @@ build-backend = "poetry.core.masonry.api"
 name = "river"
 version = "0.20.0"
 description = "Online machine learning in Python"
+readme = "README.md"
+homepage = "https://riverml.xyz/"
+repository = "https://github.com/online-ml/river/"
 authors = ["Max Halford <maxhalford25@gmail.com>"]
 
 [tool.poetry.build]
