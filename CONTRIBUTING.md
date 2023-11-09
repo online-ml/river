@@ -190,6 +190,9 @@ make execute-notebooks
 ```sh
 RIVER_VERSION=$(python -c "import river; print(river.__version__)")
 echo $RIVER_VERSION
+```
+
+```sh
 git tag $RIVER_VERSION
 git push origin $RIVER_VERSION
 ```
