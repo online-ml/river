@@ -38,7 +38,6 @@ optional = true
 [tool.poetry.group.compat.dependencies]
 scikit-learn = "^1.0.1"
 sqlalchemy = "^2.0.0"
-vaex = "^4.0.0"
 
 [tool.poetry.group.docs]
 optional = true
