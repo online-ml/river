@@ -19,6 +19,7 @@ def _progressive_validation(
     delay: str | int | dt.timedelta | typing.Callable | None = None,
     measure_time=False,
     measure_memory=False,
+    yield_predictions=False,
 ):
     # Check that the model and the metric are in accordance
     if not metric.works_with(model):
@@ -45,7 +46,7 @@ def _progressive_validation(
     if measure_time:
         start = time.perf_counter()
 
-    def report():
+    def report(y_pred):
         if isinstance(metric, metrics.base.Metrics):
             state = {m.__class__.__name__: m for m in metric}
         else:
@@ -58,6 +59,9 @@ def _progressive_validation(
             state["Time"] = dt.timedelta(seconds=now - start)
         if measure_memory:
             state["Memory"] = model._raw_memory_usage
+        if yield_predictions:
+            state["Prediction"] = y_pred
+
         return state
 
     for i, x, y, *kwargs in stream.simulate_qa(dataset, moment, delay, copy=True):
@@ -90,13 +94,13 @@ def _progressive_validation(
         # Yield current results
         n_total_answers += 1
         if n_total_answers == next_checkpoint:
-            yield report()
+            yield report(y_pred=y_pred)
             prev_checkpoint = next_checkpoint
             next_checkpoint = next(checkpoints, None)
     else:
         # If the dataset was exhausted, we need to make sure that we yield the final results
         if prev_checkpoint and n_total_answers != prev_checkpoint:
-            yield report()
+            yield report(y_pred=None)
 
 
 def iter_progressive_val_score(
@@ -108,6 +112,7 @@ def iter_progressive_val_score(
     step=1,
     measure_time=False,
     measure_memory=False,
+    yield_predictions=False,
 ) -> typing.Generator:
     """Evaluates the performance of a model on a streaming dataset and yields results.
 
@@ -143,6 +148,9 @@ def iter_progressive_val_score(
         Whether or not to measure the elapsed time.
     measure_memory
         Whether or not to measure the memory usage of the model.
+    yield_predictions
+        Whether or not to include predictions. If step is 1, then this is equivalent to yielding
+        the predictions at every iterations. Otherwise, not all predictions will be yielded.
 
     Examples
     --------
@@ -180,6 +188,26 @@ def iter_progressive_val_score(
     {'ROCAUC': ROCAUC: 95.07%, 'Step': 1200}
     {'ROCAUC': ROCAUC: 95.07%, 'Step': 1250}
 
+    The `yield_predictions` parameter can be used to include the predictions in the results:
+
+    >>> import itertools
+
+    >>> steps = evaluate.iter_progressive_val_score(
+    ...     model=model,
+    ...     dataset=datasets.Phishing(),
+    ...     metric=metrics.ROCAUC(),
+    ...     step=1,
+    ...     yield_predictions=True
+    ... )
+
+    >>> for step in itertools.islice(steps, 100, 105):
+    ...    print(step)
+    {'ROCAUC': ROCAUC: 94.68%, 'Step': 101, 'Prediction': {False: 0.966..., True: 0.033...}}
+    {'ROCAUC': ROCAUC: 94.75%, 'Step': 102, 'Prediction': {False: 0.035..., True: 0.964...}}
+    {'ROCAUC': ROCAUC: 94.82%, 'Step': 103, 'Prediction': {False: 0.043..., True: 0.956...}}
+    {'ROCAUC': ROCAUC: 94.89%, 'Step': 104, 'Prediction': {False: 0.816..., True: 0.183...}}
+    {'ROCAUC': ROCAUC: 94.96%, 'Step': 105, 'Prediction': {False: 0.041..., True: 0.958...}}
+
     References
     ----------
     [^1]: [Beating the Hold-Out: Bounds for K-fold and Progressive Cross-Validation](http://hunch.net/~jl/projects/prediction_bounds/progressive_validation/coltfinal.pdf)
@@ -196,6 +224,7 @@ def iter_progressive_val_score(
         delay=delay,
         measure_time=measure_time,
         measure_memory=measure_memory,
+        yield_predictions=yield_predictions,
     )
 
 

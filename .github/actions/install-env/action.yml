@@ -1,0 +1,53 @@
+name: Install env
+
+inputs:
+  python-version:
+    description: "Python version to use"
+    required: true
+  build-root:
+    default: "true"
+    options:
+      - true
+      - false
+
+runs:
+  using: "composite"
+  steps:
+    - name: Check out repository
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      id: set-up-python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ inputs.python-version }}
+
+    - name: Load cached Poetry installation
+      uses: actions/cache@v3
+      with:
+        path: ~/.local # the path depends on the OS
+        key: poetry-1 # increment to reset cache
+
+    - name: Install poetry
+      uses: snok/install-poetry@v1
+      with:
+        virtualenvs-create: true
+        virtualenvs-in-project: true
+        installer-parallel: true
+
+    - name: Load cached virtual env
+      id: cached-poetry-dependencies
+      uses: actions/cache@v3
+      with:
+        path: .venv
+        key: venv-${{ runner.os }}-${{ steps.set-up-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
+
+    - name: Install dependencies
+      shell: bash
+      if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+      run: poetry install --no-interaction --no-ansi --no-root
+
+    - name: Build
+      shell: bash
+      if: ${{ inputs.build-root == 'true' }}
+      run: poetry install --no-interaction --no-ansi

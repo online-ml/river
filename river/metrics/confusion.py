@@ -127,3 +127,10 @@ class ConfusionMatrix:
     @property
     def total_false_negatives(self):
         return sum(self.false_negatives(label) for label in self.classes)
+
+    def works_with(self, model) -> bool:
+        return utils.inspect.isclassifier(model)
+
+    @property
+    def requires_labels(self):
+        return True

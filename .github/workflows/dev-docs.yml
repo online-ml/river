@@ -1,0 +1,47 @@
+name: dev-docs
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Build River
+        uses: ./.github/actions/install-env
+        with:
+          python-version: "3.12"
+          build-root: false
+
+      - name: Install extra Ubuntu dependencies
+        run: sudo apt-get install graphviz pandoc
+
+      - name: Install extra Python dependencies
+        run: |
+          poetry install --with docs
+
+      - name: Build docs
+        run: |
+          source $VENV
+          make doc
+
+      - name: Deploy docs
+        env:
+          GH_TOKEN: ${{ secrets.GitHubToken }}
+        run: |
+          source $VENV
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git config pull.rebase false
+          git add --all
+          git commit -m "Release dev docs" --allow-empty
+          git fetch
+          git checkout gh-pages
+          git pull
+          git checkout main
+          mike deploy dev --push --remote https://github.com/${{ github.repository }}.git

@@ -1,11 +1,15 @@
 <p align="center">
-  <img height="220px" src="docs/img/logo.svg" alt="river_logo">
+  <img height="220px" src="https://github.com/online-ml/river/assets/8095957/64ad5fb6-383c-4bfb-af71-3d055a103a1a" alt="river_logo">
 </p>
 
 <p align="center">
   <!-- Tests -->
-  <a href="https://github.com/online-ml/river/actions/workflows/ci.yml">
-    <img src="https://github.com/online-ml/river/actions/workflows/ci.yml/badge.svg" alt="CI Pipeline">
+  <a href="https://github.com/online-ml/river/actions/workflows/unit-tests.yml">
+    <img src="https://github.com/online-ml/river/actions/workflows/unit-tests.yml/badge.svg" alt="unit-tests">
+  </a>
+  <!-- Code quality -->
+  <a href="https://github.com/online-ml/river/actions/workflows/code-quality.yml">
+    <img src="https://github.com/online-ml/river/actions/workflows/code-quality.yml/badge.svg" alt="code-quality">
   </a>
   <!-- Documentation -->
   <a href="https://riverml.xyz">
@@ -14,10 +18,6 @@
   <!-- Discord -->
   <a href="https://discord.gg/qNmrKEZMAn">
     <img src="https://dcbadge.vercel.app/api/server/qNmrKEZMAn?style=flat-square" alt="discord">
-  </a>
-  <!-- Roadmap -->
-  <a href="https://github.com/orgs/online-ml/projects/3/">
-    <img src="https://img.shields.io/website?label=roadmap&style=flat-square&url=https://github.com/orgs/online-ml/projects/3/" alt="roadmap">
   </a>
   <!-- PyPI -->
   <a href="https://pypi.org/project/river">

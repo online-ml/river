@@ -39,7 +39,7 @@ class GaussianRandomProjector(base.Transformer):
     ...     x = model.transform_one(x)
     ...     print(x)
     ...     break
-    {0: -61289.37139206629, 1: 141312.51039283074, 2: 279165.99370457436}
+    {0: -61289.371..., 1: 141312.510..., 2: 279165.993...}
 
     >>> model = (
     ...     preprocessing.GaussianRandomProjector(
@@ -50,7 +50,7 @@ class GaussianRandomProjector(base.Transformer):
     ...     linear_model.LinearRegression()
     ... )
     >>> evaluate.progressive_val_score(dataset, model, metrics.MAE())
-    MAE: 0.933502
+    MAE: 0.933...
 
     References
     ----------
