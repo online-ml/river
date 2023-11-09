@@ -23,17 +23,15 @@ jobs:
       - name: Install extra Python dependencies
         run: |
           poetry install --with docs --with compat
-          poetry run pip install rich
           poetry run python -m spacy download en_core_web_sm
 
       - name: Use Rich in notebooks
         run: |
-          ipython profile create
+          poetry run ipython profile create
           echo "%load_ext rich" > ~/.ipython/profile_default/startup/00_rich.ipy
 
       - name: Execute notebooks
         run: |
-          pip install numpy --upgrade
           make execute-notebooks
 
       - name: Build docs
