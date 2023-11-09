@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "river"
-version = "0.19.0"
+version = "0.20.0"
 description = "Online machine learning in Python"
 authors = ["Max Halford <maxhalford25@gmail.com>"]
 
