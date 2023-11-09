@@ -32,11 +32,13 @@ jobs:
 
       - name: Execute notebooks
         run: |
-          poetry shell
+          source $VENV
           make execute-notebooks
 
       - name: Build docs
-        run: make doc
+        run: |
+          source $VENV
+          make doc
 
       - name: Deploy docs
         env:
