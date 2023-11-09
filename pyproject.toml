@@ -37,6 +37,7 @@ ipykernel = "^6.26.0"
 ipython = "^8.17.2"
 rich = "^13.6.0"
 jupyter = "^1.0.0"
+mike = "^2.0.0"
 
 [tool.poetry.group.compat]
 optional = true
