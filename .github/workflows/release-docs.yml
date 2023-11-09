@@ -23,7 +23,7 @@ jobs:
       - name: Install extra Python dependencies
         run: |
           poetry install --with docs --with compat
-          poetry install rich
+          poetry run pip install rich
           poetry run python -m spacy download en_core_web_sm
 
       - name: Use Rich in notebooks
