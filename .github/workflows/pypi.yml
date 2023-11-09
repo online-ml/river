@@ -68,7 +68,7 @@ jobs:
             rustup default nightly &&
             rustup show
           # rust doesn't seem to be available for musl linux on i686
-          CIBW_SKIP: "*-musllinux_i686"
+          CIBW_SKIP: "*-musllinux_{i686,aarch64}"
           # we build for "alt_arch_name" if it exists, else 'auto
           CIBW_ARCHS: ${{ matrix.alt_arch_name || 'auto' }}
 
