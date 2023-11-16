@@ -1,5 +1,5 @@
 <p align="center">
-  <img height="220px" src="docs/img/logo.svg" alt="river_logo">
+  <img height="220px" src="https://github.com/online-ml/river/assets/8095957/64ad5fb6-383c-4bfb-af71-3d055a103a1a" alt="river_logo">
 </p>
 
 <p align="center">
