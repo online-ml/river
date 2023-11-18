@@ -3,10 +3,11 @@ from __future__ import annotations
 import functools
 from collections import defaultdict
 
+from river import metrics
 from river import utils
 
 
-class ConfusionMatrix:
+class ConfusionMatrix(metrics.base.MultiClassMetric):
     """Confusion Matrix for binary and multi-class classification.
 
     Parameters
@@ -128,9 +129,9 @@ class ConfusionMatrix:
     def total_false_negatives(self):
         return sum(self.false_negatives(label) for label in self.classes)
 
-    def works_with(self, model) -> bool:
-        return utils.inspect.isclassifier(model)
-
     @property
-    def requires_labels(self):
-        return True
+    def bigger_is_better(self):
+        raise NotImplementedError
+
+    def get(self):
+        raise NotImplementedError

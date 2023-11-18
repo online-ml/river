@@ -7,8 +7,6 @@ import operator
 
 from river import base, stats, utils
 
-from . import confusion
-
 __all__ = [
     "BinaryMetric",
     "ClassificationMetric",
@@ -79,9 +77,16 @@ class ClassificationMetric(Metric):
 
     _fmt = ".2%"  # output a percentage, e.g. 0.427 becomes "42,7%"
 
-    def __init__(self, cm: confusion.ConfusionMatrix | None = None):
+    def __init__(self, cm: "confusion.ConfusionMatrix" | None = None):
+        # HACK: there is a circular dependency between ConfusionMatrix and ClassificationMetric. We
+        # use ConfusionMatrix here so as to express metrics in terms of false/true
+        # positives/negatives. But for UX reasons, we also want ConfusionMatrix to be a
+        # ClassificationMetric, so that it can used in places a ClassificationMetric can be used,
+        # such as evaluate.progressive_val_score.
+        from river import metrics
+
         if cm is None:
-            cm = confusion.ConfusionMatrix()
+            cm = metrics.ConfusionMatrix()
         self.cm = cm
 
     def update(self, y_true, y_pred, sample_weight=1.0):
@@ -220,7 +225,7 @@ class Metrics(Metric, collections.UserList):
 
     """
 
-    def __init__(self, metrics, str_sep=", "):
+    def __init__(self, metrics, str_sep="\n"):
         super().__init__(metrics)
         self.str_sep = str_sep
 

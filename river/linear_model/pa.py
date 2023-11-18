@@ -73,7 +73,8 @@ class PARegressor(BasePA, base.Regressor):
     ...     metric = metric.update(yi, y_pred)
 
     >>> print(metric)
-    MAE: 9.809402, MSE: 472.393532
+    MAE: 9.809402
+    MSE: 472.393532
 
     References
     ----------
@@ -156,7 +157,8 @@ class PAClassifier(BasePA, base.Classifier):
     ...     metric = metric.update(yi, model.predict_proba_one(xi))
 
     >>> print(metric)
-    Accuracy: 88.46%, LogLoss: 0.325727
+    Accuracy: 88.46%
+    LogLoss: 0.325727...
 
     References
     ----------
