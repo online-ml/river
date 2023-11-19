@@ -51,15 +51,15 @@ class R2(metrics.base.RegressionMetric):
     def bigger_is_better(self):
         return True
 
-    def update(self, y_true, y_pred, sample_weight=1.0):
-        self._y_var.update(y_true, w=sample_weight)
-        squared_error = (y_true - y_pred) * (y_true - y_pred) * sample_weight
+    def update(self, y_true, y_pred, w=1.0):
+        self._y_var.update(y_true, w=w)
+        squared_error = (y_true - y_pred) * (y_true - y_pred) * w
         self._residual_sum_of_squares += squared_error
         return self
 
-    def revert(self, y_true, y_pred, sample_weight=1.0):
-        self._y_var.update(y_true, w=-sample_weight)
-        self._residual_sum_of_squares -= (y_true - y_pred) * (y_true - y_pred) * sample_weight
+    def revert(self, y_true, y_pred, w=1.0):
+        self._y_var.update(y_true, w=-w)
+        self._residual_sum_of_squares -= (y_true - y_pred) * (y_true - y_pred) * w
         return self
 
     def get(self):

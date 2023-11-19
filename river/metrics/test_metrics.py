@@ -236,7 +236,7 @@ def test_metric(metric, sk_metric):
         m = copy.deepcopy(metric)
         for i, (yt, yp, w) in enumerate(zip(y_true, y_pred, sample_weights)):
             if metric.works_with_weights:
-                m.update(y_true=yt, y_pred=yp, sample_weight=w)
+                m.update(y_true=yt, y_pred=yp, w=w)
             else:
                 m.update(y_true=yt, y_pred=yp)
 
