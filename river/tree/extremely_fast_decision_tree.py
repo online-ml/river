@@ -204,7 +204,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
             else:
                 return EFDTNominalMultiwayBranch
 
-    def learn_one(self, x, y, *, sample_weight=1.0):
+    def learn_one(self, x, y, *, w=1.0):
         """Incrementally train the model
 
         Parameters
@@ -213,7 +213,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
             Instance attributes.
         y
             The label of the instance.
-        sample_weight
+        w
             The weight of the sample.
 
         Notes
@@ -234,20 +234,20 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
         # Updates the set of observed classes
         self.classes.add(y)
 
-        self._train_weight_seen_by_model += sample_weight
+        self._train_weight_seen_by_model += w
 
         if self._root is None:
             self._root = self._new_leaf()
             self._n_active_leaves = 1
 
         # Sort instance X into a leaf
-        self._sort_to_leaf(x, y, sample_weight)
+        self._sort_to_leaf(x, y, w)
         # Process all nodes, starting from root to the leaf where the instance x belongs.
-        self._process_nodes(x, y, sample_weight, self._root, None, None)
+        self._process_nodes(x, y, w, self._root, None, None)
 
         return self
 
-    def _sort_to_leaf(self, x, y, sample_weight):
+    def _sort_to_leaf(self, x, y, w):
         """For a given instance, find the corresponding leaf and update it.
 
         Private function where leaf learn from instance.
@@ -262,7 +262,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
             Instance attributes.
         y
             The instance label.
-        sample_weight
+        w
             The weight of the sample.
 
         """
@@ -287,12 +287,12 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
                             node = node.traverse(x, until_leaf=False)
                     if isinstance(node, HTLeaf):
                         break
-        node.learn_one(x, y, sample_weight=sample_weight, tree=self)
+        node.learn_one(x, y, w=w, tree=self)
 
         if self._train_weight_seen_by_model % self.memory_estimate_period == 0:
             self._estimate_model_size()
 
-    def _process_nodes(self, x, y, sample_weight, node, parent, branch_index):
+    def _process_nodes(self, x, y, w, node, parent, branch_index):
         """Process nodes from the root to the leaf where the instance belongs.
 
         1. If the node is internal:
@@ -306,7 +306,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
             Instance attributes.
         y
             The label of the instance.
-        sample_weight
+        w
             The weight of the sample.
         node
             The node to process.
@@ -317,7 +317,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
         """
         if isinstance(node, BaseEFDTBranch):
             # Update split nodes as the tree is traversed
-            node.learn_one(x, y, sample_weight=sample_weight, tree=self)
+            node.learn_one(x, y, w=w, tree=self)
 
             old_weight = node.last_split_reevaluation_at
             new_weight = node.total_weight
@@ -342,7 +342,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
                     child = node.children[child_index]
                 except KeyError:
                     child_index, child = node.most_common_path()
-                self._process_nodes(x, y, sample_weight, child, node, child_index)
+                self._process_nodes(x, y, w, child, node, child_index)
         elif self._growth_allowed and node.is_active():
             if node.depth >= self.max_depth:  # Max depth reached
                 node.deactivate()

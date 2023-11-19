@@ -77,7 +77,7 @@ class HTLeaf(Leaf, abc.ABC):
         pass
 
     @abc.abstractmethod
-    def update_stats(self, y, sample_weight):
+    def update_stats(self, y, w):
         pass
 
     def _iter_features(self, x) -> typing.Iterable:
@@ -90,7 +90,7 @@ class HTLeaf(Leaf, abc.ABC):
         """
         yield from x.items()
 
-    def update_splitters(self, x, y, sample_weight, nominal_attributes):
+    def update_splitters(self, x, y, w, nominal_attributes):
         for att_id, att_val in self._iter_features(x):
             if att_id in self._disabled_attrs:
                 continue
@@ -106,7 +106,7 @@ class HTLeaf(Leaf, abc.ABC):
                     splitter = self.splitter.clone()
 
                 self.splitters[att_id] = splitter
-            splitter.update(att_val, y, sample_weight)
+            splitter.update(att_val, y, w)
 
     def best_split_suggestions(self, criterion, tree) -> list[BranchFactory]:
         """Find possible split candidates.
@@ -149,7 +149,7 @@ class HTLeaf(Leaf, abc.ABC):
             del self.splitters[att_id]
             self._disabled_attrs.add(att_id)
 
-    def learn_one(self, x, y, *, sample_weight=1.0, tree=None):
+    def learn_one(self, x, y, *, w=1.0, tree=None):
         """Update the node with the provided sample.
 
         Parameters
@@ -158,7 +158,7 @@ class HTLeaf(Leaf, abc.ABC):
             Sample attributes for updating the node.
         y
             Target value.
-        sample_weight
+        w
             Sample weight.
         tree
             Tree to update.
@@ -169,9 +169,9 @@ class HTLeaf(Leaf, abc.ABC):
         All classes overriding this method should include a call to `super().learn_one`
         to guarantee the learning process happens consistently.
         """
-        self.update_stats(y, sample_weight)
+        self.update_stats(y, w)
         if self.is_active():
-            self.update_splitters(x, y, sample_weight, tree.nominal_attributes)
+            self.update_splitters(x, y, w, tree.nominal_attributes)
 
     @abc.abstractmethod
     def prediction(self, x, *, tree=None) -> dict:

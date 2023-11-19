@@ -31,11 +31,11 @@ class LeafMajorityClass(HTLeaf):
     def new_nominal_splitter():
         return NominalSplitterClassif()
 
-    def update_stats(self, y, sample_weight):
+    def update_stats(self, y, w):
         try:
-            self.stats[y] += sample_weight
+            self.stats[y] += w
         except KeyError:
-            self.stats[y] = sample_weight
+            self.stats[y] = w
 
     def prediction(self, x, *, tree=None):
         return normalize_values_in_dict(self.stats, inplace=False)
@@ -164,7 +164,7 @@ class LeafNaiveBayesAdaptive(LeafMajorityClass):
         self._mc_correct_weight = 0.0
         self._nb_correct_weight = 0.0
 
-    def learn_one(self, x, y, *, sample_weight=1.0, tree=None):
+    def learn_one(self, x, y, *, w=1.0, tree=None):
         """Update the node with the provided instance.
 
         Parameters
@@ -173,7 +173,7 @@ class LeafNaiveBayesAdaptive(LeafMajorityClass):
             Instance attributes for updating the node.
         y
             Instance class.
-        sample_weight
+        w
             The instance's weight.
         tree
             The Hoeffding Tree to update.
@@ -184,13 +184,13 @@ class LeafNaiveBayesAdaptive(LeafMajorityClass):
             # Empty node (assume the majority class will be the best option) or majority
             # class prediction is correct
             if len(self.stats) == 0 or max(mc_pred, key=mc_pred.get) == y:
-                self._mc_correct_weight += sample_weight
+                self._mc_correct_weight += w
 
             nb_pred = do_naive_bayes_prediction(x, self.stats, self.splitters)
             if len(nb_pred) > 0 and max(nb_pred, key=nb_pred.get) == y:
-                self._nb_correct_weight += sample_weight
+                self._nb_correct_weight += w
 
-        super().learn_one(x, y, sample_weight=sample_weight, tree=tree)
+        super().learn_one(x, y, w=w, tree=tree)
 
     def prediction(self, x, *, tree=None):
         """Get the probabilities per class for a given instance.

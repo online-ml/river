@@ -47,14 +47,14 @@ class AdaLeafRegressor(HTLeaf):
     def kill_tree_children(self, hatr):
         pass
 
-    def learn_one(self, x, y, *, sample_weight=1.0, tree=None, parent=None, parent_branch=None):
+    def learn_one(self, x, y, *, w=1.0, tree=None, parent=None, parent_branch=None):
         y_pred = self.prediction(x, tree=tree)
 
         if tree.bootstrap_sampling:
             # Perform bootstrap-sampling
             k = poisson(rate=1, rng=self.rng)
             if k > 0:
-                sample_weight *= k
+                w *= k
 
         drift_input = abs(y - y_pred)
         old_error = self._error_tracker.mean.get()
@@ -69,7 +69,7 @@ class AdaLeafRegressor(HTLeaf):
             self._error_tracker = self._error_tracker.clone()
 
         # Update learning model
-        super().learn_one(x, y, sample_weight=sample_weight, tree=tree)
+        super().learn_one(x, y, w=w, tree=tree)
 
         weight_seen = self.total_weight
 
@@ -149,13 +149,13 @@ class AdaBranchRegressor(DTBranch):
             if isinstance(child, AdaBranchRegressor) and child._alternate_tree:
                 yield from child._alternate_tree.iter_leaves()
 
-    def learn_one(self, x, y, *, sample_weight=1.0, tree=None, parent=None, parent_branch=None):
+    def learn_one(self, x, y, *, w=1.0, tree=None, parent=None, parent_branch=None):
         leaf = super().traverse(x, until_leaf=True)
         y_pred = leaf.prediction(x, tree=tree)
 
         # Update stats as traverse the tree to improve predictions (in case split nodes are used
         # to provide responses)
-        self.stats.update(y, sample_weight)
+        self.stats.update(y, w)
 
         drift_input = abs(y - y_pred)
         old_error = self._error_tracker.mean.get()
@@ -224,7 +224,7 @@ class AdaBranchRegressor(DTBranch):
             self._alternate_tree.learn_one(
                 x,
                 y,
-                sample_weight=sample_weight,
+                w=w,
                 tree=tree,
                 parent=parent,
                 parent_branch=parent_branch,
@@ -238,7 +238,7 @@ class AdaBranchRegressor(DTBranch):
             child.learn_one(
                 x,
                 y,
-                sample_weight=sample_weight,
+                w=w,
                 tree=tree,
                 parent=self,
                 parent_branch=self.branch_no(x),
@@ -253,7 +253,7 @@ class AdaBranchRegressor(DTBranch):
                 leaf.learn_one(
                     x,
                     y,
-                    sample_weight=sample_weight,
+                    w=w,
                     tree=tree,
                     parent=self,
                     parent_branch=self.branch_no(x),
@@ -265,7 +265,7 @@ class AdaBranchRegressor(DTBranch):
                 child.learn_one(
                     x,
                     y,
-                    sample_weight=sample_weight,
+                    w=w,
                     tree=tree,
                     parent=self,
                     parent_branch=child_id,
