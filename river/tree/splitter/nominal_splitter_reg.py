@@ -28,16 +28,16 @@ class NominalSplitterReg(Splitter):
         return False
 
     @staticmethod
-    def _update_estimator_univariate(estimator, target, sample_weight):
-        estimator.update(target, sample_weight)
+    def _update_estimator_univariate(estimator, target, w):
+        estimator.update(target, w)
 
     @staticmethod
-    def _update_estimator_multivariate(estimator, target, sample_weight):
+    def _update_estimator_multivariate(estimator, target, w):
         for t in target:
-            estimator[t].update(target[t], sample_weight)
+            estimator[t].update(target[t], w)
 
-    def update(self, att_val, target_val, sample_weight):
-        if att_val is None or sample_weight is None:
+    def update(self, att_val, target_val, w):
+        if att_val is None or w is None:
             return
         else:
             try:
@@ -49,7 +49,7 @@ class NominalSplitterReg(Splitter):
                 else:
                     self._statistics[att_val] = Var()
                 estimator = self._statistics[att_val]
-            self._update_estimator(estimator, target_val, sample_weight)
+            self._update_estimator(estimator, target_val, w)
 
     def cond_proba(self, att_val, target_val):
         """Not implemented in regression splitters."""

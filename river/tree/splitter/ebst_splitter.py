@@ -43,14 +43,14 @@ class EBSTSplitter(Splitter):
     def is_target_class(self) -> bool:
         return False
 
-    def update(self, att_val, target_val, sample_weight):
+    def update(self, att_val, target_val, w):
         if att_val is None:
             return
         else:
             if self._root is None:
-                self._root = EBSTNode(att_val, target_val, sample_weight)
+                self._root = EBSTNode(att_val, target_val, w)
             else:
-                self._root.insert_value(att_val, target_val, sample_weight)
+                self._root.insert_value(att_val, target_val, w)
 
     def cond_proba(self, att_val, target_val):
         """Not implemented in regression splitters."""
@@ -237,7 +237,7 @@ class EBSTSplitter(Splitter):
 
 
 class EBSTNode:
-    def __init__(self, att_val, target_val, sample_weight):
+    def __init__(self, att_val, target_val, w):
         self.att_val = att_val
 
         if isinstance(target_val, dict):
@@ -250,23 +250,23 @@ class EBSTNode:
             self.estimator = Var()
             self._update_estimator = self._update_estimator_univariate
 
-        self._update_estimator(self, target_val, sample_weight)
+        self._update_estimator(self, target_val, w)
 
         self._left = None
         self._right = None
 
     @staticmethod
-    def _update_estimator_univariate(node, target, sample_weight):
-        node.estimator.update(target, sample_weight)
+    def _update_estimator_univariate(node, target, w):
+        node.estimator.update(target, w)
 
     @staticmethod
-    def _update_estimator_multivariate(node, target, sample_weight):
+    def _update_estimator_multivariate(node, target, w):
         for t in target:
-            node.estimator[t].update(target[t], sample_weight)
+            node.estimator[t].update(target[t], w)
 
     # Incremental implementation of the insert method. Avoiding unnecessary
     # stack tracing must decrease memory costs
-    def insert_value(self, att_val, target_val, sample_weight):
+    def insert_value(self, att_val, target_val, w):
         current = self
         antecedent = None
         is_right = False
@@ -274,10 +274,10 @@ class EBSTNode:
         while current is not None:
             antecedent = current
             if att_val == current.att_val:
-                self._update_estimator(current, target_val, sample_weight)
+                self._update_estimator(current, target_val, w)
                 return
             elif att_val < current.att_val:
-                self._update_estimator(current, target_val, sample_weight)
+                self._update_estimator(current, target_val, w)
 
                 current = current._left
                 is_right = False
@@ -287,6 +287,6 @@ class EBSTNode:
 
         # Value was not yet added to the tree
         if is_right:
-            antecedent._right = EBSTNode(att_val, target_val, sample_weight)
+            antecedent._right = EBSTNode(att_val, target_val, w)
         else:
-            antecedent._left = EBSTNode(att_val, target_val, sample_weight)
+            antecedent._left = EBSTNode(att_val, target_val, w)

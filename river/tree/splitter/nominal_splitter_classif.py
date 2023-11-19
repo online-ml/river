@@ -24,18 +24,18 @@ class NominalSplitterClassif(Splitter):
     def is_numeric(self):
         return False
 
-    def update(self, att_val, target_val, sample_weight):
+    def update(self, att_val, target_val, w):
         if att_val is None:
-            self._missing_weight_observed += sample_weight
+            self._missing_weight_observed += w
         else:
             self._att_values.add(att_val)
 
             try:
-                self._att_dist_per_class[target_val][att_val] += sample_weight
+                self._att_dist_per_class[target_val][att_val] += w
             except KeyError:
-                self._att_dist_per_class[target_val][att_val] = sample_weight
+                self._att_dist_per_class[target_val][att_val] = w
 
-        self._total_weight_observed += sample_weight
+        self._total_weight_observed += w
 
     def cond_proba(self, att_val, target_val):
         class_dist = self._att_dist_per_class[target_val]
