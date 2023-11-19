@@ -153,7 +153,7 @@ class TextClust(base.Clusterer):
         self.micro_distance = self.distances(self.micro_distance)
         self.macro_distance = self.distances(self.macro_distance)
 
-    def learn_one(self, x, t=None, sample_weight=None):
+    def learn_one(self, x, t=None, w=None):
         localdict = {}
         for key in x.keys():
             new_key = key
@@ -213,7 +213,7 @@ class TextClust(base.Clusterer):
 
     ## predicts the cluster number. The type specifies whether this should happen on micro-cluster
     ## or macro-cluster level
-    def predict_one(self, x, sample_weight=None, type="micro"):
+    def predict_one(self, x, w=None, type="micro"):
         localdict = {}
         for key in x.keys():
             new_key = key
