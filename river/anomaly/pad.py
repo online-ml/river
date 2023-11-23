@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import math
-
 import numbers
 
 from river import anomaly, base, linear_model, preprocessing, stats, time_series
@@ -136,7 +135,9 @@ class PredictiveAnomalyDetection(anomaly.base.SupervisedAnomalyDetector):
                 y = float(y)
             else:
                 # Handle non-numerical values or raise an exception
-                raise TypeError(f"The target value 'y' must be a numerical type for forecasting, got {type(y)} instead.")
+                raise TypeError(
+                    f"The target value 'y' must be a numerical type for forecasting, got {type(y)} instead."
+                )
 
             # When theres no feature-dict just pass target to forecaster
             if not x:
