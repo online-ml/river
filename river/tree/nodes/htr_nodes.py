@@ -64,8 +64,8 @@ class LeafMean(HTLeaf):
                     pre_split_dist=self.stats,
                 )
 
-    def update_stats(self, y, sample_weight):
-        self.stats.update(y, sample_weight)
+    def update_stats(self, y, w):
+        self.stats.update(y, w)
 
     def prediction(self, x, *, tree=None):
         return self.stats.mean.get()
@@ -133,13 +133,13 @@ class LeafModel(LeafMean):
         sign = inspect.signature(leaf_model.learn_one).parameters
         self._model_supports_weights = "sample_weight" in sign or "w" in sign
 
-    def learn_one(self, x, y, *, sample_weight=1.0, tree=None):
-        super().learn_one(x, y, sample_weight=sample_weight, tree=tree)
+    def learn_one(self, x, y, *, w=1.0, tree=None):
+        super().learn_one(x, y, w=w, tree=tree)
 
         if self._model_supports_weights:
-            self._leaf_model.learn_one(x, y, sample_weight)
+            self._leaf_model.learn_one(x, y, w)
         else:
-            for _ in range(int(sample_weight)):
+            for _ in range(int(w)):
                 self._leaf_model.learn_one(x, y)
 
     def prediction(self, x, *, tree=None):
@@ -173,14 +173,14 @@ class LeafAdaptive(LeafModel):
         self._fmse_mean = 0.0
         self._fmse_model = 0.0
 
-    def learn_one(self, x, y, *, sample_weight=1.0, tree=None):
+    def learn_one(self, x, y, *, w=1.0, tree=None):
         pred_mean = self.stats.mean.get()
         pred_model = self._leaf_model.predict_one(x)
 
         self._fmse_mean = tree.model_selector_decay * self._fmse_mean + (y - pred_mean) ** 2
         self._fmse_model = tree.model_selector_decay * self._fmse_model + (y - pred_model) ** 2
 
-        super().learn_one(x, y, sample_weight=sample_weight, tree=tree)
+        super().learn_one(x, y, w=w, tree=tree)
 
     def prediction(self, x, *, tree=None):
         if self._fmse_mean < self._fmse_model:  # Act as a regression tree

@@ -30,14 +30,14 @@ class ExhaustiveSplitter(Splitter):
         super().__init__()
         self._root = None
 
-    def update(self, att_val, target_val, sample_weight):
+    def update(self, att_val, target_val, w):
         if att_val is None:
             return
         else:
             if self._root is None:
-                self._root = ExhaustiveNode(att_val, target_val, sample_weight)
+                self._root = ExhaustiveNode(att_val, target_val, w)
             else:
-                self._root.insert_value(att_val, target_val, sample_weight)
+                self._root.insert_value(att_val, target_val, w)
 
     def cond_proba(self, att_val, target_val):
         """The underlying data structure used to monitor the input does not allow probability
@@ -148,27 +148,27 @@ class ExhaustiveSplitter(Splitter):
 
 
 class ExhaustiveNode:
-    def __init__(self, att_val, target_val, sample_weight):
+    def __init__(self, att_val, target_val, w):
         self.class_count_left = defaultdict(float)
         self.class_count_right = defaultdict(float)
         self._left = None
         self._right = None
 
         self.cut_point = att_val
-        self.class_count_left[target_val] += sample_weight
+        self.class_count_left[target_val] += w
 
-    def insert_value(self, val, label, sample_weight):
+    def insert_value(self, val, label, w):
         if val == self.cut_point:
-            self.class_count_left[label] += sample_weight
+            self.class_count_left[label] += w
         elif val < self.cut_point:
-            self.class_count_left[label] += sample_weight
+            self.class_count_left[label] += w
             if self._left is None:
-                self._left = ExhaustiveNode(val, label, sample_weight)
+                self._left = ExhaustiveNode(val, label, w)
             else:
-                self._left.insert_value(val, label, sample_weight)
+                self._left.insert_value(val, label, w)
         else:
-            self.class_count_right[label] += sample_weight
+            self.class_count_right[label] += w
             if self._right is None:
-                self._right = ExhaustiveNode(val, label, sample_weight)
+                self._right = ExhaustiveNode(val, label, w)
             else:
-                self._right.insert_value(val, label, sample_weight)
+                self._right.insert_value(val, label, w)

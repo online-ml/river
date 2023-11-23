@@ -84,7 +84,7 @@ class STREAMKMeans(base.Clusterer):
         self._temp_chunk = {}
         self.centers = {}
 
-    def learn_one(self, x, sample_weight=None):
+    def learn_one(self, x, w=None):
         self.time_stamp += 1
 
         index = self.time_stamp % self.chunk_size
@@ -107,7 +107,7 @@ class STREAMKMeans(base.Clusterer):
 
         return self
 
-    def predict_one(self, x, sample_weight=None):
+    def predict_one(self, x, w=None):
         def get_distance(c):
             return utils.math.minkowski_distance(self.centers[c], x, 2)
 

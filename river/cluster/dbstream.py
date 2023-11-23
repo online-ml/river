@@ -389,7 +389,7 @@ class DBSTREAM(base.Clusterer):
 
         self.clustering_is_up_to_date = True
 
-    def learn_one(self, x, sample_weight=None):
+    def learn_one(self, x, w=None):
         self._update(x)
 
         if self._time_stamp % self.cleanup_interval == 0:
@@ -399,7 +399,7 @@ class DBSTREAM(base.Clusterer):
 
         return self
 
-    def predict_one(self, x, sample_weight=None):
+    def predict_one(self, x, w=None):
         self._recluster()
 
         min_distance = math.inf

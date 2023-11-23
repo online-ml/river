@@ -33,9 +33,9 @@ class LeafMeanMultiTarget(LeafMean):
         stats = stats if stats else VectorDict(default_factory=functools.partial(Var))
         super().__init__(stats, depth, splitter, **kwargs)
 
-    def update_stats(self, y, sample_weight):
+    def update_stats(self, y, w):
         for t in y:
-            self.stats[t].update(y[t], sample_weight)
+            self.stats[t].update(y[t], w)
 
     def prediction(self, x, *, tree=None):
         return {t: self.stats[t].mean.get() if t in self.stats else 0.0 for t in tree.targets}
@@ -82,8 +82,8 @@ class LeafModelMultiTarget(LeafMeanMultiTarget):
                 sign = inspect.signature(self._leaf_models[t].learn_one).parameters
                 self._model_supports_weights[t] = "sample_weight" in sign or "w" in sign
 
-    def learn_one(self, x, y, *, sample_weight=1.0, tree=None):
-        super().learn_one(x, y, sample_weight=sample_weight, tree=tree)
+    def learn_one(self, x, y, *, w=1.0, tree=None):
+        super().learn_one(x, y, w=w, tree=tree)
 
         for target_id, y_ in y.items():
             try:
@@ -107,9 +107,9 @@ class LeafModelMultiTarget(LeafMeanMultiTarget):
 
             # Now the proper training
             if self._model_supports_weights[target_id]:
-                model.learn_one(x, y_, sample_weight)
+                model.learn_one(x, y_, w)
             else:
-                for _ in range(int(sample_weight)):
+                for _ in range(int(w)):
                     model.learn_one(x, y_)
 
     def prediction(self, x, *, tree=None):
@@ -145,7 +145,7 @@ class LeafAdaptiveMultiTarget(LeafModelMultiTarget):
         self._fmse_mean = collections.defaultdict(float)
         self._fmse_model = collections.defaultdict(float)
 
-    def learn_one(self, x, y, *, sample_weight=1.0, tree=None):
+    def learn_one(self, x, y, *, w=1.0, tree=None):
         pred_mean = {t: self.stats[t].mean.get() if t in self.stats else 0.0 for t in tree.targets}
         pred_model = super().prediction(x, tree=tree)
 
@@ -157,7 +157,7 @@ class LeafAdaptiveMultiTarget(LeafModelMultiTarget):
                 tree.model_selector_decay * self._fmse_model[t] + (y[t] - pred_model[t]) ** 2
             )
 
-        super().learn_one(x, y, sample_weight=sample_weight, tree=tree)
+        super().learn_one(x, y, w=w, tree=tree)
 
     def prediction(self, x, *, tree=None):
         pred = {}

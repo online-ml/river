@@ -111,13 +111,13 @@ class BaseEFDTBranch(DTBranch):
     def new_nominal_splitter():
         return NominalSplitterClassif()
 
-    def update_stats(self, y, sample_weight):
+    def update_stats(self, y, w):
         try:
-            self.stats[y] += sample_weight
+            self.stats[y] += w
         except KeyError:
-            self.stats[y] = sample_weight
+            self.stats[y] = w
 
-    def update_splitters(self, x, y, sample_weight, nominal_attributes):
+    def update_splitters(self, x, y, w, nominal_attributes):
         for att_id, att_val in x.items():
             if att_id in self._disabled_attrs:
                 continue
@@ -133,9 +133,9 @@ class BaseEFDTBranch(DTBranch):
                     splitter = copy.deepcopy(self.splitter)
 
                 self.splitters[att_id] = splitter
-            splitter.update(att_val, y, sample_weight)
+            splitter.update(att_val, y, w)
 
-    def learn_one(self, x, y, *, sample_weight=1.0, tree=None):
+    def learn_one(self, x, y, *, w=1.0, tree=None):
         """Update branch with the provided sample.
 
         Parameters
@@ -144,13 +144,13 @@ class BaseEFDTBranch(DTBranch):
             Sample attributes for updating the node.
         y
             Target value.
-        sample_weight
+        w
             Sample weight.
         tree
             Tree to update.
         """
-        self.update_stats(y, sample_weight)
-        self.update_splitters(x, y, sample_weight, tree.nominal_attributes)
+        self.update_stats(y, w)
+        self.update_splitters(x, y, w, tree.nominal_attributes)
 
     def prediction(self, x, *, tree=None):
         return normalize_values_in_dict(self.stats, inplace=False)
