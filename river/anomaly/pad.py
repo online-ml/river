@@ -133,9 +133,9 @@ class PredictiveAnomalyDetection(anomaly.base.SupervisedAnomalyDetector):
             y = float(y)
             # When theres no feature-dict just pass target to forecaster
             if not x:
-                self.predictive_model.learn_one(y=y)
+                self.predictive_model.learn_one(y)
             else:
-                self.predictive_model.learn_one(x=x, y=y)
+                self.predictive_model.learn_one(y, x)
         else:
             self.predictive_model.learn_one(x=x, y=y)
         return self
