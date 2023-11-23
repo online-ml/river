@@ -132,9 +132,9 @@ class PredictiveAnomalyDetection(anomaly.base.SupervisedAnomalyDetector):
         if isinstance(self.predictive_model, time_series.base.Forecaster):
             # When theres no feature-dict just pass target to forecaster
             if not x:
-                self.predictive_model.learn_one(y=y)
+                self.predictive_model.learn_one(y)
             else:
-                self.predictive_model.learn_one(x=x, y=y)
+                self.predictive_model.learn_one(x, y)
         else:
             self.predictive_model.learn_one(x=x, y=y)
         return self
