@@ -47,12 +47,12 @@ class AdaLeafClassifier(LeafNaiveBayesAdaptive):
     def kill_tree_children(self, hat):
         pass
 
-    def learn_one(self, x, y, *, sample_weight=1.0, tree=None, parent=None, parent_branch=None):
+    def learn_one(self, x, y, *, w=1.0, tree=None, parent=None, parent_branch=None):
         if tree.bootstrap_sampling:
             # Perform bootstrap-sampling
             k = poisson(rate=1, rng=self.rng)
             if k > 0:
-                sample_weight *= k
+                w *= k
 
         aux = self.prediction(x, tree=tree)
         y_pred = max(aux, key=aux.get) if aux else None
@@ -71,7 +71,7 @@ class AdaLeafClassifier(LeafNaiveBayesAdaptive):
             self._mean_error = self._mean_error.clone()
 
         # Update statistics
-        super().learn_one(x, y, sample_weight=sample_weight, tree=tree)
+        super().learn_one(x, y, w=w, tree=tree)
 
         weight_seen = self.total_weight
 
@@ -176,7 +176,7 @@ class AdaBranchClassifier(DTBranch):
             if isinstance(child, AdaBranchClassifier) and child._alternate_tree:
                 yield from child._alternate_tree.iter_leaves()
 
-    def learn_one(self, x, y, *, sample_weight=1.0, tree=None, parent=None, parent_branch=None):
+    def learn_one(self, x, y, *, w=1.0, tree=None, parent=None, parent_branch=None):
         leaf = super().traverse(x, until_leaf=True)
         aux = leaf.prediction(x, tree=tree)
         y_pred = max(aux, key=aux.get) if aux else None
@@ -185,9 +185,9 @@ class AdaBranchClassifier(DTBranch):
         # Update stats as traverse the tree to improve predictions (in case split nodes are used
         # to provide responses)
         try:
-            self.stats[y] += sample_weight
+            self.stats[y] += w
         except KeyError:
-            self.stats[y] = sample_weight
+            self.stats[y] = w
 
         old_error = self._mean_error.get()
 
@@ -250,7 +250,7 @@ class AdaBranchClassifier(DTBranch):
             self._alternate_tree.learn_one(
                 x,
                 y,
-                sample_weight=sample_weight,
+                w=w,
                 tree=tree,
                 parent=parent,
                 parent_branch=parent_branch,
@@ -265,7 +265,7 @@ class AdaBranchClassifier(DTBranch):
             child.learn_one(
                 x,
                 y,
-                sample_weight=sample_weight,
+                w=w,
                 tree=tree,
                 parent=self,
                 parent_branch=self.branch_no(x),
@@ -280,7 +280,7 @@ class AdaBranchClassifier(DTBranch):
                 leaf.learn_one(
                     x,
                     y,
-                    sample_weight=sample_weight,
+                    w=w,
                     tree=tree,
                     parent=self,
                     parent_branch=self.branch_no(x),
@@ -292,7 +292,7 @@ class AdaBranchClassifier(DTBranch):
                 child.learn_one(
                     x,
                     y,
-                    sample_weight=sample_weight,
+                    w=w,
                     tree=tree,
                     parent=self,
                     parent_branch=child_id,

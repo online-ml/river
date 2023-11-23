@@ -318,7 +318,7 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
                 # Manage memory
                 self._enforce_size_limit()
 
-    def learn_one(self, x, y, *, sample_weight=1.0):
+    def learn_one(self, x, y, *, w=1.0):
         """Train the model on instance x and corresponding target y.
 
         Parameters
@@ -327,7 +327,7 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
             Instance attributes.
         y
             Class label for sample x.
-        sample_weight
+        w
             Sample weight.
 
         Returns
@@ -349,7 +349,7 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
         # Updates the set of observed classes
         self.classes.add(y)
 
-        self._train_weight_seen_by_model += sample_weight
+        self._train_weight_seen_by_model += w
 
         if self._root is None:
             self._root = self._new_leaf()
@@ -369,7 +369,7 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
             node = self._root
 
         if isinstance(node, HTLeaf):
-            node.learn_one(x, y, sample_weight=sample_weight, tree=self)
+            node.learn_one(x, y, w=w, tree=self)
             if self._growth_allowed and node.is_active():
                 if node.depth >= self.max_depth:  # Max depth reached
                     node.deactivate()
@@ -403,7 +403,7 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
                 if isinstance(node, HTLeaf):
                     break
             # Learn from the sample
-            node.learn_one(x, y, sample_weight=sample_weight, tree=self)
+            node.learn_one(x, y, w=w, tree=self)
 
         if self._train_weight_seen_by_model % self.memory_estimate_period == 0:
             self._estimate_model_size()

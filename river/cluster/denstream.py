@@ -313,7 +313,7 @@ class DenStream(base.Clusterer):
                 else:
                     item.covered = False
 
-    def learn_one(self, x, sample_weight=None):
+    def learn_one(self, x, w=None):
         self._n_samples_seen += 1
         # control the stream speed
         if self._n_samples_seen % self.stream_speed == 0:
@@ -352,7 +352,7 @@ class DenStream(base.Clusterer):
                     self.o_micro_clusters.pop(j)
         return self
 
-    def predict_one(self, x, sample_weight=None):
+    def predict_one(self, x, w=None):
         # This function handles the case when a clustering request arrives.
         # implementation of the DBSCAN algorithm proposed by Ester et al.
         if not self.initialized:

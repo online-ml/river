@@ -29,17 +29,17 @@ class RandomSplitter(Splitter):
         return super().clone(new_params, include_attributes)
 
     @abc.abstractmethod
-    def _update_stats(self, branch, target_val, sample_weight):
+    def _update_stats(self, branch, target_val, w):
         pass
 
     def cond_proba(self, att_val, class_val) -> float:
         """This attribute observer does not support probability density estimation."""
         raise NotImplementedError
 
-    def update(self, att_val, target_val, sample_weight) -> Splitter:
+    def update(self, att_val, target_val, w) -> Splitter:
         if self.threshold is None:
             if len(self._buffer) < self.buffer_size:
-                self._buffer.append((att_val, target_val, sample_weight))
+                self._buffer.append((att_val, target_val, w))
                 return self
 
             mn = min(self._buffer, key=lambda t: t[0])[0]
@@ -53,7 +53,7 @@ class RandomSplitter(Splitter):
 
             return self
 
-        self._update_stats(0 if att_val <= self.threshold else 1, target_val, sample_weight)
+        self._update_stats(0 if att_val <= self.threshold else 1, target_val, w)
 
         return self
 
@@ -76,8 +76,8 @@ class RegRandomSplitter(RandomSplitter):
         super().__init__(seed, buffer_size)
         self.stats = {0: stats.Var(), 1: stats.Var()}
 
-    def _update_stats(self, branch, target_val, sample_weight):
-        self.stats[branch].update(target_val, sample_weight)
+    def _update_stats(self, branch, target_val, w):
+        self.stats[branch].update(target_val, w)
 
     @property
     def is_target_class(self) -> bool:

@@ -30,7 +30,7 @@ class GaussianSplitter(Splitter):
         self._att_dist_per_class: dict[ClfTarget, Gaussian] = {}
         self.n_splits = n_splits
 
-    def update(self, att_val, target_val, sample_weight):
+    def update(self, att_val, target_val, w):
         if att_val is None:
             return
         else:
@@ -46,7 +46,7 @@ class GaussianSplitter(Splitter):
                 self._min_per_class[target_val] = att_val
                 self._max_per_class[target_val] = att_val
 
-            val_dist.update(att_val, sample_weight)
+            val_dist.update(att_val, w)
 
     def cond_proba(self, att_val, target_val):
         if target_val in self._att_dist_per_class:

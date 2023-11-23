@@ -217,17 +217,17 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
         )
         return summ
 
-    def learn_one(self, x, y, *, sample_weight=1.0):
+    def learn_one(self, x, y, *, w=1.0):
         # Updates the set of observed classes
         self.classes.add(y)
 
-        self._train_weight_seen_by_model += sample_weight
+        self._train_weight_seen_by_model += w
 
         if self._root is None:
             self._root = self._new_leaf()
             self._n_active_leaves = 1
 
-        self._root.learn_one(x, y, sample_weight=sample_weight, tree=self)
+        self._root.learn_one(x, y, w=w, tree=self)
 
         if self._train_weight_seen_by_model % self.memory_estimate_period == 0:
             self._estimate_model_size()
