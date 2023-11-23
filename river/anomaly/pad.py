@@ -172,7 +172,7 @@ class PredictiveAnomalyDetection(anomaly.base.SupervisedAnomalyDetector):
     # This version of score_one also returns the score along with the prediction, error and threshold of the model
     def score_one_detailed(
         self, x: dict, y: base.typing.Target
-    ) -> (float, base.typing.Target, float, float):
+    ) -> tuple[float, base.typing.Target, float, float]:
         if isinstance(self.predictive_model, time_series.base.Forecaster):
             y_pred = self.predictive_model.forecast(self.horizon)[0]
         else:
