@@ -37930,21 +37930,21 @@
 ## Environment
 
 <pre>Python implementation: CPython
-Python version       : 3.10.13
+Python version       : 3.10.12
 IPython version      : 8.16.1
 
 river       : 0.19.0
-numpy       : 1.25.2
+numpy       : 1.26.1
 scikit-learn: 1.3.1
 pandas      : 2.1.1
 scipy       : 1.11.3
 
-Compiler    : Clang 14.0.6 
-OS          : Darwin
-Release     : 22.6.0
-Machine     : arm64
-Processor   : arm
-CPU cores   : 8
+Compiler    : GCC 11.4.0
+OS          : Linux
+Release     : 5.15.0-1046-kvm
+Machine     : x86_64
+Processor   : x86_64
+CPU cores   : 2
 Architecture: 64bit
 </pre>
 
