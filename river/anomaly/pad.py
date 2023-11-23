@@ -126,19 +126,12 @@ class PredictiveAnomalyDetection(anomaly.base.SupervisedAnomalyDetector):
         self.iterations: int = 0
 
     # This method is called to make the predictive model learn one example
-    def learn_one(self, x: dict | None, y: base.typing.Target):
+    def learn_one(self, x: dict | None, y: base.typing.Target | float):
         self.iterations += 1
 
         # Check if model is a time-series forecasting model or regressor/classification
         if isinstance(self.predictive_model, time_series.base.Forecaster):
-            if isinstance(y, numbers.Number):
-                y = float(y)
-            else:
-                # Handle non-numerical values or raise an exception
-                raise TypeError(
-                    f"The target value 'y' must be a numerical type for forecasting, got {type(y)} instead."
-                )
-
+        
             # When theres no feature-dict just pass target to forecaster
             if not x:
                 self.predictive_model.learn_one(y)
