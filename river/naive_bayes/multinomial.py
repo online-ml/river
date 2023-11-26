@@ -57,7 +57,7 @@ class MultinomialNB(base.BaseNB):
     ... )
 
     >>> for sentence, label in docs:
-    ...     model = model.learn_one(sentence, label)
+    ...     model.learn_one(sentence, label)
 
     >>> model["nb"].p_class("yes")
     0.5
@@ -132,18 +132,12 @@ class MultinomialNB(base.BaseNB):
         y
             Target class.
 
-        Returns
-        -------
-        self
-
         """
         self.class_counts.update((y,))
 
         for f, frequency in x.items():
             self.feature_counts[f].update({y: frequency})
             self.class_totals.update({y: frequency})
-
-        return self
 
     @property
     def classes_(self):

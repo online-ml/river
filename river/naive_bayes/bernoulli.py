@@ -54,7 +54,7 @@ class BernoulliNB(base.BaseNB):
     ... )
 
     >>> for sentence, label in docs:
-    ...     model = model.learn_one(sentence, label)
+    ...     model.learn_one(sentence, label)
 
     >>> model["nb"].p_class("yes")
     0.75
@@ -122,17 +122,11 @@ class BernoulliNB(base.BaseNB):
         y
             Target class.
 
-        Returns
-        -------
-        self
-
         """
         self.class_counts.update((y,))
 
         for i, xi in x.items():
             self.feature_counts[i].update({y: xi > self.true_threshold})
-
-        return self
 
     def p_feature_given_class(self, f: str, c: str) -> float:
         num = self.feature_counts.get(f, {}).get(c, 0.0) + self.alpha

@@ -56,7 +56,7 @@ class ComplementNB(base.BaseNB):
     ... )
 
     >>> for sentence, label in docs:
-    ...     model = model.learn_one(sentence, label)
+    ...     model.learn_one(sentence, label)
 
     >>> model["nb"].p_class("yes")
     0.5
@@ -133,10 +133,6 @@ class ComplementNB(base.BaseNB):
         y
             Target class.
 
-        Returns
-        -------
-        self
-
         """
         self.class_counts.update((y,))
 
@@ -144,8 +140,6 @@ class ComplementNB(base.BaseNB):
             self.feature_counts[f].update({y: frequency})
             self.feature_totals.update({f: frequency})
             self.class_totals.update({y: frequency})
-
-        return self
 
     def p_class(self, c):
         return self.class_counts[c] / sum(self.class_counts.values())
