@@ -76,7 +76,7 @@ class FunkMF(reco.base.Ranker):
     ... )
 
     >>> for x, y in dataset:
-    ...     _ = model.learn_one(**x, y=y)
+    ...     model.learn_one(**x, y=y)
 
     >>> model.predict_one(user='Bob', item='Harry Potter')
     1.866272
@@ -143,5 +143,3 @@ class FunkMF(reco.base.Ranker):
         # Update latent weights
         self.u_latents = self.u_optimizer.step(self.u_latents, u_latent_grad)
         self.i_latents = self.i_optimizer.step(self.i_latents, i_latent_grad)
-
-        return self
