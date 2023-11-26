@@ -69,7 +69,7 @@ class PARegressor(BasePA, base.Regressor):
 
     >>> for xi, yi in stream.iter_array(X, y):
     ...     y_pred = model.predict_one(xi)
-    ...     model = model.learn_one(xi, yi)
+    ...     model.learn_one(xi, yi)
     ...     metric = metric.update(yi, y_pred)
 
     >>> print(metric)
@@ -95,8 +95,6 @@ class PARegressor(BasePA, base.Regressor):
             self.weights[i] += step * xi
         if self.learn_intercept:
             self.intercept += step
-
-        return self
 
     def predict_one(self, x):
         return utils.math.dot(x, self.weights) + self.intercept
@@ -148,7 +146,7 @@ class PAClassifier(BasePA, base.Classifier):
     ... )
 
     >>> for xi, yi in stream.iter_array(X_train, y_train):
-    ...     y_pred = model.learn_one(xi, yi)
+    ...     model.learn_one(xi, yi)
 
     >>> metric = metrics.Accuracy() + metrics.LogLoss()
 
@@ -177,8 +175,6 @@ class PAClassifier(BasePA, base.Classifier):
             self.weights[i] += step * xi
         if self.learn_intercept:
             self.intercept += step
-
-        return self
 
     def predict_proba_one(self, x):
         y_pred = utils.math.sigmoid(utils.math.dot(x, self.weights) + self.intercept)

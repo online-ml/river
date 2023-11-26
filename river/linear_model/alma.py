@@ -85,5 +85,3 @@ class ALMAClassifier(base.Classifier):
                 self.w[i] /= max(1, norm)
 
             self.k += 1
-
-        return self
