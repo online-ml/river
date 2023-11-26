@@ -15,17 +15,13 @@ class AnomalyDetector(base.Estimator):
         return False
 
     @abc.abstractmethod
-    def learn_one(self, x: dict) -> AnomalyDetector:
+    def learn_one(self, x: dict):
         """Update the model.
 
         Parameters
         ----------
         x
             A dictionary of features.
-
-        Returns
-        -------
-        self
 
         """
 
@@ -52,17 +48,13 @@ class SupervisedAnomalyDetector(base.Estimator):
     """A supervised anomaly detector."""
 
     @abc.abstractmethod
-    def learn_one(self, x: dict, y: base.typing.Target) -> SupervisedAnomalyDetector:
+    def learn_one(self, x: dict, y: base.typing.Target):
         """Update the model.
 
         Parameters
         ----------
         x
             A dictionary of features.
-
-        Returns
-        -------
-        self
 
         """
 
@@ -153,11 +145,6 @@ class AnomalyFilter(base.Wrapper, base.Estimator):
         args
             Depends on whether the underlying anomaly detector is supervised or not.
 
-        Returns
-        -------
-        self
-
         """
         if self.protect_anomaly_detector and not self.classify(self.score_one(*args)):
             self.anomaly_detector.learn_one(*args, **learn_kwargs)
-        return self
