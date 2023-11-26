@@ -21,10 +21,6 @@ class Clusterer(estimator.Estimator):
         x
             A dictionary of features.
 
-        Returns
-        -------
-        self
-
         """
 
     @abc.abstractmethod

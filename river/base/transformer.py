@@ -57,7 +57,7 @@ class Transformer(base.Estimator, BaseTransformer):
     def _supervised(self):
         return False
 
-    def learn_one(self, x: dict) -> Transformer:
+    def learn_one(self, x: dict):
         """Update with a set of features `x`.
 
         A lot of transformers don't actually have to do anything during the `learn_one` step
@@ -70,12 +70,8 @@ class Transformer(base.Estimator, BaseTransformer):
         x
             A dictionary of features.
 
-        Returns
-        -------
-        self
-
         """
-        return self
+        return
 
 
 class SupervisedTransformer(base.Estimator, BaseTransformer):
@@ -85,7 +81,7 @@ class SupervisedTransformer(base.Estimator, BaseTransformer):
     def _supervised(self):
         return True
 
-    def learn_one(self, x: dict, y: base.typing.Target) -> SupervisedTransformer:
+    def learn_one(self, x: dict, y: base.typing.Target):
         """Update with a set of features `x` and a target `y`.
 
         Parameters
@@ -95,12 +91,8 @@ class SupervisedTransformer(base.Estimator, BaseTransformer):
         y
             A target.
 
-        Returns
-        -------
-        self
-
         """
-        return self
+        return
 
 
 class MiniBatchTransformer(Transformer):

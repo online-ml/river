@@ -25,10 +25,6 @@ class Classifier(estimator.Estimator):
         y
             A label.
 
-        Returns
-        -------
-        self
-
         """
 
     def predict_proba_one(self, x: dict) -> dict[base.typing.ClfTarget, float]:

@@ -453,7 +453,7 @@ def log_method_calls(
     >>> with utils.log_method_calls(class_condition):
     ...     for x, y in datasets.CreditCard().take(1):
     ...         score = model.score_one(x)
-    ...         model = model.learn_one(x)
+    ...         model.learn_one(x)
 
     >>> print(logs.getvalue())
     MinMaxScaler.transform_one
