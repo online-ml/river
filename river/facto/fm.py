@@ -179,7 +179,7 @@ class FMRegressor(FM, base.Regressor):
     ... )
 
     >>> for x, y in dataset:
-    ...     _ = model.learn_one(x, y)
+    ...     model.learn_one(x, y)
 
     >>> model.predict_one({'Bob': 1, 'Harry Potter': 1})
     5.236504
@@ -320,7 +320,7 @@ class FMClassifier(FM, base.Classifier):
     ... )
 
     >>> for x, y in dataset:
-    ...     _ = model.learn_one(x, y)
+    ...     model.learn_one(x, y)
 
     >>> model.predict_one({'Bob': 1, 'Harry Potter': 1})
     True
