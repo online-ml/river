@@ -394,7 +394,7 @@ class HoeffdingTree(ABC):
         ...    tau=0.05,
         ... )
         >>> for x, y in datasets.Phishing():
-        ...    model = model.learn_one(x, y)
+        ...    model.learn_one(x, y)
         >>> dot = model.draw()
 
         .. image:: ../../docs/img/dtree_draw.svg

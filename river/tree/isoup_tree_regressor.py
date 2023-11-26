@@ -233,8 +233,6 @@ class iSOUPTreeRegressor(tree.HoeffdingTreeRegressor, base.MultiTargetRegressor)
 
         super().learn_one(x, y, w=w)  # type: ignore
 
-        return self
-
     def predict_one(self, x):
         pred = {}
         if self._root is not None:
