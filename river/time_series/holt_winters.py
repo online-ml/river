@@ -192,11 +192,11 @@ class HoltWinters(time_series.base.Forecaster):
                 self.trend.update(y, self.level)
             if self.season is not None:
                 self.season.update(y, self.level, self.trend)
-            return self
+            return
 
         self._first_values.append(y)
         if len(self._first_values) < max(2, self.seasonality):
-            return self
+            return
 
         # The components can be initialized now that enough values have been observed
         self.level.append(statistics.mean(self._first_values))
@@ -207,8 +207,6 @@ class HoltWinters(time_series.base.Forecaster):
             self.season.extend([y / self.level[-1] for y in self._first_values])
 
         self._initialized = True
-
-        return self
 
     def forecast(self, horizon, xs=None):
         op = operator.mul if self.multiplicative else operator.add

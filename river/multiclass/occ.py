@@ -145,8 +145,6 @@ class OutputCodeClassifier(base.Wrapper, base.Classifier):
         for i, c in enumerate(code):
             self.classifiers[i].learn_one(x, c, **kwargs)
 
-        return self
-
     def predict_one(self, x, **kwargs):
         if not self.code_book:  # it's empty
             return None

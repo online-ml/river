@@ -111,8 +111,6 @@ class BaseSRPEnsemble(base.Wrapper, base.Ensemble):
                     continue
             model.learn_one(x=x, y=y, w=k, n_samples_seen=self._n_samples_seen)
 
-        return self
-
     def _generate_subspaces(self, features: list):
         n_features = len(features)
 

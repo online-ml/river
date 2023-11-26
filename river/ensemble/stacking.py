@@ -81,8 +81,6 @@ class StackingClassifier(base.Ensemble, base.Classifier):
         # Update the meta-classifier using the predictions from the base classifiers
         self.meta_classifier.learn_one(oof, y)
 
-        return self
-
     def predict_proba_one(self, x):
         oof = {
             f"oof_{i}_{k}": p

@@ -87,8 +87,6 @@ class OneVsRestClassifier(base.Wrapper, base.Classifier):
         for label, model in self.classifiers.items():
             model.learn_one(x, y == label, **kwargs)
 
-        return self
-
     def predict_proba_one(self, x, **kwargs):
         y_pred = {}
         total = 0.0

@@ -134,8 +134,6 @@ class BanditRegressor(BanditModelSection, model_selection.base.ModelSelectionReg
             self.policy.update(arm_id, y, y_pred)
             model.learn_one(x, y)
 
-        return self
-
 
 class BanditClassifier(BanditModelSection, model_selection.base.ModelSelectionClassifier):
     """Bandit-based model selection for classification.
@@ -208,5 +206,3 @@ class BanditClassifier(BanditModelSection, model_selection.base.ModelSelectionCl
             )
             self.policy.update(arm_id, y, y_pred)
             model.learn_one(x, y)
-
-        return self

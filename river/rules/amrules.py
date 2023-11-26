@@ -19,7 +19,6 @@ class MeanRegressor(base.Regressor):
 
     def learn_one(self, x: dict, y: base.typing.RegTarget, w: int = 1):
         self.mean.update(y, w)
-        return self
 
     def predict_one(self, x: dict):
         return self.mean.get()
@@ -50,8 +49,6 @@ class AdaptiveRegressor(base.Regressor):
 
         for _ in range(int(w)):
             self.model_predictor.learn_one(x, y)
-
-        return self
 
     def predict_one(self, x: dict):
         if self._mae_mean <= self._mae_model:
@@ -146,8 +143,6 @@ class RegRule(HoeffdingRule, base.Regressor, anomaly.base.AnomalyDetector):
     def learn_one(self, x: dict, y: base.typing.RegTarget, w: int = 1):  # type: ignore
         self.update(x, y, w)
         self.pred_model.learn_one(x, y, w)
-
-        return self
 
     def predict_one(self, x: dict):
         return self.pred_model.predict_one(x)
@@ -356,7 +351,7 @@ class AMRules(base.Regressor):
             drift_detector=self.drift_detector.clone(),
         )
 
-    def learn_one(self, x: dict, y: base.typing.RegTarget, w: int = 1) -> AMRules:
+    def learn_one(self, x: dict, y: base.typing.RegTarget, w: int = 1):
         any_covered = False
         to_del = set()
 
@@ -411,8 +406,6 @@ class AMRules(base.Regressor):
         for rule_id in to_del:
             del self._rules[rule_id]
 
-        return self
-
     def predict_one(self, x: dict) -> base.typing.RegTarget:
         y_pred = 0
         hits = 0
@@ -466,7 +459,7 @@ class AMRules(base.Regressor):
         ...     if i == 1000:
         ...         # Skip the last example
         ...         break
-        ...     model = model.learn_one(x, y)
+        ...     model.learn_one(x, y)
 
         >>> model.anomaly_score(x)
         (1.0168907243483933, 0.13045786430817402, 1.0)
@@ -517,7 +510,7 @@ class AMRules(base.Regressor):
         ...     if i == 1000:
         ...         # Skip the last example
         ...         break
-        ...     model = model.learn_one(x, y)
+        ...     model.learn_one(x, y)
 
         >>> print(model.debug_one(x))
         Rule 0: 3 > 0.5060 and 0 > 0.2538

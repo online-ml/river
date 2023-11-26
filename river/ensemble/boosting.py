@@ -91,7 +91,6 @@ class AdaBoostClassifier(base.WrapperEnsemble, base.Classifier):
                 lambda_poisson *= (self.correct_weight[i] + self.wrong_weight[i]) / (
                     2 * self.wrong_weight[i]
                 )
-        return self
 
     def predict_proba_one(self, x, **kwargs):
         y_proba = collections.Counter()
@@ -204,7 +203,6 @@ class ADWINBoostingClassifier(AdaBoostClassifier):
             self._drift_detectors[max_error_idx] = drift.ADWIN()
             self.correct_weight[max_error_idx] = 0
             self.wrong_weight[max_error_idx] = 0
-        return self
 
 
 class BOLEClassifier(AdaBoostClassifier):
@@ -326,7 +324,6 @@ class BOLEClassifier(AdaBoostClassifier):
                 self.wrong_weight[pos] += lambda_poisson
                 lambda_poisson *= (self.instances_seen) / (2 * self.wrong_weight[pos])
                 correct = False
-        return self
 
     def predict_proba_one(self, x, **kwargs):
         y_proba = collections.Counter()

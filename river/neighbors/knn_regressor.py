@@ -103,8 +103,6 @@ class KNNRegressor(base.Regressor):
     def learn_one(self, x, y):
         self._nn.append((x, y))
 
-        return self
-
     def predict_one(self, x, **kwargs):
         # Find the nearest neighbors!
         nearest = self._nn.search((x, None), n_neighbors=self.n_neighbors, **kwargs)
