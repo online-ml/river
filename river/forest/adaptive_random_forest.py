@@ -209,8 +209,6 @@ class BaseForest(base.Ensemble):
                         # Update warning tracker
                         self._drift_tracker[i] += 1
 
-        return self
-
     def _init_ensemble(self, features: list):
         self._set_max_features(len(features))
         self.data = [self._new_base_model() for _ in range(self.n_models)]

@@ -324,8 +324,6 @@ class ExtraTrees(base.Ensemble, metaclass=abc.ABCMeta):
         # Increase by one the count of instances observed by each trained model
         self._sample_counter.update(trained)
 
-        return self
-
     # Properties
     @property
     def n_warnings(self) -> collections.Counter:
