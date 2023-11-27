@@ -86,7 +86,7 @@ class BernoulliNB(base.BaseNB):
     ...     ("nb", naive_bayes.BernoulliNB(alpha=1))
     ... )
 
-    >>> model = model.learn_many(X, y)
+    >>> model.learn_many(X, y)
 
     >>> unseen = pd.Series(["Taiwanese Taipei", "Chinese Shanghai"])
 
@@ -180,10 +180,6 @@ class BernoulliNB(base.BaseNB):
         y
             Target classes.
 
-        Returns
-        -------
-        self
-
         """
         # One hot encode y and convert it into sparse matrix
         y = base.one_hot_encode(y)
@@ -217,8 +213,6 @@ class BernoulliNB(base.BaseNB):
             ]:
                 for f, count in dict_count.items():
                     self.feature_counts[f].update(count)
-
-        return self
 
     def _feature_log_prob(self, columns: list) -> pd.DataFrame:
         """Compute log probabilities of input features.

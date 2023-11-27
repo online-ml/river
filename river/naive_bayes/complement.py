@@ -92,7 +92,7 @@ class ComplementNB(base.BaseNB):
     ...     ("nb", naive_bayes.ComplementNB(alpha=1))
     ... )
 
-    >>> model = model.learn_many(X, y)
+    >>> model.learn_many(X, y)
 
     >>> unseen = pd.Series(["Taiwanese Taipei", "Chinese Shanghai"])
 
@@ -190,10 +190,6 @@ class ComplementNB(base.BaseNB):
         y
             Target classes.
 
-        Returns
-        -------
-        self
-
         """
         y = base.one_hot_encode(y)
         columns, classes = X.columns, y.columns
@@ -225,8 +221,6 @@ class ComplementNB(base.BaseNB):
             ]:
                 for f, count in dict_count.items():
                     self.feature_counts[f].update(count)
-
-        return self
 
     def _feature_log_prob(self, unknown: list, columns: list) -> pd.DataFrame:
         """Compute log probabilities of input features.

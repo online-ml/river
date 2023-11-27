@@ -75,7 +75,7 @@ class OrdinalEncoder(base.MiniBatchTransformer):
     2        0      0
     3        0      0
 
-    >>> encoder = encoder.learn_many(xb1)
+    >>> encoder.learn_many(xb1)
     >>> encoder.transform_many(xb2)
        country  place
     4        0      0
@@ -132,4 +132,3 @@ class OrdinalEncoder(base.MiniBatchTransformer):
             for xi in X[i].dropna().unique():
                 if xi not in self.categories[i]:
                     self.categories[i][xi] = next(self._counters[i])
-        return self

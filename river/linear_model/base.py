@@ -191,4 +191,4 @@ class GLM:
     def learn_many(self, X: pd.DataFrame, y: pd.Series, w: float | pd.Series = 1):
         self._y_name = y.name
         with self._learn_mode(set(X)):
-            return self._fit(X, y, w, get_grad=self._eval_gradient_many)
+            self._fit(X, y, w, get_grad=self._eval_gradient_many)

@@ -131,8 +131,8 @@ class StandardScaler(base.MiniBatchTransformer):
     >>> X = pd.DataFrame.from_dict(X)
 
     >>> scaler = preprocessing.StandardScaler()
-    >>> scaler = scaler.learn_many(X[:3])
-    >>> scaler = scaler.learn_many(X[3:])
+    >>> scaler.learn_many(X[:3])
+    >>> scaler.learn_many(X[3:])
 
     You can then call `transform_many` to scale a mini-batch of features:
 
@@ -216,8 +216,6 @@ class StandardScaler(base.MiniBatchTransformer):
             if self.with_std:
                 self.vars[col] = a * old_var + b * new_var + a * b * (old_mean - new_mean) ** 2
             self.counts[col] += new_count
-
-        return self
 
     def transform_many(self, X: pd.DataFrame):
         """Scale a mini-batch of features.

@@ -113,7 +113,7 @@ class MiniBatchTransformer(Transformer):
 
         """
 
-    def learn_many(self, X: pd.DataFrame) -> Transformer:
+    def learn_many(self, X: pd.DataFrame):
         """Update with a mini-batch of features.
 
         A lot of transformers don't actually have to do anything during the `learn_many` step
@@ -126,12 +126,8 @@ class MiniBatchTransformer(Transformer):
         X
             A DataFrame of features.
 
-        Returns
-        -------
-        self
-
         """
-        return self
+        return
 
 
 class MiniBatchSupervisedTransformer(Transformer):
@@ -142,7 +138,7 @@ class MiniBatchSupervisedTransformer(Transformer):
         return True
 
     @abc.abstractmethod
-    def learn_many(self, X: pd.DataFrame, y: pd.Series) -> MiniBatchSupervisedTransformer:
+    def learn_many(self, X: pd.DataFrame, y: pd.Series):
         """Update the model with a mini-batch of features `X` and targets `y`.
 
         Parameters
@@ -152,12 +148,8 @@ class MiniBatchSupervisedTransformer(Transformer):
         y
             A series of boolean target values.
 
-        Returns
-        -------
-        self
-
         """
-        return self
+        return
 
     @abc.abstractmethod
     def transform_many(self, X: pd.DataFrame) -> pd.DataFrame:

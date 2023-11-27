@@ -93,7 +93,7 @@ class MultinomialNB(base.BaseNB):
     ...     ("nb", naive_bayes.MultinomialNB(alpha=1))
     ... )
 
-    >>> model = model.learn_many(X, y)
+    >>> model.learn_many(X, y)
 
     >>> unseen = pd.Series(["Taiwanese Taipei", "Chinese Shanghai"])
 
@@ -191,10 +191,6 @@ class MultinomialNB(base.BaseNB):
         y
             Target classes.
 
-        Returns
-        -------
-        self
-
         """
         y = base.one_hot_encode(y)
         columns, classes = X.columns, y.columns
@@ -222,8 +218,6 @@ class MultinomialNB(base.BaseNB):
             ]:
                 for f, count in dict_count.items():
                     self.feature_counts[f].update(count)
-
-        return self
 
     def _feature_log_prob(self, columns: list, known: list, unknown: list) -> pd.DataFrame:
         """Compute log probabilities of input features.

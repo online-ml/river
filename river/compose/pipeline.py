@@ -703,8 +703,6 @@ class Pipeline(base.Estimator):
         else:
             last_step.learn_many(X=X, **params)
 
-        return self
-
     def _transform_many(self, X: pd.DataFrame):
         """This methods takes care of applying the first n - 1 steps of the pipeline, which are
         supposedly transformers. It also returns the final step so that other functions can do

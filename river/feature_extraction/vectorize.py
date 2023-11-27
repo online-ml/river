@@ -359,7 +359,7 @@ class BagOfWords(base.Transformer, VectorizerMixin):
         )
 
     def learn_many(self, X):
-        return self
+        return
 
 
 class TFIDF(BagOfWords):

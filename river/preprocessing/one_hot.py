@@ -171,8 +171,8 @@ class OneHotEncoder(base.MiniBatchTransformer):
 
     >>> oh = preprocessing.OneHotEncoder(drop_zeros=False)
     >>> X_init = pd.DataFrame([{"c1": "Oranges", "c2": "Apples"}])
-    >>> oh = oh.learn_many(X_init)
-    >>> oh = oh.learn_many(X)
+    >>> oh.learn_many(X_init)
+    >>> oh.learn_many(X)
 
     >>> df = oh.transform_many(X)
     >>> df.sort_index(axis="columns")
@@ -232,12 +232,10 @@ class OneHotEncoder(base.MiniBatchTransformer):
 
     def learn_many(self, X):
         if self.drop_zeros:
-            return self
+            return
 
         for col in X.columns:
             self.values[col].update(X[col].unique())
-
-        return self
 
     def transform_many(self, X):
         oh = pd.get_dummies(X, columns=X.columns, sparse=True, dtype="uint8")

@@ -105,7 +105,7 @@ class OneClassSVM(linear_model.base.GLM, anomaly.base.AnomalyDetector):
         super().learn_one(x, y=1)
 
     def learn_many(self, X):
-        return super().learn_many(X, y=pd.Series(True, index=X.index))
+        super().learn_many(X, y=pd.Series(True, index=X.index))
 
     def score_one(self, x):
         return self._raw_dot_one(x) - self.intercept

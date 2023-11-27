@@ -144,7 +144,7 @@ class TransformerUnion(base.MiniBatchTransformer):
     ...     (compose.Select("revenue") | preprocessing.StandardScaler())
     ... )
 
-    >>> _ = agg.learn_many(X)
+    >>> agg.learn_many(X)
     >>> agg.transform_many(X)
        place   revenue
     0      2  0.441250
@@ -293,7 +293,6 @@ class TransformerUnion(base.MiniBatchTransformer):
                 t.learn_many(X, y)
             else:
                 t.learn_many(X)
-        return self
 
     def transform_many(self, X):
         """Passes the data through each transformer and packs the results together."""
