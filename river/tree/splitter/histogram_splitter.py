@@ -33,8 +33,8 @@ class HistogramSplitter(Splitter):
             functools.partial(sketch.Histogram, max_bins=self.n_bins)
         )
 
-    def update(self, att_val, target_val, sample_weight):
-        for _ in range(int(sample_weight)):
+    def update(self, att_val, target_val, w):
+        for _ in range(int(w)):
             self.hists[target_val].update(att_val)
 
     def cond_proba(self, att_val, target_val):

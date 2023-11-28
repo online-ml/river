@@ -51,24 +51,24 @@ class MultiLabelConfusionMatrix:
     def __init__(self):
         self.data = dict()
 
-    def update(self, y_true, y_pred, sample_weight=1.0):
+    def update(self, y_true, y_pred, w=1.0):
         for label, yt in y_true.items():
             try:
                 cm = self.data[label]
             except KeyError:
                 cm = metrics.ConfusionMatrix()
                 self.data[label] = cm
-            cm.update(yt, y_pred[label], sample_weight)
+            cm.update(yt, y_pred[label], w)
         return self
 
-    def revert(self, y_true, y_pred, sample_weight=1.0):
+    def revert(self, y_true, y_pred, w=1.0):
         for label, yt in y_true.items():
             try:
                 cm = self.data[label]
             except KeyError:
                 cm = metrics.ConfusionMatrix()
                 self.data[label] = cm
-            cm.update(yt, y_pred[label], sample_weight)
+            cm.update(yt, y_pred[label], w)
         return self
 
     def __repr__(self):

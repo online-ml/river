@@ -53,18 +53,18 @@ class SampleAverage(MultiOutputMetric, metrics.base.WrapperMetric):
             return utils.inspect.ismoclassifier(model)
         return utils.inspect.ismoregressor(model)
 
-    def update(self, y_true, y_pred, sample_weight=1.0):
+    def update(self, y_true, y_pred, w=1.0):
         metric = self.metric.clone()
         for i in y_true:
             metric.update(y_true[i], y_pred[i])
-        self._avg.update(metric.get(), sample_weight)
+        self._avg.update(metric.get(), w)
         return self
 
-    def revert(self, y_true, y_pred, sample_weight=1.0):
+    def revert(self, y_true, y_pred, w=1.0):
         metric = self.metric.clone()
         for i in y_true:
             metric.update(y_true[i], y_pred[i])
-        self._avg.revert(metric.get(), sample_weight)
+        self._avg.revert(metric.get(), w)
         return self
 
     def get(self):

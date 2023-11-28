@@ -22,10 +22,10 @@ class TEBSTSplitter(EBSTSplitter):
         super().__init__()
         self.digits = digits
 
-    def update(self, att_val, target_val, sample_weight):
+    def update(self, att_val, target_val, w):
         try:
             att_val = round(att_val, self.digits)
-            super().update(att_val, target_val, sample_weight)
+            super().update(att_val, target_val, w)
         except TypeError:  # feature value is None
             pass
 

@@ -37,10 +37,10 @@ class MultiOutputClassificationMetric(MultiOutputMetric):
         y_true: dict[str | int, base.typing.ClfTarget],
         y_pred: dict[str | int, base.typing.ClfTarget]
         | dict[str | int, dict[base.typing.ClfTarget, float]],
-        sample_weight=1.0,
+        w=1.0,
     ) -> MultiOutputClassificationMetric:
         """Update the metric."""
-        self.cm.update(y_true, y_pred, sample_weight)
+        self.cm.update(y_true, y_pred, w)
         return self
 
     def revert(
@@ -48,10 +48,10 @@ class MultiOutputClassificationMetric(MultiOutputMetric):
         y_true: dict[str | int, base.typing.ClfTarget],
         y_pred: dict[str | int, base.typing.ClfTarget]
         | dict[str | int, dict[base.typing.ClfTarget, float]],
-        sample_weight=1.0,
+        w=1.0,
     ) -> MultiOutputClassificationMetric:
         """Revert the metric."""
-        self.cm.revert(y_true, y_pred, sample_weight)
+        self.cm.revert(y_true, y_pred, w)
         return self
 
     def works_with(self, model) -> bool:
