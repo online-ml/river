@@ -76,23 +76,15 @@ class PredictiveAnomalyDetection(anomaly.base.SupervisedAnomalyDetector):
     ...     warmup_period=15
     ... )
 
+    >>> scores = []
+
     >>> for t, (x, y) in enumerate(datasets.AirlinePassengers()):
     ...     score = PAD.score_one(None, y)
-    ...     PAD.learn_one(None, y)
-    ...     print(score)
-    0.0
-    0.0
-    0.0
-    0.0
-    ...
-    5.477831890312668e-05
-    0.07305562392710468
-    0.030122505497227493
-    0.04803795404401492
-    0.014216675596576562
-    0.04789677144570603
-    0.003410489566495498
+    ...     PAD = PAD.learn_one(None, y)
+    ...     scores.append(score)
 
+    >>> print(scores[-3:])
+    [0.014216675596576562, 0.04789677144570603, 0.003410489566495498]
 
     References
     ----------
