@@ -3,8 +3,7 @@ from __future__ import annotations
 import functools
 from collections import defaultdict
 
-from river import metrics
-from river import utils
+from river import metrics, utils
 
 
 class ConfusionMatrix(metrics.base.MultiClassMetric):

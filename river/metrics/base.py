@@ -77,7 +77,7 @@ class ClassificationMetric(Metric):
 
     _fmt = ".2%"  # output a percentage, e.g. 0.427 becomes "42,7%"
 
-    def __init__(self, cm: "confusion.ConfusionMatrix" | None = None):
+    def __init__(self, cm=None):
         # HACK: there is a circular dependency between ConfusionMatrix and ClassificationMetric. We
         # use ConfusionMatrix here so as to express metrics in terms of false/true
         # positives/negatives. But for UX reasons, we also want ConfusionMatrix to be a
