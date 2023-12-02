@@ -47,7 +47,7 @@ jobs:
           # CIBW_BUILD: "cp39-* cp310-* cp311-* cp312-*"
           CIBW_BUILD: "cp311-*"
           # rust doesn't seem to be available for musl linux on i686
-          # CIBW_SKIP: "*-musllinux_{i686,aarch64}"
+          CIBW_SKIP: "*-musllinux_i686"
           # we build for "alt_arch_name" if it exists, else 'auto
           CIBW_ARCHS_LINUX: "x86_64 i686 aarch64 ppc64le s390x"
           # We don't build arm64 and universal2 wheels yet because there's an issue with Poetry.
