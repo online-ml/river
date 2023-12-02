@@ -207,7 +207,7 @@ class iSOUPTreeRegressor(tree.HoeffdingTreeRegressor, base.MultiTargetRegressor)
 
             return new_adaptive
 
-    def learn_one(self, x, y, *, sample_weight: float = 1.0) -> iSOUPTreeRegressor:  # type: ignore
+    def learn_one(self, x, y, *, w: float = 1.0) -> iSOUPTreeRegressor:  # type: ignore
         """Incrementally train the model with one sample.
 
         Training tasks:
@@ -225,13 +225,13 @@ class iSOUPTreeRegressor(tree.HoeffdingTreeRegressor, base.MultiTargetRegressor)
             Instance attributes.
         y
             Target values.
-        sample_weight
+        w
             The weight of the passed sample.
         """
         # Update target set
         self.targets.update(y.keys())
 
-        super().learn_one(x, y, sample_weight=sample_weight)  # type: ignore
+        super().learn_one(x, y, w=w)  # type: ignore
 
         return self
 

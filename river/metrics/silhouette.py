@@ -68,7 +68,7 @@ class Silhouette(metrics.base.ClusteringMetric):
         distances = {i: math.sqrt(utils.math.minkowski_distance(centers[i], x, 2)) for i in centers}
         return sorted(distances.values())[-2]
 
-    def update(self, x, y_pred, centers, sample_weight=1.0):
+    def update(self, x, y_pred, centers, w=1.0):
         distance_closest_centroid = math.sqrt(utils.math.minkowski_distance(centers[y_pred], x, 2))
         self._sum_distance_closest_centroid += distance_closest_centroid
 
@@ -77,7 +77,7 @@ class Silhouette(metrics.base.ClusteringMetric):
 
         return self
 
-    def revert(self, x, y_pred, centers, sample_weight=1.0):
+    def revert(self, x, y_pred, centers, w=1.0):
         distance_closest_centroid = math.sqrt(utils.math.minkowski_distance(centers[y_pred], x, 2))
         self._sum_distance_closest_centroid -= distance_closest_centroid
 

@@ -109,7 +109,7 @@ class BaseSRPEnsemble(base.Wrapper, base.Ensemble):
                 k = poisson(rate=self.lam, rng=self._rng)
                 if k == 0:
                     continue
-            model.learn_one(x=x, y=y, sample_weight=k, n_samples_seen=self._n_samples_seen)
+            model.learn_one(x=x, y=y, w=k, n_samples_seen=self._n_samples_seen)
 
         return self
 
@@ -532,7 +532,7 @@ class BaseSRPClassifier(BaseSRPEstimator):
         x: dict,
         y: base.typing.ClfTarget,
         *,
-        sample_weight: int,
+        w: int,
         n_samples_seen: int,
         **kwargs,
     ):
@@ -543,8 +543,8 @@ class BaseSRPClassifier(BaseSRPEstimator):
             # Use all features
             x_subset = x
 
-        # TODO Find a way to verify if the model natively supports sample_weight
-        for _ in range(int(sample_weight)):
+        # TODO Find a way to verify if the model natively supports sample_weight (w)
+        for _ in range(int(w)):
             self.model.learn_one(x=x_subset, y=y, **kwargs)
 
         if self._background_learner:
@@ -552,7 +552,7 @@ class BaseSRPClassifier(BaseSRPEstimator):
             # Note: Pass the original instance x so features are correctly
             # selected based on the corresponding subspace
             self._background_learner.learn_one(
-                x=x, y=y, sample_weight=sample_weight, n_samples_seen=n_samples_seen  # type: ignore
+                x=x, y=y, w=w, n_samples_seen=n_samples_seen  # type: ignore
             )
 
         if not self.disable_drift_detector and not self.is_background_learner:
@@ -830,7 +830,7 @@ class BaseSRPRegressor(BaseSRPEstimator):
         x: dict,
         y: base.typing.RegTarget,
         *,
-        sample_weight: int,
+        w: int,
         n_samples_seen: int,
         **kwargs,
     ):
@@ -842,8 +842,8 @@ class BaseSRPRegressor(BaseSRPEstimator):
             # Use all features
             x_subset = x
 
-        # TODO Find a way to verify if the model natively supports sample_weight
-        for _ in range(int(sample_weight)):
+        # TODO Find a way to verify if the model natively supports sample_weight (w)
+        for _ in range(int(w)):
             self.model.learn_one(x=x_subset, y=y, **kwargs)
 
         # Drift detection input
@@ -860,7 +860,7 @@ class BaseSRPRegressor(BaseSRPEstimator):
             # Note: Pass the original instance x so features are correctly
             # selected based on the corresponding subspace
             self._background_learner.learn_one(
-                x=x, y=y, sample_weight=sample_weight, n_samples_seen=n_samples_seen  # type: ignore
+                x=x, y=y, w=w, n_samples_seen=n_samples_seen  # type: ignore
             )
 
         if not self.disable_drift_detector and not self.is_background_learner:

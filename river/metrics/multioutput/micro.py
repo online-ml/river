@@ -30,14 +30,14 @@ class MicroAverage(MultiOutputMetric, metrics.base.WrapperMetric):
             return utils.inspect.ismoclassifier(model)
         return utils.inspect.ismoregressor(model)
 
-    def update(self, y_true, y_pred, sample_weight=1.0):
+    def update(self, y_true, y_pred, w=1.0):
         for i in y_true:
-            self.metric.update(y_true[i], y_pred[i], sample_weight)
+            self.metric.update(y_true[i], y_pred[i], w)
         return self
 
-    def revert(self, y_true, y_pred, sample_weight=1.0):
+    def revert(self, y_true, y_pred, w=1.0):
         for i in y_true:
-            self.metric.revert(y_true[i], y_pred[i], sample_weight)
+            self.metric.revert(y_true[i], y_pred[i], w)
         return self
 
     def get(self):

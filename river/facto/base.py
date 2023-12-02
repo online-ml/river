@@ -65,20 +65,20 @@ class BaseFM:
     def _init_latents(self) -> collections.defaultdict:
         """Initializes latent weights dict."""
 
-    def learn_one(self, x, y, sample_weight=1.0):
+    def learn_one(self, x, y, w=1.0):
         x = self._ohe_cat_features(x)
 
         if self.sample_normalization:
             x_l2_norm = sum(xj**2 for xj in x.values()) ** 0.5
             x = {j: xj / x_l2_norm for j, xj in x.items()}
 
-        return self._learn_one(x, y, sample_weight=sample_weight)
+        return self._learn_one(x, y, w=w)
 
     def _ohe_cat_features(self, x):
         """One hot encodes string features considering them as categorical."""
         return dict((f"{j}_{xj}", 1) if isinstance(xj, str) else (j, xj) for j, xj in x.items())
 
-    def _learn_one(self, x, y, sample_weight=1.0):
+    def _learn_one(self, x, y, w=1.0):
         # Calculate the gradient of the loss with respect to the raw output
         g_loss = self.loss.gradient(y_true=y, y_pred=self._raw_dot(x))
 
@@ -86,7 +86,7 @@ class BaseFM:
         g_loss = utils.math.clamp(g_loss, minimum=-self.clip_gradient, maximum=self.clip_gradient)
 
         # Apply the sample weight
-        g_loss *= sample_weight
+        g_loss *= w
 
         # Update the intercept
         intercept_lr = self.intercept_lr.get(self.weight_optimizer.n_iterations)

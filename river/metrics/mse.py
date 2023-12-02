@@ -81,5 +81,5 @@ class RMSLE(RMSE):
 
     """
 
-    def update(self, y_true, y_pred, sample_weight=1.0):
-        return super().update(math.log(y_true + 1), math.log(y_pred + 1), sample_weight)
+    def update(self, y_true, y_pred, w=1.0):
+        return super().update(math.log(y_true + 1), math.log(y_pred + 1), w)

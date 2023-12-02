@@ -314,10 +314,10 @@ class ExtraTrees(base.Ensemble, metaclass=abc.ABCMeta):
             if w == 0:  # Skip model update if w is zero
                 continue
 
-            model.learn_one(x, y, sample_weight=w)
+            model.learn_one(x, y, w=w)
 
             if i in self._background_trees:
-                self._background_trees[i].learn_one(x, y, sample_weight=w)
+                self._background_trees[i].learn_one(x, y, w=w)
 
             trained.append(i)
 

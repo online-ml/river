@@ -66,11 +66,11 @@ class QOSplitter(Splitter):
 
         self.allow_multiway_splits = allow_multiway_splits
 
-    def update(self, att_val, target_val, sample_weight):
+    def update(self, att_val, target_val, w):
         if att_val is None:
             return
         else:
-            self._quantizer.update(att_val, target_val, sample_weight)
+            self._quantizer.update(att_val, target_val, w)
 
     def cond_proba(self, att_val, target_val):
         raise NotImplementedError
@@ -162,12 +162,12 @@ class Slot:
             self.y_stats = stats.Var()
             self._update_estimator = self._update_estimator_univariate
 
-    def _update_estimator_univariate(self, target, sample_weight):
-        self.y_stats.update(target, sample_weight)
+    def _update_estimator_univariate(self, target, w):
+        self.y_stats.update(target, w)
 
-    def _update_estimator_multivariate(self, target, sample_weight):
+    def _update_estimator_multivariate(self, target, w):
         for t in target:
-            self.y_stats[t].update(target[t], sample_weight)
+            self.y_stats[t].update(target[t], w)
 
     def __iadd__(self, o):
         self.x_stats += o.x_stats
@@ -175,9 +175,9 @@ class Slot:
 
         return self
 
-    def update(self, x, y, sample_weight):
-        self.x_stats.update(x, sample_weight)
-        self._update_estimator(y, sample_weight)
+    def update(self, x, y, w):
+        self.x_stats.update(x, w)
+        self._update_estimator(y, w)
 
 
 class FeatureQuantizer:

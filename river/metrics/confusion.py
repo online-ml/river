@@ -63,22 +63,22 @@ class ConfusionMatrix(metrics.base.MultiClassMetric):
         """Syntactic sugar for accessing the counts directly."""
         return self.data[key]
 
-    def update(self, y_true, y_pred, sample_weight=1.0):
+    def update(self, y_true, y_pred, w=1.0):
         self.n_samples += 1
-        self._update(y_true, y_pred, sample_weight)
+        self._update(y_true, y_pred, w)
         return self
 
-    def revert(self, y_true, y_pred, sample_weight=1.0):
+    def revert(self, y_true, y_pred, w=1.0):
         self.n_samples -= 1
-        # Revert is equal to subtracting so we pass the negative sample_weight
-        self._update(y_true, y_pred, -sample_weight)
+        # Revert is equal to subtracting so we pass the negative sample_weight (w)
+        self._update(y_true, y_pred, -w)
         return self
 
-    def _update(self, y_true, y_pred, sample_weight):
-        self.data[y_true][y_pred] += sample_weight
-        self.total_weight += sample_weight
-        self.sum_row[y_true] += sample_weight
-        self.sum_col[y_pred] += sample_weight
+    def _update(self, y_true, y_pred, w):
+        self.data[y_true][y_pred] += w
+        self.total_weight += w
+        self.sum_row[y_true] += w
+        self.sum_col[y_pred] += w
 
     @property
     def classes(self):
