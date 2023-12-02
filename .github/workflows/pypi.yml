@@ -48,7 +48,9 @@ jobs:
           # CIBW_SKIP: "*-musllinux_{i686,aarch64}"
           # we build for "alt_arch_name" if it exists, else 'auto
           CIBW_ARCHS_LINUX: "x86_64 i686 aarch64 ppc64le s390x"
-          CIBW_ARCHS_MACOS: "x86_64 arm64 universal2"
+          # We don't build arm64 wheels yet because there's an issue with Poetry.
+          # More information here: https://cibuildwheel.readthedocs.io/en/stable/faq/#how-to-cross-compile (CTRL + F "poetry")
+          CIBW_ARCHS_MACOS: "x86_64 universal2"
           CIBW_ARCHS_WINDOWS: "AMD64 x86 ARM64"
 
           CIBW_MANYLINUX_X86_64_IMAGE: "manylinux2014"
@@ -79,17 +81,6 @@ jobs:
           CIBW_BEFORE_BUILD_LINUX: >
             curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain=nightly --profile=minimal -y &&
             rustup show
-
-      # See Poetry note here: https://cibuildwheel.readthedocs.io/en/stable/faq/#how-to-cross-compile
-      # It explains why wheels have be re-tagged for macos
-      - run: pip install wheel==0.40
-        if: matrix.os == 'macos-latest' || matrix.os == 'macos-11'
-      # create pendulum-2.1.2-cp311-cp311-macosx_12_0_arm64.whl
-      - run: wheel tags --platform-tag macosx_12_0_arm64 ./wheelhouse/pendulum-2.1.2-cp311-cp311-macosx_12_0_x86_64.whl
-        if: matrix.os == 'macos-latest' || matrix.os == 'macos-11'
-      # remove the incorrectly tagged arm64 wheel
-      - run: rm ./wheelhouse/pendulum-2.1.2-cp311-cp311-macosx_12_0_x86_64.whl
-        if: matrix.os == 'macos-latest' || matrix.os == 'macos-11'
 
       - uses: actions/upload-artifact@v2
         with:
