@@ -21,26 +21,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-latest, windows-latest, macos-11, macos-latest]
         arch: [main, alt]
-        include:
-          - os: ubuntu-latest
-            platform: linux
-          - os: windows-latest
-            ls: dir
-          - os: macos-latest
-            arch: alt
-            alt_arch_name: arm64
-          - os: ubuntu-latest
-            platform: linux
-            alt_arch_name: aarch64
-        exclude:
-          - os: windows-latest
-            arch: alt
-          - os: macos-latest
-            arch: alt
-          - os: ubuntu-latest
-            arch: alt
 
     steps:
       - uses: actions/checkout@v3
@@ -72,28 +54,38 @@ jobs:
         uses: pypa/cibuildwheel@v2.16.2
         env:
           CIBW_BUILD: "cp39-* cp310-* cp311-* cp312-*"
-          CIBW_BEFORE_BUILD: >
-            pip install setuptools-rust cython &&
+          CIBW_BEFORE_ALL: >
             rustup default nightly &&
             rustup show
           # rust doesn't seem to be available for musl linux on i686
           # CIBW_SKIP: "*-musllinux_{i686,aarch64}"
           # we build for "alt_arch_name" if it exists, else 'auto
-          CIBW_ARCHS: ${{ matrix.alt_arch_name || 'auto' }}
+          CIBW_ARCHS_LINUX: "x86_64 i686 aarch64 ppc64le s390x"
+          CIBW_ARCHS_MACOS: "x86_64 arm64 universal2"
+          CIBW_ARCHS_WINDOWS: "AMD64 x86 ARM64"
 
           CIBW_MANYLINUX_X86_64_IMAGE: "manylinux2014"
-          CIBW_MUSLLINUX_X86_64_IMAGE: "musllinux_1_1"
+          CIBW_MANYLINUX_I686_IMAGE: "manylinux2014"
           CIBW_MANYLINUX_AARCH64_IMAGE: "manylinux2014"
+          CIBW_MANYLINUX_PPC64LE_IMAGE: "manylinux2014"
+          CIBW_MANYLINUX_S390X_IMAGE: "manylinux2014"
+          CIBW_MANYLINUX_PYPY_X86_64_IMAGE: "manylinux2014"
+          CIBW_MANYLINUX_PYPY_I686_IMAGE: "manylinux2014"
+          CIBW_MANYLINUX_PYPY_AARCH64_IMAGE: "manylinux2014"
+
+          CIBW_MUSLLINUX_X86_64_IMAGE: "musllinux_1_1"
+          CIBW_MUSLLINUX_I686_IMAGE: "musllinux_1_1"
           CIBW_MUSLLINUX_AARCH64_IMAGE: "musllinux_1_1"
+          CIBW_MUSLLINUX_PPC64LE_IMAGE: "musllinux_1_1"
+          CIBW_MUSLLINUX_S390X_IMAGE: "musllinux_1_1"
+
           CIBW_ENVIRONMENT: 'PATH="$HOME/.cargo/bin:$PATH"'
           # Fix the following error: error: cargo rustc --lib --message-format=json-render-diagnostics --manifest-path Cargo.toml --release -v --features pyo3/extension-module -- --crate-type cdylibfailed with code -9
           # You need to set a second environment variable CARGO_NET_GIT_FETCH_WITH_CLI="true" for linux environments
           # Solutio found here: https://github.com/rust-lang/cargo/issues/10583
           CIBW_ENVIRONMENT_LINUX: 'PATH="$HOME/.cargo/bin:$PATH" CARGO_NET_GIT_FETCH_WITH_CLI="true"'
-          CIBW_MANYLINUX_I686_IMAGE: "manylinux2014"
           CIBW_ENVIRONMENT_WINDOWS: 'PATH="$UserProfile\.cargo\bin;$PATH"'
           CIBW_BEFORE_BUILD_LINUX: >
-            pip install cython numpy setuptools wheel setuptools-rust &&
             curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain=nightly --profile=minimal -y &&
             rustup show
 
