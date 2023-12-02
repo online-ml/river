@@ -53,7 +53,8 @@ jobs:
           # We don't build arm64 and universal2 wheels yet because there's an issue with Poetry.
           # More information here: https://cibuildwheel.readthedocs.io/en/stable/faq/#how-to-cross-compile (CTRL + F "poetry")
           CIBW_ARCHS_MACOS: "x86_64"
-          CIBW_ARCHS_WINDOWS: "AMD64 x86 ARM64"
+          # We don't build ARM64 wheels yet because there's a Rust issue
+          CIBW_ARCHS_WINDOWS: "AMD64 x86"
 
           CIBW_MANYLINUX_X86_64_IMAGE: "manylinux2014"
           CIBW_MANYLINUX_I686_IMAGE: "manylinux2014"
