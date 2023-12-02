@@ -48,9 +48,9 @@ jobs:
           # CIBW_SKIP: "*-musllinux_{i686,aarch64}"
           # we build for "alt_arch_name" if it exists, else 'auto
           CIBW_ARCHS_LINUX: "x86_64 i686 aarch64 ppc64le s390x"
-          # We don't build arm64 wheels yet because there's an issue with Poetry.
+          # We don't build arm64 and universal2 wheels yet because there's an issue with Poetry.
           # More information here: https://cibuildwheel.readthedocs.io/en/stable/faq/#how-to-cross-compile (CTRL + F "poetry")
-          CIBW_ARCHS_MACOS: "x86_64 universal2"
+          CIBW_ARCHS_MACOS: "x86_64"
           CIBW_ARCHS_WINDOWS: "AMD64 x86 ARM64"
 
           CIBW_MANYLINUX_X86_64_IMAGE: "manylinux2014"
