@@ -43,7 +43,9 @@ jobs:
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.16.2
         env:
-          CIBW_BUILD: "cp39-* cp310-* cp311-* cp312-*"
+          # TODO
+          # CIBW_BUILD: "cp39-* cp310-* cp311-* cp312-*"
+          CIBW_BUILD: "cp311-*"
           # rust doesn't seem to be available for musl linux on i686
           # CIBW_SKIP: "*-musllinux_{i686,aarch64}"
           # we build for "alt_arch_name" if it exists, else 'auto
