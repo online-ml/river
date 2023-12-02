@@ -6,6 +6,15 @@ on:
     tags:
       - "*"
 
+    #   Cython-3.0.6-cp310-cp310-macosx_10_9_x86_64.whl
+    #   Cython-3.0.6-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl
+    #   Cython-3.0.6-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
+    #   Cython-3.0.6-cp310-cp310-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl
+    #   Cython-3.0.6-cp310-cp310-musllinux_1_1_aarch64.whl
+    #   Cython-3.0.6-cp310-cp310-musllinux_1_1_x86_64.whl
+    #   Cython-3.0.6-cp310-cp310-win32.whl
+    #   Cython-3.0.6-cp310-cp310-win_amd64.whl
+
 jobs:
   build_wheels:
     name: Build wheels on ${{ matrix.os }}
@@ -68,7 +77,7 @@ jobs:
             rustup default nightly &&
             rustup show
           # rust doesn't seem to be available for musl linux on i686
-          CIBW_SKIP: "*-musllinux_{i686,aarch64}"
+          # CIBW_SKIP: "*-musllinux_{i686,aarch64}"
           # we build for "alt_arch_name" if it exists, else 'auto
           CIBW_ARCHS: ${{ matrix.alt_arch_name || 'auto' }}
 
