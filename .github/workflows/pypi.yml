@@ -6,15 +6,6 @@ on:
     tags:
       - "*"
 
-    #   Cython-3.0.6-cp310-cp310-macosx_10_9_x86_64.whl
-    #   Cython-3.0.6-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl
-    #   Cython-3.0.6-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
-    #   Cython-3.0.6-cp310-cp310-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl
-    #   Cython-3.0.6-cp310-cp310-musllinux_1_1_aarch64.whl
-    #   Cython-3.0.6-cp310-cp310-musllinux_1_1_x86_64.whl
-    #   Cython-3.0.6-cp310-cp310-win32.whl
-    #   Cython-3.0.6-cp310-cp310-win_amd64.whl
-
 jobs:
   build_wheels:
     name: Build wheels on ${{ matrix.os }}
@@ -22,7 +13,6 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-11, macos-latest]
-        arch: [main, alt]
 
     steps:
       - uses: actions/checkout@v3
@@ -89,6 +79,17 @@ jobs:
           CIBW_BEFORE_BUILD_LINUX: >
             curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain=nightly --profile=minimal -y &&
             rustup show
+
+      # See Poetry note here: https://cibuildwheel.readthedocs.io/en/stable/faq/#how-to-cross-compile
+      # It explains why wheels have be re-tagged for macos
+      - run: pip install wheel==0.40
+        if: matrix.os == 'macos-latest' || matrix.os == 'macos-11'
+      # create pendulum-2.1.2-cp311-cp311-macosx_12_0_arm64.whl
+      - run: wheel tags --platform-tag macosx_12_0_arm64 ./wheelhouse/pendulum-2.1.2-cp311-cp311-macosx_12_0_x86_64.whl
+        if: matrix.os == 'macos-latest' || matrix.os == 'macos-11'
+      # remove the incorrectly tagged arm64 wheel
+      - run: rm ./wheelhouse/pendulum-2.1.2-cp311-cp311-macosx_12_0_x86_64.whl
+        if: matrix.os == 'macos-latest' || matrix.os == 'macos-11'
 
       - uses: actions/upload-artifact@v2
         with:
