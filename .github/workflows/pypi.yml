@@ -26,7 +26,7 @@ jobs:
           override: true
 
       - run: rustup target add aarch64-apple-darwin
-        if: matrix.os == 'macos-latest'
+        if: matrix.os == 'macos-latest' || matrix.os == 'macos-11'
 
       - run: rustup toolchain install stable-i686-pc-windows-msvc
         if: matrix.os == 'windows-latest'
