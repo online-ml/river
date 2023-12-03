@@ -72,7 +72,7 @@ class BaseFM:
             x_l2_norm = sum(xj**2 for xj in x.values()) ** 0.5
             x = {j: xj / x_l2_norm for j, xj in x.items()}
 
-        return self._learn_one(x, y, w=w)
+        self._learn_one(x, y, w=w)
 
     def _ohe_cat_features(self, x):
         """One hot encodes string features considering them as categorical."""
@@ -98,8 +98,6 @@ class BaseFM:
 
         # Update the latent weights
         self._update_latents(x, g_loss)
-
-        return self
 
     def _raw_dot(self, x):
         # Start with the intercept

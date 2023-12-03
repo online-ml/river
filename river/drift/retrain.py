@@ -67,7 +67,6 @@ class DriftRetrainingClassifier(base.Wrapper, base.Classifier):
     def learn_one(self, x, y, **kwargs):
         self._update_detector(x, y)
         self.model.learn_one(x, y, **kwargs)
-        return self
 
     def _update_detector(self, x, y):
         y_pred = self.model.predict_one(x)

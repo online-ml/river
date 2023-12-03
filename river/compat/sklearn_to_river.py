@@ -104,11 +104,9 @@ class SKL2RiverRegressor(SKL2RiverBase, base.Regressor):
 
     def learn_one(self, x, y):
         self.estimator.partial_fit(X=[self._align_dict(x)], y=[y])
-        return self
 
     def learn_many(self, X, y):
         self.estimator.partial_fit(X=self._align_df(X), y=y)
-        return self
 
     def predict_one(self, x):
         try:
@@ -176,11 +174,9 @@ class SKL2RiverClassifier(SKL2RiverBase, base.Classifier):
 
     def learn_one(self, x, y):
         self.estimator.partial_fit(X=[self._align_dict(x)], y=[y], classes=self.classes)
-        return self
 
     def learn_many(self, X, y):
         self.estimator.partial_fit(X=self._align_df(X), y=y, classes=self.classes)
-        return self
 
     def predict_proba_one(self, x):
         try:

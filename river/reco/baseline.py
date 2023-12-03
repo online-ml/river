@@ -69,7 +69,7 @@ class Baseline(reco.base.Ranker):
     >>> model = reco.Baseline(optimizer=optim.SGD(0.005))
 
     >>> for x, y in dataset:
-    ...     _ = model.learn_one(**x, y=y)
+    ...     model.learn_one(**x, y=y)
 
     >>> model.predict_one(user='Bob', item='Harry Potter')
     6.538120
@@ -130,5 +130,3 @@ class Baseline(reco.base.Ranker):
         # Update biases
         self.u_biases = self.u_optimizer.step(self.u_biases, u_grad_bias)
         self.i_biases = self.i_optimizer.step(self.i_biases, i_grad_bias)
-
-        return self

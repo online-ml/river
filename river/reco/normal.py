@@ -44,7 +44,7 @@ class RandomNormal(reco.base.Ranker):
     >>> model = reco.RandomNormal(seed=42)
 
     >>> for x, y in dataset:
-    ...     _ = model.learn_one(**x, y=y)
+    ...     model.learn_one(**x, y=y)
 
     >>> model.predict_one(user='Bob', item='Harry Potter')
     6.147299621751425
@@ -60,7 +60,6 @@ class RandomNormal(reco.base.Ranker):
     def learn_one(self, user, item, y, x=None):
         self.mean.update(y)
         self.variance.update(y)
-        return self
 
     def predict_one(self, user, item, x=None):
         μ = self.mean.get() or 0

@@ -35,7 +35,8 @@ class VarianceThreshold(base.Transformer):
     >>> selector = feature_selection.VarianceThreshold()
 
     >>> for x, _ in stream.iter_array(X):
-    ...     print(selector.learn_one(x).transform_one(x))
+    ...     selector.learn_one(x)
+    ...     print(selector.transform_one(x))
     {0: 0, 1: 2, 2: 0, 3: 3}
     {1: 1, 2: 4}
     {1: 1, 2: 1}
@@ -50,8 +51,6 @@ class VarianceThreshold(base.Transformer):
     def learn_one(self, x):
         for i, xi in x.items():
             self.variances[i].update(xi)
-
-        return self
 
     def check_feature(self, feature):
         if feature not in self.variances:

@@ -144,7 +144,7 @@ class QuantileFilter(anomaly.base.AnomalyFilter):
     >>> for x, y in datasets.CreditCard().take(2000):
     ...     score = model.score_one(x)
     ...     is_anomaly = model['QuantileFilter'].classify(score)
-    ...     model = model.learn_one(x)
+    ...     model.learn_one(x)
     ...     report = report.update(y, is_anomaly)
 
     >>> report
@@ -180,7 +180,6 @@ class QuantileFilter(anomaly.base.AnomalyFilter):
         if not self.protect_anomaly_detector or not self.classify(score):
             self.anomaly_detector.learn_one(*args, **learn_kwargs)
         self.quantile.update(score)
-        return self
 
     @classmethod
     def _unit_test_params(cls):

@@ -133,7 +133,6 @@ class KNNClassifier(base.Classifier):
 
         # Ensure classes known to instance reflect window
         self._run_class_cleanup()
-        return self
 
     def _run_class_cleanup(self):
         """Helper function to run class cleanup, accounting for _cleanup_counter."""

@@ -50,7 +50,7 @@ class EntropySampler(ActiveLearningClassifier):
     ...     metric = metric.update(y, y_pred)
     ...     if ask:
     ...         n_samples_used += 1
-    ...         model = model.learn_one(x, y)
+    ...         model.learn_one(x, y)
 
     >>> metric
     Accuracy: 86.60%

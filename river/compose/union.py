@@ -66,7 +66,7 @@ class TransformerUnion(base.MiniBatchTransformer):
 
     >>> from pprint import pprint
     >>> for x in X:
-    ...     agg = agg.learn_one(x)
+    ...     agg.learn_one(x)
     ...     pprint(agg.transform_one(x))
     {'revenue_count_by_place': 1, 'revenue_mean_by_place': 42.0}
     {'revenue_count_by_place': 1, 'revenue_mean_by_place': 16.0}
@@ -144,7 +144,7 @@ class TransformerUnion(base.MiniBatchTransformer):
     ...     (compose.Select("revenue") | preprocessing.StandardScaler())
     ... )
 
-    >>> _ = agg.learn_many(X)
+    >>> agg.learn_many(X)
     >>> agg.transform_many(X)
        place   revenue
     0      2  0.441250
@@ -269,7 +269,6 @@ class TransformerUnion(base.MiniBatchTransformer):
                 t.learn_one(x, y)
             else:
                 t.learn_one(x)
-        return self
 
     def transform_one(self, x):
         """Passes the data through each transformer and packs the results together."""
@@ -294,7 +293,6 @@ class TransformerUnion(base.MiniBatchTransformer):
                 t.learn_many(X, y)
             else:
                 t.learn_many(X)
-        return self
 
     def transform_many(self, X):
         """Passes the data through each transformer and packs the results together."""

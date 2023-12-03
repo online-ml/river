@@ -58,7 +58,7 @@ class RegressionJackknife(base.Wrapper, base.Regressor):
     ...     interval = model.predict_one(x, with_interval=True)
     ...     validity = validity.update(y in interval)
     ...     efficiency = efficiency.update(interval.width)
-    ...     model = model.learn_one(x, y)
+    ...     model.learn_one(x, y)
 
     The interval's validity is the proportion of times the true value is within the interval. We
     specified a confidence level of 90%, so we expect the validity to be around 90%.
@@ -116,8 +116,6 @@ class RegressionJackknife(base.Wrapper, base.Regressor):
         self._upper.update(error)
 
         self.regressor.learn_one(x, y, **kwargs)
-
-        return self
 
     def predict_one(self, x, with_interval=False, **kwargs):
         """Predict the output of features `x`.

@@ -92,7 +92,7 @@ Now let's run the model on the dataset in a streaming fashion. We sequentially i
 >>> for x, y in dataset:
 ...     y_pred = model.predict_one(x)      # make a prediction
 ...     metric = metric.update(y, y_pred)  # update the metric
-...     model = model.learn_one(x, y)      # make the model learn
+...     model.learn_one(x, y)              # make the model learn
 
 >>> metric
 Accuracy: 89.28%

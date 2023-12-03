@@ -69,8 +69,6 @@ class GreedyRegressor(ModelSelectionRegressor):
                 self._best_model = model
                 self._best_metric = metric
 
-        return self
-
     @property
     def best_model(self):
         return self._best_model

@@ -97,7 +97,7 @@ class TextClust(base.Clusterer):
     ...     y_pred = model.predict_one(x["text"])
     ...     y = x["cluster"]
     ...     metric = metric.update(y,y_pred)
-    ...     model = model.learn_one(x["text"])
+    ...     model.learn_one(x["text"])
 
     >>> print(metric)
     AdjustedRand: -0.17647058823529413

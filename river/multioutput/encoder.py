@@ -41,7 +41,7 @@ class MultiClassEncoder(base.MultiLabelClassifier):
     ...    y_pred = model.predict_one(x)
     ...    y_pred = {k: y_pred.get(k, 0) for k in y}
     ...    metric = metric.update(y, y_pred)
-    ...    model = model.learn_one(x, y)
+    ...    model.learn_one(x, y)
 
     >>> metric
     MicroAverage(Jaccard): 95.10%
@@ -70,8 +70,6 @@ class MultiClassEncoder(base.MultiLabelClassifier):
 
         # Update the classifier
         self.model.learn_one(x, y_encoded)
-
-        return self
 
     def predict_proba_one(self, x, **kwargs):
         enc_probas = self.model.predict_proba_one(x, **kwargs)
