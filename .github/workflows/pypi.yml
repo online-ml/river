@@ -43,9 +43,7 @@ jobs:
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.16.2
         env:
-          # TODO
-          # CIBW_BUILD: "cp39-* cp310-* cp311-* cp312-*"
-          CIBW_BUILD: "cp311-*"
+          CIBW_BUILD: "cp39-* cp310-* cp311-* cp312-*"
           CIBW_ARCHS_LINUX: "x86_64 i686 aarch64 ppc64le s390x"
           # CIBW_ARCHS_MACOS: "x86_64 arm64"
           CIBW_ARCHS_MACOS: "universal2"
