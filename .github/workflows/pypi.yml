@@ -25,6 +25,15 @@ jobs:
           toolchain: nightly
           override: true
 
+      - run: rustup target add aarch64-apple-darwin
+        if: matrix.os == 'macos-latest'
+
+      - run: rustup toolchain install stable-i686-pc-windows-msvc
+        if: matrix.os == 'windows-latest'
+
+      - run: rustup target add i686-pc-windows-msvc
+        if: matrix.os == 'windows-latest'
+
       - name: Set up QEMU
         if: matrix.os == 'ubuntu-latest'
         uses: docker/setup-qemu-action@v3
