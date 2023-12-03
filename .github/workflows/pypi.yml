@@ -12,27 +12,25 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-11, macos-latest]
+        os:
+          [
+            ubuntu-latest,
+            windows-latest,
+            macos-11,
+            macos-latest,
+            macos-latest-xlarge,
+          ]
 
     steps:
       - uses: actions/checkout@v3
 
-      - name: set up rust
+      - name: Set up rust
         if: matrix.os != 'ubuntu-latest'
         uses: actions-rs/toolchain@v1
         with:
           profile: minimal
           toolchain: nightly
           override: true
-
-      - run: rustup target add aarch64-apple-darwin
-        if: matrix.os == 'macos-latest'
-
-      - run: rustup toolchain install stable-i686-pc-windows-msvc
-        if: matrix.os == 'windows-latest'
-
-      - run: rustup target add i686-pc-windows-msvc
-        if: matrix.os == 'windows-latest'
 
       - name: Set up QEMU
         if: matrix.os == 'ubuntu-latest'
@@ -47,13 +45,18 @@ jobs:
           # CIBW_BUILD: "cp39-* cp310-* cp311-* cp312-*"
           CIBW_BUILD: "cp311-*"
           CIBW_ARCHS_LINUX: "x86_64 i686 aarch64 ppc64le s390x"
-          # We don't build arm64 and universal2 wheels yet because there's an issue with Poetry.
-          # More information here: https://cibuildwheel.readthedocs.io/en/stable/faq/#how-to-cross-compile (CTRL + F "poetry")
-          CIBW_ARCHS_MACOS: "x86_64"
+          CIBW_ARCHS_MACOS: "x86_64 arm64"
           # We don't build ARM64 wheels yet because there's a Rust issue
           CIBW_ARCHS_WINDOWS: "AMD64 x86"
           # Rust doesn't seem to be available for musl linux on i686 and ppc64le
-          CIBW_SKIP: "*-musllinux_i686 *-musllinux_ppc64le"
+          CIBW_SKIP: "*-musllinux_i686 *-musllinux_ppc64le *-musllinux_s390x"
+
+          # arm64 and universal2 wheels are tagged with x86_64 because there's an issue with Poetry
+          # More information here: https://cibuildwheel.readthedocs.io/en/stable/faq/#how-to-cross-compile (CTRL + F "poetry")
+          # https://github.com/pypa/cibuildwheel/issues/1415
+          CIBW_REPAIR_WHEEL_COMMAND_MACOS: >
+            delocate-wheel --require-archs {delocate_archs} -w {dest_dir} -v {wheel} &&
+            for file in {dest_dir}/*.whl ; do mv $file ${file//x86_64/arm64} ; done
 
           CIBW_MANYLINUX_X86_64_IMAGE: "manylinux2014"
           CIBW_MANYLINUX_I686_IMAGE: "manylinux2014"
