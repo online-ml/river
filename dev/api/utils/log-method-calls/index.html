@@ -5261,7 +5261,7 @@
 <span class="k">with</span> <span class="n">utils</span><span class="o">.</span><span class="n">log_method_calls</span><span class="p">(</span><span class="n">class_condition</span><span class="p">):</span>
     <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">datasets</span><span class="o">.</span><span class="n">CreditCard</span><span class="p">()</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="mi">1</span><span class="p">):</span>
         <span class="n">score</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">score_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-        <span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="n">logs</span><span class="o">.</span><span class="n">getvalue</span><span class="p">())</span>
 </code></pre></div>

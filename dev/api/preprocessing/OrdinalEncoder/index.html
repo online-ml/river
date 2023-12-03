@@ -5338,7 +5338,7 @@
 <span class="n">encoder</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">OrdinalEncoder</span><span class="p">()</span>
 <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">X</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">encoder</span><span class="o">.</span><span class="n">transform_one</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
-    <span class="n">encoder</span> <span class="o">=</span> <span class="n">encoder</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">encoder</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 </code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>{&#39;country&#39;: 0, &#39;place&#39;: 0}
 {&#39;country&#39;: -1, &#39;place&#39;: -1}
@@ -5361,7 +5361,7 @@
 2        0      0
 3        0      0
 </code></pre></div></p>
-<p><div class="language-python highlight"><pre><span></span><code><span class="n">encoder</span> <span class="o">=</span> <span class="n">encoder</span><span class="o">.</span><span class="n">learn_many</span><span class="p">(</span><span class="n">xb1</span><span class="p">)</span>
+<p><div class="language-python highlight"><pre><span></span><code><span class="n">encoder</span><span class="o">.</span><span class="n">learn_many</span><span class="p">(</span><span class="n">xb1</span><span class="p">)</span>
 <span class="n">encoder</span><span class="o">.</span><span class="n">transform_many</span><span class="p">(</span><span class="n">xb2</span><span class="p">)</span>
 </code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>   country  place
@@ -5380,8 +5380,6 @@
 <li><strong>X</strong>     — <em>'pd.DataFrame'</em>    </li>
 <li><strong>y</strong>     — defaults to <code>None</code>    </li>
 </ul>
-<p><strong>Returns</strong></p>
-<p><em>Transformer</em>:     self</p>
 </details>
 <p><span /></p>
 <details class="- abstract">
@@ -5392,8 +5390,6 @@
 <ul>
 <li><strong>x</strong>     — <em>'dict'</em>    </li>
 </ul>
-<p><strong>Returns</strong></p>
-<p><em>Transformer</em>:     self</p>
 </details>
 <p><span /></p>
 <details class="- abstract">

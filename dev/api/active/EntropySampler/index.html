@@ -5007,7 +5007,7 @@
     <span class="n">metric</span> <span class="o">=</span> <span class="n">metric</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">ask</span><span class="p">:</span>
         <span class="n">n_samples_used</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 
 <span class="n">metric</span>
 </code></pre></div>
@@ -5031,8 +5031,6 @@
 <li><strong>y</strong>    </li>
 <li><strong>kwargs</strong>    </li>
 </ul>
-<p><strong>Returns</strong></p>
-<p>self</p>
 </details>
 <p><span /></p>
 <details class="- abstract">

@@ -4992,7 +4992,7 @@
     <span class="n">interval</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict_one</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">with_interval</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">validity</span> <span class="o">=</span> <span class="n">validity</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">y</span> <span class="ow">in</span> <span class="n">interval</span><span class="p">)</span>
     <span class="n">efficiency</span> <span class="o">=</span> <span class="n">efficiency</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">interval</span><span class="o">.</span><span class="n">width</span><span class="p">)</span>
-    <span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 </code></pre></div>
 <p>The interval's validity is the proportion of times the true value is within the interval. We
 specified a confidence level of 90%, so we expect the validity to be around 90%.</p>
@@ -5016,8 +5016,6 @@ specified a confidence level of 90%, so we expect the validity to be around 90%.
 <li><strong>y</strong>    </li>
 <li><strong>kwargs</strong>    </li>
 </ul>
-<p><strong>Returns</strong></p>
-<p>self</p>
 </details>
 <p><span /></p>
 <details class="- abstract">

@@ -5120,7 +5120,7 @@
 
 <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">150</span><span class="p">):</span>
     <span class="n">y</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">gauss</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-    <span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 
 <span class="n">model</span><span class="o">.</span><span class="n">score_one</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
 </code></pre></div>
@@ -5143,8 +5143,6 @@
 <li><strong>x</strong>     — <em>'dict'</em>    </li>
 <li><strong>y</strong>     — <em>'base.typing.Target'</em>    </li>
 </ul>
-<p><strong>Returns</strong></p>
-<p><em>SupervisedAnomalyDetector</em>:     self</p>
 </details>
 <p><span /></p>
 <details class="- abstract">

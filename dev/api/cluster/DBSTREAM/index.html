@@ -5144,7 +5144,7 @@
 <span class="p">)</span>
 
 <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">stream</span><span class="o">.</span><span class="n">iter_array</span><span class="p">(</span><span class="n">X</span><span class="p">):</span>
-    <span class="n">dbstream</span> <span class="o">=</span> <span class="n">dbstream</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">dbstream</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
 <span class="n">dbstream</span><span class="o">.</span><span class="n">predict_one</span><span class="p">({</span><span class="mi">0</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="mi">2</span><span class="p">})</span>
 </code></pre></div>
@@ -5167,8 +5167,6 @@
 <li><strong>x</strong>     — <em>'dict'</em>    </li>
 <li><strong>w</strong>     — defaults to <code>None</code>    </li>
 </ul>
-<p><strong>Returns</strong></p>
-<p><em>Clusterer</em>:     self</p>
 </details>
 <p><span /></p>
 <details class="- abstract">

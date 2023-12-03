@@ -5047,7 +5047,7 @@
 <span class="p">)</span>
 
 <span class="k">for</span> <span class="n">sentence</span><span class="p">,</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
-    <span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">sentence</span><span class="p">,</span> <span class="n">label</span><span class="p">)</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">sentence</span><span class="p">,</span> <span class="n">label</span><span class="p">)</span>
 
 <span class="n">model</span><span class="p">[</span><span class="s2">&quot;nb&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">p_class</span><span class="p">(</span><span class="s2">&quot;yes&quot;</span><span class="p">)</span>
 </code></pre></div>
@@ -5087,7 +5087,7 @@
     <span class="p">(</span><span class="s2">&quot;nb&quot;</span><span class="p">,</span> <span class="n">naive_bayes</span><span class="o">.</span><span class="n">MultinomialNB</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
 <span class="p">)</span>
 
-<span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">learn_many</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">learn_many</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 
 <span class="n">unseen</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s2">&quot;Taiwanese Taipei&quot;</span><span class="p">,</span> <span class="s2">&quot;Chinese Shanghai&quot;</span><span class="p">])</span>
 
@@ -5134,8 +5134,6 @@ dtype: object
 <li><strong>X</strong>     — <em>'pd.DataFrame'</em>    </li>
 <li><strong>y</strong>     — <em>'pd.Series'</em>    </li>
 </ul>
-<p><strong>Returns</strong></p>
-<p><em>MiniBatchClassifier</em>:     self</p>
 </details>
 <p><span /></p>
 <details class="- abstract">
@@ -5146,8 +5144,6 @@ dtype: object
 <li><strong>x</strong>     — <em>'dict'</em>    </li>
 <li><strong>y</strong>     — <em>'base.typing.ClfTarget'</em>    </li>
 </ul>
-<p><strong>Returns</strong></p>
-<p><em>Classifier</em>:     self</p>
 </details>
 <p><span /></p>
 <details class="- abstract">

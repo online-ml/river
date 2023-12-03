@@ -5322,7 +5322,7 @@ no need to specify which features to encode.</p>
 
 <span class="n">oh</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">OneHotEncoder</span><span class="p">()</span>
 <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">X</span><span class="p">[:</span><span class="mi">2</span><span class="p">]:</span>
-    <span class="n">oh</span> <span class="o">=</span> <span class="n">oh</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">oh</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
     <span class="n">pprint</span><span class="p">(</span><span class="n">oh</span><span class="o">.</span><span class="n">transform_one</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
 </code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>{&#39;c1_u&#39;: 1, &#39;c2_d&#39;: 1}
@@ -5332,7 +5332,7 @@ no need to specify which features to encode.</p>
 in the output. Otherwise, all the past features will be included in the output.</p>
 <p><div class="language-python highlight"><pre><span></span><code><span class="n">oh</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">OneHotEncoder</span><span class="p">(</span><span class="n">drop_zeros</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">X</span><span class="p">:</span>
-    <span class="n">oh</span> <span class="o">=</span> <span class="n">oh</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">oh</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
     <span class="n">pprint</span><span class="p">(</span><span class="n">oh</span><span class="o">.</span><span class="n">transform_one</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
 </code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>{&#39;c1_u&#39;: 1, &#39;c2_d&#39;: 1}
@@ -5343,7 +5343,7 @@ in the output. Otherwise, all the past features will be included in the output.<
 <p>You can encode only <code>k - 1</code> features out of <code>k</code> by setting <code>drop_first</code> to <code>True</code>.</p>
 <p><div class="language-python highlight"><pre><span></span><code><span class="n">oh</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">OneHotEncoder</span><span class="p">(</span><span class="n">drop_first</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">drop_zeros</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">X</span><span class="p">:</span>
-    <span class="n">oh</span> <span class="o">=</span> <span class="n">oh</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">oh</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
     <span class="n">pprint</span><span class="p">(</span><span class="n">oh</span><span class="o">.</span><span class="n">transform_one</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
 </code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>{&#39;c2_d&#39;: 1}
@@ -5358,7 +5358,7 @@ in the output. Otherwise, all the past features will be included in the output.<
 <span class="n">pp</span> <span class="o">=</span> <span class="n">compose</span><span class="o">.</span><span class="n">Select</span><span class="p">(</span><span class="s1">&#39;c1&#39;</span><span class="p">)</span> <span class="o">|</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">OneHotEncoder</span><span class="p">()</span>
 
 <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">X</span><span class="p">:</span>
-    <span class="n">pp</span> <span class="o">=</span> <span class="n">pp</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">pp</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
     <span class="n">pprint</span><span class="p">(</span><span class="n">pp</span><span class="o">.</span><span class="n">transform_one</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
 </code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>{&#39;c1_u&#39;: 1}
@@ -5371,7 +5371,7 @@ in the output. Otherwise, all the past features will be included in the output.<
 <span class="n">pp</span> <span class="o">+=</span> <span class="n">compose</span><span class="o">.</span><span class="n">Select</span><span class="p">(</span><span class="s1">&#39;c2&#39;</span><span class="p">)</span>
 
 <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">X</span><span class="p">:</span>
-    <span class="n">pp</span> <span class="o">=</span> <span class="n">pp</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">pp</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
     <span class="n">pprint</span><span class="p">(</span><span class="n">pp</span><span class="o">.</span><span class="n">transform_one</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
 </code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>{&#39;c1_u&#39;: 1, &#39;c2&#39;: &#39;d&#39;}
@@ -5388,7 +5388,7 @@ encode all of the entries individually.</p>
 
 <span class="n">oh</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">OneHotEncoder</span><span class="p">(</span><span class="n">drop_zeros</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">X</span><span class="p">:</span>
-    <span class="n">oh</span> <span class="o">=</span> <span class="n">oh</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">oh</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
     <span class="n">pprint</span><span class="p">(</span><span class="n">oh</span><span class="o">.</span><span class="n">transform_one</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
 </code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>{&#39;c1_a&#39;: 1, &#39;c1_u&#39;: 1, &#39;c2_d&#39;: 1}
@@ -5438,8 +5438,8 @@ encode all of the entries individually.</p>
 <p>Here's an example where the zeros are kept:</p>
 <p><div class="language-python highlight"><pre><span></span><code><span class="n">oh</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">OneHotEncoder</span><span class="p">(</span><span class="n">drop_zeros</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="n">X_init</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([{</span><span class="s2">&quot;c1&quot;</span><span class="p">:</span> <span class="s2">&quot;Oranges&quot;</span><span class="p">,</span> <span class="s2">&quot;c2&quot;</span><span class="p">:</span> <span class="s2">&quot;Apples&quot;</span><span class="p">}])</span>
-<span class="n">oh</span> <span class="o">=</span> <span class="n">oh</span><span class="o">.</span><span class="n">learn_many</span><span class="p">(</span><span class="n">X_init</span><span class="p">)</span>
-<span class="n">oh</span> <span class="o">=</span> <span class="n">oh</span><span class="o">.</span><span class="n">learn_many</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+<span class="n">oh</span><span class="o">.</span><span class="n">learn_many</span><span class="p">(</span><span class="n">X_init</span><span class="p">)</span>
+<span class="n">oh</span><span class="o">.</span><span class="n">learn_many</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 
 <span class="n">df</span> <span class="o">=</span> <span class="n">oh</span><span class="o">.</span><span class="n">transform_many</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 <span class="n">df</span><span class="o">.</span><span class="n">sort_index</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">&quot;columns&quot;</span><span class="p">)</span>
@@ -5470,8 +5470,6 @@ dtype: object
 <ul>
 <li><strong>X</strong>     — <em>'pd.DataFrame'</em>    </li>
 </ul>
-<p><strong>Returns</strong></p>
-<p><em>Transformer</em>:     self</p>
 </details>
 <p><span /></p>
 <details class="- abstract">
@@ -5482,8 +5480,6 @@ dtype: object
 <ul>
 <li><strong>x</strong>     — <em>'dict'</em>    </li>
 </ul>
-<p><strong>Returns</strong></p>
-<p><em>Transformer</em>:     self</p>
 </details>
 <p><span /></p>
 <details class="- abstract">

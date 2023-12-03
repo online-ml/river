@@ -4987,7 +4987,7 @@
 <span class="n">model</span> <span class="o">=</span> <span class="n">dummy</span><span class="o">.</span><span class="n">StatisticRegressor</span><span class="p">(</span><span class="n">stats</span><span class="o">.</span><span class="n">Mean</span><span class="p">())</span>
 
 <span class="k">for</span> <span class="n">sentence</span><span class="p">,</span> <span class="n">score</span> <span class="ow">in</span> <span class="n">sentences</span><span class="p">:</span>
-    <span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">sentence</span><span class="p">,</span> <span class="n">score</span><span class="p">)</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">sentence</span><span class="p">,</span> <span class="n">score</span><span class="p">)</span>
 
 <span class="n">new_sentence</span> <span class="o">=</span> <span class="s1">&#39;glad sad miserable pleasant glad&#39;</span>
 <span class="n">model</span><span class="o">.</span><span class="n">predict_one</span><span class="p">(</span><span class="n">new_sentence</span><span class="p">)</span>
@@ -5003,8 +5003,6 @@
 <li><strong>x</strong>     — <em>'dict'</em>    </li>
 <li><strong>y</strong>     — <em>'base.typing.RegTarget'</em>    </li>
 </ul>
-<p><strong>Returns</strong></p>
-<p><em>Regressor</em>:     self</p>
 </details>
 <p><span /></p>
 <details class="- abstract">

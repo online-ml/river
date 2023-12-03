@@ -5026,7 +5026,7 @@
 <span class="p">)</span>
 
 <span class="k">for</span> <span class="n">xi</span><span class="p">,</span> <span class="n">yi</span><span class="p">,</span> <span class="ow">in</span> <span class="n">stream</span><span class="o">.</span><span class="n">iter_array</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
-    <span class="n">selector</span> <span class="o">=</span> <span class="n">selector</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">xi</span><span class="p">,</span> <span class="n">yi</span><span class="p">)</span>
+    <span class="n">selector</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">xi</span><span class="p">,</span> <span class="n">yi</span><span class="p">)</span>
 
 <span class="n">pprint</span><span class="p">(</span><span class="n">selector</span><span class="o">.</span><span class="n">leaderboard</span><span class="p">)</span>
 </code></pre></div>
@@ -5054,8 +5054,6 @@
 <li><strong>x</strong>     — <em>'dict'</em>    </li>
 <li><strong>y</strong>     — <em>'base.typing.Target'</em>    </li>
 </ul>
-<p><strong>Returns</strong></p>
-<p><em>SupervisedTransformer</em>:     self</p>
 </details>
 <p><span /></p>
 <details class="- abstract">

@@ -5025,7 +5025,7 @@
 <div class="language-python highlight"><pre><span></span><code><span class="k">for</span> <span class="n">X</span> <span class="ow">in</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">chunksize</span><span class="o">=</span><span class="mi">64</span><span class="p">):</span>
     <span class="n">y</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;category&#39;</span><span class="p">)</span>
     <span class="n">y_pred</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict_many</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
-    <span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">learn_many</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">learn_many</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 </code></pre></div>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <details class="- abstract">
@@ -5040,8 +5040,6 @@
 <li><strong>y</strong>    </li>
 <li><strong>kwargs</strong>    </li>
 </ul>
-<p><strong>Returns</strong></p>
-<p>self</p>
 </details>
 <p><span /></p>
 <details class="- abstract">

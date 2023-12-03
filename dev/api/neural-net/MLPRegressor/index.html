@@ -5087,7 +5087,7 @@
     <span class="k">for</span> <span class="n">xb</span> <span class="ow">in</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">chunksize</span><span class="o">=</span><span class="n">batch_size</span><span class="p">):</span>
         <span class="n">yb</span> <span class="o">=</span> <span class="n">xb</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;five_thirty_eight&#39;</span><span class="p">)</span>
         <span class="n">y_pred</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict_many</span><span class="p">(</span><span class="n">xb</span><span class="p">)</span>
-        <span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">learn_many</span><span class="p">(</span><span class="n">xb</span><span class="p">,</span> <span class="n">yb</span><span class="p">)</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">learn_many</span><span class="p">(</span><span class="n">xb</span><span class="p">,</span> <span class="n">yb</span><span class="p">)</span>
 
 <span class="n">model</span><span class="o">.</span><span class="n">predict_many</span><span class="p">(</span><span class="n">xb</span><span class="p">)</span>
 </code></pre></div>
@@ -5130,8 +5130,6 @@
 <li><strong>x</strong>     — <em>'dict'</em>    </li>
 <li><strong>y</strong>     — <em>'base.typing.RegTarget'</em>    </li>
 </ul>
-<p><strong>Returns</strong></p>
-<p><em>Regressor</em>:     self</p>
 </details>
 <p><span /></p>
 <details class="- abstract">

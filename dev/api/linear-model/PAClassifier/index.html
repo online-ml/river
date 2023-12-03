@@ -5161,7 +5161,7 @@
 <span class="p">)</span>
 
 <span class="k">for</span> <span class="n">xi</span><span class="p">,</span> <span class="n">yi</span> <span class="ow">in</span> <span class="n">stream</span><span class="o">.</span><span class="n">iter_array</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">):</span>
-    <span class="n">y_pred</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">xi</span><span class="p">,</span> <span class="n">yi</span><span class="p">)</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">xi</span><span class="p">,</span> <span class="n">yi</span><span class="p">)</span>
 
 <span class="n">metric</span> <span class="o">=</span> <span class="n">metrics</span><span class="o">.</span><span class="n">Accuracy</span><span class="p">()</span> <span class="o">+</span> <span class="n">metrics</span><span class="o">.</span><span class="n">LogLoss</span><span class="p">()</span>
 
@@ -5182,8 +5182,6 @@ LogLoss: 0.325727...
 <li><strong>x</strong>    </li>
 <li><strong>y</strong>    </li>
 </ul>
-<p><strong>Returns</strong></p>
-<p>self</p>
 </details>
 <p><span /></p>
 <details class="- abstract">

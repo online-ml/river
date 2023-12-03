@@ -5105,7 +5105,7 @@ dampens the fact that too few samples might have been seen within a group.</p>
 
 <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">dataset</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">agg</span><span class="o">.</span><span class="n">transform_one</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
-    <span class="n">agg</span> <span class="o">=</span> <span class="n">agg</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+    <span class="n">agg</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 </code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>{&#39;y_bayes_mean_by_place&#39;: 3.0}
 {&#39;y_bayes_mean_by_place&#39;: 3.0}
@@ -5128,7 +5128,7 @@ group the data:</p>
 
 <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">dataset</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">agg</span><span class="o">.</span><span class="n">transform_one</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
-    <span class="n">agg</span> <span class="o">=</span> <span class="n">agg</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+    <span class="n">agg</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 </code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>{&#39;y_bayes_mean_by_place_and_country&#39;: 3.0}
 {&#39;y_bayes_mean_by_place_and_country&#39;: 3.0}
@@ -5167,7 +5167,7 @@ instance, we can calculate the average (how) revenue (on) for each place (by) ov
     <span class="n">x</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;group&quot;</span><span class="p">:</span> <span class="n">g</span><span class="p">}</span>
     <span class="n">y</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">ascii_lowercase</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">g</span><span class="p">)</span> <span class="o">+</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span>
     <span class="n">t</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2023</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">dt</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="n">day</span><span class="p">)</span>
-    <span class="n">agg</span> <span class="o">=</span> <span class="n">agg</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="n">t</span><span class="p">)</span>
+    <span class="n">agg</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="n">t</span><span class="p">)</span>
 </code></pre></div>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <details class="- abstract">
@@ -5179,8 +5179,6 @@ instance, we can calculate the average (how) revenue (on) for each place (by) ov
 <li><strong>y</strong>     — <em>'base.typing.Target'</em>    </li>
 <li><strong>t</strong>     — defaults to <code>None</code>    </li>
 </ul>
-<p><strong>Returns</strong></p>
-<p><em>SupervisedTransformer</em>:     self</p>
 </details>
 <p><span /></p>
 <details class="- abstract">

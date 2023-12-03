@@ -5210,7 +5210,7 @@
 <span class="p">)</span>
 
 <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">dataset</span><span class="p">:</span>
-    <span class="n">_</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 
 <span class="n">model</span><span class="o">.</span><span class="n">predict_one</span><span class="p">({</span><span class="s1">&#39;Bob&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;Harry Potter&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
 </code></pre></div>
@@ -5248,8 +5248,6 @@ Bob - Harry Potter    1.00000    0.00224        0.00224
 <li><strong>y</strong>     — <em>'base.typing.RegTarget'</em>    </li>
 <li><strong>w</strong>     — defaults to <code>1.0</code>    </li>
 </ul>
-<p><strong>Returns</strong></p>
-<p><em>Regressor</em>:     self</p>
 </details>
 <p><span /></p>
 <details class="- abstract">

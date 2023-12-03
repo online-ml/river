@@ -5153,7 +5153,7 @@
 
 <span class="k">for</span> <span class="n">xi</span><span class="p">,</span> <span class="n">yi</span> <span class="ow">in</span> <span class="n">stream</span><span class="o">.</span><span class="n">iter_array</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
     <span class="n">y_pred</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict_one</span><span class="p">(</span><span class="n">xi</span><span class="p">)</span>
-    <span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">xi</span><span class="p">,</span> <span class="n">yi</span><span class="p">)</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">xi</span><span class="p">,</span> <span class="n">yi</span><span class="p">)</span>
     <span class="n">metric</span> <span class="o">=</span> <span class="n">metric</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">yi</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="n">metric</span><span class="p">)</span>
@@ -5170,8 +5170,6 @@ MSE: 472.393532
 <li><strong>x</strong>    </li>
 <li><strong>y</strong>    </li>
 </ul>
-<p><strong>Returns</strong></p>
-<p>self</p>
 </details>
 <p><span /></p>
 <details class="- abstract">

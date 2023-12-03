@@ -5113,7 +5113,7 @@
 <span class="p">]</span>
 
 <span class="k">for</span> <span class="n">sentence</span> <span class="ow">in</span> <span class="n">corpus</span><span class="p">:</span>
-    <span class="n">tfidf</span> <span class="o">=</span> <span class="n">tfidf</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">sentence</span><span class="p">)</span>
+    <span class="n">tfidf</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">sentence</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">tfidf</span><span class="o">.</span><span class="n">transform_one</span><span class="p">(</span><span class="n">sentence</span><span class="p">))</span>
 </code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>{&#39;this&#39;: 0.447, &#39;is&#39;: 0.447, &#39;the&#39;: 0.447, &#39;first&#39;: 0.447, &#39;document&#39;: 0.447}
@@ -5127,7 +5127,7 @@ field to access if the string is stored in a dictionary:</p>
 
 <span class="k">for</span> <span class="n">sentence</span> <span class="ow">in</span> <span class="n">corpus</span><span class="p">:</span>
     <span class="n">x</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;sentence&#39;</span><span class="p">:</span> <span class="n">sentence</span><span class="p">}</span>
-    <span class="n">tfidf</span> <span class="o">=</span> <span class="n">tfidf</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">tfidf</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">tfidf</span><span class="o">.</span><span class="n">transform_one</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
 </code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>{&#39;this&#39;: 0.447, &#39;is&#39;: 0.447, &#39;the&#39;: 0.447, &#39;first&#39;: 0.447, &#39;document&#39;: 0.447}
@@ -5147,8 +5147,6 @@ field to access if the string is stored in a dictionary:</p>
 <ul>
 <li><strong>x</strong>     — <em>'dict'</em>    </li>
 </ul>
-<p><strong>Returns</strong></p>
-<p><em>Transformer</em>:     self</p>
 </details>
 <p><span /></p>
 <details class="- abstract">

@@ -5718,7 +5718,7 @@ you call <code>transform_one</code>, you're expecting it to return the average a
 </code></pre></div>
 <p>Now let's call the <code>learn_one</code> method to update our feature extractor.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">x</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
-<span class="n">agg</span> <span class="o">=</span> <span class="n">agg</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="n">agg</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 </code></pre></div>
 <p>At this point, the average defaults to the initial value of <a href="../../stats/Mean"><code>stats.Mean</code></a>, which is 0.</p>
 <p><div class="language-python highlight"><pre><span></span><code><span class="n">agg</span><span class="o">.</span><span class="n">transform_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
@@ -5726,12 +5726,12 @@ you call <code>transform_one</code>, you're expecting it to return the average a
 <div class="language-text highlight"><pre><span></span><code>{&#39;sales_mean_of_shift_1_by_shop&#39;: 0.0}
 </code></pre></div></p>
 <p>We can now update our feature extractor with the next data point and check the output.</p>
-<p><div class="language-python highlight"><pre><span></span><code><span class="n">agg</span> <span class="o">=</span> <span class="n">agg</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="n">X</span><span class="p">))</span>
+<p><div class="language-python highlight"><pre><span></span><code><span class="n">agg</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="n">X</span><span class="p">))</span>
 <span class="n">agg</span><span class="o">.</span><span class="n">transform_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 </code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>{&#39;sales_mean_of_shift_1_by_shop&#39;: 10.0}
 </code></pre></div></p>
-<p><div class="language-python highlight"><pre><span></span><code><span class="n">agg</span> <span class="o">=</span> <span class="n">agg</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="n">X</span><span class="p">))</span>
+<p><div class="language-python highlight"><pre><span></span><code><span class="n">agg</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="n">X</span><span class="p">))</span>
 <span class="n">agg</span><span class="o">.</span><span class="n">transform_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 </code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>{&#39;sales_mean_of_shift_1_by_shop&#39;: 12.5}

@@ -5305,7 +5305,7 @@ average of the previously seen values:</p>
 <span class="n">imp</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">StatImputer</span><span class="p">((</span><span class="s1">&#39;temperature&#39;</span><span class="p">,</span> <span class="n">stats</span><span class="o">.</span><span class="n">Mean</span><span class="p">()))</span>
 
 <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">X</span><span class="p">:</span>
-    <span class="n">imp</span> <span class="o">=</span> <span class="n">imp</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">imp</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">imp</span><span class="o">.</span><span class="n">transform_one</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
 </code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>{&#39;temperature&#39;: 1}
@@ -5329,7 +5329,7 @@ values by the most commonly seen value:</p>
 <span class="n">imp</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">StatImputer</span><span class="p">((</span><span class="s1">&#39;weather&#39;</span><span class="p">,</span> <span class="n">stats</span><span class="o">.</span><span class="n">Mode</span><span class="p">()))</span>
 
 <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">X</span><span class="p">:</span>
-    <span class="n">imp</span> <span class="o">=</span> <span class="n">imp</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">imp</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">imp</span><span class="o">.</span><span class="n">transform_one</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
 </code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>{&#39;weather&#39;: &#39;sunny&#39;}
@@ -5344,7 +5344,7 @@ values by the most commonly seen value:</p>
 <p><div class="language-python highlight"><pre><span></span><code><span class="n">imp</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">StatImputer</span><span class="p">((</span><span class="s1">&#39;weather&#39;</span><span class="p">,</span> <span class="s1">&#39;missing&#39;</span><span class="p">))</span>
 
 <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">X</span><span class="p">:</span>
-    <span class="n">imp</span> <span class="o">=</span> <span class="n">imp</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">imp</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">imp</span><span class="o">.</span><span class="n">transform_one</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
 </code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>{&#39;weather&#39;: &#39;sunny&#39;}
@@ -5374,7 +5374,7 @@ impute:</p>
 <span class="p">)</span>
 
 <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">X</span><span class="p">:</span>
-    <span class="n">imp</span> <span class="o">=</span> <span class="n">imp</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">imp</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">imp</span><span class="o">.</span><span class="n">transform_one</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
 </code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>{&#39;weather&#39;: &#39;sunny&#39;, &#39;temperature&#39;: 8}
@@ -5411,7 +5411,7 @@ weather condition as so:</p>
 <span class="p">)</span>
 
 <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">X</span><span class="p">:</span>
-    <span class="n">imp</span> <span class="o">=</span> <span class="n">imp</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">imp</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">imp</span><span class="o">.</span><span class="n">transform_one</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
 </code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>{&#39;weather&#39;: &#39;sunny&#39;, &#39;temperature&#39;: 8}
@@ -5435,8 +5435,6 @@ weather condition as so:</p>
 <ul>
 <li><strong>x</strong>     — <em>'dict'</em>    </li>
 </ul>
-<p><strong>Returns</strong></p>
-<p><em>Transformer</em>:     self</p>
 </details>
 <p><span /></p>
 <details class="- abstract">

@@ -5147,7 +5147,7 @@
     <span class="n">y_pred</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict_one</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">])</span>
     <span class="n">y</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;cluster&quot;</span><span class="p">]</span>
     <span class="n">metric</span> <span class="o">=</span> <span class="n">metric</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">y</span><span class="p">,</span><span class="n">y_pred</span><span class="p">)</span>
-    <span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">])</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">])</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="n">metric</span><span class="p">)</span>
 </code></pre></div>
@@ -5172,8 +5172,6 @@
 <li><strong>t</strong>     — defaults to <code>None</code>    </li>
 <li><strong>w</strong>     — defaults to <code>None</code>    </li>
 </ul>
-<p><strong>Returns</strong></p>
-<p><em>Clusterer</em>:     self</p>
 </details>
 <p><span /></p>
 <details class="- abstract">

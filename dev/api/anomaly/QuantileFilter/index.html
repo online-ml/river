@@ -5155,7 +5155,7 @@
 <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">datasets</span><span class="o">.</span><span class="n">CreditCard</span><span class="p">()</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="mi">2000</span><span class="p">):</span>
     <span class="n">score</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">score_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
     <span class="n">is_anomaly</span> <span class="o">=</span> <span class="n">model</span><span class="p">[</span><span class="s1">&#39;QuantileFilter&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">classify</span><span class="p">(</span><span class="n">score</span><span class="p">)</span>
-    <span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
     <span class="n">report</span> <span class="o">=</span> <span class="n">report</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">is_anomaly</span><span class="p">)</span>
 
 <span class="n">report</span>
@@ -5191,8 +5191,6 @@ Weighted      99.85%   94.45%   97.05%
 <li><strong>args</strong>    </li>
 <li><strong>learn_kwargs</strong>    </li>
 </ul>
-<p><strong>Returns</strong></p>
-<p>self</p>
 </details>
 <p><span /></p>
 <details class="- abstract">
