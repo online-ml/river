@@ -44,8 +44,8 @@ class NoDrift(base.DriftDetector):
     Let's put that to test:
 
     >>> for x, y in dataset:
-    ...     adaptive_model = adaptive_model.learn_one(x, y)
-    ...     stationary_model = stationary_model.learn_one(x, y)
+    ...     adaptive_model.learn_one(x, y)
+    ...     stationary_model.learn_one(x, y)
 
     The adaptive model:
 

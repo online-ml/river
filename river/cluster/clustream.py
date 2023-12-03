@@ -103,7 +103,7 @@ class CluStream(base.Clusterer):
     ... )
 
     >>> for x, _ in stream.iter_array(X):
-    ...     clustream = clustream.learn_one(x)
+    ...     clustream.learn_one(x)
 
     >>> clustream.predict_one({0: 1, 1: 1})
     1
@@ -216,7 +216,7 @@ class CluStream(base.Clusterer):
             if len(self.micro_clusters) == self.max_micro_clusters:
                 self._initialized = True
 
-            return self
+            return
 
         # Determine the closest micro-cluster with respect to the new point instance
         closest_id, closest_dist = self._get_closest_mc(x)
@@ -236,7 +236,7 @@ class CluStream(base.Clusterer):
 
         if closest_dist < radius:
             closest_mc.insert(x, w, self._timestamp)
-            return self
+            return
 
         # If the new point does not fit in the micro-cluster, micro-clusters
         # whose relevance stamps are less than the threshold are deleted.
@@ -253,11 +253,9 @@ class CluStream(base.Clusterer):
                 n_clusters=self.n_macro_clusters, seed=self.seed, **self.kwargs
             )
             for center in self._mc_centers.values():
-                self._kmeans_mc = self._kmeans_mc.learn_one(center)
+                self._kmeans_mc.learn_one(center)
 
             self.centers = self._kmeans_mc.centers
-
-        return self
 
     def predict_one(self, x):
         index, _ = self._get_closest_mc(x)

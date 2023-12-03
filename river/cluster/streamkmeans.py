@@ -63,7 +63,7 @@ class STREAMKMeans(base.Clusterer):
     >>> streamkmeans = cluster.STREAMKMeans(chunk_size=3, n_clusters=2, halflife=0.5, sigma=1.5, seed=0)
 
     >>> for x, _ in stream.iter_array(X):
-    ...     streamkmeans = streamkmeans.learn_one(x)
+    ...     streamkmeans.learn_one(x)
 
     >>> streamkmeans.predict_one({0: 1, 1: 0})
     0
@@ -99,13 +99,11 @@ class STREAMKMeans(base.Clusterer):
         if index == 0:
             kmeans_i = cluster.KMeans(n_clusters=self.n_clusters, **self.kwargs)
             for point_j in self._temp_chunk.values():
-                kmeans_i = kmeans_i.learn_one(point_j)
+                kmeans_i.learn_one(point_j)
             for center_j in kmeans_i.centers.values():
-                self._kmeans = self._kmeans.learn_one(center_j)
+                self._kmeans.learn_one(center_j)
 
         self.centers = self._kmeans.centers
-
-        return self
 
     def predict_one(self, x, w=None):
         def get_distance(c):

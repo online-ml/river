@@ -62,7 +62,6 @@ class VotingClassifier(base.Classifier, base.Ensemble):
     def learn_one(self, x, y):
         for model in self:
             model.learn_one(x, y)
-        return self
 
     def predict_one(self, x):
         if self.use_probabilities:

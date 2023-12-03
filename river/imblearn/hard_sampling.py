@@ -66,8 +66,6 @@ class HardSampling(base.Wrapper):
         else:
             self.model.learn_one(x, y)
 
-        return self
-
 
 class HardSamplingRegressor(HardSampling, base.Regressor):
     """Hard sampling regressor.

@@ -9,7 +9,6 @@ class MeanForecaster(time_series.base.Forecaster):
 
     def learn_one(self, y, x=None):
         self.mean.update(y)
-        return self
 
     def forecast(self, horizon, xs=None):
         return [self.mean.get()] * horizon

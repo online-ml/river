@@ -24,7 +24,7 @@ def test_missing_features():
     >>> for x, y in datasets.CreditCard().take(8000):
     ...     del x[random.choice(features)]
     ...     score = model.score_one(x)
-    ...     model = model.learn_one(x, y)
+    ...     model.learn_one(x, y)
     ...     auc = auc.update(y, score)
 
     >>> auc

@@ -48,7 +48,7 @@ class OneClassSVM(linear_model.base.GLM, anomaly.base.AnomalyDetector):
     >>> for x, y in datasets.CreditCard().take(2500):
     ...     score = model.score_one(x)
     ...     is_anomaly = model.classify(score)
-    ...     model = model.learn_one(x)
+    ...     model.learn_one(x)
     ...     auc = auc.update(y, is_anomaly)
 
     >>> auc
@@ -102,10 +102,10 @@ class OneClassSVM(linear_model.base.GLM, anomaly.base.AnomalyDetector):
         )
 
     def learn_one(self, x):
-        return super().learn_one(x, y=1)
+        super().learn_one(x, y=1)
 
     def learn_many(self, X):
-        return super().learn_many(X, y=pd.Series(True, index=X.index))
+        super().learn_many(X, y=pd.Series(True, index=X.index))
 
     def score_one(self, x):
         return self._raw_dot_one(x) - self.intercept

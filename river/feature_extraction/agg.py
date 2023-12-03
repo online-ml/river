@@ -62,7 +62,7 @@ class Agg(base.Transformer):
     ... )
 
     >>> for x in X:
-    ...     agg = agg.learn_one(x)
+    ...     agg.learn_one(x)
     ...     print(agg.transform_one(x))
     {'revenue_mean_by_place': 42.0}
     {'revenue_mean_by_place': 16.0}
@@ -84,7 +84,7 @@ class Agg(base.Transformer):
     ... )
 
     >>> for x in X:
-    ...     agg = agg.learn_one(x)
+    ...     agg.learn_one(x)
     ...     print(agg.transform_one(x))
     {'revenue_max_by_place_and_country': 42}
     {'revenue_max_by_place_and_country': 16}
@@ -105,7 +105,7 @@ class Agg(base.Transformer):
 
     >>> import pprint
     >>> for x in X:
-    ...     agg = agg.learn_one(x)
+    ...     agg.learn_one(x)
     ...     pprint.pprint(agg.transform_one(x))
     {'revenue_max_by_place_and_country': 42, 'revenue_mean_by_place': 42.0}
     {'revenue_max_by_place_and_country': 16, 'revenue_mean_by_place': 16.0}
@@ -155,7 +155,7 @@ class Agg(base.Transformer):
     ...         "value": string.ascii_lowercase.index(g) + random.random(),
     ...     }
     ...     t = dt.datetime(2023, 1, 1) + dt.timedelta(days=day)
-    ...     agg = agg.learn_one(x, t=t)
+    ...     agg.learn_one(x, t=t)
 
     >>> len(agg.state)
     26
@@ -193,7 +193,6 @@ class Agg(base.Transformer):
             self._groups[key].update(x[self.on], t=t)
         else:
             self._groups[key].update(x[self.on])
-        return self
 
     def transform_one(self, x):
         return {self._feature_name: self._groups[self._make_key(x)].get()}
@@ -267,7 +266,7 @@ class TargetAgg(base.SupervisedTransformer, Agg):
 
     >>> for x, y in dataset:
     ...     print(agg.transform_one(x))
-    ...     agg = agg.learn_one(x, y)
+    ...     agg.learn_one(x, y)
     {'y_bayes_mean_by_place': 3.0}
     {'y_bayes_mean_by_place': 3.0}
     {'y_bayes_mean_by_place': 9.5}
@@ -290,7 +289,7 @@ class TargetAgg(base.SupervisedTransformer, Agg):
 
     >>> for x, y in dataset:
     ...     print(agg.transform_one(x))
-    ...     agg = agg.learn_one(x, y)
+    ...     agg.learn_one(x, y)
     {'y_bayes_mean_by_place_and_country': 3.0}
     {'y_bayes_mean_by_place_and_country': 3.0}
     {'y_bayes_mean_by_place_and_country': 3.0}
@@ -328,7 +327,7 @@ class TargetAgg(base.SupervisedTransformer, Agg):
     ...     x = {"group": g}
     ...     y = string.ascii_lowercase.index(g) + random.random()
     ...     t = dt.datetime(2023, 1, 1) + dt.timedelta(days=day)
-    ...     agg = agg.learn_one(x, y, t=t)
+    ...     agg.learn_one(x, y, t=t)
 
     References
     ----------
@@ -354,4 +353,3 @@ class TargetAgg(base.SupervisedTransformer, Agg):
             self._groups[key].update(y, t=t)
         else:
             self._groups[key].update(y)
-        return self

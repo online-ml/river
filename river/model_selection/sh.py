@@ -92,8 +92,6 @@ class SuccessiveHalving(abc.ABC):
             self._s = cutoff
             self._r = math.floor(self.budget / (self._s * math.ceil(math.log(self._n, self.eta))))
 
-        return self
-
 
 class SuccessiveHalvingRegressor(SuccessiveHalving, ModelSelectionRegressor):
     r"""Successive halving algorithm for regression.

@@ -338,7 +338,7 @@ def progressive_val_score(
     >>> for x, y in datasets.Phishing():
     ...     y_pred = model.predict_proba_one(x)
     ...     metric = metric.update(y, y_pred)
-    ...     model = model.learn_one(x, y)
+    ...     model.learn_one(x, y)
 
     >>> metric
     ROCAUC: 95.07%

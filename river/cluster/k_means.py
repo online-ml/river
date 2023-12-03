@@ -65,7 +65,7 @@ class KMeans(base.Clusterer):
     >>> k_means = cluster.KMeans(n_clusters=2, halflife=0.1, sigma=3, seed=42)
 
     >>> for i, (x, _) in enumerate(stream.iter_array(X)):
-    ...     k_means = k_means.learn_one(x)
+    ...     k_means.learn_one(x)
     ...     print(f'{X[i]} is assigned to cluster {k_means.predict_one(x)}')
     [1, 2] is assigned to cluster 1
     [1, 4] is assigned to cluster 1
@@ -118,7 +118,6 @@ class KMeans(base.Clusterer):
 
     def learn_one(self, x):
         self.learn_predict_one(x)
-        return self
 
     def predict_one(self, x):
         def get_distance(c):

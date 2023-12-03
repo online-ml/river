@@ -49,7 +49,7 @@ def test_issue_1243():
     >>> group1 = compose.Select('z')
     >>> group2 = compose.Select('x') | preprocessing.StandardScaler()
     >>> model = group1 + group2 + group1 * group2
-    >>> model = model.learn_many(X)
+    >>> model.learn_many(X)
     >>> for x in X.to_dict('records'):
     ...     print(model.transform_one(x))
     {'z*x': 0.785..., 'x': 0.785..., 'z': 1}

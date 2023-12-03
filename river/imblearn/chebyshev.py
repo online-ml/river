@@ -110,8 +110,6 @@ class ChebyshevUnderSampler(base.Wrapper, base.Regressor):
         else:
             self.regressor.learn_one(x, y, **kwargs)
 
-        return self
-
     @classmethod
     def _unit_test_params(cls):
         yield {"regressor": linear_model.LinearRegression(), "seed": 42}
@@ -204,8 +202,6 @@ class ChebyshevOverSampler(base.Wrapper, base.Regressor):
                 self.regressor.learn_one(x, y, **kwargs)
         else:
             self.regressor.learn_one(x, y, **kwargs)
-
-        return self
 
     @classmethod
     def _unit_test_params(cls):

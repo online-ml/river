@@ -82,7 +82,7 @@ def test_learn_one_methods(model):
     assert model.predict_one("not fitted yet") is None
 
     for x, y in yield_dataset():
-        model = model.learn_one(x, y)
+        model.learn_one(x, y)
 
     # Check class methods.
     if isinstance(model["model"], naive_bayes.ComplementNB) or isinstance(
@@ -116,10 +116,10 @@ def test_learn_many_vs_learn_one(model, batch_model):
     ComplementNB with differents alpha parameters..
     """
     for x, y in yield_dataset():
-        model = model.learn_one(x, y)
+        model.learn_one(x, y)
 
     for x, y in yield_batch_dataset():
-        batch_model = batch_model.learn_many(x, y)
+        batch_model.learn_many(x, y)
 
     assert model["model"].p_class("yes") == batch_model["model"].p_class("yes")
     assert model["model"].p_class("no") == batch_model["model"].p_class("no")
@@ -216,7 +216,7 @@ def test_river_vs_sklearn(model, sk_model, bag):
     ComplementNB with differents alpha parameters.
     """
     for x, y in yield_batch_dataset():
-        model = model.learn_many(x, y)
+        model.learn_many(x, y)
 
     X = pd.concat([x for x, _ in yield_batch_dataset()])
     y = pd.concat([y for _, y in yield_batch_dataset()])

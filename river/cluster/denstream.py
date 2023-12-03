@@ -117,7 +117,7 @@ class DenStream(base.Clusterer):
     ...                               n_samples_init=10)
 
     >>> for x, _ in stream.iter_array(X):
-    ...     denstream = denstream.learn_one(x)
+    ...     denstream.learn_one(x)
 
     >>> denstream.predict_one({0: -1, 1: -2})
     0
@@ -326,7 +326,7 @@ class DenStream(base.Clusterer):
                 self._initial_dbscan()
                 self.initialized = True
                 del self._init_buffer
-            return self
+            return
 
         # Merge
         self._merge(x)
@@ -350,7 +350,6 @@ class DenStream(base.Clusterer):
                 if o_micro_cluster_j.calc_weight(self.timestamp) < xi:
                     # c_o might not grow into a p-micro-cluster, we can safely delete it
                     self.o_micro_clusters.pop(j)
-        return self
 
     def predict_one(self, x, w=None):
         # This function handles the case when a clustering request arrives.

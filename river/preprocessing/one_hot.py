@@ -57,7 +57,7 @@ class OneHotEncoder(base.MiniBatchTransformer):
 
     >>> oh = preprocessing.OneHotEncoder()
     >>> for x in X[:2]:
-    ...     oh = oh.learn_one(x)
+    ...     oh.learn_one(x)
     ...     pprint(oh.transform_one(x))
     {'c1_u': 1, 'c2_d': 1}
     {'c1_a': 1, 'c1_u': 0, 'c2_d': 0, 'c2_x': 1}
@@ -67,7 +67,7 @@ class OneHotEncoder(base.MiniBatchTransformer):
 
     >>> oh = preprocessing.OneHotEncoder(drop_zeros=True)
     >>> for x in X:
-    ...     oh = oh.learn_one(x)
+    ...     oh.learn_one(x)
     ...     pprint(oh.transform_one(x))
     {'c1_u': 1, 'c2_d': 1}
     {'c1_a': 1, 'c2_x': 1}
@@ -78,7 +78,7 @@ class OneHotEncoder(base.MiniBatchTransformer):
 
     >>> oh = preprocessing.OneHotEncoder(drop_first=True, drop_zeros=True)
     >>> for x in X:
-    ...     oh = oh.learn_one(x)
+    ...     oh.learn_one(x)
     ...     pprint(oh.transform_one(x))
     {'c2_d': 1}
     {'c2_x': 1}
@@ -93,7 +93,7 @@ class OneHotEncoder(base.MiniBatchTransformer):
     >>> pp = compose.Select('c1') | preprocessing.OneHotEncoder()
 
     >>> for x in X:
-    ...     pp = pp.learn_one(x)
+    ...     pp.learn_one(x)
     ...     pprint(pp.transform_one(x))
     {'c1_u': 1}
     {'c1_a': 1, 'c1_u': 0}
@@ -106,7 +106,7 @@ class OneHotEncoder(base.MiniBatchTransformer):
     >>> pp += compose.Select('c2')
 
     >>> for x in X:
-    ...     pp = pp.learn_one(x)
+    ...     pp.learn_one(x)
     ...     pprint(pp.transform_one(x))
     {'c1_u': 1, 'c2': 'd'}
     {'c1_a': 1, 'c1_u': 0, 'c2': 'x'}
@@ -123,7 +123,7 @@ class OneHotEncoder(base.MiniBatchTransformer):
 
     >>> oh = preprocessing.OneHotEncoder(drop_zeros=True)
     >>> for x in X:
-    ...     oh = oh.learn_one(x)
+    ...     oh.learn_one(x)
     ...     pprint(oh.transform_one(x))
     {'c1_a': 1, 'c1_u': 1, 'c2_d': 1}
     {'c1_a': 1, 'c1_b': 1, 'c2_x': 1}
@@ -171,8 +171,8 @@ class OneHotEncoder(base.MiniBatchTransformer):
 
     >>> oh = preprocessing.OneHotEncoder(drop_zeros=False)
     >>> X_init = pd.DataFrame([{"c1": "Oranges", "c2": "Apples"}])
-    >>> oh = oh.learn_many(X_init)
-    >>> oh = oh.learn_many(X)
+    >>> oh.learn_many(X_init)
+    >>> oh.learn_many(X)
 
     >>> df = oh.transform_many(X)
     >>> df.sort_index(axis="columns")
@@ -201,7 +201,7 @@ class OneHotEncoder(base.MiniBatchTransformer):
 
     def learn_one(self, x):
         if self.drop_zeros:
-            return self
+            return
 
         for i, xi in x.items():
             if isinstance(xi, list) or isinstance(xi, set):
@@ -209,8 +209,6 @@ class OneHotEncoder(base.MiniBatchTransformer):
                     self.values[i].add(xj)
             else:
                 self.values[i].add(xi)
-
-        return self
 
     def transform_one(self, x, y=None):
         oh = {}
@@ -234,12 +232,10 @@ class OneHotEncoder(base.MiniBatchTransformer):
 
     def learn_many(self, X):
         if self.drop_zeros:
-            return self
+            return
 
         for col in X.columns:
             self.values[col].update(X[col].unique())
-
-        return self
 
     def transform_many(self, X):
         oh = pd.get_dummies(X, columns=X.columns, sparse=True, dtype="uint8")

@@ -119,7 +119,7 @@ class DBSTREAM(base.Clusterer):
     ... )
 
     >>> for x, _ in stream.iter_array(X):
-    ...     dbstream = dbstream.learn_one(x)
+    ...     dbstream.learn_one(x)
 
     >>> dbstream.predict_one({0: 1, 1: 2})
     0
@@ -396,8 +396,6 @@ class DBSTREAM(base.Clusterer):
             self._cleanup()
 
         self.clustering_is_up_to_date = False
-
-        return self
 
     def predict_one(self, x, w=None):
         self._recluster()

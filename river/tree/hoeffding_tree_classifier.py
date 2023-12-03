@@ -330,10 +330,6 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
         w
             Sample weight.
 
-        Returns
-        -------
-        self
-
         Notes
         -----
         Training tasks:
@@ -407,8 +403,6 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
 
         if self._train_weight_seen_by_model % self.memory_estimate_period == 0:
             self._estimate_model_size()
-
-        return self
 
     def predict_proba_one(self, x):
         proba = {c: 0.0 for c in sorted(self.classes)}

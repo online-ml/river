@@ -22,7 +22,6 @@ class VW2RiverClassifier(VW2RiverBase, base.Classifier):
         ex = self._format_x(x)
         ex = f"{y_vw} | {ex}"
         self.vw.learn(ex)
-        return self
 
     def predict_proba_one(self, x):
         ex = "| " + self._format_x(x)

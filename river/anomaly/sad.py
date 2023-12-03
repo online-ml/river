@@ -46,7 +46,7 @@ class StandardAbsoluteDeviation(anomaly.base.SupervisedAnomalyDetector):
 
     >>> for _ in range(150):
     ...     y = rng.gauss(0, 1)
-    ...     model = model.learn_one(None, y)
+    ...     model.learn_one(None, y)
 
     >>> model.score_one(None, 2)
     2.057...
@@ -66,8 +66,6 @@ class StandardAbsoluteDeviation(anomaly.base.SupervisedAnomalyDetector):
     def learn_one(self, x, y):
         self.variance.update(y)
         self.sub_stat.update(y)
-
-        return self
 
     def score_one(self, x, y):
         score = (y - self.sub_stat.get()) / (self.variance.get() ** 0.5 + 1e-10)

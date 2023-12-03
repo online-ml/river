@@ -43,7 +43,6 @@ class Grouper(base.Transformer):
     def learn_one(self, x):
         key = self._get_key(x)
         self.transformers[key].learn_one(x)
-        return self
 
     def transform_one(self, x):
         key = self._get_key(x)
