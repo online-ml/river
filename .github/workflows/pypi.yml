@@ -38,7 +38,8 @@ jobs:
           # CIBW_BUILD: "cp39-* cp310-* cp311-* cp312-*"
           CIBW_BUILD: "cp311-*"
           CIBW_ARCHS_LINUX: "x86_64 i686 aarch64 ppc64le s390x"
-          CIBW_ARCHS_MACOS: "x86_64 arm64"
+          # CIBW_ARCHS_MACOS: "x86_64 arm64"
+          CIBW_ARCHS_MACOS: "universal2"
           # We don't build ARM64 wheels yet because there's a Rust issue
           CIBW_ARCHS_WINDOWS: "AMD64 x86"
           # Rust nighlty doesn't seem to be available for musl linux on i686 and ppc64le and s390x (yet)
@@ -48,8 +49,9 @@ jobs:
           # More information here: https://cibuildwheel.readthedocs.io/en/stable/faq/#how-to-cross-compile (CTRL + F "poetry")
           # https://github.com/pypa/cibuildwheel/issues/1415
           CIBW_REPAIR_WHEEL_COMMAND_MACOS: >
+            ls {dest_dir} &&
             delocate-wheel --require-archs {delocate_archs} -w {dest_dir} -v {wheel} &&
-            for file in {dest_dir}/*.whl ; do mv $file ${file//x86_64/arm64} 2>/dev/null ; done
+            for file in {dest_dir}/*.whl ; do mv $file ${file//x86_64/universal2} ; done
 
           CIBW_MANYLINUX_X86_64_IMAGE: "manylinux2014"
           CIBW_MANYLINUX_I686_IMAGE: "manylinux2014"
