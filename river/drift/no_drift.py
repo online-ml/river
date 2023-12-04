@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from river import base
-from river.base.drift_detector import DriftDetector
 
 
 class NoDrift(base.DriftDetector):
