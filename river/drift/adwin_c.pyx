@@ -88,7 +88,7 @@ cdef class AdaptiveWindowing:
             If True then a change is detected.
 
         """
-        self._update(value)
+        return self._update(value)
 
     cdef bint _update(self, double value):
         # Increment window with one element

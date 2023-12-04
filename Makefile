@@ -25,15 +25,3 @@ livedoc: doc
 
 rebase:
 	git fetch && git rebase origin/main
-
-develop:
-	python ./setup.py develop
-
-build-cython:
-	python setup.py build_ext --inplace --force
-
-build-rust:
-	python setup.py build_rust --inplace --release
-
-build:
-	python setup.py build_rust --inplace --release build_ext  --inplace --force

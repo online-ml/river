@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "river"
-version = "0.20.1"
+version = "0.21.0"
 description = "Online machine learning in Python"
 readme = "README.md"
 homepage = "https://riverml.xyz/"
