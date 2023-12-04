@@ -331,7 +331,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../releases/unreleased/" class="md-tabs__link">
+        <a href="../../../releases/0.21.0/" class="md-tabs__link">
           
   
     
@@ -4173,11 +4173,11 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../releases/unreleased/" class="md-nav__link">
+      <a href="../../../releases/0.21.0/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    Unreleased
+    0.21.0 - 2023-12-04
   </span>
   
 
@@ -5200,7 +5200,7 @@ and ensures that the values of each feature are comprised between 0 and 1.</p>
 <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">datasets</span><span class="o">.</span><span class="n">CreditCard</span><span class="p">()</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="mi">2500</span><span class="p">):</span>
     <span class="n">score</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">score_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
     <span class="n">model</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-    <span class="n">auc</span> <span class="o">=</span> <span class="n">auc</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">score</span><span class="p">)</span>
+    <span class="n">auc</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">score</span><span class="p">)</span>
 
 <span class="n">auc</span>
 </code></pre></div>

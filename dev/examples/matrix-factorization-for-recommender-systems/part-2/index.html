@@ -331,7 +331,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../releases/unreleased/" class="md-tabs__link">
+        <a href="../../../releases/0.21.0/" class="md-tabs__link">
           
   
     
@@ -4051,11 +4051,11 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../releases/unreleased/" class="md-nav__link">
+      <a href="../../../releases/0.21.0/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    Unreleased
+    0.21.0 - 2023-12-04
   </span>
   
 
@@ -5069,10 +5069,14 @@
 
 <span class="n">evaluate</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>[25,000] MAE: 0.761761, RMSE: 0.960662 – 00:00:01 – 778.29 KB
-[50,000] MAE: 0.751922, RMSE: 0.949783 – 00:00:02 – 908.2 KB
-[75,000] MAE: 0.749822, RMSE: 0.948634 – 00:00:03 – 1.03 MB
-[100,000] MAE: 0.748393, RMSE: 0.94776 – 00:00:05 – 1.15 MB
+<div class="language-text highlight"><pre><span></span><code>[25,000] MAE: 0.761778
+RMSE: 0.960803 – 00:00:01 – 778.29 KB
+[50,000] MAE: 0.751986
+RMSE: 0.949941 – 00:00:02 – 908.2 KB
+[75,000] MAE: 0.750044
+RMSE: 0.948911 – 00:00:03 – 1.03 MB
+[100,000] MAE: 0.748609
+RMSE: 0.947994 – 00:00:05 – 1.15 MB
 </code></pre></div>
 <p>Both MAE are very close to each other (0.7486 vs 0.7485) showing that we almost reproduced <a href="/api/reco/BiasedMF/">[reco.BiasedMF](../../../api/reco/BiasedMF)</a> algorithm. The cost is a naturally slower running time as FM implementation offers more flexibility.</p>
 <h2 id="feature-engineering-for-fm-models">Feature engineering for FM models<a class="headerlink" href="#feature-engineering-for-fm-models" title="Permanent link">&para;</a></h2>
@@ -5148,10 +5152,14 @@ y = 4.0
 
 <span class="n">evaluate</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>[25,000] MAE: 0.760059, RMSE: 0.961415 – 00:00:03 – 895.78 KB
-[50,000] MAE: 0.751429, RMSE: 0.951504 – 00:00:07 – 1.02 MB
-[75,000] MAE: 0.750568, RMSE: 0.951592 – 00:00:11 – 1.18 MB
-[100,000] MAE: 0.75018, RMSE: 0.951622 – 00:00:16 – 1.33 MB
+<div class="language-text highlight"><pre><span></span><code>[25,000] MAE: 0.759838
+RMSE: 0.961281 – 00:00:03 – 895.78 KB
+[50,000] MAE: 0.751307
+RMSE: 0.951391 – 00:00:08 – 1.02 MB
+[75,000] MAE: 0.750361
+RMSE: 0.951393 – 00:00:12 – 1.18 MB
+[100,000] MAE: 0.749994
+RMSE: 0.951435 – 00:00:16 – 1.33 MB
 </code></pre></div>
 <p>Note that using more variables involves factorizing a larger latent space, then increasing the number of latent factors <span class="arithmatex">\(k\)</span> often helps capturing more information.</p>
 <p>Some other feature engineering tips from <a href="https://www.kaggle.com/c/criteo-display-ad-challenge/discussion/10555">3 idiots' winning solution</a> for Kaggle <a href="https://www.kaggle.com/c/criteo-display-ad-challenge">Criteo display ads</a> competition in 2014:</p>
@@ -5193,10 +5201,14 @@ y = 4.0
 
 <span class="n">evaluate</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>[25,000] MAE: 0.761379, RMSE: 0.96214 – 00:00:15 – 1.67 MB
-[50,000] MAE: 0.751998, RMSE: 0.951589 – 00:00:31 – 1.97 MB
-[75,000] MAE: 0.750994, RMSE: 0.951616 – 00:00:46 – 2.3 MB
-[100,000] MAE: 0.750849, RMSE: 0.952142 – 00:01:02 – 2.6 MB
+<div class="language-text highlight"><pre><span></span><code>[25,000] MAE: 0.761297
+RMSE: 0.962054 – 00:00:15 – 1.67 MB
+[50,000] MAE: 0.751865
+RMSE: 0.951499 – 00:00:31 – 1.97 MB
+[75,000] MAE: 0.750853
+RMSE: 0.951526 – 00:00:47 – 2.3 MB
+[100,000] MAE: 0.750607
+RMSE: 0.951982 – 00:01:03 – 2.6 MB
 </code></pre></div>
 <p>As said previously, high-order interactions are often hard to estimate due to too much sparsity, that's why we won't spend too much time here.</p>
 <h2 id="field-aware-factorization-machines-ffm">Field-aware Factorization Machines (FFM)<a class="headerlink" href="#field-aware-factorization-machines-ffm" title="Permanent link">&para;</a></h2>
@@ -5235,10 +5247,14 @@ y = 4.0
 
 <span class="n">evaluate</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>[25,000] MAE: 0.758339, RMSE: 0.959047 – 00:00:05 – 2.04 MB
-[50,000] MAE: 0.749833, RMSE: 0.948531 – 00:00:12 – 2.41 MB
-[75,000] MAE: 0.749631, RMSE: 0.949418 – 00:00:18 – 2.82 MB
-[100,000] MAE: 0.749776, RMSE: 0.950131 – 00:00:24 – 3.19 MB
+<div class="language-text highlight"><pre><span></span><code>[25,000] MAE: 0.757718
+RMSE: 0.958158 – 00:00:06 – 2.04 MB
+[50,000] MAE: 0.749502
+RMSE: 0.948065 – 00:00:12 – 2.41 MB
+[75,000] MAE: 0.749275
+RMSE: 0.948918 – 00:00:18 – 2.82 MB
+[100,000] MAE: 0.749542
+RMSE: 0.949769 – 00:00:24 – 3.19 MB
 </code></pre></div>
 <p>Note that FFM usually needs to learn smaller number of latent factors <span class="arithmatex">\(k\)</span> than FM as each latent vector only deals with one field.</p>
 <h2 id="field-weighted-factorization-machines-fwfm">Field-weighted Factorization Machines (FwFM)<a class="headerlink" href="#field-weighted-factorization-machines-fwfm" title="Permanent link">&para;</a></h2>
@@ -5275,10 +5291,14 @@ y = 4.0
 
 <span class="n">evaluate</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>[25,000] MAE: 0.761435, RMSE: 0.962211 – 00:00:07 – 792.94 KB
-[50,000] MAE: 0.754063, RMSE: 0.953248 – 00:00:15 – 922.85 KB
-[75,000] MAE: 0.754729, RMSE: 0.95507 – 00:00:22 – 1.04 MB
-[100,000] MAE: 0.755697, RMSE: 0.956542 – 00:00:30 – 1.17 MB
+<div class="language-text highlight"><pre><span></span><code>[25,000] MAE: 0.761539
+RMSE: 0.962241 – 00:00:07 – 792.94 KB
+[50,000] MAE: 0.754089
+RMSE: 0.953181 – 00:00:15 – 922.85 KB
+[75,000] MAE: 0.754806
+RMSE: 0.954979 – 00:00:22 – 1.04 MB
+[100,000] MAE: 0.755404
+RMSE: 0.95604 – 00:00:30 – 1.17 MB
 </code></pre></div>
 
 

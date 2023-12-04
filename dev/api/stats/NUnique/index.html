@@ -331,7 +331,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../releases/unreleased/" class="md-tabs__link">
+        <a href="../../../releases/0.21.0/" class="md-tabs__link">
           
   
     
@@ -4717,11 +4717,11 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../releases/unreleased/" class="md-nav__link">
+      <a href="../../../releases/0.21.0/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    Unreleased
+    0.21.0 - 2023-12-04
   </span>
   
 
@@ -5692,16 +5692,18 @@
 <span class="n">alphabet</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">ascii_lowercase</span>
 <span class="n">n_unique</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">NUnique</span><span class="p">(</span><span class="n">error_rate</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
 
-<span class="n">n_unique</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+<span class="n">n_unique</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">)</span>
+<span class="n">n_unique</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
 </code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>1
 </code></pre></div></p>
-<p><div class="language-python highlight"><pre><span></span><code><span class="n">n_unique</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;b&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+<p><div class="language-python highlight"><pre><span></span><code><span class="n">n_unique</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;b&#39;</span><span class="p">)</span>
+<span class="n">n_unique</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
 </code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>2
 </code></pre></div></p>
 <p><div class="language-python highlight"><pre><span></span><code><span class="k">for</span> <span class="n">letter</span> <span class="ow">in</span> <span class="n">alphabet</span><span class="p">:</span>
-    <span class="n">n_unique</span> <span class="o">=</span> <span class="n">n_unique</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">letter</span><span class="p">)</span>
+    <span class="n">n_unique</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">letter</span><span class="p">)</span>
 <span class="n">n_unique</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
 </code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>31
@@ -5709,7 +5711,7 @@
 <p>Lowering the <code>error_rate</code> parameter will increase the precision.</p>
 <p><div class="language-python highlight"><pre><span></span><code><span class="n">n_unique</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">NUnique</span><span class="p">(</span><span class="n">error_rate</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">letter</span> <span class="ow">in</span> <span class="n">alphabet</span><span class="p">:</span>
-    <span class="n">n_unique</span> <span class="o">=</span> <span class="n">n_unique</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">letter</span><span class="p">)</span>
+    <span class="n">n_unique</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">letter</span><span class="p">)</span>
 <span class="n">n_unique</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
 </code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>26

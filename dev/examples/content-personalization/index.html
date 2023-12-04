@@ -331,7 +331,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../releases/unreleased/" class="md-tabs__link">
+        <a href="../../releases/0.21.0/" class="md-tabs__link">
           
   
     
@@ -3953,11 +3953,11 @@
   
   
     <li class="md-nav__item">
-      <a href="../../releases/unreleased/" class="md-nav__link">
+      <a href="../../releases/0.21.0/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    Unreleased
+    0.21.0 - 2023-12-04
   </span>
   
 
@@ -4974,13 +4974,13 @@
 <div class="language-python highlight"><pre><span></span><code><span class="n">model</span><span class="o">.</span><span class="n">i_biases</span>
 </code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>defaultdict(Zeros (),
-            {&#39;finance&#39;: 0.0,
-             &#39;politics&#39;: 0.0,
-             &#39;music&#39;: 0.0,
-             &#39;health&#39;: 0.0,
-             &#39;sports&#39;: 0.0,
-             &#39;camping&#39;: 0.0,
-             &#39;food&#39;: 0.0})
+            {&#39;politics&#39;: 0.06389451550325113,
+             &#39;music&#39;: -0.04041254194187752,
+             &#39;camping&#39;: -0.040319730234734,
+             &#39;health&#39;: -0.03581829597317823,
+             &#39;food&#39;: -0.037778771188204816,
+             &#39;finance&#39;: -0.04029646665611086,
+             &#39;sports&#39;: -0.03661678982763635})
 </code></pre></div>
 <p>The model is not as performant if we use a reward function where both users have different preferences.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">simulate</span><span class="p">(</span>
@@ -5086,25 +5086,25 @@
 <span class="p">)</span>
 </code></pre></div>
 <style type="text/css">
-#T_57d05_row0_col5, #T_57d05_row1_col0, #T_57d05_row2_col4, #T_57d05_row3_col5 {
+#T_efa54_row0_col5, #T_efa54_row1_col6, #T_efa54_row2_col4, #T_efa54_row3_col5 {
   background-color: lightgreen;
 }
 </style>
-<table id="T_57d05">
+<table id="T_efa54">
   <thead>
     <tr>
       <th class="blank level0" >&nbsp;</th>
-      <th id="T_57d05_level0_col0" class="col_heading level0 col0" colspan="7">preference</th>
+      <th id="T_efa54_level0_col0" class="col_heading level0 col0" colspan="7">preference</th>
     </tr>
     <tr>
       <th class="index_name level1" >item</th>
-      <th id="T_57d05_level1_col0" class="col_heading level1 col0" >camping</th>
-      <th id="T_57d05_level1_col1" class="col_heading level1 col1" >finance</th>
-      <th id="T_57d05_level1_col2" class="col_heading level1 col2" >food</th>
-      <th id="T_57d05_level1_col3" class="col_heading level1 col3" >health</th>
-      <th id="T_57d05_level1_col4" class="col_heading level1 col4" >music</th>
-      <th id="T_57d05_level1_col5" class="col_heading level1 col5" >politics</th>
-      <th id="T_57d05_level1_col6" class="col_heading level1 col6" >sports</th>
+      <th id="T_efa54_level1_col0" class="col_heading level1 col0" >camping</th>
+      <th id="T_efa54_level1_col1" class="col_heading level1 col1" >finance</th>
+      <th id="T_efa54_level1_col2" class="col_heading level1 col2" >food</th>
+      <th id="T_efa54_level1_col3" class="col_heading level1 col3" >health</th>
+      <th id="T_efa54_level1_col4" class="col_heading level1 col4" >music</th>
+      <th id="T_efa54_level1_col5" class="col_heading level1 col5" >politics</th>
+      <th id="T_efa54_level1_col6" class="col_heading level1 col6" >sports</th>
     </tr>
     <tr>
       <th class="index_name level0" >user</th>
@@ -5119,44 +5119,44 @@
   </thead>
   <tbody>
     <tr>
-      <th id="T_57d05_level0_row0" class="row_heading level0 row0" >Anna@afternoon</th>
-      <td id="T_57d05_row0_col0" class="data row0 col0" >0.009727</td>
-      <td id="T_57d05_row0_col1" class="data row0 col1" >0.042877</td>
-      <td id="T_57d05_row0_col2" class="data row0 col2" >0.005421</td>
-      <td id="T_57d05_row0_col3" class="data row0 col3" >-0.089900</td>
-      <td id="T_57d05_row0_col4" class="data row0 col4" >-0.143453</td>
-      <td id="T_57d05_row0_col5" class="data row0 col5" >1.000000</td>
-      <td id="T_57d05_row0_col6" class="data row0 col6" >-0.113309</td>
+      <th id="T_efa54_level0_row0" class="row_heading level0 row0" >Anna@afternoon</th>
+      <td id="T_efa54_row0_col0" class="data row0 col0" >-0.018105</td>
+      <td id="T_efa54_row0_col1" class="data row0 col1" >0.032865</td>
+      <td id="T_efa54_row0_col2" class="data row0 col2" >0.069222</td>
+      <td id="T_efa54_row0_col3" class="data row0 col3" >-0.059041</td>
+      <td id="T_efa54_row0_col4" class="data row0 col4" >0.168353</td>
+      <td id="T_efa54_row0_col5" class="data row0 col5" >1.000000</td>
+      <td id="T_efa54_row0_col6" class="data row0 col6" >0.195960</td>
     </tr>
     <tr>
-      <th id="T_57d05_level0_row1" class="row_heading level0 row1" >Anna@morning</th>
-      <td id="T_57d05_row1_col0" class="data row1 col0" >0.000000</td>
-      <td id="T_57d05_row1_col1" class="data row1 col1" >0.000000</td>
-      <td id="T_57d05_row1_col2" class="data row1 col2" >0.000000</td>
-      <td id="T_57d05_row1_col3" class="data row1 col3" >-0.044113</td>
-      <td id="T_57d05_row1_col4" class="data row1 col4" >-0.164195</td>
-      <td id="T_57d05_row1_col5" class="data row1 col5" >0.000000</td>
-      <td id="T_57d05_row1_col6" class="data row1 col6" >-0.013165</td>
+      <th id="T_efa54_level0_row1" class="row_heading level0 row1" >Anna@morning</th>
+      <td id="T_efa54_row1_col0" class="data row1 col0" >-0.117577</td>
+      <td id="T_efa54_row1_col1" class="data row1 col1" >0.081131</td>
+      <td id="T_efa54_row1_col2" class="data row1 col2" >0.076300</td>
+      <td id="T_efa54_row1_col3" class="data row1 col3" >-0.136399</td>
+      <td id="T_efa54_row1_col4" class="data row1 col4" >0.154483</td>
+      <td id="T_efa54_row1_col5" class="data row1 col5" >0.221890</td>
+      <td id="T_efa54_row1_col6" class="data row1 col6" >1.000000</td>
     </tr>
     <tr>
-      <th id="T_57d05_level0_row2" class="row_heading level0 row2" >Tom@afternoon</th>
-      <td id="T_57d05_row2_col0" class="data row2 col0" >-0.044299</td>
-      <td id="T_57d05_row2_col1" class="data row2 col1" >0.099239</td>
-      <td id="T_57d05_row2_col2" class="data row2 col2" >0.037974</td>
-      <td id="T_57d05_row2_col3" class="data row2 col3" >-0.097214</td>
-      <td id="T_57d05_row2_col4" class="data row2 col4" >1.000000</td>
-      <td id="T_57d05_row2_col5" class="data row2 col5" >-0.172445</td>
-      <td id="T_57d05_row2_col6" class="data row2 col6" >0.012231</td>
+      <th id="T_efa54_level0_row2" class="row_heading level0 row2" >Tom@afternoon</th>
+      <td id="T_efa54_row2_col0" class="data row2 col0" >0.057220</td>
+      <td id="T_efa54_row2_col1" class="data row2 col1" >-0.027115</td>
+      <td id="T_efa54_row2_col2" class="data row2 col2" >-0.074671</td>
+      <td id="T_efa54_row2_col3" class="data row2 col3" >-0.233071</td>
+      <td id="T_efa54_row2_col4" class="data row2 col4" >1.000000</td>
+      <td id="T_efa54_row2_col5" class="data row2 col5" >0.163607</td>
+      <td id="T_efa54_row2_col6" class="data row2 col6" >0.141781</td>
     </tr>
     <tr>
-      <th id="T_57d05_level0_row3" class="row_heading level0 row3" >Tom@morning</th>
-      <td id="T_57d05_row3_col0" class="data row3 col0" >-0.023693</td>
-      <td id="T_57d05_row3_col1" class="data row3 col1" >0.020042</td>
-      <td id="T_57d05_row3_col2" class="data row3 col2" >-0.002125</td>
-      <td id="T_57d05_row3_col3" class="data row3 col3" >-0.114500</td>
-      <td id="T_57d05_row3_col4" class="data row3 col4" >-0.165890</td>
-      <td id="T_57d05_row3_col5" class="data row3 col5" >1.000000</td>
-      <td id="T_57d05_row3_col6" class="data row3 col6" >-0.096596</td>
+      <th id="T_efa54_level0_row3" class="row_heading level0 row3" >Tom@morning</th>
+      <td id="T_efa54_row3_col0" class="data row3 col0" >-0.028562</td>
+      <td id="T_efa54_row3_col1" class="data row3 col1" >-0.005428</td>
+      <td id="T_efa54_row3_col2" class="data row3 col2" >0.061163</td>
+      <td id="T_efa54_row3_col3" class="data row3 col3" >-0.050107</td>
+      <td id="T_efa54_row3_col4" class="data row3 col4" >0.063483</td>
+      <td id="T_efa54_row3_col5" class="data row3 col5" >1.000000</td>
+      <td id="T_efa54_row3_col6" class="data row3 col6" >0.125515</td>
     </tr>
   </tbody>
 </table>

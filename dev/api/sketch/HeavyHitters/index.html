@@ -331,7 +331,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../releases/unreleased/" class="md-tabs__link">
+        <a href="../../../releases/0.21.0/" class="md-tabs__link">
           
   
     
@@ -4054,11 +4054,11 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../releases/unreleased/" class="md-nav__link">
+      <a href="../../../releases/0.21.0/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    Unreleased
+    0.21.0 - 2023-12-04
   </span>
   
 
@@ -5031,7 +5031,7 @@
 </code></pre></div>
 <p>We will feed the counter with printable ASCII characters:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10_000</span><span class="p">):</span>
-    <span class="n">hh</span> <span class="o">=</span> <span class="n">hh</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">rng</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">printable</span><span class="p">))</span>
+    <span class="n">hh</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">rng</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">printable</span><span class="p">))</span>
 </code></pre></div>
 <p>We can retrieve estimates of the <code>n</code> top elements and their frequencies. Let's try <code>n=3</code>
 <div class="language-python highlight"><pre><span></span><code><span class="n">hh</span><span class="o">.</span><span class="n">most_common</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>

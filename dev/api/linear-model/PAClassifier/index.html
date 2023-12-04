@@ -331,7 +331,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../releases/unreleased/" class="md-tabs__link">
+        <a href="../../../releases/0.21.0/" class="md-tabs__link">
           
   
     
@@ -4181,11 +4181,11 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../releases/unreleased/" class="md-nav__link">
+      <a href="../../../releases/0.21.0/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    Unreleased
+    0.21.0 - 2023-12-04
   </span>
   
 
@@ -5166,7 +5166,7 @@
 <span class="n">metric</span> <span class="o">=</span> <span class="n">metrics</span><span class="o">.</span><span class="n">Accuracy</span><span class="p">()</span> <span class="o">+</span> <span class="n">metrics</span><span class="o">.</span><span class="n">LogLoss</span><span class="p">()</span>
 
 <span class="k">for</span> <span class="n">xi</span><span class="p">,</span> <span class="n">yi</span> <span class="ow">in</span> <span class="n">stream</span><span class="o">.</span><span class="n">iter_array</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">):</span>
-    <span class="n">metric</span> <span class="o">=</span> <span class="n">metric</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">yi</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">predict_proba_one</span><span class="p">(</span><span class="n">xi</span><span class="p">))</span>
+    <span class="n">metric</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">yi</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">predict_proba_one</span><span class="p">(</span><span class="n">xi</span><span class="p">))</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="n">metric</span><span class="p">)</span>
 </code></pre></div>

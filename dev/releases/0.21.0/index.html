@@ -12,7 +12,7 @@
         <meta name="author" content="The Fellowship of Online Machine Learning">
       
       
-        <link rel="canonical" href="https://riverml.xyz/dev/releases/unreleased/">
+        <link rel="canonical" href="https://riverml.xyz/dev/releases/0.21.0/">
       
       
         <link rel="prev" href="../../faq/">
@@ -26,7 +26,7 @@
     
     
       
-        <title>Unreleased - River</title>
+        <title>0.21.0 - 2023-12-04 - River</title>
       
     
     
@@ -86,7 +86,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#unreleased" class="md-skip">
+        <a href="#0210-2023-12-04" class="md-skip">
           Skip to content
         </a>
       
@@ -123,7 +123,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Unreleased
+              0.21.0 - 2023-12-04
             
           </span>
         </div>
@@ -3908,7 +3908,7 @@
           
   
   <span class="md-ellipsis">
-    Unreleased
+    0.21.0 - 2023-12-04
   </span>
   
 
@@ -3919,7 +3919,7 @@
         
   
   <span class="md-ellipsis">
-    Unreleased
+    0.21.0 - 2023-12-04
   </span>
   
 
@@ -3941,54 +3941,9 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#cluster" class="md-nav__link">
+  <a href="#covariance" class="md-nav__link">
     <span class="md-ellipsis">
-      cluster
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#ensemble" class="md-nav__link">
-    <span class="md-ellipsis">
-      ensemble
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#facto" class="md-nav__link">
-    <span class="md-ellipsis">
-      facto
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#forest" class="md-nav__link">
-    <span class="md-ellipsis">
-      forest
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#tree" class="md-nav__link">
-    <span class="md-ellipsis">
-      tree
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#metrics" class="md-nav__link">
-    <span class="md-ellipsis">
-      metrics
+      covariance
     </span>
   </a>
   
@@ -4878,54 +4833,9 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#cluster" class="md-nav__link">
+  <a href="#covariance" class="md-nav__link">
     <span class="md-ellipsis">
-      cluster
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#ensemble" class="md-nav__link">
-    <span class="md-ellipsis">
-      ensemble
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#facto" class="md-nav__link">
-    <span class="md-ellipsis">
-      facto
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#forest" class="md-nav__link">
-    <span class="md-ellipsis">
-      forest
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#tree" class="md-nav__link">
-    <span class="md-ellipsis">
-      tree
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#metrics" class="md-nav__link">
-    <span class="md-ellipsis">
-      metrics
+      covariance
     </span>
   </a>
   
@@ -4946,30 +4856,15 @@
                   
 
 
-<h1 id="unreleased">Unreleased<a class="headerlink" href="#unreleased" title="Permanent link">&para;</a></h1>
-<h2 id="cluster">cluster<a class="headerlink" href="#cluster" title="Permanent link">&para;</a></h2>
+<h1 id="0210-2023-12-04">0.21.0 - 2023-12-04<a class="headerlink" href="#0210-2023-12-04" title="Permanent link">&para;</a></h1>
 <ul>
-<li>Renamed <code>sample_weight</code> to <code>w</code>.</li>
+<li>The <code>learn_one</code> and <code>learn_many</code> methods of each estimator don't not return anything anymore. This is to emphasize that the estimators are stateful.</li>
+<li>The <code>update</code> and <code>revert</code> method of classes that have also cease to return anything.</li>
+<li><code>sample_weight</code> has been renamed to <code>w</code>.</li>
 </ul>
-<h2 id="ensemble">ensemble<a class="headerlink" href="#ensemble" title="Permanent link">&para;</a></h2>
+<h2 id="covariance">covariance<a class="headerlink" href="#covariance" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Renamed <code>sample_weight</code> to <code>w</code>.</li>
-</ul>
-<h2 id="facto">facto<a class="headerlink" href="#facto" title="Permanent link">&para;</a></h2>
-<ul>
-<li>Renamed <code>sample_weight</code> to <code>w</code>.</li>
-</ul>
-<h2 id="forest">forest<a class="headerlink" href="#forest" title="Permanent link">&para;</a></h2>
-<ul>
-<li>Renamed <code>sample_weight</code> to <code>w</code>.</li>
-</ul>
-<h2 id="tree">tree<a class="headerlink" href="#tree" title="Permanent link">&para;</a></h2>
-<ul>
-<li>Renamed <code>sample_weight</code> to <code>w</code>.</li>
-</ul>
-<h2 id="metrics">metrics<a class="headerlink" href="#metrics" title="Permanent link">&para;</a></h2>
-<ul>
-<li>Renamed <code>sample_weight</code> to <code>w</code>.</li>
+<li>Fixed an issue where <code>update_many</code> would reset <a href="../../api/covariance/EmpiricalCovariance"><code>covariance.EmpiricalCovariance</code></a> each time it was called.</li>
 </ul>
 
 

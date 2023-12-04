@@ -331,7 +331,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../releases/unreleased/" class="md-tabs__link">
+        <a href="../../../releases/0.21.0/" class="md-tabs__link">
           
   
     
@@ -4726,11 +4726,11 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../releases/unreleased/" class="md-nav__link">
+      <a href="../../../releases/0.21.0/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    Unreleased
+    0.21.0 - 2023-12-04
   </span>
   
 
@@ -5697,7 +5697,8 @@
 <span class="n">cov</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">Cov</span><span class="p">()</span>
 
 <span class="k">for</span> <span class="n">xi</span><span class="p">,</span> <span class="n">yi</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">cov</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">xi</span><span class="p">,</span> <span class="n">yi</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">())</span>
+    <span class="n">cov</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">xi</span><span class="p">,</span> <span class="n">yi</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">cov</span><span class="o">.</span><span class="n">get</span><span class="p">())</span>
 </code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>0.0
 -1.044999
@@ -5712,7 +5713,8 @@
 <span class="n">rcov</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">Rolling</span><span class="p">(</span><span class="n">stats</span><span class="o">.</span><span class="n">Cov</span><span class="p">(),</span> <span class="n">window_size</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 
 <span class="k">for</span> <span class="n">xi</span><span class="p">,</span> <span class="n">yi</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">rcov</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">xi</span><span class="p">,</span> <span class="n">yi</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">())</span>
+    <span class="n">rcov</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">xi</span><span class="p">,</span> <span class="n">yi</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">rcov</span><span class="o">.</span><span class="n">get</span><span class="p">())</span>
 </code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>0.0
 -1.045
