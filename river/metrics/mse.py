@@ -21,7 +21,8 @@ class MSE(metrics.base.MeanMetric, metrics.base.RegressionMetric):
     >>> metric = metrics.MSE()
 
     >>> for yt, yp in zip(y_true, y_pred):
-    ...     print(metric.update(yt, yp).get())
+    ...     metric.update(yt, yp)
+    ...     print(metric.get())
     0.25
     0.25
     0.1666
@@ -46,7 +47,8 @@ class RMSE(MSE):
 
     >>> metric = metrics.RMSE()
     >>> for yt, yp in zip(y_true, y_pred):
-    ...     print(metric.update(yt, yp).get())
+    ...     metric.update(yt, yp)
+    ...     print(metric.get())
     0.5
     0.5
     0.408248
@@ -74,7 +76,7 @@ class RMSLE(RMSE):
 
     >>> metric = metrics.RMSLE()
     >>> for yt, yp in zip(y_true, y_pred):
-    ...     metric = metric.update(yt, yp)
+    ...     metric.update(yt, yp)
 
     >>> metric
     RMSLE: 0.357826
@@ -82,4 +84,4 @@ class RMSLE(RMSE):
     """
 
     def update(self, y_true, y_pred, w=1.0):
-        return super().update(math.log(y_true + 1), math.log(y_pred + 1), w)
+        super().update(math.log(y_true + 1), math.log(y_pred + 1), w)

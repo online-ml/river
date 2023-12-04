@@ -278,8 +278,13 @@ class CluStreamMicroCluster(base.Base):
         self.x = x
         self.w = w
         self.timestamp = timestamp
-        self.var_x = {k: stats.Var().update(x[k], w) for k in x}
-        self.var_time = stats.Var().update(timestamp, w)
+        self.var_x = {}
+        for k in x:
+            v = stats.Var()
+            v.update(x[k], w)
+            self.var_x[k] = v
+        self.var_time = stats.Var()
+        self.var_time.update(timestamp, w)
 
     @property
     def center(self):
@@ -344,5 +349,7 @@ class CluStreamMicroCluster(base.Base):
 
     def __iadd__(self, other: CluStreamMicroCluster):
         self.var_time += other.var_time
-        self.var_x = {k: self.var_x[k] + other.var_x.get(k, stats.Var()) for k in self.var_x}
+        self.var_x = {
+            k: self.var_x[k] + other.var_x.get(k, stats.Var()) for k in self.var_x
+        }
         return self

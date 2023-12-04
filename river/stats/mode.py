@@ -29,7 +29,8 @@ class Mode(stats.base.Univariate):
     >>> X = ['sunny', 'cloudy', 'cloudy', 'rainy', 'rainy', 'rainy']
     >>> mode = stats.Mode(k=2)
     >>> for x in X:
-    ...     print(mode.update(x).get())
+    ...     mode.update(x)
+    ...     print(mode.get())
     sunny
     sunny
     cloudy
@@ -39,7 +40,8 @@ class Mode(stats.base.Univariate):
 
     >>> mode = stats.Mode(k=-1)
     >>> for x in X:
-    ...     print(mode.update(x).get())
+    ...     mode.update(x)
+    ...     print(mode.get())
     sunny
     sunny
     cloudy
@@ -60,7 +62,6 @@ class Mode(stats.base.Univariate):
     def update(self, x):
         if self.k == -1 or x in self.counts or len(self.counts) < self.k:
             self.counts[x] += 1
-        return self
 
     def get(self):
         return max(self.counts, key=self.counts.get, default=None)
@@ -89,7 +90,8 @@ class RollingMode(stats.base.RollingUnivariate):
     >>> X = ['sunny', 'sunny', 'sunny', 'rainy', 'rainy', 'rainy', 'rainy']
     >>> rolling_mode = stats.RollingMode(window_size=2)
     >>> for x in X:
-    ...     print(rolling_mode.update(x).get())
+    ...     rolling_mode.update(x)
+    ...     print(rolling_mode.get())
     sunny
     sunny
     sunny
@@ -100,7 +102,8 @@ class RollingMode(stats.base.RollingUnivariate):
 
     >>> rolling_mode = stats.RollingMode(window_size=5)
     >>> for x in X:
-    ...     print(rolling_mode.update(x).get())
+    ...     rolling_mode.update(x)
+    ...     print(rolling_mode.get())
     sunny
     sunny
     sunny
@@ -131,7 +134,6 @@ class RollingMode(stats.base.RollingUnivariate):
 
         self.counts[x] += 1
         self.window.append(x)
-        return self
 
     def get(self):
         return max(self.counts, key=self.counts.get, default=None)

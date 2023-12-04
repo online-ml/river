@@ -238,7 +238,7 @@ class Constant(stats.base.Univariate):
         self.value = value
 
     def update(self, x):
-        return self
+        ...
 
     def get(self):
         return self.value

@@ -171,7 +171,7 @@ class HalfSpaceTrees(anomaly.base.AnomalyDetector):
     >>> for x, y in datasets.CreditCard().take(2500):
     ...     score = model.score_one(x)
     ...     model.learn_one(x)
-    ...     auc = auc.update(y, score)
+    ...     auc.update(y, score)
 
     >>> auc
     ROCAUC: 91.15%

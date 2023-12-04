@@ -79,7 +79,8 @@ class SelectKBest(base.SupervisedTransformer):
 
     def learn_one(self, x, y):
         for i, xi in x.items():
-            self.leaderboard[i] = self.similarities[i].update(xi, y).get()
+            self.similarities[i].update(xi, y)
+            self.leaderboard[i] = self.similarities[i].get()
 
     def transform_one(self, x):
         best_features = {pair[0] for pair in self.leaderboard.most_common(self.k)}

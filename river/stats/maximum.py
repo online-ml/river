@@ -19,9 +19,10 @@ class Max(stats.base.Univariate):
     >>> from river import stats
 
     >>> X = [1, -4, 3, -2, 5, -6]
-    >>> _max = stats.Max()
+    >>> maximum = stats.Max()
     >>> for x in X:
-    ...     print(_max.update(x).get())
+    ...     maximum.update(x)
+    ...     print(maximum.get())
     1
     1
     3
@@ -37,7 +38,6 @@ class Max(stats.base.Univariate):
     def update(self, x):
         if x > self.max:
             self.max = x
-        return self
 
     def get(self):
         return self.max
@@ -59,7 +59,8 @@ class RollingMax(stats.base.RollingUnivariate):
     >>> X = [1, -4, 3, -2, 2, 1]
     >>> rolling_max = stats.RollingMax(window_size=2)
     >>> for x in X:
-    ...     print(rolling_max.update(x).get())
+    ...     rolling_max.update(x)
+    ...     print(rolling_max.get())
     1
     1
     3
@@ -78,7 +79,6 @@ class RollingMax(stats.base.RollingUnivariate):
 
     def update(self, x):
         self.window.append(x)
-        return self
 
     def get(self):
         try:
@@ -103,7 +103,8 @@ class AbsMax(stats.base.Univariate):
     >>> X = [1, -4, 3, -2, 5, -6]
     >>> abs_max = stats.AbsMax()
     >>> for x in X:
-    ...     print(abs_max.update(x).get())
+    ...     abs_max.update(x)
+    ...     print(abs_max.get())
     1
     4
     4
@@ -119,7 +120,6 @@ class AbsMax(stats.base.Univariate):
     def update(self, x):
         if abs(x) > self.abs_max:
             self.abs_max = abs(x)
-        return self
 
     def get(self):
         return self.abs_max
@@ -141,7 +141,8 @@ class RollingAbsMax(stats.base.RollingUnivariate):
     >>> X = [1, -4, 3, -2, 2, 1]
     >>> rolling_absmax = stats.RollingAbsMax(window_size=2)
     >>> for x in X:
-    ...     print(rolling_absmax.update(x).get())
+    ...     rolling_absmax.update(x)
+    ...     print(rolling_absmax.get())
     1
     4
     4
@@ -160,7 +161,6 @@ class RollingAbsMax(stats.base.RollingUnivariate):
 
     def update(self, x):
         self.window.append(abs(x))
-        return self
 
     def get(self):
         try:

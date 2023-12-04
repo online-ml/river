@@ -34,7 +34,7 @@ class Link(stats.base.Univariate):
 
     Let us now call `update`.
 
-    >>> stat = stat.update(1)
+    >>> stat.update(1)
 
     The output from `get` will still be 0. The reason is that `stats.Shift` has not enough
     values, and therefore outputs it's default value, which is `None`. The `stats.Mean`
@@ -47,13 +47,13 @@ class Link(stats.base.Univariate):
     therefore the mean can be updated. The mean is therefore equal to 1, because that's the
     only value from the past.
 
-    >>> stat = stat.update(3)
+    >>> stat.update(3)
     >>> stat.get()
     1.0
 
     On the subsequent call to update, the mean will be updated with the value 3.
 
-    >>> stat = stat.update(4)
+    >>> stat.update(4)
     >>> stat.get()
     2.0
 
@@ -73,7 +73,6 @@ class Link(stats.base.Univariate):
         y = self.left.get()
         if y is not None:
             self.right.update(y)
-        return self
 
     def get(self):
         return self.right.get()

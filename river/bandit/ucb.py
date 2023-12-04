@@ -53,8 +53,8 @@ class UCB(bandit.base.Policy):
     >>> while True:
     ...     arm = policy.pull(range(env.action_space.n))
     ...     observation, reward, terminated, truncated, info = env.step(arm)
-    ...     policy = policy.update(arm, reward)
-    ...     metric = metric.update(reward)
+    ...     policy.update(arm, reward)
+    ...     metric.update(reward)
     ...     if terminated or truncated:
     ...         break
 
@@ -70,9 +70,16 @@ class UCB(bandit.base.Policy):
     """
 
     def __init__(
-        self, delta: float, reward_obj=None, reward_scaler=None, burn_in=0, seed: int = None
+        self,
+        delta: float,
+        reward_obj=None,
+        reward_scaler=None,
+        burn_in=0,
+        seed: int = None,
     ):
-        super().__init__(reward_obj=reward_obj, reward_scaler=reward_scaler, burn_in=burn_in)
+        super().__init__(
+            reward_obj=reward_obj, reward_scaler=reward_scaler, burn_in=burn_in
+        )
         self.delta = delta
         self.seed = seed
         self._rng = random.Random(seed)

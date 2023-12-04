@@ -35,7 +35,7 @@ class Shift(stats.base.Univariate):
     >>> stat = stats.Shift(1) | stats.Mean()
 
     >>> for i in range(5):
-    ...     stat = stat.update(i)
+    ...     stat.update(i)
     ...     print(stat.get())
     0.0
     0.0
@@ -96,7 +96,6 @@ class Shift(stats.base.Univariate):
 
     def update(self, x):
         self.buffer.append(x)
-        return self
 
     def get(self):
         try:

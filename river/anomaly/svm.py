@@ -49,7 +49,7 @@ class OneClassSVM(linear_model.base.GLM, anomaly.base.AnomalyDetector):
     ...     score = model.score_one(x)
     ...     is_anomaly = model.classify(score)
     ...     model.learn_one(x)
-    ...     auc = auc.update(y, is_anomaly)
+    ...     auc.update(y, is_anomaly)
 
     >>> auc
     ROCAUC: 74.68%

@@ -48,7 +48,8 @@ class FowlkesMallows(metrics.base.MultiClassMetric):
     >>> metric = metrics.FowlkesMallows()
 
     >>> for yt, yp in zip(y_true, y_pred):
-    ...     print(metric.update(yt, yp))
+    ...     metric.update(yt, yp)
+    ...     print(metric)
     FowlkesMallows: 0.00%
     FowlkesMallows: 100.00%
     FowlkesMallows: 57.74%

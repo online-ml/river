@@ -25,7 +25,9 @@ class Gaussian(base.ContinuousDistribution):
 
     >>> from river import proba
 
-    >>> p = proba.Gaussian().update(6).update(7)
+    >>> p = proba.Gaussian()
+    >>> p.update(6)
+    >>> p.update(7)
 
     >>> p
     𝒩(μ=6.500, σ=0.707)
@@ -34,6 +36,7 @@ class Gaussian(base.ContinuousDistribution):
     0.564189
 
     >>> p.revert(7)
+    >>> p
     𝒩(μ=6.000, σ=0.000)
 
     """
@@ -65,17 +68,17 @@ class Gaussian(base.ContinuousDistribution):
 
     def update(self, x, w=1.0):
         self._var.update(x, w)
-        return self
 
     def revert(self, x, w=1.0):
         self._var.revert(x, w)
-        return self
 
     def __call__(self, x):
         var = self._var.get()
         if var:
             try:
-                return math.exp((x - self.mu) ** 2 / (-2 * var)) / math.sqrt(math.tau * var)
+                return math.exp((x - self.mu) ** 2 / (-2 * var)) / math.sqrt(
+                    math.tau * var
+                )
             except ValueError:
                 return 0.0
             except OverflowError:
@@ -133,7 +136,7 @@ class MultivariateGaussian(base.MultivariateContinuousDistribution):
     0.0
 
     >>> for x in X.to_dict(orient="records"):
-    ...     p = p.update(x)
+    ...     p.update(x)
     >>> p.var
                blue     green       red
     blue   0.076119  0.020292 -0.010128
@@ -176,7 +179,7 @@ class MultivariateGaussian(base.MultivariateContinuousDistribution):
 
     >>> p = utils.Rolling(MultivariateGaussian(), window_size=5)
     >>> for x in X.to_dict(orient="records"):
-    ...     p = p.update(x)
+    ...     p.update(x)
     >>> p.var
                blue     green       red
     blue   0.087062 -0.022873  0.007765
@@ -189,7 +192,7 @@ class MultivariateGaussian(base.MultivariateContinuousDistribution):
     >>> X.index = [dt(2023, 3, 28, 0, 0, 0) + td(seconds=x) for x in range(8)]
     >>> p = utils.TimeRolling(MultivariateGaussian(), period=td(seconds=5))
     >>> for t, x in X.iterrows():
-    ...     p = p.update(x.to_dict(), t=t)
+    ...     p.update(x.to_dict(), t=t)
     >>> p.var
                blue     green       red
     blue   0.087062 -0.022873  0.007765
@@ -201,8 +204,8 @@ class MultivariateGaussian(base.MultivariateContinuousDistribution):
     >>> multi = proba.MultivariateGaussian()
     >>> single = proba.Gaussian()
     >>> for x in X.to_dict(orient='records'):
-    ...     multi = multi.update(x)
-    ...     single = single.update(x['blue'])
+    ...     multi.update(x)
+    ...     single.update(x['blue'])
     >>> multi.mu['blue'] == single.mu
     True
     >>> multi.sigma['blue']['blue'] == single.sigma
@@ -239,7 +242,9 @@ class MultivariateGaussian(base.MultivariateContinuousDistribution):
     @property
     def var(self) -> pd.DataFrame:
         """The variance of the distribution."""
-        variables = sorted(list({var for cov in self._var.matrix.keys() for var in cov}))
+        variables = sorted(
+            list({var for cov in self._var.matrix.keys() for var in cov})
+        )
         # Initialize the covariance matrix array
         cov_array = np.zeros((len(variables), len(variables)))
 
@@ -264,19 +269,19 @@ class MultivariateGaussian(base.MultivariateContinuousDistribution):
 
     def __repr__(self):
         mu_str = ", ".join(f"{m:.3f}" for m in self.mu.values())
-        var_str = self.var.to_string(float_format="{:0.3f}".format, header=False, index=False)
+        var_str = self.var.to_string(
+            float_format="{:0.3f}".format, header=False, index=False
+        )
         var_str = "        [" + var_str.replace("\n", "]\n        [") + "]"
         return f"𝒩(\n    μ=({mu_str}),\n    σ^2=(\n{var_str}\n    )\n)"
 
     def update(self, x):
         # TODO: add support for weigthed samples
         self._var.update(x)
-        return self
 
     def revert(self, x):
         # TODO: add support for weigthed samples
         self._var.revert(x)
-        return self
 
     def __call__(self, x: dict[str, float]):
         """PDF(x) method."""

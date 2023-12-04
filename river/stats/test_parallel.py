@@ -22,7 +22,8 @@ def test_add_mean():
     for i, (x, y, w) in enumerate(zip(X, Y, W)):
         A.update(x, w)
         B.update(y, w)
-        C.update(x, w).update(y, w)
+        C.update(x, w)
+        C.update(y, w)
 
         D = A + B
         assert math.isclose(C.get(), D.get())
@@ -55,7 +56,8 @@ def test_add_var(ddof):
     for i, (x, y, w) in enumerate(zip(X, Y, W)):
         A.update(x, w)
         B.update(y, w)
-        C.update(x, w).update(y, w)
+        C.update(x, w)
+        C.update(y, w)
 
         D = A + B
         assert math.isclose(C.get(), D.get())
@@ -89,7 +91,8 @@ def test_sub(stat):
     for x, y, w in zip(X, Y, W):
         A.update(x, w)
         B.update(y, w)
-        C.update(x, w).update(y, w)
+        C.update(x, w)
+        C.update(y, w)
 
     D = C - B
     assert math.isclose(D.get(), A.get())

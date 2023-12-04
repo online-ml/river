@@ -25,7 +25,7 @@ def test_missing_features():
     ...     del x[random.choice(features)]
     ...     score = model.score_one(x)
     ...     model.learn_one(x, y)
-    ...     auc = auc.update(y, score)
+    ...     auc.update(y, score)
 
     >>> auc
     ROCAUC: 88.68%

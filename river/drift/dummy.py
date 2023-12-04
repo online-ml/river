@@ -51,7 +51,7 @@ class DummyDriftDetector(base.DriftDetector):
 
     >>> ptrigger = DummyDriftDetector(t_0=500, seed=42)
     >>> for i, v in enumerate(data):
-    ...     _ = ptrigger.update(v)
+    ...     ptrigger.update(v)
     ...     if ptrigger.drift_detected:
     ...         print(f"Drift detected at instance {i}.")
     Drift detected at instance 499.
@@ -67,7 +67,7 @@ class DummyDriftDetector(base.DriftDetector):
     ...     seed=42
     ... )
     >>> for i, v in enumerate(data):
-    ...     _ = rtrigger.update(v)
+    ...     rtrigger.update(v)
     ...     if rtrigger.drift_detected:
     ...         print(f"Drift detected at instance {i}.")
     Drift detected at instance 368.
@@ -86,7 +86,7 @@ class DummyDriftDetector(base.DriftDetector):
 
     >>> rtrigger = rtrigger.clone()
     >>> for i, v in enumerate(data):
-    ...     _ = rtrigger.update(v)
+    ...     rtrigger.update(v)
     ...     if rtrigger.drift_detected:
     ...         print(f"Drift detected at instance {i}.")
     Drift detected at instance 429.
@@ -174,8 +174,6 @@ class DummyDriftDetector(base.DriftDetector):
         self._n += 1
         self._drift_detected = False
         self._trigger()
-
-        return self
 
     def clone(self):
         new = (

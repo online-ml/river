@@ -46,7 +46,7 @@ class Skyline(collections.UserList, base.Base):
 
     >>> for _ in range(100):
     ...     house = random_house()
-    ...     skyline = skyline.update(house)
+    ...     skyline.update(house)
 
     >>> print(len(skyline))
     13
@@ -94,7 +94,7 @@ class Skyline(collections.UserList, base.Base):
     ... )
 
     >>> for kart in karts:
-    ...     skyline = skyline.update(kart._asdict())
+    ...     skyline.update(kart._asdict())
 
     >>> best_cart_names = [kart['name'] for kart in skyline]
     >>> for name in best_cart_names:
@@ -159,7 +159,7 @@ class Skyline(collections.UserList, base.Base):
         # If the skyline is empty then the first element is part of the skyline
         if not self:
             self.append(x)
-            return self
+            return
 
         to_drop = []
         is_dominated = False
@@ -177,7 +177,7 @@ class Skyline(collections.UserList, base.Base):
                 to_drop.append(i)
 
         if is_dominated:
-            return self
+            return
 
         # Remove dominated elements
         if to_drop:
@@ -187,4 +187,4 @@ class Skyline(collections.UserList, base.Base):
         # Add x to the skyline
         self.append(x)
 
-        return self
+        return

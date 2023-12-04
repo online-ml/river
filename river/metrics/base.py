@@ -95,7 +95,6 @@ class ClassificationMetric(Metric):
             y_pred,
             w=w,
         )
-        return self
 
     def revert(self, y_true, y_pred, w=1.0):
         self.cm.revert(
@@ -103,7 +102,6 @@ class ClassificationMetric(Metric):
             y_pred,
             w=w,
         )
-        return self
 
     @property
     def bigger_is_better(self):
@@ -192,11 +190,15 @@ class RegressionMetric(Metric):
     _fmt = ",.6f"  # use commas to separate big numbers and show 6 decimals
 
     @abc.abstractmethod
-    def update(self, y_true: numbers.Number, y_pred: numbers.Number) -> RegressionMetric:
+    def update(
+        self, y_true: numbers.Number, y_pred: numbers.Number
+    ) -> RegressionMetric:
         """Update the metric."""
 
     @abc.abstractmethod
-    def revert(self, y_true: numbers.Number, y_pred: numbers.Number) -> RegressionMetric:
+    def revert(
+        self, y_true: numbers.Number, y_pred: numbers.Number
+    ) -> RegressionMetric:
         """Revert the metric."""
 
     @property
@@ -238,11 +240,10 @@ class Metrics(Metric, collections.UserList):
                     m.update(y_true, max(y_pred, key=y_pred.get))
                 else:
                     m.update(y_true, y_pred)
-            return self
+            return
 
         for m in self:
             m.update(y_true, y_pred)
-        return self
 
     def revert(self, y_true, y_pred, w=1.0):
         # If the metrics are classification metrics, then we have to handle the case where some
@@ -253,11 +254,10 @@ class Metrics(Metric, collections.UserList):
                     m.revert(y_true, max(y_pred, key=y_pred.get), w)
                 else:
                     m.revert(y_true, y_pred, w)
-            return self
+            return
 
         for m in self:
             m.revert(y_true, y_pred, w)
-        return self
 
     def get(self):
         return [m.get() for m in self]
@@ -322,7 +322,11 @@ class WrapperMetric(Metric):
 
     def __repr__(self):
         name = self.__class__.__name__
-        return super().__repr__().replace(name, f"{name}({self.metric.__class__.__name__})")
+        return (
+            super()
+            .__repr__()
+            .replace(name, f"{name}({self.metric.__class__.__name__})")
+        )
 
 
 class MeanMetric(abc.ABC):
@@ -340,11 +344,9 @@ class MeanMetric(abc.ABC):
 
     def update(self, y_true, y_pred, w=1.0):
         self._mean.update(x=self._eval(y_true, y_pred), w=w)
-        return self
 
     def revert(self, y_true, y_pred, w=1.0):
         self._mean.revert(x=self._eval(y_true, y_pred), w=w)
-        return self
 
     def get(self):
         return self._mean.get()

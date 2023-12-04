@@ -25,7 +25,7 @@ class ConfusionMatrix(metrics.base.MultiClassMetric):
     >>> cm = metrics.ConfusionMatrix()
 
     >>> for yt, yp in zip(y_true, y_pred):
-    ...     cm = cm.update(yt, yp)
+    ...     cm.update(yt, yp)
 
     >>> cm
            ant  bird   cat
@@ -65,13 +65,11 @@ class ConfusionMatrix(metrics.base.MultiClassMetric):
     def update(self, y_true, y_pred, w=1.0):
         self.n_samples += 1
         self._update(y_true, y_pred, w)
-        return self
 
     def revert(self, y_true, y_pred, w=1.0):
         self.n_samples -= 1
         # Revert is equal to subtracting so we pass the negative sample_weight (w)
         self._update(y_true, y_pred, -w)
-        return self
 
     def _update(self, y_true, y_pred, w):
         self.data[y_true][y_pred] += w

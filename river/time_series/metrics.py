@@ -19,10 +19,6 @@ class ForecastingMetric(base.Base, abc.ABC):
         y_pred
             Predicted values at each time step of the horizon.
 
-        Returns
-        -------
-        self
-
         """
 
     @abc.abstractmethod

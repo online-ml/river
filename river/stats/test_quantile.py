@@ -14,7 +14,7 @@ def test_issue_1178():
 
     >>> q = stats.Quantile(0.01)
     >>> for x in [5, 0, 0, 0, 0, 0, 0, 0]:
-    ...     q = q.update(x)
+    ...     q.update(x)
     ...     print(q)
     Quantile: 5.
     Quantile: 0.
@@ -27,7 +27,7 @@ def test_issue_1178():
 
     >>> q = stats.Quantile(0.99)
     >>> for x in [5, 0, 0, 0, 0, 0, 0, 0]:
-    ...     q = q.update(x)
+    ...     q.update(x)
     ...     print(q)
     Quantile: 5.
     Quantile: 5.

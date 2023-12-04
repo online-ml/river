@@ -26,7 +26,7 @@ class CrossEntropy(metrics.base.MeanMetric, metrics.base.MultiClassMetric):
     >>> metric = metrics.CrossEntropy()
 
     >>> for yt, yp in zip(y_true, y_pred):
-    ...     metric = metric.update(yt, yp)
+    ...     metric.update(yt, yp)
     ...     print(metric.get())
     1.222454
     1.169691
@@ -53,6 +53,8 @@ class CrossEntropy(metrics.base.MeanMetric, metrics.base.MultiClassMetric):
 
         for label, proba in y_pred.items():
             if y_true == label:
-                total += math.log(utils.math.clamp(x=proba, minimum=1e-15, maximum=1 - 1e-15))
+                total += math.log(
+                    utils.math.clamp(x=proba, minimum=1e-15, maximum=1 - 1e-15)
+                )
 
         return -total

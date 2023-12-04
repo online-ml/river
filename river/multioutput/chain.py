@@ -80,7 +80,7 @@ class ClassifierChain(BaseChain, base.MultiLabelClassifier):
     ...     # Convert y values to booleans
     ...     y = {i: yi == 'TRUE' for i, yi in y.items()}
     ...     y_pred = model.predict_one(x)
-    ...     metric = metric.update(y, y_pred)
+    ...     metric.update(y, y_pred)
     ...     model.learn_one(x, y)
 
     >>> metric
@@ -300,7 +300,7 @@ class ProbabilisticClassifierChain(ClassifierChain):
     >>> for x, y in dataset:
     ...    y_pred = model.predict_one(x)
     ...    y_pred = {k: y_pred.get(k, 0) for k in y}
-    ...    metric = metric.update(y, y_pred)
+    ...    metric.update(y, y_pred)
     ...    model.learn_one(x, y)
 
     >>> metric
@@ -395,7 +395,7 @@ class MonteCarloClassifierChain(ProbabilisticClassifierChain):
     >>> for x, y in dataset:
     ...    y_pred = model.predict_one(x)
     ...    y_pred = {k: y_pred.get(k, 0) for k in y}
-    ...    metric = metric.update(y, y_pred)
+    ...    metric.update(y, y_pred)
     ...    model.learn_one(x, y)
 
     >>> metric

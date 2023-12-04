@@ -41,7 +41,6 @@ class MultiOutputClassificationMetric(MultiOutputMetric):
     ) -> MultiOutputClassificationMetric:
         """Update the metric."""
         self.cm.update(y_true, y_pred, w)
-        return self
 
     def revert(
         self,
@@ -52,7 +51,6 @@ class MultiOutputClassificationMetric(MultiOutputMetric):
     ) -> MultiOutputClassificationMetric:
         """Revert the metric."""
         self.cm.revert(y_true, y_pred, w)
-        return self
 
     def works_with(self, model) -> bool:
         return utils.inspect.ismoclassifier(model)

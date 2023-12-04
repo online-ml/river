@@ -26,7 +26,8 @@ class SEM(var.Var):
 
     >>> sem = stats.SEM()
     >>> for x in X:
-    ...     print(sem.update(x).get())
+    ...     sem.update(x)
+    ...     print(sem.get())
     0.0
     1.0
     0.577350
@@ -40,7 +41,8 @@ class SEM(var.Var):
 
     >>> rolling_sem = utils.Rolling(stats.SEM(ddof=1), window_size=3)
     >>> for x in X:
-    ...     print(rolling_sem.update(x).get())
+    ...     rolling_sem.update(x)
+    ...     print(rolling_sem.get())
     0.0
     1.5
     0.881917

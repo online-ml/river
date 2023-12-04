@@ -27,7 +27,8 @@ class Precision(metrics.base.BinaryMetric):
     >>> metric = metrics.Precision()
 
     >>> for yt, yp in zip(y_true, y_pred):
-    ...     print(metric.update(yt, yp))
+    ...     metric.update(yt, yp)
+    ...     print(metric)
     Precision: 100.00%
     Precision: 50.00%
     Precision: 50.00%
@@ -66,7 +67,8 @@ class MacroPrecision(metrics.base.MultiClassMetric):
     >>> metric = metrics.MacroPrecision()
 
     >>> for yt, yp in zip(y_true, y_pred):
-    ...     print(metric.update(yt, yp))
+    ...     metric.update(yt, yp)
+    ...     print(metric)
     MacroPrecision: 100.00%
     MacroPrecision: 25.00%
     MacroPrecision: 50.00%
@@ -114,7 +116,8 @@ class MicroPrecision(metrics.base.MultiClassMetric):
     >>> metric = metrics.MicroPrecision()
 
     >>> for yt, yp in zip(y_true, y_pred):
-    ...     print(metric.update(yt, yp))
+    ...     metric.update(yt, yp)
+    ...     print(metric)
     MicroPrecision: 100.00%
     MicroPrecision: 50.00%
     MicroPrecision: 66.67%
@@ -160,7 +163,8 @@ class WeightedPrecision(metrics.base.MultiClassMetric):
     >>> metric = metrics.WeightedPrecision()
 
     >>> for yt, yp in zip(y_true, y_pred):
-    ...     print(metric.update(yt, yp))
+    ...     metric.update(yt, yp)
+    ...     print(metric)
     WeightedPrecision: 100.00%
     WeightedPrecision: 25.00%
     WeightedPrecision: 50.00%

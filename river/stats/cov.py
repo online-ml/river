@@ -26,7 +26,8 @@ class Cov(stats.base.Bivariate):
     >>> cov = stats.Cov()
 
     >>> for xi, yi in zip(x, y):
-    ...     print(cov.update(xi, yi).get())
+    ...     cov.update(xi, yi)
+    ...     print(cov.get())
     0.0
     -1.044999
     -4.286
@@ -41,7 +42,8 @@ class Cov(stats.base.Bivariate):
     >>> rcov = utils.Rolling(stats.Cov(), window_size=3)
 
     >>> for xi, yi in zip(x, y):
-    ...     print(rcov.update(xi, yi).get())
+    ...     rcov.update(xi, yi)
+    ...     print(rcov.get())
     0.0
     -1.045
     -4.286
@@ -79,21 +81,18 @@ class Cov(stats.base.Bivariate):
         self.mean_x.update(x, w)
         self.mean_y.update(y, w)
         self.cov += w * (dx * (y - self.mean_y.get()) - self.cov) / max(self.n - self.ddof, 1)
-        return self
 
     def revert(self, x, y, w=1.0):
         dx = x - self.mean_x.get()
         self.mean_x.revert(x, w)
         self.mean_y.revert(y, w)
         self.cov -= w * (dx * (y - self.mean_y.get()) - self.cov) / max(self.n - self.ddof, 1)
-        return self
 
     def update_many(self, X: np.ndarray, Y: np.ndarray):
         dx = X - self.mean_x.get()
         self.mean_x.update_many(X)
         self.mean_y.update_many(Y)
         self.cov += (dx * (Y - self.mean_y.get()) - self.cov).sum() / max(self.n - self.ddof, 1)
-        return self
 
     def get(self):
         return self.cov

@@ -26,7 +26,7 @@ def test_univariate_multivariate_consistency(p):
     single = {c: proba.Gaussian() for c in X.columns}
 
     for x in X.to_dict(orient="records"):
-        multi = multi.update(x)
+        multi.update(x)
         for c, s in single.items():
             s.update(x[c])
 

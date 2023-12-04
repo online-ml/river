@@ -24,7 +24,8 @@ class Kurtosis(stats.base.Univariate):
 
     >>> kurtosis = stats.Kurtosis(bias=False)
     >>> for x in X:
-    ...     print(kurtosis.update(x).get())
+    ...     kurtosis.update(x)
+    ...     print(kurtosis.get())
     -3.0
     -2.0
     -1.5
@@ -50,7 +51,8 @@ class Kurtosis(stats.base.Univariate):
 
     >>> kurtosis = stats.Kurtosis(bias=True)
     >>> for x in X:
-    ...     print(kurtosis.update(x).get())
+    ...     kurtosis.update(x)
+    ...     print(kurtosis.get())
     -3.0
     -2.0
     -1.5
@@ -87,7 +89,6 @@ class Kurtosis(stats.base.Univariate):
 
     def update(self, x):
         self._kurtosis.update(x)
-        return self
 
     def get(self):
         return self._kurtosis.get()

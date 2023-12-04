@@ -25,7 +25,8 @@ class AutoCorr(stats.base.Univariate):
 
     >>> auto_corr = stats.AutoCorr(lag=1)
     >>> for x in [0.25, 0.5, 0.2, -0.05]:
-    ...     print(auto_corr.update(x).get())
+    ...     auto_corr.update(x)
+    ...     print(auto_corr.get())
     0
     0
     -1.0
@@ -33,7 +34,8 @@ class AutoCorr(stats.base.Univariate):
 
     >>> auto_corr = stats.AutoCorr(lag=2)
     >>> for x in [0.25, 0.5, 0.2, -0.05]:
-    ...     print(auto_corr.update(x).get())
+    ...     auto_corr.update(x)
+    ...     print(auto_corr.get())
     0
     0
     0
@@ -41,7 +43,8 @@ class AutoCorr(stats.base.Univariate):
 
     >>> auto_corr = stats.AutoCorr(lag=1)
     >>> for x in [1, 0, 0, 0]:
-    ...     print(auto_corr.update(x).get())
+    ...     auto_corr.update(x)
+    ...     print(auto_corr.get())
     0
     0
     0
@@ -65,8 +68,6 @@ class AutoCorr(stats.base.Univariate):
 
         # Add x to the window
         self.window.append(x)
-
-        return self
 
     def get(self):
         return self.pearson.get()

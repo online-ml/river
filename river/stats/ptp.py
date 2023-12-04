@@ -15,7 +15,8 @@ class PeakToPeak(stats.base.Univariate):
     >>> X = [1, -4, 3, -2, 2, 4]
     >>> ptp = stats.PeakToPeak()
     >>> for x in X:
-    ...     print(ptp.update(x).get())
+    ...     ptp.update(x)
+    ...     print(ptp.get())
     0.
     5.
     7.
@@ -37,7 +38,6 @@ class PeakToPeak(stats.base.Univariate):
         self._ptp.update(x)
         if not self._is_updated:
             self._is_updated = True
-        return self
 
     def get(self):
         if not self._is_updated:
@@ -68,7 +68,8 @@ class RollingPeakToPeak(stats.base.RollingUnivariate):
     >>> X = [1, -4, 3, -2, 2, 1]
     >>> ptp = stats.RollingPeakToPeak(window_size=2)
     >>> for x in X:
-    ...     print(ptp.update(x).get())
+    ...     ptp.update(x)
+    ...     print(ptp.get())
     0
     5
     7
@@ -89,7 +90,6 @@ class RollingPeakToPeak(stats.base.RollingUnivariate):
     def update(self, x):
         self.max.update(x)
         self.min.update(x)
-        return self
 
     def get(self):
         maximum = self.max.get()

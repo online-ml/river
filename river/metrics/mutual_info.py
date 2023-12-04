@@ -60,7 +60,8 @@ class MutualInfo(metrics.base.MultiClassMetric):
 
     >>> metric = metrics.MutualInfo()
     >>> for yt, yp in zip(y_true, y_pred):
-    ...     print(metric.update(yt, yp).get())
+    ...     metric.update(yt, yp)
+    ...     print(metric.get())
     0.0
     0.0
     0.0
@@ -144,7 +145,8 @@ class NormalizedMutualInfo(metrics.base.MultiClassMetric):
 
     >>> metric = metrics.NormalizedMutualInfo()
     >>> for yt, yp in zip(y_true, y_pred):
-    ...     print(metric.update(yt, yp).get())
+    ...     metric.update(yt, yp)
+    ...     print(metric.get())
     1.0
     1.0
     0.0
@@ -257,7 +259,8 @@ class AdjustedMutualInfo(metrics.base.MultiClassMetric):
 
     >>> metric = metrics.AdjustedMutualInfo()
     >>> for yt, yp in zip(y_true, y_pred):
-    ...     print(metric.update(yt, yp).get())
+    ...     metric.update(yt, yp)
+    ...     print(metric.get())
     1.0
     1.0
     0.0
@@ -332,7 +335,9 @@ class AdjustedMutualInfo(metrics.base.MultiClassMetric):
         else:
             denominator = max(denominator, np.finfo("float64").eps)
 
-        adjusted_mutual_info_score = (mutual_info_score - expected_mutual_info_score) / denominator
+        adjusted_mutual_info_score = (
+            mutual_info_score - expected_mutual_info_score
+        ) / denominator
 
         return adjusted_mutual_info_score
 

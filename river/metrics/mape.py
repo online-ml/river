@@ -18,7 +18,7 @@ class MAPE(metrics.base.MeanMetric, metrics.base.RegressionMetric):
 
     >>> metric = metrics.MAPE()
     >>> for yt, yp in zip(y_true, y_pred):
-    ...     metric = metric.update(yt, yp)
+    ...     metric.update(yt, yp)
 
     >>> metric
     MAPE: 32.738095

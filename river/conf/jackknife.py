@@ -56,8 +56,8 @@ class RegressionJackknife(base.Wrapper, base.Regressor):
 
     >>> for x, y in dataset:
     ...     interval = model.predict_one(x, with_interval=True)
-    ...     validity = validity.update(y in interval)
-    ...     efficiency = efficiency.update(interval.width)
+    ...     validity.update(y in interval)
+    ...     efficiency.update(interval.width)
     ...     model.learn_one(x, y)
 
     The interval's validity is the proportion of times the true value is within the interval. We
@@ -91,7 +91,9 @@ class RegressionJackknife(base.Wrapper, base.Regressor):
 
         alpha = (1 - confidence_level) / 2
         self._lower = (
-            stats.RollingQuantile(alpha, window_size) if window_size else stats.Quantile(alpha)
+            stats.RollingQuantile(alpha, window_size)
+            if window_size
+            else stats.Quantile(alpha)
         )
         self._upper = (
             stats.RollingQuantile(1 - alpha, window_size)
@@ -107,7 +109,11 @@ class RegressionJackknife(base.Wrapper, base.Regressor):
     def _unit_test_params(cls):
         from river import linear_model, preprocessing
 
-        yield {"regressor": (preprocessing.StandardScaler() | linear_model.LinearRegression())}
+        yield {
+            "regressor": (
+                preprocessing.StandardScaler() | linear_model.LinearRegression()
+            )
+        }
 
     def learn_one(self, x, y, **kwargs):
         # Update the quantiles
@@ -138,5 +144,6 @@ class RegressionJackknife(base.Wrapper, base.Regressor):
             return y_pred
 
         return interval.Interval(
-            lower=y_pred + (self._lower.get() or 0), upper=y_pred + (self._upper.get() or 0)
+            lower=y_pred + (self._lower.get() or 0),
+            upper=y_pred + (self._upper.get() or 0),
         )

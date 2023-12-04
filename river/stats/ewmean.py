@@ -25,7 +25,8 @@ class EWMean(stats.base.Univariate):
     >>> X = [1, 3, 5, 4, 6, 8, 7, 9, 11]
     >>> ewm = stats.EWMean(fading_factor=0.5)
     >>> for x in X:
-    ...     print(ewm.update(x).get())
+    ...     ewm.update(x)
+    ...     print(ewm.get())
     1.0
     2.0
     3.5
@@ -58,7 +59,6 @@ class EWMean(stats.base.Univariate):
 
     def update(self, x):
         self._ewmean.update(x)
-        return self
 
     def get(self):
         return self._ewmean.get()

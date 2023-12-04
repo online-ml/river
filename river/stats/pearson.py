@@ -31,7 +31,8 @@ class PearsonCorr(stats.base.Bivariate):
     >>> pearson = stats.PearsonCorr()
 
     >>> for xi, yi in zip(x, y):
-    ...     print(pearson.update(xi, yi).get())
+    ...     pearson.update(xi, yi)
+    ...     print(pearson.get())
     0
     0
     0
@@ -50,7 +51,8 @@ class PearsonCorr(stats.base.Bivariate):
     >>> pearson = utils.Rolling(stats.PearsonCorr(), window_size=4)
 
     >>> for xi, yi in zip(x, y):
-    ...     print(pearson.update(xi, yi).get())
+    ...     pearson.update(xi, yi)
+    ...     print(pearson.get())
     0
     0
     0
@@ -74,13 +76,11 @@ class PearsonCorr(stats.base.Bivariate):
         self.var_x.update(x)
         self.var_y.update(y)
         self.cov_xy.update(x, y)
-        return self
 
     def revert(self, x, y):
         self.var_x.revert(x)
         self.var_y.revert(y)
         self.cov_xy.revert(x, y)
-        return self
 
     def get(self):
         var_x = self.var_x.get()
