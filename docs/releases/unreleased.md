@@ -1,4 +1,5 @@
-# Unreleased
+## cluster
+- Added `cluster.HierarchicalClustering`.
 
 ## cluster 
 
