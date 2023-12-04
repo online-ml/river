@@ -81,7 +81,7 @@ class EmpiricalCovariance(SymmetricMatrix):
 
     >>> cov = covariance.EmpiricalCovariance()
     >>> for x in X.to_dict(orient="records"):
-    ...     cov = cov.update(x)
+    ...     cov.update(x)
     >>> cov
             blue     green    red
      blue    0.076    0.020   -0.010
@@ -160,8 +160,6 @@ class EmpiricalCovariance(SymmetricMatrix):
                 var = self[i, i]
             var.update(xi)
 
-        return self
-
     def revert(self, x: dict):
         """Downdate with a single sample.
 
@@ -177,8 +175,6 @@ class EmpiricalCovariance(SymmetricMatrix):
 
         for i, xi in x.items():
             self[i, i].revert(x[i])
-
-        return self
 
     def update_many(self, X: pd.DataFrame):
         """Update with a dataframe of samples.
@@ -198,7 +194,9 @@ class EmpiricalCovariance(SymmetricMatrix):
         mean = dict(zip(X.columns, mean_arr))
         cov = {
             (i, j): cov_arr[r, c]
-            for (r, i), (c, j) in itertools.combinations_with_replacement(enumerate(X.columns), r=2)
+            for (r, i), (c, j) in itertools.combinations_with_replacement(
+                enumerate(X.columns), r=2
+            )
         }
 
         self = self._from_state(n=n, mean=mean, cov=cov, ddof=self.ddof)
@@ -249,7 +247,9 @@ class EmpiricalCovariance(SymmetricMatrix):
                 new[i, i]
             except KeyError:
                 new._cov[i, i] = stats.Var(new.ddof)
-            new._cov[i, i] += stats.Var._from_state(n=n, m=mean[i], sig=cov[i, i], ddof=new.ddof)
+            new._cov[i, i] += stats.Var._from_state(
+                n=n, m=mean[i], sig=cov[i, i], ddof=new.ddof
+            )
         return new
 
 
@@ -281,7 +281,7 @@ class EmpiricalPrecision(SymmetricMatrix):
 
     >>> prec = covariance.EmpiricalPrecision()
     >>> for x in X.to_dict(orient="records"):
-    ...     prec = prec.update(x)
+    ...     prec.update(x)
 
     >>> prec
         0        1        2
@@ -329,7 +329,10 @@ class EmpiricalPrecision(SymmetricMatrix):
         # Fortran order is necessary for scipy's linalg.blas.dger
         inv_cov = np.array(
             [
-                [self._inv_cov.get(min((i, j), (j, i)), 1.0 if i == j else 0.0) for j in x]
+                [
+                    self._inv_cov.get(min((i, j), (j, i)), 1.0 if i == j else 0.0)
+                    for j in x
+                ]
                 for i in x
             ],
             order="F",
@@ -349,8 +352,6 @@ class EmpiricalPrecision(SymmetricMatrix):
             for j, fj in enumerate(x):
                 self._inv_cov[min((fi, fj), (fj, fi))] = row[j]
 
-        return self
-
     def update_many(self, X: pd.DataFrame):
         """Update with a dataframe of samples.
 
@@ -366,7 +367,13 @@ class EmpiricalPrecision(SymmetricMatrix):
         loc = np.array([self._loc.get(feature, 0.0) for feature in X])
         w = np.array([self._w.get(feature, 0.0) for feature in X])
         inv_cov = np.array(
-            [[self._inv_cov.get(min((i, j), (j, i)), 1.0 if i == j else 0.0) for j in X] for i in X]
+            [
+                [
+                    self._inv_cov.get(min((i, j), (j, i)), 1.0 if i == j else 0.0)
+                    for j in X
+                ]
+                for i in X
+            ]
         ) / np.maximum(w, 1)
 
         # update formulas
