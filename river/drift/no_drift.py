@@ -68,7 +68,7 @@ class NoDrift(base.DriftDetector):
     def __init__(self):
         super().__init__()
 
-    def update(self, x: int | float) -> DriftDetector:
+    def update(self, x: int | float):
         ...
 
     @property
