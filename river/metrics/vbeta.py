@@ -50,7 +50,8 @@ class Homogeneity(metrics.base.MultiClassMetric):
 
     >>> metric = metrics.Homogeneity()
     >>> for yt, yp in zip(y_true, y_pred):
-    ...     print(metric.update(yt, yp).get())
+    ...     metric.update(yt, yp)
+    ...     print(metric.get())
     1.0
     1.0
     0.0
@@ -145,7 +146,8 @@ class Completeness(metrics.base.MultiClassMetric):
 
     >>> metric = metrics.Completeness()
     >>> for yt, yp in zip(y_true, y_pred):
-    ...     print(metric.update(yt, yp).get())
+    ...     metric.update(yt, yp)
+    ...     print(metric.get())
     1.0
     1.0
     1.0
@@ -242,7 +244,8 @@ class VBeta(metrics.base.MultiClassMetric):
 
     >>> metric = metrics.VBeta(beta=1.0)
     >>> for yt, yp in zip(y_true, y_pred):
-    ...     print(metric.update(yt, yp).get())
+    ...     metric.update(yt, yp)
+    ...     print(metric.get())
     1.0
     1.0
     0.0

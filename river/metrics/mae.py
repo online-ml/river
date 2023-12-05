@@ -19,7 +19,8 @@ class MAE(metrics.base.MeanMetric, metrics.base.RegressionMetric):
     >>> metric = metrics.MAE()
 
     >>> for yt, yp in zip(y_true, y_pred):
-    ...     print(metric.update(yt, yp).get())
+    ...     metric.update(yt, yp)
+    ...     print(metric.get())
     0.5
     0.5
     0.333

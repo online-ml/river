@@ -79,7 +79,8 @@ def test_finite_differences(lm, dataset):
     eps = 1e-6
 
     for x, y in dataset:
-        x = scaler.learn_one(x).transform_one(x)
+        scaler.learn_one(x)
+        x = scaler.transform_one(x)
 
         # Store the current gradient and weights
         gradient, _ = lm._eval_gradient_one(x, y, 1)
@@ -214,7 +215,8 @@ def test_lin_reg_sklearn_coherence(river_params, sklearn_params):
     sk = sklm.SGDRegressor(**sklearn_params)
 
     for x, y in datasets.TrumpApproval().take(100):
-        x = ss.learn_one(x).transform_one(x)
+        ss.learn_one(x)
+        x = ss.transform_one(x)
         rv.learn_one(x, y)
         sk.partial_fit([list(x.values())], [y])
 
@@ -238,7 +240,8 @@ def test_lin_reg_sklearn_learn_many_coherence(river_params, sklearn_params):
     sk = sklm.SGDRegressor(**sklearn_params)
 
     for x, y in datasets.TrumpApproval().take(100):
-        x = ss.learn_one(x).transform_one(x)
+        ss.learn_one(x)
+        x = ss.transform_one(x)
         rv.learn_many(pd.DataFrame([x]), pd.Series([y]))
         sk.partial_fit([list(x.values())], [y])
 
@@ -320,7 +323,8 @@ def test_log_reg_sklearn_coherence(river_params, sklearn_params):
     sk = sklm.SGDClassifier(**sklearn_params)
 
     for x, y in datasets.Bananas().take(100):
-        x = ss.learn_one(x).transform_one(x)
+        ss.learn_one(x)
+        x = ss.transform_one(x)
         rv.learn_one(x, y)
         sk.partial_fit([list(x.values())], [y], classes=[False, True])
 
@@ -360,7 +364,8 @@ def test_perceptron_sklearn_coherence(river_params, sklearn_params):
     sk = sklm.Perceptron(**sklearn_params)
 
     for x, y in datasets.Bananas().take(100):
-        x = ss.learn_one(x).transform_one(x)
+        ss.learn_one(x)
+        x = ss.transform_one(x)
         rv.learn_one(x, y)
         sk.partial_fit([list(x.values())], [y], classes=[False, True])
 
@@ -403,7 +408,8 @@ def test_lin_reg_sklearn_l1_non_regression():
     )
 
     for xi, yi in stream.iter_pandas(X, y):
-        xi_tr = ss.learn_one(xi).transform_one(xi)
+        ss.learn_one(xi)
+        xi_tr = ss.transform_one(xi)
         rv.learn_one(xi_tr, yi)
         sk.partial_fit([list(xi_tr.values())], [yi])
 
@@ -455,7 +461,8 @@ def test_log_reg_sklearn_l1_non_regression():
     rv_pred = list()
     sk_pred = list()
     for xi, yi in stream.iter_pandas(X, y):
-        xi_tr = ss.learn_one(xi).transform_one(xi)
+        ss.learn_one(xi)
+        xi_tr = ss.transform_one(xi)
         rv.learn_one(xi_tr, yi)
         sk.partial_fit([list(xi_tr.values())], [yi], classes=[False, True])
 

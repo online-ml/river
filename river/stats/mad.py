@@ -22,7 +22,8 @@ class MAD(quantile.Quantile):
 
     >>> mad = stats.MAD()
     >>> for x in X:
-    ...     print(mad.update(x).get())
+    ...     mad.update(x)
+    ...     print(mad.get())
     0.0
     2.0
     1.0
@@ -49,4 +50,3 @@ class MAD(quantile.Quantile):
     def update(self, x):
         self.median.update(x)
         super().update(abs(x - self.median.get()))
-        return self

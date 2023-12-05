@@ -18,7 +18,6 @@ class Count(stats.base.Univariate):
 
     def update(self, x=None):
         self.n += 1
-        return self
 
     def get(self):
         return self.n

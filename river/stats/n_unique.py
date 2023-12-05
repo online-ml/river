@@ -37,14 +37,16 @@ class NUnique(stats.base.Univariate):
     >>> alphabet = string.ascii_lowercase
     >>> n_unique = stats.NUnique(error_rate=0.2, seed=42)
 
-    >>> n_unique.update('a').get()
+    >>> n_unique.update('a')
+    >>> n_unique.get()
     1
 
-    >>> n_unique.update('b').get()
+    >>> n_unique.update('b')
+    >>> n_unique.get()
     2
 
     >>> for letter in alphabet:
-    ...     n_unique = n_unique.update(letter)
+    ...     n_unique.update(letter)
     >>> n_unique.get()
     31
 
@@ -52,7 +54,7 @@ class NUnique(stats.base.Univariate):
 
     >>> n_unique = stats.NUnique(error_rate=0.01, seed=42)
     >>> for letter in alphabet:
-    ...     n_unique = n_unique.update(letter)
+    ...     n_unique.update(letter)
     >>> n_unique.get()
     26
 
@@ -87,7 +89,6 @@ class NUnique(stats.base.Univariate):
         i = x & NUnique.P32 - 1 >> 32 - self.n_bits
         z = 35 - len(bin(NUnique.P32 - 1 & x << self.n_bits | 1 << self.n_bits - 1))
         self.buckets[i] = max(self.buckets[i], z)
-        return self
 
     def get(self):
         a = (

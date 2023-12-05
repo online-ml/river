@@ -96,12 +96,11 @@ class TextClust(base.Clusterer):
     >>> for x in corpus:
     ...     y_pred = model.predict_one(x["text"])
     ...     y = x["cluster"]
-    ...     metric = metric.update(y,y_pred)
-    ...     model = model.learn_one(x["text"])
+    ...     metric.update(y,y_pred)
+    ...     model.learn_one(x["text"])
 
     >>> print(metric)
     AdjustedRand: -0.17647058823529413
-
 
     """
 
@@ -192,7 +191,12 @@ class TextClust(base.Clusterer):
                 self.micro_clusters[clusterId].n += 1
 
                 self.micro_clusters[clusterId].merge(
-                    mc, self.t, self.omega, self.fading_factor, self.term_fading, self.realtime
+                    mc,
+                    self.t,
+                    self.omega,
+                    self.fading_factor,
+                    self.term_fading,
+                    self.realtime,
                 )
                 self._dist_mean += min_dist
 
@@ -256,7 +260,9 @@ class TextClust(base.Clusterer):
             if counter > 1:
                 ## our threshold
                 mu = (sumdist - min_dist) / (counter - 1)
-                threshold = mu - self.sigma * math.sqrt(squaresum / (counter - 1) - mu**2)
+                threshold = mu - self.sigma * math.sqrt(
+                    squaresum / (counter - 1) - mu**2
+                )
 
                 if min_dist < threshold:
                     clusterId = smallest_key
@@ -282,7 +288,9 @@ class TextClust(base.Clusterer):
     # update weights according to the fading factor
     def _updateweights(self):
         for micro in self.micro_clusters.values():
-            micro.fade(self.t, self.omega, self.fading_factor, self.term_fading, self.realtime)
+            micro.fade(
+                self.t, self.omega, self.fading_factor, self.term_fading, self.realtime
+            )
 
         # delete micro clusters with a weight smaller omega
         for key in list(self.micro_clusters.keys()):
@@ -329,7 +337,9 @@ class TextClust(base.Clusterer):
             j = i + 1
             while j < len(self.micro_clusters):
                 m_dist = self.micro_distance.dist(
-                    self.micro_clusters[micro_keys[i]], self.micro_clusters[micro_keys[j]], idf
+                    self.micro_clusters[micro_keys[i]],
+                    self.micro_clusters[micro_keys[j]],
+                    idf,
                 )
 
                 ## lets merge them
@@ -363,7 +373,9 @@ class TextClust(base.Clusterer):
         ids = list(clusters.keys())
 
         # initialize all distances to 0
-        distances = pd.DataFrame(np.zeros((numClusters, numClusters)), columns=ids, index=ids)
+        distances = pd.DataFrame(
+            np.zeros((numClusters, numClusters)), columns=ids, index=ids
+        )
 
         for idx, row in enumerate(ids):
             for col in ids[idx + 1 :]:
@@ -443,7 +455,10 @@ class TextClust(base.Clusterer):
         numClusters = min([self.num_macro, len(self.micro_clusters)])
 
         # create empty clusters
-        macros = {x: self.microcluster({}, self.t, 0, self.realtime, x) for x in range(numClusters)}
+        macros = {
+            x: self.microcluster({}, self.t, 0, self.realtime, x)
+            for x in range(numClusters)
+        }
 
         # merge micro clusters to macro clusters
         for key, value in self.microToMacro.items():
@@ -463,7 +478,9 @@ class TextClust(base.Clusterer):
     def showclusters(self, topn, num, type="micro"):
         # first clusters are sorted according to their respective weights
         if type == "micro":
-            sortedmicro = sorted(self.micro_clusters.values(), key=lambda x: x.weight, reverse=True)
+            sortedmicro = sorted(
+                self.micro_clusters.values(), key=lambda x: x.weight, reverse=True
+            )
         else:
             sortedmicro = sorted(
                 self.get_macroclusters().values(), key=lambda x: x.weight, reverse=True
@@ -493,7 +510,10 @@ class TextClust(base.Clusterer):
             ]
             for rep in representatives:
                 print(
-                    "weight: " + str(round(rep[1], 2)) + "\t token: " + str(rep[0]).expandtabs(10)
+                    "weight: "
+                    + str(round(rep[1], 2))
+                    + "\t token: "
+                    + str(rep[0]).expandtabs(10)
                 )
         print("-------------------------------------------")
 
@@ -519,7 +539,9 @@ class TextClust(base.Clusterer):
             # identify the closest micro cluster using the predefined distance measure
             for key in self.micro_clusters.keys():
                 if self.micro_clusters[key].weight > self.min_weight:
-                    cur_dist = self.micro_distance.dist(mc, self.micro_clusters[key], idf)
+                    cur_dist = self.micro_distance.dist(
+                        mc, self.micro_clusters[key], idf
+                    )
                     if cur_dist < dist:
                         dist = cur_dist
                         closest = key
@@ -594,7 +616,9 @@ class TextClust(base.Clusterer):
 
         ## generic method that is called for each distance
         def dist(self, m1, m2, idf):
-            return getattr(self, self.type, lambda: "Invalid distance measure")(m1, m2, idf)
+            return getattr(self, self.type, lambda: "Invalid distance measure")(
+                m1, m2, idf
+            )
 
         ##calculate cosine similarity directly and fast
         def tfidf_cosine_distance(self, mc, microcluster, idf):
@@ -604,12 +628,17 @@ class TextClust(base.Clusterer):
             for k in list(mc.tf.keys()):
                 if k in idf:
                     if k in microcluster.tf:
-                        sum += (mc.tf[k]["tf"] * idf[k]) * (microcluster.tf[k]["tf"] * idf[k])
+                        sum += (mc.tf[k]["tf"] * idf[k]) * (
+                            microcluster.tf[k]["tf"] * idf[k]
+                        )
                     tfidflen += mc.tf[k]["tf"] * idf[k] * mc.tf[k]["tf"] * idf[k]
             tfidflen = math.sqrt(tfidflen)
             for k in list(microcluster.tf.keys()):
                 microtfidflen += (
-                    microcluster.tf[k]["tf"] * idf[k] * microcluster.tf[k]["tf"] * idf[k]
+                    microcluster.tf[k]["tf"]
+                    * idf[k]
+                    * microcluster.tf[k]["tf"]
+                    * idf[k]
                 )
             microtfidflen = math.sqrt(microtfidflen)
             if tfidflen == 0 or microtfidflen == 0:

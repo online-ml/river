@@ -57,7 +57,7 @@ class OneVsRestClassifier(base.Wrapper, base.Classifier):
     >>> for X in pd.read_csv(dataset.path, chunksize=64):
     ...     y = X.pop('category')
     ...     y_pred = model.predict_many(X)
-    ...     model = model.learn_many(X, y)
+    ...     model.learn_many(X, y)
 
     """
 
@@ -87,8 +87,6 @@ class OneVsRestClassifier(base.Wrapper, base.Classifier):
         for label, model in self.classifiers.items():
             model.learn_one(x, y == label, **kwargs)
 
-        return self
-
     def predict_proba_one(self, x, **kwargs):
         y_pred = {}
         total = 0.0
@@ -113,8 +111,6 @@ class OneVsRestClassifier(base.Wrapper, base.Classifier):
         # Train each label's associated classifier
         for label, model in self.classifiers.items():
             model.learn_many(X, y == label, **kwargs)
-
-        return self
 
     def predict_proba_many(self, X, **kwargs):
         y_pred = pd.DataFrame(columns=self.classifiers.keys(), index=X.index)

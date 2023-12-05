@@ -38,10 +38,9 @@ class MultiOutputClassificationMetric(MultiOutputMetric):
         y_pred: dict[str | int, base.typing.ClfTarget]
         | dict[str | int, dict[base.typing.ClfTarget, float]],
         w=1.0,
-    ) -> MultiOutputClassificationMetric:
+    ):
         """Update the metric."""
         self.cm.update(y_true, y_pred, w)
-        return self
 
     def revert(
         self,
@@ -49,10 +48,9 @@ class MultiOutputClassificationMetric(MultiOutputMetric):
         y_pred: dict[str | int, base.typing.ClfTarget]
         | dict[str | int, dict[base.typing.ClfTarget, float]],
         w=1.0,
-    ) -> MultiOutputClassificationMetric:
+    ):
         """Revert the metric."""
         self.cm.revert(y_true, y_pred, w)
-        return self
 
     def works_with(self, model) -> bool:
         return utils.inspect.ismoclassifier(model)
@@ -74,7 +72,7 @@ class MultiOutputRegressionMetric(Metric):
         self,
         y_true: dict[str | int, float | int],
         y_pred: dict[str | int, float | int],
-    ) -> MultiOutputRegressionMetric:
+    ):
         """Update the metric."""
 
     @abc.abstractmethod
@@ -82,7 +80,7 @@ class MultiOutputRegressionMetric(Metric):
         self,
         y_true: dict[str | int, float | int],
         y_pred: dict[str | int, float | int],
-    ) -> MultiOutputRegressionMetric:
+    ):
         """Revert the metric."""
 
     def works_with(self, model) -> bool:

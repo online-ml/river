@@ -38,7 +38,7 @@ class ExactMatch(metrics.base.MeanMetric, MultiOutputClassificationMetric):
 
     >>> metric = metrics.multioutput.ExactMatch()
     >>> for yt, yp in zip(y_true, y_pred):
-    ...     metric = metric.update(yt, yp)
+    ...     metric.update(yt, yp)
 
     >>> metric
     ExactMatch: 33.33%

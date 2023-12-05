@@ -456,7 +456,6 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
 
         # Incrementing iteration
         self.iteration += 1
-        return self
 
     def predict_proba_one(self, x):
         """Predict the probability of the samples.

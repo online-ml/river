@@ -80,7 +80,7 @@ def test_issue_1313():
     feat_2    float32
     dtype: object
 
-    >>> model = model.learn_many(X)
+    >>> model.learn_many(X)
     >>> X1 = model.transform_many(X)
     >>> X1.dtypes
     feat_1    float32

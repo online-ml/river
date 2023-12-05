@@ -37,7 +37,7 @@ class CohenKappa(metrics.base.MultiClassMetric):
     >>> metric = metrics.CohenKappa()
 
     >>> for yt, yp in zip(y_true, y_pred):
-    ...     metric = metric.update(yt, yp)
+    ...     metric.update(yt, yp)
 
     >>> metric
     CohenKappa: 42.86%

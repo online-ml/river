@@ -19,7 +19,8 @@ class Sum(stats.base.Univariate):
     >>> X = [-5, -3, -1, 1, 3, 5]
     >>> mean = stats.Sum()
     >>> for x in X:
-    ...     print(mean.update(x).get())
+    ...     mean.update(x)
+    ...     print(mean.get())
     -5.0
     -8.0
     -9.0
@@ -32,7 +33,8 @@ class Sum(stats.base.Univariate):
     >>> X = [1, -4, 3, -2, 2, 1]
     >>> rolling_sum = utils.Rolling(stats.Sum(), window_size=2)
     >>> for x in X:
-    ...     print(rolling_sum.update(x).get())
+    ...     rolling_sum.update(x)
+    ...     print(rolling_sum.get())
     1.0
     -3.0
     -1.0
@@ -47,11 +49,9 @@ class Sum(stats.base.Univariate):
 
     def update(self, x):
         self.sum += x
-        return self
 
     def revert(self, x):
         self.sum -= x
-        return self
 
     def get(self):
         return self.sum

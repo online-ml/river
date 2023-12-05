@@ -124,7 +124,7 @@ class StochasticGradientTree(base.Estimator, abc.ABC):
             node.update(x, grad_hess, self, w)
 
             if node.total_weight - node.last_split_attempt_at < self.grace_period:
-                return self
+                return
 
             # Update split attempt data
             node.last_split_attempt_at = node.total_weight
@@ -149,8 +149,6 @@ class StochasticGradientTree(base.Estimator, abc.ABC):
             if p < self.delta and best_split.merit.loss_mean < 0:
                 p_branch = p_node.branch_no(x) if isinstance(p_node, DTBranch) else None
                 node.apply_split(best_split, p_node, p_branch, self)
-
-        return self
 
     @staticmethod
     def _compute_p_value(merit, n_observations):

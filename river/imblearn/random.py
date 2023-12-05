@@ -91,7 +91,7 @@ class RandomUnderSampler(ClassificationSampler):
             self._pivot = max(g.keys(), key=lambda y: f[y] / g[y])
         else:
             self.classifier.learn_one(x, y, **kwargs)
-            return self
+            return
 
         # Determine the sampling ratio if the class is not the pivot
         M = f[self._pivot] / g[self._pivot]  # Likelihood ratio
@@ -99,8 +99,6 @@ class RandomUnderSampler(ClassificationSampler):
 
         if ratio < 1 and self._rng.random() < ratio:
             self.classifier.learn_one(x, y, **kwargs)
-
-        return self
 
 
 class RandomOverSampler(ClassificationSampler):
@@ -166,15 +164,13 @@ class RandomOverSampler(ClassificationSampler):
             self._pivot = max(g.keys(), key=lambda y: g[y] / f[y])
         else:
             self.classifier.learn_one(x, y, **kwargs)
-            return self
+            return
 
         M = g[self._pivot] / f[self._pivot]
         rate = M * f[y] / g[y]
 
         for _ in range(utils.random.poisson(rate, rng=self._rng)):
             self.classifier.learn_one(x, y, **kwargs)
-
-        return self
 
 
 class RandomSampler(ClassificationSampler):
@@ -253,5 +249,3 @@ class RandomSampler(ClassificationSampler):
 
         for _ in range(utils.random.poisson(rate, rng=self._rng)):
             self.classifier.learn_one(x, y, **kwargs)
-
-        return self

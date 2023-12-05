@@ -65,7 +65,6 @@ class Quantile(stats.base.Univariate):
         self._quantile.update(x)
         if not self._is_updated:
             self._is_updated = True
-        return self
 
     def get(self):
         # HACK: Avoid this following error in `QuantileFilter`
@@ -106,7 +105,7 @@ class RollingQuantile(stats.base.RollingUnivariate):
     ... )
 
     >>> for i in range(1001):
-    ...     rolling_quantile = rolling_quantile.update(i)
+    ...     rolling_quantile.update(i)
     ...     if i % 100 == 0:
     ...         print(rolling_quantile.get())
     0.0
@@ -141,7 +140,6 @@ class RollingQuantile(stats.base.RollingUnivariate):
         self._rolling_quantile.update(x)
         if not self._is_updated:
             self._is_updated = True
-        return self
 
     def get(self):
         if not self._is_updated:

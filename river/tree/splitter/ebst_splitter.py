@@ -33,6 +33,7 @@ class EBSTSplitter(Splitter):
         data streams. Data mining and knowledge discovery, 23(1), 128-168.
     [^2]: [Osojnik, Aljaž. 2017. Structured output prediction on Data Streams
     (Doctoral Dissertation)](http://kt.ijs.si/theses/phd_aljaz_osojnik.pdf)
+
     """
 
     def __init__(self):

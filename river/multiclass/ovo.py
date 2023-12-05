@@ -80,8 +80,6 @@ class OneVsOneClassifier(base.Wrapper, base.Classifier):
             pair = (c, y) if c < y else (y, c)
             self.classifiers[pair].learn_one(x, y=c < y, **kwargs)
 
-        return self
-
     def predict_one(self, x, **kwargs):
         if not self.classifiers:  # is empty
             return None

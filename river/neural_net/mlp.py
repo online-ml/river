@@ -162,8 +162,6 @@ class MLP:
         z, a = self._forward(X)
         self._backward(z, a, y)
 
-        return self
-
     def __call__(self, X: pd.DataFrame):
         """Make predictions.
 
@@ -261,7 +259,7 @@ class MLPRegressor(base.Regressor, MLP):
     ...     for xb in pd.read_csv(dataset.path, chunksize=batch_size):
     ...         yb = xb.pop('five_thirty_eight')
     ...         y_pred = model.predict_many(xb)
-    ...         model = model.learn_many(xb, yb)
+    ...         model.learn_many(xb, yb)
 
     >>> model.predict_many(xb)
           five_thirty_eight
@@ -310,10 +308,11 @@ class MLPRegressor(base.Regressor, MLP):
     def learn_one(self, x, y):
         # Multi-output
         if isinstance(y, dict):
-            return self.learn_many(X=pd.DataFrame([x]), y=pd.DataFrame([y]))
+            self.learn_many(X=pd.DataFrame([x]), y=pd.DataFrame([y]))
+            return
 
         # Single output
-        return self.learn_many(X=pd.DataFrame([x]), y=pd.Series([y]))
+        self.learn_many(X=pd.DataFrame([x]), y=pd.Series([y]))
 
     def predict_one(self, x):
         y_pred = self.predict_many(X=pd.DataFrame([x]))

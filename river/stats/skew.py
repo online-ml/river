@@ -23,7 +23,8 @@ class Skew(stats.base.Univariate):
 
     >>> skew = stats.Skew(bias=False)
     >>> for x in X:
-    ...     print(skew.update(x).get())
+    ...     skew.update(x)
+    ...     print(skew.get())
     0.0
     0.0
     -1.4802398132849872
@@ -37,7 +38,8 @@ class Skew(stats.base.Univariate):
 
     >>> skew = stats.Skew(bias=True)
     >>> for x in X:
-    ...     print(skew.update(x).get())
+    ...     skew.update(x)
+    ...     print(skew.get())
     0.0
     0.0
     -0.6043053732501439
@@ -66,7 +68,6 @@ class Skew(stats.base.Univariate):
 
     def update(self, x):
         self._skew.update(x)
-        return self
 
     def get(self):
         return self._skew.get()

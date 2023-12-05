@@ -10,9 +10,9 @@ def test_issue_1272():
     >>> from river import forest, metrics
 
     >>> model = forest.ARFClassifier(metric=metrics.CrossEntropy())
-    >>> model = model.learn_one({"x": 1}, True)
+    >>> model.learn_one({"x": 1}, True)
 
     >>> model = forest.ARFClassifier()
-    >>> model = model.learn_one({"x": 1}, True)
+    >>> model.learn_one({"x": 1}, True)
 
     """

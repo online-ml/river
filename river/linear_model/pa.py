@@ -13,7 +13,9 @@ class BasePA:
     def __init__(self, C, mode, learn_intercept):
         self.C = C
         self.mode = mode
-        self.calc_tau = {0: self._calc_tau_0, 1: self._calc_tau_1, 2: self._calc_tau_2}[mode]
+        self.calc_tau = {0: self._calc_tau_0, 1: self._calc_tau_1, 2: self._calc_tau_2}[
+            mode
+        ]
         self.learn_intercept = learn_intercept
         self.weights = collections.defaultdict(float)
         self.intercept = 0.0
@@ -69,11 +71,12 @@ class PARegressor(BasePA, base.Regressor):
 
     >>> for xi, yi in stream.iter_array(X, y):
     ...     y_pred = model.predict_one(xi)
-    ...     model = model.learn_one(xi, yi)
-    ...     metric = metric.update(yi, y_pred)
+    ...     model.learn_one(xi, yi)
+    ...     metric.update(yi, y_pred)
 
     >>> print(metric)
-    MAE: 9.809402, MSE: 472.393532
+    MAE: 9.809402
+    MSE: 472.393532
 
     References
     ----------
@@ -95,8 +98,6 @@ class PARegressor(BasePA, base.Regressor):
             self.weights[i] += step * xi
         if self.learn_intercept:
             self.intercept += step
-
-        return self
 
     def predict_one(self, x):
         return utils.math.dot(x, self.weights) + self.intercept
@@ -148,15 +149,16 @@ class PAClassifier(BasePA, base.Classifier):
     ... )
 
     >>> for xi, yi in stream.iter_array(X_train, y_train):
-    ...     y_pred = model.learn_one(xi, yi)
+    ...     model.learn_one(xi, yi)
 
     >>> metric = metrics.Accuracy() + metrics.LogLoss()
 
     >>> for xi, yi in stream.iter_array(X_test, y_test):
-    ...     metric = metric.update(yi, model.predict_proba_one(xi))
+    ...     metric.update(yi, model.predict_proba_one(xi))
 
     >>> print(metric)
-    Accuracy: 88.46%, LogLoss: 0.325727
+    Accuracy: 88.46%
+    LogLoss: 0.325727...
 
     References
     ----------
@@ -177,8 +179,6 @@ class PAClassifier(BasePA, base.Classifier):
             self.weights[i] += step * xi
         if self.learn_intercept:
             self.intercept += step
-
-        return self
 
     def predict_proba_one(self, x):
         y_pred = utils.math.sigmoid(utils.math.dot(x, self.weights) + self.intercept)

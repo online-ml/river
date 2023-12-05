@@ -264,7 +264,7 @@ def test_learn_transform():
 
     for document in DOC_SET:
         tokens = {token: 1 for token in document.split(" ")}
-        lda = lda.learn_one(x=tokens)
+        lda.learn_one(x=tokens)
 
         components_list.append(lda.transform_one(x=tokens))
 

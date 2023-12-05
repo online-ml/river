@@ -194,8 +194,6 @@ class BayesianLinearRegression(base.Regressor):
 
         self._set_arrays(x.keys(), m_arr, ss_arr, ss_inv_arr)
 
-        return self
-
     def predict_one(self, x, with_dist=False):
         """Predict the output of features `x`.
 

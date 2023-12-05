@@ -34,7 +34,7 @@ class ClassificationReport(metrics.base.MultiClassMetric):
     >>> report = metrics.ClassificationReport()
 
     >>> for yt, yp in zip(y_true, y_pred):
-    ...     report = report.update(yt, yp)
+    ...     report.update(yt, yp)
 
     >>> print(report)
                    Precision   Recall   F1       Support

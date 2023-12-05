@@ -60,7 +60,8 @@ class Rolling(BaseRolling):
     >>> rmean = utils.Rolling(stats.Mean(), window_size=3)
 
     >>> for x in X:
-    ...     print(rmean.update(x).get())
+    ...     rmean.update(x)
+    ...     print(rmean.get())
     1.0
     2.0
     3.0
@@ -81,7 +82,6 @@ class Rolling(BaseRolling):
             self.obj.revert(*self.window[0][0], **self.window[0][1])
         self.obj.update(*args, **kwargs)
         self.window.append((args, kwargs))
-        return self
 
 
 class TimeRolling(BaseRolling):
@@ -114,7 +114,8 @@ class TimeRolling(BaseRolling):
 
     >>> rmean = utils.TimeRolling(stats.Mean(), period=dt.timedelta(days=3))
     >>> for t, x in X.items():
-    ...     print(rmean.update(x, t=t).get())
+    ...     rmean.update(x, t=t)
+    ...     print(rmean.get())
     1.0
     3.0
     5.0
@@ -151,5 +152,3 @@ class TimeRolling(BaseRolling):
             if i > 0:
                 self._timestamps = self._timestamps[i:]
                 self._datum = self._datum[i:]
-
-        return self

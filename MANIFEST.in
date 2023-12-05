@@ -1,3 +1,4 @@
+global-include *.cpp
 global-include *.pyx
 global-include *.pxd
 include river/datasets/*.csv

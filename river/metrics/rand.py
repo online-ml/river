@@ -26,7 +26,9 @@ def _pair_confusion(cm):
 
     false_negatives -= sum_squares
 
-    true_negatives = cm.n_samples * cm.n_samples - (false_positives + false_negatives) - sum_squares
+    true_negatives = (
+        cm.n_samples * cm.n_samples - (false_positives + false_negatives) - sum_squares
+    )
 
     pair_confusion_matrix[0][0] = true_negatives
     pair_confusion_matrix[0][1] = false_positives
@@ -78,7 +80,7 @@ class Rand(metrics.base.MultiClassMetric):
     >>> metric = metrics.Rand()
 
     >>> for yt, yp in zip(y_true, y_pred):
-    ...     metric = metric.update(yt, yp)
+    ...     metric.update(yt, yp)
 
     >>> metric
     Rand: 0.666667
@@ -147,7 +149,8 @@ class AdjustedRand(metrics.base.MultiClassMetric):
     >>> metric = metrics.AdjustedRand()
 
     >>> for yt, yp in zip(y_true, y_pred):
-    ...     print(metric.update(yt, yp).get())
+    ...     metric.update(yt, yp)
+    ...     print(metric.get())
     1.0
     1.0
     0.0
@@ -186,8 +189,10 @@ class AdjustedRand(metrics.base.MultiClassMetric):
                 2.0
                 * (true_positives * true_negatives - false_negatives * false_positives)
                 / (
-                    (true_positives + false_negatives) * (false_negatives + true_negatives)
-                    + (true_positives + false_positives) * (false_positives + true_negatives)
+                    (true_positives + false_negatives)
+                    * (false_negatives + true_negatives)
+                    + (true_positives + false_positives)
+                    * (false_positives + true_negatives)
                 )
             )
         except ZeroDivisionError:

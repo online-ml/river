@@ -24,16 +24,17 @@ class Multinomial(base.DiscreteDistribution):
     >>> from river import proba
 
     >>> p = proba.Multinomial(['green'] * 3)
-    >>> p = p.update('red')
-
+    >>> p.update('red')
     >>> p('red')
     0.25
 
-    >>> p = p.update('red').update('red')
+    >>> p.update('red')
+    >>> p.update('red')
     >>> p('green')
     0.5
 
-    >>> p = p.revert('red').revert('red')
+    >>> p.revert('red')
+    >>> p.revert('red')
     >>> p('red')
     0.25
 
@@ -49,7 +50,7 @@ class Multinomial(base.DiscreteDistribution):
     ... )
 
     >>> for x in X:
-    ...     dist = dist.update(x)
+    ...     dist.update(x)
     ...     print(dist)
     ...     print()
     P(red) = 1.000
@@ -82,7 +83,7 @@ class Multinomial(base.DiscreteDistribution):
     ... )
 
     >>> for x, day in zip(X, days):
-    ...     dist = dist.update(x, t=dt.datetime(2019, 1, day))
+    ...     dist.update(x, t=dt.datetime(2019, 1, day))
     ...     print(dist)
     ...     print()
     P(red) = 1.000
@@ -123,15 +124,15 @@ class Multinomial(base.DiscreteDistribution):
     def update(self, x):
         self.counts.update([x])
         self._n += 1
-        return self
 
     def revert(self, x):
         self.counts.subtract([x])
         self._n -= 1
-        return self
 
     def sample(self):
-        return self._rng.choices(list(self.counts.keys()), weights=list(self.counts.values()))[0]
+        return self._rng.choices(
+            list(self.counts.keys()), weights=list(self.counts.values())
+        )[0]
 
     def __call__(self, x):
         try:
@@ -140,4 +141,6 @@ class Multinomial(base.DiscreteDistribution):
             return 0.0
 
     def __repr__(self):
-        return "\n".join(f"P({c}) = {self(c):.3f}" for c, _ in self.counts.most_common())
+        return "\n".join(
+            f"P({c}) = {self(c):.3f}" for c, _ in self.counts.most_common()
+        )

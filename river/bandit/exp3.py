@@ -52,8 +52,8 @@ class Exp3(bandit.base.Policy):
     >>> while True:
     ...     action = policy.pull(range(env.action_space.n))
     ...     observation, reward, terminated, truncated, info = env.step(action)
-    ...     policy = policy.update(action, reward)
-    ...     metric = metric.update(reward)
+    ...     policy.update(action, reward)
+    ...     metric.update(reward)
     ...     if terminated or truncated:
     ...         break
 
@@ -70,9 +70,16 @@ class Exp3(bandit.base.Policy):
     _REQUIRES_UNIVARIATE_REWARD = True
 
     def __init__(
-        self, gamma: float, reward_obj=None, reward_scaler=None, burn_in=0, seed: int | None = None
+        self,
+        gamma: float,
+        reward_obj=None,
+        reward_scaler=None,
+        burn_in=0,
+        seed: int | None = None,
     ):
-        super().__init__(reward_obj=reward_obj, reward_scaler=reward_scaler, burn_in=burn_in)
+        super().__init__(
+            reward_obj=reward_obj, reward_scaler=reward_scaler, burn_in=burn_in
+        )
         self.seed = seed
         self.gamma = gamma
         self._rng = random.Random(seed)
@@ -84,7 +91,8 @@ class Exp3(bandit.base.Policy):
     def _pull(self, arm_ids):
         total = sum(self._weights[arm_id] for arm_id in arm_ids)
         self._probabilities = {
-            arm_id: (1 - self.gamma) * (self._weights[arm_id] / total) + self.gamma / len(arm_ids)
+            arm_id: (1 - self.gamma) * (self._weights[arm_id] / total)
+            + self.gamma / len(arm_ids)
             for arm_id in arm_ids
         }
         return self._rng.choices(arm_ids, weights=self._probabilities.values())[0]
@@ -94,7 +102,6 @@ class Exp3(bandit.base.Policy):
         reward = reward_args[0]
         reward /= self._probabilities[arm_id]
         self._weights[arm_id] *= math.exp(self.gamma * reward / len(self._weights))
-        return self
 
     @classmethod
     def _unit_test_params(cls):

@@ -229,9 +229,6 @@ class HoeffdingTreeRegressor(HoeffdingTree, base.Regressor):
         w
             The weight of the sample.
 
-        Returns
-        -------
-        self
         """
 
         self._train_weight_seen_by_model += w
@@ -292,8 +289,6 @@ class HoeffdingTreeRegressor(HoeffdingTree, base.Regressor):
 
         if self._train_weight_seen_by_model % self.memory_estimate_period == 0:
             self._estimate_model_size()
-
-        return self
 
     def predict_one(self, x):
         """Predict the target value using one of the leaf prediction strategies.

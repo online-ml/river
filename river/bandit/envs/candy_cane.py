@@ -36,7 +36,7 @@ class CandyCaneContest(gym.Env):
     >>> while True:
     ...     arm = env.action_space.sample()
     ...     observation, reward, terminated, truncated, info = env.step(arm)
-    ...     metric = metric.update(reward)
+    ...     metric.update(reward)
     ...     if terminated or truncated:
     ...         break
 
@@ -58,8 +58,12 @@ class CandyCaneContest(gym.Env):
         self.action_space = gym.spaces.Discrete(n_machines)
         self.observation_space = gym.spaces.Dict(
             {
-                "attempts": gym.spaces.Tuple([gym.spaces.Discrete(self.n_steps)] * n_machines),
-                "successes": gym.spaces.Tuple([gym.spaces.Discrete(self.n_steps)] * n_machines),
+                "attempts": gym.spaces.Tuple(
+                    [gym.spaces.Discrete(self.n_steps)] * n_machines
+                ),
+                "successes": gym.spaces.Tuple(
+                    [gym.spaces.Discrete(self.n_steps)] * n_machines
+                ),
             }
         )
         self.reward_range = (0.0, 1.0)

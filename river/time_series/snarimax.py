@@ -176,7 +176,7 @@ class SNARIMAX(time_series.base.Forecaster):
     ... )
 
     >>> for t, (x, y) in enumerate(datasets.AirlinePassengers()):
-    ...     model = model.learn_one(y)
+    ...     model.learn_one(y)
 
     >>> horizon = 12
     >>> future = [
@@ -244,7 +244,7 @@ class SNARIMAX(time_series.base.Forecaster):
     ... )
 
     >>> for x, y in datasets.AirlinePassengers():
-    ...     model = model.learn_one(x, y)
+    ...     model.learn_one(x, y)
 
     >>> forecast = model.forecast(horizon=horizon)
     >>> for x, y_pred in zip(future, forecast):
@@ -348,8 +348,6 @@ class SNARIMAX(time_series.base.Forecaster):
             self.regressor.learn_one(x, y_diff)
 
         self.y_hist.appendleft(y)
-
-        return self
 
     def forecast(self, horizon, xs=None):
         if xs is None:

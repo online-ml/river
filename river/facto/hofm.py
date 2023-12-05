@@ -203,7 +203,7 @@ class HOFMRegressor(HOFM, base.Regressor):
     ... )
 
     >>> for x, y in dataset:
-    ...     _ = model.learn_one(x, y)
+    ...     model.learn_one(x, y)
 
     >>> model.predict_one({'user': 'Bob', 'item': 'Harry Potter', 'time': .14})
     5.311745
@@ -353,7 +353,7 @@ class HOFMClassifier(HOFM, base.Classifier):
     ... )
 
     >>> for x, y in dataset:
-    ...     _ = model.learn_one(x, y)
+    ...     model.learn_one(x, y)
 
     >>> model.predict_one({'user': 'Bob', 'item': 'Harry Potter', 'time': .14})
     True

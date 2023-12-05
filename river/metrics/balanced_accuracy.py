@@ -27,7 +27,7 @@ class BalancedAccuracy(metrics.base.MultiClassMetric):
 
         >>> metric = metrics.BalancedAccuracy()
         >>> for yt, yp in zip(y_true, y_pred):
-        ...     metric = metric.update(yt, yp)
+        ...     metric.update(yt, yp)
 
         >>> metric
         BalancedAccuracy: 62.50%
@@ -36,7 +36,7 @@ class BalancedAccuracy(metrics.base.MultiClassMetric):
         >>> y_pred = [0, 1, 0, 0, 0, 1]
         >>> metric = metrics.BalancedAccuracy()
         >>> for yt, yp in zip(y_true, y_pred):
-        ...     metric = metric.update(yt, yp)
+        ...     metric.update(yt, yp)
 
         >>> metric
         BalancedAccuracy: 62.50%

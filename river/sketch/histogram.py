@@ -101,7 +101,7 @@ class Histogram(collections.UserList, base.Base):
     >>> hist = sketch.Histogram(max_bins=15)
 
     >>> for x in values:
-    ...     hist = hist.update(x)
+    ...     hist.update(x)
 
     >>> for bin in hist:
     ...     print(bin)
@@ -140,7 +140,7 @@ class Histogram(collections.UserList, base.Base):
         # Insert the bin if the histogram is empty
         if not self:
             self.append(b)
-            return self
+            return
 
         # Use bisection to find where to insert
         # We don't use the bisect module in order to save some CPU cycles
@@ -168,8 +168,6 @@ class Histogram(collections.UserList, base.Base):
         # Bins have to be merged if there are more than max_bins
         if len(self) > self.max_bins:
             self._shrink(1)
-
-        return self
 
     def _shrink(self, k):
         """Shrinks the histogram by merging the two closest bins."""
@@ -208,7 +206,7 @@ class Histogram(collections.UserList, base.Base):
 
         >>> hist = sketch.Histogram()
         >>> for x in range(4):
-        ...     hist = hist.update(x)
+        ...     hist.update(x)
 
         >>> print(hist)
         [0.00000, 0.00000]: 1
@@ -255,7 +253,7 @@ class Histogram(collections.UserList, base.Base):
 
         >>> hist = sketch.Histogram()
         >>> for x in range(4):
-        ...     hist = hist.update(x)
+        ...     hist.update(x)
 
         >>> print(hist)
         [0.00000, 0.00000]: 1

@@ -138,11 +138,11 @@ class HalfSpaceTrees(anomaly.base.AnomalyDetector):
     ... )
 
     >>> for x in X[:3]:
-    ...     hst = hst.learn_one({'x': x})  # Warming up
+    ...     hst.learn_one({'x': x})  # Warming up
 
     >>> for x in X:
     ...     features = {'x': x}
-    ...     hst = hst.learn_one(features)
+    ...     hst.learn_one(features)
     ...     print(f'Anomaly score for x={x:.3f}: {hst.score_one(features):.3f}')
     Anomaly score for x=0.500: 0.107
     Anomaly score for x=0.450: 0.071
@@ -170,8 +170,8 @@ class HalfSpaceTrees(anomaly.base.AnomalyDetector):
 
     >>> for x, y in datasets.CreditCard().take(2500):
     ...     score = model.score_one(x)
-    ...     model = model.learn_one(x)
-    ...     auc = auc.update(y, score)
+    ...     model.learn_one(x)
+    ...     auc.update(y, score)
 
     >>> auc
     ROCAUC: 91.15%
@@ -267,8 +267,6 @@ class HalfSpaceTrees(anomaly.base.AnomalyDetector):
                     node.l_mass = 0
             self._first_window = False
             self.counter = 0
-
-        return self
 
     def score_one(self, x):
         if self._first_window:

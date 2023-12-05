@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from river import base
-from river.base.drift_detector import DriftDetector
 
 
 class NoDrift(base.DriftDetector):
@@ -44,8 +43,8 @@ class NoDrift(base.DriftDetector):
     Let's put that to test:
 
     >>> for x, y in dataset:
-    ...     adaptive_model = adaptive_model.learn_one(x, y)
-    ...     stationary_model = stationary_model.learn_one(x, y)
+    ...     adaptive_model.learn_one(x, y)
+    ...     stationary_model.learn_one(x, y)
 
     The adaptive model:
 
@@ -68,8 +67,8 @@ class NoDrift(base.DriftDetector):
     def __init__(self):
         super().__init__()
 
-    def update(self, x: int | float) -> DriftDetector:
-        return self
+    def update(self, x: int | float):
+        ...
 
     @property
     def drift_detected(self):

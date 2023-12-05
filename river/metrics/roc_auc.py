@@ -34,7 +34,7 @@ class ROCAUC(metrics.base.BinaryMetric):
     >>> metric = metrics.ROCAUC()
 
     >>> for yt, yp in zip(y_true, y_pred):
-    ...     metric = metric.update(yt, yp)
+    ...     metric.update(yt, yp)
 
     >>> metric
     ROCAUC: 87.50%
@@ -45,7 +45,7 @@ class ROCAUC(metrics.base.BinaryMetric):
     >>> metric = metrics.ROCAUC(n_thresholds=20)
 
     >>> for yt, yp in zip(y_true, y_pred):
-    ...     metric = metric.update(yt, yp)
+    ...     metric.update(yt, yp)
 
     >>> metric
     ROCAUC: 75.00%
@@ -71,13 +71,11 @@ class ROCAUC(metrics.base.BinaryMetric):
         p_true = y_pred.get(True, 0.0) if isinstance(y_pred, dict) else y_pred
         for t, cm in zip(self.thresholds, self.cms):
             cm.update(y_true == self.pos_val, p_true > t, w)
-        return self
 
     def revert(self, y_true, y_pred, w=1.0):
         p_true = y_pred.get(True, 0.0) if isinstance(y_pred, dict) else y_pred
         for t, cm in zip(self.thresholds, self.cms):
             cm.revert(y_true == self.pos_val, p_true > t, w)
-        return self
 
     @property
     def requires_labels(self):

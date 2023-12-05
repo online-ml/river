@@ -16,7 +16,7 @@ def test_with_counter():
     >>> counter = utils.Rolling(collections.Counter(), window_size=3)
 
     >>> for i in range(5):
-    ...     counter = counter.update([i])
+    ...     counter.update([i])
 
     >>> counter
     Counter({2: 1, 3: 1, 4: 1, 0: 0, 1: 0})

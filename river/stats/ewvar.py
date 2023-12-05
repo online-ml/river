@@ -28,7 +28,8 @@ class EWVar(stats.base.Univariate):
     >>> X = [1, 3, 5, 4, 6, 8, 7, 9, 11]
     >>> ewv = stats.EWVar(fading_factor=0.5)
     >>> for x in X:
-    ...     print(ewv.update(x).get())
+    ...     ewv.update(x)
+    ...     print(ewv.get())
     0.0
     1.0
     2.75
@@ -61,7 +62,6 @@ class EWVar(stats.base.Univariate):
 
     def update(self, x):
         self._ewvar.update(x)
-        return self
 
     def get(self):
         return self._ewvar.get()

@@ -39,7 +39,7 @@ class GeometricMean(metrics.base.MultiClassMetric):
     >>> metric = metrics.GeometricMean()
 
     >>> for yt, yp in zip(y_true, y_pred):
-    ...     metric = metric.update(yt, yp)
+    ...     metric.update(yt, yp)
 
     >>> metric
     GeometricMean: 69.34%

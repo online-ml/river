@@ -40,12 +40,10 @@ class MacroAverage(MultiOutputMetric, metrics.base.WrapperMetric):
     def update(self, y_true, y_pred, w=1.0):
         for i in y_true:
             self.metrics[i].update(y_true[i], y_pred[i], w)
-        return self
 
     def revert(self, y_true, y_pred, w=1.0):
         for i in y_true:
             self.metrics[i].revert(y_true[i], y_pred[i], w)
-        return self
 
     def get(self):
         return statistics.mean(metric.get() for metric in self.metrics.values())
