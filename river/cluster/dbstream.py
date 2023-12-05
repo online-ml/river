@@ -161,7 +161,7 @@ class DBSTREAM(base.Clusterer):
 
     @staticmethod
     def _distance(point_a, point_b):
-        return math.sqrt(utils.math.minkowski_distance(point_a, point_b, 2))
+        return utils.math.minkowski_distance(point_a, point_b, 2)
 
     def _find_fixed_radius_nn(self, x):
         fixed_radius_nn = {}
