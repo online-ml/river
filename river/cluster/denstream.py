@@ -120,16 +120,16 @@ class DenStream(base.Clusterer):
     ...     denstream.learn_one(x)
 
     >>> denstream.predict_one({0: -1, 1: -2})
-    0
+    1
 
     >>> denstream.predict_one({0: 5, 1: 4})
-    1
+    2
 
     >>> denstream.predict_one({0: 1, 1: 1})
     0
 
     >>> denstream.n_clusters
-    2
+    3
 
     """
 
@@ -183,7 +183,7 @@ class DenStream(base.Clusterer):
 
     @staticmethod
     def _distance(point_a, point_b):
-        return math.sqrt(utils.math.minkowski_distance(point_a, point_b, 2))
+        return utils.math.minkowski_distance(point_a, point_b, 2)
 
     def _get_closest_cluster_key(self, point, clusters):
         min_distance = math.inf
