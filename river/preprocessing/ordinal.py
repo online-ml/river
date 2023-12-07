@@ -54,7 +54,7 @@ class OrdinalEncoder(base.MiniBatchTransformer):
     >>> encoder = preprocessing.OrdinalEncoder()
     >>> for x in X:
     ...     print(encoder.transform_one(x))
-    ...     encoder = encoder.learn_one(x)
+    ...     encoder.learn_one(x)
     {'country': 0, 'place': 0}
     {'country': -1, 'place': -1}
     {'country': 0, 'place': 0}
@@ -75,7 +75,7 @@ class OrdinalEncoder(base.MiniBatchTransformer):
     2        0      0
     3        0      0
 
-    >>> encoder = encoder.learn_many(xb1)
+    >>> encoder.learn_many(xb1)
     >>> encoder.transform_many(xb2)
        country  place
     4        0      0
@@ -113,7 +113,6 @@ class OrdinalEncoder(base.MiniBatchTransformer):
         for i, xi in x.items():
             if xi is not None and xi not in self.categories[i]:
                 self.categories[i][xi] = next(self._counters[i])
-        return self
 
     def transform_many(self, X):
         return pd.DataFrame(
@@ -133,4 +132,3 @@ class OrdinalEncoder(base.MiniBatchTransformer):
             for xi in X[i].dropna().unique():
                 if xi not in self.categories[i]:
                     self.categories[i][xi] = next(self._counters[i])
-        return self

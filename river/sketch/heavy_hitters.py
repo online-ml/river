@@ -54,7 +54,7 @@ class HeavyHitters(base.Base):
     We will feed the counter with printable ASCII characters:
 
     >>> for _ in range(10_000):
-    ...     hh = hh.update(rng.choice(string.printable))
+    ...     hh.update(rng.choice(string.printable))
 
     We can retrieve estimates of the `n` top elements and their frequencies. Let's try `n=3`
     >>> hh.most_common(3)
@@ -118,8 +118,6 @@ class HeavyHitters(base.Base):
                 del self._entries[key]
 
             self._delta = self._bucket_width + self._delta * self.fading_factor
-
-        return self
 
     def most_common(self, n: int | None = None) -> list[tuple[typing.Hashable, float]]:
         res = []

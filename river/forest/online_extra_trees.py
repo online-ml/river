@@ -222,10 +222,10 @@ class ExtraTrees(base.Ensemble, metaclass=abc.ABCMeta):
         warning_detector: base.DriftDetector,
         detector_input: int | float,
     ) -> tuple[bool, bool]:
-        in_warning = warning_detector.update(detector_input).drift_detected
-        in_drift = drift_detector.update(detector_input).drift_detected
+        warning_detector.update(detector_input)
+        drift_detector.update(detector_input)
 
-        return in_drift, in_warning
+        return drift_detector.drift_detected, warning_detector.drift_detected
 
     @staticmethod
     def _detection_mode_drop(
@@ -233,9 +233,9 @@ class ExtraTrees(base.Ensemble, metaclass=abc.ABCMeta):
         warning_detector: base.DriftDetector,
         detector_input: int | float,
     ) -> tuple[bool, bool]:
-        in_drift = drift_detector.update(detector_input).drift_detected
+        drift_detector.update(detector_input)
 
-        return in_drift, False
+        return drift_detector.drift_detected, False
 
     @staticmethod
     def _detection_mode_off(
@@ -323,8 +323,6 @@ class ExtraTrees(base.Ensemble, metaclass=abc.ABCMeta):
 
         # Increase by one the count of instances observed by each trained model
         self._sample_counter.update(trained)
-
-        return self
 
     # Properties
     @property

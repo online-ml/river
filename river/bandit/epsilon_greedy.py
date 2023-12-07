@@ -49,8 +49,8 @@ class EpsilonGreedy(bandit.base.Policy):
     >>> while True:
     ...     arm = policy.pull(range(env.action_space.n))
     ...     observation, reward, terminated, truncated, info = env.step(arm)
-    ...     policy = policy.update(arm, reward)
-    ...     metric = metric.update(reward)
+    ...     policy.update(arm, reward)
+    ...     metric.update(reward)
     ...     if terminated or truncated:
     ...         break
 
@@ -64,7 +64,12 @@ class EpsilonGreedy(bandit.base.Policy):
     """
 
     def __init__(
-        self, epsilon: float, decay=0.0, reward_obj=None, burn_in=0, seed: int | None = None
+        self,
+        epsilon: float,
+        decay=0.0,
+        reward_obj=None,
+        burn_in=0,
+        seed: int | None = None,
     ):
         super().__init__(reward_obj=reward_obj, burn_in=burn_in)
         self.epsilon = epsilon

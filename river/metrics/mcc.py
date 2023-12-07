@@ -29,7 +29,7 @@ class MCC(metrics.base.BinaryMetric):
     >>> mcc = metrics.MCC()
 
     >>> for yt, yp in zip(y_true, y_pred):
-    ...     mcc = mcc.update(yt, yp)
+    ...     mcc.update(yt, yp)
 
     >>> mcc
     MCC: -0.333333

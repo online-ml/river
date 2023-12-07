@@ -22,7 +22,7 @@ class IQR(stats.base.Univariate):
     >>> iqr = stats.IQR(q_inf=0.25, q_sup=0.75)
 
     >>> for i in range(0, 1001):
-    ...     iqr = iqr.update(i)
+    ...     iqr.update(i)
     ...     if i % 100 == 0:
     ...         print(iqr.get())
     0.0
@@ -59,7 +59,6 @@ class IQR(stats.base.Univariate):
         self._iqr.update(x)
         if not self._is_updated:
             self._is_updated = True
-        return self
 
     def get(self):
         return self._iqr.get()
@@ -98,7 +97,7 @@ class RollingIQR(stats.base.RollingUnivariate):
     ... )
 
     >>> for i in range(0, 1001):
-    ...     rolling_iqr = rolling_iqr.update(i)
+    ...     rolling_iqr.update(i)
     ...     if i % 100 == 0:
     ...         print(rolling_iqr.get())
     0.0
@@ -130,7 +129,6 @@ class RollingIQR(stats.base.RollingUnivariate):
         self._rolling_iqr.update(x)
         if not self._is_updated:
             self._is_updated = True
-        return self
 
     def get(self):
         # HACK: Avoid crash if get is called before update

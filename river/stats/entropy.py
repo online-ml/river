@@ -35,8 +35,8 @@ class Entropy(stats.base.Univariate):
     >>> from river import stats
 
     >>> def entropy_list(labels, base=None):
-    ...   value,counts = np.unique(labels, return_counts=True)
-    ...   return entropy(counts, base=base)
+    ...     value,counts = np.unique(labels, return_counts=True)
+    ...     return entropy(counts, base=base)
 
     >>> SEED = 42 * 1337
     >>> random.seed(SEED)
@@ -49,7 +49,7 @@ class Entropy(stats.base.Univariate):
     >>> random.shuffle(list_animal)
 
     >>> for animal in list_animal:
-    ...     _ = entro.update(animal)
+    ...     entro.update(animal)
 
     >>> print(f'{entro.get():.6f}')
     1.058093
@@ -83,15 +83,17 @@ class Entropy(stats.base.Univariate):
         fading_factor = self.fading_factor
 
         entropy = self.entropy
-        entropy = (n + eps) / (n + 1) * (fading_factor * entropy - math.log((n + eps) / (n + 1)))
+        entropy = (
+            (n + eps)
+            / (n + 1)
+            * (fading_factor * entropy - math.log((n + eps) / (n + 1)))
+        )
         entropy -= (cx + 1) / (n + 1) * math.log((cx + 1) / (n + 1))
         entropy += (cx + eps) / (n + 1) * math.log((cx + eps) / (n + 1))
         self.entropy = entropy
 
         self.n += 1
         self.counter.update([x])
-
-        return self
 
     def get(self):
         return self.entropy

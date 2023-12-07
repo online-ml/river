@@ -119,7 +119,7 @@ class DBSTREAM(base.Clusterer):
     ... )
 
     >>> for x, _ in stream.iter_array(X):
-    ...     dbstream = dbstream.learn_one(x)
+    ...     dbstream.learn_one(x)
 
     >>> dbstream.predict_one({0: 1, 1: 2})
     0
@@ -161,7 +161,7 @@ class DBSTREAM(base.Clusterer):
 
     @staticmethod
     def _distance(point_a, point_b):
-        return math.sqrt(utils.math.minkowski_distance(point_a, point_b, 2))
+        return utils.math.minkowski_distance(point_a, point_b, 2)
 
     def _find_fixed_radius_nn(self, x):
         fixed_radius_nn = {}
@@ -396,8 +396,6 @@ class DBSTREAM(base.Clusterer):
             self._cleanup()
 
         self.clustering_is_up_to_date = False
-
-        return self
 
     def predict_one(self, x, w=None):
         self._recluster()

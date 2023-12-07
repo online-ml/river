@@ -19,8 +19,6 @@ class BaseBagging(base.WrapperEnsemble):
             for _ in range(utils.random.poisson(1, self._rng)):
                 model.learn_one(x, y, **kwargs)
 
-        return self
-
 
 class BaggingClassifier(BaseBagging, base.Classifier):
     """Online bootstrap aggregation for classification.
@@ -244,8 +242,6 @@ class ADWINBaggingClassifier(BaggingClassifier):
             self.models[max_error_idx] = self.model.clone()
             self._drift_detectors[max_error_idx] = drift.ADWIN()
 
-        return self
-
 
 class LeveragingBaggingClassifier(BaggingClassifier):
     """Leveraging Bagging ensemble classifier.
@@ -406,8 +402,6 @@ class LeveragingBaggingClassifier(BaggingClassifier):
             )
             self[max_error_idx] = self.model.clone()
             self._drift_detectors[max_error_idx] = drift.ADWIN(delta=self.adwin_delta)
-
-        return self
 
     @property
     def bagging_methods(self):

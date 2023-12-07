@@ -377,7 +377,6 @@ class MondrianTreeRegressor(MondrianTree, base.Regressor):
 
         # Incrementing iteration
         self.iteration += 1
-        return self
 
     def predict_one(self, x):
         """Predict the label of the samples.

@@ -42,12 +42,12 @@ class Silhouette(metrics.base.ClusteringMetric):
     >>> metric = metrics.Silhouette()
 
     >>> for x, _ in stream.iter_array(X):
-    ...     k_means = k_means.learn_one(x)
+    ...     k_means.learn_one(x)
     ...     y_pred = k_means.predict_one(x)
-    ...     metric = metric.update(x, y_pred, k_means.centers)
+    ...     metric.update(x, y_pred, k_means.centers)
 
     >>> metric
-    Silhouette: 0.568058
+    Silhouette: 0.32145
 
     References
     ----------
@@ -65,26 +65,22 @@ class Silhouette(metrics.base.ClusteringMetric):
 
     @staticmethod
     def _find_distance_second_closest_center(centers, x):
-        distances = {i: math.sqrt(utils.math.minkowski_distance(centers[i], x, 2)) for i in centers}
+        distances = {i: utils.math.minkowski_distance(centers[i], x, 2) for i in centers}
         return sorted(distances.values())[-2]
 
     def update(self, x, y_pred, centers, w=1.0):
-        distance_closest_centroid = math.sqrt(utils.math.minkowski_distance(centers[y_pred], x, 2))
+        distance_closest_centroid = utils.math.minkowski_distance(centers[y_pred], x, 2)
         self._sum_distance_closest_centroid += distance_closest_centroid
 
         distance_second_closest_centroid = self._find_distance_second_closest_center(centers, x)
         self._sum_distance_second_closest_centroid += distance_second_closest_centroid
 
-        return self
-
     def revert(self, x, y_pred, centers, w=1.0):
-        distance_closest_centroid = math.sqrt(utils.math.minkowski_distance(centers[y_pred], x, 2))
+        distance_closest_centroid = utils.math.minkowski_distance(centers[y_pred], x, 2)
         self._sum_distance_closest_centroid -= distance_closest_centroid
 
         distance_second_closest_centroid = self._find_distance_second_closest_center(centers, x)
         self._sum_distance_second_closest_centroid -= distance_second_closest_centroid
-
-        return self
 
     def get(self):
         try:

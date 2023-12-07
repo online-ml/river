@@ -35,7 +35,7 @@ class PredClipper(base.Wrapper, base.Regressor):
     ... )
 
     >>> for x, y in dataset:
-    ...     _ = model.learn_one(x, y)
+    ...     model.learn_one(x, y)
 
     >>> model.predict_one({'a': -100, 'b': -200})
     0
@@ -56,7 +56,6 @@ class PredClipper(base.Wrapper, base.Regressor):
 
     def learn_one(self, x, y, **kwargs):
         self.regressor.learn_one(x=x, y=y, **kwargs)
-        return self
 
     def predict_one(self, x, **kwargs):
         y_pred = self.regressor.predict_one(x=x, **kwargs)

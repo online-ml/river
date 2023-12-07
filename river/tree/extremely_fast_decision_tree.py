@@ -226,10 +226,6 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
         * Reevaluate the best split for each internal node.
         * Attempt to split the leaf.
 
-        Returns
-        -------
-        self
-
         """
         # Updates the set of observed classes
         self.classes.add(y)
@@ -244,8 +240,6 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
         self._sort_to_leaf(x, y, w)
         # Process all nodes, starting from root to the leaf where the instance x belongs.
         self._process_nodes(x, y, w, self._root, None, None)
-
-        return self
 
     def _sort_to_leaf(self, x, y, w):
         """For a given instance, find the corresponding leaf and update it.

@@ -52,7 +52,7 @@ class FBeta(metrics.base.BinaryMetric):
 
     >>> metric = metrics.FBeta(beta=2)
     >>> for yt, yp in zip(y_true, y_pred):
-    ...     metric = metric.update(yt, yp)
+    ...     metric.update(yt, yp)
 
     >>> metric
     FBeta: 35.71%
@@ -100,7 +100,8 @@ class MacroFBeta(metrics.base.MultiClassMetric):
     >>> metric = metrics.MacroFBeta(beta=.8)
 
     >>> for yt, yp in zip(y_true, y_pred):
-    ...     print(metric.update(yt, yp))
+    ...     metric.update(yt, yp)
+    ...     print(metric)
     MacroFBeta: 100.00%
     MacroFBeta: 31.06%
     MacroFBeta: 54.04%
@@ -164,7 +165,7 @@ class MicroFBeta(metrics.base.MultiClassMetric):
 
     >>> metric = metrics.MicroFBeta(beta=2)
     >>> for yt, yp in zip(y_true, y_pred):
-    ...     metric = metric.update(yt, yp)
+    ...     metric.update(yt, yp)
 
     >>> metric
     MicroFBeta: 60.00%
@@ -217,7 +218,8 @@ class WeightedFBeta(metrics.base.MultiClassMetric):
     >>> metric = metrics.WeightedFBeta(beta=0.8)
 
     >>> for yt, yp in zip(y_true, y_pred):
-    ...     print(metric.update(yt, yp))
+    ...     metric.update(yt, yp)
+    ...     print(metric)
     WeightedFBeta: 100.00%
     WeightedFBeta: 31.06%
     WeightedFBeta: 54.04%
@@ -287,7 +289,8 @@ class MultiFBeta(metrics.base.MultiClassMetric):
     ... )
 
     >>> for yt, yp in zip(y_true, y_pred):
-    ...     print(metric.update(yt, yp))
+    ...     metric.update(yt, yp)
+    ...     print(metric)
     MultiFBeta: 100.00%
     MultiFBeta: 25.76%
     MultiFBeta: 62.88%
@@ -300,7 +303,9 @@ class MultiFBeta(metrics.base.MultiClassMetric):
         super().__init__(cm)
         self.betas = betas
         self.weights = (
-            collections.defaultdict(functools.partial(int, 1)) if weights is None else weights
+            collections.defaultdict(functools.partial(int, 1))
+            if weights is None
+            else weights
         )
 
     def get(self):
@@ -353,7 +358,7 @@ class F1(FBeta):
     >>> metric = metrics.F1()
 
     >>> for yt, yp in zip(y_true, y_pred):
-    ...     metric = metric.update(yt, yp)
+    ...     metric.update(yt, yp)
 
     >>> metric
     F1: 40.00%
@@ -387,7 +392,8 @@ class MacroF1(MacroFBeta):
     >>> metric = metrics.MacroF1()
 
     >>> for yt, yp in zip(y_true, y_pred):
-    ...     print(metric.update(yt, yp))
+    ...     metric.update(yt, yp)
+    ...     print(metric)
     MacroF1: 100.00%
     MacroF1: 33.33%
     MacroF1: 55.56%
@@ -423,7 +429,7 @@ class MicroF1(MicroFBeta):
 
     >>> metric = metrics.MicroF1()
     >>> for yt, yp in zip(y_true, y_pred):
-    ...     metric = metric.update(yt, yp)
+    ...     metric.update(yt, yp)
 
     >>> metric
     MicroF1: 60.00%
@@ -464,7 +470,8 @@ class WeightedF1(WeightedFBeta):
     >>> metric = metrics.WeightedF1()
 
     >>> for yt, yp in zip(y_true, y_pred):
-    ...     print(metric.update(yt, yp))
+    ...     metric.update(yt, yp)
+    ...     print(metric)
     WeightedF1: 100.00%
     WeightedF1: 33.33%
     WeightedF1: 55.56%

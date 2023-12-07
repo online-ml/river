@@ -75,7 +75,7 @@ def test_mutate():
 
     >>> for x, y in datasets.TrumpApproval():
     ...     _ = model.predict_one(x)
-    ...     model = model.learn_one(x, y)
+    ...     model.learn_one(x, y)
 
     >>> len(model[-1].weights)
     6

@@ -79,7 +79,7 @@ class DDM(base.BinaryDriftAndWarningDetector):
     >>> print_warning = True
     >>> # Update drift detector and verify if change is detected
     >>> for i, x in enumerate(data_stream):
-    ...     _ = ddm.update(x)
+    ...     ddm.update(x)
     ...     if ddm.warning_detected and print_warning:
     ...         print(f"Warning detected at index {i}")
     ...         print_warning = False
@@ -145,5 +145,3 @@ class DDM(base.BinaryDriftAndWarningDetector):
             if p_i + s_i > self._p_min + self.drift_threshold * self._s_min:
                 self._drift_detected = True
                 self._warning_detected = False
-
-        return self

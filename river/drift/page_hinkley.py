@@ -40,7 +40,7 @@ class PageHinkley(DriftDetector):
 
     >>> # Update drift detector and verify if change is detected
     >>> for i, val in enumerate(data_stream):
-    ...     _ = ph.update(val)
+    ...     ph.update(val)
     ...     if ph.drift_detected:
     ...         print(f"Change detected at index {i}, input value: {val}")
     Change detected at index 1006, input value: 5
@@ -125,5 +125,3 @@ class PageHinkley(DriftDetector):
             test_increase = self._sum_increase - self._min_increase
             test_decrease = self._max_decrease - self._sum_decrease
             self._drift_detected = self._test_drift(test_increase, test_decrease)
-
-        return self

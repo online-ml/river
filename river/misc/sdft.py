@@ -32,14 +32,13 @@ class SDFT(base.Base):
     >>> sdft = misc.SDFT(window_size)
 
     >>> for i, x in enumerate(X):
-    ...     sdft = sdft.update(x)
-    ...
+    ...     sdft.update(x)
     ...     if i + 1 >= window_size:
     ...         assert np.allclose(sdft.coefficients, np.fft.fft(X[i+1 - window_size:i+1]))
 
     References
     ----------
-    [^1]: [Jacobsen, E. and Lyons, R., 2003. The sliding DFT. IEEE Signal Processing Magazine, 20(2), pp.74-80.](https://www.comm.utoronto.ca/~dimitris/ece431/slidingdft.pdf)
+    [^1]: [Jacobsen, E. asample_average.pynd Lyons, R., 2003. The sliding DFT. IEEE Signal Processing Magazine, 20(2), pp.74-80.](https://www.comm.utoronto.ca/~dimitris/ece431/slidingdft.pdf)
     [^2]: [Understanding and Implementing the Sliding DFT](https://www.dsprelated.com/showarticle/776.php)
 
     """
@@ -68,5 +67,3 @@ class SDFT(base.Base):
             for i, c in enumerate(self.coefficients):
                 self.coefficients[i] = (c + diff) * np.exp(2j * np.pi * i / self.window_size)
             self.window.append(x)
-
-        return self

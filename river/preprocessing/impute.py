@@ -17,7 +17,7 @@ class PreviousImputer(base.Transformer):
 
     >>> imputer = preprocessing.PreviousImputer()
 
-    >>> imputer = imputer.learn_one({'x': 1, 'y': 2})
+    >>> imputer.learn_one({'x': 1, 'y': 2})
     >>> imputer.transform_one({'y': None})
     {'y': 2}
 
@@ -33,8 +33,6 @@ class PreviousImputer(base.Transformer):
         for i, v in x.items():
             if v is not None:
                 self._latest[i] = v
-
-        return self
 
     def transform_one(self, x):
         for i, v in x.items():
@@ -80,7 +78,7 @@ class StatImputer(base.Transformer):
     >>> imp = preprocessing.StatImputer(('temperature', stats.Mean()))
 
     >>> for x in X:
-    ...     imp = imp.learn_one(x)
+    ...     imp.learn_one(x)
     ...     print(imp.transform_one(x))
     {'temperature': 1}
     {'temperature': 8}
@@ -104,7 +102,7 @@ class StatImputer(base.Transformer):
     >>> imp = preprocessing.StatImputer(('weather', stats.Mode()))
 
     >>> for x in X:
-    ...     imp = imp.learn_one(x)
+    ...     imp.learn_one(x)
     ...     print(imp.transform_one(x))
     {'weather': 'sunny'}
     {'weather': 'rainy'}
@@ -119,7 +117,7 @@ class StatImputer(base.Transformer):
     >>> imp = preprocessing.StatImputer(('weather', 'missing'))
 
     >>> for x in X:
-    ...     imp = imp.learn_one(x)
+    ...     imp.learn_one(x)
     ...     print(imp.transform_one(x))
     {'weather': 'sunny'}
     {'weather': 'rainy'}
@@ -149,7 +147,7 @@ class StatImputer(base.Transformer):
     ... )
 
     >>> for x in X:
-    ...     imp = imp.learn_one(x)
+    ...     imp.learn_one(x)
     ...     print(imp.transform_one(x))
     {'weather': 'sunny', 'temperature': 8}
     {'weather': 'rainy', 'temperature': 3}
@@ -187,7 +185,7 @@ class StatImputer(base.Transformer):
     ... )
 
     >>> for x in X:
-    ...     imp = imp.learn_one(x)
+    ...     imp.learn_one(x)
     ...     print(imp.transform_one(x))
     {'weather': 'sunny', 'temperature': 8}
     {'weather': 'rainy', 'temperature': 3}
@@ -216,8 +214,6 @@ class StatImputer(base.Transformer):
             if x[i] is not None:
                 self.stats[i].update(x[i])
 
-        return self
-
     def transform_one(self, x):
         # Transformers are supposed to be pure, therefore we make a copy of the features
         x = x.copy()
@@ -242,7 +238,7 @@ class Constant(stats.base.Univariate):
         self.value = value
 
     def update(self, x):
-        return self
+        ...
 
     def get(self):
         return self.value

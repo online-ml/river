@@ -43,7 +43,7 @@ class RollingROCAUC(metrics.base.BinaryMetric):
     >>> metric = metrics.RollingROCAUC(window_size=4)
 
     >>> for yt, yp in zip(y_true, y_pred):
-    ...     metric = metric.update(yt, yp)
+    ...     metric.update(yt, yp)
 
     >>> metric
     RollingROCAUC: 75.00%
@@ -53,7 +53,7 @@ class RollingROCAUC(metrics.base.BinaryMetric):
     def __init__(self, window_size=1000, pos_val=True):
         self.window_size = window_size
         self.pos_val = pos_val
-        self.__metric = EfficientRollingROCAUC(pos_val, window_size)
+        self._metric = EfficientRollingROCAUC(pos_val, window_size)
 
     def works_with(self, model) -> bool:
         return (
@@ -64,13 +64,11 @@ class RollingROCAUC(metrics.base.BinaryMetric):
 
     def update(self, y_true, y_pred):
         p_true = y_pred.get(True, 0.0) if isinstance(y_pred, dict) else y_pred
-        self.__metric.update(y_true, p_true)
-        return self
+        self._metric.update(y_true, p_true)
 
     def revert(self, y_true, y_pred):
         p_true = y_pred.get(True, 0.0) if isinstance(y_pred, dict) else y_pred
-        self.__metric.revert(y_true, p_true)
-        return self
+        self._metric.revert(y_true, p_true)
 
     @property
     def requires_labels(self) -> bool:
@@ -81,4 +79,4 @@ class RollingROCAUC(metrics.base.BinaryMetric):
         return False
 
     def get(self):
-        return self.__metric.get()
+        return self._metric.get()

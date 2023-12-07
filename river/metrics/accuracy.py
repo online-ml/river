@@ -25,7 +25,7 @@ class Accuracy(metrics.base.MultiClassMetric):
 
     >>> metric = metrics.Accuracy()
     >>> for yt, yp in zip(y_true, y_pred):
-    ...     metric = metric.update(yt, yp)
+    ...     metric.update(yt, yp)
 
     >>> metric
     Accuracy: 60.00%

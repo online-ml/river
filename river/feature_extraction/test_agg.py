@@ -29,7 +29,8 @@ def test_agg_lag():
     ...     Agg("revenue", None, Shift(2))
     ... )
     >>> for x in X:
-    ...     print(agg.learn_one(x).transform_one(x))
+    ...     agg.learn_one(x)
+    ...     print(agg.transform_one(x))
     {'revenue_shift_2': None, 'customers_shift_2': None}
     {'revenue_shift_2': None, 'customers_shift_2': None}
     {'revenue_shift_2': 420, 'customers_shift_2': 10}
@@ -50,7 +51,8 @@ def test_agg_lag():
     ...     for d in [1, 2, 3]
     ... ])
     >>> for x in X:
-    ...     print(agg.learn_one(x).transform_one(x))
+    ...     agg.learn_one(x)
+    ...     print(agg.transform_one(x))
     {'customers_shift_3': None, 'customers_shift_2': None, 'customers_shift_1': None}
     {'customers_shift_3': None, 'customers_shift_2': None, 'customers_shift_1': 10}
     {'customers_shift_3': None, 'customers_shift_2': 10, 'customers_shift_1': 10}
@@ -67,7 +69,8 @@ def test_agg_lag():
 
     >>> agg = Agg("customers", "shop", Shift(1))
     >>> for x in X:
-    ...     print(agg.learn_one(x).transform_one(x))
+    ...     agg.learn_one(x)
+    ...     print(agg.transform_one(x))
     {'customers_shift_1_by_shop': None}
     {'customers_shift_1_by_shop': None}
     {'customers_shift_1_by_shop': 10}
@@ -104,7 +107,7 @@ def test_target_agg_lag():
     >>> agg = TargetAgg(None, Shift(1)) + TargetAgg(None, Shift(2))
     >>> for x, y in dataset:
     ...     print(agg.transform_one(x))
-    ...     agg = agg.learn_one(x, y)
+    ...     agg.learn_one(x, y)
     {'y_shift_2': None, 'y_shift_1': None}
     {'y_shift_2': None, 'y_shift_1': None}
     {'y_shift_2': None, 'y_shift_1': 42}
@@ -119,7 +122,7 @@ def test_target_agg_lag():
     >>> agg = TargetAgg("country", Shift(1)) + TargetAgg("country", Shift(2))
     >>> for x, y in dataset:
     ...     print(agg.transform_one(x))
-    ...     agg = agg.learn_one(x, y)
+    ...     agg.learn_one(x, y)
     {'y_shift_2_by_country': None, 'y_shift_1_by_country': None}
     {'y_shift_2_by_country': None, 'y_shift_1_by_country': None}
     {'y_shift_2_by_country': None, 'y_shift_1_by_country': None}

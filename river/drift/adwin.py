@@ -51,7 +51,7 @@ class ADWIN(DriftDetector):
 
     >>> # Update drift detector and verify if change is detected
     >>> for i, val in enumerate(data_stream):
-    ...     _ = adwin.update(val)
+    ...     adwin.update(val)
     ...     if adwin.drift_detected:
     ...         print(f"Change detected at index {i}, input value: {val}")
     Change detected at index 1023, input value: 4
@@ -133,5 +133,3 @@ class ADWIN(DriftDetector):
             self._reset()
 
         self._drift_detected = self._helper.update(x)
-
-        return self

@@ -53,9 +53,9 @@ class Beta(base.ContinuousDistribution):
     (0.867..., 0.165...)
 
     >>> for success in range(100):
-    ...     beta = beta.update(True)
+    ...     beta.update(True)
     >>> for failure in range(200):
-    ...     beta = beta.update(False)
+    ...     beta.update(False)
 
     >>> beta(.21), beta(.35)
     (2.525...e-05, 0.841...)
@@ -85,18 +85,18 @@ class Beta(base.ContinuousDistribution):
             self.alpha += 1
         else:
             self.beta += 1
-        return self
 
     def revert(self, x):
         if x:
             self.alpha -= 1
         else:
             self.beta -= 1
-        return self
 
     def __call__(self, p: float):
         return (
-            p ** (self.alpha - 1) * (1 - p) ** (self.beta - 1) / _beta_func(self.alpha, self.beta)
+            p ** (self.alpha - 1)
+            * (1 - p) ** (self.beta - 1)
+            / _beta_func(self.alpha, self.beta)
         )
 
     def sample(self):

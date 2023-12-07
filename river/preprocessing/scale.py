@@ -52,7 +52,8 @@ class Binarizer(base.Transformer):
 
     >>> binarizer = river.preprocessing.Binarizer()
     >>> for x in X:
-    ...     print(binarizer.learn_one(x).transform_one(x))
+    ...     binarizer.learn_one(x)
+    ...     print(binarizer.transform_one(x))
     {'x1': False, 'x2': False}
     {'x1': True, 'x2': True}
     {'x1': True, 'x2': True}
@@ -114,7 +115,8 @@ class StandardScaler(base.MiniBatchTransformer):
     >>> scaler = preprocessing.StandardScaler()
 
     >>> for x in X:
-    ...     print(scaler.learn_one(x).transform_one(x))
+    ...     scaler.learn_one(x)
+    ...     print(scaler.transform_one(x))
     {'x': 0.0, 'y': 0.0}
     {'x': -0.999, 'y': 0.999}
     {'x': 0.937, 'y': 1.350}
@@ -129,8 +131,8 @@ class StandardScaler(base.MiniBatchTransformer):
     >>> X = pd.DataFrame.from_dict(X)
 
     >>> scaler = preprocessing.StandardScaler()
-    >>> scaler = scaler.learn_many(X[:3])
-    >>> scaler = scaler.learn_many(X[3:])
+    >>> scaler.learn_many(X[:3])
+    >>> scaler.learn_many(X[3:])
 
     You can then call `transform_many` to scale a mini-batch of features:
 
@@ -165,8 +167,6 @@ class StandardScaler(base.MiniBatchTransformer):
                 self.vars[i] += (
                     (xi - old_mean) * (xi - self.means[i]) - self.vars[i]
                 ) / self.counts[i]
-
-        return self
 
     def transform_one(self, x):
         if self.with_std:
@@ -216,8 +216,6 @@ class StandardScaler(base.MiniBatchTransformer):
             if self.with_std:
                 self.vars[col] = a * old_var + b * new_var + a * b * (old_mean - new_mean) ** 2
             self.counts[col] += new_count
-
-        return self
 
     def transform_many(self, X: pd.DataFrame):
         """Scale a mini-batch of features.
@@ -280,7 +278,8 @@ class MinMaxScaler(base.Transformer):
     >>> scaler = preprocessing.MinMaxScaler()
 
     >>> for x in X:
-    ...     print(scaler.learn_one(x).transform_one(x))
+    ...     scaler.learn_one(x)
+    ...     print(scaler.transform_one(x))
     {'x': 0.0}
     {'x': 0.0}
     {'x': 0.406920}
@@ -297,8 +296,6 @@ class MinMaxScaler(base.Transformer):
         for i, xi in x.items():
             self.min[i].update(xi)
             self.max[i].update(xi)
-
-        return self
 
     def transform_one(self, x):
         return {
@@ -338,7 +335,8 @@ class MaxAbsScaler(base.Transformer):
     >>> scaler = preprocessing.MaxAbsScaler()
 
     >>> for x in X:
-    ...     print(scaler.learn_one(x).transform_one(x))
+    ...     scaler.learn_one(x)
+    ...     print(scaler.transform_one(x))
     {'x': 1.0}
     {'x': 0.767216}
     {'x': 0.861940}
@@ -353,8 +351,6 @@ class MaxAbsScaler(base.Transformer):
     def learn_one(self, x):
         for i, xi in x.items():
             self.abs_max[i].update(xi)
-
-        return self
 
     def transform_one(self, x):
         return {i: safe_div(xi, self.abs_max[i].get()) for i, xi in x.items()}
@@ -403,7 +399,8 @@ class RobustScaler(base.Transformer):
     >>> scaler = preprocessing.RobustScaler()
 
     >>> for x in X:
-    ...     print(scaler.learn_one(x).transform_one(x))
+    ...     scaler.learn_one(x)
+    ...     print(scaler.transform_one(x))
         {'x': 0.0}
         {'x': -1.0}
         {'x': 0.0}
@@ -426,8 +423,6 @@ class RobustScaler(base.Transformer):
                 self.median[i].update(xi)
             if self.with_scaling:
                 self.iqr[i].update(xi)
-
-        return self
 
     def transform_one(self, x):
         x_tf = {}
@@ -525,7 +520,8 @@ class AdaptiveStandardScaler(base.Transformer):
     >>> scaler = preprocessing.AdaptiveStandardScaler(fading_factor=.6)
 
     >>> for x in X:
-    ...     print(scaler.learn_one(x).transform_one(x))
+    ...     scaler.learn_one(x)
+    ...     print(scaler.transform_one(x))
     {'x': 0.0}
     {'x': -0.816}
     {'x': 0.812}
@@ -546,7 +542,6 @@ class AdaptiveStandardScaler(base.Transformer):
         for i, xi in x.items():
             self.vars[i].update(xi)
             self.means[i].update(xi)
-        return self
 
     def transform_one(self, x):
         return {

@@ -65,10 +65,6 @@ class DriftDetector(_BaseDriftDetector):
         x
             Input value.
 
-        Returns
-        -------
-        self
-
         """
 
 
@@ -87,10 +83,6 @@ class BinaryDriftDetector(_BaseDriftDetector):
         ----------
         x
             Input boolean.
-
-        Returns
-        -------
-        self
 
         """
 

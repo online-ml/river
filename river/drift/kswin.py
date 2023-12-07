@@ -65,7 +65,7 @@ class KSWIN(DriftDetector):
 
     >>> # Update drift detector and verify if change is detected
     >>> for i, val in enumerate(data_stream):
-    ...     _ = kswin.update(val)
+    ...     kswin.update(val)
     ...     if kswin.drift_detected:
     ...         print(f"Change detected at index {i}, input value: {val}")
     Change detected at index 1016, input value: 6
@@ -156,8 +156,6 @@ class KSWIN(DriftDetector):
                 self._drift_detected = False
         else:  # Not enough samples in the sliding window for a valid test
             self._drift_detected = False
-
-        return self
 
     @classmethod
     def _unit_test_params(cls):

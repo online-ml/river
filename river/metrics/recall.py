@@ -27,7 +27,8 @@ class Recall(metrics.base.BinaryMetric):
     >>> metric = metrics.Recall()
 
     >>> for yt, yp in zip(y_true, y_pred):
-    ...     print(metric.update(yt, yp))
+    ...     metric.update(yt, yp)
+    ...     print(metric)
     Recall: 100.00%
     Recall: 100.00%
     Recall: 50.00%
@@ -65,7 +66,8 @@ class MacroRecall(metrics.base.MultiClassMetric):
     >>> metric = metrics.MacroRecall()
 
     >>> for yt, yp in zip(y_true, y_pred):
-    ...     print(metric.update(yt, yp))
+    ...     metric.update(yt, yp)
+    ...     print(metric)
     MacroRecall: 100.00%
     MacroRecall: 50.00%
     MacroRecall: 66.67%
@@ -110,7 +112,8 @@ class MicroRecall(metrics.MicroPrecision):
     >>> metric = metrics.MicroRecall()
 
     >>> for yt, yp in zip(y_true, y_pred):
-    ...     print(metric.update(yt, yp))
+    ...     metric.update(yt, yp)
+    ...     print(metric)
     MicroRecall: 100.00%
     MicroRecall: 50.00%
     MicroRecall: 66.67%
@@ -147,7 +150,8 @@ class WeightedRecall(metrics.base.MultiClassMetric):
     >>> metric = metrics.WeightedRecall()
 
     >>> for yt, yp in zip(y_true, y_pred):
-    ...     print(metric.update(yt, yp))
+    ...     metric.update(yt, yp)
+    ...     print(metric)
     WeightedRecall: 100.00%
     WeightedRecall: 50.00%
     WeightedRecall: 66.67%

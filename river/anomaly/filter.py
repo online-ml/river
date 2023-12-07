@@ -86,7 +86,9 @@ class ThresholdFilter(anomaly.base.AnomalyFilter):
 
     """
 
-    def __init__(self, anomaly_detector, threshold: float, protect_anomaly_detector=True):
+    def __init__(
+        self, anomaly_detector, threshold: float, protect_anomaly_detector=True
+    ):
         super().__init__(
             anomaly_detector=anomaly_detector,
             protect_anomaly_detector=protect_anomaly_detector,
@@ -144,8 +146,8 @@ class QuantileFilter(anomaly.base.AnomalyFilter):
     >>> for x, y in datasets.CreditCard().take(2000):
     ...     score = model.score_one(x)
     ...     is_anomaly = model['QuantileFilter'].classify(score)
-    ...     model = model.learn_one(x)
-    ...     report = report.update(y, is_anomaly)
+    ...     model.learn_one(x)
+    ...     report.update(y, is_anomaly)
 
     >>> report
                    Precision   Recall   F1       Support
@@ -180,13 +182,13 @@ class QuantileFilter(anomaly.base.AnomalyFilter):
         if not self.protect_anomaly_detector or not self.classify(score):
             self.anomaly_detector.learn_one(*args, **learn_kwargs)
         self.quantile.update(score)
-        return self
 
     @classmethod
     def _unit_test_params(cls):
         from river import preprocessing
 
         yield {
-            "anomaly_detector": preprocessing.StandardScaler() | anomaly.OneClassSVM(nu=0.2),
+            "anomaly_detector": preprocessing.StandardScaler()
+            | anomaly.OneClassSVM(nu=0.2),
             "q": 0.995,
         }

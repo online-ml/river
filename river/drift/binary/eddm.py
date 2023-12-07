@@ -69,7 +69,7 @@ class EDDM(base.BinaryDriftAndWarningDetector):
     >>> print_warning = True
     >>> # Update drift detector and verify if change is detected
     >>> for i, x in enumerate(data_stream):
-    ...     _ = eddm.update(x)
+    ...     eddm.update(x)
     ...     if eddm.warning_detected and print_warning:
     ...         print(f"Warning detected at index {i}")
     ...         print_warning = False
@@ -162,5 +162,3 @@ class EDDM(base.BinaryDriftAndWarningDetector):
 
             # Update the index of the last error/failure detected
             self._last_error = self._n
-
-        return self

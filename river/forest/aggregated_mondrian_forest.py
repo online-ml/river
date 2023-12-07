@@ -196,8 +196,6 @@ class AMFClassifier(AMFLearner, base.Classifier):
         for tree in self:
             tree.learn_one(x, y)
 
-        return self
-
     def predict_proba_one(self, x):
         # Checking that the model has been trained once at least
         # Otherwise return the default empty dict
@@ -316,8 +314,6 @@ class AMFRegressor(AMFLearner, base.Regressor):
             tree.learn_one(x, y)
 
         self.iteration += 1
-
-        return self
 
     def predict_one(self, x):
         # Checking that the model has been trained once at least

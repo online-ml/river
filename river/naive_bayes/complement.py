@@ -56,7 +56,7 @@ class ComplementNB(base.BaseNB):
     ... )
 
     >>> for sentence, label in docs:
-    ...     model = model.learn_one(sentence, label)
+    ...     model.learn_one(sentence, label)
 
     >>> model["nb"].p_class("yes")
     0.5
@@ -92,7 +92,7 @@ class ComplementNB(base.BaseNB):
     ...     ("nb", naive_bayes.ComplementNB(alpha=1))
     ... )
 
-    >>> model = model.learn_many(X, y)
+    >>> model.learn_many(X, y)
 
     >>> unseen = pd.Series(["Taiwanese Taipei", "Chinese Shanghai"])
 
@@ -133,10 +133,6 @@ class ComplementNB(base.BaseNB):
         y
             Target class.
 
-        Returns
-        -------
-        self
-
         """
         self.class_counts.update((y,))
 
@@ -144,8 +140,6 @@ class ComplementNB(base.BaseNB):
             self.feature_counts[f].update({y: frequency})
             self.feature_totals.update({f: frequency})
             self.class_totals.update({y: frequency})
-
-        return self
 
     def p_class(self, c):
         return self.class_counts[c] / sum(self.class_counts.values())
@@ -196,10 +190,6 @@ class ComplementNB(base.BaseNB):
         y
             Target classes.
 
-        Returns
-        -------
-        self
-
         """
         y = base.one_hot_encode(y)
         columns, classes = X.columns, y.columns
@@ -231,8 +221,6 @@ class ComplementNB(base.BaseNB):
             ]:
                 for f, count in dict_count.items():
                     self.feature_counts[f].update(count)
-
-        return self
 
     def _feature_log_prob(self, unknown: list, columns: list) -> pd.DataFrame:
         """Compute log probabilities of input features.

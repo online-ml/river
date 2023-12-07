@@ -82,7 +82,7 @@ class EmpiricalCovariance(SymmetricMatrix):
 
     >>> cov = covariance.EmpiricalCovariance()
     >>> for x in X.to_dict(orient="records"):
-    ...     cov = cov.update(x)
+    ...     cov.update(x)
     >>> cov
             blue     green    red
      blue    0.076    0.020   -0.010
@@ -92,7 +92,7 @@ class EmpiricalCovariance(SymmetricMatrix):
     There is also an `update_many` method to process mini-batches. The results are identical.
 
     >>> cov = covariance.EmpiricalCovariance()
-    >>> cov = cov.update_many(X)
+    >>> cov.update_many(X)
     >>> cov
             blue     green    red
      blue    0.076    0.020   -0.010
@@ -109,22 +109,6 @@ class EmpiricalCovariance(SymmetricMatrix):
     >>> cov["blue", "blue"]
     Var: 0.076119
 
-    Start from a state:
-    >>> n = 8
-    >>> mean = {'red': 0.416, 'green': 0.387, 'blue': 0.518}
-    >>> cov_ = {('red', 'red'): 0.079,
-    ...     ('red', 'green'): -0.053,
-    ...     ('red', 'blue'): -0.010,
-    ...     ('green', 'green'): 0.113,
-    ...     ('green', 'blue'): 0.020,
-    ...     ('blue', 'blue'): 0.076}
-    >>> cov = covariance.EmpiricalCovariance._from_state(
-    ...    n=n, mean=mean, cov=cov_, ddof=1)
-    >>> cov
-            blue     green    red
-     blue    0.076    0.020   -0.010
-    green    0.020    0.113   -0.053
-      red   -0.010   -0.053    0.079
     """
 
     def __init__(self, ddof=1):
@@ -150,7 +134,7 @@ class EmpiricalCovariance(SymmetricMatrix):
                 cov = self[i, j]
             except KeyError:
                 self._cov[i, j] = stats.Cov(self.ddof)
-                cov = self[i, j]
+                cov = self._cov[i, j]
             cov.update(x[i], x[j])
 
         for i, xi in x.items():
@@ -158,10 +142,8 @@ class EmpiricalCovariance(SymmetricMatrix):
                 var = self[i, i]
             except KeyError:
                 self._cov[i, i] = stats.Var(self.ddof)
-                var = self[i, i]
+                var = self._cov[i, i]
             var.update(xi)
-
-        return self
 
     def revert(self, x: dict):
         """Downdate with a single sample.
@@ -178,8 +160,6 @@ class EmpiricalCovariance(SymmetricMatrix):
 
         for i, xi in x.items():
             self[i, i].revert(x[i])
-
-        return self
 
     def update_many(self, X: pd.DataFrame):
         """Update with a dataframe of samples.
@@ -199,7 +179,9 @@ class EmpiricalCovariance(SymmetricMatrix):
         mean = dict(zip(X.columns, mean_arr))
         cov = {
             (i, j): cov_arr[r, c]
-            for (r, i), (c, j) in itertools.combinations_with_replacement(enumerate(X.columns), r=2)
+            for (r, i), (c, j) in itertools.combinations_with_replacement(
+                enumerate(X.columns), r=2
+            )
         }
 
         self = self._from_state(n=n, mean=mean, cov=cov, ddof=self.ddof)
@@ -234,7 +216,7 @@ class EmpiricalCovariance(SymmetricMatrix):
         new = cls(ddof=ddof)
         for i, j in itertools.combinations(mean.keys(), r=2):
             try:
-                new[i, j]
+                self[i, j]
             except KeyError:
                 new._cov[i, j] = stats.Cov(new.ddof)
                 if isinstance(cov, dict):
@@ -251,7 +233,7 @@ class EmpiricalCovariance(SymmetricMatrix):
 
         for i in mean.keys():
             try:
-                new[i, i]
+                self[i, i]
             except KeyError:
                 new._cov[i, i] = stats.Var(new.ddof)
             if isinstance(cov, dict):
@@ -291,7 +273,7 @@ class EmpiricalPrecision(SymmetricMatrix):
 
     >>> prec = covariance.EmpiricalPrecision()
     >>> for x in X.to_dict(orient="records"):
-    ...     prec = prec.update(x)
+    ...     prec.update(x)
 
     >>> prec
         0        1        2
@@ -339,7 +321,10 @@ class EmpiricalPrecision(SymmetricMatrix):
         # Fortran order is necessary for scipy's linalg.blas.dger
         inv_cov = np.array(
             [
-                [self._inv_cov.get(min((i, j), (j, i)), 1.0 if i == j else 0.0) for j in x]
+                [
+                    self._inv_cov.get(min((i, j), (j, i)), 1.0 if i == j else 0.0)
+                    for j in x
+                ]
                 for i in x
             ],
             order="F",
@@ -359,8 +344,6 @@ class EmpiricalPrecision(SymmetricMatrix):
             for j, fj in enumerate(x):
                 self._inv_cov[min((fi, fj), (fj, fi))] = row[j]
 
-        return self
-
     def update_many(self, X: pd.DataFrame):
         """Update with a dataframe of samples.
 
@@ -376,7 +359,13 @@ class EmpiricalPrecision(SymmetricMatrix):
         loc = np.array([self._loc.get(feature, 0.0) for feature in X])
         w = np.array([self._w.get(feature, 0.0) for feature in X])
         inv_cov = np.array(
-            [[self._inv_cov.get(min((i, j), (j, i)), 1.0 if i == j else 0.0) for j in X] for i in X]
+            [
+                [
+                    self._inv_cov.get(min((i, j), (j, i)), 1.0 if i == j else 0.0)
+                    for j in X
+                ]
+                for i in X
+            ]
         ) / np.maximum(w, 1)
 
         # update formulas

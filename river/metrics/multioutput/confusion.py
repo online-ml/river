@@ -28,7 +28,7 @@ class MultiLabelConfusionMatrix:
     ... ]
 
     >>> for yt, yp in zip(y_true, y_pred):
-    ...     cm = cm.update(yt, yp)
+    ...     cm.update(yt, yp)
 
     >>> cm
     0
@@ -59,7 +59,6 @@ class MultiLabelConfusionMatrix:
                 cm = metrics.ConfusionMatrix()
                 self.data[label] = cm
             cm.update(yt, y_pred[label], w)
-        return self
 
     def revert(self, y_true, y_pred, w=1.0):
         for label, yt in y_true.items():
@@ -69,10 +68,11 @@ class MultiLabelConfusionMatrix:
                 cm = metrics.ConfusionMatrix()
                 self.data[label] = cm
             cm.update(yt, y_pred[label], w)
-        return self
 
     def __repr__(self):
         return "\n\n".join(
-            "\n".join([str(label)] + textwrap.indent(repr(cm), prefix="    ").splitlines())
+            "\n".join(
+                [str(label)] + textwrap.indent(repr(cm), prefix="    ").splitlines()
+            )
             for label, cm in self.data.items()
         )

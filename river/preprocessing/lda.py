@@ -95,7 +95,7 @@ class LDA(base.Transformer):
     ... )
 
     >>> for x in X:
-    ...     lda = lda.learn_one(x)
+    ...     lda.learn_one(x)
     ...     topics = lda.transform_one(x)
     ...     print(topics)
     {0: 0.5, 1: 2.5}
@@ -195,7 +195,6 @@ class LDA(base.Transformer):
 
     def learn_one(self, x):
         self.learn_transform_one(x)
-        return self
 
     def transform_one(self, x):
         # Extracts words of the document as a list of words:

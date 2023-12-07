@@ -243,7 +243,7 @@ class Pipeline(base.Estimator):
     >>> model = (tfidf + counts) | mnb
 
     >>> for x, y in dataset:
-    ...     model = model.learn_one(x, y)
+    ...     model.learn_one(x, y)
 
     >>> x = dataset[0][0]
     >>> report = model.debug_one(dataset[0][0])
@@ -477,8 +477,6 @@ class Pipeline(base.Estimator):
             else:
                 step.learn_one(x=x)
 
-        return self
-
     def _transform_one(self, x: dict):
         """This methods takes care of applying the first n - 1 steps of the pipeline, which are
         supposedly transformers. It also returns the final step so that other functions can do
@@ -704,8 +702,6 @@ class Pipeline(base.Estimator):
             last_step.learn_many(X=X, y=y, **params)
         else:
             last_step.learn_many(X=X, **params)
-
-        return self
 
     def _transform_many(self, X: pd.DataFrame):
         """This methods takes care of applying the first n - 1 steps of the pipeline, which are

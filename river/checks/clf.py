@@ -15,7 +15,7 @@ def check_predict_proba_one(classifier, dataset):
     for x, y in dataset:
         xx, yy = copy.deepcopy(x), copy.deepcopy(y)
 
-        classifier = classifier.learn_one(x, y)
+        classifier.learn_one(x, y)
         y_pred = classifier.predict_proba_one(x)
 
         if utils.inspect.isactivelearner(classifier):
@@ -37,7 +37,7 @@ def check_predict_proba_one_binary(classifier, dataset):
 
     for x, y in dataset:
         y_pred = classifier.predict_proba_one(x)
-        classifier = classifier.learn_one(x, y)
+        classifier.learn_one(x, y)
         assert set(y_pred.keys()) == {False, True}
 
 

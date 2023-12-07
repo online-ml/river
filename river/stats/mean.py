@@ -24,7 +24,8 @@ class Mean(stats.base.Univariate):
     >>> X = [-5, -3, -1, 1, 3, 5]
     >>> mean = stats.Mean()
     >>> for x in X:
-    ...     print(mean.update(x).get())
+    ...     mean.update(x)
+    ...     print(mean.get())
     -5.0
     -4.0
     -3.0
@@ -40,7 +41,8 @@ class Mean(stats.base.Univariate):
     >>> rmean = utils.Rolling(stats.Mean(), window_size=2)
 
     >>> for x in X:
-    ...     print(rmean.update(x).get())
+    ...     rmean.update(x)
+    ...     print(rmean.get())
     1.0
     1.5
     2.5
@@ -63,14 +65,12 @@ class Mean(stats.base.Univariate):
     def update(self, x, w=1.0):
         self.n += w
         self._mean += (w / self.n) * (x - self._mean)
-        return self
 
     def update_many(self, X: np.ndarray):
         a = self.n / (self.n + len(X))
         b = len(X) / (self.n + len(X))
         self._mean = a * self._mean + b * np.mean(X)
         self.n += len(X)
-        return self
 
     def revert(self, x, w=1.0):
         self.n -= w
@@ -80,7 +80,6 @@ class Mean(stats.base.Univariate):
             self._mean = 0.0
         else:
             self._mean -= (w / self.n) * (x - self._mean)
-        return self
 
     def get(self):
         return self._mean
@@ -148,11 +147,9 @@ class BayesianMean(stats.base.Univariate):
 
     def update(self, x):
         self._mean.update(x)
-        return self
 
     def revert(self, x):
         self._mean.revert(x)
-        return self
 
     def get(self):
         # Uses the notation from https://www.wikiwand.com/en/Bayes_estimator#/Practical_example_of_Bayes_estimators

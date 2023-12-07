@@ -27,7 +27,8 @@ class Jaccard(metrics.base.BinaryMetric):
     >>> metric = metrics.Jaccard()
 
     >>> for yt, yp in zip(y_true, y_pred):
-    ...     print(metric.update(yt, yp))
+    ...     metric.update(yt, yp)
+    ...     print(metric)
     Jaccard: 0.00%
     Jaccard: 50.00%
     Jaccard: 66.67%
@@ -69,7 +70,8 @@ class MacroJaccard(metrics.base.MultiClassMetric):
     >>> metric = metrics.MacroJaccard()
 
     >>> for yt, yp in zip(y_true, y_pred):
-    ...     print(metric.update(yt, yp))
+    ...     metric.update(yt, yp)
+    ...     print(metric)
     MacroJaccard: 100.00%
     MacroJaccard: 25.00%
     MacroJaccard: 50.00%
@@ -115,7 +117,8 @@ class MicroJaccard(metrics.base.MultiClassMetric):
     >>> metric = metrics.MicroJaccard()
 
     >>> for yt, yp in zip(y_true, y_pred):
-    ...     print(metric.update(yt, yp))
+    ...     metric.update(yt, yp)
+    ...     print(metric)
     MicroJaccard: 100.00%
     MicroJaccard: 33.33%
     MicroJaccard: 50.00%
@@ -156,7 +159,8 @@ class WeightedJaccard(metrics.base.MultiClassMetric):
     >>> metric = metrics.WeightedJaccard()
 
     >>> for yt, yp in zip(y_true, y_pred):
-    ...     print(metric.update(yt, yp))
+    ...     metric.update(yt, yp)
+    ...     print(metric)
     WeightedJaccard: 100.00%
     WeightedJaccard: 25.00%
     WeightedJaccard: 50.00%

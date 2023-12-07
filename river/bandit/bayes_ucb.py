@@ -45,8 +45,8 @@ class BayesUCB(bandit.base.Policy):
     >>> while True:
     ...     action = policy.pull(range(env.action_space.n))
     ...     observation, reward, terminated, truncated, info = env.step(action)
-    ...     policy = policy.update(action, reward)
-    ...     metric = metric.update(reward)
+    ...     policy.update(action, reward)
+    ...     metric.update(reward)
     ...     if terminated or truncated:
     ...         break
 
@@ -86,4 +86,3 @@ class BayesUCB(bandit.base.Policy):
         super().update(arm_id, *reward_args, **reward_kwargs)
         reward = reward_args[0]
         self._posteriors[arm_id].update(reward)
-        return self

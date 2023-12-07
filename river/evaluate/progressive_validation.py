@@ -23,7 +23,9 @@ def _progressive_validation(
 ):
     # Check that the model and the metric are in accordance
     if not metric.works_with(model):
-        raise ValueError(f"{metric.__class__.__name__} metric is not compatible with {model}")
+        raise ValueError(
+            f"{metric.__class__.__name__} metric is not compatible with {model}"
+        )
 
     # Determine if predict_one or predict_proba_one should be used in case of a classifier
     if utils.inspect.isanomalydetector(model) or utils.inspect.isanomalyfilter(model):
@@ -337,8 +339,8 @@ def progressive_val_score(
 
     >>> for x, y in datasets.Phishing():
     ...     y_pred = model.predict_proba_one(x)
-    ...     metric = metric.update(y, y_pred)
-    ...     model = model.learn_one(x, y)
+    ...     metric.update(y, y_pred)
+    ...     model.learn_one(x, y)
 
     >>> metric
     ROCAUC: 95.07%

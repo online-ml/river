@@ -12,31 +12,12 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-        arch: [main, alt]
-        include:
-          - os: ubuntu-latest
-            platform: linux
-          - os: windows-latest
-            ls: dir
-          - os: macos-latest
-            arch: alt
-            alt_arch_name: arm64
-          - os: ubuntu-latest
-            platform: linux
-            alt_arch_name: aarch64
-        exclude:
-          - os: windows-latest
-            arch: alt
-          - os: macos-latest
-            arch: alt
-          - os: ubuntu-latest
-            arch: alt
+        os: [ubuntu-latest, windows-latest, macos-11, macos-latest]
 
     steps:
       - uses: actions/checkout@v3
 
-      - name: set up rust
+      - name: Set up rust
         if: matrix.os != 'ubuntu-latest'
         uses: actions-rs/toolchain@v1
         with:
@@ -45,7 +26,7 @@ jobs:
           override: true
 
       - run: rustup target add aarch64-apple-darwin
-        if: matrix.os == 'macos-latest'
+        if: matrix.os == 'macos-latest' || matrix.os == 'macos-11'
 
       - run: rustup toolchain install stable-i686-pc-windows-msvc
         if: matrix.os == 'windows-latest'
@@ -63,28 +44,48 @@ jobs:
         uses: pypa/cibuildwheel@v2.16.2
         env:
           CIBW_BUILD: "cp39-* cp310-* cp311-* cp312-*"
-          CIBW_BEFORE_BUILD: >
-            pip install setuptools-rust cython &&
-            rustup default nightly &&
-            rustup show
-          # rust doesn't seem to be available for musl linux on i686
-          CIBW_SKIP: "*-musllinux_{i686,aarch64}"
-          # we build for "alt_arch_name" if it exists, else 'auto
-          CIBW_ARCHS: ${{ matrix.alt_arch_name || 'auto' }}
+          CIBW_ARCHS_LINUX: "x86_64 i686 aarch64 ppc64le s390x"
+          # CIBW_ARCHS_MACOS: "x86_64 arm64"
+          CIBW_ARCHS_MACOS: "universal2"
+          # We don't build ARM64 wheels yet because there's a Rust issue
+          CIBW_ARCHS_WINDOWS: "AMD64 x86"
+          # Rust nighlty doesn't seem to be available for musl linux on i686 and ppc64le and s390x (yet)
+          CIBW_SKIP: "*-musllinux_i686 *-musllinux_ppc64le *-musllinux_s390x"
+
+          # arm64 and universal2 wheels are tagged with x86_64 because there's an issue with Poetry
+          # More information here: https://cibuildwheel.readthedocs.io/en/stable/faq/#how-to-cross-compile (CTRL + F "poetry")
+          # https://github.com/pypa/cibuildwheel/issues/1415
+          CIBW_REPAIR_WHEEL_COMMAND_MACOS: >
+            ls {dest_dir} &&
+            delocate-wheel --require-archs {delocate_archs} -w {dest_dir} -v {wheel} &&
+            for file in {dest_dir}/*.whl ; do mv $file ${file//x86_64/universal2} ; done
 
           CIBW_MANYLINUX_X86_64_IMAGE: "manylinux2014"
-          CIBW_MUSLLINUX_X86_64_IMAGE: "musllinux_1_1"
+          CIBW_MANYLINUX_I686_IMAGE: "manylinux2014"
           CIBW_MANYLINUX_AARCH64_IMAGE: "manylinux2014"
+          CIBW_MANYLINUX_PPC64LE_IMAGE: "manylinux2014"
+          CIBW_MANYLINUX_S390X_IMAGE: "manylinux2014"
+          CIBW_MANYLINUX_PYPY_X86_64_IMAGE: "manylinux2014"
+          CIBW_MANYLINUX_PYPY_I686_IMAGE: "manylinux2014"
+          CIBW_MANYLINUX_PYPY_AARCH64_IMAGE: "manylinux2014"
+
+          CIBW_MUSLLINUX_X86_64_IMAGE: "musllinux_1_1"
+          CIBW_MUSLLINUX_I686_IMAGE: "musllinux_1_1"
           CIBW_MUSLLINUX_AARCH64_IMAGE: "musllinux_1_1"
+          CIBW_MUSLLINUX_PPC64LE_IMAGE: "musllinux_1_1"
+          CIBW_MUSLLINUX_S390X_IMAGE: "musllinux_1_1"
+
           CIBW_ENVIRONMENT: 'PATH="$HOME/.cargo/bin:$PATH"'
           # Fix the following error: error: cargo rustc --lib --message-format=json-render-diagnostics --manifest-path Cargo.toml --release -v --features pyo3/extension-module -- --crate-type cdylibfailed with code -9
           # You need to set a second environment variable CARGO_NET_GIT_FETCH_WITH_CLI="true" for linux environments
           # Solutio found here: https://github.com/rust-lang/cargo/issues/10583
           CIBW_ENVIRONMENT_LINUX: 'PATH="$HOME/.cargo/bin:$PATH" CARGO_NET_GIT_FETCH_WITH_CLI="true"'
-          CIBW_MANYLINUX_I686_IMAGE: "manylinux2014"
           CIBW_ENVIRONMENT_WINDOWS: 'PATH="$UserProfile\.cargo\bin;$PATH"'
+
+          CIBW_BEFORE_BUILD: >
+            rustup default nightly &&
+            rustup show
           CIBW_BEFORE_BUILD_LINUX: >
-            pip install cython numpy setuptools wheel setuptools-rust &&
             curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain=nightly --profile=minimal -y &&
             rustup show
 

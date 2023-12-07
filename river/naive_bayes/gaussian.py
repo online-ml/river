@@ -33,7 +33,7 @@ class GaussianNB(base.Classifier):
     >>> model = naive_bayes.GaussianNB()
 
     >>> for x, y in stream.iter_array(X, Y):
-    ...     _ = model.learn_one(x, y)
+    ...     model.learn_one(x, y)
 
     >>> model.predict_one({0: -0.8, 1: -1})
     1
@@ -51,8 +51,6 @@ class GaussianNB(base.Classifier):
 
         for i, xi in x.items():
             self.gaussians[y][i].update(xi)
-
-        return self
 
     def predict_proba_one(self, x):
         """Return probabilities using the log-likelihoods."""

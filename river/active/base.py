@@ -71,4 +71,3 @@ class ActiveLearningClassifier(base.Wrapper, base.Classifier):
 
     def learn_one(self, x, y, **kwargs):
         self.classifier.learn_one(x, y)
-        return self

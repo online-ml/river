@@ -172,8 +172,6 @@ class Set(base.Base):
         for x in values:
             self.add(x)
 
-        return self
-
     def __contains__(self, x: typing.Hashable):
         proj = []
         pos = self._hash(x)

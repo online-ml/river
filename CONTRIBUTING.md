@@ -106,40 +106,10 @@ From the root of the repository, you can then run the `make livedoc` command to 
 
 All classes and function are automatically picked up and added to the documentation. The only thing you have to do is to add an entry to the relevant file in the [`docs/releases` directory](docs/releases).
 
-## Building Cython extensions
-
-```sh
-make build-cython
-```
-
-## Building Rust extensions
-
-Debug settings:
-
-```sh
-make develop
-```
-
-Release settings:
-
-```sh
-make build-rust
-```
-
-After building the project by modifying the rust part of the codebase (changing the project architecture, renaming it, etc.), it happens that by importing `river,` the python process is killed. If this happens, we invite you to remove the following things and start a new build:
-
-```sh
-# remove all .so output from rust ie river/stats/_rust_stats.cpython*
-rm -rf target
-rm -rf river.egg-info
-rm Cargo.lock
-rm -rf build
-```
-
 ## Build Cython and Rust extensions
 
 ```sh
-make build_all
+poetry install
 ```
 
 ## Testing
@@ -182,10 +152,11 @@ make execute-notebooks
 2. Run `make execute-notebooks` just to be safe
 3. Run the [benchmarks](benchmarks)
 4. Bump the version in `river/__version__.py`
-5. Tag and date the `docs/releases/unreleased.md` file
-6. Commit and push
-7. Wait for CI to [run the unit tests](https://github.com/online-ml/river/actions/workflows/ci.yml)
-8. Push the tag:
+5. Bump the version in `pyproject.toml`
+6. Tag and date the `docs/releases/unreleased.md` file
+7. Commit and push
+8. Wait for CI to [run the unit tests](https://github.com/online-ml/river/actions/workflows/ci.yml)
+9. Push the tag:
 
 ```sh
 RIVER_VERSION=$(python -c "import river; print(river.__version__)")

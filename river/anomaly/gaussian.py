@@ -32,7 +32,7 @@ class GaussianScorer(anomaly.base.SupervisedAnomalyDetector):
     >>> detector = anomaly.GaussianScorer()
 
     >>> for y in (rng.gauss(0, 1) for _ in range(100)):
-    ...     detector = detector.learn_one(None, y)
+    ...     detector.learn_one(None, y)
 
     >>> detector.score_one(None, -3)
     0.999477...
@@ -59,7 +59,6 @@ class GaussianScorer(anomaly.base.SupervisedAnomalyDetector):
 
     def learn_one(self, x, y):
         self.gaussian.update(y)
-        return self
 
     def score_one(self, x, y):
         if self.gaussian.n_samples < self.grace_period:

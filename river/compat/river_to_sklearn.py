@@ -530,7 +530,8 @@ class River2SKLClusterer(River2SKLBase, sklearn_base.ClusterMixin):
         # Call learn_one for each observation
         self.labels_ = np.empty(len(X), dtype=np.int32)
         for i, (x, _) in enumerate(STREAM_METHODS[type(X)](X)):
-            label = self.instance_.learn_one(x).predict_one(x)
+            self.instance_.learn_one(x)
+            label = self.instance_.predict_one(x)
             self.labels_[i] = label
 
         return self

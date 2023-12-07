@@ -21,7 +21,6 @@ class Min(stats.base.Univariate):
     def update(self, x):
         if x < self.min:
             self.min = x
-        return self
 
     def get(self):
         return self.min
@@ -43,7 +42,8 @@ class RollingMin(stats.base.RollingUnivariate):
     >>> X = [1, -4, 3, -2, 2, 1]
     >>> rolling_min = stats.RollingMin(2)
     >>> for x in X:
-    ...     print(rolling_min.update(x).get())
+    ...     rolling_min.update(x)
+    ...     print(rolling_min.get())
     1
     -4
     -4
@@ -62,7 +62,6 @@ class RollingMin(stats.base.RollingUnivariate):
 
     def update(self, x):
         self.window.append(x)
-        return self
 
     def get(self):
         try:

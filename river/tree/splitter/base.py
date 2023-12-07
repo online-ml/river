@@ -33,6 +33,7 @@ class Splitter(base.Estimator, abc.ABC):
             The target value.
         w
             The weight of the instance.
+
         """
 
     @abc.abstractmethod
@@ -49,6 +50,7 @@ class Splitter(base.Estimator, abc.ABC):
         Returns
         -------
             Probability for an attribute value given a class.
+
         """
 
     @abc.abstractmethod

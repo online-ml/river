@@ -91,4 +91,3 @@ class LinUCBDisjoint(bandit.base.ContextualPolicy):
         super().update(arm_id, None, *reward_args, **reward_kwargs)
         reward = reward_args[0]
         self._bayes_lin_regs[arm_id].learn_one(x=context, y=reward)
-        return self

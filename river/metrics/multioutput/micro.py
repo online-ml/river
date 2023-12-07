@@ -33,12 +33,10 @@ class MicroAverage(MultiOutputMetric, metrics.base.WrapperMetric):
     def update(self, y_true, y_pred, w=1.0):
         for i in y_true:
             self.metric.update(y_true[i], y_pred[i], w)
-        return self
 
     def revert(self, y_true, y_pred, w=1.0):
         for i in y_true:
             self.metric.revert(y_true[i], y_pred[i], w)
-        return self
 
     def get(self):
         return self.metric.get()

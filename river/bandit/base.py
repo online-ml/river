@@ -113,7 +113,6 @@ class Policy(base.Base, abc.ABC):
         self._rewards[arm_id].update(*reward_args, **reward_kwargs)
         self._counts[arm_id] += 1
         self._n += 1
-        return self
 
     @property
     def ranking(self) -> list[ArmID]:
@@ -214,4 +213,3 @@ class ContextualPolicy(Policy):
         self._rewards[arm_id].update(*reward_args, **reward_kwargs)
         self._counts[arm_id] += 1
         self._n += 1
-        return self
