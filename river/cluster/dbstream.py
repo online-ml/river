@@ -266,6 +266,15 @@ class DBSTREAM(base.Clusterer):
 
             if micro_cluster_i.weight * value < weight_weak:
                 micro_clusters.pop(i)
+                self.s.pop(i, None)
+                self.s_t.pop(i, None)
+                # Since self.s and self.s_t always have the same keys and are arranged in ascending orders
+                for j in self.s:
+                    if j < i:
+                        self.s[j].pop(i, None)
+                        self.s_t[j].pop(i, None)
+                    else:
+                        break
 
         # Update microclusters
         self._micro_clusters = micro_clusters
