@@ -183,7 +183,7 @@ class EmpiricalCovariance(SymmetricMatrix):
             )
         }
 
-        self._update_from_state(n=n, mean=mean, cov=cov, ddof=self.ddof)
+        self._update_from_state(n=n, mean=mean, cov=cov)
 
     def _update_from_state(self, n: int, mean: dict, cov: float | dict):
         """Update from state information.
