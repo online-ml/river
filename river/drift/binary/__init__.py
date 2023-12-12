@@ -6,5 +6,6 @@ from .eddm import EDDM
 from .hddm_a import HDDM_A
 from .hddm_w import HDDM_W
 from .fhddm import FHDDM
+from .fhddm_s import FHDDMS
 
-__all__ = ["DDM", "EDDM", "HDDM_A", "HDDM_W", "FHDDM"]
+__all__ = ["DDM", "EDDM", "HDDM_A", "HDDM_W", "FHDDM", "FHDDMS"]
