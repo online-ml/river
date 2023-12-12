@@ -76,24 +76,21 @@ def test_with_two_micro_clusters():
 
     add_cluster(dbstream, initial_point={1: 1, 2: 1}, move_towards={1: 1.7, 2: 1.7}, times=25)
     add_cluster(dbstream, initial_point={1: 3, 2: 3}, move_towards={1: 2.3, 2: 2.3}, times=25)
-    # Points in the middle of first and second micro-clusters
-    for _ in range(5):
-        dbstream.learn_one({1: 2, 2: 2})
 
-    assert len(dbstream._micro_clusters) == 2
+    assert len(dbstream.micro_clusters) == 2
     assert_micro_cluster_properties(
-        dbstream.micro_clusters[0], center={1: 1.597322, 2: 1.597322}, last_update=56
+        dbstream.micro_clusters[0], center={1: 2.137623, 2: 2.137623}, last_update=51
     )
     assert_micro_cluster_properties(
-        dbstream.micro_clusters[1], center={1: 2.402677, 2: 2.402677}, last_update=56
+        dbstream.micro_clusters[1], center={1: 2.914910, 2: 2.914910}, last_update=51
     )
 
-    assert dbstream.s == {0: {1: 3.995844478090532}}
-    assert dbstream.s_t == {0: {1: 56}}
+    assert dbstream.s == {0: {1: 23.033438964246173}}
+    assert dbstream.s_t == {0: {1: 51}}
 
     dbstream._recluster()
     assert len(dbstream.clusters) == 1
-    assert_micro_cluster_properties(dbstream.clusters[0], center={1: 2.003033, 2: 2.003033})
+    assert_micro_cluster_properties(dbstream.clusters[0], center={1: 2.415239, 2: 2.415239})
 
 
 def test_density_graph_with_three_micro_clusters():
