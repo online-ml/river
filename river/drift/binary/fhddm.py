@@ -59,7 +59,7 @@ class FHDDM(base.BinaryDriftAndWarningDetector):
     def __init__(
         self, sliding_window_size: int = 100, confidence_level: float = 0.000001
     ):
-        
+
         super().__init__()
         self.sliding_window_size = sliding_window_size
         self.confidence_level = confidence_level
@@ -83,8 +83,8 @@ class FHDDM(base.BinaryDriftAndWarningDetector):
     def update(self, x):
         if self.drift_detected:
             self._reset()
-        
-        #print (self.epsilon)   
+
+        #print (self.epsilon)
         #print (self.sliding_window)
         #print (self.pointer)
         if self.pointer < self.sliding_window_size:
