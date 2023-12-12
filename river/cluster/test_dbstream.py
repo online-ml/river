@@ -5,7 +5,7 @@ import pytest
 from river.cluster import DBSTREAM
 
 
-def build_dbstream(fading_factor=0.001, intersection_factor=0.05):
+def build_dbstream(fading_factor=0.01, intersection_factor=0.05):
     return DBSTREAM(
         fading_factor=fading_factor,
         clustering_threshold=1,
@@ -31,27 +31,44 @@ def test_cluster_formation_and_cleanup():
 
     X = [
         {1: 1},
+        {1: 2},
         {1: 3},
         {1: 3},
         {1: 3},
         {1: 5},
         {1: 7},
         {1: 9},
+        {1: 10},
         {1: 11},
         {1: 11},
+        {1: 12},
         {1: 13},
         {1: 11},
         {1: 15},
+        {1: 15},
+        {1: 16},
+        {1: 17},
+        {1: 17},
         {1: 17},
     ]
 
     for x in X:
         dbstream.learn_one(x)
 
-    assert len(dbstream._micro_clusters) == 3
-    assert_micro_cluster_properties(dbstream.micro_clusters[1], center={1: 3}, last_update=3)
-    assert_micro_cluster_properties(dbstream.micro_clusters[5], center={1: 11}, last_update=10)
-    assert_micro_cluster_properties(dbstream.micro_clusters[7], center={1: 17}, last_update=12)
+    assert len(dbstream._micro_clusters) == 4
+    assert_micro_cluster_properties(dbstream.micro_clusters[2], center={1: 3}, last_update=4)
+    assert_micro_cluster_properties(dbstream.micro_clusters[7], center={1: 11}, last_update=13)
+    assert_micro_cluster_properties(dbstream.micro_clusters[8], center={1: 15}, last_update=15)
+    assert_micro_cluster_properties(dbstream.micro_clusters[10], center={1: 17}, last_update=19)
+
+    assert dbstream.predict_one({1: 2.0}) == 0
+    assert dbstream.predict_one({1: 13.0}) == 1
+    assert dbstream.predict_one({1: 13 + 1e-10}) == 2
+    assert dbstream.predict_one({1: 16 - 1e-10}) == 2
+    assert dbstream.predict_one({1: 18}) == 3
+
+    assert len(dbstream._clusters) == 4
+    assert dbstream.s == dbstream.s_t == {}
 
 
 def test_with_two_micro_clusters():
