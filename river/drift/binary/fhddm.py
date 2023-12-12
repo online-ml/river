@@ -2,8 +2,7 @@ from __future__ import annotations
 
 import math
 
-from river import base, stats
-from river.base.drift_detector import BinaryDriftDetector
+from river import base
 
 
 class FHDDM(base.BinaryDriftAndWarningDetector):
