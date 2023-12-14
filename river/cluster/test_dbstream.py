@@ -157,3 +157,48 @@ def test_density_graph_with_removed_microcluster():
     dbstream._recluster()
     assert len(dbstream.clusters) == 1
     assert_micro_cluster_properties(dbstream.clusters[0], center={1: 3.152231, 2: 3.152231})
+
+
+def test_dbstream_synthetic_sklearn():
+    centers = [(-10, -10), (-5, -5), (0, 0), (5, 5), (10, 10)]
+    cluster_std = [0.6] * 5
+
+    # Create a dataset with 15000 data points with 5 centers and cluster SD of 0.6 each
+    X, y = make_blobs(n_samples=15_000,
+                      cluster_std=cluster_std,
+                      centers=centers,
+                      n_features=2,
+                      random_state=42)
+
+    dbstream = DBSTREAM(
+        clustering_threshold=2,
+        fading_factor=0.05,
+        intersection_factor=0.1,
+        cleanup_interval=1.0,
+        minimum_weight=1.0,
+    )
+
+    # Use VBeta as the metric to investigate the performance of DBSTREAM
+    v_beta = metrics.VBeta(beta=1.0)
+
+    for x, y_true in stream.iter_array(X, y):
+        dbstream.learn_one(x)
+        y_pred = dbstream.predict_one(x)
+        v_beta.update(y_true, y_pred)
+
+    assert len(dbstream._micro_clusters) == 12
+    assert round(v_beta.get(), 4) == 0.9816
+
+    assert dbstream.s.keys() == dbstream.s_t.keys()
+
+    dbstream._recluster()
+
+    # Check that the resulted cluster centers are close to the expected centers
+    dbstream_expected_centers = {0: {0: 10, 1: 10},
+                                 1: {0: -5, 1: -5},
+                                 2: {0: 0, 1: 0},
+                                 3: {0: 5, 1: 5},
+                                 4: {0: -10, 1: -10}}
+
+    for i in dbstream.centers.keys():
+        assert utils.math.minkowski_distance(dbstream.centers[i], dbstream_expected_centers[i], 2) < 0.2
