@@ -129,7 +129,8 @@ def test_density_graph_with_three_micro_clusters():
 
 
 def test_density_graph_with_removed_microcluster():
-    dbstream = build_dbstream(fading_factor=0.1, intersection_factor=0.3)
+    dbstream = build_dbstream(fading_factor=0.1,
+                              intersection_factor=0.3)
 
     add_cluster(dbstream, initial_point={1: 1, 2: 1}, move_towards={1: 1.7, 2: 1.7}, times=25)
     add_cluster(dbstream, initial_point={1: 3, 2: 3}, move_towards={1: 2.3, 2: 2.3}, times=25)
@@ -137,26 +138,28 @@ def test_density_graph_with_removed_microcluster():
     for _ in range(5):
         dbstream.learn_one({1: 2, 2: 2})
 
-    add_cluster(dbstream, initial_point={1: 4, 2: 4}, move_towards={1: 3.3, 2: 3.3}, times=25)
+    add_cluster(dbstream, initial_point={1: 3.5, 2: 3.5}, move_towards={1: 2.9, 2: 2.9}, times=25)
+
     # Points in the middle of second and third micro-clusters
     for _ in range(4):
-        dbstream.learn_one({1: 3, 2: 3})
+        dbstream.learn_one({1: 2.6, 2: 2.6})
 
     assert len(dbstream._micro_clusters) == 2
     assert_micro_cluster_properties(
-        dbstream.micro_clusters[1], center={1: 2.461654, 2: 2.461654}, last_update=86
+        dbstream.micro_clusters[0], center={1: 2.023498, 2: 2.023498}, last_update=86
     )
     assert_micro_cluster_properties(
-        dbstream.micro_clusters[2], center={1: 3.430485, 2: 3.430485}, last_update=86
+        dbstream.micro_clusters[1], center={1: 2.766543, 2: 2.766543}, last_update=86
     )
 
-    assert dbstream.s[0] == pytest.approx({1: 3.615835})
-    assert dbstream.s[1] == pytest.approx({2: 2.803583})
-    assert dbstream.s_t == {0: {1: 56}, 1: {2: 86}}
+    assert dbstream.s == {0: {1: 4.702391097045977}}
+    assert dbstream.s_t == {0: {1: 86}}
 
     dbstream._recluster()
     assert len(dbstream.clusters) == 1
-    assert_micro_cluster_properties(dbstream.clusters[0], center={1: 3.152231, 2: 3.152231})
+    assert_micro_cluster_properties(
+        dbstream.clusters[0], center={1: 2.560647, 2: 2.560647}
+    )
 
 
 def test_dbstream_synthetic_sklearn():
