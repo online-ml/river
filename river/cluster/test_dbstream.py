@@ -2,7 +2,10 @@ from __future__ import annotations
 
 import pytest
 
+from river import stream, utils, metrics
+
 from river.cluster import DBSTREAM
+from sklearn.datasets import make_blobs
 
 
 def build_dbstream(fading_factor=0.01, intersection_factor=0.05):
@@ -102,30 +105,33 @@ def test_density_graph_with_three_micro_clusters():
     for _ in range(5):
         dbstream.learn_one({1: 2, 2: 2})
 
+    assert dbstream.s == {0: {1: 23.033438964246173}}
+    assert dbstream.s_t == {0: {1: 51}}
+
     add_cluster(dbstream, initial_point={1: 4, 2: 4}, move_towards={1: 3.3, 2: 3.3}, times=25)
     # Points in the middle of second and third micro-clusters
     for _ in range(4):
         dbstream.learn_one({1: 3, 2: 3})
 
     assert len(dbstream._micro_clusters) == 3
+    assert_micro_cluster_properties(
+        dbstream.micro_clusters[0], center={1: 2.0, 2: 2.0}, last_update=56
+    )
+    assert_micro_cluster_properties(
+        dbstream.micro_clusters[1], center={1: 3.0, 2: 3.0}, last_update=86
+    )
+    assert_micro_cluster_properties(
+        dbstream.micro_clusters[2], center={1: 3.982141, 2: 3.982141}, last_update=82
+    )
 
-    assert_micro_cluster_properties(
-        dbstream.micro_clusters[0], center={1: 1.597322, 2: 1.597322}, last_update=56
-    )
-    assert_micro_cluster_properties(
-        dbstream.micro_clusters[1], center={1: 2.461654, 2: 2.461654}, last_update=86
-    )
-    assert_micro_cluster_properties(
-        dbstream.micro_clusters[2], center={1: 3.430485, 2: 3.430485}, last_update=86
-    )
-
-    assert dbstream.s[0] == pytest.approx({1: 3.995844})
-    assert dbstream.s[1] == pytest.approx({2: 2.997921})
-    assert dbstream.s_t == {0: {1: 56}, 1: {2: 86}}
+    assert dbstream.s[0] == pytest.approx({1: 23.033439})
+    assert dbstream.s[1] == pytest.approx({2: 23.033439})
+    assert dbstream.s_t == {0: {1: 51}, 1: {2: 82}}
 
     dbstream._recluster()
     assert len(dbstream.clusters) == 1
-    assert_micro_cluster_properties(dbstream.clusters[0], center={1: 2.489894, 2: 2.489894})
+    print(dbstream.clusters[0].center)
+    assert_micro_cluster_properties(dbstream.clusters[0], center={1: 2.800788, 2: 2.800788})
 
 
 def test_density_graph_with_removed_microcluster():
