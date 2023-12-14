@@ -1,11 +1,10 @@
 from __future__ import annotations
 
 import pytest
-
-from river import stream, utils, metrics
-
-from river.cluster import DBSTREAM
 from sklearn.datasets import make_blobs
+
+from river import metrics, stream, utils
+from river.cluster import DBSTREAM
 
 
 def build_dbstream(fading_factor=0.01, intersection_factor=0.05):
