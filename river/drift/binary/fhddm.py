@@ -22,7 +22,7 @@ class FHDDM(base.BinaryDriftAndWarningDetector):
     - 1: Error, $y \\neq y'$
 
     *Implementation based on MOA.*
-    
+
     Parameters
     ----------
     sliding_window_size
