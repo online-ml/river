@@ -22,6 +22,7 @@ class FHDDM(base.BinaryDriftAndWarningDetector):
     - 1: Error, $y \\neq y'$
 
     *Implementation based on MOA.*
+    
     Parameters
     ----------
     sliding_window_size
@@ -38,18 +39,18 @@ class FHDDM(base.BinaryDriftAndWarningDetector):
     >>> rng = random.Random(42)
     >>> fhddm = drift.binary.FHDDM()
 
-    >>> # Simulate a data stream where the first 1000 instances come from a uniform distribution
+    >>> # Simulate a data stream where the first 250 instances come from a uniform distribution
     >>> # of 1's and 0's
-    >>> data_stream = rng.choices([0, 1], k=1000)
-    >>> # Increase the probability of 1's appearing in the next 1000 instances
-    >>> data_stream = data_stream + rng.choices([0, 1], k=1000, weights=[0.7, 0.3])
+    >>> data_stream = rng.choices([0, 1], k=250)
+    >>> # Increase the probability of 1's appearing in the next 250 instances
+    >>> data_stream = data_stream + rng.choices([0, 1], k=250, weights=[0.9, 0.1])
     >>> # Update drift detector and verify if change is detected
     >>> for i, x in enumerate(data_stream):
     ...     fhddm.update(x)
     ...     if fhddm.drift_detected:
     ...         print(f"Change detected at index {i}")
-    ...         exit(0)
-    Change detected at index 1057
+    ...         break
+    Change detected at index 315
 
     References
     ----------
@@ -63,40 +64,31 @@ class FHDDM(base.BinaryDriftAndWarningDetector):
         super().__init__()
         self.sliding_window_size = sliding_window_size
         self.confidence_level = confidence_level
-        self.sliding_window = [0] * self.sliding_window_size
-        self.pointer = 0
-        self.epsilon = math.sqrt(
-            (math.log(1 / self.confidence_level)) / (2 * self.sliding_window_size)
-        )
-        self.u_max = 0
-        self.n_one = 0
+        self._reset()
 
     def _reset(self):
-        self.sliding_window = [0] * self.sliding_window_size
-        self.pointer = 0
-        self.epsilon = math.sqrt(
+        self._sliding_window = [0] * self.sliding_window_size
+        self._pointer = 0
+        self._epsilon = math.sqrt(
             (math.log(1 / self.confidence_level)) / (2 * self.sliding_window_size)
         )
-        self.u_max = 0
-        self.n_one = 0
+        self._u_max = 0
+        self._n_one = 0
 
     def update(self, x):
         if self.drift_detected:
             self._reset()
 
-        #print (self.epsilon)
-        #print (self.sliding_window)
-        #print (self.pointer)
-        if self.pointer < self.sliding_window_size:
-            self.sliding_window[self.pointer] = x
-            self.n_one += self.sliding_window[self.pointer]
-            self.pointer += 1
+        if self._pointer < self.sliding_window_size:
+            self._sliding_window[self._pointer] = x
+            self._n_one += self._sliding_window[self._pointer]
+            self._pointer += 1
         else:
-            self.n_one -= self.sliding_window.pop(0)
-            self.sliding_window.append(x)
-            self.n_one += x
+            self._n_one -= self._sliding_window.pop(0)
+            self._sliding_window.append(x)
+            self._n_one += x
 
-        if self.pointer == self.sliding_window_size:
-            u = self.n_one / self.sliding_window_size
-            self.u_max = u if (self.u_max < u) else self.u_max
-            self._drift_detected = True if (self.u_max - u > self.epsilon) else False
+        if self._pointer == self.sliding_window_size:
+            u = self._n_one / self.sliding_window_size
+            self._u_max = u if (self._u_max < u) else self._u_max
+            self._drift_detected = True if (self._u_max - u > self._epsilon) else False
