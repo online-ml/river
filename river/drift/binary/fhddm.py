@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import collections
 import math
 
 from river import base
@@ -49,7 +50,6 @@ class FHDDM(base.BinaryDriftAndWarningDetector):
     ...     fhddm.update(x)
     ...     if fhddm.drift_detected:
     ...         print(f"Change detected at index {i}")
-    ...         break
     Change detected at index 315
 
     References
@@ -67,28 +67,21 @@ class FHDDM(base.BinaryDriftAndWarningDetector):
         self._reset()
 
     def _reset(self):
-        self._sliding_window = [0] * self.sliding_window_size
-        self._pointer = 0
+        self._sliding_window = collections.deque(maxlen=self.sliding_window_size)
         self._epsilon = math.sqrt(
             (math.log(1 / self.confidence_level)) / (2 * self.sliding_window_size)
         )
         self._u_max = 0
-        self._n_one = 0
 
     def update(self, x):
         if self.drift_detected:
+            self._drift_detected = False
             self._reset()
 
-        if self._pointer < self.sliding_window_size:
-            self._sliding_window[self._pointer] = x
-            self._n_one += self._sliding_window[self._pointer]
-            self._pointer += 1
-        else:
-            self._n_one -= self._sliding_window.pop(0)
-            self._sliding_window.append(x)
-            self._n_one += x
+        self._sliding_window.append(x)
 
-        if self._pointer == self.sliding_window_size:
-            u = self._n_one / self.sliding_window_size
+        if len(self._sliding_window) == self.sliding_window_size:
+            n_one = self._sliding_window.count(1)
+            u = n_one / self.sliding_window_size
             self._u_max = u if (self._u_max < u) else self._u_max
             self._drift_detected = True if (self._u_max - u > self._epsilon) else False

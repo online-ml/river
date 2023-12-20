@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import collections
+import itertools
 import math
 
 from river import base
@@ -40,16 +42,15 @@ class FHDDMS(base.BinaryDriftAndWarningDetector):
 
     >>> # Simulate a data stream where the first 1000 instances come from a uniform distribution
     >>> # of 1's and 0's
-    >>> data_stream = rng.choices([0, 1], k=1000)
+    >>> data_stream = rng.choices([0, 1], k=250)
     >>> # Increase the probability of 1's appearing in the next 1000 instances
-    >>> data_stream = data_stream + rng.choices([0, 1], k=1000, weights=[0.7, 0.3])
+    >>> data_stream = data_stream + rng.choices([0, 1], k=250, weights=[0.9, 0.1])
     >>> # Update drift detector and verify if change is detected
     >>> for i, x in enumerate(data_stream):
     ...     fhddms.update(x)
     ...     if fhddms.drift_detected:
     ...         print(f"Change detected at index {i}")
-    ...         exit(0)
-    Change detected at index 1057
+    Change detected at index 284
 
     References
     ----------
@@ -59,29 +60,22 @@ class FHDDMS(base.BinaryDriftAndWarningDetector):
 
     def __init__(
         self,
-        stack_size: int = 4,
+        sliding_window_size: int = 100,
         short_window_size: int = 25,
         confidence_level: float = 0.000001,
     ):
         super().__init__()
-        self.stack_size = stack_size
         self.short_window_size = short_window_size
-        self.long_window_size = short_window_size * stack_size
+        self.long_window_size = sliding_window_size
+
+        assert self.short_window_size < self.long_window_size, "Short window must be smaller than long window"
+
         self.confidence_level = confidence_level
 
-        self.stack = [0] * (self.short_window_size * self.stack_size)
-        self.epsilon_s = math.sqrt(
-            (math.log(1 / self.confidence_level)) / (2 * self.short_window_size)
-        )
-        self.epsilon_l = math.sqrt(
-            (math.log(1 / self.confidence_level)) / (2 * self.long_window_size)
-        )
-        self.pointer = 0
-        self.u_s_max = 0
-        self.u_l_max = 0
+        self._reset()
 
     def _reset(self):
-        self.stack = [0] * (self.short_window_size * self.stack_size)
+        self._sliding_window = collections.deque(maxlen=self.long_window_size)
         self.epsilon_s = math.sqrt(
             (math.log(1 / self.confidence_level)) / (2 * self.short_window_size)
         )
@@ -94,22 +88,21 @@ class FHDDMS(base.BinaryDriftAndWarningDetector):
 
     def update(self, x):
         if self.drift_detected:
+            self._drift_detected = False
             self._reset()
 
-        if self.pointer < self.stack_size:
-            self.stack[self.pointer] = x
-            self.pointer += 1
-        else:
-            _ = self.stack.pop(0)
-            self.stack.append(x)
+        self._sliding_window.append(x)
 
-        if self.pointer == self.stack_size:
+        short_win_drift_status = False
+        long_win_drift_status = False
+
+        if len(self._sliding_window) == self.long_window_size:
             u_s = (
-                sum(self.stack[self.stack_size - self.short_window_size :])
+                sum (itertools.islice(self._sliding_window, self.long_window_size - self.short_window_size, self.long_window_size))
                 / self.short_window_size
             )
             self.u_s_max = u_s if self.u_s_max < u_s else self.u_s_max
-            u_l = sum(self.stack) / self.long_window_size
+            u_l = self._sliding_window.count(1) / self.long_window_size
             self.u_l_max = u_l if self.u_l_max < u_l else self.u_l_max
 
             short_win_drift_status = (
@@ -119,4 +112,4 @@ class FHDDMS(base.BinaryDriftAndWarningDetector):
                 True if self.u_l_max - u_l > self.epsilon_l else False
             )
 
-            self._drift_detected = short_win_drift_status or long_win_drift_status
+        self._drift_detected = short_win_drift_status or long_win_drift_status
