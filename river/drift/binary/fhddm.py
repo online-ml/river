@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import collections
+import itertools
 import math
 
 from river import base
@@ -58,12 +59,13 @@ class FHDDM(base.BinaryDriftAndWarningDetector):
 
     """
     def __init__(
-        self, sliding_window_size: int = 100, confidence_level: float = 0.000001
+        self, sliding_window_size: int = 100, confidence_level: float = 0.000001, short_window_size: int = None
     ):
 
         super().__init__()
         self.sliding_window_size = sliding_window_size
         self.confidence_level = confidence_level
+        self.short_window_size = short_window_size
         self._reset()
 
     def _reset(self):
@@ -72,6 +74,12 @@ class FHDDM(base.BinaryDriftAndWarningDetector):
             (math.log(1 / self.confidence_level)) / (2 * self.sliding_window_size)
         )
         self._u_max = 0
+        if self.short_window_size is not None:
+            self._short_window = collections.deque(maxlen=self.short_window_size)
+            self._u_short_max = 0
+            self._epsilon_s = math.sqrt(
+                (math.log(1 / self.confidence_level)) / (2 * self.short_window_size)
+            )
 
     def update(self, x):
         if self.drift_detected:
@@ -84,4 +92,20 @@ class FHDDM(base.BinaryDriftAndWarningDetector):
             n_one = self._sliding_window.count(1)
             u = n_one / self.sliding_window_size
             self._u_max = u if (self._u_max < u) else self._u_max
-            self._drift_detected = True if (self._u_max - u > self._epsilon) else False
+
+            short_win_drift_status = False
+            long_win_drift_status = False
+
+            if self.short_window_size is not None:
+                u_s = (
+                    sum (itertools.islice(self._sliding_window, self.sliding_window_size - self.short_window_size, self.sliding_window_size))
+                / self.short_window_size
+                )
+                self._u_short_max = u_s if self._u_short_max < u_s else self._u_short_max
+                short_win_drift_status = (
+                    True if self._u_short_max - u_s > self._epsilon_s else False
+                )
+
+            long_win_drift_status = True if (self._u_max - u > self._epsilon) else False
+
+            self._drift_detected = long_win_drift_status or short_win_drift_status
