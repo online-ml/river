@@ -1,6 +1,9 @@
+from __future__ import annotations
+
 import platform
 from distutils.command.build_ext import build_ext
 from distutils.errors import CCompilerError, DistutilsExecError, DistutilsPlatformError
+
 import setuptools
 from setuptools_rust import Binding, RustExtension
 
@@ -9,7 +12,6 @@ try:
     from numpy import get_include
 except ImportError:
     subprocess.check_call([sys.executable, "-m", "pip", "install", "numpy"])
-    from numpy import __version__ as numpy_version
     from numpy import get_include
 
 try:

@@ -3,6 +3,8 @@ docs/api. The script scans through all the modules, classes, and functions. It p
 the __doc__ of each object and formats it so that MkDocs can process it in turn.
 
 """
+from __future__ import annotations
+
 import argparse
 import collections
 import doctest
@@ -360,14 +362,16 @@ def print_docstring(obj, file):
     # Methods
     if inspect.isclass(obj) and doc["Methods"]:
         printf(h2("Methods"))
-        printf_indent = lambda x, **kwargs: printf(f"    {x}", **kwargs)
+
+        def printf_indent(x, **kwargs):
+            return printf(f"    {x}", **kwargs)
 
         for meth in doc["Methods"]:
             base_method_names = {"clone", "mutate"}
 
             if (
                 issubclass(obj, river.base.Base)
-                and not obj is river.base.Base
+                and obj is not river.base.Base
                 and meth.name in base_method_names
             ):
                 continue
@@ -395,8 +399,8 @@ def print_docstring(obj, file):
             }
 
             if (
-                issubclass(obj, (collections.UserList, collections.UserDict))
-                and not obj is river.base.Ensemble
+                issubclass(obj, collections.UserList | collections.UserDict)
+                and obj is not river.base.Ensemble
                 and meth.name in container_method_names
             ):
                 continue
@@ -488,7 +492,9 @@ def print_module(mod, path, overview, depth=0, verbose=False):
         print(md_line(mod.__doc__), file=overview)
 
     # Extract all public classes and functions
-    ispublic = lambda x: x.__name__ in mod.__all__ and not x.__name__.startswith("_")
+    def ispublic(x):
+        return x.__name__ in mod.__all__ and not x.__name__.startswith("_")
+
     classes = inspect.getmembers(mod, lambda x: inspect.isclass(x) and ispublic(x))
     funcs = inspect.getmembers(mod, lambda x: inspect.isfunction(x) and ispublic(x))
 

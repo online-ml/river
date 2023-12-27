@@ -178,9 +178,7 @@ class EmpiricalCovariance(SymmetricMatrix):
         mean = dict(zip(X.columns, mean_arr))
         cov = {
             (i, j): cov_arr[r, c]
-            for (r, i), (c, j) in itertools.combinations_with_replacement(
-                enumerate(X.columns), r=2
-            )
+            for (r, i), (c, j) in itertools.combinations_with_replacement(enumerate(X.columns), r=2)
         }
 
         for i, j in itertools.combinations(sorted(mean.keys()), r=2):
@@ -201,9 +199,7 @@ class EmpiricalCovariance(SymmetricMatrix):
                 self[i, i]
             except KeyError:
                 self._cov[i, i] = stats.Var(self.ddof)
-            self._cov[i, i] += stats.Var._from_state(
-                n=n, m=mean[i], sig=cov[i, i], ddof=self.ddof
-            )
+            self._cov[i, i] += stats.Var._from_state(n=n, m=mean[i], sig=cov[i, i], ddof=self.ddof)
 
 
 class EmpiricalPrecision(SymmetricMatrix):
@@ -282,10 +278,7 @@ class EmpiricalPrecision(SymmetricMatrix):
         # Fortran order is necessary for scipy's linalg.blas.dger
         inv_cov = np.array(
             [
-                [
-                    self._inv_cov.get(min((i, j), (j, i)), 1.0 if i == j else 0.0)
-                    for j in x
-                ]
+                [self._inv_cov.get(min((i, j), (j, i)), 1.0 if i == j else 0.0) for j in x]
                 for i in x
             ],
             order="F",
@@ -320,13 +313,7 @@ class EmpiricalPrecision(SymmetricMatrix):
         loc = np.array([self._loc.get(feature, 0.0) for feature in X])
         w = np.array([self._w.get(feature, 0.0) for feature in X])
         inv_cov = np.array(
-            [
-                [
-                    self._inv_cov.get(min((i, j), (j, i)), 1.0 if i == j else 0.0)
-                    for j in X
-                ]
-                for i in X
-            ]
+            [[self._inv_cov.get(min((i, j), (j, i)), 1.0 if i == j else 0.0) for j in X] for i in X]
         ) / np.maximum(w, 1)
 
         # update formulas
