@@ -59,7 +59,7 @@ class FHDDM(base.BinaryDriftAndWarningDetector):
     ----------
     [^1]: A. Pesaranghader, H.L. Viktor, Fast Hoeffding Drift Detection Method for Evolving Data Streams. In the Proceedings of ECML-PKDD 2016.
     [^2]: Reservoir of Diverse Adaptive Learners and Stacking Fast Hoeffding Drift Detection Methods for Evolving Data Streams.
-    
+
     """
     def __init__(
         self, sliding_window_size: int = 100, confidence_level: float = 0.000001, short_window_size: int = None
