@@ -30,8 +30,10 @@ class FHDDM(base.BinaryDriftAndWarningDetector):
     sliding_window_size
         The minimum required number of analyzed samples so change can be detected.
     confidence_level
-        Threshold to decide if a drift was detected. The default value gives a 99\\% of confidence
+        Confidence level used to determine the epsilon coefficient in Hoeffding’s inequality. The default value gives a 99\\% of confidence
         level to the drift assessment.
+    short_window_size
+        The size of the short window size that it is used in a Stacking version of FHDDM [^2].
 
     Examples
     --------
@@ -56,7 +58,8 @@ class FHDDM(base.BinaryDriftAndWarningDetector):
     References
     ----------
     [^1]: A. Pesaranghader, H.L. Viktor, Fast Hoeffding Drift Detection Method for Evolving Data Streams. In the Proceedings of ECML-PKDD 2016.
-
+    [^2]: Reservoir of Diverse Adaptive Learners and Stacking Fast Hoeffding Drift Detection Methods for Evolving Data Streams.
+    
     """
     def __init__(
         self, sliding_window_size: int = 100, confidence_level: float = 0.000001, short_window_size: int = None
