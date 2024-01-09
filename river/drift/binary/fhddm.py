@@ -55,13 +55,10 @@ class FHDDM(base.BinaryDriftAndWarningDetector):
     >>> for i, x in enumerate(data_stream):
     ...     fhddm.update(x)
     ...     fhddm_s.update(x)
-    ...     if fhddm.drift_detected:
-    ...         print(f"FHDDM detected change at index {i}")
-    ...     if fhddm_s.drift_detected:
-    ...         print(f"FHDDMS detected change at index {i}")
-    FHDDMS detected change at index 279
-    FHDDM detected change at index 315
-
+    ...     if fhddm.drift_detected or fhddm_s.drift_detected:
+    ...         print(f"Change detected at index {i}")
+    Change detected at index 279
+    
     References
     ----------
     [^1]: A. Pesaranghader, H.L. Viktor, Fast Hoeffding Drift Detection Method for Evolving Data Streams. In the Proceedings of ECML-PKDD 2016.
