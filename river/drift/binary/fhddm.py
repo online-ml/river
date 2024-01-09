@@ -41,7 +41,10 @@ class FHDDM(base.BinaryDriftAndWarningDetector):
     >>> from river import drift
 
     >>> rng = random.Random(42)
+    >>> # Traditional FHDDM [1]
     >>> fhddm = drift.binary.FHDDM()
+    >>> # Stacking FHDDM [2]
+    >>> fhddm_s = drift.binary.FHDDM(short_window_size = 20)
 
     >>> # Simulate a data stream where the first 250 instances come from a uniform distribution
     >>> # of 1's and 0's
@@ -51,9 +54,13 @@ class FHDDM(base.BinaryDriftAndWarningDetector):
     >>> # Update drift detector and verify if change is detected
     >>> for i, x in enumerate(data_stream):
     ...     fhddm.update(x)
+    ...     fhddm_s.update(x)
     ...     if fhddm.drift_detected:
-    ...         print(f"Change detected at index {i}")
-    Change detected at index 315
+    ...         print(f"FHDDM detected change at index {i}")
+    ...     if fhddm_s.drift_detected:
+    ...         print(f"FHDDMS detected change at index {i}")
+    FHDDMS detected change at index 279
+    FHDDM detected change at index 315
 
     References
     ----------
