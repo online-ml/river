@@ -45,7 +45,6 @@ class FHDDM(base.BinaryDriftAndWarningDetector):
     >>> fhddm = drift.binary.FHDDM()
     >>> # Stacking FHDDM [2]
     >>> fhddm_s = drift.binary.FHDDM(short_window_size = 20)
-
     >>> # Simulate a data stream where the first 250 instances come from a uniform distribution
     >>> # of 1's and 0's
     >>> data_stream = rng.choices([0, 1], k=250)
@@ -58,6 +57,7 @@ class FHDDM(base.BinaryDriftAndWarningDetector):
     ...     if fhddm.drift_detected or fhddm_s.drift_detected:
     ...         print(f"Change detected at index {i}")
     Change detected at index 279
+    Change detected at index 315
 
     References
     ----------
