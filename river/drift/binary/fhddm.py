@@ -73,6 +73,7 @@ class FHDDM(base.BinaryDriftAndWarningDetector):
         self.sliding_window_size = sliding_window_size
         self.confidence_level = confidence_level
         self.short_window_size = short_window_size
+        self.n_one = 0
         self._reset()
 
     def _reset(self):
@@ -81,6 +82,7 @@ class FHDDM(base.BinaryDriftAndWarningDetector):
             (math.log(1 / self.confidence_level)) / (2 * self.sliding_window_size)
         )
         self._u_max = 0
+        self.n_one = 0
         if self.short_window_size is not None:
             self._short_window = collections.deque(maxlen=self.short_window_size)
             self._u_short_max = 0
@@ -94,10 +96,10 @@ class FHDDM(base.BinaryDriftAndWarningDetector):
             self._reset()
 
         self._sliding_window.append(x)
+        self.n_one += x
 
-        if len(self._sliding_window) == self.sliding_window_size:
-            n_one = self._sliding_window.count(1)
-            u = n_one / self.sliding_window_size
+        if len(self._sliding_window) == self.sliding_window_size:      
+            u = self.n_one / self.sliding_window_size
             self._u_max = u if (self._u_max < u) else self._u_max
 
             short_win_drift_status = False
@@ -116,3 +118,4 @@ class FHDDM(base.BinaryDriftAndWarningDetector):
             long_win_drift_status = True if (self._u_max - u > self._epsilon) else False
 
             self._drift_detected = long_win_drift_status or short_win_drift_status
+            self.n_one -= self._sliding_window.popleft()
