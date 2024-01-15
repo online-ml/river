@@ -98,7 +98,7 @@ class FHDDM(base.BinaryDriftAndWarningDetector):
         self._sliding_window.append(x)
         self.n_one += x
 
-        if len(self._sliding_window) == self.sliding_window_size:      
+        if len(self._sliding_window) == self.sliding_window_size:
             u = self.n_one / self.sliding_window_size
             self._u_max = u if (self._u_max < u) else self._u_max
 
