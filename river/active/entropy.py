@@ -91,8 +91,8 @@ class EntropySampler(ActiveLearningClassifier):
     def _ask_for_label(self, x, y_pred) -> bool:
         return self._rng.random() < self._p(y_pred)
 
-    @classmethod
-    def _unit_test_params(cls):
+    @staticmethod
+    def _unit_test_params():
         from river import tree
 
         yield {"classifier": tree.HoeffdingTreeClassifier()}
