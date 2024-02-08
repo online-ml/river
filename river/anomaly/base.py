@@ -96,7 +96,9 @@ class AnomalyFilter(base.Wrapper, base.Estimator):
 
     """
 
-    def __init__(self, anomaly_detector: AnomalyDetector, protect_anomaly_detector=True):
+    def __init__(
+        self, anomaly_detector: AnomalyDetector, protect_anomaly_detector=True
+    ):
         self.anomaly_detector = anomaly_detector
         self.protect_anomaly_detector = protect_anomaly_detector
 

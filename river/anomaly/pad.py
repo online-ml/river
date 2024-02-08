@@ -84,7 +84,7 @@ class PredictiveAnomalyDetection(anomaly.base.SupervisedAnomalyDetector):
     ...     scores.append(score)
 
     >>> print(scores[-3:])
-    [0.014216675596576562, 0.04789677144570603, 0.003410489566495498]
+    [0.22826275421710077, 0.7681759442175604, 0.05329236123455621]
 
     References
     ----------
@@ -121,7 +121,9 @@ class PredictiveAnomalyDetection(anomaly.base.SupervisedAnomalyDetector):
         self.iterations += 1
 
         # Check if model is a time-series forecasting model or regressor/classification
-        if isinstance(self.predictive_model, time_series.base.Forecaster) and isinstance(y, float):
+        if isinstance(
+            self.predictive_model, time_series.base.Forecaster
+        ) and isinstance(y, float):
             # When theres no feature-dict just pass target to forecaster
             if not x:
                 self.predictive_model.learn_one(y)
@@ -154,7 +156,7 @@ class PredictiveAnomalyDetection(anomaly.base.SupervisedAnomalyDetector):
         # Updating metrics only when not in warmup
         self.dynamic_mean_squared_error.update(squared_error)
         self.dynamic_squared_error_variance.update(squared_error)
-        
+
         # Every error above threshold is scored with 100% or 1.0
         # Everything below is distributed linearly from 0.0 - 0.999...
         if squared_error >= threshold:
@@ -186,7 +188,7 @@ class PredictiveAnomalyDetection(anomaly.base.SupervisedAnomalyDetector):
             # Updating metrics only when not in warmup
             self.dynamic_mean_squared_error.update(squared_error)
             self.dynamic_squared_error_variance.update(squared_error)
-            
+
             if squared_error >= threshold:
                 score = 1.0
             else:
