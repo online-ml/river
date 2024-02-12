@@ -12,37 +12,37 @@ class PredictiveAnomalyDetection(anomaly.base.SupervisedAnomalyDetector):
 
     This semi-supervised technique to anomaly detection employs a predictive model to learn the normal behavior
     of a dataset. It forecasts future data points and compares these predictions with actual values to determine
-    anomalies. An anomaly score is generated based on the deviation of the prediction from the actual value, with higher
+    anomalies. An anomaly score is calculated based on the deviation of the prediction from the actual value, with higher
     scores indicating a higher probability of an anomaly.
 
-    The actual anomaly-score is calculated by comparing the squared-error to a dynamic threshold. If the error larger
-    than this threshold, the score will be 1.0. If the error is smaller, then the score will be linearly distributed
-    between 0.0 and 0.999... depending on the distance to the threshold.
+    The actual anomaly score is calculated by comparing the squared-error to a dynamic threshold. If the error is larger
+    than this threshold, the score will be 1.0; else, the score will be linearly distributed within the range (0.0, 1.0),
+    with a higher score indicating a higher squared error compared to the threshold.
 
     Parameters
     ----------
     predictive_model
         The underlying model that learns the normal behavior of the data and makes predictions on future behavior.
-        This can be any Estimator, depending on the type of problem (e.g. some Forecaster for Time-Series Data).
+        This can be an estimator of any type, depending on the type of problem (e.g. some Forecaster for Time-Series Data).
     horizon
-        When using a Forecaster this is the horizon of its forecasts.
+        When a Forecaster is used as a predictive model, this is the horizon of its forecasts.
     n_std
-        Number of Standard Deviations to use for calculating the threshold. Larger numbers will result in the model
-        being less sensitive.
+        Number of Standard Deviations to calculate the threshold. A larger number of standard deviation will result in
+        a higher threshold, resulting in the model being less sensitive.
     warmup_period
-        Number of iterations for the model to warm up. Since the model will start with no knowledge,
-        the first predictions will be bad resulting in a high error (which is normal).
-        Therefore the first instance will have a very high anomaly-score. While the model is warming up,
-        no score will be calculated and the score_one method will just return 0.
+        Duration for the model to warm up. Since the model starts with zero knowledge,
+        the first instances will have very high anomaly scores, resulting in bad predictions (or high error). As such,
+        a warm-up period is necessary to discard the first seen instances.
+        While the model is within the warm-up period, no score will be calculated and the score_one method will return 0.0.
 
     Attributes
     ----------
-    dynamic_mean_squared_error : stats.Mean
-         The Running mean of the (squared) errors the model made to update the dynamic threshold.
-    dynamic_squared_error_variance : stats.Var
-        The running variance of the (squared) errors the model made to update the dynamic threshold.
-    iterations : int
-        The number of iterations the model has seen
+    dynamic_mae : stats.Mean
+         The running mean of the (squared) errors from the predictions of the model to update the dynamic threshold.
+    dynamic_se_variance : stats.Var
+        The running variance of the (squared) errors from the predictions of the model to update the dynamic threshold.
+    iter : int
+        The number of iterations (data points) passed.
 
     Examples
     --------
@@ -83,12 +83,14 @@ class PredictiveAnomalyDetection(anomaly.base.SupervisedAnomalyDetector):
     ...     PAD = PAD.learn_one(None, y)
     ...     scores.append(score)
 
-    >>> print(scores[-3:])
-    [0.22826275421710077, 0.7681759442175604, 0.05329236123455621]
+    >>> print(scores[-1])
+    0.05329236123455621
 
     References
     ----------
-    [^1]: [Generic and Scalable Framework for Automated Time-series Anomaly Detection](https://dl.acm.org/doi/abs/10.1145/2783258.2788611)
+    [^1]: Laptev N, Amizadeh S, Flint I. Generic and scalable framework for Automated Time-series Anomaly Detection.
+    Proceedings of the 21st ACM SIGKDD International Conference on Knowledge Discovery and Data Mining 2015.
+    doi:10.1145/2783258.2788611.
     """
 
     def __init__(
@@ -98,7 +100,7 @@ class PredictiveAnomalyDetection(anomaly.base.SupervisedAnomalyDetector):
         n_std: float = 3.0,
         warmup_period: int = 0,
     ):
-        # Setting the predictive model that learns how normal data behaves
+
         self.predictive_model = (
             predictive_model
             if predictive_model is not None
@@ -110,32 +112,33 @@ class PredictiveAnomalyDetection(anomaly.base.SupervisedAnomalyDetector):
         self.warmup_period = warmup_period
 
         # Initialize necessary statistical measures
-        self.dynamic_mean_squared_error = stats.Mean()
-        self.dynamic_squared_error_variance = stats.Var()
+        self.dynamic_mae = stats.Mean()
+        self.dynamic_se_variance = stats.Var()
 
         # Initialize necessary values for warm-up procedure
-        self.iterations: int = 0
+        self.iter: int = 0
 
     # This method is called to make the predictive model learn one example
     def learn_one(self, x: dict | None, y: base.typing.Target | float):
-        self.iterations += 1
+        self.iter += 1
 
-        # Check if model is a time-series forecasting model or regressor/classification
+        # Check whether the model is a time-series forecasting or regression/classification model
         if isinstance(
             self.predictive_model, time_series.base.Forecaster
         ) and isinstance(y, float):
-            # When theres no feature-dict just pass target to forecaster
+            # When there's no data point as dict of features, the target will be passed
+            # to the forecaster as exogenous variable.
             if not x:
-                self.predictive_model.learn_one(y)
+                self.predictive_model.learn_one(y=y)
             else:
-                self.predictive_model.learn_one(y, x)
+                self.predictive_model.learn_one(y=y, x=x)
         else:
             self.predictive_model.learn_one(x=x, y=y)
         return self
 
-    # This method is calles to calculate an anomaly score for one example
     def score_one(self, x: dict, y: base.typing.Target):
-        # Check if model is a time-series forecasting model
+        # Return the predicted value of x from the predictive model, first by checking whether
+        # it is a time-series forecaster.
         if isinstance(self.predictive_model, time_series.base.Forecaster):
             y_pred = self.predictive_model.forecast(self.horizon)[0]
         else:
@@ -145,17 +148,18 @@ class PredictiveAnomalyDetection(anomaly.base.SupervisedAnomalyDetector):
         squared_error = (y_pred - y) ** 2
 
         # Based on the errors and hyperparameters, calculate threshold
-        threshold = self.dynamic_mean_squared_error.get() + (
-            self.n_std * math.sqrt(self.dynamic_squared_error_variance.get())
+        threshold = self.dynamic_mae.get() + (
+            self.n_std * math.sqrt(self.dynamic_se_variance.get())
         )
 
-        # When warmup hyperparam is used, only return score if warmed up
-        if self.iterations < self.warmup_period:
+        # When warmup hyper-parameter is used, the anomaly score is only returned once the warmup period has passed.
+        # When the warmup period has not passed, the default value of the anomaly score is 0.
+        if self.iter < self.warmup_period:
             return 0.0
 
         # Updating metrics only when not in warmup
-        self.dynamic_mean_squared_error.update(squared_error)
-        self.dynamic_squared_error_variance.update(squared_error)
+        self.dynamic_mae.update(squared_error)
+        self.dynamic_se_variance.update(squared_error)
 
         # Every error above threshold is scored with 100% or 1.0
         # Everything below is distributed linearly from 0.0 - 0.999...
@@ -163,35 +167,3 @@ class PredictiveAnomalyDetection(anomaly.base.SupervisedAnomalyDetector):
             return 1.0
         else:
             return squared_error / threshold
-
-    # This version of score_one also returns the score along with the prediction, error and threshold of the model
-    def score_one_detailed(
-        self, x: dict, y: base.typing.Target
-    ) -> tuple[float, base.typing.Target, float, float]:
-        if isinstance(self.predictive_model, time_series.base.Forecaster):
-            y_pred = self.predictive_model.forecast(self.horizon)[0]
-        else:
-            y_pred = self.predictive_model.predict_one(x)
-
-        squared_error = (y_pred - y) ** 2
-
-        threshold = self.dynamic_mean_squared_error.get() + (
-            self.n_std * math.sqrt(self.dynamic_squared_error_variance.get())
-        )
-
-        score: float = 0.0
-
-        if self.iterations < self.warmup_period:
-            score = 0.0
-        else:
-
-            # Updating metrics only when not in warmup
-            self.dynamic_mean_squared_error.update(squared_error)
-            self.dynamic_squared_error_variance.update(squared_error)
-
-            if squared_error >= threshold:
-                score = 1.0
-            else:
-                score = squared_error / threshold
-
-        return (score, y_pred, squared_error, threshold)
