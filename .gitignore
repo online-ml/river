@@ -1,0 +1,70 @@
+# Hidden
+.*
+
+# MacOS
+.DS_Store
+
+# Jupyter
+.ipynb_checkpoints
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# PyCharm
+.idea
+
+# VSC
+.vscode/
+
+# Misc
+paho*
+
+# Plots
+plots/
+*.pdf
+*.html
+
+# Data
+**/data/*
+!**/data/input/
+!**/data/output/
+
+# Misc
+config.ini
+tests/*
+!tests/test.csv
+!tests/sample.json
+!tests/test*.py
+!reports/.coveragerc
+
+# Allow gitignore
+!*.gitignore
+!*.github
+!*.gitattributes
+
+# LaTeX
+*.aux
+*.bbl
+*.blg
+*.log
+*.out
+*.synctex.gz
+*.toc
+*.fls
+*.fdb_latexmk
+*.pdfsync
+*.synctex.gz(busy)
+*.synctex.gz(busy)*
+*.synctex.gz([0-9])
+*.synctex.gz([0-9])*
