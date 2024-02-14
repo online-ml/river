@@ -71,8 +71,6 @@ class MultiLabelConfusionMatrix:
 
     def __repr__(self):
         return "\n\n".join(
-            "\n".join(
-                [str(label)] + textwrap.indent(repr(cm), prefix="    ").splitlines()
-            )
+            "\n".join([str(label)] + textwrap.indent(repr(cm), prefix="    ").splitlines())
             for label, cm in self.data.items()
         )

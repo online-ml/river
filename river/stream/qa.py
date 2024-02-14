@@ -157,10 +157,14 @@ def simulate_qa(
                 break
 
             # Reveal the ground truth and pop the observation from the queue
-            yield (i_old, x_old, y_old, kwargs_old) if kwargs_old else (
-                i_old,
-                x_old,
-                y_old,
+            yield (
+                (i_old, x_old, y_old, kwargs_old)
+                if kwargs_old
+                else (
+                    i_old,
+                    x_old,
+                    y_old,
+                )
             )
             del mementos[0]
 
@@ -170,8 +174,12 @@ def simulate_qa(
         yield (i, x, None, kwargs) if kwargs else (i, x, None)
 
     for memento in mementos:
-        yield (memento.i, memento.x, memento.y, memento.kwargs) if memento.kwargs else (
-            memento.i,
-            memento.x,
-            memento.y,
+        yield (
+            (memento.i, memento.x, memento.y, memento.kwargs)
+            if memento.kwargs
+            else (
+                memento.i,
+                memento.x,
+                memento.y,
+            )
         )

@@ -349,7 +349,5 @@ class CluStreamMicroCluster(base.Base):
 
     def __iadd__(self, other: CluStreamMicroCluster):
         self.var_time += other.var_time
-        self.var_x = {
-            k: self.var_x[k] + other.var_x.get(k, stats.Var()) for k in self.var_x
-        }
+        self.var_x = {k: self.var_x[k] + other.var_x.get(k, stats.Var()) for k in self.var_x}
         return self

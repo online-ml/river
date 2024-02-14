@@ -83,11 +83,7 @@ class Entropy(stats.base.Univariate):
         fading_factor = self.fading_factor
 
         entropy = self.entropy
-        entropy = (
-            (n + eps)
-            / (n + 1)
-            * (fading_factor * entropy - math.log((n + eps) / (n + 1)))
-        )
+        entropy = (n + eps) / (n + 1) * (fading_factor * entropy - math.log((n + eps) / (n + 1)))
         entropy -= (cx + 1) / (n + 1) * math.log((cx + 1) / (n + 1))
         entropy += (cx + eps) / (n + 1) * math.log((cx + eps) / (n + 1))
         self.entropy = entropy

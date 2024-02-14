@@ -94,9 +94,7 @@ class Beta(base.ContinuousDistribution):
 
     def __call__(self, p: float):
         return (
-            p ** (self.alpha - 1)
-            * (1 - p) ** (self.beta - 1)
-            / _beta_func(self.alpha, self.beta)
+            p ** (self.alpha - 1) * (1 - p) ** (self.beta - 1) / _beta_func(self.alpha, self.beta)
         )
 
     def sample(self):

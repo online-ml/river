@@ -10,9 +10,7 @@ from river import base, compose, metrics, proba, stats, utils
 __all__ = ["ArmID", "Policy", "ContextualPolicy", "RewardObj"]
 
 ArmID = typing.Union[int, str]  # noqa: UP007
-RewardObj = typing.Union[  # noqa: UP007
-    stats.base.Statistic, metrics.base.Metric, proba.base.Distribution
-]
+RewardObj = typing.Union[stats.base.Statistic, metrics.base.Metric, proba.base.Distribution]  # noqa: UP007
 
 
 class Policy(base.Base, abc.ABC):

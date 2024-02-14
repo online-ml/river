@@ -163,6 +163,7 @@ class NormalizedMutualInfo(metrics.base.MultiClassMetric):
           In Wikipedia, The Free Encyclopedia,
           from https://en.wikipedia.org/w/index.php?title=Mutual_information&oldid=1012714929
     """
+
     _AVERAGE_MIN = "min"
     _AVERAGE_MAX = "max"
     _AVERAGE_GEOMETRIC = "geometric"
@@ -277,6 +278,7 @@ class AdjustedMutualInfo(metrics.base.MultiClassMetric):
           In Wikipedia, The Free Encyclopedia,
           from https://en.wikipedia.org/w/index.php?title=Mutual_information&oldid=1012714929
     """
+
     _AVERAGE_MIN = "min"
     _AVERAGE_MAX = "max"
     _AVERAGE_GEOMETRIC = "geometric"
@@ -335,9 +337,7 @@ class AdjustedMutualInfo(metrics.base.MultiClassMetric):
         else:
             denominator = max(denominator, np.finfo("float64").eps)
 
-        adjusted_mutual_info_score = (
-            mutual_info_score - expected_mutual_info_score
-        ) / denominator
+        adjusted_mutual_info_score = (mutual_info_score - expected_mutual_info_score) / denominator
 
         return adjusted_mutual_info_score
 

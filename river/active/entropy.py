@@ -63,9 +63,7 @@ class EntropySampler(ActiveLearningClassifier):
 
     """
 
-    def __init__(
-        self, classifier: base.Classifier, discount_factor: float = 3, seed=None
-    ):
+    def __init__(self, classifier: base.Classifier, discount_factor: float = 3, seed=None):
         super().__init__(classifier, seed=seed)
         self.discount_factor = discount_factor
 

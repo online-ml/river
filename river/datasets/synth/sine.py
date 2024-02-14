@@ -80,6 +80,7 @@ class Sine(datasets.base.SyntheticDataset):
           Springer Berlin Heidelberg, 2004. 286-295."
 
     """
+
     _N_BASE_FEATURES = 2
     _N_FEATURES_INCLUDING_NOISE = 4
 

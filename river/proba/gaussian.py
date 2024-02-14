@@ -76,9 +76,7 @@ class Gaussian(base.ContinuousDistribution):
         var = self._var.get()
         if var:
             try:
-                return math.exp((x - self.mu) ** 2 / (-2 * var)) / math.sqrt(
-                    math.tau * var
-                )
+                return math.exp((x - self.mu) ** 2 / (-2 * var)) / math.sqrt(math.tau * var)
             except ValueError:
                 return 0.0
             except OverflowError:
@@ -242,9 +240,7 @@ class MultivariateGaussian(base.MultivariateContinuousDistribution):
     @property
     def var(self) -> pd.DataFrame:
         """The variance of the distribution."""
-        variables = sorted(
-            list({var for cov in self._var.matrix.keys() for var in cov})
-        )
+        variables = sorted(list({var for cov in self._var.matrix.keys() for var in cov}))
         # Initialize the covariance matrix array
         cov_array = np.zeros((len(variables), len(variables)))
 
@@ -269,9 +265,7 @@ class MultivariateGaussian(base.MultivariateContinuousDistribution):
 
     def __repr__(self):
         mu_str = ", ".join(f"{m:.3f}" for m in self.mu.values())
-        var_str = self.var.to_string(
-            float_format="{:0.3f}".format, header=False, index=False
-        )
+        var_str = self.var.to_string(float_format="{:0.3f}".format, header=False, index=False)
         var_str = "        [" + var_str.replace("\n", "]\n        [") + "]"
         return f"𝒩(\n    μ=({mu_str}),\n    σ^2=(\n{var_str}\n    )\n)"
 

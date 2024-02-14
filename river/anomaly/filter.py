@@ -86,9 +86,7 @@ class ThresholdFilter(anomaly.base.AnomalyFilter):
 
     """
 
-    def __init__(
-        self, anomaly_detector, threshold: float, protect_anomaly_detector=True
-    ):
+    def __init__(self, anomaly_detector, threshold: float, protect_anomaly_detector=True):
         super().__init__(
             anomaly_detector=anomaly_detector,
             protect_anomaly_detector=protect_anomaly_detector,
@@ -188,7 +186,6 @@ class QuantileFilter(anomaly.base.AnomalyFilter):
         from river import preprocessing
 
         yield {
-            "anomaly_detector": preprocessing.StandardScaler()
-            | anomaly.OneClassSVM(nu=0.2),
+            "anomaly_detector": preprocessing.StandardScaler() | anomaly.OneClassSVM(nu=0.2),
             "q": 0.995,
         }

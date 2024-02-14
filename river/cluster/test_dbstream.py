@@ -134,8 +134,7 @@ def test_density_graph_with_three_micro_clusters():
 
 
 def test_density_graph_with_removed_microcluster():
-    dbstream = build_dbstream(fading_factor=0.1,
-                              intersection_factor=0.3)
+    dbstream = build_dbstream(fading_factor=0.1, intersection_factor=0.3)
 
     add_cluster(dbstream, initial_point={1: 1, 2: 1}, move_towards={1: 1.7, 2: 1.7}, times=25)
     add_cluster(dbstream, initial_point={1: 3, 2: 3}, move_towards={1: 2.3, 2: 2.3}, times=25)
@@ -162,9 +161,7 @@ def test_density_graph_with_removed_microcluster():
 
     dbstream._recluster()
     assert len(dbstream.clusters) == 1
-    assert_micro_cluster_properties(
-        dbstream.clusters[0], center={1: 2.560647, 2: 2.560647}
-    )
+    assert_micro_cluster_properties(dbstream.clusters[0], center={1: 2.560647, 2: 2.560647})
 
 
 def test_dbstream_synthetic_sklearn():
@@ -172,11 +169,9 @@ def test_dbstream_synthetic_sklearn():
     cluster_std = [0.6] * 5
 
     # Create a dataset with 15000 data points with 5 centers and cluster SD of 0.6 each
-    X, y = make_blobs(n_samples=15_000,
-                      cluster_std=cluster_std,
-                      centers=centers,
-                      n_features=2,
-                      random_state=42)
+    X, y = make_blobs(
+        n_samples=15_000, cluster_std=cluster_std, centers=centers, n_features=2, random_state=42
+    )
 
     dbstream = DBSTREAM(
         clustering_threshold=2,
@@ -202,11 +197,16 @@ def test_dbstream_synthetic_sklearn():
     dbstream._recluster()
 
     # Check that the resulted cluster centers are close to the expected centers
-    dbstream_expected_centers = {0: {0: 10, 1: 10},
-                                 1: {0: -5, 1: -5},
-                                 2: {0: 0, 1: 0},
-                                 3: {0: 5, 1: 5},
-                                 4: {0: -10, 1: -10}}
+    dbstream_expected_centers = {
+        0: {0: 10, 1: 10},
+        1: {0: -5, 1: -5},
+        2: {0: 0, 1: 0},
+        3: {0: 5, 1: 5},
+        4: {0: -10, 1: -10},
+    }
 
     for i in dbstream.centers.keys():
-        assert utils.math.minkowski_distance(dbstream.centers[i], dbstream_expected_centers[i], 2) < 0.2
+        assert (
+            utils.math.minkowski_distance(dbstream.centers[i], dbstream_expected_centers[i], 2)
+            < 0.2
+        )
