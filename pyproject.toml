@@ -20,6 +20,7 @@ python = ">=3.9,<3.13"
 numpy = "^1.23.0"
 scipy = "^1.8.1"
 pandas = "^2.1"
+polars = "^0.20.8"
 
 [tool.poetry.group.dev.dependencies]
 graphviz = "^0.20.1"
