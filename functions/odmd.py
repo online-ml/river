@@ -16,7 +16,7 @@ Example:
 TODO:
 
     - [ ] Add base class of river which is base.MiniBatchRegressor
-    - [ ] Take dict and pd.DataFrame as inputs
+    - [ ] Compute amlitudes of the singular values of the input matrix.
 
 References:
     [^1]: Zhang, H., Clarence Worth Rowley, Deem, E.A. and Cattafesta, L.N.
@@ -59,12 +59,6 @@ class OnlineDMD:
     An exponential weighting factor can be used to place more weight on
     recent data.
 
-    Usage:
-        odmd = OnlineDMD(n, weighting)
-        odmd.initialize(X, Y) # optional
-        odmd.update(x, y)
-        evals, modes = odmd.computemodes()
-
     Args:
         w: weighting factor in (0,1]. Smaller value allows more adpative
         learning, but too small weighting may result in model identification
@@ -80,9 +74,9 @@ class OnlineDMD:
     Attributes:
         m: state dimension x(t) as in z(t) = f(z(t-1)) or y(t) = f(t, x(t))
         n_seen: number of seen samples (read-only), reverted if windowed
+        feature_names_in_: list of feature names. Used for dict inputs.
         A: DMD matrix, size n by n
         _P: inverse of covariance matrix of X
-        feature_names_in_: list of feature names. Used for dict inputs.
 
     Examples:
 
@@ -107,15 +101,16 @@ class OnlineDMD:
         np.random.seed(seed)
         self.m: int
         self.n_seen: int = 0
+        self.feature_names_in_: list[str]
         self.A: np.ndarray
         self._P: np.ndarray
-        self.feature_names_in_: list[str]
+        self._Y: np.ndarray
 
     @property
-    def get_eigs_modes(self) -> tuple[np.ndarray, np.ndarray]:
+    def eigs_modes(self) -> tuple[np.ndarray, np.ndarray]:
         """Compute and return DMD eigenvalues and DMD modes at current step"""
-        eigs, modes = np.linalg.eig(self.A)
-        return eigs, modes
+        Lambda, Phi = np.linalg.eig(self.A)
+        return Lambda, Phi
 
     def _init_update(self) -> None:
         if self.initialize < self.m:
@@ -127,6 +122,28 @@ class OnlineDMD:
         self.A = np.random.randn(self.m, self.m)
         self._X_init = np.zeros((self.m, self.initialize))
         self._Y_init = np.zeros((self.m, self.initialize))
+
+    @property
+    def xi(self) -> np.ndarray:
+        """Amlitudes of the singular values of the input matrix."""
+        Lambda, Phi = self.eigs_modes
+        # Compute Discrete temporal dynamics matrix (Vandermonde matrix).
+        C = np.vander(Lambda, self.n_seen, increasing=True)
+        # xi = self.Phi.conj().T @ self._Y @ np.linalg.pinv(self.C)
+        import cvxpy as cp
+
+        gamma = 0.5
+        xi = cp.Variable(self.m)
+        objective = cp.Minimize(
+            cp.norm(self._Y - Phi @ cp.diag(xi) @ C, "fro")
+            + gamma * cp.norm(xi, 1)
+        )
+        problem = cp.Problem(objective)
+
+        # Solve the problem
+        problem.solve()
+        xi = xi.value
+        return xi
 
     def update(self, x: dict | np.ndarray, y: dict | np.ndarray) -> None:
         """Update the DMD computation with a new pair of snapshots (x, y)
@@ -353,12 +370,6 @@ class OnlineDMDwC(OnlineDMD):
 
     An exponential weighting factor can be used to place more weight on
     recent data.
-
-    Usage:
-        odmd = OnlineDMD(n, weighting)
-        odmd.initialize(X, Y) # optional
-        odmd.update(x, y)
-        evals, modes = odmd.computemodes()
 
     Args:
         B: control matrix, size n by m. If None, the control matrix will be
@@ -587,7 +598,7 @@ class OnlineDMDwC(OnlineDMD):
 
         Parameters:
             x: The current state.
-            U: 
+            u: The control input.
 
         Returns:
             np.ndarray: The predicted next state.
@@ -610,6 +621,7 @@ class OnlineDMDwC(OnlineDMD):
 
         Args:
             x: The initial value.
+            U: The control input matrix of shape (l, forecast), where l is the number of control inputs.
             forecast (int): The number of future values to predict.
 
         Returns:
@@ -639,7 +651,7 @@ class OnlineDMDwC(OnlineDMD):
         Args:
             X: 2D array, shape (n, p), matrix [x(1),x(2),...x(p)]
             Y: 2D array, shape (n, p), matrix [y(1),y(2),...y(p)]
-            U: 2D array, shape (l, p), matrix [u(1),u(2),...u(p)
+            U: 2D array, shape (l, p), matrix [u(1),u(2),...u(p)]
 
         Returns:
             float: Truncation error of the DMD model
