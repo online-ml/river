@@ -9,7 +9,6 @@ a more flexible interface aligned with River API covers and separates update
 and revert methods to operate with Rolling and TimeRolling wrapers.
 
 Example:
-
     $ python examples/lti.ipynb
     $ python examples/lti_control.ipynb
     $ python examples/ltv_control.ipynb
@@ -18,6 +17,7 @@ TODO:
 
     - [ ] Add base class of river which is base.MiniBatchRegressor
     - [ ] Take dict and pd.DataFrame as inputs
+
 References:
     [^1]: Zhang, H., Clarence Worth Rowley, Deem, E.A. and Cattafesta, L.N.
     (2019). Online Dynamic Mode Decomposition for Time-Varying Systems. Siam
@@ -29,6 +29,7 @@ from __future__ import annotations
 import warnings
 
 import numpy as np
+import pandas as pd
 
 __all__ = [
     "OnlineDMD",
@@ -77,10 +78,11 @@ class OnlineDMD:
         seed: random seed for reproducibility (initialize A with random values)
 
     Attributes:
-        n_seen: number of seen samples (read-only), reverted if windowed
         m: state dimension x(t) as in z(t) = f(z(t-1)) or y(t) = f(t, x(t))
+        n_seen: number of seen samples (read-only), reverted if windowed
         A: DMD matrix, size n by n
         _P: inverse of covariance matrix of X
+        feature_names_in_: list of feature names. Used for dict inputs.
 
     Examples:
 
@@ -107,6 +109,7 @@ class OnlineDMD:
         self.n_seen: int = 0
         self.A: np.ndarray
         self._P: np.ndarray
+        self.feature_names_in_: list[str]
 
     @property
     def get_eigs_modes(self) -> tuple[np.ndarray, np.ndarray]:
@@ -125,7 +128,7 @@ class OnlineDMD:
         self._X_init = np.zeros((self.m, self.initialize))
         self._Y_init = np.zeros((self.m, self.initialize))
 
-    def update(self, x: np.ndarray, y: np.ndarray) -> None:
+    def update(self, x: dict | np.ndarray, y: dict | np.ndarray) -> None:
         """Update the DMD computation with a new pair of snapshots (x, y)
 
         Here, if the (discrete-time) dynamics are given by z(t) = f(z(t-1)),
@@ -136,6 +139,13 @@ class OnlineDMD:
             x: 1D array, shape (n, ), x(t) as in y(t) = f(t, x(t))
             y: 1D array, shape (n, ), y(t) as in y(t) = f(t, x(t))
         """
+        if isinstance(x, dict):
+            self.feature_names_in_ = list(x.keys())
+            x = np.array(list(x.values()))
+        if isinstance(y, dict):
+            assert self.feature_names_in_ == list(y.keys())
+            y = np.array(list(y.values()))
+
         # Initialize properties which depend on the shape of x
         if self.n_seen == 0:
             self.m = x.shape[0]
@@ -165,11 +175,11 @@ class OnlineDMD:
 
         self.n_seen += 1
 
-    def learn_one(self, x: np.ndarray, y: np.ndarray) -> None:
+    def learn_one(self, x: dict | np.ndarray, y: dict | np.ndarray) -> None:
         """Allias for update method."""
         self.update(x, y)
 
-    def revert(self, x: np.ndarray, y: np.ndarray) -> None:
+    def revert(self, x: dict | np.ndarray, y: dict | np.ndarray) -> None:
         """Gradually forget the older snapshots and revert the DMD computation.
 
         Compatible with Rolling and TimeRolling wrappers.
@@ -178,6 +188,11 @@ class OnlineDMD:
             x: 1D array, shape (n, ), x(t) as in y(t) = f(t, x(t))
             y: 1D array, shape (n, ), y(t) as in y(t) = f(t, x(t))
         """
+        if isinstance(x, dict):
+            x = np.array(list(x.values()))
+        if isinstance(y, dict):
+            y = np.array(list(y.values()))
+
         # compute P*x matrix vector product beforehand
         Px = self._P.dot(x)
         # Apply exponential weighting factor
@@ -194,7 +209,9 @@ class OnlineDMD:
         self._P = (self._P + self._P.T) / 2
         self.n_seen -= 1
 
-    def _update_many(self, X: np.ndarray, Y: np.ndarray) -> None:
+    def _update_many(
+        self, X: np.ndarray | pd.DataFrame, Y: np.ndarray | pd.DataFrame
+    ) -> None:
         """Update the DMD computation with a new batch of snapshots (X,Y).
 
         This method brings no change in theoretical time and space complexity.
@@ -227,7 +244,9 @@ class OnlineDMD:
         self._P = (self._P - PX.dot(Gamma).dot(PX.T)) / self.w
         self._P = (self._P + self._P.T) / 2
 
-    def learn_many(self, X: np.ndarray, Y: np.ndarray) -> None:
+    def learn_many(
+        self, X: np.ndarray | pd.DataFrame, Y: np.ndarray | pd.DataFrame
+    ) -> None:
         """Learn the OnlineDMD model using multiple snapshot pairs.
 
         Useful for initializing the model with a batch of snapshot pairs.
@@ -237,6 +256,10 @@ class OnlineDMD:
             X: The input snapshot matrix of shape (m, p), where m is the number of snapshots and p is the number of features.
             Y: The output snapshot matrix of shape (m, p), where m is the number of snapshots and p is the number of features.
         """
+        if isinstance(X, pd.DataFrame):
+            X = X.values
+        if isinstance(Y, pd.DataFrame):
+            Y = Y.values
 
         # necessary condition for over-constrained initialization
         p = X.shape[1]
@@ -259,7 +282,7 @@ class OnlineDMD:
             for i in range(p):
                 self.update(X[:, i], Y[:, i])
 
-    def predict_one(self, x: np.ndarray) -> np.ndarray:
+    def predict_one(self, x: dict | np.ndarray) -> np.ndarray:
         """
         Predicts the next state given the current state.
 
@@ -270,12 +293,12 @@ class OnlineDMD:
             np.ndarray: The predicted next state.
         """
         mat = np.zeros((self.m, 2))
-        mat[:, 0] = x
+        mat[:, 0] = x if isinstance(x, np.ndarray) else list(x.values())
         for s in range(1, 2):
             mat[:, s] = (self.A @ mat[:, s - 1]).real
-        return mat[:, 1:]
+        return mat[:, -1]
 
-    def predict_many(self, x: np.ndarray, forecast: int) -> np.ndarray:
+    def predict_many(self, x: dict | np.ndarray, forecast: int) -> np.ndarray:
         """
         Predicts multiple future values based on the given initial value.
 
@@ -290,7 +313,7 @@ class OnlineDMD:
             - [ ] Align predict_many with river API
         """
         mat = np.zeros((self.m, forecast + 1))
-        mat[:, 0] = x
+        mat[:, 0] = x if isinstance(x, np.ndarray) else list(x.values())
         for s in range(1, forecast + 1):
             mat[:, s] = (self.A @ mat[:, s - 1]).real
         return mat[:, 1:]
@@ -352,8 +375,8 @@ class OnlineDMDwC(OnlineDMD):
         seed: random seed for reproducibility (initialize A with random values)
 
     Attributes:
-        n_seen: number of seen samples (read-only), reverted if windowed
         m: state dimension x(t) as in z(t) = f(z(t-1)) or y(t) = f(t, x(t))
+        n_seen: number of seen samples (read-only), reverted if windowed
         A: DMD matrix, size n by n
         _P: inverse of covariance matrix of X
 
@@ -385,7 +408,10 @@ class OnlineDMDwC(OnlineDMD):
         self.l: int
 
     def _update_many(
-        self, X: np.ndarray, Y: np.ndarray, U: np.ndarray | None = None
+        self,
+        X: np.ndarray | pd.DataFrame,
+        Y: np.ndarray | pd.DataFrame,
+        U: np.ndarray | pd.DataFrame | None = None,
     ) -> None:
         """Update the DMD computation with a new batch of snapshots (X,Y).
 
@@ -428,6 +454,13 @@ class OnlineDMDwC(OnlineDMD):
             Y: The output snapshot matrix of shape (m, p), where m is the number of snapshots and p is the number of features.
             U: The output snapshot matrix of shape (m, p), where m is the number of snapshots and p is the number of features.
         """
+        if isinstance(X, pd.DataFrame):
+            X = X.values
+        if isinstance(Y, pd.DataFrame):
+            Y = Y.values
+        if isinstance(U, pd.DataFrame):
+            U = U.values
+
         if self.known_B:
             Y = Y - self.B @ U
         else:
@@ -453,7 +486,10 @@ class OnlineDMDwC(OnlineDMD):
         self._U_init = np.zeros((self.l, self.initialize))
 
     def update(
-        self, x: np.ndarray, y: np.ndarray, u: np.ndarray | None = None
+        self,
+        x: dict | np.ndarray,
+        y: dict | np.ndarray,
+        u: dict | np.ndarray | None = None,
     ) -> None:
         """Update the DMD computation with a new pair of snapshots (x, y)
 
@@ -466,6 +502,12 @@ class OnlineDMDwC(OnlineDMD):
             y: 1D array, shape (n, ), y(t) as in y(t) = f(t, x(t))
             u: 1D array, shape (m, ), u(t) as in y(t) = f(t, x(t), u(t))
         """
+        if isinstance(x, dict):
+            x = np.array(list(x.values()))
+        if isinstance(y, dict):
+            y = np.array(list(y.values()))
+        if isinstance(u, dict):
+            u = np.array(list(u.values()))
         # Needed in case of recursive call from learn_many within parent class
         if u is None:
             super().update(x, y)
@@ -499,11 +541,15 @@ class OnlineDMDwC(OnlineDMD):
 
             self.n_seen += 1
 
-    def learn_one(self, x: np.ndarray, y: np.ndarray, u: np.ndarray) -> None:
+    def learn_one(
+        self, x: dict | np.ndarray, y: dict | np.ndarray, u: dict | np.ndarray
+    ) -> None:
         """Allias for OnlineDMDwC.update method."""
         return self.update(x, y, u)
 
-    def revert(self, x: np.ndarray, y: np.ndarray, u: np.ndarray) -> None:
+    def revert(
+        self, x: dict | np.ndarray, y: dict | np.ndarray, u: dict | np.ndarray
+    ) -> None:
         """Gradually forget the older snapshots and revert the DMD computation.
 
         Compatible with Rolling and TimeRolling wrappers.
@@ -513,6 +559,13 @@ class OnlineDMDwC(OnlineDMD):
             y: 1D array, shape (n, ), y(t)
             u: 1D array, shape (m, ), u(t)
         """
+        if isinstance(x, dict):
+            x = np.array(list(x.values()))
+        if isinstance(y, dict):
+            y = np.array(list(y.values()))
+        if isinstance(u, dict):
+            u = np.array(list(u.values()))
+
         if self.known_B:
             y = y - self.B @ u
         else:
@@ -526,25 +579,31 @@ class OnlineDMDwC(OnlineDMD):
             self.B = self.A[:, -self.l :]
             self.A = self.A[:, : -self.l]
 
-    def predict_one(self, x: np.ndarray, u: np.ndarray) -> np.ndarray:
+    def predict_one(
+        self, x: dict | np.ndarray, u: dict | np.ndarray
+    ) -> np.ndarray:
         """
         Predicts the next state given the current state.
 
         Parameters:
             x: The current state.
+            U: 
 
         Returns:
             np.ndarray: The predicted next state.
         """
+        if isinstance(u, dict):
+            u = np.array(list(u.values()))
+
         mat = np.zeros((self.m, 2))
-        mat[:, 0] = x
+        mat[:, 0] = x if isinstance(x, np.ndarray) else list(x.values())
         for s in range(1, 2):
-            action = (self.B @ u[:, s - 1]).real
+            action = (self.B @ u).real
             mat[:, s] = (self.A @ mat[:, s - 1]).real + action
-        return mat[:, 1:]
+        return mat[:, -1]
 
     def predict_many(
-        self, x: np.ndarray, u: np.ndarray, forecast: int
+        self, x: dict | np.ndarray, U: np.ndarray | pd.DataFrame, forecast: int
     ) -> np.ndarray:
         """
         Predicts multiple future values based on the given initial value.
@@ -559,15 +618,21 @@ class OnlineDMDwC(OnlineDMD):
         TODO:
             - [ ] Align predict_many with river API
         """
+        if isinstance(U, pd.DataFrame):
+            U = U.values
+
         mat = np.zeros((self.m, forecast + 1))
-        mat[:, 0] = x
+        mat[:, 0] = x if isinstance(x, np.ndarray) else list(x.values())
         for s in range(1, forecast + 1):
-            action = (self.B @ u[:, s - 1]).real
+            action = (self.B @ U[:, s - 1]).real
             mat[:, s] = (self.A @ mat[:, s - 1]).real + action
         return mat[:, 1:]
 
     def truncation_error(
-        self, X: np.ndarray, Y: np.ndarray, U: np.ndarray
+        self,
+        X: np.ndarray | pd.DataFrame,
+        Y: np.ndarray | pd.DataFrame,
+        U: np.ndarray | pd.DataFrame,
     ) -> float:
         """Compute the truncation error of the DMD model on the given data.
 
