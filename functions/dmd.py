@@ -23,7 +23,7 @@ class DMD:
         Lambda (numpy.ndarray): Eigenvalues of the Koopman matrix.
         m (int): Number of variables.
         n (int): Number of time steps (snapshots).
-        r (int): Number of modes to keep.
+        r (int): Number of modes to keep. If 0 (default), all modes are kept.
         Phi (numpy.ndarray): Eigenfunctions of the Koopman operator (Modal structures)
         S_bar (numpy.ndarray): Low-rank approximation of the Koopman operator (Rayleigh quotient matrix).
         xi (numpy.ndarray): Amlitudes of the singular values of the input matrix.
@@ -32,7 +32,7 @@ class DMD:
         [^1]: Schmid, P. (2022). Dynamic Mode Decomposition and Its Variants. 54(1), pp.225-254. doi:[10.1146/annurev-fluid-030121-015835](https://doi.org/10.1146/annurev-fluid-030121-015835).
     """
 
-    def __init__(self, r: int):
+    def __init__(self, r: int = 0):
         self._C: np.ndarray | None
         self.Y: np.ndarray
         self.K: np.ndarray
@@ -40,7 +40,7 @@ class DMD:
         self.m: int
         self.n: int
         self.Phi: np.ndarray
-        self.r = r
+        self.r: int = r
         self.S_bar: np.ndarray
         self._xi: np.ndarray
 
@@ -85,13 +85,14 @@ class DMD:
     def _fit(self, X: np.ndarray, Y: np.ndarray):
         # Perform singular value decomposition on X
         u_, sigma, v = np.linalg.svd(X, full_matrices=False)
-        sigma_inv = np.reciprocal(sigma[: self.r])
+        r = self.r if self.r > 0 else len(sigma)
+        sigma_inv = np.reciprocal(sigma[: r])
         # Compute the low-rank approximation of Koopman matrix
         self.S_bar = (
-            u_[: self.m, : self.r].conj().T
+            u_[: self.m, : r].conj().T
             @ Y
-            @ v[: self.r, :].conj().T
-            * sigma_inv
+            @ v[: r, :].conj().T
+            @ np.diag(sigma_inv)
         )
 
         # Perform eigenvalue decomposition on S_bar
@@ -99,14 +100,14 @@ class DMD:
 
         # Compute the coefficient matrix
         # TODO: Find out whether to use X or Y (X usage ~ u @ W obviously)
-        # self.Phi = X @ v[: self.r, :].conj().T @ np.diag(sigma_inv) @ W
-        self.Phi = u_[:, : self.r] @ W
+        # self.Phi = X @ v[: r, :].conj().T @ np.diag(sigma_inv) @ W
+        self.Phi = u_[:, : r] @ W
         # self.K = self.Phi @ np.diag(self.Lambda) @ np.linalg.pinv(self.Phi)
         self.K = (
             Y
-            @ v[: self.r, :].conj().T
+            @ v[: r, :].conj().T
             @ np.diag(sigma_inv)
-            @ u_[:, : self.r].conj().T
+            @ u_[:, : r].conj().T
         )
 
     def fit(self, x: np.ndarray):
@@ -153,7 +154,7 @@ class DMD:
         return mat[:, 1:]
 
 
-class DMDC(DMD):
+class DMDwC(DMD):
     def __init__(self, r: int):
         super().__init__(r)
         self.B: np.ndarray
