@@ -104,7 +104,7 @@ class OnlineDMD:
         self.feature_names_in_: list[str]
         self.A: np.ndarray
         self._P: np.ndarray
-        self._Y: np.ndarray
+        self._Y: np.ndarray  # for xi computation
 
     @property
     def eigs_modes(self) -> tuple[np.ndarray, np.ndarray]:
@@ -120,8 +120,9 @@ class OnlineDMD:
             self.initialize = self.m
 
         self.A = np.random.randn(self.m, self.m)
-        self._X_init = np.zeros((self.m, self.initialize))
-        self._Y_init = np.zeros((self.m, self.initialize))
+        self._X_init = np.empty((self.m, self.initialize))
+        self._Y_init = np.empty((self.m, self.initialize))
+        self._Y = np.empty((self.m, 0))
 
     @property
     def xi(self) -> np.ndarray:
@@ -130,19 +131,16 @@ class OnlineDMD:
         # Compute Discrete temporal dynamics matrix (Vandermonde matrix).
         C = np.vander(Lambda, self.n_seen, increasing=True)
         # xi = self.Phi.conj().T @ self._Y @ np.linalg.pinv(self.C)
-        import cvxpy as cp
 
-        gamma = 0.5
-        xi = cp.Variable(self.m)
-        objective = cp.Minimize(
-            cp.norm(self._Y - Phi @ cp.diag(xi) @ C, "fro")
-            + gamma * cp.norm(xi, 1)
-        )
-        problem = cp.Problem(objective)
+        from scipy.optimize import minimize
 
-        # Solve the problem
-        problem.solve()
-        xi = xi.value
+        def objective_function(x):
+            return np.linalg.norm(
+                self._Y - Phi @ np.diag(x) @ C, "fro"
+            ) + 0.5 * np.linalg.norm(x, 1)
+
+        # Minimize the objective function
+        xi = minimize(objective_function, np.ones(self.m)).x
         return xi
 
     def update(self, x: dict | np.ndarray, y: dict | np.ndarray) -> None:
@@ -191,6 +189,11 @@ class OnlineDMD:
             self._P = (self._P + self._P.T) / 2
 
         self.n_seen += 1
+        if self._Y.shape[1] < self.n_seen:
+            self._Y = np.hstack([self._Y, y.reshape(-1, 1)])
+        elif self._Y.shape[1] > self.n_seen:
+            self._Y = self._Y[:, self.n_seen:]
+        
 
     def learn_one(self, x: dict | np.ndarray, y: dict | np.ndarray) -> None:
         """Allias for update method."""

@@ -1,1 +1,4 @@
 numpy~=1.26.3
+pandas~=2.2.0
+river~=0.21.0
+scipy~=1.12.0
