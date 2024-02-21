@@ -44,46 +44,25 @@ class DMD:
         self.Phi: np.ndarray
         self.A_bar: np.ndarray
         self.A: np.ndarray
-        self._C: np.ndarray | None
-        self._xi: np.ndarray
         self._Y: np.ndarray
 
     @property
     def C(self) -> np.ndarray:
-        if self._C is None:
-            self._C = np.vander(self.Lambda, self.n, increasing=True)
-        return self._C
+        return np.vander(self.Lambda, self.n, increasing=True)
 
     @property
     def xi(self) -> np.ndarray:
-        if not hasattr(self, "_xi") or self._xi is None:
-            # self._xi = self.Phi.conj().T @ self._Y @ np.linalg.pinv(self.C)
-            import cvxpy as cp
+        from scipy.optimize import minimize
 
-            gamma = 0.5
-            xi = cp.Variable(self.m)
-            objective = cp.Minimize(
-                cp.norm(self._Y - self.Phi @ cp.diag(xi) @ self.C, "fro")
-                + gamma * cp.norm(xi, 1)
-            )
-            # As Quadratic Programming
-            # FIX: ValueError: The 'minimize' objective must be real valued.
-            # XHX = np.dot(X.T, X)
-            # CCH = np.dot(C, C.T)
-            # P = np.multiply(XHX, CCH.conjugate())
-            # p_star = np.dot(C, np.dot(v.T, np.dot(sigma, X)))
-            # print(sigma)
-            # print()
-            # s = sigma.T @ sigma
+        def objective_function(x):
+            return np.linalg.norm(
+                self._Y - self.Phi @ np.diag(x) @ self.C, "fro"
+            ) + 0.5 * np.linalg.norm(x, 1)
 
-            # # Extract the optimal value
-            # objective = cp.Minimize(xi.flatten().T @ P @ xi.flatten() - p_star.T @ xi.flatten() + s)
-            problem = cp.Problem(objective)
-
-            # Solve the problem
-            problem.solve()
-            self._xi = xi.value
-        return self._xi
+        # Minimize the objective function
+        xi = minimize(objective_function, np.ones(self.m)).x
+        self._xi = xi
+        return self.xi
 
     def _fit(self, X: np.ndarray, Y: np.ndarray):
         # Perform singular value decomposition on X
@@ -119,11 +98,11 @@ class DMD:
 
         """
         # Build X matrices
-        X = X[:, :-1]
         if hasattr(self, "m"):
             self._Y = X[: self.m, 1:]
         else:
             self._Y = X[:, 1:]
+        X = X[:, :-1]
 
         self.m, self.n = self._Y.shape
 
