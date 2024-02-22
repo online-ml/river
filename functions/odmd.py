@@ -353,7 +353,7 @@ class OnlineDMD:
 
     def truncation_error(self, X: np.ndarray, Y: np.ndarray) -> float:
         """Compute the truncation error of the DMD model on the given data.
-        
+
         Since this implementation computes exact DMD, the truncation error is relevant only for initialization.
 
         Args:

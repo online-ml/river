@@ -15,7 +15,7 @@ def hankel(
 
     Returns:
         np.ndarray: The Hankel matrix.
-        
+
     Example:
     >>> X = np.array([1., 2., 3., 4., 5.])
     >>> hankel(X, 3, cut_rollover=False)
@@ -34,5 +34,5 @@ def hankel(
         hX[:, i] = X
         X = np.roll(X, -1)
     if cut_rollover:
-        hX = hX[:-hn+1]
+        hX = hX[: -hn + 1]
     return hX

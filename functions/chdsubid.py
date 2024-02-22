@@ -44,7 +44,7 @@ class SubIDDriftDetector:
 
     def _compute_distance(self, Y: np.ndarray) -> float:
         """Compute the distance between the Hankel matrix and its transformation.
-        
+
         This formulation computes a measure of how much information in the dataset represented by Y is preserved or retained when projected onto the space spanned by W. The difference between the covariance matrix of Y and the projected version is computed, and the sum of all elements in this difference matrix gives an overall measure of dissimilarity or distortion.
 
         Args:
@@ -67,8 +67,7 @@ class SubIDDriftDetector:
             # TODO: Think about normalizing Ds w.r.t.
             #  (self.ref_size * hankel_rank)? (Kawahara et al. 2007)
             D_train = (
-                self._compute_distance(Y[: self.ref_size, :])
-                / self.ref_size
+                self._compute_distance(Y[: self.ref_size, :]) / self.ref_size
             )
             # Must wait for all test samples to be collected
             # D_test = self._compute_distance(Y[-self.test_size :]) / self.test_size
@@ -79,5 +78,5 @@ class SubIDDriftDetector:
             self.score = abs(D_test / D_train)
             self.drift_detected = self.score > self.threshold
         else:
-            self.score = 0.
+            self.score = 0.0
             self.drift_detected = False
