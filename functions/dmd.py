@@ -10,6 +10,8 @@ River API covers and separates update and revert methods in Windowed DMD.
 References:
     [^1]: Schmid, P. (2022). Dynamic Mode Decomposition and Its Variants. 54(1), pp.225-254. doi:[10.1146/annurev-fluid-030121-015835](https://doi.org/10.1146/annurev-fluid-030121-015835).
 """
+from typing import Union
+
 import numpy as np
 
 
@@ -89,7 +91,7 @@ class DMD:
             Y @ v[:r, :].conj().T @ np.diag(sigma_inv) @ u_[:, :r].conj().T
         )
 
-    def fit(self, X: np.ndarray, Y: np.ndarray | None = None):
+    def fit(self, X: np.ndarray, Y: Union[np.ndarray, None] = None):
         """
         Fit the DMD model to the input X.
 
@@ -139,13 +141,15 @@ class DMD:
 
 
 class DMDwC(DMD):
-    def __init__(self, r: int, B: np.ndarray | None = None):
+    def __init__(self, r: int, B: Union[np.ndarray, None] = None):
         super().__init__(r)
         self.B = B
         self.known_B = B is not None
         self.l: int
 
-    def fit(self, X: np.ndarray, U: np.ndarray, Y: np.ndarray | None = None):
+    def fit(
+        self, X: np.ndarray, U: np.ndarray, Y: Union[np.ndarray, None] = None
+    ):
         U_ = U.copy()
         if Y is None:
             Y = X[:, 1:]

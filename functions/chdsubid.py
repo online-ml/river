@@ -1,16 +1,16 @@
-import typing
 from collections import deque
+from typing import Protocol, Tuple, Union, runtime_checkable
 
 import numpy as np
 
 
-@typing.runtime_checkable
-class SubIdentifier(typing.Protocol):
-    def update(self, x: dict | np.ndarray, y: dict | np.ndarray):
+@runtime_checkable
+class SubIdentifier(Protocol):
+    def update(self, x: Union[dict, np.ndarray], y: Union[dict, np.ndarray]):
         ...
 
     @property
-    def eig(self) -> typing.Tuple[np.ndarray, np.ndarray]:
+    def eig(self) -> Tuple[np.ndarray, np.ndarray]:
         ...
 
 

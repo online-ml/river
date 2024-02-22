@@ -27,6 +27,7 @@ References:
 from __future__ import annotations
 
 import warnings
+from typing import Union
 
 import numpy as np
 import pandas as pd
@@ -94,7 +95,7 @@ class OnlineDMD:
         w: float = 1.0,
         initialize: int = 1,
         exponential_weighting: bool = False,
-        seed: int | None = None,
+        seed: Union[int, None] = None,
     ) -> None:
         self.r = int(r)
         self.w = float(w)
@@ -147,7 +148,9 @@ class OnlineDMD:
         xi = minimize(objective_function, np.ones(self.m)).x
         return xi
 
-    def update(self, x: dict | np.ndarray, y: dict | np.ndarray) -> None:
+    def update(
+        self, x: Union[dict, np.ndarray], y: Union[dict, np.ndarray]
+    ) -> None:
         """Update the DMD computation with a new pair of snapshots (x, y)
 
         Here, if the (discrete-time) dynamics are given by z(t) = f(z(t-1)),
@@ -198,11 +201,15 @@ class OnlineDMD:
         elif self._Y.shape[1] > self.n_seen:
             self._Y = self._Y[:, self.n_seen :]
 
-    def learn_one(self, x: dict | np.ndarray, y: dict | np.ndarray) -> None:
+    def learn_one(
+        self, x: Union[dict, np.ndarray], y: Union[dict, np.ndarray]
+    ) -> None:
         """Allias for update method."""
         self.update(x, y)
 
-    def revert(self, x: dict | np.ndarray, y: dict | np.ndarray) -> None:
+    def revert(
+        self, x: Union[dict, np.ndarray], y: Union[dict, np.ndarray]
+    ) -> None:
         """Gradually forget the older snapshots and revert the DMD computation.
 
         Compatible with Rolling and TimeRolling wrappers.
@@ -239,7 +246,9 @@ class OnlineDMD:
         self.n_seen -= 1
 
     def _update_many(
-        self, X: np.ndarray | pd.DataFrame, Y: np.ndarray | pd.DataFrame
+        self,
+        X: Union[np.ndarray, pd.DataFrame],
+        Y: Union[np.ndarray, pd.DataFrame],
     ) -> None:
         """Update the DMD computation with a new batch of snapshots (X,Y).
 
@@ -274,7 +283,9 @@ class OnlineDMD:
         self._P = (self._P + self._P.T) / 2
 
     def learn_many(
-        self, X: np.ndarray | pd.DataFrame, Y: np.ndarray | pd.DataFrame
+        self,
+        X: Union[np.ndarray, pd.DataFrame],
+        Y: Union[np.ndarray, pd.DataFrame],
     ) -> None:
         """Learn the OnlineDMD model using multiple snapshot pairs.
 
@@ -315,7 +326,7 @@ class OnlineDMD:
             for i in range(p):
                 self.update(X[:, i], Y[:, i])
 
-    def predict_one(self, x: dict | np.ndarray) -> np.ndarray:
+    def predict_one(self, x: Union[dict, np.ndarray]) -> np.ndarray:
         """
         Predicts the next state given the current state.
 
@@ -331,7 +342,9 @@ class OnlineDMD:
             mat[:, s] = (self.A @ mat[:, s - 1]).real
         return mat[:, -1]
 
-    def predict_many(self, x: dict | np.ndarray, forecast: int) -> np.ndarray:
+    def predict_many(
+        self, x: Union[dict, np.ndarray], forecast: int
+    ) -> np.ndarray:
         """
         Predicts multiple future values based on the given initial value.
 
@@ -421,12 +434,12 @@ class OnlineDMDwC(OnlineDMD):
 
     def __init__(
         self,
-        B: np.ndarray | None = None,
+        B: Union[np.ndarray, None] = None,
         r: int = 0,
         w: float = 1.0,
         initialize: int = 1,
         exponential_weighting: bool = False,
-        seed: int | None = None,
+        seed: Union[int, None] = None,
     ) -> None:
         super().__init__(
             r,
@@ -441,9 +454,9 @@ class OnlineDMDwC(OnlineDMD):
 
     def _update_many(
         self,
-        X: np.ndarray | pd.DataFrame,
-        Y: np.ndarray | pd.DataFrame,
-        U: np.ndarray | pd.DataFrame | None = None,
+        X: Union[np.ndarray, pd.DataFrame],
+        Y: Union[np.ndarray, pd.DataFrame],
+        U: Union[np.ndarray, pd.DataFrame, None] = None,
     ) -> None:
         """Update the DMD computation with a new batch of snapshots (X,Y).
 
@@ -519,9 +532,9 @@ class OnlineDMDwC(OnlineDMD):
 
     def update(
         self,
-        x: dict | np.ndarray,
-        y: dict | np.ndarray,
-        u: dict | np.ndarray | None = None,
+        x: Union[dict, np.ndarray],
+        y: Union[dict, np.ndarray],
+        u: Union[dict, np.ndarray, None] = None,
     ) -> None:
         """Update the DMD computation with a new pair of snapshots (x, y)
 
@@ -574,13 +587,19 @@ class OnlineDMDwC(OnlineDMD):
             self.n_seen += 1
 
     def learn_one(
-        self, x: dict | np.ndarray, y: dict | np.ndarray, u: dict | np.ndarray
+        self,
+        x: Union[dict, np.ndarray],
+        y: Union[dict, np.ndarray],
+        u: Union[dict, np.ndarray],
     ) -> None:
         """Allias for OnlineDMDwC.update method."""
         return self.update(x, y, u)
 
     def revert(
-        self, x: dict | np.ndarray, y: dict | np.ndarray, u: dict | np.ndarray
+        self,
+        x: Union[dict, np.ndarray],
+        y: Union[dict, np.ndarray],
+        u: Union[dict, np.ndarray],
     ) -> None:
         """Gradually forget the older snapshots and revert the DMD computation.
 
@@ -612,7 +631,7 @@ class OnlineDMDwC(OnlineDMD):
             self.A = self.A[:, : -self.l]
 
     def predict_one(
-        self, x: dict | np.ndarray, u: dict | np.ndarray
+        self, x: Union[dict, np.ndarray], u: Union[dict, np.ndarray]
     ) -> np.ndarray:
         """
         Predicts the next state given the current state.
@@ -635,7 +654,10 @@ class OnlineDMDwC(OnlineDMD):
         return mat[:, -1]
 
     def predict_many(
-        self, x: dict | np.ndarray, U: np.ndarray | pd.DataFrame, forecast: int
+        self,
+        x: Union[dict, np.ndarray],
+        U: Union[np.ndarray, pd.DataFrame],
+        forecast: int,
     ) -> np.ndarray:
         """
         Predicts multiple future values based on the given initial value.
@@ -663,9 +685,9 @@ class OnlineDMDwC(OnlineDMD):
 
     def truncation_error(
         self,
-        X: np.ndarray | pd.DataFrame,
-        Y: np.ndarray | pd.DataFrame,
-        U: np.ndarray | pd.DataFrame,
+        X: Union[np.ndarray, pd.DataFrame],
+        Y: Union[np.ndarray, pd.DataFrame],
+        U: Union[np.ndarray, pd.DataFrame],
     ) -> float:
         """Compute the truncation error of the DMD model on the given data.
 
