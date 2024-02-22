@@ -60,7 +60,8 @@ class OnlineDMD:
     recent data.
 
     Args:
-        w: weighting factor in (0,1]. Smaller value allows more adpative
+        r: Number of modes to keep. If 0 (default), all modes are kept.
+        w: Weighting factor in (0,1]. Smaller value allows more adpative
         learning, but too small weighting may result in model identification
         instability (relies only on limited recent snapshots).
         initialize: number of snapshot pairs to initialize the model with. If 0
@@ -68,8 +69,8 @@ class OnlineDMD:
             where \alpha is a large positive scalar. If initialize is smaller
             than the state dimension, it will be set to the state dimension and
             raise a warning. Defaults to 1.
-        exponential_weighting: whether to use exponential weighting in revert
-        seed: random seed for reproducibility (initialize A with random values)
+        exponential_weighting: Whether to use exponential weighting in revert
+        seed: Random seed for reproducibility (initialize A with random values)
 
     Attributes:
         m: state dimension x(t) as in z(t) = f(z(t-1)) or y(t) = f(t, x(t))
@@ -89,11 +90,13 @@ class OnlineDMD:
 
     def __init__(
         self,
+        r: int = 0,
         w: float = 1.0,
         initialize: int = 1,
         exponential_weighting: bool = False,
         seed: int | None = None,
     ) -> None:
+        self.r = int(r)
         self.w = float(w)
         assert self.w > 0 and self.w <= 1
         self.initialize = int(initialize)
@@ -107,9 +110,11 @@ class OnlineDMD:
         self._Y: np.ndarray  # for xi computation
 
     @property
-    def eigs_modes(self) -> tuple[np.ndarray, np.ndarray]:
+    def eig(self) -> tuple[np.ndarray, np.ndarray]:
         """Compute and return DMD eigenvalues and DMD modes at current step"""
         Lambda, Phi = np.linalg.eig(self.A)
+        if self.r:
+            Lambda, Phi = Lambda[: self.r], Phi[:, : self.r]
         return Lambda, Phi
 
     def _init_update(self) -> None:
@@ -118,7 +123,6 @@ class OnlineDMD:
                 f"Initialization is under-constrained. Changed initialize to {self.m}."
             )
             self.initialize = self.m
-
         self.A = np.random.randn(self.m, self.m)
         self._X_init = np.empty((self.m, self.initialize))
         self._Y_init = np.empty((self.m, self.initialize))
@@ -127,7 +131,7 @@ class OnlineDMD:
     @property
     def xi(self) -> np.ndarray:
         """Amlitudes of the singular values of the input matrix."""
-        Lambda, Phi = self.eigs_modes
+        Lambda, Phi = self.eig
         # Compute Discrete temporal dynamics matrix (Vandermonde matrix).
         C = np.vander(Lambda, self.n_seen, increasing=True)
         # xi = self.Phi.conj().T @ self._Y @ np.linalg.pinv(self.C)
@@ -192,8 +196,7 @@ class OnlineDMD:
         if self._Y.shape[1] < self.n_seen:
             self._Y = np.hstack([self._Y, y.reshape(-1, 1)])
         elif self._Y.shape[1] > self.n_seen:
-            self._Y = self._Y[:, self.n_seen:]
-        
+            self._Y = self._Y[:, self.n_seen :]
 
     def learn_one(self, x: dict | np.ndarray, y: dict | np.ndarray) -> None:
         """Allias for update method."""
@@ -208,6 +211,12 @@ class OnlineDMD:
             x: 1D array, shape (n, ), x(t) as in y(t) = f(t, x(t))
             y: 1D array, shape (n, ), y(t) as in y(t) = f(t, x(t))
         """
+        if self.n_seen < self.initialize:
+            raise RuntimeError(
+                f"Cannot revert {self.__class__.__name__} before "
+                "initialization. If used with Rolling or TimeRolling, window "
+                f"size should be increased to {self.initialize}."
+            )
         if isinstance(x, dict):
             x = np.array(list(x.values()))
         if isinstance(y, dict):
@@ -288,12 +297,16 @@ class OnlineDMD:
             self.m = X.shape[0]
             assert p >= self.m and np.linalg.matrix_rank(X) == self.m
             # Exponential weighting factor - older snapshots are weighted less
-            weight = np.sqrt(self.w) ** range(p - 1, -1, -1)
+            if self.exponential_weighting:
+                weight = np.sqrt(self.w) ** range(p - 1, -1, -1)
+            else:
+                weight = np.ones(p)
             Xqhat, Yqhat = weight * X, weight * Y
             self.A = Yqhat.dot(np.linalg.pinv(Xqhat))
             self._P = np.linalg.inv(Xqhat.dot(Xqhat.T)) / self.w
             self.n_seen += p
             self.initialize = 0
+            self._Y = Y
         # Update incrementally if initialized
         # Zhang (2019): "single rank-s update is roughly the same as applying
         #  the rank-1 formula s times"
@@ -340,6 +353,8 @@ class OnlineDMD:
 
     def truncation_error(self, X: np.ndarray, Y: np.ndarray) -> float:
         """Compute the truncation error of the DMD model on the given data.
+        
+        Since this implementation computes exact DMD, the truncation error is relevant only for initialization.
 
         Args:
             X: 2D array, shape (n, p), matrix [x(1),x(2),...x(p)]
@@ -377,6 +392,7 @@ class OnlineDMDwC(OnlineDMD):
     Args:
         B: control matrix, size n by m. If None, the control matrix will be
         identified from the snapshots. Defaults to None.
+        r: number of modes to keep. If 0 (default), all modes are kept.
         w: weighting factor in (0,1]. Smaller value allows more adpative
         learning, but too small weighting may result in model identification
         instability (relies only on limited recent snapshots).
@@ -406,12 +422,14 @@ class OnlineDMDwC(OnlineDMD):
     def __init__(
         self,
         B: np.ndarray | None = None,
+        r: int = 0,
         w: float = 1.0,
         initialize: int = 1,
         exponential_weighting: bool = False,
         seed: int | None = None,
     ) -> None:
         super().__init__(
+            r,
             w,
             initialize,
             exponential_weighting,
