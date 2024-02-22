@@ -89,20 +89,24 @@ class DMD:
             Y @ v[:r, :].conj().T @ np.diag(sigma_inv) @ u_[:, :r].conj().T
         )
 
-    def fit(self, X: np.ndarray):
+    def fit(self, X: np.ndarray, Y: np.ndarray | None = None):
         """
         Fit the DMD model to the input X.
 
         Args:
             X: Input X matrix of shape (m, n), where m is the number of variables and n is the number of time steps.
+            Y: The output snapshot matrix of shape (m, n).
 
         """
         # Build X matrices
-        if hasattr(self, "m"):
-            self._Y = X[: self.m, 1:]
-        else:
-            self._Y = X[:, 1:]
-        X = X[:, :-1]
+        if Y is None:
+            if hasattr(self, "m"):
+                Y = X[: self.m, 1:]
+            else:
+                Y = X[:, 1:]
+            X = X[:, :-1]
+
+        self._Y = Y
 
         self.m, self.n = self._Y.shape
 
@@ -135,36 +139,39 @@ class DMD:
 
 
 class DMDwC(DMD):
-    def __init__(self, r: int):
+    def __init__(self, r: int, B: np.ndarray | None = None):
         super().__init__(r)
-        self.B: np.ndarray
+        self.B = B
+        self.known_B = B is not None
         self.l: int
 
-    def fit(self, X: np.ndarray, u: np.ndarray, B: np.ndarray | None = None):
-        # Need to copy u because it will be modified
-        F = u.copy()
+    def fit(self, X: np.ndarray, U: np.ndarray, Y: np.ndarray | None = None):
+        U_ = U.copy()
+        if Y is None:
+            Y = X[:, 1:]
+            X = X[:, :-1]
 
-        self.l = F.shape[0]
+        self.l = U_.shape[0]
         self.m, self.n = X.shape
-        if X.shape[1] != F.shape[1]:
+        if X.shape[1] != U_.shape[1]:
             raise ValueError(
                 "X and u must have the same number of time steps.\n"
-                f"X: {X.shape[1]}, u: {F.shape[1]}"
+                f"X: {X.shape[1]}, u: {U_.shape[1]}"
             )
-        if B is None:
-            X = np.vstack((X, F))
+        if not self.known_B:
+            X = np.vstack((X, U_))
 
-            X = X[:, :-1]
-            self._Y = X[: self.m, 1:]
+            self._Y = Y
         else:
-            X = X[:, :-1]
-            self._Y = X[:, 1:] - B * F[:, :-1]
+            # Subtract the effect of actuation
+            self._Y = Y - self.B * U_[:, :-1]
         # self.m, self.n = self._Y.shape
 
         super()._fit(X, self._Y)
-        # split K into state transition matrix and control matrix
-        self.B = self.A[:, -self.l :]
-        self.A = self.A[:, : -self.l]
+        if not self.known_B:
+            # split K into state transition matrix and control matrix
+            self.B = self.A[:, -self.l :]
+            self.A = self.A[:, : -self.l]
 
     def predict(
         self,
