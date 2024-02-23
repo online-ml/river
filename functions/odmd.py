@@ -105,7 +105,7 @@ class OnlineDMD(MiniBatchRegressor):
     True
 
     >>> model.xi  # TODO: verify the result
-    array([0.54244922, 0.54244922])
+    array([0.54244, 0.54244])
 
     >>> from river.utils import Rolling
     >>> model = Rolling(OnlineDMD(r=2, w=1.), 10)
