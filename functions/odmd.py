@@ -89,46 +89,46 @@ class OnlineDMD(MiniBatchRegressor):
     >>> w1 = np.cos(np.pi * freq * tspan)
     >>> w2 = -np.sin(np.pi * freq * tspan)
     >>> df = pd.DataFrame({'w1': w1[:-1], 'w2': w2[:-1]})
-    
+
     >>> model = OnlineDMD(r=2, w=0.1, initialize=0)
     >>> X, Y = df.iloc[:-1], df.shift(-1).iloc[:-1]
-    
+
     >>> for (_, x), (_, y) in zip(X.iterrows(), Y.iterrows()):
     ...     x, y = x.to_dict(), y.to_dict()
     ...     model.learn_one(x, y)
-    
+
     >>> eig, _ =  np.log(model.eig[0]) / dt
     >>> r, i = eig.real, eig.imag
     >>> np.isclose(eig.real, 0.)
     True
     >>> np.isclose(eig.imag, np.pi * freq)
     True
-    
+
     >>> model.xi  # TODO: verify the result
     array([0.54244922, 0.54244922])
-    
+
     >>> from river.utils import Rolling
     >>> model = Rolling(OnlineDMD(r=2, w=1.), 10)
     >>> X, Y = df.iloc[:-1], df.shift(-1).iloc[:-1]
-    
+
     >>> for (_, x), (_, y) in zip(X.iterrows(), Y.iterrows()):
     ...     x, y = x.to_dict(), y.to_dict()
     ...     model.update(x, y)
-    
+
     >>> eig, _ =  np.log(model.eig[0]) / dt
     >>> r, i = eig.real, eig.imag
     >>> np.isclose(eig.real, 0.)
     True
     >>> np.isclose(eig.imag, np.pi * freq)
     True
-    
+
     >>> np.isclose(model.truncation_error(X.values.T, Y.values.T), 0)
     True
-    
+
     >>> w_pred = model.predict_one(np.array([w1[-2], w2[-2]]))
     >>> np.allclose(w_pred, [w1[-1], w2[-1]])
     True
-    
+
     >>> w_pred = model.predict_many(np.array([1, 0]), 10)
     >>> np.allclose(w_pred, [w1[1:11], w2[1:11]])
     True

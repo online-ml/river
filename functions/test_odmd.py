@@ -101,6 +101,7 @@ def test_errors_raised():
         for x, y in zip(X.T, Y.T):
             rodmd.update(x, y)
 
+
 def test_allclose_online_batch():
     dmd = DMD()
     odmd = OnlineDMD()
