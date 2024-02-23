@@ -12,6 +12,9 @@ import os
 import sys
 
 import numpy as np
+import pandas as pd
+import pytest
+from river.utils import Rolling
 from scipy.integrate import odeint
 
 # from river.compat.river_to_sklearn import convert_river_to_sklearn
@@ -50,13 +53,60 @@ for k in range(m):
     eigvals[:, k] = np.linalg.eigvals(A[:, :, k])
 
 
+def test_input_types():
+    n_init = round(samples / 2)
+
+    odmd1 = OnlineDMD()
+
+    odmd1.learn_many(X[:, :n_init], Y[:, :n_init])
+    for x, y in zip(X[:, n_init:].T, Y[:, n_init:].T):
+        odmd1.learn_one(x, y)
+
+    X_, Y_ = pd.DataFrame(X.T), pd.DataFrame(Y.T)
+
+    odmd2 = OnlineDMD()
+
+    odmd2.learn_many(X_.iloc[:n_init].T, Y_.iloc[:n_init].T)
+    for x, y in zip(X_.iloc[n_init:].values, Y_.iloc[n_init:].values):
+        odmd2.learn_one(x, y)
+
+    assert np.allclose(odmd1.A, odmd2.A)
+
+
+def test_one_many_close():
+    n_init = round(samples / 2)
+
+    odmd1 = OnlineDMD()
+
+    odmd1.learn_many(X[:, :n_init], Y[:, :n_init])
+    for x, y in zip(X[:, n_init:].T, Y[:, n_init:].T):
+        odmd1.learn_one(x, y)
+
+    odmd2 = OnlineDMD()
+
+    odmd2.learn_many(X[:, :n_init], Y[:, :n_init])
+    odmd2.learn_many(X[:, n_init:], Y[:, n_init:])
+
+    assert np.allclose(odmd1.A, odmd2.A)
+
+
+def test_errors_raised():
+    odmd = OnlineDMD()
+
+    with pytest.raises(Exception):
+        odmd._update_many(X, Y)
+
+    rodmd = Rolling(OnlineDMD(), window_size=1)
+    with pytest.raises(Exception):
+        for x, y in zip(X.T, Y.T):
+            rodmd.update(x, y)
+
 def test_allclose_online_batch():
     dmd = DMD()
     odmd = OnlineDMD()
 
     dmd.fit(X, Y)
 
-    odmd = OnlineDMD()
     eigvals_online_ = np.empty((n, m), dtype=complex)
     for i, (x, y) in enumerate(zip(X.T, Y.T)):
         odmd.learn_one(x, y)
@@ -69,17 +119,17 @@ def test_allclose_online_batch():
 
 
 def test_allclose_weighted_true():
-    init_samples = round(samples / 2)
+    n_init = round(samples / 2)
     odmd = OnlineDMD(w=0.9)
-    # odmd.learn_many(X[:, :init_samples], Y[:, :init_samples])
+    # odmd.learn_many(X[:, :n_init], Y[:, :n_init])
 
     eigvals_online_ = np.empty((n, m), dtype=complex)
     for i, (x, y) in enumerate(zip(X.T, Y.T)):
         odmd.learn_one(x, y)
         eigvals_online_[:, i] = np.log(np.linalg.eigvals(odmd.A)) / dt
 
-    slope_eig_true = np.diff(eigvals)[0, init_samples:].mean()
-    slope_eig_online = np.diff(eigvals_online_)[0, init_samples:].mean()
+    slope_eig_true = np.diff(eigvals)[0, n_init:].mean()
+    slope_eig_online = np.diff(eigvals_online_)[0, n_init:].mean()
     print(slope_eig_true, slope_eig_online)
     np.allclose(
         slope_eig_true,

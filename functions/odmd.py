@@ -31,6 +31,7 @@ from typing import Union
 
 import numpy as np
 import pandas as pd
+from river.base import MiniBatchRegressor
 
 __all__ = [
     "OnlineDMD",
@@ -38,7 +39,7 @@ __all__ = [
 ]
 
 
-class OnlineDMD:
+class OnlineDMD(MiniBatchRegressor):
     """Online Dynamic Mode Decomposition (DMD).
 
     This regressor is a class that implements online dynamic mode decomposition
@@ -81,6 +82,56 @@ class OnlineDMD:
         _P: inverse of covariance matrix of X
 
     Examples:
+    >>> import numpy as np
+    >>> import pandas as pd
+    >>> n = 101; freq = 2.; tspan = np.linspace(0, 10, n); dt = 0.1
+    >>> a1 = 1; a2 = 1; phase1 = -np.pi; phase2 = np.pi / 2
+    >>> w1 = np.cos(np.pi * freq * tspan)
+    >>> w2 = -np.sin(np.pi * freq * tspan)
+    >>> df = pd.DataFrame({'w1': w1[:-1], 'w2': w2[:-1]})
+    
+    >>> model = OnlineDMD(r=2, w=0.1, initialize=0)
+    >>> X, Y = df.iloc[:-1], df.shift(-1).iloc[:-1]
+    
+    >>> for (_, x), (_, y) in zip(X.iterrows(), Y.iterrows()):
+    ...     x, y = x.to_dict(), y.to_dict()
+    ...     model.learn_one(x, y)
+    
+    >>> eig, _ =  np.log(model.eig[0]) / dt
+    >>> r, i = eig.real, eig.imag
+    >>> np.isclose(eig.real, 0.)
+    True
+    >>> np.isclose(eig.imag, np.pi * freq)
+    True
+    
+    >>> model.xi  # TODO: verify the result
+    array([0.54244922, 0.54244922])
+    
+    >>> from river.utils import Rolling
+    >>> model = Rolling(OnlineDMD(r=2, w=1.), 10)
+    >>> X, Y = df.iloc[:-1], df.shift(-1).iloc[:-1]
+    
+    >>> for (_, x), (_, y) in zip(X.iterrows(), Y.iterrows()):
+    ...     x, y = x.to_dict(), y.to_dict()
+    ...     model.update(x, y)
+    
+    >>> eig, _ =  np.log(model.eig[0]) / dt
+    >>> r, i = eig.real, eig.imag
+    >>> np.isclose(eig.real, 0.)
+    True
+    >>> np.isclose(eig.imag, np.pi * freq)
+    True
+    
+    >>> np.isclose(model.truncation_error(X.values.T, Y.values.T), 0)
+    True
+    
+    >>> w_pred = model.predict_one(np.array([w1[-2], w2[-2]]))
+    >>> np.allclose(w_pred, [w1[-1], w2[-1]])
+    True
+    
+    >>> w_pred = model.predict_many(np.array([1, 0]), 10)
+    >>> np.allclose(w_pred, [w1[1:11], w2[1:11]])
+    True
 
     References:
         [^1]: Zhang, H., Clarence Worth Rowley, Deem, E.A. and Cattafesta, L.N.
@@ -119,9 +170,9 @@ class OnlineDMD:
         return Lambda, Phi
 
     def _init_update(self) -> None:
-        if self.initialize < self.m:
+        if self.initialize > 0 and self.initialize < self.m:
             warnings.warn(
-                f"Initialization is under-constrained. Changed initialize to {self.m}."
+                f"Initialization is under-constrained. Changing initialize to {self.m}."
             )
             self.initialize = self.m
         self.A = np.random.randn(self.m, self.m)
@@ -172,7 +223,6 @@ class OnlineDMD:
         if self.n_seen == 0:
             self.m = x.shape[0]
             self._init_update()
-
         if bool(self.initialize) and self.n_seen <= self.initialize - 1:
             self._X_init[:, self.n_seen] = x
             self._Y_init[:, self.n_seen] = y
@@ -265,15 +315,12 @@ class OnlineDMD:
 
         """
         if self.n_seen == 0:
-            self.m = X.shape[0]
-            self._init_update()
-            epsilon = 1e-15
-            alpha = 1.0 / epsilon
-            self._P = alpha * np.identity(self.m)  # inverse of cov(X)
+            raise RuntimeError("Model is not initialized.")
         p = X.shape[1]
-        #
-        weights = np.sqrt(self.w) ** range(p - 1, -1, -1)
-        weights = np.ones(p)
+        if self.exponential_weighting:
+            weights = np.sqrt(self.w) ** range(p - 1, -1, -1)
+        else:
+            weights = np.ones(p)
         C = np.diag(weights)
         PX = self._P.dot(X)
         AX = self.A.dot(X)
@@ -309,10 +356,10 @@ class OnlineDMD:
             assert p >= self.m and np.linalg.matrix_rank(X) == self.m
             # Exponential weighting factor - older snapshots are weighted less
             if self.exponential_weighting:
-                weight = np.sqrt(self.w) ** range(p - 1, -1, -1)
+                weights = np.sqrt(self.w) ** range(p - 1, -1, -1)
             else:
-                weight = np.ones(p)
-            Xqhat, Yqhat = weight * X, weight * Y
+                weights = np.ones(p)
+            Xqhat, Yqhat = weights * X, weights * Y
             self.A = Yqhat.dot(np.linalg.pinv(Xqhat))
             self._P = np.linalg.inv(Xqhat.dot(Xqhat.T)) / self.w
             self.n_seen += p
@@ -323,8 +370,6 @@ class OnlineDMD:
         #  the rank-1 formula s times"
         else:
             self._update_many(X, Y)
-            for i in range(p):
-                self.update(X[:, i], Y[:, i])
 
     def predict_one(self, x: Union[dict, np.ndarray]) -> np.ndarray:
         """
