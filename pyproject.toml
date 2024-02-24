@@ -11,6 +11,18 @@ homepage = "https://riverml.xyz/"
 repository = "https://github.com/online-ml/river/"
 authors = ["Max Halford <maxhalford25@gmail.com>"]
 
+include = [
+    "**/*.cpp",  
+    "**/*.pyx", 
+    "**/*.pxd",
+    "river/datasets/*.csv",
+    "river/datasets/*.gz",
+    "river/datasets/*.zip",
+    "river/stream/*.zip", 
+    "Cargo.toml",
+    "rust_src/**/*"
+]
+
 [tool.poetry.build]
 generate-setup-file = true
 script = "build.py"
