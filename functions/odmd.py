@@ -424,6 +424,31 @@ class OnlineDMD(MiniBatchRegressor):
         Y_hat = self.A @ X
         return float(np.linalg.norm(Y - Y_hat) / np.linalg.norm(Y))
 
+    def transform_one(self, x: Union[dict, np.ndarray]) -> np.ndarray:
+        """
+        Transforms the given input sample.
+
+        Args:
+            x: The input to transform.
+
+        Returns:
+            np.ndarray: The transformed input.
+        """
+        _, Phi = self.eig
+        return Phi.T @ x
+
+    def transform_many(self, X: Union[dict, np.ndarray]) -> np.ndarray:
+        """
+        Transforms the given input sequence.
+
+        Args:
+            x: The input to transform.
+
+        Returns:
+            np.ndarray: The transformed input.
+        """
+        return self.transform_one(X)
+
 
 class OnlineDMDwC(OnlineDMD):
     """Online Dynamic Mode Decomposition (DMD) with Control.
