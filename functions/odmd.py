@@ -15,8 +15,8 @@ Example:
 
 TODO:
 
-    - [ ] Add base class of river which is base.MiniBatchRegressor
     - [ ] Compute amlitudes of the singular values of the input matrix.
+    - [ ] Align with transposed data in form of (snapshots, features).
 
 References:
     [^1]: Zhang, H., Clarence Worth Rowley, Deem, E.A. and Cattafesta, L.N.
@@ -153,7 +153,8 @@ class OnlineDMD(MiniBatchRegressor):
         assert self.w > 0 and self.w <= 1
         self.initialize = int(initialize)
         self.exponential_weighting = exponential_weighting
-        np.random.seed(seed)
+        self.seed = seed
+        np.random.seed(self.seed)
         self.m: int
         self.n_seen: int = 0
         self.feature_names_in_: list[str]
@@ -434,10 +435,13 @@ class OnlineDMD(MiniBatchRegressor):
         Returns:
             np.ndarray: The transformed input.
         """
+        if isinstance(x, dict):
+            x = np.array(list(x.values()))
+
         _, Phi = self.eig
         return Phi.T @ x
 
-    def transform_many(self, X: Union[dict, np.ndarray]) -> np.ndarray:
+    def transform_many(self, X: Union[np.ndarray, pd.DataFrame]) -> np.ndarray:
         """
         Transforms the given input sequence.
 
