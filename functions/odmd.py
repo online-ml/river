@@ -96,7 +96,6 @@ class OnlineDMD(MiniBatchRegressor):
     >>> for (_, x), (_, y) in zip(X.iterrows(), Y.iterrows()):
     ...     x, y = x.to_dict(), y.to_dict()
     ...     model.learn_one(x, y)
-
     >>> eig, _ =  np.log(model.eig[0]) / dt
     >>> r, i = eig.real, eig.imag
     >>> np.isclose(eig.real, 0.)
@@ -122,7 +121,7 @@ class OnlineDMD(MiniBatchRegressor):
     >>> np.isclose(eig.imag, np.pi * freq)
     True
 
-    >>> np.isclose(model.truncation_error(X.values.T, Y.values.T), 0)
+    >>> np.isclose(model.truncation_error(X.values, Y.values), 0)
     True
 
     >>> w_pred = model.predict_one(np.array([w1[-2], w2[-2]]))
@@ -130,7 +129,7 @@ class OnlineDMD(MiniBatchRegressor):
     True
 
     >>> w_pred = model.predict_many(np.array([1, 0]), 10)
-    >>> np.allclose(w_pred, [w1[1:11], w2[1:11]])
+    >>> np.allclose(w_pred.T, [w1[1:11], w2[1:11]])
     True
 
     References:
@@ -177,9 +176,9 @@ class OnlineDMD(MiniBatchRegressor):
             )
             self.initialize = self.m
         self.A = np.random.randn(self.m, self.m)
-        self._X_init = np.empty((self.m, self.initialize))
-        self._Y_init = np.empty((self.m, self.initialize))
-        self._Y = np.empty((self.m, 0))
+        self._X_init = np.empty((self.initialize, self.m))
+        self._Y_init = np.empty((self.initialize, self.m))
+        self._Y = np.empty((0, self.m))
 
     @property
     def xi(self) -> np.ndarray:
@@ -193,7 +192,7 @@ class OnlineDMD(MiniBatchRegressor):
 
         def objective_function(x):
             return np.linalg.norm(
-                self._Y - Phi @ np.diag(x) @ C, "fro"
+                self._Y.T - Phi @ np.diag(x) @ C, "fro"
             ) + 0.5 * np.linalg.norm(x, 1)
 
         # Minimize the objective function
@@ -210,8 +209,8 @@ class OnlineDMD(MiniBatchRegressor):
         z(t-1) and z(t).
 
         Args:
-            x: 1D array, shape (n, ), x(t) as in y(t) = f(t, x(t))
-            y: 1D array, shape (n, ), y(t) as in y(t) = f(t, x(t))
+            x: 1D array, shape (m, ), x(t) as in y(t) = f(t, x(t))
+            y: 1D array, shape (m, ), y(t) as in y(t) = f(t, x(t))
         """
         if isinstance(x, dict):
             self.feature_names_in_ = list(x.keys())
@@ -222,14 +221,15 @@ class OnlineDMD(MiniBatchRegressor):
 
         # Initialize properties which depend on the shape of x
         if self.n_seen == 0:
-            self.m = x.shape[0]
+            self.m = len(x)
             self._init_update()
         if bool(self.initialize) and self.n_seen <= self.initialize - 1:
-            self._X_init[:, self.n_seen] = x
-            self._Y_init[:, self.n_seen] = y
+            self._X_init[self.n_seen, :] = x
+            self._Y_init[self.n_seen, :] = y
             if self.n_seen == self.initialize - 1:
                 self.learn_many(self._X_init, self._Y_init)
-                self.n_seen -= self._X_init.shape[1]
+                # revert the number of seen samples to avoid doubling
+                self.n_seen -= self._X_init.shape[0]
         else:
             if self.n_seen == 0:
                 epsilon = 1e-15
@@ -238,7 +238,7 @@ class OnlineDMD(MiniBatchRegressor):
             # compute P*x matrix vector product beforehand
             Px = self._P.dot(x)
             # compute gamma
-            gamma = 1.0 / (1.0 + x.T.dot(Px))
+            gamma = 1.0 / (1.0 + x.dot(Px))
             # update A
             self.A += np.outer(gamma * (y - self.A.dot(x)), Px)
             # update P, group Px*Px' to ensure positive definite
@@ -247,10 +247,10 @@ class OnlineDMD(MiniBatchRegressor):
             self._P = (self._P + self._P.T) / 2
 
         self.n_seen += 1
-        if self._Y.shape[1] < self.n_seen:
-            self._Y = np.hstack([self._Y, y.reshape(-1, 1)])
-        elif self._Y.shape[1] > self.n_seen:
-            self._Y = self._Y[:, self.n_seen :]
+        if self._Y.shape[0] < self.n_seen:
+            self._Y = np.vstack([self._Y, y])
+        elif self._Y.shape[0] > self.n_seen:
+            self._Y = self._Y[self.n_seen :, :]
 
     def learn_one(
         self, x: Union[dict, np.ndarray], y: Union[dict, np.ndarray]
@@ -266,8 +266,8 @@ class OnlineDMD(MiniBatchRegressor):
         Compatible with Rolling and TimeRolling wrappers.
 
         Args:
-            x: 1D array, shape (n, ), x(t) as in y(t) = f(t, x(t))
-            y: 1D array, shape (n, ), y(t) as in y(t) = f(t, x(t))
+            x: 1D array, shape (m, ), x(t) as in y(t) = f(t, x(t))
+            y: 1D array, shape (m, ), y(t) as in y(t) = f(t, x(t))
         """
         if self.n_seen < self.initialize:
             raise RuntimeError(
@@ -281,15 +281,16 @@ class OnlineDMD(MiniBatchRegressor):
             y = np.array(list(y.values()))
 
         # compute P*x matrix vector product beforehand
-        Px = self._P.dot(x)
         # Apply exponential weighting factor
         if self.exponential_weighting:
             weight = 1.0 / -(self.w**self.n_seen)
         else:
-            weight = 1.0
-        gamma = 1.0 / (weight - x.T.dot(Px))
+            weight = -1.0
+        Px = self._P.dot(x)
+        gamma = 1.0 / (weight + x.dot(Px))
         # update A
-        self.A += np.outer(gamma * (y - self.A.dot(x)), Px)
+        Ax = self.A.dot(x)
+        self.A += np.outer(gamma * (y - Ax), Px)
         # update P, group Px*Px' to ensure positive definite
         self._P = (self._P - gamma * np.outer(Px, Px)) / self.w
         # ensure P is SPD by taking its symmetric part
@@ -307,8 +308,8 @@ class OnlineDMD(MiniBatchRegressor):
         However, it allows parallel computing by vectorizing update in loop.
 
         Args:
-            X: The input snapshot matrix of shape (m, p), where m is the number of snapshots and p is the number of features.
-            Y: The output snapshot matrix of shape (m, p), where m is the number of snapshots and p is the number of features.
+            X: The input snapshot matrix of shape (p, m), where p is the number of snapshots and m is the number of features.
+            Y: The output snapshot matrix of shape (p, m), where p is the number of snapshots and m is the number of features.
 
         TODO:
             - [ ] find out why not equal to for loop update implementation
@@ -317,17 +318,20 @@ class OnlineDMD(MiniBatchRegressor):
         """
         if self.n_seen == 0:
             raise RuntimeError("Model is not initialized.")
-        p = X.shape[1]
+        p = X.shape[0]
         if self.exponential_weighting:
-            weights = np.sqrt(self.w) ** range(p - 1, -1, -1)
+            weights = np.sqrt(self.w) ** np.arange(p - 1, -1, -1)
         else:
             weights = np.ones(p)
         C = np.diag(weights)
-        PX = self._P.dot(X)
-        AX = self.A.dot(X)
-        Gamma = np.linalg.inv(np.linalg.inv(C) + X.T.dot(PX))
-        self.A += (Y - AX).dot(Gamma).dot(PX.T)
-        self._P = (self._P - PX.dot(Gamma).dot(PX.T)) / self.w
+
+        Xt = X.T
+        AX = self.A.dot(Xt)
+        PX = self._P.dot(Xt)
+        PXt = PX.T
+        Gamma = np.linalg.inv(np.linalg.inv(C) + X.dot(PX))
+        self.A += (Y.T - AX).dot(Gamma).dot(PXt)
+        self._P = (self._P - PX.dot(Gamma).dot(PXt)) / self.w
         self._P = (self._P + self._P.T) / 2
 
     def learn_many(
@@ -341,8 +345,8 @@ class OnlineDMD(MiniBatchRegressor):
         Otherwise, it is equivalent to calling update method in a loop.
 
         Args:
-            X: The input snapshot matrix of shape (m, p), where m is the number of snapshots and p is the number of features.
-            Y: The output snapshot matrix of shape (m, p), where m is the number of snapshots and p is the number of features.
+            X: The input snapshot matrix of shape (p, m), where p is the number of snapshots and m is the number of features.
+            Y: The output snapshot matrix of shape (p, m), where p is the number of snapshots and m is the number of features.
         """
         if isinstance(X, pd.DataFrame):
             X = X.values
@@ -350,20 +354,22 @@ class OnlineDMD(MiniBatchRegressor):
             Y = Y.values
 
         # necessary condition for over-constrained initialization
-        p = X.shape[1]
+        n = X.shape[0]
         # Initialize A and P with first p snapshot pairs
         if not hasattr(self, "_P"):
-            self.m = X.shape[0]
-            assert p >= self.m and np.linalg.matrix_rank(X) == self.m
+            self.m = X.shape[1]
+            assert n >= self.m and np.linalg.matrix_rank(X) == self.m
             # Exponential weighting factor - older snapshots are weighted less
             if self.exponential_weighting:
-                weights = np.sqrt(self.w) ** range(p - 1, -1, -1)
+                weights = (np.sqrt(self.w) ** np.arange(n - 1, -1, -1))[
+                    :, np.newaxis
+                ]
             else:
-                weights = np.ones(p)
+                weights = np.ones((n, 1))
             Xqhat, Yqhat = weights * X, weights * Y
-            self.A = Yqhat.dot(np.linalg.pinv(Xqhat))
-            self._P = np.linalg.inv(Xqhat.dot(Xqhat.T)) / self.w
-            self.n_seen += p
+            self.A = Yqhat.T.dot(np.linalg.pinv(Xqhat.T))
+            self._P = np.linalg.inv(Xqhat.T.dot(Xqhat)) / self.w
+            self.n_seen += n
             self.initialize = 0
             self._Y = Y
         # Update incrementally if initialized
@@ -382,11 +388,11 @@ class OnlineDMD(MiniBatchRegressor):
         Returns:
             np.ndarray: The predicted next state.
         """
-        mat = np.zeros((self.m, 2))
-        mat[:, 0] = x if isinstance(x, np.ndarray) else list(x.values())
+        mat = np.zeros((2, self.m))
+        mat[0, :] = x if isinstance(x, np.ndarray) else list(x.values())
         for s in range(1, 2):
-            mat[:, s] = (self.A @ mat[:, s - 1]).real
-        return mat[:, -1]
+            mat[s, :] = (self.A @ mat[s - 1, :]).real
+        return mat[-1, :]
 
     def predict_many(
         self, x: Union[dict, np.ndarray], forecast: int
@@ -404,11 +410,11 @@ class OnlineDMD(MiniBatchRegressor):
         TODO:
             - [ ] Align predict_many with river API
         """
-        mat = np.zeros((self.m, forecast + 1))
-        mat[:, 0] = x if isinstance(x, np.ndarray) else list(x.values())
+        mat = np.zeros((forecast + 1, self.m))
+        mat[0, :] = x if isinstance(x, np.ndarray) else list(x.values())
         for s in range(1, forecast + 1):
-            mat[:, s] = (self.A @ mat[:, s - 1]).real
-        return mat[:, 1:]
+            mat[s, :] = (self.A @ mat[s - 1, :]).real
+        return mat[1:, :]
 
     def truncation_error(self, X: np.ndarray, Y: np.ndarray) -> float:
         """Compute the truncation error of the DMD model on the given data.
@@ -416,14 +422,14 @@ class OnlineDMD(MiniBatchRegressor):
         Since this implementation computes exact DMD, the truncation error is relevant only for initialization.
 
         Args:
-            X: 2D array, shape (n, p), matrix [x(1),x(2),...x(p)]
-            Y: 2D array, shape (n, p), matrix [y(1),y(2),...y(p)]
+            X: 2D array, shape (p, m), matrix [x(1),x(2),...x(p)]
+            Y: 2D array, shape (p, m), matrix [y(1),y(2),...y(p)]
 
         Returns:
             float: Truncation error of the DMD model
         """
-        Y_hat = self.A @ X
-        return float(np.linalg.norm(Y - Y_hat) / np.linalg.norm(Y))
+        Y_hat = self.A @ X.T
+        return float(np.linalg.norm(Y - Y_hat.T) / np.linalg.norm(Y))
 
     def transform_one(self, x: Union[dict, np.ndarray]) -> np.ndarray:
         """
@@ -451,7 +457,11 @@ class OnlineDMD(MiniBatchRegressor):
         Returns:
             np.ndarray: The transformed input.
         """
-        return self.transform_one(X)
+        if isinstance(X, pd.DataFrame):
+            X = X.values
+
+        _, Phi = self.eig
+        return Phi.T @ X
 
 
 class OnlineDMDwC(OnlineDMD):
@@ -538,9 +548,9 @@ class OnlineDMDwC(OnlineDMD):
         However, it allows parallel computing by vectorizing update in loop.
 
         Args:
-            X: The input snapshot matrix of shape (m, p), where m is the number of snapshots and p is the number of features.
-            Y: The output snapshot matrix of shape (m, p), where m is the number of snapshots and p is the number of features.
-            U: The control input snapshot matrix of shape (l, p), where l is the number of control inputs and p is the number of features.
+            X: The input snapshot matrix of shape (p, m), where p is the number of snapshots and m is the number of features.
+            Y: The output snapshot matrix of shape (p, m), where p is the number of snapshots and m is the number of features.
+            U: The control input snapshot matrix of shape (p, l), where p is the number of snapshots and p is the number of control inputs.
         """
         if U is None:
             super()._update_many(X, Y)
@@ -550,12 +560,12 @@ class OnlineDMDwC(OnlineDMD):
             else:
                 X = np.vstack((X, U))
             if self.n_seen == 0:
-                self.m = X.shape[0]
-                self.l = U.shape[0]
+                self.m = X.shape[1]
+                self.l = U.shape[1]
                 self._init_update()
             if not self.known_B and self.B is not None:
                 self.A = np.hstack((self.A, self.B))
-            self.l = U.shape[0]
+            self.l = U.shape[1]
             super()._update_many(X, Y)
 
             if not self.known_B:
@@ -569,9 +579,9 @@ class OnlineDMDwC(OnlineDMD):
         Otherwise, it is equivalent to calling update method in a loop.
 
         Args:
-            X: The input snapshot matrix of shape (m, p), where m is the number of snapshots and p is the number of features.
-            Y: The output snapshot matrix of shape (m, p), where m is the number of snapshots and p is the number of features.
-            U: The output snapshot matrix of shape (m, p), where m is the number of snapshots and p is the number of features.
+            X: The input snapshot matrix of shape (p, m), where p is the number of snapshots and m is the number of features.
+            Y: The output snapshot matrix of shape (p, m), where p is the number of snapshots and m is the number of features.
+            U: The output snapshot matrix of shape (p, l), where p is the number of snapshots and l is the number of control inputs.
         """
         if isinstance(X, pd.DataFrame):
             X = X.values
@@ -586,7 +596,7 @@ class OnlineDMDwC(OnlineDMD):
             X = np.vstack((X, U))
         if not self.known_B and self.B is not None:
             self.A = np.hstack((self.A, self.B))
-        self.l = U.shape[0]
+        self.l = U.shape[1]
         super().learn_many(X, Y)
 
         if not self.known_B:
@@ -720,12 +730,12 @@ class OnlineDMDwC(OnlineDMD):
         if isinstance(u, dict):
             u = np.array(list(u.values()))
 
-        mat = np.zeros((self.m, 2))
-        mat[:, 0] = x if isinstance(x, np.ndarray) else list(x.values())
+        mat = np.zeros((2, self.m))
+        mat[0, :] = x if isinstance(x, np.ndarray) else list(x.values())
         for s in range(1, 2):
             action = (self.B @ u).real
-            mat[:, s] = (self.A @ mat[:, s - 1]).real + action
-        return mat[:, -1]
+            mat[s, :] = (self.A @ mat[s - 1, :]).real + action
+        return mat[-1, :]
 
     def predict_many(
         self,
@@ -738,7 +748,7 @@ class OnlineDMDwC(OnlineDMD):
 
         Args:
             x: The initial value.
-            U: The control input matrix of shape (l, forecast), where l is the number of control inputs.
+            U: The control input matrix of shape (forecast, l), where l is the number of control inputs.
             forecast (int): The number of future values to predict.
 
         Returns:
@@ -750,12 +760,12 @@ class OnlineDMDwC(OnlineDMD):
         if isinstance(U, pd.DataFrame):
             U = U.values
 
-        mat = np.zeros((self.m, forecast + 1))
-        mat[:, 0] = x if isinstance(x, np.ndarray) else list(x.values())
+        mat = np.zeros((forecast + 1, self.m))
+        mat[0, :] = x if isinstance(x, np.ndarray) else list(x.values())
         for s in range(1, forecast + 1):
             action = (self.B @ U[:, s - 1]).real
-            mat[:, s] = (self.A @ mat[:, s - 1]).real + action
-        return mat[:, 1:]
+            mat[s, :] = (self.A @ mat[s - 1, :]).real + action
+        return mat[1:, :]
 
     def truncation_error(
         self,
@@ -766,12 +776,12 @@ class OnlineDMDwC(OnlineDMD):
         """Compute the truncation error of the DMD model on the given data.
 
         Args:
-            X: 2D array, shape (n, p), matrix [x(1),x(2),...x(p)]
-            Y: 2D array, shape (n, p), matrix [y(1),y(2),...y(p)]
-            U: 2D array, shape (l, p), matrix [u(1),u(2),...u(p)]
+            X: 2D array, shape (n, m), matrix [x(1),x(2),...x(n)]
+            Y: 2D array, shape (n, m), matrix [y(1),y(2),...y(n)]
+            U: 2D array, shape (n, l), matrix [u(1),u(2),...u(n)]
 
         Returns:
             float: Truncation error of the DMD model
         """
-        Y_hat = self.A @ X + self.B @ U
+        Y_hat = X @ self.A + U @ self.B
         return float(np.linalg.norm(Y - Y_hat) / np.linalg.norm(Y))

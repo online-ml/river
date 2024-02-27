@@ -41,16 +41,16 @@ dt = 0.1
 x0 = [1, 0]
 xsol = odeint(dyn, x0, tspan).T
 # extract snapshots
-X, Y = xsol[:, :-1], xsol[:, 1:]
+X, Y = xsol[:, :-1].T, xsol[:, 1:].T
 t = tspan[1:]
 n, m = X.shape
-A = np.empty((n, n, m))
+A = np.empty((n, m, m))
 eigvals = np.empty((n, m), dtype=complex)
-for k in range(m):
-    A[:, :, k] = np.array(
+for k in range(n):
+    A[k, :, :] = np.array(
         [[0, (1 + epsilon * t[k])], [-(1 + epsilon * t[k]), 0]]
     )
-    eigvals[:, k] = np.linalg.eigvals(A[:, :, k])
+    eigvals[k, :] = np.linalg.eigvals(A[k, :, :])
 
 
 def test_input_types():
@@ -58,15 +58,15 @@ def test_input_types():
 
     odmd1 = OnlineDMD()
 
-    odmd1.learn_many(X[:, :n_init], Y[:, :n_init])
-    for x, y in zip(X[:, n_init:].T, Y[:, n_init:].T):
+    odmd1.learn_many(X[:n_init, :], Y[:n_init, :])
+    for x, y in zip(X[n_init:, :], Y[n_init:, :]):
         odmd1.learn_one(x, y)
 
-    X_, Y_ = pd.DataFrame(X.T), pd.DataFrame(Y.T)
+    X_, Y_ = pd.DataFrame(X), pd.DataFrame(Y)
 
     odmd2 = OnlineDMD()
 
-    odmd2.learn_many(X_.iloc[:n_init].T, Y_.iloc[:n_init].T)
+    odmd2.learn_many(X_.iloc[:n_init], Y_.iloc[:n_init])
     for x, y in zip(X_.iloc[n_init:].values, Y_.iloc[n_init:].values):
         odmd2.learn_one(x, y)
 
@@ -77,17 +77,23 @@ def test_one_many_close():
     n_init = round(samples / 2)
 
     odmd1 = OnlineDMD()
-
-    odmd1.learn_many(X[:, :n_init], Y[:, :n_init])
-    for x, y in zip(X[:, n_init:].T, Y[:, n_init:].T):
-        odmd1.learn_one(x, y)
-
     odmd2 = OnlineDMD()
 
-    odmd2.learn_many(X[:, :n_init], Y[:, :n_init])
-    odmd2.learn_many(X[:, n_init:], Y[:, n_init:])
+    odmd1.learn_many(X[:n_init, :], Y[:n_init, :])
+    odmd2.learn_many(X[:n_init, :], Y[:n_init, :])
 
-    assert np.allclose(odmd1.A, odmd2.A)
+    eig_o1 = np.log(np.linalg.eigvals(odmd1.A)) / dt
+    eig_o2 = np.log(np.linalg.eigvals(odmd2.A)) / dt
+    assert np.allclose(eig_o1, eig_o2)
+
+    for x, y in zip(X[n_init:, :], Y[n_init:, :]):
+        odmd1.learn_one(x, y)
+
+    odmd2.learn_many(X[n_init:, :], Y[n_init:, :])
+    eig_o1 = np.log(np.linalg.eigvals(odmd1.A)) / dt
+    eig_o2 = np.log(np.linalg.eigvals(odmd2.A)) / dt
+    print(eig_o1, eig_o2)
+    assert np.allclose(eig_o1, eig_o2)
 
 
 def test_errors_raised():
@@ -96,41 +102,43 @@ def test_errors_raised():
     with pytest.raises(Exception):
         odmd._update_many(X, Y)
 
-    rodmd = Rolling(OnlineDMD(), window_size=1)
+    rodmd = Rolling(OnlineDMD(), window_size=1)  # type: ignore
     with pytest.raises(Exception):
-        for x, y in zip(X.T, Y.T):
+        for x, y in zip(X, Y):
             rodmd.update(x, y)
 
 
 def test_allclose_online_batch():
     dmd = DMD()
     odmd = OnlineDMD()
+    odmd_i = OnlineDMD(initialize=0)
 
     dmd.fit(X, Y)
 
-    eigvals_online_ = np.empty((n, m), dtype=complex)
-    for i, (x, y) in enumerate(zip(X.T, Y.T)):
+    for x, y in zip(X, Y):
         odmd.learn_one(x, y)
-        eigvals_online_[:, i] = np.log(np.linalg.eigvals(odmd.A)) / dt
+        odmd_i.learn_one(x, y)
 
     eigvals_batch = np.log(np.linalg.eigvals(dmd.A)) / dt
     eigvals_online = np.log(np.linalg.eigvals(odmd.A)) / dt
+    eigvals_online_i = np.log(np.linalg.eigvals(odmd_i.A)) / dt
 
+    assert np.allclose(eigvals_online, eigvals_online_i)
     assert np.allclose(eigvals_batch, eigvals_online)
 
 
 def test_allclose_weighted_true():
     n_init = round(samples / 2)
     odmd = OnlineDMD(w=0.9)
-    # odmd.learn_many(X[:, :n_init], Y[:, :n_init])
+    # odmd.learn_many(X[:n_init, :], Y[:n_init, :])
 
     eigvals_online_ = np.empty((n, m), dtype=complex)
-    for i, (x, y) in enumerate(zip(X.T, Y.T)):
+    for i, (x, y) in enumerate(zip(X, Y)):
         odmd.learn_one(x, y)
-        eigvals_online_[:, i] = np.log(np.linalg.eigvals(odmd.A)) / dt
+        eigvals_online_[i, :] = np.log(np.linalg.eigvals(odmd.A)) / dt
 
-    slope_eig_true = np.diff(eigvals)[0, n_init:].mean()
-    slope_eig_online = np.diff(eigvals_online_)[0, n_init:].mean()
+    slope_eig_true = np.diff(eigvals)[n_init:, 0].mean()
+    slope_eig_online = np.diff(eigvals_online_)[n_init:, 0].mean()
     print(slope_eig_true, slope_eig_online)
     np.allclose(
         slope_eig_true,

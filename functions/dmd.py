@@ -7,6 +7,10 @@ and DMD with Control algorithm. It is based on the paper by Zhang et al.
 However, this implementation provides a more flexible interface aligned with
 River API covers and separates update and revert methods in Windowed DMD.
 
+TODO:
+
+    - [ ] Align design with (n, m) convention (currently (m, n)).
+
 References:
     [^1]: Schmid, P. (2022). Dynamic Mode Decomposition and Its Variants. 54(1), pp.225-254. doi:[10.1146/annurev-fluid-030121-015835](https://doi.org/10.1146/annurev-fluid-030121-015835).
 """
@@ -22,7 +26,7 @@ class DMD:
         r: Number of modes to keep. If 0 (default), all modes are kept.
 
     Attributes:
-        m: Number of variables.
+        m: Number of features (variables).
         n: Number of time steps (snapshots).
         feature_names_in_: list of feature names. Used for pd.DataFrame inputs.
         Lambda: Eigenvalues of the Koopman matrix.
@@ -96,17 +100,16 @@ class DMD:
         Fit the DMD model to the input X.
 
         Args:
-            X: Input X matrix of shape (m, n), where m is the number of variables and n is the number of time steps.
-            Y: The output snapshot matrix of shape (m, n).
+            X: Input X matrix of shape (n, m), where m is the number of variables and n is the number of time steps.
+            Y: The output snapshot matrix of shape (n, m).
 
         """
         # Build X matrices
         if Y is None:
-            if hasattr(self, "m"):
-                Y = X[: self.m, 1:]
-            else:
-                Y = X[:, 1:]
-            X = X[:, :-1]
+            Y = X[1:, :]
+            X = X[:-1, :]
+        X = X.T  # PATCH#1: Match (m, n) implementation
+        Y = Y.T  # PATCH#1: Match (m, n) implementation
 
         self._Y = Y
 
@@ -133,11 +136,12 @@ class DMD:
         if self.A is None or self.m is None:
             raise RuntimeError("Fit the model before making predictions.")
 
-        mat = np.zeros((self.m, forecast + 1))
-        mat[:, 0] = x
+        mat = np.zeros((forecast + 1, self.m))
+        print(mat.shape)
+        mat[0, :] = x
         for s in range(1, forecast + 1):
-            mat[:, s] = (self.A @ mat[:, s - 1]).real
-        return mat[:, 1:]
+            mat[s, :] = (self.A @ mat[s - 1, :]).real
+        return mat[1:, :]
 
 
 class DMDwC(DMD):
@@ -154,13 +158,15 @@ class DMDwC(DMD):
         if Y is None:
             Y = X[:, 1:]
             X = X[:, :-1]
+        X = X.T  # PATCH#1: Match (m, n) implementation
+        U = U.T  # PATCH#1: Match (m, n) implementation
 
         self.l = U_.shape[0]
         self.m, self.n = X.shape
-        if X.shape[1] != U_.shape[1]:
+        if X.shape[0] != U_.shape[0]:
             raise ValueError(
                 "X and u must have the same number of time steps.\n"
-                f"X: {X.shape[1]}, u: {U_.shape[1]}"
+                f"X: {X.shape[0]}, u: {U_.shape[0]}"
             )
         if not self.known_B:
             X = np.vstack((X, U_))
@@ -202,9 +208,9 @@ class DMDwC(DMD):
                 f"u: {u.shape[1]}, forecast: {forecast}"
             )
 
-        mat = np.zeros((self.m, forecast + 1))
-        mat[:, 0] = x
+        mat = np.zeros((forecast + 1, self.m))
+        mat[0, :] = x
         for s in range(1, forecast + 1):
-            action = (self.B @ u[:, s - 1]).real
-            mat[:, s] = (self.A @ mat[:, s - 1]).real + action
-        return mat[:, 1:]
+            action = (self.B @ u[s - 1, :]).real
+            mat[s, :] = (self.A @ mat[s - 1, :]).real + action
+        return mat[1:, :]
