@@ -16,6 +16,9 @@ def hankel(
     Returns:
         np.ndarray: The Hankel matrix.
 
+    TODO:
+        - [ ] Add support for 2D arrays.
+
     Example:
     >>> X = np.array([1., 2., 3., 4., 5.])
     >>> hankel(X, 3, cut_rollover=False)

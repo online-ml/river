@@ -7,12 +7,17 @@ and DMD with Control algorithm. It is based on the paper by Zhang et al.
 However, this implementation provides a more flexible interface aligned with
 River API covers and separates update and revert methods in Windowed DMD.
 
+TODO:
+
+    - [ ] Align design with (n, m) convention (currently (m, n)).
+
 References:
     [^1]: Schmid, P. (2022). Dynamic Mode Decomposition and Its Variants. 54(1), pp.225-254. doi:[10.1146/annurev-fluid-030121-015835](https://doi.org/10.1146/annurev-fluid-030121-015835).
 """
 from typing import Union
 
 import numpy as np
+import scipy as sp
 
 
 class DMD:
@@ -22,7 +27,7 @@ class DMD:
         r: Number of modes to keep. If 0 (default), all modes are kept.
 
     Attributes:
-        m: Number of variables.
+        m: Number of features (variables).
         n: Number of time steps (snapshots).
         feature_names_in_: list of feature names. Used for pd.DataFrame inputs.
         Lambda: Eigenvalues of the Koopman matrix.
@@ -68,16 +73,17 @@ class DMD:
 
     def _fit(self, X: np.ndarray, Y: np.ndarray):
         # Perform singular value decomposition on X
-        u_, sigma, v = np.linalg.svd(X, full_matrices=False)
-        r = self.r if self.r > 0 else len(sigma)
-        sigma_inv = np.reciprocal(sigma[:r])
+        r = self.r if self.r > 0 else self.m
+        # u_, sigma, v = np.linalg.svd(X, full_matrices=False)
+        # # Truncate the singular value matrices
+        if r < self.m:
+            u_, sigma, v = sp.sparse.linalg.svds(X, k=r)
+        else:
+            u_, sigma, v = np.linalg.svd(X)
+        u_, sigma, v = u_[:, :r], sigma[:r], v[:r, :]
+        sigma_inv = np.reciprocal(sigma)
         # Compute the low-rank approximation of Koopman matrix
-        self.A_bar = (
-            u_[: self.m, :r].conj().T
-            @ Y
-            @ v[:r, :].conj().T
-            @ np.diag(sigma_inv)
-        )
+        self.A_bar = u_.conj().T @ Y @ v.conj().T @ np.diag(sigma_inv)
 
         # Perform eigenvalue decomposition on A
         self.Lambda, W = np.linalg.eig(self.A_bar)
@@ -85,28 +91,25 @@ class DMD:
         # Compute the coefficient matrix
         # TODO: Find out whether to use X or Y (X usage ~ u @ W obviously)
         # self.Phi = X @ v[: r, :].conj().T @ np.diag(sigma_inv) @ W
-        self.Phi = u_[:, :r] @ W
+        self.Phi = u_ @ W
         # self.A = self.Phi @ np.diag(self.Lambda) @ np.linalg.pinv(self.Phi)
-        self.A = (
-            Y @ v[:r, :].conj().T @ np.diag(sigma_inv) @ u_[:, :r].conj().T
-        )
+        self.A = Y @ v.conj().T @ np.diag(sigma_inv) @ u_.conj().T
 
     def fit(self, X: np.ndarray, Y: Union[np.ndarray, None] = None):
         """
         Fit the DMD model to the input X.
 
         Args:
-            X: Input X matrix of shape (m, n), where m is the number of variables and n is the number of time steps.
-            Y: The output snapshot matrix of shape (m, n).
+            X: Input X matrix of shape (n, m), where m is the number of variables and n is the number of time steps.
+            Y: The output snapshot matrix of shape (n, m).
 
         """
         # Build X matrices
         if Y is None:
-            if hasattr(self, "m"):
-                Y = X[: self.m, 1:]
-            else:
-                Y = X[:, 1:]
-            X = X[:, :-1]
+            Y = X[1:, :]
+            X = X[:-1, :]
+        X = X.T  # PATCH#1: Match (m, n) implementation
+        Y = Y.T  # PATCH#1: Match (m, n) implementation
 
         self._Y = Y
 
@@ -133,11 +136,11 @@ class DMD:
         if self.A is None or self.m is None:
             raise RuntimeError("Fit the model before making predictions.")
 
-        mat = np.zeros((self.m, forecast + 1))
-        mat[:, 0] = x
+        mat = np.zeros((forecast + 1, self.m))
+        mat[0, :] = x
         for s in range(1, forecast + 1):
-            mat[:, s] = (self.A @ mat[:, s - 1]).real
-        return mat[:, 1:]
+            mat[s, :] = (self.A @ mat[s - 1, :]).real
+        return mat[1:, :]
 
 
 class DMDwC(DMD):
@@ -151,31 +154,37 @@ class DMDwC(DMD):
         self, X: np.ndarray, U: np.ndarray, Y: Union[np.ndarray, None] = None
     ):
         U_ = U.copy()
+        if not self.known_B:
+            X = np.hstack((X, U_))
         if Y is None:
-            Y = X[:, 1:]
-            X = X[:, :-1]
+            Y = X[1:, :]
+            X = X[:-1, :]
+            U_ = U_[:-1, :]
 
-        self.l = U_.shape[0]
-        self.m, self.n = X.shape
-        if X.shape[1] != U_.shape[1]:
+        if X.shape[0] != U_.shape[0]:
             raise ValueError(
                 "X and u must have the same number of time steps.\n"
-                f"X: {X.shape[1]}, u: {U_.shape[1]}"
+                f"X: {X.shape[0]}, u: {U_.shape[0]}"
             )
-        if not self.known_B:
-            X = np.vstack((X, U_))
 
+        X = X.T  # PATCH#1: Match (m, n) implementation
+        U_ = U_.T  # PATCH#1: Match (m, n) implementation
+        Y = Y.T  # PATCH#1: Match (m, n) implementation
+
+        if not self.known_B:
             self._Y = Y
         else:
             # Subtract the effect of actuation
             self._Y = Y - self.B * U_[:, :-1]
-        # self.m, self.n = self._Y.shape
+
+        self.l = U_.shape[0]
+        self.m, self.n = X.shape
 
         super()._fit(X, self._Y)
         if not self.known_B:
             # split K into state transition matrix and control matrix
-            self.B = self.A[:, -self.l :]
-            self.A = self.A[:, : -self.l]
+            self.B = self.A[: self.m - self.l, -self.l :]
+            self.A = self.A[: self.m - self.l, : -self.l]
 
     def predict(
         self,
@@ -196,15 +205,15 @@ class DMDwC(DMD):
         """
         if self.A is None or self.m is None:
             raise RuntimeError("Fit the model before making predictions.")
-        if forecast != 1 and u.shape[1] != forecast:
+        if forecast != 1 and u.shape[0] != forecast:
             raise ValueError(
                 "u must have forecast number of time steps.\n"
                 f"u: {u.shape[1]}, forecast: {forecast}"
             )
 
-        mat = np.zeros((self.m, forecast + 1))
-        mat[:, 0] = x
+        mat = np.zeros((forecast + 1, self.m - self.l))
+        mat[0, :] = x
         for s in range(1, forecast + 1):
-            action = (self.B @ u[:, s - 1]).real
-            mat[:, s] = (self.A @ mat[:, s - 1]).real + action
-        return mat[:, 1:]
+            action = (self.B @ u[s - 1, :]).real
+            mat[s, :] = (self.A @ mat[s - 1, :]).real + action
+        return mat[1:, :]
