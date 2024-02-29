@@ -8,15 +8,12 @@ and implementation of authors available at
 a more flexible interface aligned with River API covers and separates update
 and revert methods to operate with Rolling and TimeRolling wrapers.
 
-Example:
-    $ python examples/lti.ipynb
-    $ python examples/lti_control.ipynb
-    $ python examples/ltv_control.ipynb
-
 TODO:
 
     - [ ] Compute amlitudes of the singular values of the input matrix.
-    - [ ] Align with transposed data in form of (snapshots, features).
+    - [ ] Update prediction computation for continuous time
+          x(t) = Phi exp(diag(ln(Lambda) / dt) * t) Phi^+ x(0) (MIT lecture)
+          continuous time eigenvalues exp(Lambda * dt) (Zhang et al. 2019)
 
 References:
     [^1]: Zhang, H., Clarence Worth Rowley, Deem, E.A. and Cattafesta, L.N.
@@ -31,6 +28,8 @@ from typing import Union
 
 import numpy as np
 import pandas as pd
+import scipy as sp
+from scipy.sparse.linalg._eigen.arpack.arpack import ArpackNoConvergence
 from river.base import MiniBatchRegressor
 
 __all__ = [
@@ -78,8 +77,8 @@ class OnlineDMD(MiniBatchRegressor):
         m: state dimension x(t) as in z(t) = f(z(t-1)) or y(t) = f(t, x(t))
         n_seen: number of seen samples (read-only), reverted if windowed
         feature_names_in_: list of feature names. Used for dict inputs.
-        A: DMD matrix, size n by n
-        _P: inverse of covariance matrix of X
+        A: DMD matrix, size n by n (non-Hermitian)
+        _P: inverse of covariance matrix of X (symmetric)
 
     Examples:
     >>> import numpy as np
@@ -164,9 +163,12 @@ class OnlineDMD(MiniBatchRegressor):
     @property
     def eig(self) -> tuple[np.ndarray, np.ndarray]:
         """Compute and return DMD eigenvalues and DMD modes at current step"""
-        Lambda, Phi = np.linalg.eig(self.A)
-        if self.r:
-            Lambda, Phi = Lambda[: self.r], Phi[:, : self.r]
+        try:
+            Lambda, Phi = sp.sparse.linalg.eigs(self.A, k=self.r)
+        except ArpackNoConvergence:
+            Lambda, Phi = sp.linalg.schur(self.A, check_finite=False)
+            if self.r:
+                Lambda, Phi = Lambda[: self.r], Phi[:, : self.r]
         return Lambda, Phi
 
     def _init_update(self) -> None:
