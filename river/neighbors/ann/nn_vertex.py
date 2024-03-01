@@ -18,6 +18,18 @@ class Vertex(base.Base):
         self.flags: set[int]= set()
         self.worst_edge: int | None = None
 
+    def __eq__(self, other) -> bool:
+        if not isinstance(other, Vertex):
+            raise NotImplementedError
+
+        return self.uuid == other.uuid
+
+    def __lt__(self, other) -> bool:
+        if not isinstance(other, Vertex):
+            raise NotImplementedError
+
+        return self.uuid < other.uuid
+
     def farewell(self, vertex_pool: list[Vertex]):
         for rn in list(self.r_edges):
             vertex_pool[rn].rem_edge(self)
