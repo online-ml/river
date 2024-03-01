@@ -117,7 +117,7 @@ class SWINN(BaseNN):
         self.n_iters = n_iters
         self.seed = seed
 
-        self._data: collections.deque[Vertex] = collections.deque(maxlen=self.maxlen)
+        self._data: collections.deque[Vertex | None] = collections.deque(maxlen=self.maxlen)
         self._uuid = itertools.cycle(range(self.maxlen))
         self._rng = random.Random(self.seed)
         self._index = False
@@ -146,16 +146,16 @@ class SWINN(BaseNN):
     def _fix_graph(self):
         """Connect every isolated node in the graph to their nearest neighbors."""
 
-        for node in list(Vertex._isolated):
-            if not node.is_isolated():
+        for nid in list(Vertex._isolated):
+            if not self[nid].is_isolated():
                 continue
-            neighbors, dists = self._search(node.item, self.graph_k)
-            node.fill(neighbors, dists)
+            neighbors, dists = self._search(self[nid].item, self.graph_k)
+            self[nid].fill(neighbors, dists)
 
         # Update class property
         Vertex._isolated.clear()
 
-    def _safe_node_removal(self):
+    def _safe_node_removal(self, nid: int):
         """Remove the oldest data point from the search graph.
 
         Make sure nodes are accessible from any given starting point after removing the oldest
@@ -163,24 +163,24 @@ class SWINN(BaseNN):
         the only bridge between its neighbors.
 
         """
-        node = self._data.popleft()
+        node = self[nid]
         # Get previous neighborhood info
         rns = node.r_neighbors()[0]
         ns = node.neighbors()[0]
-        node.farewell()
+        node.farewell(vertex_pool=self._data)
 
         # Nodes whose only direct neighbor was the removed node
-        rns = {rn for rn in rns if not rn.has_neighbors()}
+        rns = {rn for rn in rns if not self[rn].has_neighbors()}
         # Nodes whose only reverse neighbor was the removed node
-        ns = {n for n in ns if not n.has_rneighbors()}
+        ns = {n for n in ns if not self[n].has_rneighbors()}
 
         affected = list(rns | ns)
         isolated = rns.intersection(ns)
 
         # First we handle the unreachable nodes
         for al in isolated:
-            neighbors, dists = self._search(al.item, self.graph_k)
-            al.fill(neighbors, dists)
+            neighbors, dists = self._search(self[al].item, self.graph_k)
+            self[al].fill(neighbors, dists)
 
         rns -= isolated
         ns -= isolated
@@ -192,26 +192,29 @@ class SWINN(BaseNN):
             # Check the group of nodes without reverse neighborhood for seeds
             # Thus we can join two separate groups
             if len(ns) > 0:
-                seed = self._rng.choice(ns)
+                seed = self[self._rng.choice(ns)]
 
             # Use the search index to create new connections
-            neighbors, dists = self._search(rn.item, self.graph_k, seed=seed, exclude=rn)
-            rn.fill(neighbors, dists)
+            neighbors, dists = self._search(self[rn].item, self.graph_k, seed=seed, exclude={rn})
+            self[rn].fill(neighbors, dists)
+
+        self._data[nid] = None
+        del node
 
         self._refine(affected)
 
-    def _refine(self, nodes: list[Vertex] = None):
+    def _refine(self, nodes: list[int] = None):
         """Update the nearest neighbor graph to improve the edge distances.
 
         Parameters
         ----------
         nodes
-            The list of nodes for which the neighborhood refinement will be applied.
+            The list of node ids for which the neighborhood refinement will be applied.
             If `None`, all nodes will have their neighborhood enhanced.
         """
 
         if nodes is None:
-            nodes = [n for n in self]
+            nodes = [n.uuid for n in self]
 
         min_changes = self.delta * self.graph_k * len(nodes)
 
@@ -223,65 +226,62 @@ class SWINN(BaseNN):
             old = collections.defaultdict(set)
 
             # Expand undirected neighborhood
-            for node in nodes:
+            for nid in nodes:
+                node = self[nid]
                 neighbors = node.neighbors()[0]
                 flags = node.sample_flags
 
                 for neigh, flag in zip(neighbors, flags):
                     # To avoid evaluating previous neighbors again
-                    tried.add((node.uuid, neigh.uuid))
+                    tried.add((nid, neigh))
                     if flag:
-                        new[node].add(neigh)
-                        new[neigh].add(node)
+                        new[nid].add(neigh)
+                        new[neigh].add(nid)
                     else:
-                        old[node].add(neigh)
-                        old[neigh].add(node)
+                        old[nid].add(neigh)
+                        old[neigh].add(nid)
 
             # Limits the maximum number of edges to explore and update sample flags
-            for node in nodes:
-                if len(new[node]) > self.max_candidates:
-                    new[node] = self._rng.sample(tuple(new[node]), self.max_candidates)  # type: ignore
-                else:
-                    new[node] = new[node]
+            for nid in nodes:
+                if len(new[nid]) > self.max_candidates:
+                    new[nid] = self._rng.sample(tuple(new[nid]), self.max_candidates)  # type: ignore
 
-                if len(old[node]) > self.max_candidates:
-                    old[node] = self._rng.sample(tuple(old[node]), self.max_candidates)  # type: ignore
-                else:
-                    old[node] = old[node]
+                if len(old[nid]) > self.max_candidates:
+                    old[nid] = self._rng.sample(tuple(old[nid]), self.max_candidates)  # type: ignore
 
-                node.sample_flags = new[node]
+                self[nid].sample_flags = new[nid]
 
             # Perform local joins an attempt to improve the neighborhood
-            for node in nodes:
+            for nid in nodes:
                 # The origin of the join must have a boolean flag set to true
-                for n1 in new[node]:
+                for n1 in new[nid]:
                     # Consider connections between vertices whose boolean flags are both true
-                    for n2 in new[node]:
-                        if n1.uuid == n2.uuid or n1.is_neighbor(n2):
+                    for n2 in new[nid]:
+                        if n1 == n2 or self[n1].is_neighbor(self[n2]):
                             continue
 
-                        if (n1.uuid, n2.uuid) in tried or (n2.uuid, n1.uuid) in tried:
+                        if (n1, n2) in tried or (n2, n1) in tried:
                             continue
 
-                        dist = self.dist_func(n1.item, n2.item)
-                        total_changes += n1.push_edge(n2, dist, self.graph_k)
-                        total_changes += n2.push_edge(n1, dist, self.graph_k)
+                        dist = self.dist_func(self[n1].item, self[n2].item)
+                        total_changes += self[n1].push_edge(self[n2], dist, self.graph_k, self._data)
+                        total_changes += self[n2].push_edge(self[n1], dist, self.graph_k, self._data)
 
-                        tried.add((n1.uuid, n2.uuid))
+                        tried.add((n1, n2))
 
                     # Or one of the connections has a boolean flag set to false
-                    for n2 in old[node]:
-                        if n1.uuid == n2.uuid or n1.is_neighbor(n2):
+                    for n2 in old[nid]:
+                        if n1 == n2 or self[n1].is_neighbor(self[n2]):
                             continue
 
-                        if (n1.uuid, n2.uuid) in tried or (n2.uuid, n1.uuid) in tried:
+                        if (n1, n2) in tried or (n2, n1) in tried:
                             continue
 
-                        dist = self.dist_func(n1.item, n2.item)
-                        total_changes += n1.push_edge(n2, dist, self.graph_k)
-                        total_changes += n2.push_edge(n1, dist, self.graph_k)
+                        dist = self.dist_func(self[n1].item, self[n2].item)
+                        total_changes += self[n1].push_edge(self[n2], dist, self.graph_k, self._data)
+                        total_changes += self[n2].push_edge(self[n1], dist, self.graph_k, self._data)
 
-                        tried.add((n1.uuid, n2.uuid))
+                        tried.add((n1, n2))
 
             # Stopping criterion
             if total_changes <= min_changes:
@@ -289,7 +289,7 @@ class SWINN(BaseNN):
 
         # Reduce the number of edges, if needed
         for n in nodes:
-            n.prune(self.prune_prob, self.max_candidates, self._rng)
+            self[n].prune(self.prune_prob, self.max_candidates, self._data, self._rng)
 
         # Ensure that no node is isolated in the graph
         self._fix_graph()
@@ -322,13 +322,16 @@ class SWINN(BaseNN):
 
         # A slot will be replaced, so let's update the search graph first
         if len(self) == self.maxlen:
-            self._safe_node_removal()
+            self._safe_node_removal(node.uuid)
 
         # Assign the closest neighbors to the new item
         neighbors, dists = self._search(node.item, self.graph_k)
 
         # Add the new element to the buffer
-        self._data.append(node)
+        if len(self) == self.maxlen:
+            self._data[node.uuid] = node
+        else:
+            self._data.append(node)
         node.fill(neighbors, dists)
 
     def _linear_scan(self, item, k):
@@ -340,7 +343,7 @@ class SWINN(BaseNN):
 
         return None
 
-    def _search(self, item, k, epsilon: float = 0.1, seed=None, exclude=None) -> tuple[list, list]:
+    def _search(self, item, k, epsilon: float = 0.1, seed: Vertex = None, exclude: set[int] | None = None) -> tuple[list, list]:
         # Limiter for the distance bound
         distance_scale = 1 + epsilon
         # Distance threshold for early stops
@@ -348,15 +351,13 @@ class SWINN(BaseNN):
 
         if exclude is None:
             exclude = set()
-        else:
-            exclude = {exclude.uuid}
 
         if seed is None:
             # Make sure the starting point for the search is valid
             while True:
                 # Random seed point to start the search
                 seed = self[self._rng.randint(0, len(self) - 1)]
-                if not seed.is_isolated() and seed.uuid not in exclude:
+                if seed is not None and not seed.is_isolated() and seed.uuid not in exclude:
                     break
 
         dist = self.dist_func(item, seed.item)
@@ -373,7 +374,7 @@ class SWINN(BaseNN):
 
         c_dist, c_n = heapq.heappop(pool)
         while c_dist < distance_bound:
-            tns = [n for n in c_n.all_neighbors() if n.uuid not in visited]
+            tns = [self[n] for n in c_n.all_neighbors() if n not in visited]
 
             for n in tns:
                 dist = self.dist_func(item, n.item)
@@ -454,9 +455,9 @@ class SWINN(BaseNN):
 
         """
         forest = set()
-        trees = {n: {n} for n in self}
+        trees = {n.uuid: {n.uuid} for n in self}
 
-        edges = [((n1, n2), w) for n1 in self for n2, w in n1.edges.items()]
+        edges = [((n1.uuid, n2), w) for n1 in self for n2, w in n1.edges.items()]
         edges.sort(key=operator.itemgetter(1))
 
         for (n1, n2), _ in edges:
