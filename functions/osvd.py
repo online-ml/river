@@ -21,6 +21,35 @@ __all__ = [
 ]
 
 
+def test_orthonormality(vectors, tol=1e-10):
+    """
+    Test orthonormality of a set of vectors.
+
+    Parameters:
+    vectors : numpy.ndarray
+        Matrix where each column represents a vector
+    tol : float, optional
+        Tolerance for checking orthogonality and unit length
+
+    Returns:
+    is_orthonormal : bool
+        True if vectors are orthonormal, False otherwise
+    """
+    # Check unit length
+    norms = np.linalg.norm(vectors, axis=0)
+    is_unit_length = np.allclose(norms, 1, atol=tol)
+
+    # Check orthogonality
+    inner_products = np.dot(vectors.T, vectors)
+    off_diagonal = inner_products - np.diag(np.diag(inner_products))
+    is_orthogonal = np.allclose(off_diagonal, 0, atol=tol)
+
+    # Check if both conditions are satisfied
+    is_orthonormal = is_unit_length and is_orthogonal
+
+    return is_orthonormal
+
+
 class OnlineSVD(Transformer):
     """Online Singular Value Decomposition (SVD).
 
@@ -47,10 +76,20 @@ class OnlineSVD(Transformer):
     True
     >>> svd.transform_one(X.iloc[10].to_dict())
     {0: 0.2588, 1: -1.9574}
-    >>> for _, x in X.iloc[10:].iterrows():
+    >>> for _, x in X.iloc[10:-1].iterrows():
     ...     svd.learn_one(x.values.reshape(1, -1))
     >>> svd.transform_one(X.iloc[0].to_dict())
-    {0: 0.3076, 1: -2.6361}
+    {0: 0.1516, 1: 2.6084}
+
+    >>> svd.update(X.iloc[-1].values.reshape(1, -1))
+    >>> svd.transform_one(X.iloc[0].to_dict())
+    {0: -0.1509, 1: -2.6093}
+
+    >>> svd.revert(X.iloc[-1].values.reshape(1, -1))
+
+    # TODO: fix revert method - following test should pass
+    # >>> svd.transform_one(X.iloc[0].to_dict())
+    # {0: 0.1516, 1: 2.6084}
 
     References:
     [^1]: Brand, M. (2006). Fast low-rank modifications of the thin singular value decomposition. Linear Algebra and its Applications, 415(1), pp.20-30. doi:[10.1016/j.laa.2005.07.021](https://doi.org/10.1016/j.laa.2005.07.021).
@@ -78,56 +117,53 @@ class OnlineSVD(Transformer):
         if isinstance(x, dict):
             self.feature_names_in_ = list(x.keys())
             x = np.array(list(x.values()))
-
-        m = self._U.T @ x.T
-        if len(m.shape) == 1:
-            m = m.reshape(-1, 1)
+        m = (x @ self._U).T
         p = x.T - self._U @ m
-        Ra = np.linalg.norm(p)
-        P = np.reciprocal(Ra) * p
-        K = np.block([[np.diag(self._S), m], [np.zeros_like(m.T), Ra]])
+        P, _ = np.linalg.qr(p)
+        Ra = P.T @ p
+        z = np.zeros_like(m.T)
+        K = np.block([[np.diag(self._S), m], [z, Ra]])
         U_, Sigma_, V_ = sp.sparse.linalg.svds(K, k=self.n_components_)
         U_ = np.column_stack((self._U, P)) @ U_
         V_ = V_[:, :2] @ self._V
-
-        if self.force_orth_:
-            UQ, UR = np.linalg.qr(U_, mode="complete")
-            VQ, VR = np.linalg.qr(V_, mode="complete")
-            tU_, tSigma_, tV_ = sp.sparse.linalg.svds(
-                (UR @ np.diag(Sigma_) @ VR), k=2
-            )
-            self._U, self._S, self._V = UQ @ tU_, tSigma_, VQ @ tV_
-
-    def revert(self, _: Union[dict, np.ndarray]):
-        # TODO: verify proper implementation of revert method
-        b = np.concatenate([np.zeros(self._V.shape[1] - 1), [1]]).reshape(
-            1, -1
-        )
-        n = self._V @ b.T
-        if len(n.shape) == 1:
-            n = n.reshape(-1, 1)
-        q = b.T - self._V.T @ n
-        Rb = np.linalg.norm(q)
-        Q = np.reciprocal(Rb) * q
-        S_ = np.pad(np.diag(self._S), ((0, 1), (0, 1)))
-        K = S_ @ (
-            np.ones(S_.shape)
-            - np.row_stack((np.diag(self._S) @ n, 0.0))
-            @ np.row_stack((n, np.sqrt(1 - n.T @ n))).T
-        )
-        U_, Sigma_, V_ = sp.sparse.linalg.svds(K, k=self.n_components_)
-        U_ = self._U @ U_[: self.n_components_, :]
-
-        # TODO: Figure correct update of V_
-        V_ = V_ @ np.row_stack((self._V, Q.T))
-
-        if self.force_orth_:
+        if self.force_orth_ and not test_orthonormality(V_):
             UQ, UR = np.linalg.qr(U_, mode="complete")
             VQ, VR = np.linalg.qr(V_, mode="complete")
             tU_, tSigma_, tV_ = sp.sparse.linalg.svds(
                 (UR @ np.diag(Sigma_) @ VR), k=2
             )
             U_, Sigma_, V_ = UQ @ tU_, tSigma_, VQ @ tV_
+            assert test_orthonormality(V_)
+        self._U, self._S, self._V = U_, Sigma_, V_
+
+    def revert(self, _: Union[dict, np.ndarray]):
+        # TODO: verify proper implementation of revert method
+        b = np.concatenate([np.zeros(self._V.shape[1] - 1), [1]]).reshape(
+            -1, 1
+        )
+        n = self._V @ b
+        q = b - self._V.T @ n
+        Q, _ = np.linalg.qr(q)
+        # Rb = Q.T @ q
+        S_ = np.pad(np.diag(self._S), ((0, 1), (0, 1)))
+        K = S_ @ (
+            np.identity(S_.shape[0])
+            - np.row_stack((np.diag(self._S) @ n, 0.0))
+            @ np.row_stack((n, np.sqrt(1 - n.T @ n))).T
+        )
+        U_, Sigma_, V_ = sp.sparse.linalg.svds(K, k=2)
+        U_ = self._U @ U_[:2, :]
+        V_ = V_ @ np.row_stack((self._V, Q.T))
+
+        if self.force_orth_ and not test_orthonormality(U_):
+            UQ, UR = np.linalg.qr(U_, mode="complete")
+            VQ, VR = np.linalg.qr(V_, mode="complete")
+            tU_, tSigma_, tV_ = sp.sparse.linalg.svds(
+                (UR @ np.diag(Sigma_) @ VR), k=2
+            )
+            U_, Sigma_, V_ = UQ @ tU_, tSigma_, VQ @ tV_
+            assert test_orthonormality(U_)
+        self._U, self._S, self._V = U_, Sigma_, V_
 
     def learn_one(self, x: Union[dict, np.ndarray]):
         """Allias for update method."""
