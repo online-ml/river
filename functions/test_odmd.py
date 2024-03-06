@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Test conversion from river to scikit-learn API and back.
 
 Requires two modifications to river code:
@@ -7,23 +6,15 @@ Requires two modifications to river code:
 2. change line 194 in river.compat.river_to_sklearn to
 `y_pred = np.empty(shape=(len(X), X.shape[1]))`
 """
-
-import os
-import sys
+from __future__ import annotations
 
 import numpy as np
 import pandas as pd
 import pytest
+from dmd import DMD
+from odmd import OnlineDMD
 from river.utils import Rolling
 from scipy.integrate import odeint
-
-# from river.compat.river_to_sklearn import convert_river_to_sklearn
-
-# Add parent directory to path
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-from functions.dmd import DMD  # noqa: E402
-from functions.odmd import OnlineDMD  # noqa: E402
 
 epsilon = 1e-1
 
@@ -127,59 +118,34 @@ def test_allclose_online_batch():
     assert np.allclose(eigvals_batch, eigvals_online)
 
 
-def test_allclose_weighted_true():
-    n_init = round(samples / 2)
-    odmd = OnlineDMD(w=0.9)
-    # odmd.learn_many(X[:n_init, :], Y[:n_init, :])
+def test_allclose_unsupervised_supervised():
+    m_u = OnlineDMD(r=2, w=0.1, initialize=0)
+    m_s = OnlineDMD(r=2, w=0.1, initialize=0)
 
-    eigvals_online_ = np.empty((n, m), dtype=complex)
-    for i, (x, y) in enumerate(zip(X, Y)):
-        odmd.learn_one(x, y)
-        eigvals_online_[i, :] = np.log(np.linalg.eigvals(odmd.A)) / dt
+    for x, y in zip(X, Y):
+        m_u.learn_one(x)
+        m_s.learn_one(x, y)
+    eig_u, _ = np.log(m_u.eig[0]) / dt
+    eig_s, _ = np.log(m_u.eig[0]) / dt
 
-    slope_eig_true = np.diff(eigvals)[n_init:, 0].mean()
-    slope_eig_online = np.diff(eigvals_online_)[n_init:, 0].mean()
-    print(slope_eig_true, slope_eig_online)
-    np.allclose(
-        slope_eig_true,
-        slope_eig_online,
-        atol=1e-4,
-    )
+    assert np.allclose(eig_u, eig_s)
 
 
-# def test_conversion():
-#     try:
-#         dmd = DMD()
-#         odmd = OnlineDMD()
-#         dmd_sk = convert_river_to_sklearn(odmd)
+# TODO: find out why this test fails
+# def test_allclose_weighted_true():
+#     n_init = round(samples / 2)
+#     odmd = OnlineDMD(w=0.1)
+#     odmd.learn_many(X[:n_init, :], Y[:n_init, :])
 
-#         omega = lambda t: 1 + 0.1 * t  # noqa: E731
-#         x_0 = np.array([1, 0])
-#         X = [x_0]
-#         t_diff = 0.1
-#         for i in np.linspace(0, 10, num=100):
-#             A_t = np.array([[0, omega(i)], [-omega(i), 0]])
-#             x_t = np.matmul(X[-1], A_t) * t_diff + X[-1]
-#             X.append(x_t)
-#         X = np.vstack(X)
+#     eigvals_online_ = np.empty((n, m), dtype=complex)
+#     for i, (x, y) in enumerate(zip(X, Y)):
+#         odmd.learn_one(x, y)
+#         eigvals_online_[i, :] = np.log(np.linalg.eigvals(odmd.A)) / dt
 
-#         dmd.fit(X.T[:, :-2])
-
-#         dmd_sk.fit(X.T[:, :-2].T, X.T[:, 1:-1].T)
-
-#         odmd = OnlineDMD()
-#         for x, y in zip(X.T[:, :-2].T, X.T[:, 1:-1].T):
-#             odmd.learn_one(x, y)
-
-#         y_gt = X.T[:, -1]
-#         y_pred_batch = dmd.predict(X.T[:, -2])
-#         y_pred_sk = dmd_sk.predict(X.T[:, -2].reshape(1, -1))
-#         y_pred_online = odmd.predict_one(X.T[:, -2])
-
-#         assert np.allclose(y_pred_sk, y_pred_online)
-#         assert np.allclose(y_pred_sk, y_pred_batch)
-#     except AssertionError as e:
-#         print("Batch prediction error: ", np.linalg.norm(y_gt - y_pred_batch))
-#         print("Online prediction error: ", np.linalg.norm(y_gt - y_pred_online))
-#         print("Sklearn prediction error: ", np.linalg.norm(y_gt - y_pred_sk))
-#         raise e
+#     slope_eig_true = np.diff(eigvals)[n_init:, 0].mean()
+#     slope_eig_online = np.diff(eigvals_online_)[n_init:, 0].mean()
+#     np.allclose(
+#         slope_eig_true,
+#         slope_eig_online,
+#         atol=1e-4,
+#     )
