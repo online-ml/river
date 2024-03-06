@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Online Dynamic Mode Decomposition (DMD) in [River API](riverml.xyz).
 
 This module contains the implementation of the Online DMD, Weighted Online DMD,
@@ -24,13 +23,13 @@ References:
 from __future__ import annotations
 
 import warnings
-from typing import Union
 
 import numpy as np
 import pandas as pd
 import scipy as sp
-from river.base import MiniBatchRegressor
 from scipy.sparse.linalg._eigen.arpack.arpack import ArpackNoConvergence
+
+from river.base import MiniBatchRegressor
 
 __all__ = [
     "OnlineDMD",
@@ -152,7 +151,7 @@ class OnlineDMD(MiniBatchRegressor):
         w: float = 1.0,
         initialize: int = 1,
         exponential_weighting: bool = False,
-        seed: Union[int, None] = None,
+        seed: int | None = None,
     ) -> None:
         self.r = int(r)
         self.w = float(w)
@@ -214,8 +213,8 @@ class OnlineDMD(MiniBatchRegressor):
 
     def update(
         self,
-        x: Union[dict, np.ndarray],
-        y: Union[dict, np.ndarray, None] = None,
+        x: dict | np.ndarray,
+        y: dict | np.ndarray | None = None,
     ) -> None:
         """Update the DMD computation with a new pair of snapshots (x, y)
 
@@ -279,16 +278,16 @@ class OnlineDMD(MiniBatchRegressor):
 
     def learn_one(
         self,
-        x: Union[dict, np.ndarray],
-        y: Union[dict, np.ndarray, None] = None,
+        x: dict | np.ndarray,
+        y: dict | np.ndarray | None = None,
     ) -> None:
         """Allias for update method."""
         self.update(x, y)
 
     def revert(
         self,
-        x: Union[dict, np.ndarray],
-        y: Union[dict, np.ndarray, None] = None,
+        x: dict | np.ndarray,
+        y: dict | np.ndarray | None = None,
     ) -> None:
         """Gradually forget the older snapshots and revert the DMD computation.
 
@@ -338,8 +337,8 @@ class OnlineDMD(MiniBatchRegressor):
 
     def _update_many(
         self,
-        X: Union[np.ndarray, pd.DataFrame],
-        Y: Union[np.ndarray, pd.DataFrame],
+        X: np.ndarray | pd.DataFrame,
+        Y: np.ndarray | pd.DataFrame,
     ) -> None:
         """Update the DMD computation with a new batch of snapshots (X,Y).
 
@@ -375,8 +374,8 @@ class OnlineDMD(MiniBatchRegressor):
 
     def learn_many(
         self,
-        X: Union[np.ndarray, pd.DataFrame],
-        Y: Union[np.ndarray, pd.DataFrame, None] = None,
+        X: np.ndarray | pd.DataFrame,
+        Y: np.ndarray | pd.DataFrame | None = None,
     ) -> None:
         """Learn the OnlineDMD model using multiple snapshot pairs.
 
@@ -425,7 +424,7 @@ class OnlineDMD(MiniBatchRegressor):
         else:
             self._update_many(X, Y)
 
-    def predict_one(self, x: Union[dict, np.ndarray]) -> np.ndarray:
+    def predict_one(self, x: dict | np.ndarray) -> np.ndarray:
         """
         Predicts the next state given the current state.
 
@@ -441,9 +440,7 @@ class OnlineDMD(MiniBatchRegressor):
             mat[s, :] = (self.A @ mat[s - 1, :]).real
         return mat[-1, :]
 
-    def predict_many(
-        self, x: Union[dict, np.ndarray], forecast: int
-    ) -> np.ndarray:
+    def predict_many(self, x: dict | np.ndarray, forecast: int) -> np.ndarray:
         """
         Predicts multiple future values based on the given initial value.
 
@@ -478,7 +475,7 @@ class OnlineDMD(MiniBatchRegressor):
         Y_hat = self.A @ X.T
         return float(np.linalg.norm(Y - Y_hat.T) / np.linalg.norm(Y))
 
-    def transform_one(self, x: Union[dict, np.ndarray]) -> np.ndarray:
+    def transform_one(self, x: dict | np.ndarray) -> np.ndarray:
         """
         Transforms the given input sample.
 
@@ -494,7 +491,7 @@ class OnlineDMD(MiniBatchRegressor):
         _, Phi = self.eig
         return Phi.T @ x
 
-    def transform_many(self, X: Union[np.ndarray, pd.DataFrame]) -> np.ndarray:
+    def transform_many(self, X: np.ndarray | pd.DataFrame) -> np.ndarray:
         """
         Transforms the given input sequence.
 
@@ -636,12 +633,12 @@ class OnlineDMDwC(OnlineDMD):
 
     def __init__(
         self,
-        B: Union[np.ndarray, None] = None,
+        B: np.ndarray | None = None,
         r: int = 0,
         w: float = 1.0,
         initialize: int = 1,
         exponential_weighting: bool = False,
-        seed: Union[int, None] = None,
+        seed: int | None = None,
     ) -> None:
         super().__init__(
             r,
@@ -656,9 +653,9 @@ class OnlineDMDwC(OnlineDMD):
 
     def _update_many(
         self,
-        X: Union[np.ndarray, pd.DataFrame],
-        Y: Union[np.ndarray, pd.DataFrame],
-        U: Union[np.ndarray, pd.DataFrame, None] = None,
+        X: np.ndarray | pd.DataFrame,
+        Y: np.ndarray | pd.DataFrame,
+        U: np.ndarray | pd.DataFrame | None = None,
     ) -> None:
         """Update the DMD computation with a new batch of snapshots (X,Y).
 
@@ -735,9 +732,9 @@ class OnlineDMDwC(OnlineDMD):
 
     def update(
         self,
-        x: Union[dict, np.ndarray],
-        y: Union[dict, np.ndarray],
-        u: Union[dict, np.ndarray, None] = None,
+        x: dict | np.ndarray,
+        y: dict | np.ndarray,
+        u: dict | np.ndarray | None = None,
     ) -> None:
         """Update the DMD computation with a new pair of snapshots (x, y)
 
@@ -791,18 +788,18 @@ class OnlineDMDwC(OnlineDMD):
 
     def learn_one(
         self,
-        x: Union[dict, np.ndarray],
-        y: Union[dict, np.ndarray],
-        u: Union[dict, np.ndarray],
+        x: dict | np.ndarray,
+        y: dict | np.ndarray,
+        u: dict | np.ndarray,
     ) -> None:
         """Allias for OnlineDMDwC.update method."""
         return self.update(x, y, u)
 
     def revert(
         self,
-        x: Union[dict, np.ndarray],
-        y: Union[dict, np.ndarray],
-        u: Union[dict, np.ndarray],
+        x: dict | np.ndarray,
+        y: dict | np.ndarray,
+        u: dict | np.ndarray,
     ) -> None:
         """Gradually forget the older snapshots and revert the DMD computation.
 
@@ -834,7 +831,7 @@ class OnlineDMDwC(OnlineDMD):
             self.A = self.A[:, : -self.l]
 
     def predict_one(
-        self, x: Union[dict, np.ndarray], u: Union[dict, np.ndarray]
+        self, x: dict | np.ndarray, u: dict | np.ndarray
     ) -> np.ndarray:
         """
         Predicts the next state given the current state.
@@ -858,8 +855,8 @@ class OnlineDMDwC(OnlineDMD):
 
     def predict_many(
         self,
-        x: Union[dict, np.ndarray],
-        U: Union[np.ndarray, pd.DataFrame],
+        x: dict | np.ndarray,
+        U: np.ndarray | pd.DataFrame,
         forecast: int,
     ) -> np.ndarray:
         """
@@ -888,9 +885,9 @@ class OnlineDMDwC(OnlineDMD):
 
     def truncation_error(
         self,
-        X: Union[np.ndarray, pd.DataFrame],
-        Y: Union[np.ndarray, pd.DataFrame],
-        U: Union[np.ndarray, pd.DataFrame],
+        X: np.ndarray | pd.DataFrame,
+        Y: np.ndarray | pd.DataFrame,
+        U: np.ndarray | pd.DataFrame,
     ) -> float:
         """Compute the truncation error of the DMD model on the given data.
 

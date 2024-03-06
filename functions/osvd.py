@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Online Singular Value Decomposition (SVD) in [River API](riverml.xyz).
 
 This module contains the implementation of the Online SVD algorithm.
@@ -9,11 +8,10 @@ References:
 """
 from __future__ import annotations
 
-from typing import Union
-
 import numpy as np
 import pandas as pd
 import scipy as sp
+
 from river.base import MiniBatchTransformer
 
 __all__ = [
@@ -130,7 +128,7 @@ class OnlineSVD(MiniBatchTransformer):
         )
         return UQ @ tU_, tSigma_, VQ @ tV_
 
-    def update(self, x: Union[dict, np.ndarray]):
+    def update(self, x: dict | np.ndarray):
         if isinstance(x, dict):
             self.feature_names_in_ = list(x.keys())
             x = np.array(list(x.values()))
@@ -147,7 +145,7 @@ class OnlineSVD(MiniBatchTransformer):
             U_, Sigma_, V_ = self._orthogonalize(U_, Sigma_, V_)
         self._U, self._S, self._V = U_, Sigma_, V_
 
-    def revert(self, _: Union[dict, np.ndarray]):
+    def revert(self, _: dict | np.ndarray):
         # TODO: verify proper implementation of revert method
         b = np.concatenate([np.zeros(self._V.shape[1] - 1), [1]]).reshape(
             -1, 1
@@ -170,11 +168,11 @@ class OnlineSVD(MiniBatchTransformer):
             U_, Sigma_, V_ = self._orthogonalize(U_, Sigma_, V_)
         self._U, self._S, self._V = U_, Sigma_, V_
 
-    def learn_one(self, x: Union[dict, np.ndarray]):
+    def learn_one(self, x: dict | np.ndarray):
         """Allias for update method."""
         self.update(x)
 
-    def learn_many(self, X: Union[np.ndarray, pd.DataFrame]):
+    def learn_many(self, X: np.ndarray | pd.DataFrame):
         if isinstance(X, pd.DataFrame):
             self.feature_names_in_ = list(X.columns)
             X = X.values
@@ -188,9 +186,7 @@ class OnlineSVD(MiniBatchTransformer):
                 X.T, k=self.n_components_
             )
 
-    def transform_one(
-        self, x: Union[dict, np.ndarray]
-    ) -> Union[dict, np.ndarray]:
+    def transform_one(self, x: dict | np.ndarray) -> dict | np.ndarray:
         is_dict = isinstance(x, dict)
         if is_dict:
             self.feature_names_in_ = list(x.keys())
@@ -200,8 +196,8 @@ class OnlineSVD(MiniBatchTransformer):
         return x_ if not is_dict else dict(zip(self.feature_names_in_, x_))
 
     def transform_many(
-        self, X: Union[np.ndarray, pd.DataFrame]
-    ) -> Union[np.ndarray, pd.DataFrame]:
+        self, X: np.ndarray | pd.DataFrame
+    ) -> np.ndarray | pd.DataFrame:
         is_df = isinstance(X, pd.DataFrame)
         if is_df:
             self.feature_names_in_ = list(X.columns)

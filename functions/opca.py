@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Online Principal Component Analysis (PCA) in [River API](riverml.xyz).
 
 This module contains the implementation of the Online PCA algorithm.
@@ -13,6 +12,7 @@ from collections import deque
 from typing import Union
 
 import numpy as np
+
 from river.base import Transformer
 
 __all__ = [
