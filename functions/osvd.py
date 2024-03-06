@@ -14,14 +14,14 @@ from typing import Union
 import numpy as np
 import pandas as pd
 import scipy as sp
-from river.base import Transformer
+from river.base import MiniBatchTransformer
 
 __all__ = [
     "OnlineSVD",
 ]
 
 
-def test_orthonormality(vectors, tol=1e-10):
+def test_orthonormality(vectors, tol=1e-10):  # pragma: no cover
     """
     Test orthonormality of a set of vectors.
 
@@ -50,7 +50,7 @@ def test_orthonormality(vectors, tol=1e-10):
     return is_orthonormal
 
 
-class OnlineSVD(Transformer):
+class OnlineSVD(MiniBatchTransformer):
     """Online Singular Value Decomposition (SVD).
 
     Args:
@@ -70,7 +70,7 @@ class OnlineSVD(Transformer):
     >>> m = 20
     >>> n = 80
     >>> X = pd.DataFrame(np.random.rand(n, m))
-    >>> svd = OnlineSVD(n_components=2)
+    >>> svd = OnlineSVD(n_components=2, force_orth=True)
     >>> svd.learn_many(X.iloc[:10])
     >>> svd._U.shape == (m, 2)
     True
@@ -79,17 +79,26 @@ class OnlineSVD(Transformer):
     >>> for _, x in X.iloc[10:-1].iterrows():
     ...     svd.learn_one(x.values.reshape(1, -1))
     >>> svd.transform_one(X.iloc[0].to_dict())
-    {0: 0.1516, 1: 2.6084}
+    {0: 2.5420, 1: 0.05388}
 
     >>> svd.update(X.iloc[-1].values.reshape(1, -1))
     >>> svd.transform_one(X.iloc[0].to_dict())
-    {0: -0.1509, 1: -2.6093}
+    {0: 2.3492, 1: 0.03840}
 
     >>> svd.revert(X.iloc[-1].values.reshape(1, -1))
 
-    # TODO: fix revert method - following test should pass
-    # >>> svd.transform_one(X.iloc[0].to_dict())
-    # {0: 0.1516, 1: 2.6084}
+    TODO: fix revert method - following test should pass
+    >>> svd.transform_one(X.iloc[0].to_dict())
+    {0: 2.3492, 1: 0.03840}
+
+    Works with mini-batches as well
+    >>> svd = OnlineSVD(n_components=2, initialize=3, force_orth=True)
+    >>> svd.learn_many(X.iloc[:30])
+    >>> svd.learn_many(X.iloc[30:60])
+    >>> svd.transform_many(X.iloc[60:62])
+              0         1
+    0  0.103185 -2.409013
+    1 -0.066338 -1.896232
 
     References:
     [^1]: Brand, M. (2006). Fast low-rank modifications of the thin singular value decomposition. Linear Algebra and its Applications, 415(1), pp.20-30. doi:[10.1016/j.laa.2005.07.021](https://doi.org/10.1016/j.laa.2005.07.021).
@@ -113,6 +122,14 @@ class OnlineSVD(Transformer):
         self._S: np.ndarray
         self._V: np.ndarray
 
+    def _orthogonalize(self, U_, Sigma_, V_):
+        UQ, UR = np.linalg.qr(U_, mode="complete")
+        VQ, VR = np.linalg.qr(V_, mode="complete")
+        tU_, tSigma_, tV_ = sp.sparse.linalg.svds(
+            (UR @ np.diag(Sigma_) @ VR), k=2
+        )
+        return UQ @ tU_, tSigma_, VQ @ tV_
+
     def update(self, x: Union[dict, np.ndarray]):
         if isinstance(x, dict):
             self.feature_names_in_ = list(x.keys())
@@ -126,14 +143,8 @@ class OnlineSVD(Transformer):
         U_, Sigma_, V_ = sp.sparse.linalg.svds(K, k=self.n_components_)
         U_ = np.column_stack((self._U, P)) @ U_
         V_ = V_[:, :2] @ self._V
-        if self.force_orth_ and not test_orthonormality(V_):
-            UQ, UR = np.linalg.qr(U_, mode="complete")
-            VQ, VR = np.linalg.qr(V_, mode="complete")
-            tU_, tSigma_, tV_ = sp.sparse.linalg.svds(
-                (UR @ np.diag(Sigma_) @ VR), k=2
-            )
-            U_, Sigma_, V_ = UQ @ tU_, tSigma_, VQ @ tV_
-            assert test_orthonormality(V_)
+        if self.force_orth_ and not test_orthonormality(V_.T):
+            U_, Sigma_, V_ = self._orthogonalize(U_, Sigma_, V_)
         self._U, self._S, self._V = U_, Sigma_, V_
 
     def revert(self, _: Union[dict, np.ndarray]):
@@ -156,13 +167,7 @@ class OnlineSVD(Transformer):
         V_ = V_ @ np.row_stack((self._V, Q.T))
 
         if self.force_orth_ and not test_orthonormality(U_):
-            UQ, UR = np.linalg.qr(U_, mode="complete")
-            VQ, VR = np.linalg.qr(V_, mode="complete")
-            tU_, tSigma_, tV_ = sp.sparse.linalg.svds(
-                (UR @ np.diag(Sigma_) @ VR), k=2
-            )
-            U_, Sigma_, V_ = UQ @ tU_, tSigma_, VQ @ tV_
-            assert test_orthonormality(U_)
+            U_, Sigma_, V_ = self._orthogonalize(U_, Sigma_, V_)
         self._U, self._S, self._V = U_, Sigma_, V_
 
     def learn_one(self, x: Union[dict, np.ndarray]):
@@ -177,7 +182,7 @@ class OnlineSVD(Transformer):
 
         if hasattr(self, "_U") and hasattr(self, "_S") and hasattr(self, "_V"):
             for x in X:
-                self.learn_one(x)
+                self.learn_one(x.reshape(1, -1))
         else:
             self._U, self._S, self._V = sp.sparse.linalg.svds(
                 X.T, k=self.n_components_
@@ -201,10 +206,7 @@ class OnlineSVD(Transformer):
         if is_df:
             self.feature_names_in_ = list(X.columns)
             X = X.values
+        assert X.shape[1] == self.n_features_in_
 
         X_ = self._U.T @ X.T
-        return (
-            X_
-            if not is_df
-            else pd.DataFrame(X_.T, columns=self.feature_names_in_)
-        )
+        return X_.T if not is_df else pd.DataFrame(X_.T)

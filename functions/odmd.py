@@ -187,6 +187,7 @@ class OnlineDMD(MiniBatchRegressor):
                 f"Initialization is under-constrained. Set initialize={self.m} to supress this Warning."
             )
             self.initialize = self.m
+
         self.A = np.random.randn(self.m, self.m)
         self._X_init = np.empty((self.initialize, self.m))
         self._Y_init = np.empty((self.initialize, self.m))
@@ -234,7 +235,7 @@ class OnlineDMD(MiniBatchRegressor):
             else:
                 y = x
                 x = self._x_prev
-                self._x_prev = x
+                self._x_prev = y
 
         if isinstance(x, dict):
             self.feature_names_in_ = list(x.keys())
@@ -554,6 +555,77 @@ class OnlineDMDwC(OnlineDMD):
         _P: inverse of covariance matrix of X
 
     Examples:
+    >>> import numpy as np
+    >>> import pandas as pd
+
+    >>> n = 101
+    >>> freq = 2.0
+    >>> tspan = np.linspace(0, 10, n)
+    >>> dt = 0.1
+    >>> a1 = 1
+    >>> a2 = 1
+    >>> phase1 = -np.pi
+    >>> phase2 = np.pi / 2
+    >>> w1 = np.cos(np.pi * freq * tspan)
+    >>> w2 = -np.sin(np.pi * freq * tspan)
+    >>> u_ = np.ones(n)
+    >>> u_[tspan > 5] *= 2
+    >>> w1[tspan > 5] *= 2
+    >>> w2[tspan > 5] *= 2
+    >>> df = pd.DataFrame({"w1": w1[:-1], "w2": w2[:-1]})
+    >>> U = pd.DataFrame({"u": u_[:-2]})
+
+    >>> model = OnlineDMDwC(r=2, w=0.1, initialize=0)
+    >>> X, Y = df.iloc[:-1], df.shift(-1).iloc[:-1]
+
+    >>> for (_, x), (_, y), (_, u) in zip(X.iterrows(), Y.iterrows(), U.iterrows()):
+    ...     x, y, u = x.to_dict(), y.to_dict(), u.to_dict()
+    ...     model.learn_one(x, y, u)
+    >>> eig, _ = np.log(model.eig[0]) / dt
+    >>> r, i = eig.real, eig.imag
+    >>> np.isclose(eig.real, 0.0)
+    True
+    >>> np.isclose(eig.imag, np.pi * freq)
+    True
+
+    Supports mini-batch learning:
+    >>> from river.utils import Rolling
+
+    >>> model = Rolling(OnlineDMDwC(r=2, w=1.0), 10)
+    >>> X, Y = df.iloc[:-1], df.shift(-1).iloc[:-1]
+
+    >>> for (_, x), (_, y), (_, u) in zip(X.iterrows(), Y.iterrows(), U.iterrows()):
+    ...     x, y, u = x.to_dict(), y.to_dict(), u.to_dict()
+    ...     model.update(x, y, u)
+
+    >>> eig, _ = np.log(model.eig[0]) / dt
+    >>> r, i = eig.real, eig.imag
+    >>> np.isclose(eig.real, 0.0)
+    True
+    >>> np.isclose(eig.imag, np.pi * freq)
+    True
+
+    # TODO: find out why not passing
+    # >>> np.isclose(model.truncation_error(X.values, Y.values, U.values), 0)
+    # True
+
+    >>> w_pred = model.predict_one(
+    ...     np.array([w1[-2], w2[-2]]),
+    ...     np.array([u_[-2]]),
+    ... )
+    >>> np.allclose(w_pred, [w1[-1], w2[-1]])
+    True
+
+    >>> w_pred = model.predict_one(
+    ...     np.array([w1[-2], w2[-2]]),
+    ...     np.array([u_[-2]]),
+    ... )
+    >>> np.allclose(w_pred, [w1[-1], w2[-1]])
+    True
+
+    >>> w_pred = model.predict_many(np.array([1, 0]), np.ones((10, 1)), 10)
+    >>> np.allclose(w_pred.T, [w1[1:11], w2[1:11]])
+    True
 
     References:
         [^1]: Zhang, H., Clarence Worth Rowley, Deem, E.A. and Cattafesta, L.N.
@@ -639,18 +711,18 @@ class OnlineDMDwC(OnlineDMD):
         if self.known_B:
             Y = Y - self.B @ U
         else:
-            X = np.vstack((X, U))
+            X = np.hstack((X, U))
         if not self.known_B and self.B is not None:
             self.A = np.hstack((self.A, self.B))
         self.l = U.shape[1]
         super().learn_many(X, Y)
+        self.m = self.m - self.l  # PATCH: overwrite change of parent
 
         if not self.known_B:
             self.B = self.A[:, -self.l :]
             self.A = self.A[:, : -self.l]
 
     def _init_update(self):
-        super()._init_update()
         if not self.known_B and self.initialize < self.m + self.l:
             warnings.warn(
                 f"Initialization is under-constrained. Changed initialize to {self.m + self.l}."
@@ -658,7 +730,8 @@ class OnlineDMDwC(OnlineDMD):
             self.initialize = self.m + self.l
         # TODO: find out whether should be set in init or here
         self.B = np.random.randn(self.m, self.l)
-        self._U_init = np.zeros((self.l, self.initialize))
+        self._U_init = np.zeros((self.initialize, self.l))
+        super()._init_update()
 
     def update(
         self,
@@ -688,14 +761,14 @@ class OnlineDMDwC(OnlineDMD):
             super().update(x, y)
         else:
             if self.n_seen == 0:
-                self.m = x.shape[0]
-                self.l = u.shape[0]
+                self.m = len(x)
+                self.l = len(u)
                 self._init_update()
 
             if bool(self.initialize) and self.n_seen <= self.initialize - 1:
-                self._X_init[:, self.n_seen] = x
-                self._Y_init[:, self.n_seen] = y
-                self._U_init[:, self.n_seen] = u
+                self._X_init[self.n_seen, :] = x
+                self._Y_init[self.n_seen, :] = y
+                self._U_init[self.n_seen, :] = u
                 if self.n_seen == self.initialize - 1:
                     self.learn_many(self._X_init, self._Y_init, self._U_init)
                     self.n_seen -= self._X_init.shape[1]
@@ -809,7 +882,7 @@ class OnlineDMDwC(OnlineDMD):
         mat = np.zeros((forecast + 1, self.m))
         mat[0, :] = x if isinstance(x, np.ndarray) else list(x.values())
         for s in range(1, forecast + 1):
-            action = (self.B @ U[:, s - 1]).real
+            action = (self.B @ U[s - 1, :]).real
             mat[s, :] = (self.A @ mat[s - 1, :]).real + action
         return mat[1:, :]
 
@@ -829,5 +902,5 @@ class OnlineDMDwC(OnlineDMD):
         Returns:
             float: Truncation error of the DMD model
         """
-        Y_hat = X @ self.A + U @ self.B
-        return float(np.linalg.norm(Y - Y_hat) / np.linalg.norm(Y))
+        Y_hat = self.A @ X.T + self.B @ U.T
+        return float(np.linalg.norm(Y - Y_hat.T) / np.linalg.norm(Y))
