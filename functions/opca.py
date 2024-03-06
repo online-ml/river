@@ -51,10 +51,18 @@ class OnlinePCA(Transformer):
         >>> nan_indices = np.random.choice(range(X.shape[0]), size=n_nans, replace=False)
         >>> X[nan_indices] = np.nan
         >>> pca = OnlinePCA(n_components=2)
-        >>> for x in X:
+        >>> for x in X[:50]:
         ...     pca.learn_one(x)
         >>> pca.transform_one(X[-1, :])
-        {0: -17.9802, 1: -0.5415}
+        {0: -17.9652, 1: -0.8711}
+
+        >>> pca = OnlinePCA(n_components=2, b=4)
+        >>> X = pd.DataFrame(X)
+        >>> for _, x in X.iloc[:50].iterrows():
+        ...     pca.learn_one(x.to_dict())
+        >>> pca.transform_one(X.iloc[-1, :].to_dict())
+        {0: -17.9470, 1: -1.0941}
+
     """
 
     def __init__(
@@ -122,7 +130,7 @@ class OnlinePCA(Transformer):
                 _, _, V = np.linalg.svd(
                     np.array(self.Y_k), full_matrices=False
                 )
-                self.S_hat = V.T
+                self.S_hat = V.T[:, : self.n_components]
             else:
                 R_k = np.empty((self.n_features_in_, self.b))
                 # range((self.n_seen - 1) * self.b + 1, self.n_seen * self.b) [Eftekhari, et al. (2019)]
