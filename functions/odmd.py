@@ -29,8 +29,8 @@ from typing import Union
 import numpy as np
 import pandas as pd
 import scipy as sp
-from scipy.sparse.linalg._eigen.arpack.arpack import ArpackNoConvergence
 from river.base import MiniBatchRegressor
+from scipy.sparse.linalg._eigen.arpack.arpack import ArpackNoConvergence
 
 __all__ = [
     "OnlineDMD",
@@ -46,7 +46,15 @@ class OnlineDMD(MiniBatchRegressor):
     and space complexity is O(2n^2), where n is the state dimension.
 
     This estimator supports learning with mini-batches with same time and space
-    complexity as the online learning.
+    complexity as the online learning. It can be used as Rolling or TimeRolling
+    estimator.
+
+    OnlineDMD implements `transform_one` and `transform_many` methods like
+    unsupervised MiniBatchTransformer. In such case, we may use `learn_one`
+    without `y` and `learn_many` without `Y` to learn the model.
+    In that case OnlineDMD preserves previous snapshot and uses it as x while
+    current snapshot is used as y.
+    NOTE: That means `predict_one` and `predict_many` used with
 
     At time step t, define two matrices X(t) = [x(1),x(2),...,x(t)],
     Y(t) = [y(1),y(2),...,y(t)], that contain all the past snapshot pairs,
@@ -152,7 +160,9 @@ class OnlineDMD(MiniBatchRegressor):
         self.initialize = int(initialize)
         self.exponential_weighting = exponential_weighting
         self.seed = seed
+
         np.random.seed(self.seed)
+
         self.m: int
         self.n_seen: int = 0
         self.feature_names_in_: list[str]
@@ -174,7 +184,7 @@ class OnlineDMD(MiniBatchRegressor):
     def _init_update(self) -> None:
         if self.initialize > 0 and self.initialize < self.m:
             warnings.warn(
-                f"Initialization is under-constrained. Changing initialize to {self.m}."
+                f"Initialization is under-constrained. Set initialize={self.m} to supress this Warning."
             )
             self.initialize = self.m
         self.A = np.random.randn(self.m, self.m)
@@ -202,7 +212,9 @@ class OnlineDMD(MiniBatchRegressor):
         return xi
 
     def update(
-        self, x: Union[dict, np.ndarray], y: Union[dict, np.ndarray]
+        self,
+        x: Union[dict, np.ndarray],
+        y: Union[dict, np.ndarray, None] = None,
     ) -> None:
         """Update the DMD computation with a new pair of snapshots (x, y)
 
@@ -214,6 +226,16 @@ class OnlineDMD(MiniBatchRegressor):
             x: 1D array, shape (m, ), x(t) as in y(t) = f(t, x(t))
             y: 1D array, shape (m, ), y(t) as in y(t) = f(t, x(t))
         """
+        # If Hankelizer is used, we need to use DMD without y
+        if y is None:
+            if not hasattr(self, "_x_prev"):
+                self._x_prev = x
+                return
+            else:
+                y = x
+                x = self._x_prev
+                self._x_prev = x
+
         if isinstance(x, dict):
             self.feature_names_in_ = list(x.keys())
             x = np.array(list(x.values()))
@@ -255,13 +277,17 @@ class OnlineDMD(MiniBatchRegressor):
             self._Y = self._Y[self.n_seen :, :]
 
     def learn_one(
-        self, x: Union[dict, np.ndarray], y: Union[dict, np.ndarray]
+        self,
+        x: Union[dict, np.ndarray],
+        y: Union[dict, np.ndarray, None] = None,
     ) -> None:
         """Allias for update method."""
         self.update(x, y)
 
     def revert(
-        self, x: Union[dict, np.ndarray], y: Union[dict, np.ndarray]
+        self,
+        x: Union[dict, np.ndarray],
+        y: Union[dict, np.ndarray, None] = None,
     ) -> None:
         """Gradually forget the older snapshots and revert the DMD computation.
 
@@ -277,6 +303,16 @@ class OnlineDMD(MiniBatchRegressor):
                 "initialization. If used with Rolling or TimeRolling, window "
                 f"size should be increased to {self.initialize}."
             )
+        if y is None:
+            # raise ValueError("revert method not implemented for y = None.")
+            if not hasattr(self, "_x_first"):
+                self._x_first = x
+                return
+            else:
+                y = x
+                x = self._x_first
+                self._x_first = x
+
         if isinstance(x, dict):
             x = np.array(list(x.values()))
         if isinstance(y, dict):
@@ -339,7 +375,7 @@ class OnlineDMD(MiniBatchRegressor):
     def learn_many(
         self,
         X: Union[np.ndarray, pd.DataFrame],
-        Y: Union[np.ndarray, pd.DataFrame],
+        Y: Union[np.ndarray, pd.DataFrame, None] = None,
     ) -> None:
         """Learn the OnlineDMD model using multiple snapshot pairs.
 
@@ -350,6 +386,14 @@ class OnlineDMD(MiniBatchRegressor):
             X: The input snapshot matrix of shape (p, m), where p is the number of snapshots and m is the number of features.
             Y: The output snapshot matrix of shape (p, m), where p is the number of snapshots and m is the number of features.
         """
+        if Y is None:
+            if isinstance(X, pd.DataFrame):
+                Y = X.shift(-1).iloc[:-1]
+                X = X.iloc[:-1]
+            elif isinstance(X, np.ndarray):
+                Y = np.roll(X, -1)[:-1]
+                X = X[:-1]
+
         if isinstance(X, pd.DataFrame):
             X = X.values
         if isinstance(Y, pd.DataFrame):
