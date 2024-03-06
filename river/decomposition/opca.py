@@ -9,7 +9,6 @@ References:
 from __future__ import annotations
 
 from collections import deque
-from typing import Union
 
 import numpy as np
 
@@ -68,11 +67,11 @@ class OnlinePCA(Transformer):
     def __init__(
         self,
         n_components: int,
-        b: Union[int, None] = None,
+        b: int | None = None,
         lambda_: float = 0.0,
         sigma: float = 0.0,
         tau: float = 0.0,
-        seed: Union[int, None] = None,
+        seed: int | None = None,
     ):
         self.n_components = int(n_components)
         if b is None:
@@ -91,12 +90,12 @@ class OnlinePCA(Transformer):
         self.feature_names_in_: list[str]
         self.n_features_in_: int  # n [Eftekhari, et al. (2019)]
         self.n_seen: int = 0  # k [Eftekhari, et al. (2019)]
-        self.Y_k = deque(maxlen=b)
-        self.P_omega_k = deque(maxlen=b)
+        self.Y_k: deque = deque(maxlen=b)
+        self.P_omega_k: deque = deque(maxlen=b)
         self.S_hat: np.ndarray
         np.random.seed(seed)
 
-    def learn_one(self, x: Union[dict, np.ndarray]):
+    def learn_one(self, x: dict | np.ndarray):
         """_summary_
 
         Args:
@@ -172,7 +171,7 @@ class OnlinePCA(Transformer):
 
         self.n_seen += 1
 
-    def transform_one(self, x: Union[dict, np.ndarray]) -> dict:
+    def transform_one(self, x: dict | np.ndarray) -> dict:
         if isinstance(x, dict):
             x = np.array(list(x.values()))
         x = x @ self.S_hat

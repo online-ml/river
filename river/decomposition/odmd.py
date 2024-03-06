@@ -687,7 +687,12 @@ class OnlineDMDwC(OnlineDMD):
                 self.B = self.A[:, -self.l :]
                 self.A = self.A[:, : -self.l]
 
-    def learn_many(self, X: np.ndarray, Y: np.ndarray, U: np.ndarray) -> None:
+    def learn_many(
+        self,
+        X: np.ndarray | pd.DataFrame,
+        Y: np.ndarray | pd.DataFrame,
+        U: np.ndarray | pd.DataFrame,
+    ) -> None:
         """Learn the OnlineDMDwC model using multiple snapshot pairs.
 
         Useful for initializing the model with a batch of snapshot pairs.

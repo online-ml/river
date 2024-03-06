@@ -187,22 +187,24 @@ class OnlineSVD(MiniBatchTransformer):
             )
 
     def transform_one(self, x: dict | np.ndarray) -> dict | np.ndarray:
-        is_dict = isinstance(x, dict)
-        if is_dict:
+        if isinstance(x, dict):
             self.feature_names_in_ = list(x.keys())
             x = np.array(list(x.values()))
 
         x_ = self._U.T @ x.T
-        return x_ if not is_dict else dict(zip(self.feature_names_in_, x_))
+        return (
+            x_
+            if not isinstance(x, dict)
+            else dict(zip(self.feature_names_in_, x_))
+        )
 
     def transform_many(
         self, X: np.ndarray | pd.DataFrame
     ) -> np.ndarray | pd.DataFrame:
-        is_df = isinstance(X, pd.DataFrame)
-        if is_df:
+        if isinstance(X, pd.DataFrame):
             self.feature_names_in_ = list(X.columns)
             X = X.values
         assert X.shape[1] == self.n_features_in_
 
         X_ = self._U.T @ X.T
-        return X_.T if not is_df else pd.DataFrame(X_.T)
+        return X_.T if not isinstance(X, pd.DataFrame) else pd.DataFrame(X_.T)

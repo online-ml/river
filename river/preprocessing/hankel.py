@@ -53,7 +53,7 @@ class Hankelizer(Transformer):
         self.w = w
         self.return_partial = return_partial
 
-        self._window = deque(maxlen=self.w - 1)
+        self._window: deque = deque(maxlen=self.w - 1)
         self.feature_names_in_: list[str]
         self.n_features_in_: int
 

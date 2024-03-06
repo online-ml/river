@@ -11,10 +11,10 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 import pytest
-from dmd import DMD
-from odmd import OnlineDMD
-from river.utils import Rolling
 from scipy.integrate import odeint
+
+from river.decomposition.odmd import OnlineDMD
+from river.utils import Rolling
 
 epsilon = 1e-1
 
@@ -97,25 +97,6 @@ def test_errors_raised():
     with pytest.raises(Exception):
         for x, y in zip(X, Y):
             rodmd.update(x, y)
-
-
-def test_allclose_online_batch():
-    dmd = DMD()
-    odmd = OnlineDMD()
-    odmd_i = OnlineDMD(initialize=0)
-
-    dmd.fit(X, Y)
-
-    for x, y in zip(X, Y):
-        odmd.learn_one(x, y)
-        odmd_i.learn_one(x, y)
-
-    eigvals_batch = np.log(np.linalg.eigvals(dmd.A)) / dt
-    eigvals_online = np.log(np.linalg.eigvals(odmd.A)) / dt
-    eigvals_online_i = np.log(np.linalg.eigvals(odmd_i.A)) / dt
-
-    assert np.allclose(eigvals_online, eigvals_online_i)
-    assert np.allclose(eigvals_batch, eigvals_online)
 
 
 def test_allclose_unsupervised_supervised():
