@@ -80,6 +80,7 @@ class OnlinePCA(Transformer):
         assert tau >= 0
         self.tau = tau
 
+        self.feature_names_in_: list[str]
         self.n_features_in_: int  # n [Eftekhari, et al. (2019)]
         self.n_seen: int = 0  # k [Eftekhari, et al. (2019)]
         self.Y_k = deque(maxlen=b)
@@ -95,9 +96,11 @@ class OnlinePCA(Transformer):
         """
         if isinstance(x, dict):
             if self.n_seen == 0:
-                self.feature_names_in_ = set(x.keys())
+                self.feature_names_in_ = list(x.keys())
             else:
-                assert not self.feature_names_in_.difference(set(x.keys()))
+                assert not set(self.feature_names_in_).difference(
+                    set(x.keys())
+                )
             x = np.array(list(x.values()))
         if self.n_seen == 0:
             self.n_features_in_ = len(x)
@@ -160,7 +163,6 @@ class OnlinePCA(Transformer):
             self.Y_k.clear()  # Non overlapping blocks
 
         self.n_seen += 1
-        return
 
     def transform_one(self, x: Union[dict, np.ndarray]) -> dict:
         if isinstance(x, dict):
