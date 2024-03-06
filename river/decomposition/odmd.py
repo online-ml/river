@@ -29,15 +29,13 @@ import pandas as pd
 import scipy as sp
 from scipy.sparse.linalg._eigen.arpack.arpack import ArpackNoConvergence
 
-from river.base import MiniBatchRegressor
-
 __all__ = [
     "OnlineDMD",
     "OnlineDMDwC",
 ]
 
 
-class OnlineDMD(MiniBatchRegressor):
+class OnlineDMD:
     """Online Dynamic Mode Decomposition (DMD).
 
     This regressor is a class that implements online dynamic mode decomposition
@@ -687,7 +685,7 @@ class OnlineDMDwC(OnlineDMD):
                 self.B = self.A[:, -self.l :]
                 self.A = self.A[:, : -self.l]
 
-    def learn_many(
+    def learn_many(  # type: ignore  # TODO: fix override OnlineDMD.learn_many
         self,
         X: np.ndarray | pd.DataFrame,
         Y: np.ndarray | pd.DataFrame,
@@ -735,7 +733,7 @@ class OnlineDMDwC(OnlineDMD):
         self._U_init = np.zeros((self.initialize, self.l))
         super()._init_update()
 
-    def update(
+    def update(  # type: ignore  # TODO: fix override OnlineDMD.update
         self,
         x: dict | np.ndarray,
         y: dict | np.ndarray,
@@ -791,7 +789,7 @@ class OnlineDMDwC(OnlineDMD):
 
             self.n_seen += 1
 
-    def learn_one(
+    def learn_one(  # type: ignore  # TODO: fix override OnlineDMD.learn_one
         self,
         x: dict | np.ndarray,
         y: dict | np.ndarray,
@@ -800,7 +798,7 @@ class OnlineDMDwC(OnlineDMD):
         """Allias for OnlineDMDwC.update method."""
         return self.update(x, y, u)
 
-    def revert(
+    def revert(  # type: ignore  # TODO: fix override OnlineDMD.revert
         self,
         x: dict | np.ndarray,
         y: dict | np.ndarray,
@@ -835,7 +833,7 @@ class OnlineDMDwC(OnlineDMD):
             self.B = self.A[:, -self.l :]
             self.A = self.A[:, : -self.l]
 
-    def predict_one(
+    def predict_one(  # type: ignore  # TODO: fix override OnlineDMD.predict_one
         self, x: dict | np.ndarray, u: dict | np.ndarray
     ) -> np.ndarray:
         """
@@ -858,7 +856,7 @@ class OnlineDMDwC(OnlineDMD):
             mat[s, :] = (self.A @ mat[s - 1, :]).real + action
         return mat[-1, :]
 
-    def predict_many(
+    def predict_many(  # type: ignore  # TODO: fix override OnlineDMD.predict_many
         self,
         x: dict | np.ndarray,
         U: np.ndarray | pd.DataFrame,
@@ -888,7 +886,7 @@ class OnlineDMDwC(OnlineDMD):
             mat[s, :] = (self.A @ mat[s - 1, :]).real + action
         return mat[1:, :]
 
-    def truncation_error(
+    def truncation_error(  # type: ignore  # TODO: fix override OnlineDMD.truncation_error
         self,
         X: np.ndarray | pd.DataFrame,
         Y: np.ndarray | pd.DataFrame,
