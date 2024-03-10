@@ -56,7 +56,7 @@ class OnlineSVD(MiniBatchTransformer):
         force_orth: If True, the algorithm will force the singular vectors to be orthogonal. *Note*: Significantly increases the computational cost.
 
     Attributes:
-        n_components_: Desired dimensionality of output data.
+        n_components: Desired dimensionality of output data.
         initialize: Number of initial samples to use for the initialization of the algorithm. The value must be greater than `n_components`.
         feature_names_in_: List of input features.
         _U: Left singular vectors.
@@ -85,7 +85,6 @@ class OnlineSVD(MiniBatchTransformer):
 
     >>> svd.revert(X.iloc[-1].values.reshape(1, -1))
 
-    TODO: fix revert method - following test should pass
     >>> svd.transform_one(X.iloc[0].to_dict())
     {0: 2.3492, 1: 0.03840}
 
@@ -108,12 +107,13 @@ class OnlineSVD(MiniBatchTransformer):
         initialize: int = 0,
         force_orth: bool = False,
     ):
-        self.n_components_ = n_components
+        self.n_components = n_components
         if initialize <= n_components:
             self.initialize = n_components + 1
         else:
             self.initialize = initialize
-        self.force_orth_ = force_orth
+        self.force_orth = force_orth
+
         self.n_features_in_: int
         self.feature_names_in_: list
         self._U: np.ndarray
@@ -124,24 +124,51 @@ class OnlineSVD(MiniBatchTransformer):
         UQ, UR = np.linalg.qr(U_, mode="complete")
         VQ, VR = np.linalg.qr(V_, mode="complete")
         tU_, tSigma_, tV_ = sp.sparse.linalg.svds(
-            (UR @ np.diag(Sigma_) @ VR), k=2
+            (UR @ np.diag(Sigma_) @ VR), k=self.n_components
         )
+        tU_, tSigma_, tV_ = self._sort_svd(tU_, tSigma_, tV_)
         return UQ @ tU_, tSigma_, VQ @ tV_
+
+    def _sort_svd(self, U, S, V):
+        """Sort the singular value decomposition in descending order.
+
+        As sparse SVD does not guarantee the order of the singular values, we
+        need to sort the singular value decomposition in descending order.
+        """
+        if not np.array_equal(S, sorted(S, reverse=True)):
+            sort_idx = np.argsort(S)[::-1]
+            S = S[sort_idx]
+            U = U[:, sort_idx]
+            V = V[sort_idx, :]
+        return U, S, V
+
+    def _truncate_svd(self):
+        """Truncate the singular value decomposition to the n components.
+
+        Full SVD returns the full matrices U, S, and V in correct order. If the
+        result acqisition is faster than sparse SVD, we combine the results of
+        full SVD with truncation.
+        """
+        self._U = self._U[:, : self.n_components]
+        self._S = self._S[: self.n_components]
+        self._V = self._V[: self.n_components, :]
 
     def update(self, x: dict | np.ndarray):
         if isinstance(x, dict):
             self.feature_names_in_ = list(x.keys())
             x = np.array(list(x.values()))
+        x = x.reshape(1, -1)
         m = (x @ self._U).T
         p = x.T - self._U @ m
         P, _ = np.linalg.qr(p)
         Ra = P.T @ p
         z = np.zeros_like(m.T)
         K = np.block([[np.diag(self._S), m], [z, Ra]])
-        U_, Sigma_, V_ = sp.sparse.linalg.svds(K, k=self.n_components_)
+        U_, Sigma_, V_ = sp.sparse.linalg.svds(K, k=self.n_components)
+        U_, Sigma_, V_ = self._sort_svd(U_, Sigma_, V_)
         U_ = np.column_stack((self._U, P)) @ U_
-        V_ = V_[:, :2] @ self._V
-        if self.force_orth_ and not test_orthonormality(V_.T):
+        V_ = V_[:, : self.n_components] @ self._V
+        if self.force_orth and not test_orthonormality(V_.T):
             U_, Sigma_, V_ = self._orthogonalize(U_, Sigma_, V_)
         self._U, self._S, self._V = U_, Sigma_, V_
 
@@ -160,11 +187,12 @@ class OnlineSVD(MiniBatchTransformer):
             - np.row_stack((np.diag(self._S) @ n, 0.0))
             @ np.row_stack((n, np.sqrt(1 - n.T @ n))).T
         )
-        U_, Sigma_, V_ = sp.sparse.linalg.svds(K, k=2)
-        U_ = self._U @ U_[:2, :]
+        U_, Sigma_, V_ = sp.sparse.linalg.svds(K, k=self.n_components)
+        U_, Sigma_, V_ = self._sort_svd(U_, Sigma_, V_)
+        U_ = self._U @ U_[: self.n_components, :]
         V_ = V_ @ np.row_stack((self._V, Q.T))
 
-        if self.force_orth_ and not test_orthonormality(U_):
+        if self.force_orth:  # and not test_orthonormality(U_):
             U_, Sigma_, V_ = self._orthogonalize(U_, Sigma_, V_)
         self._U, self._S, self._V = U_, Sigma_, V_
 
@@ -184,9 +212,16 @@ class OnlineSVD(MiniBatchTransformer):
             for x in X:
                 self.learn_one(x.reshape(1, -1))
         else:
-            self._U, self._S, self._V = sp.sparse.linalg.svds(
-                X.T, k=self.n_components_
-            )
+            if self.n_components < self.n_features_in_:
+                self._U, self._S, self._V = sp.sparse.linalg.svds(
+                    X.T, k=self.n_components
+                )
+                self._U, self._S, self._V = self._sort_svd(self._U, self._S, self._V)
+
+            else:
+                self._U, self._S, self._V = np.linalg.svd(
+                    X.T, full_matrices=False
+                )
 
     def transform_one(self, x: dict | np.ndarray) -> dict:
         if isinstance(x, dict):
