@@ -13,6 +13,7 @@ TODO:
     - [ ] Update prediction computation for continuous time
           x(t) = Phi exp(diag(ln(Lambda) / dt) * t) Phi^+ x(0) (MIT lecture)
           continuous time eigenvalues exp(Lambda * dt) (Zhang et al. 2019)
+    - [ ] Figure out how to use as both MiniBatchRegressor and MiniBatchTransformer
 
 References:
     [^1]: Zhang, H., Clarence Worth Rowley, Deem, E.A. and Cattafesta, L.N.
@@ -30,6 +31,8 @@ import pandas as pd
 import scipy as sp
 from scipy.sparse.linalg._eigen.arpack.arpack import ArpackNoConvergence
 
+from river.base import MiniBatchRegressor
+
 from .osvd import OnlineSVD
 
 __all__ = [
@@ -38,7 +41,7 @@ __all__ = [
 ]
 
 
-class OnlineDMD:
+class OnlineDMD(MiniBatchRegressor):
     """Online Dynamic Mode Decomposition (DMD).
 
     This regressor is a class that implements online dynamic mode decomposition
@@ -53,7 +56,7 @@ class OnlineDMD:
     unsupervised MiniBatchTransformer. In such case, we may use `learn_one`
     without `y` and `learn_many` without `Y` to learn the model.
     In that case OnlineDMD preserves previous snapshot and uses it as x while
-    current snapshot is used as y.
+    current snapshot is used as y, therefore, being delayed by one sample.
     NOTE: That means `predict_one` and `predict_many` used with
 
     At time step t, define two matrices X(t) = [x(1),x(2),...,x(t)],
@@ -491,6 +494,11 @@ class OnlineDMD:
             else:
                 weights = np.ones((n, 1))
             Xqhat, Yqhat = weights * X, weights * Y
+            XX = Xqhat.T @ Xqhat
+            # TODO: think about using correlation matrix to avoid scaling issues
+            #  https://stats.stackexchange.com/questions/12200/normalizing-variables-for-svd-pca
+            # std = np.sqrt(np.diag(XX))
+            # XX = XX / np.outer(std, std)
             # Perform truncated DMD
             if self.r < self.m:
                 self._svd.learn_many(Xqhat)
@@ -513,11 +521,11 @@ class OnlineDMD:
                     @ _V.T
                     @ np.diag(1 / _S)
                 ) @ _UU
-                self._P = np.linalg.inv(_U.T @ Xqhat.T @ Xqhat @ _U) / self.w
+                self._P = np.linalg.inv(_U.T @ XX @ _U) / self.w
             # Perform exact DMD
             else:
                 self.A = Yqhat.T.dot(np.linalg.pinv(Xqhat.T))
-                self._P = np.linalg.inv(Xqhat.T @ Xqhat) / self.w
+                self._P = np.linalg.inv(XX) / self.w
 
             # Store the last p snapshots for xi computation
             self._Y = Yqhat

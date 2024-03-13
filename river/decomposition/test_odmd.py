@@ -114,6 +114,47 @@ def test_allclose_unsupervised_supervised():
 
 # TODO: test various combinations of truncated and exact state and control parts of DMDwC
 
+# Proctor et al. (2016) "Dynamic Mode Decomposition with Control" suggests that
+#  the DMDwC where B is unknown requires a second SVD computation for output
+#  space of Y. As the computation and updates of SVDs are expensive, we want to
+#  avoid this if possible. This test checks if the SVD of augumented state +
+#  control space is at least as close to SVD of original space than the SVD of
+#  the output space to the SVD of the original space.
+def test_one_svd_is_enough():
+    import numpy as np
+    import pandas as pd
+    import scipy as sp
+
+    n = 101
+    freq = 2.0
+    tspan = np.linspace(0, 10, n)
+    w1 = np.cos(np.pi * freq * tspan)
+    w2 = -np.sin(np.pi * freq * tspan)
+    w3 = np.sin(2 * np.pi * freq * tspan)
+    u_ = np.ones(n)
+    u_[tspan > 5] *= 2
+    w1[tspan > 5] *= 2
+    w2[tspan > 5] *= 2
+    w3[tspan > 5] *= 2
+    df = pd.DataFrame({"w1": w1[:-1], "w2": w2[:-1], "w3": w3[:-1]})
+    X, Y = df.iloc[:-1], df.shift(-1).iloc[:-1]
+    U = pd.DataFrame({"u": u_[:-2]})
+    X_ = X.copy()
+    X_["u"] = U
+    
+    u_orig, s_orig, _ = sp.sparse.linalg.svds(
+        X.values.T, k=2, return_singular_vectors="u"
+    )
+    u_aug, s_aug, _ = sp.sparse.linalg.svds(
+        X_.values.T, k=3, return_singular_vectors="u"
+    )
+    u_out, s_out, _ = sp.sparse.linalg.svds(
+        Y.values.T, k=2, return_singular_vectors="u"
+    )
+    
+    assert (np.abs(u_orig - u_aug[:3, :2]) <= np.abs(u_orig - u_out)).all()
+    assert (np.abs(s_orig - s_aug[:2]) <= np.abs(s_orig - s_out)).all()
+
 # TODO: find out why this test fails
 # def test_allclose_weighted_true():
 #     n_init = round(samples / 2)

@@ -3,8 +3,13 @@
 This module contains the implementation of the Online SVD algorithm.
 It is based on the paper by Brand et al. [^1]
 
+TODO:
+    - [ ] Implement update methods based on [2] to save time on reorthogonalization.
+    - [ ] Figure out revert method based on [2]
+
 References:
     [^1]: Brand, M. (2006). Fast low-rank modifications of the thin singular value decomposition. Linear Algebra and its Applications, 415(1), pp.20-30. doi:[10.1016/j.laa.2005.07.021](https://doi.org/10.1016/j.laa.2005.07.021).
+    [^2]: Zhang, Y. (2022). An answer to an open question in the incremental SVD. doi:[10.48550/arXiv.2204.05398](https://doi.org/10.48550/arXiv.2204.05398)
 """
 from __future__ import annotations
 
