@@ -9,6 +9,7 @@ the latter extracts new information from the data
 from __future__ import annotations
 
 from .feature_hasher import FeatureHasher
+from .hankel import Hankelizer
 from .impute import PreviousImputer, StatImputer
 from .lda import LDA
 from .one_hot import OneHotEncoder
@@ -31,6 +32,7 @@ __all__ = [
     "Binarizer",
     "FeatureHasher",
     "GaussianRandomProjector",
+    "Hankelizer",
     "LDA",
     "MaxAbsScaler",
     "MinMaxScaler",
