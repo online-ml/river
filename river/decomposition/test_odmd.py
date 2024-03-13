@@ -112,6 +112,8 @@ def test_allclose_unsupervised_supervised():
     assert np.allclose(eig_u, eig_s)
 
 
+# TODO: test various combinations of truncated and exact state and control parts of DMDwC
+
 # TODO: find out why this test fails
 # def test_allclose_weighted_true():
 #     n_init = round(samples / 2)

@@ -73,20 +73,20 @@ class OnlineSVD(MiniBatchTransformer):
     >>> svd._U.shape == (m, 2)
     True
     >>> svd.transform_one(X.iloc[10].to_dict())
-    {0: 0.2588, 1: -1.9574}
+    {0: -1.9574, 1: 0.2588}
     >>> for _, x in X.iloc[10:-1].iterrows():
     ...     svd.learn_one(x.values.reshape(1, -1))
     >>> svd.transform_one(X.iloc[0].to_dict())
-    {0: 2.5420, 1: 0.05388}
+    {0: 2.6084, 1: 0.1516}
 
     >>> svd.update(X.iloc[-1].values.reshape(1, -1))
     >>> svd.transform_one(X.iloc[0].to_dict())
-    {0: 2.3492, 1: 0.03840}
+    {0: 2.6093, 1: -0.1509}
 
     >>> svd.revert(X.iloc[-1].values.reshape(1, -1))
 
     >>> svd.transform_one(X.iloc[0].to_dict())
-    {0: 2.3492, 1: 0.03840}
+    {0: -2.6098, 1: -0.1407}
 
     Works with mini-batches as well
     >>> svd = OnlineSVD(n_components=2, initialize=3, force_orth=True)
@@ -94,8 +94,8 @@ class OnlineSVD(MiniBatchTransformer):
     >>> svd.learn_many(X.iloc[30:60])
     >>> svd.transform_many(X.iloc[60:62])
               0         1
-    0  0.103185 -2.409013
-    1 -0.066338 -1.896232
+    0 -2.408117 0.025278
+    1 -1.889659 -0.197139
 
     References:
     [^1]: Brand, M. (2006). Fast low-rank modifications of the thin singular value decomposition. Linear Algebra and its Applications, 415(1), pp.20-30. doi:[10.1016/j.laa.2005.07.021](https://doi.org/10.1016/j.laa.2005.07.021).
@@ -105,7 +105,7 @@ class OnlineSVD(MiniBatchTransformer):
         self,
         n_components: int = 2,
         initialize: int = 0,
-        force_orth: bool = False,
+        force_orth: bool = True,
     ):
         self.n_components = n_components
         if initialize <= n_components:
@@ -162,33 +162,47 @@ class OnlineSVD(MiniBatchTransformer):
         p = x.T - self._U @ m
         P, _ = np.linalg.qr(p)
         Ra = P.T @ p
-        z = np.zeros_like(m.T)
-        K = np.block([[np.diag(self._S), m], [z, Ra]])
-        U_, Sigma_, V_ = sp.sparse.linalg.svds(K, k=self.n_components)
-        U_, Sigma_, V_ = self._sort_svd(U_, Sigma_, V_)
-        U_ = np.column_stack((self._U, P)) @ U_
-        V_ = V_[:, : self.n_components] @ self._V
-        if self.force_orth and not test_orthonormality(V_.T):
-            U_, Sigma_, V_ = self._orthogonalize(U_, Sigma_, V_)
-        self._U, self._S, self._V = U_, Sigma_, V_
-
-    def revert(self, _: dict | np.ndarray):
-        # TODO: verify proper implementation of revert method
         b = np.concatenate([np.zeros(self._V.shape[1] - 1), [1]]).reshape(
             -1, 1
         )
         n = self._V @ b
         q = b - self._V.T @ n
         Q, _ = np.linalg.qr(q)
+
+        z = np.zeros_like(m.T)
+        K = np.block([[np.diag(self._S), m], [z, Ra]])
+
+        U_, Sigma_, V_ = sp.sparse.linalg.svds(K, k=self.n_components)
+        U_, Sigma_, V_ = self._sort_svd(U_, Sigma_, V_)
+        U_ = np.column_stack((self._U, P)) @ U_
+        V_ = V_ @ np.row_stack((self._V, Q.T))
+        # V_ = V_[:, : self.n_components] @ self._V
+        if self.force_orth:
+            U_, Sigma_, V_ = self._orthogonalize(U_, Sigma_, V_)
+        self._U, self._S, self._V = U_, Sigma_, V_
+
+    def revert(self, x: dict | np.ndarray):
+        if isinstance(x, dict):
+            x = np.array(list(x.values()))
+        x = x.reshape(1, -1)
+
+        b = np.concatenate([np.zeros(self._V.shape[1] - 1), [1]]).reshape(
+            -1, 1
+        )
+        n = self._V @ b
+        q = b - self._V.T @ n
+        Q, _ = np.linalg.qr(q)  # Orthonormal basis of column space of q
         # Rb = Q.T @ q
         S_ = np.pad(np.diag(self._S), ((0, 1), (0, 1)))
         K = S_ @ (
             np.identity(S_.shape[0])
-            - np.row_stack((np.diag(self._S) @ n, 0.0))
+            - np.row_stack((n, 0.0))
             @ np.row_stack((n, np.sqrt(1 - n.T @ n))).T
         )
         U_, Sigma_, V_ = sp.sparse.linalg.svds(K, k=self.n_components)
         U_, Sigma_, V_ = self._sort_svd(U_, Sigma_, V_)
+        # Since the update is not rank-increasing, we can skip computation of P
+        #  otherwise we do U_ = np.column_stack((self._U, P)) @ U_
         U_ = self._U @ U_[: self.n_components, :]
         V_ = V_ @ np.row_stack((self._V, Q.T))
 
