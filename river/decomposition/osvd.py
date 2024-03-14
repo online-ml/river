@@ -102,8 +102,8 @@ class OnlineSVD(MiniBatchTransformer):
     >>> svd.learn_many(X.iloc[30:60])
     >>> svd.transform_many(X.iloc[60:62])
               0         1         2         3
-    0 -0.103403  0.134656 -0.108399 -0.125872
-    1 -0.063485  0.023943 -0.120235 -0.088502
+    0 ...0.103403  0.134656 ...0.108399 ...0.125872
+    1 ...0.063485  0.023943 ...0.120235 ...0.088502
 
     References:
     [^1]: Brand, M. (2006). Fast low-rank modifications of the thin singular value decomposition. Linear Algebra and its Applications, 415(1), pp.20-30. doi:[10.1016/j.laa.2005.07.021](https://doi.org/10.1016/j.laa.2005.07.021).
@@ -185,8 +185,8 @@ class OnlineSVD(MiniBatchTransformer):
             self._X_init[self.n_seen, :] = x
             if self.n_seen == self.initialize - 1:
                 self.learn_many(self._X_init)
-                # revert the number of seen samples to avoid doubling
-                self.n_seen -= self._X_init.shape[0]
+                # revert I seen which learn_many accounted for
+                self.n_seen -= 1
         else:
             m = (x @ self._U).T
             p = x.T - self._U @ m
@@ -224,7 +224,7 @@ class OnlineSVD(MiniBatchTransformer):
         x = x.reshape(1, -1)
 
         b = np.zeros(self._V.shape[1])
-        b[idx] = 1.
+        b[-1] = 1.
         b = b.reshape(-1, 1)
 
         n = self._V[:, idx].reshape(-1, 1)
