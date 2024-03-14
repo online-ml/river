@@ -49,7 +49,7 @@ class Hankelizer(Transformer):
     """
 
     def __init__(
-        self, w: int, return_partial: bool | Literal["copy"] = "copy"
+        self, w: int = 2, return_partial: bool | Literal["copy"] = "copy"
     ):
         self.w = w
         self.return_partial = return_partial
