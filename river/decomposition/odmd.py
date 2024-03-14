@@ -308,33 +308,27 @@ class OnlineDMD(MiniBatchRegressor):
         if isinstance(x, dict):
             self.feature_names_in_ = list(x.keys())
             x = np.array(list(x.values()))
-        if len(x.shape) == 1:
-            x_ = x.reshape(1, -1)
-        else:
-            x_ = x
+        x = x.reshape(1, -1)
         if isinstance(y, dict):
             assert self.feature_names_in_ == list(y.keys())
             y = np.array(list(y.values()))
-        if len(y.shape) == 1:
-            y_ = y.reshape(1, -1)
-        else:
-            y_ = y
+        y = y.reshape(1, -1)
 
         # Initialize properties which depend on the shape of x
         if self.n_seen == 0:
-            self.m = len(x)
+            self.m = x.shape[1]
             self._init_update()
 
         # Collect buffer of past snapshots to compute xi
         if self._Y.shape[0] <= self.n_seen:
-            self._Y = np.vstack([self._Y, y_])
+            self._Y = np.vstack([self._Y, y])
         elif self._Y.shape[0] > self.n_seen:
             self._Y = self._Y[self.n_seen :, :]
 
         # Initialize A and P with first self.initialize snapshot pairs
         if bool(self.initialize) and self.n_seen <= self.initialize - 1:
-            self._X_init[self.n_seen, :] = x_
-            self._Y_init[self.n_seen, :] = y_
+            self._X_init[self.n_seen, :] = x
+            self._Y_init[self.n_seen, :] = y
             if self.n_seen == self.initialize - 1:
                 self.learn_many(self._X_init, self._Y_init)
                 # revert the number of seen samples to avoid doubling
@@ -346,9 +340,9 @@ class OnlineDMD(MiniBatchRegressor):
                 alpha = 1.0 / epsilon
                 self._P = alpha * np.identity(self.r)
             if self.r < self.m:
-                x_, y_ = self._truncate_w_svd(x_, y_, svd_modify="update")
+                x, y = self._truncate_w_svd(x, y, svd_modify="update")
 
-            self._update_A_P(x_, y_, 1.0)
+            self._update_A_P(x, y, 1.0)
 
         self.n_seen += 1
 

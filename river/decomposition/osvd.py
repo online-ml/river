@@ -125,13 +125,17 @@ class OnlineSVD(MiniBatchTransformer):
         self._S: np.ndarray
         self._V: np.ndarray
 
+        self.n_seen: int = 0
+
     def _orthogonalize(self, U_, Sigma_, V_):
         UQ, UR = np.linalg.qr(U_, mode="complete")
         VQ, VR = np.linalg.qr(V_, mode="complete")
-        tU_, tSigma_, tV_ = sp.sparse.linalg.svds(
-            (UR @ np.diag(Sigma_) @ VR), k=self.n_components
-        )
-        tU_, tSigma_, tV_ = self._sort_svd(tU_, tSigma_, tV_)
+        A = UR @ np.diag(Sigma_) @ VR
+        if 0 < self.n_components and self.n_components < min(A.shape):
+            tU_, tSigma_, tV_ = sp.sparse.linalg.svds(A, k=self.n_components)
+            tU_, tSigma_, tV_ = self._sort_svd(tU_, tSigma_, tV_)
+        else:
+            tU_, tSigma_, tV_ = np.linalg.svd(A, full_matrices=False)
         return UQ @ tU_, tSigma_, VQ @ tV_
 
     def _sort_svd(self, U, S, V):
@@ -163,28 +167,55 @@ class OnlineSVD(MiniBatchTransformer):
             self.feature_names_in_ = list(x.keys())
             x = np.array(list(x.values()))
         x = x.reshape(1, -1)
-        m = (x @ self._U).T
-        p = x.T - self._U @ m
-        P, _ = np.linalg.qr(p)
-        Ra = P.T @ p
-        b = np.concatenate([np.zeros(self._V.shape[1] - 1), [1]]).reshape(
-            -1, 1
-        )
-        n = self._V @ b
-        q = b - self._V.T @ n
-        Q, _ = np.linalg.qr(q)
 
-        z = np.zeros_like(m.T)
-        K = np.block([[np.diag(self._S), m], [z, Ra]])
+        if self.n_seen == 0:
+            self.n_features_in_ = x.shape[1]
+            if self.n_components == 0:
+                self.n_components = self.n_features_in_
+            # Make initialize feasible if not set and learn_one is called first
+            if not self.initialize:
+                self.initialize = self.n_components
+            self._X_init = np.empty((self.initialize, self.n_features_in_))
+            # Initialize _U with random orthonormal matrix for transform_one
+            r_mat = np.random.randn(self.n_features_in_, self.n_components)
+            self._U, _ = np.linalg.qr(r_mat)
 
-        U_, Sigma_, V_ = sp.sparse.linalg.svds(K, k=self.n_components)
-        U_, Sigma_, V_ = self._sort_svd(U_, Sigma_, V_)
-        U_ = np.column_stack((self._U, P)) @ U_
-        V_ = V_ @ np.row_stack((self._V, Q.T))
-        # V_ = V_[:, : self.n_components] @ self._V
-        if self.force_orth:
-            U_, Sigma_, V_ = self._orthogonalize(U_, Sigma_, V_)
-        self._U, self._S, self._V = U_, Sigma_, V_
+        # Initialize if called without learn_many
+        if bool(self.initialize) and self.n_seen <= self.initialize - 1:
+            self._X_init[self.n_seen, :] = x
+            if self.n_seen == self.initialize - 1:
+                self.learn_many(self._X_init)
+                # revert the number of seen samples to avoid doubling
+                self.n_seen -= self._X_init.shape[0]
+        else:
+            m = (x @ self._U).T
+            p = x.T - self._U @ m
+            P, _ = np.linalg.qr(p)
+            Ra = P.T @ p
+            b = np.concatenate([np.zeros(self._V.shape[1] - 1), [1]]).reshape(
+                -1, 1
+            )
+            n = self._V @ b
+            q = b - self._V.T @ n
+            Q, _ = np.linalg.qr(q)
+
+            z = np.zeros_like(m.T)
+            K = np.block([[np.diag(self._S), m], [z, Ra]])
+
+            if 0 < self.n_components and self.n_components < min(K.shape):
+                U_, Sigma_, V_ = sp.sparse.linalg.svds(K, k=self.n_components)
+                U_, Sigma_, V_ = self._sort_svd(U_, Sigma_, V_)
+            else:
+                U_, Sigma_, V_ = np.linalg.svd(K, full_matrices=False)
+
+            U_ = np.column_stack((self._U, P)) @ U_
+            V_ = V_ @ np.row_stack((self._V, Q.T))
+            # V_ = V_[:, : self.n_components] @ self._V
+            if self.force_orth:
+                U_, Sigma_, V_ = self._orthogonalize(U_, Sigma_, V_)
+            self._U, self._S, self._V = U_, Sigma_, V_
+
+        self.n_seen += 1
 
     def revert(self, x: dict | np.ndarray):
         if isinstance(x, dict):
@@ -204,8 +235,13 @@ class OnlineSVD(MiniBatchTransformer):
             - np.row_stack((n, 0.0))
             @ np.row_stack((n, np.sqrt(1 - n.T @ n))).T
         )
-        U_, Sigma_, V_ = sp.sparse.linalg.svds(K, k=self.n_components)
-        U_, Sigma_, V_ = self._sort_svd(U_, Sigma_, V_)
+
+        if 0 < self.n_components and self.n_components < min(K.shape):
+            U_, Sigma_, V_ = sp.sparse.linalg.svds(K, k=self.n_components)
+            U_, Sigma_, V_ = self._sort_svd(U_, Sigma_, V_)
+        else:
+            U_, Sigma_, V_ = np.linalg.svd(K, full_matrices=False)
+
         # Since the update is not rank-increasing, we can skip computation of P
         #  otherwise we do U_ = np.column_stack((self._U, P)) @ U_
         U_ = self._U @ U_[: self.n_components, :]
@@ -227,20 +263,32 @@ class OnlineSVD(MiniBatchTransformer):
             self.feature_names_in_ = [str(i) for i in range(X.shape[0])]
         self.n_features_in_ = X.shape[1]
 
+        if self.n_seen == 0:
+            self.n_features_in_ = len(X)
+            if self.n_components == 0:
+                self.n_components = self.n_features_in_
+
         if hasattr(self, "_U") and hasattr(self, "_S") and hasattr(self, "_V"):
             for x in X:
                 self.learn_one(x.reshape(1, -1))
         else:
-            if self.n_components < self.n_features_in_:
+            if (
+                0 < self.n_components
+                and self.n_components < self.n_features_in_
+            ):
                 self._U, self._S, self._V = sp.sparse.linalg.svds(
                     X.T, k=self.n_components
                 )
-                self._U, self._S, self._V = self._sort_svd(self._U, self._S, self._V)
+                self._U, self._S, self._V = self._sort_svd(
+                    self._U, self._S, self._V
+                )
 
             else:
                 self._U, self._S, self._V = np.linalg.svd(
                     X.T, full_matrices=False
                 )
+
+            self.n_seen = X.shape[0]
 
     def transform_one(self, x: dict | np.ndarray) -> dict:
         if isinstance(x, dict):
@@ -249,14 +297,32 @@ class OnlineSVD(MiniBatchTransformer):
         else:
             self.feature_names_in_ = [str(i) for i in range(x.shape[0])]
 
-        x_ = self._U.T @ x.T
-        return dict(zip(self.feature_names_in_, x_))
+        # If transform one is called before any learning has been done
+        # TODO: consider raising an runtime error
+        if not hasattr(self, "_U"):
+            return dict(
+                zip(
+                    range(self.n_components),
+                    np.zeros(self.n_components),
+                )
+            )
+
+        x_ = x @ self._U
+        return dict(zip(range(self.n_components), x_))
 
     def transform_many(self, X: np.ndarray | pd.DataFrame) -> pd.DataFrame:
         if isinstance(X, pd.DataFrame):
             self.feature_names_in_ = list(X.columns)
             X = X.values
+
+        # If transform one is called before any learning has been done
+        # TODO: consider raising an runtime error
+        if not hasattr(self, "_U"):
+            return pd.DataFrame(
+                np.zeros((X.shape[0], self.n_components)),
+                index=range(self.n_components),
+            )
         assert X.shape[1] == self.n_features_in_
 
-        X_ = self._U.T @ X.T
-        return pd.DataFrame(X_.T)
+        X_ = X @ self._U
+        return pd.DataFrame(X_)

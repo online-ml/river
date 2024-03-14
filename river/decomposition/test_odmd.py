@@ -141,7 +141,7 @@ def test_one_svd_is_enough():
     U = pd.DataFrame({"u": u_[:-2]})
     X_ = X.copy()
     X_["u"] = U
-    
+
     u_orig, s_orig, _ = sp.sparse.linalg.svds(
         X.values.T, k=2, return_singular_vectors="u"
     )
@@ -151,7 +151,7 @@ def test_one_svd_is_enough():
     u_out, s_out, _ = sp.sparse.linalg.svds(
         Y.values.T, k=2, return_singular_vectors="u"
     )
-    
+
     assert (np.abs(u_orig - u_aug[:3, :2]) <= np.abs(u_orig - u_out)).all()
     assert (np.abs(s_orig - s_aug[:2]) <= np.abs(s_orig - s_out)).all()
 

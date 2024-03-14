@@ -66,7 +66,7 @@ class OnlinePCA(Transformer):
 
     def __init__(
         self,
-        n_components: int,
+        n_components: int = 2,
         b: int | None = None,
         lambda_: float = 0.0,
         sigma: float = 0.0,
@@ -74,11 +74,11 @@ class OnlinePCA(Transformer):
         seed: int | None = None,
     ):
         self.n_components = int(n_components)
-        if b is None:
-            # Default to O(r) to maximize the efficiency [Eftekhari, et al. (2019)]
-            b = n_components
+        # Default maximizes the efficiency [Eftekhari, et al. (2019)]
+        if not b:
+            b = self.n_components
         else:
-            assert b >= n_components
+            b = int(b)
         self.b = b
         assert lambda_ >= 0
         self.lambda_ = lambda_
@@ -90,10 +90,11 @@ class OnlinePCA(Transformer):
         self.feature_names_in_: list[str]
         self.n_features_in_: int  # n [Eftekhari, et al. (2019)]
         self.n_seen: int = 0  # k [Eftekhari, et al. (2019)]
-        self.Y_k: deque = deque(maxlen=b)
-        self.P_omega_k: deque = deque(maxlen=b)
+        self.Y_k: deque
+        self.P_omega_k: deque
         self.S_hat: np.ndarray
-        np.random.seed(seed)
+        self.seed = seed
+        np.random.seed(self.seed)
 
     def learn_one(self, x: dict | np.ndarray):
         """_summary_
@@ -109,10 +110,21 @@ class OnlinePCA(Transformer):
                     set(x.keys())
                 )
             x = np.array(list(x.values()))
+        # TODO: align with OnlineSVD
+        # x = x.reshape(1, -1)
+
         if self.n_seen == 0:
-            self.n_features_in_ = len(x)
-            # r_mat = np.random.randn(self.n_features_in_, self.n_components)
-            # self.S_hat, _ = np.linalg.qr(r_mat)
+            self.n_features_in_ = x.shape[0]
+            if self.n_components == 0:
+                self.n_components = self.n_features_in_
+            # Make b feasible if not set and learn_one is called first
+            if not self.b:
+                self.b = self.n_components
+            self.Y_k = deque(maxlen=self.b)
+            self.P_omega_k = deque(maxlen=self.b)
+            # Initialize S_hat with random orthonormal matrix for transform_one
+            r_mat = np.random.randn(self.n_features_in_, self.n_components)
+            self.S_hat, _ = np.linalg.qr(r_mat)
 
         # Random index set over which s_t is observed
         omega_t = ~np.isnan(x)  # (n_features_in_,)
@@ -124,7 +136,8 @@ class OnlinePCA(Transformer):
         self.P_omega_k.append(P_omega_t)
 
         if len(self.Y_k) == self.b:
-            if not hasattr(self, "S_hat"):
+            # Reinitialize S_hat now when deque is full
+            if self.n_seen == self.b - 1:
                 # Let S_hat \in \mathbb{R}^{n \times b} be the
                 _, _, V = np.linalg.svd(
                     np.array(self.Y_k), full_matrices=False
@@ -174,5 +187,14 @@ class OnlinePCA(Transformer):
     def transform_one(self, x: dict | np.ndarray) -> dict:
         if isinstance(x, dict):
             x = np.array(list(x.values()))
+        # If transform one is called before any learning has been done
+        # TODO: consider raising an runtime error
+        if not hasattr(self, "S_hat"):
+            return dict(
+                zip(
+                    range(self.n_components),
+                    np.zeros(self.n_components),
+                )
+            )
         x = x @ self.S_hat
-        return dict(zip(range(self.n_components), x))  #
+        return dict(zip(range(self.n_components), x))
