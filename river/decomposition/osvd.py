@@ -70,37 +70,40 @@ class OnlineSVD(MiniBatchTransformer):
 
     Examples:
     >>> np.random.seed(0)
-    >>> m = 20
+    >>> r = 3
+    >>> m = 4
     >>> n = 80
-    >>> X = pd.DataFrame(np.random.rand(n, m))
-    >>> svd = OnlineSVD(n_components=2, force_orth=True)
-    >>> svd.learn_many(X.iloc[:10])
-    >>> svd._U.shape == (m, 2)
-    True
+    >>> X = pd.DataFrame(np.linalg.qr(np.random.rand(n, m))[0])
+    >>> svd = OnlineSVD(n_components=r, force_orth=False)
+    >>> svd.learn_many(X.iloc[: r * 2])
+    >>> svd._U.shape == (m, r), svd._V.shape == (r, r * 2)
+    (True, True)
+
     >>> svd.transform_one(X.iloc[10].to_dict())
-    {0: -1.9574, 1: 0.2588}
+    {0: 0.0494, 1: 0.0030, 2: 0.0111}
+
     >>> for _, x in X.iloc[10:-1].iterrows():
     ...     svd.learn_one(x.values.reshape(1, -1))
     >>> svd.transform_one(X.iloc[0].to_dict())
-    {0: 2.6084, 1: 0.1516}
+    {0: -0.0488, 1: -0.0613, 2: 0.1150}
 
-    >>> svd.update(X.iloc[-1].values.reshape(1, -1))
+    >>> svd.update(X.iloc[-1].to_dict())
     >>> svd.transform_one(X.iloc[0].to_dict())
-    {0: 2.6093, 1: -0.1509}
+    {0: 0.0409, 1: -0.0336, 2: 0.1287}
 
-    >>> svd.revert(X.iloc[-1].values.reshape(1, -1))
-
+    For higher dimensional data and forced orthogonality, revert may not return us to the original state.
+    >>> svd.revert(X.iloc[-1].to_dict(), idx=-1)
     >>> svd.transform_one(X.iloc[0].to_dict())
-    {0: -2.6098, 1: -0.1407}
+    {0: 0.0488, 1: -0.0613, 2: 0.1150}
 
-    Works with mini-batches as well
-    >>> svd = OnlineSVD(n_components=2, initialize=3, force_orth=True)
+    >>> svd = OnlineSVD(n_components=0, initialize=3, force_orth=True)
     >>> svd.learn_many(X.iloc[:30])
+
     >>> svd.learn_many(X.iloc[30:60])
     >>> svd.transform_many(X.iloc[60:62])
-              0         1
-    0 -2.408117 0.025278
-    1 -1.889659 -0.197139
+              0         1         2         3
+    0 -0.103403  0.134656 -0.108399 -0.125872
+    1 -0.063485  0.023943 -0.120235 -0.088502
 
     References:
     [^1]: Brand, M. (2006). Fast low-rank modifications of the thin singular value decomposition. Linear Algebra and its Applications, 415(1), pp.20-30. doi:[10.1016/j.laa.2005.07.021](https://doi.org/10.1016/j.laa.2005.07.021).
@@ -113,10 +116,7 @@ class OnlineSVD(MiniBatchTransformer):
         force_orth: bool = True,
     ):
         self.n_components = n_components
-        if initialize <= n_components:
-            self.initialize = n_components + 1
-        else:
-            self.initialize = initialize
+        self.initialize = initialize
         self.force_orth = force_orth
 
         self.n_features_in_: int
@@ -192,11 +192,11 @@ class OnlineSVD(MiniBatchTransformer):
             p = x.T - self._U @ m
             P, _ = np.linalg.qr(p)
             Ra = P.T @ p
-            b = np.concatenate([np.zeros(self._V.shape[1] - 1), [1]]).reshape(
-                -1, 1
-            )
-            n = self._V @ b
-            q = b - self._V.T @ n
+            # pad V with zeros to create place for new singular vector
+            _V = np.pad(self._V, ((0, 0), (0, 1)))
+            b = np.concatenate([np.zeros(_V.shape[1] - 1), [1]]).reshape(-1, 1)
+            n = _V @ b
+            q = b - _V.T @ n
             Q, _ = np.linalg.qr(q)
 
             z = np.zeros_like(m.T)
@@ -209,7 +209,7 @@ class OnlineSVD(MiniBatchTransformer):
                 U_, Sigma_, V_ = np.linalg.svd(K, full_matrices=False)
 
             U_ = np.column_stack((self._U, P)) @ U_
-            V_ = V_ @ np.row_stack((self._V, Q.T))
+            V_ = V_ @ np.row_stack((_V, Q.T))
             # V_ = V_[:, : self.n_components] @ self._V
             if self.force_orth:
                 U_, Sigma_, V_ = self._orthogonalize(U_, Sigma_, V_)
@@ -217,25 +217,28 @@ class OnlineSVD(MiniBatchTransformer):
 
         self.n_seen += 1
 
-    def revert(self, x: dict | np.ndarray):
+    def revert(self, x: dict | np.ndarray, idx: int = 0):
         if isinstance(x, dict):
             x = np.array(list(x.values()))
         x = x.reshape(1, -1)
 
-        b = np.concatenate([np.zeros(self._V.shape[1] - 1), [1]]).reshape(
-            -1, 1
-        )
-        n = self._V @ b
+        b = np.zeros(self._V.shape[1])
+        b[idx] = 1.
+        b = b.reshape(-1, 1)
+
+        n = self._V[:, idx].reshape(-1, 1)
+
         q = b - self._V.T @ n
         Q, _ = np.linalg.qr(q)  # Orthonormal basis of column space of q
         # Rb = Q.T @ q
         S_ = np.pad(np.diag(self._S), ((0, 1), (0, 1)))
+        # For full-rank SVD, this results in nn == 1.
+        nn = n.T @ n
+        norm_n = np.sqrt(1.0 - nn) if nn < 1 else 0.0
         K = S_ @ (
             np.identity(S_.shape[0])
-            - np.row_stack((n, 0.0))
-            @ np.row_stack((n, np.sqrt(1 - n.T @ n))).T
+            - np.row_stack((n, 0.0)) @ np.row_stack((n, norm_n)).T
         )
-
         if 0 < self.n_components and self.n_components < min(K.shape):
             U_, Sigma_, V_ = sp.sparse.linalg.svds(K, k=self.n_components)
             U_, Sigma_, V_ = self._sort_svd(U_, Sigma_, V_)
@@ -245,7 +248,9 @@ class OnlineSVD(MiniBatchTransformer):
         # Since the update is not rank-increasing, we can skip computation of P
         #  otherwise we do U_ = np.column_stack((self._U, P)) @ U_
         U_ = self._U @ U_[: self.n_components, :]
-        V_ = V_ @ np.row_stack((self._V, Q.T))
+
+        V_ = V_ @ np.row_stack((self._V, Q.T))[:, :-1]
+        # V_ = V_[:, : self.n_components] @ self._V[:, :-1]
 
         if self.force_orth:  # and not test_orthonormality(U_):
             U_, Sigma_, V_ = self._orthogonalize(U_, Sigma_, V_)
@@ -261,10 +266,9 @@ class OnlineSVD(MiniBatchTransformer):
             X = X.values
         else:
             self.feature_names_in_ = [str(i) for i in range(X.shape[0])]
-        self.n_features_in_ = X.shape[1]
 
         if self.n_seen == 0:
-            self.n_features_in_ = len(X)
+            self.n_features_in_ = X.shape[1]
             if self.n_components == 0:
                 self.n_components = self.n_features_in_
 
@@ -272,10 +276,8 @@ class OnlineSVD(MiniBatchTransformer):
             for x in X:
                 self.learn_one(x.reshape(1, -1))
         else:
-            if (
-                0 < self.n_components
-                and self.n_components < self.n_features_in_
-            ):
+            assert np.linalg.matrix_rank(X.T) >= self.n_components
+            if 0 < self.n_components and self.n_components < min(X.shape):
                 self._U, self._S, self._V = sp.sparse.linalg.svds(
                     X.T, k=self.n_components
                 )
@@ -287,6 +289,7 @@ class OnlineSVD(MiniBatchTransformer):
                 self._U, self._S, self._V = np.linalg.svd(
                     X.T, full_matrices=False
                 )
+                assert self._S.shape[0] == self.n_components
 
             self.n_seen = X.shape[0]
 
