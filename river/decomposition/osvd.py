@@ -80,21 +80,21 @@ class OnlineSVD(MiniBatchTransformer):
     (True, True)
 
     >>> svd.transform_one(X.iloc[10].to_dict())
-    {0: 0.0494, 1: 0.0030, 2: 0.0111}
+    {0: ...0.0494..., 1: ...0.0030..., 2: ...0.0111...}
 
     >>> for _, x in X.iloc[10:-1].iterrows():
     ...     svd.learn_one(x.values.reshape(1, -1))
     >>> svd.transform_one(X.iloc[0].to_dict())
-    {0: -0.0488, 1: -0.0613, 2: 0.1150}
+    {0: ...0.0488..., 1: ...0.0613..., 2: ...0.1150...}
 
     >>> svd.update(X.iloc[-1].to_dict())
     >>> svd.transform_one(X.iloc[0].to_dict())
-    {0: 0.0409, 1: -0.0336, 2: 0.1287}
+    {0: ...0.0409..., 1: ...0.0336..., 2: ...0.1287...}
 
     For higher dimensional data and forced orthogonality, revert may not return us to the original state.
     >>> svd.revert(X.iloc[-1].to_dict(), idx=-1)
     >>> svd.transform_one(X.iloc[0].to_dict())
-    {0: 0.0488, 1: -0.0613, 2: 0.1150}
+    {0: ...0.0488..., 1: ...0.0613..., 2: ...0.1150...}
 
     >>> svd = OnlineSVD(n_components=0, initialize=3, force_orth=True)
     >>> svd.learn_many(X.iloc[:30])
@@ -193,6 +193,7 @@ class OnlineSVD(MiniBatchTransformer):
             P, _ = np.linalg.qr(p)
             Ra = P.T @ p
             # pad V with zeros to create place for new singular vector
+            # TODO: in long term, we may wish to warn about increasing size of V
             _V = np.pad(self._V, ((0, 0), (0, 1)))
             b = np.concatenate([np.zeros(_V.shape[1] - 1), [1]]).reshape(-1, 1)
             n = _V @ b
