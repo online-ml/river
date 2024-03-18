@@ -1,5 +1,9 @@
 # Unreleased
 
+## anomaly
+
+- Added `PredictiveAnomalyDetection`, a semi-supervised technique that employs a predictive model for anomaly detection.
+
 ## drift
 
 - Added `FHDDM` drift detector.
