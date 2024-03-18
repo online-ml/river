@@ -28,9 +28,7 @@ def test_incremental_lof_scores():
     x_train_dict = [{f"feature_{i + 1}": elem[i] for i in range(2)} for elem in x_train]
     ground_truth = np.ones(len(x_train), dtype=int)
     ground_truth[-len(x_outliers) :] = -1
-    df_train = pd.DataFrame(
-        {"observations": x_train_dict, "ground_truth": ground_truth}
-    )
+    df_train = pd.DataFrame({"observations": x_train_dict, "ground_truth": ground_truth})
     x_pred = np.random.uniform(low=-5, high=5, size=(30, 2))
     x_pred_dict = [{f"feature_{i + 1}": elem[i] for i in range(2)} for elem in x_pred]
     incremental_lof = anomaly.LocalOutlierFactor(n_neighbors=20)
@@ -38,9 +36,7 @@ def test_incremental_lof_scores():
     for x in df_train["observations"]:
         incremental_lof.learn_one(x)
 
-    ilof_scores_train = np.array(
-        [ilof_score for ilof_score in incremental_lof.lof.values()]
-    )
+    ilof_scores_train = np.array([ilof_score for ilof_score in incremental_lof.lof.values()])
 
     ilof_scores_pred = []
     for x in x_pred_dict:
@@ -50,9 +46,7 @@ def test_incremental_lof_scores():
     lof_sklearn.fit_predict(x_train)
     lof_sklearn_scores_train = -lof_sklearn.negative_outlier_factor_
 
-    assert np.allclose(
-        ilof_scores_train, lof_sklearn_scores_train, rtol=1e-08, atol=1e-08
-    )
+    assert np.allclose(ilof_scores_train, lof_sklearn_scores_train, rtol=1e-08, atol=1e-08)
 
 
 def test_batch_lof_scores():
