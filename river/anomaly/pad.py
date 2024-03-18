@@ -127,7 +127,7 @@ class PredictiveAnomalyDetection(anomaly.base.SupervisedAnomalyDetector):
             self.predictive_model, time_series.base.Forecaster
         ) and isinstance(y, float):
             # When there's no data point as dict of features, the target will be passed
-            # to the forecaster as exogenous variable.
+            # to the forecaster as an exogenous variable.
             if not x:
                 self.predictive_model.learn_one(y=y)
             else:
@@ -144,25 +144,25 @@ class PredictiveAnomalyDetection(anomaly.base.SupervisedAnomalyDetector):
         else:
             y_pred = self.predictive_model.predict_one(x)
 
-        # Calculate the errors necessary for thresholding
+        # Calculate the squared error
         squared_error = (y_pred - y) ** 2
 
-        # Based on the errors and hyperparameters, calculate threshold
+        # Calculate the threshold
         threshold = self.dynamic_mae.get() + (
             self.n_std * math.sqrt(self.dynamic_se_variance.get())
         )
 
         # When warmup hyper-parameter is used, the anomaly score is only returned once the warmup period has passed.
-        # When the warmup period has not passed, the default value of the anomaly score is 0.
+        # When the warmup period has not passed, the default value of the anomaly score is 0.0
         if self.iter < self.warmup_period:
             return 0.0
 
-        # Updating metrics only when not in warmup
+        # Update MAE and SEV when the warm-up parameter has passed.
         self.dynamic_mae.update(squared_error)
         self.dynamic_se_variance.update(squared_error)
 
-        # Every error above threshold is scored with 100% or 1.0
-        # Everything below is distributed linearly from 0.0 - 0.999...
+        # An error above the threshold will result in a score of 1.0.
+        # Else, the score will be linearly distributed within the interval (0.0, 1.0)
         if squared_error >= threshold:
             return 1.0
         else:
