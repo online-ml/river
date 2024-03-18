@@ -390,7 +390,7 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
         )
 
         neighborhoods, rev_neighborhoods, k_dist, dist_dict = self._initial_calculations(
-                x_list_copy, nm, neighborhoods, rev_neighborhoods, k_dist, dist_dict
+            x_list_copy, nm, neighborhoods, rev_neighborhoods, k_dist, dist_dict
         )
         (
             set_new_points,
