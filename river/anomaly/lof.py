@@ -137,11 +137,7 @@ def calc_lof(set_index: set, neighborhoods: dict, local_reach: dict, lof: dict):
     """
     for i in set_index:
         denominator = len(neighborhoods[i]) * local_reach[i]
-        lof[i] = (
-            sum(local_reach[j] for j in neighborhoods[i]) / denominator
-            if denominator
-            else 0
-        )
+        lof[i] = sum(local_reach[j] for j in neighborhoods[i]) / denominator if denominator else 0
     return lof
 
 
@@ -393,10 +389,8 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
             self.lof.copy(),
         )
 
-        neighborhoods, rev_neighborhoods, k_dist, dist_dict = (
-            self._initial_calculations(
+        neighborhoods, rev_neighborhoods, k_dist, dist_dict = self._initial_calculations(
                 x_list_copy, nm, neighborhoods, rev_neighborhoods, k_dist, dist_dict
-            )
         )
         (
             set_new_points,
@@ -406,12 +400,7 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
             set_upd_lof,
         ) = define_sets(nm, neighborhoods, rev_neighborhoods)
         reach_dist = calc_reach_dist_new_points(
-            set_new_points,
-            neighborhoods,
-            rev_neighborhoods,
-            reach_dist,
-            dist_dict,
-            k_dist,
+            set_new_points, neighborhoods, rev_neighborhoods, reach_dist, dist_dict, k_dist
         )
         reach_dist = calc_reach_dist_other_points(
             set_rev_neighbors,
@@ -420,9 +409,7 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
             dist_dict,
             k_dist,
         )
-        local_reach = calc_local_reach_dist(
-            set_upd_lrd, neighborhoods, reach_dist, local_reach
-        )
+        local_reach = calc_local_reach_dist(set_upd_lrd, neighborhoods, reach_dist, local_reach)
         lof = calc_lof(set_upd_lof, neighborhoods, local_reach, lof)
         self.x_scores = []
 
@@ -488,9 +475,7 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
 
         # Calculate new k-dist for each particle
         for i, inner_dict in enumerate(dist_dict.values()):
-            k_distances[i] = sorted(inner_dict.values())[
-                min(k, len(inner_dict.values())) - 1
-            ]
+            k_distances[i] = sorted(inner_dict.values())[min(k, len(inner_dict.values())) - 1]
 
         # Only keep particles that are neighbors in distance dictionary
         dist_dict = {
