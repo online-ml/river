@@ -46,6 +46,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://riverml.xyz/dev/api/anomaly/PredictiveAnomalyDetection/</loc>
+         <lastmod>2024-03-18</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://riverml.xyz/dev/api/anomaly/QuantileFilter/</loc>
          <lastmod>2024-03-18</lastmod>
          <changefreq>daily</changefreq>
