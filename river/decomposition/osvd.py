@@ -224,7 +224,7 @@ class OnlineSVD(MiniBatchTransformer):
         x = x.reshape(1, -1)
 
         b = np.zeros(self._V.shape[1])
-        b[-1] = 1.
+        b[-1] = 1.0
         b = b.reshape(-1, 1)
 
         n = self._V[:, idx].reshape(-1, 1)
@@ -311,14 +311,9 @@ class OnlineSVD(MiniBatchTransformer):
                 )
             )
 
-        x_ = x @ self._U
-        return dict(zip(range(self.n_components), x_))
+        return dict(zip(range(self.n_components), x @ self._U))
 
     def transform_many(self, X: np.ndarray | pd.DataFrame) -> pd.DataFrame:
-        if isinstance(X, pd.DataFrame):
-            self.feature_names_in_ = list(X.columns)
-            X = X.values
-
         # If transform one is called before any learning has been done
         # TODO: consider raising an runtime error
         if not hasattr(self, "_U"):
