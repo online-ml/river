@@ -102,8 +102,8 @@ class OnlineSVD(MiniBatchTransformer):
     >>> svd.learn_many(X.iloc[30:60])
     >>> svd.transform_many(X.iloc[60:62])
               0         1         2         3
-    0 ...0.103403  0.134656 ...0.108399 ...0.125872
-    1 ...0.063485  0.023943 ...0.120235 ...0.088502
+    60 ...0.103403  0.134656 ...0.108399 ...0.125872
+    61 ...0.063485  0.023943 ...0.120235 ...0.088502
 
     References:
     [^1]: Brand, M. (2006). Fast low-rank modifications of the thin singular value decomposition. Linear Algebra and its Applications, 415(1), pp.20-30. doi:[10.1016/j.laa.2005.07.021](https://doi.org/10.1016/j.laa.2005.07.021).

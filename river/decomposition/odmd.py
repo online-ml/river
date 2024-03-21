@@ -15,6 +15,7 @@ TODO:
           continuous time eigenvalues exp(Lambda * dt) (Zhang et al. 2019)
     - [ ] Figure out how to use as both MiniBatchRegressor and MiniBatchTransformer
     - [ ] Find out why some values of A change sign between consecutive updates
+    - [ ] Drop seed
 
 References:
     [^1]: Zhang, H., Clarence Worth Rowley, Deem, E.A. and Cattafesta, L.N.
@@ -245,19 +246,21 @@ class OnlineDMD(MiniBatchRegressor, MiniBatchTransformer):
         """Check if A has changed since last update of eigenvalues"""
         if self.eig_rtol is None:
             return False
-        return np.allclose(np.abs(self._A_last), np.abs(self.A), rtol=self.eig_rtol)
-
+        return np.allclose(
+            np.abs(self._A_last), np.abs(self.A), rtol=self.eig_rtol
+        )
 
     def _init_update(self) -> None:
-        if self.initialize > 0 and self.initialize < self.m:
-            warnings.warn(
-                f"Initialization is under-constrained. Set initialize={self.m} to supress this Warning."
-            )
-            self.initialize = self.m
         if self.r == 0:
             self.r = self.m
+        if self.initialize > 0 and self.initialize < self.r:
+            warnings.warn(
+                f"Initialization is under-constrained. Set initialize={self.r} to supress this Warning."
+            )
+            self.initialize = self.r
 
-        self.A = np.random.randn(self.r, self.r)
+        # Zhang (2019) suggests to initialize A with random values
+        self.A = np.eye(self.r)
         self._A_last = self.A.copy()
         self._X_init = np.empty((self.initialize, self.m))
         self._Y_init = np.empty((self.initialize, self.m))
@@ -287,7 +290,7 @@ class OnlineDMD(MiniBatchRegressor, MiniBatchTransformer):
         else:
             _UUp = _UU[:p, :p]
             _UUq = _UU[p:, p:]
-            self.A = np.hstack(
+            self.A = np.column_stack(
                 (_UUp @ self.A[:, :p] @ _UUp.T, _UUp @ self.A[:, p:] @ _UUq.T)
             )
         self._P = np.linalg.inv(_UU @ np.linalg.inv(self._P) @ _UU.T) / self.w
@@ -310,6 +313,7 @@ class OnlineDMD(MiniBatchRegressor, MiniBatchTransformer):
         self._P = (self._P + self._P.T) / 2
 
         # Reset properties
+        # TODO: explore what revert does with reseting properties
         if not self.A_allclose:
             self._eig = None
             self._A_last = self.A.copy()
@@ -359,7 +363,7 @@ class OnlineDMD(MiniBatchRegressor, MiniBatchTransformer):
 
         # Collect buffer of past snapshots to compute xi
         if self._Y.shape[0] <= self.n_seen:
-            self._Y = np.vstack([self._Y, y])
+            self._Y = np.row_stack([self._Y, y])
         elif self._Y.shape[0] > self.n_seen:
             self._Y = self._Y[self.n_seen :, :]
 
@@ -404,6 +408,9 @@ class OnlineDMD(MiniBatchRegressor, MiniBatchTransformer):
         Args:
             x: 1D array, shape (1, m), x(t) as in y(t) = f(t, x(t))
             y: 1D array, shape (1, m), y(t) as in y(t) = f(t, x(t))
+
+        TODO:
+        - [ ] it seems like this does not work as expected
         """
         if self.n_seen < self.initialize:
             raise RuntimeError(
@@ -412,7 +419,6 @@ class OnlineDMD(MiniBatchRegressor, MiniBatchTransformer):
                 f"size should be increased to {self.initialize + 1 if y is None else 0}."
             )
         if y is None:
-            # raise ValueError("revert method not implemented for y = None.")
             if not hasattr(self, "_x_first"):
                 self._x_first = x
                 return
@@ -423,16 +429,10 @@ class OnlineDMD(MiniBatchRegressor, MiniBatchTransformer):
 
         if isinstance(x, dict):
             x = np.array(list(x.values()))
-        if len(x.shape) == 1:
-            x_ = x.reshape(1, -1)
-        else:
-            x_ = x
+        x_ = x.reshape(1, -1)
         if isinstance(y, dict):
             y = np.array(list(y.values()))
-        if len(y.shape) == 1:
-            y_ = y.reshape(1, -1)
-        else:
-            y_ = y
+        y_ = y.reshape(1, -1)
 
         if self.r < self.m:
             x_, y_ = self._truncate_w_svd(x_, y_, svd_modify="revert")
@@ -806,22 +806,23 @@ class OnlineDMDwC(OnlineDMD):
         self.l: int
 
     def _init_update(self) -> None:
-        if self.initialize < self.m:
-            warnings.warn(
-                f"Initialization is under-constrained. Changed initialize to {self.m}."
-            )
-            self.initialize = self.m
         if self.p == 0:
             self.p = self.m
         if self.q == 0:
             self.q = self.l
+        if self.initialize < self.p + self.q:
+            warnings.warn(
+                f"Initialization is under-constrained. Changed initialize to {self.p + self.q}."
+            )
+            self.initialize = self.p + self.q
 
-        self.A = np.random.randn(self.p, self.p)
-        self.B = np.random.randn(self.p, self.q)
+        self.A = np.eye(self.p)
+        if not self.known_B:
+            self.B = np.eye(self.p, self.q)
         self._U_init = np.zeros((self.initialize, self.l))
-        self._X_init = np.empty((self.initialize, self.m - self.l))
-        self._Y_init = np.empty((self.initialize, self.m - self.l))
-        self._Y = np.empty((0, self.m - self.l))
+        self._X_init = np.empty((self.initialize, self.m))
+        self._Y_init = np.empty((self.initialize, self.m))
+        self._Y = np.empty((0, self.m))
 
     def _reconstruct_AB(self):
         # self.m stores augumented state dimension
@@ -842,7 +843,6 @@ class OnlineDMDwC(OnlineDMD):
             B = self.B
         return A, B
 
-
     def update(  # type: ignore  # TODO: fix override OnlineDMD.update
         self,
         x: dict | np.ndarray,
@@ -862,18 +862,23 @@ class OnlineDMDwC(OnlineDMD):
         """
         if isinstance(x, dict):
             x = np.array(list(x.values()))
+        x = x.reshape(1, -1)
         if isinstance(y, dict):
             y = np.array(list(y.values()))
+        y = y.reshape(1, -1)
         if isinstance(u, dict):
             u = np.array(list(u.values()))
+        if isinstance(u, np.ndarray):
+            u = u.reshape(1, -1)
         # Needed in case of recursive call from learn_many within parent class
         if u is None:
             super().update(x, y)
         else:
             if self.n_seen == 0:
-                self.m = len(x) if self.known_B else len(x) + len(u)
-                self.l = len(u)
+                self.m = x.shape[1]
+                self.l = u.shape[1]
                 self._init_update()
+                self.m += 0 if self.known_B else u.shape[1]
 
             if self.initialize and self.n_seen <= self.initialize - 1:
                 # Accumulate buffer of past snapshots for initialization
@@ -884,24 +889,22 @@ class OnlineDMDwC(OnlineDMD):
                 if self.n_seen == self.initialize - 1:
                     self.learn_many(self._X_init, self._Y_init, self._U_init)
                     # Subtract the number of seen samples to avoid doubling
-                    self.n_seen -= self._X_init.shape[1]
+                    self.n_seen -= self._X_init.shape[0]
+                self.n_seen += 1
 
             else:
                 if self.known_B:
-                    y = y - self.B @ u
+                    y = y - u @ self.B.T
                 else:
-                    x = np.hstack((x, u))
+                    x = np.column_stack((x, u))
                     if self.B is not None:  # For correct type hinting
-                        self.A = np.hstack((self.A, self.B))
-
+                        self.A = np.column_stack((self.A, self.B))
                 super().update(x, y)
 
             # In case that learn_many was called, A is already square
             if self.A.shape[0] < self.A.shape[1]:
                 self.B = self.A[: self.p, -self.q :]
                 self.A = self.A[: self.p, : -self.q]
-
-            self.n_seen += 1
 
     def learn_one(  # type: ignore  # TODO: fix override OnlineDMD.learn_one
         self,
@@ -929,23 +932,25 @@ class OnlineDMDwC(OnlineDMD):
         """
         if isinstance(x, dict):
             x = np.array(list(x.values()))
+        x = x.reshape(1, -1)
         if isinstance(y, dict):
             y = np.array(list(y.values()))
+        y = y.reshape(1, -1)
         if isinstance(u, dict):
             u = np.array(list(u.values()))
-
+        u = u.reshape(1, -1)
         if self.known_B:
-            y = y - self.B @ u
+            y = y - u @ self.B.T
         else:
-            x = np.hstack((x, u))
+            x = np.column_stack((x, u))
             if self.B is not None:
-                self.A = np.hstack((self.A, self.B))
+                self.A = np.column_stack((self.A, self.B))
 
         super().revert(x, y)
 
         if not self.known_B:
-            self.B = self.A[: self.p, -self.l :]
-            self.A = self.A[: self.p, : -self.l]
+            self.B = self.A[: self.p, -self.q :]
+            self.A = self.A[: self.p, : -self.q]
 
     def _update_many(
         self,
@@ -969,13 +974,13 @@ class OnlineDMDwC(OnlineDMD):
             if self.known_B:
                 Y = Y - self.B @ U
             else:
-                X = np.vstack((X, U))
+                X = np.column_stack((X, U))
             if self.n_seen == 0:
                 self.m = X.shape[1]
                 self.l = U.shape[1]
                 self._init_update()
             if not self.known_B and self.B is not None:
-                self.A = np.hstack((self.A, self.B))
+                self.A = np.column_stack((self.A, self.B))
             self.l = U.shape[1]
             super()._update_many(X, Y)
 
@@ -1007,15 +1012,19 @@ class OnlineDMDwC(OnlineDMD):
             U = U.values
 
         if self.known_B:
-            Y = Y - self.B @ U
+            Y = Y - U @ self.B.T
         else:
-            X = np.hstack((X, U))
+            X = np.column_stack((X, U))
             if self.B is not None:  # If learn_many is not called first
-                self.A = np.hstack((self.A, self.B))
+                self.A = np.column_stack((self.A, self.B))
 
         self.l = U.shape[1]
         super().learn_many(X, Y)
 
+        if self.p == 0:
+            self.p = self.m
+        if self.q == 0:
+            self.q = self.l
         if not self.known_B:
             self.B = self.A[: self.p, -self.l :]
             self.A = self.A[: self.p, : -self.l]
