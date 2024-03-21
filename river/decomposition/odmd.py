@@ -805,6 +805,24 @@ class OnlineDMDwC(OnlineDMD):
         self.known_B = B is not None
         self.l: int
 
+    def _init_update(self) -> None:
+        if self.initialize < self.m:
+            warnings.warn(
+                f"Initialization is under-constrained. Changed initialize to {self.m}."
+            )
+            self.initialize = self.m
+        if self.p == 0:
+            self.p = self.m
+        if self.q == 0:
+            self.q = self.l
+
+        self.A = np.random.randn(self.p, self.p)
+        self.B = np.random.randn(self.p, self.q)
+        self._U_init = np.zeros((self.initialize, self.l))
+        self._X_init = np.empty((self.initialize, self.m - self.l))
+        self._Y_init = np.empty((self.initialize, self.m - self.l))
+        self._Y = np.empty((0, self.m - self.l))
+
     def _reconstruct_AB(self):
         # self.m stores augumented state dimension
         _m = self.m - self.l if not self.known_B else self.m
@@ -824,96 +842,6 @@ class OnlineDMDwC(OnlineDMD):
             B = self.B
         return A, B
 
-    def _update_many(
-        self,
-        X: np.ndarray | pd.DataFrame,
-        Y: np.ndarray | pd.DataFrame,
-        U: np.ndarray | pd.DataFrame | None = None,
-    ) -> None:
-        """Update the DMD computation with a new batch of snapshots (X,Y).
-
-        This method brings no change in theoretical time and space complexity.
-        However, it allows parallel computing by vectorizing update in loop.
-
-        Args:
-            X: The input snapshot matrix of shape (p, m), where p is the number of snapshots and m is the number of features.
-            Y: The output snapshot matrix of shape (p, m), where p is the number of snapshots and m is the number of features.
-            U: The control input snapshot matrix of shape (p, l), where p is the number of snapshots and p is the number of control inputs.
-        """
-        if U is None:
-            super()._update_many(X, Y)
-        else:
-            if self.known_B:
-                Y = Y - self.B @ U
-            else:
-                X = np.vstack((X, U))
-            if self.n_seen == 0:
-                self.m = X.shape[1]
-                self.l = U.shape[1]
-                self._init_update()
-            if not self.known_B and self.B is not None:
-                self.A = np.hstack((self.A, self.B))
-            self.l = U.shape[1]
-            super()._update_many(X, Y)
-
-            if not self.known_B:
-                self.B = self.A[:, -self.l :]
-                self.A = self.A[:, : -self.l]
-
-    def learn_many(  # type: ignore  # TODO: fix override OnlineDMD.learn_many
-        self,
-        X: np.ndarray | pd.DataFrame,
-        Y: np.ndarray | pd.DataFrame,
-        U: np.ndarray | pd.DataFrame,
-    ) -> None:
-        """Learn the OnlineDMDwC model using multiple snapshot pairs.
-
-        Useful for initializing the model with a batch of snapshot pairs.
-        Otherwise, it is equivalent to calling update method in a loop.
-
-        Args:
-            X: The input snapshot matrix of shape (p, m), where p is the number of snapshots and m is the number of features.
-            Y: The output snapshot matrix of shape (p, m), where p is the number of snapshots and m is the number of features.
-            U: The output snapshot matrix of shape (p, l), where p is the number of snapshots and l is the number of control inputs.
-        """
-        if isinstance(X, pd.DataFrame):
-            X = X.values
-        if isinstance(Y, pd.DataFrame):
-            Y = Y.values
-        if isinstance(U, pd.DataFrame):
-            U = U.values
-
-        if self.known_B:
-            Y = Y - self.B @ U
-        else:
-            X = np.hstack((X, U))
-            if self.B is not None:  # If learn_many is not called first
-                self.A = np.hstack((self.A, self.B))
-
-        self.l = U.shape[1]
-        super().learn_many(X, Y)
-
-        if not self.known_B:
-            self.B = self.A[: self.p, -self.l :]
-            self.A = self.A[: self.p, : -self.l]
-
-    def _init_update(self) -> None:
-        if self.initialize < self.m:
-            warnings.warn(
-                f"Initialization is under-constrained. Changed initialize to {self.m}."
-            )
-            self.initialize = self.m
-        if self.p == 0:
-            self.p = self.m
-        if self.q == 0:
-            self.q = self.l
-
-        self.A = np.random.randn(self.p, self.p)
-        self.B = np.random.randn(self.p, self.q)
-        self._U_init = np.zeros((self.initialize, self.l))
-        self._X_init = np.empty((self.initialize, self.m - self.l))
-        self._Y_init = np.empty((self.initialize, self.m - self.l))
-        self._Y = np.empty((0, self.m - self.l))
 
     def update(  # type: ignore  # TODO: fix override OnlineDMD.update
         self,
@@ -1014,6 +942,79 @@ class OnlineDMDwC(OnlineDMD):
                 self.A = np.hstack((self.A, self.B))
 
         super().revert(x, y)
+
+        if not self.known_B:
+            self.B = self.A[: self.p, -self.l :]
+            self.A = self.A[: self.p, : -self.l]
+
+    def _update_many(
+        self,
+        X: np.ndarray | pd.DataFrame,
+        Y: np.ndarray | pd.DataFrame,
+        U: np.ndarray | pd.DataFrame | None = None,
+    ) -> None:
+        """Update the DMD computation with a new batch of snapshots (X,Y).
+
+        This method brings no change in theoretical time and space complexity.
+        However, it allows parallel computing by vectorizing update in loop.
+
+        Args:
+            X: The input snapshot matrix of shape (p, m), where p is the number of snapshots and m is the number of features.
+            Y: The output snapshot matrix of shape (p, m), where p is the number of snapshots and m is the number of features.
+            U: The control input snapshot matrix of shape (p, l), where p is the number of snapshots and p is the number of control inputs.
+        """
+        if U is None:
+            super()._update_many(X, Y)
+        else:
+            if self.known_B:
+                Y = Y - self.B @ U
+            else:
+                X = np.vstack((X, U))
+            if self.n_seen == 0:
+                self.m = X.shape[1]
+                self.l = U.shape[1]
+                self._init_update()
+            if not self.known_B and self.B is not None:
+                self.A = np.hstack((self.A, self.B))
+            self.l = U.shape[1]
+            super()._update_many(X, Y)
+
+            if not self.known_B:
+                self.B = self.A[:, -self.l :]
+                self.A = self.A[:, : -self.l]
+
+    def learn_many(  # type: ignore  # TODO: fix override OnlineDMD.learn_many
+        self,
+        X: np.ndarray | pd.DataFrame,
+        Y: np.ndarray | pd.DataFrame,
+        U: np.ndarray | pd.DataFrame,
+    ) -> None:
+        """Learn the OnlineDMDwC model using multiple snapshot pairs.
+
+        Useful for initializing the model with a batch of snapshot pairs.
+        Otherwise, it is equivalent to calling update method in a loop.
+
+        Args:
+            X: The input snapshot matrix of shape (p, m), where p is the number of snapshots and m is the number of features.
+            Y: The output snapshot matrix of shape (p, m), where p is the number of snapshots and m is the number of features.
+            U: The output snapshot matrix of shape (p, l), where p is the number of snapshots and l is the number of control inputs.
+        """
+        if isinstance(X, pd.DataFrame):
+            X = X.values
+        if isinstance(Y, pd.DataFrame):
+            Y = Y.values
+        if isinstance(U, pd.DataFrame):
+            U = U.values
+
+        if self.known_B:
+            Y = Y - self.B @ U
+        else:
+            X = np.hstack((X, U))
+            if self.B is not None:  # If learn_many is not called first
+                self.A = np.hstack((self.A, self.B))
+
+        self.l = U.shape[1]
+        super().learn_many(X, Y)
 
         if not self.known_B:
             self.B = self.A[: self.p, -self.l :]
