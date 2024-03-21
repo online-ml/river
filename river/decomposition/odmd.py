@@ -245,7 +245,7 @@ class OnlineDMD(MiniBatchRegressor, MiniBatchTransformer):
         """Check if A has changed since last update of eigenvalues"""
         if self.eig_rtol is None:
             return False
-        return np.allclose(np.abs(self._A_last), np.abs(self.A), rtol=1, atol=1)
+        return np.allclose(np.abs(self._A_last), np.abs(self.A), rtol=self.eig_rtol)
 
 
     def _init_update(self) -> None:
@@ -788,6 +788,7 @@ class OnlineDMDwC(OnlineDMD):
         w: float = 1.0,
         initialize: int = 1,
         exponential_weighting: bool = False,
+        eig_rtol: float | None = None,
         seed: int | None = None,
     ) -> None:
         super().__init__(
@@ -795,6 +796,7 @@ class OnlineDMDwC(OnlineDMD):
             w,
             initialize,
             exponential_weighting,
+            eig_rtol,
             seed,
         )
         self.p = p
