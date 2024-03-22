@@ -177,7 +177,7 @@ class OnlineDMD(MiniBatchRegressor, MiniBatchTransformer):
         self.feature_names_in_: list[str]
         self.A: np.ndarray
         self._P: np.ndarray
-        self._Y: np.ndarray  # for xi computation
+        self._Y: np.ndarray  # for xi and modes computation
 
         self._A_last: np.ndarray
         self._A_allclose: bool = False
@@ -211,11 +211,25 @@ class OnlineDMD(MiniBatchRegressor, MiniBatchTransformer):
     def modes(self) -> np.ndarray:
         """Reconstruct high dimensional DMD modes"""
         if self._modes is None:
-            L, Phi = self.eig
+            _, Phi = self.eig
             if self.r < self.m:
                 # Sign of eigenvectors and singular vectors may change based on underlying algorithm initialization
                 # TODO: shall we use discrete time singlar values or continuous time singlar values?
-                self._modes = self._svd._U @ np.diag(self._svd._S) @ Phi
+
+                # Schmid (2010), but Phi_comp corresponds to eigenvectors of compainion matrix
+                # self._modes = self._svd._U @ Phi_comp
+
+                # Proctor (2016)
+                # self._Y.T @ self._svd._V.T is increasingly more computationally expensive without rolling
+                self._modes = (
+                    self._Y.T
+                    @ self._svd._V.T
+                    @ np.diag(1 / self._svd._S)
+                    @ Phi
+                )
+
+                # This is faster and does not comprosime the results much.
+                # self._modes = self._svd._U @ np.diag(1 / self._svd._S) @ Phi
             else:
                 self._modes = Phi
         return self._modes.real
@@ -361,11 +375,11 @@ class OnlineDMD(MiniBatchRegressor, MiniBatchTransformer):
             self.m = x.shape[1]
             self._init_update()
 
-        # Collect buffer of past snapshots to compute xi
-        if self._Y.shape[0] <= self.n_seen:
+        # Collect buffer of past snapshots to compute modes and xi
+        if self._Y.shape[0] <= self.n_seen + 1:
             self._Y = np.row_stack([self._Y, y])
-        elif self._Y.shape[0] > self.n_seen:
-            self._Y = self._Y[self.n_seen :, :]
+        if self._Y.shape[0] > self.n_seen + 1:
+            self._Y = self._Y[-(self.n_seen + 1) :, :]
 
         # Initialize A and P with first self.initialize snapshot pairs
         if bool(self.initialize) and self.n_seen <= self.initialize - 1:
@@ -610,7 +624,11 @@ class OnlineDMD(MiniBatchRegressor, MiniBatchTransformer):
             mat[s, :] = (self.A @ mat[s - 1, :]).real
         return mat[1:, :]
 
-    def truncation_error(self, X: np.ndarray, Y: np.ndarray) -> float:
+    def truncation_error(
+        self,
+        X: np.ndarray | pd.DataFrame,
+        Y: np.ndarray | pd.DataFrame,
+    ) -> float:
         """Compute the truncation error of the DMD model on the given data.
 
         Since this implementation computes exact DMD, the truncation error is relevant only for initialization.
@@ -805,20 +823,55 @@ class OnlineDMDwC(OnlineDMD):
         self.known_B = B is not None
         self.l: int
 
+    @property
+    def modes(self) -> np.ndarray:
+        """Reconstruct high dimensional DMD modes"""
+        if self._modes is None:
+            _, Phi = self.eig
+            if self.r < self.m:
+                # Sign of eigenvectors and singular vectors may change based on underlying algorithm initialization
+                # Proctor (2016)
+                # self._Y.T @ self._svd._V.T is increasingly more computationally expensive without rolling
+                self._modes = (
+                    self._Y.T
+                    @ self._svd._V.T[:, : self.p]
+                    @ np.diag(1 / self._svd._S[: self.p])
+                    @ Phi
+                )
+                # Following has similar results to our modification
+                # self._modes = (self._Y.T @ self._svd._V.T @ np.diag(1/self._svd._S))[:, :self.p] @ Phi
+
+                # This is faster but significantly alter results for OnlineDMDwC.
+                self._modes = (self._svd._U @ np.diag(1 / self._svd._S))[: self.m - self.l, : self.p] @ Phi
+            else:
+                self._modes = Phi
+        return self._modes.real
+
     def _init_update(self) -> None:
+        if not hasattr(self, "l"):
+            super()._init_update()
+            return
         if self.p == 0:
             self.p = self.m
         if self.q == 0:
             self.q = self.l
-        if self.initialize < self.p + self.q:
+        if self.known_B:
+            self.r = self.p
+        else:
+            self.r = self.p + self.q
+        # TODO: if p or q == 0 in __init__, we need to reinitialize SVD
+        self._svd = OnlineSVD(n_components=self.r, force_orth=False)
+        if self.initialize < self.r:
             warnings.warn(
-                f"Initialization is under-constrained. Changed initialize to {self.p + self.q}."
+                f"Initialization is under-constrained. Changed initialize to {self.r}."
             )
-            self.initialize = self.p + self.q
+            self.initialize = self.r
 
         self.A = np.eye(self.p)
+        self._A_last = self.A.copy()
         if not self.known_B:
             self.B = np.eye(self.p, self.q)
+            self._A_last = np.column_stack((self.A, self.B))
         self._U_init = np.zeros((self.initialize, self.l))
         self._X_init = np.empty((self.initialize, self.m))
         self._Y_init = np.empty((self.initialize, self.m))
@@ -843,10 +896,10 @@ class OnlineDMDwC(OnlineDMD):
             B = self.B
         return A, B
 
-    def update(  # type: ignore  # TODO: fix override OnlineDMD.update
+    def update(
         self,
         x: dict | np.ndarray,
-        y: dict | np.ndarray,
+        y: dict | np.ndarray | None = None,
         u: dict | np.ndarray | None = None,
     ) -> None:
         """Update the DMD computation with a new pair of snapshots (x, y)
@@ -860,6 +913,19 @@ class OnlineDMDwC(OnlineDMD):
             y: 1D array, shape (n, ), y(t) as in y(t) = f(t, x(t))
             u: 1D array, shape (m, ), u(t) as in y(t) = f(t, x(t), u(t))
         """
+        if y is None:
+            if not hasattr(self, "_x_prev"):
+                self._x_prev = x
+                self._u_prev = u
+                return
+            else:
+                y = x
+                x = self._x_prev
+                self._x_prev = y
+                _u_hold = u
+                u = self._u_prev
+                self._u_prev = _u_hold
+
         if isinstance(x, dict):
             x = np.array(list(x.values()))
         x = x.reshape(1, -1)
@@ -906,20 +972,20 @@ class OnlineDMDwC(OnlineDMD):
                 self.B = self.A[: self.p, -self.q :]
                 self.A = self.A[: self.p, : -self.q]
 
-    def learn_one(  # type: ignore  # TODO: fix override OnlineDMD.learn_one
+    def learn_one(
         self,
         x: dict | np.ndarray,
-        y: dict | np.ndarray,
-        u: dict | np.ndarray,
+        y: dict | np.ndarray | None = None,
+        u: dict | np.ndarray | None = None,
     ) -> None:
         """Allias for OnlineDMDwC.update method."""
         return self.update(x, y, u)
 
-    def revert(  # type: ignore  # TODO: fix override OnlineDMD.revert
+    def revert(
         self,
         x: dict | np.ndarray,
-        y: dict | np.ndarray,
-        u: dict | np.ndarray,
+        y: dict | np.ndarray | None = None,
+        u: dict | np.ndarray | None = None,
     ) -> None:
         """Gradually forget the older snapshots and revert the DMD computation.
 
@@ -930,6 +996,23 @@ class OnlineDMDwC(OnlineDMD):
             y: 1D array, shape (n, ), y(t)
             u: 1D array, shape (m, ), u(t)
         """
+        if u is None:
+            super().revert(x, y)
+            return
+
+        if y is None:
+            if not hasattr(self, "_x_first"):
+                self._x_first = x
+                self._u_first = u
+                return
+            else:
+                y = x
+                x = self._x_first
+                self._x_first = x
+                _u_hold = u
+                u = self._u_first
+                self._u_first = _u_hold
+
         if isinstance(x, dict):
             x = np.array(list(x.values()))
         x = x.reshape(1, -1)
@@ -985,14 +1068,14 @@ class OnlineDMDwC(OnlineDMD):
             super()._update_many(X, Y)
 
             if not self.known_B:
-                self.B = self.A[:, -self.l :]
-                self.A = self.A[:, : -self.l]
+                self.B = self.A[:, -self.q :]
+                self.A = self.A[:, : -self.q]
 
-    def learn_many(  # type: ignore  # TODO: fix override OnlineDMD.learn_many
+    def learn_many(
         self,
         X: np.ndarray | pd.DataFrame,
-        Y: np.ndarray | pd.DataFrame,
-        U: np.ndarray | pd.DataFrame,
+        Y: np.ndarray | pd.DataFrame | None = None,
+        U: np.ndarray | pd.DataFrame | None = None,
     ) -> None:
         """Learn the OnlineDMDwC model using multiple snapshot pairs.
 
@@ -1004,6 +1087,20 @@ class OnlineDMDwC(OnlineDMD):
             Y: The output snapshot matrix of shape (p, m), where p is the number of snapshots and m is the number of features.
             U: The output snapshot matrix of shape (p, l), where p is the number of snapshots and l is the number of control inputs.
         """
+        if U is None:
+            super().learn_many(X, Y)
+            return
+
+        if Y is None:
+            if isinstance(X, pd.DataFrame):
+                Y = X.shift(-1).iloc[:-1]
+                X = X.iloc[:-1]
+                U = U.iloc[:-1]
+            elif isinstance(X, np.ndarray):
+                Y = np.roll(X, -1)[:-1]
+                X = X[:-1]
+                U = U[:-1]
+
         if isinstance(X, pd.DataFrame):
             X = X.values
         if isinstance(Y, pd.DataFrame):
@@ -1026,10 +1123,10 @@ class OnlineDMDwC(OnlineDMD):
         if self.q == 0:
             self.q = self.l
         if not self.known_B:
-            self.B = self.A[: self.p, -self.l :]
-            self.A = self.A[: self.p, : -self.l]
+            self.B = self.A[: self.p, -self.q :]
+            self.A = self.A[: self.p, : -self.q]
 
-    def predict_one(  # type: ignore  # TODO: fix override OnlineDMD.predict_one
+    def predict_one(
         self, x: dict | np.ndarray, u: dict | np.ndarray
     ) -> np.ndarray:
         """
@@ -1055,7 +1152,7 @@ class OnlineDMDwC(OnlineDMD):
             mat[s, :] = (A @ mat[s - 1, :]).real + action
         return mat[-1, :]
 
-    def predict_many(  # type: ignore  # TODO: fix override OnlineDMD.predict_many
+    def predict_many(
         self,
         x: dict | np.ndarray,
         U: np.ndarray | pd.DataFrame,
@@ -1087,7 +1184,7 @@ class OnlineDMDwC(OnlineDMD):
             mat[s, :] = (A @ mat[s - 1, :]).real + action
         return mat[1:, :]
 
-    def truncation_error(  # type: ignore  # TODO: fix override OnlineDMD.truncation_error
+    def truncation_error(
         self,
         X: np.ndarray | pd.DataFrame,
         Y: np.ndarray | pd.DataFrame,

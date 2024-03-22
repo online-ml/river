@@ -124,6 +124,7 @@ def test_one_svd_is_enough():
     import numpy as np
     import pandas as pd
     import scipy as sp
+    np.random.seed(0)
 
     n = 101
     freq = 2.0
