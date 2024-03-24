@@ -471,11 +471,11 @@ class Pipeline(base.Estimator):
             # Here the step is not a transformer, and it's supervised, such as a LinearRegression.
             # This is usually the last step of the pipeline.
             elif step._supervised:
-                step.learn_one(x=x, y=y)
+                step.learn_one(x=x, y=y, **params)
             # Here the step is not a transformer, and it's unsupervised, such as a KMeans. This
             # is also usually the last step of the pipeline.
             else:
-                step.learn_one(x=x)
+                step.learn_one(x=x, **params)
 
     def _transform_one(self, x: dict):
         """This methods takes care of applying the first n - 1 steps of the pipeline, which are
