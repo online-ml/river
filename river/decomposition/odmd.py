@@ -157,12 +157,13 @@ class OnlineDMD(MiniBatchRegressor, MiniBatchTransformer):
         initialize: int = 1,
         exponential_weighting: bool = False,
         eig_rtol: float | None = None,
+        force_orth: bool = False,
         seed: int | None = None,
     ) -> None:
         self.r = int(r)
         if self.r != 0:
             # Forcing orthogonality makes the results more unstable
-            self._svd = OnlineSVD(n_components=self.r, force_orth=False)
+            self._svd = OnlineSVD(n_components=self.r, force_orth=force_orth)
         self.w = float(w)
         assert self.w > 0 and self.w <= 1
         self.initialize = int(initialize)
@@ -198,9 +199,8 @@ class OnlineDMD(MiniBatchRegressor, MiniBatchTransformer):
             # TODO: find out whether Phi should have imaginary part
             Lambda, Phi = sp.linalg.eig(self.A, check_finite=False)
 
-            sort_idx = np.argsort(Lambda)
+            sort_idx = np.argsort(Lambda)[::-1]
             if not np.array_equal(sort_idx, range(len(Lambda))):
-                sort_idx = sort_idx[::-1]
                 Lambda = Lambda[sort_idx]
                 Phi = Phi[:, sort_idx]
             self._eig = Lambda, Phi
@@ -842,7 +842,9 @@ class OnlineDMDwC(OnlineDMD):
                 # self._modes = (self._Y.T @ self._svd._V.T @ np.diag(1/self._svd._S))[:, :self.p] @ Phi
 
                 # This is faster but significantly alter results for OnlineDMDwC.
-                self._modes = (self._svd._U @ np.diag(1 / self._svd._S))[: self.m - self.l, : self.p] @ Phi
+                self._modes = (self._svd._U @ np.diag(1 / self._svd._S))[
+                    : self.m - self.l, : self.p
+                ] @ Phi
             else:
                 self._modes = Phi
         return self._modes.real
