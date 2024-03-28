@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "river"
-version = "0.21.0"
+version = "0.21.1"
 description = "Online machine learning in Python"
 readme = "README.md"
 homepage = "https://riverml.xyz/"
@@ -12,13 +12,13 @@ repository = "https://github.com/online-ml/river/"
 authors = ["Max Halford <maxhalford25@gmail.com>"]
 
 include = [
-    "**/*.cpp",  
-    "**/*.pyx", 
+    "**/*.cpp",
+    "**/*.pyx",
     "**/*.pxd",
     "river/datasets/*.csv",
     "river/datasets/*.gz",
     "river/datasets/*.zip",
-    "river/stream/*.zip", 
+    "river/stream/*.zip",
     "Cargo.toml",
     "rust_src/**/*"
 ]
