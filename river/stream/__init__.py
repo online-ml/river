@@ -28,6 +28,13 @@ __all__ = [
 ]
 
 try:
+    from .iter_polars import iter_polars
+
+    __all__ += ["iter_polars"]
+except ImportError:
+    pass
+
+try:
     from .iter_pandas import iter_pandas
 
     __all__ += ["iter_pandas"]

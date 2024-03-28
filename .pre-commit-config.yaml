@@ -16,6 +16,8 @@ repos:
         language: python
         types: [python]
         entry: ruff
+        args: 
+          - --fix
 
       - id: mypy
         name: mypy

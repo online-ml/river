@@ -11,6 +11,18 @@ homepage = "https://riverml.xyz/"
 repository = "https://github.com/online-ml/river/"
 authors = ["Max Halford <maxhalford25@gmail.com>"]
 
+include = [
+    "**/*.cpp",  
+    "**/*.pyx", 
+    "**/*.pxd",
+    "river/datasets/*.csv",
+    "river/datasets/*.gz",
+    "river/datasets/*.zip",
+    "river/stream/*.zip", 
+    "Cargo.toml",
+    "rust_src/**/*"
+]
+
 [tool.poetry.build]
 generate-setup-file = true
 script = "build.py"
@@ -20,6 +32,7 @@ python = ">=3.9,<3.13"
 numpy = "^1.23.0"
 scipy = "^1.8.1"
 pandas = "^2.1"
+polars = "^0.20.8"
 
 [tool.poetry.group.dev.dependencies]
 graphviz = "^0.20.1"
