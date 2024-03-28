@@ -1,4 +1,6 @@
-# Unreleased
+# 0.21.1 - 2024-03-28
+
+This release should fix some of the installation issues when building the River wheel from scratch.
 
 ## anomaly
 
