@@ -30,7 +30,6 @@ U = np.zeros((samples + 1, 1))
 
 i = 1
 true_eigs_ = []
-As = []
 for k in np.linspace(t_diff, T, num=samples):
     A_t = np.array([[t_diff, -omega(k)], [omega(k), 0.1 * t_diff]])
     true_eigs_.append(np.imag(np.log(np.linalg.eig(A_t)[0])))

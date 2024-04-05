@@ -46,6 +46,9 @@ class Hankelizer(Transformer):
     Transform and learn in one go.
     >>> h.learn_transform_one({"a": 5, "b": 6})
     {'a_0': 1, 'b_0': 2, 'a_1': 3, 'b_1': 4, 'a_2': 5, 'b_2': 6}
+
+    TODO:
+        - [ ] Find out how to hankelize u while staying aligned with pipeline
     """
 
     def __init__(
@@ -67,9 +70,11 @@ class Hankelizer(Transformer):
 
         self._window.append(x)
 
-    def transform_one(self, _: dict):
+    def transform_one(self, x: dict):
         _window = list(self._window)
         w_past_current = len(_window)
+        if w_past_current == 0:
+            _window = [x]
         if not self.return_partial and w_past_current < self.w:
             raise ValueError(
                 "The window is not full yet. Set `return_partial` to True to return partial Hankel matrices."

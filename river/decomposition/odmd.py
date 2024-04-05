@@ -23,6 +23,7 @@ References:
     Journal on Applied Dynamical Systems, 18(3), pp.1586-1609.
     doi:[10.1137/18m1192329](https://doi.org/10.1137/18m1192329).
 """
+
 from __future__ import annotations
 
 import warnings
@@ -161,6 +162,7 @@ class OnlineDMD(MiniBatchRegressor, MiniBatchTransformer):
         seed: int | None = None,
     ) -> None:
         self.r = int(r)
+        self.force_orth = force_orth
         if self.r != 0:
             # Forcing orthogonality makes the results more unstable
             self._svd = OnlineSVD(n_components=self.r, force_orth=force_orth)
@@ -186,7 +188,7 @@ class OnlineDMD(MiniBatchRegressor, MiniBatchTransformer):
         self._n_computed: int = 0  # TODO: remove before merge
 
         # Properties to be reset at each update
-        self._eig: tuple(np.ndarray, np.ndarray) | None = None
+        self._eig: tuple[np.ndarray, np.ndarray] | None = None
         self._modes: np.ndarray | None = None
         self._xi: np.ndarray | None = None
 
@@ -232,7 +234,7 @@ class OnlineDMD(MiniBatchRegressor, MiniBatchTransformer):
                 # self._modes = self._svd._U @ np.diag(1 / self._svd._S) @ Phi
             else:
                 self._modes = Phi
-        return self._modes.real
+        return self._modes
 
     @property
     def xi(self) -> np.ndarray:
@@ -359,32 +361,32 @@ class OnlineDMD(MiniBatchRegressor, MiniBatchTransformer):
             else:
                 y = x
                 x = self._x_prev
-                self._x_prev = y
+        self._x_prev = y
 
         if isinstance(x, dict):
             self.feature_names_in_ = list(x.keys())
             x = np.array(list(x.values()))
-        x = x.reshape(1, -1)
+        x_ = x.reshape(1, -1)
         if isinstance(y, dict):
             assert self.feature_names_in_ == list(y.keys())
             y = np.array(list(y.values()))
-        y = y.reshape(1, -1)
+        y_ = y.reshape(1, -1)
 
         # Initialize properties which depend on the shape of x
         if self.n_seen == 0:
-            self.m = x.shape[1]
+            self.m = x_.shape[1]
             self._init_update()
 
         # Collect buffer of past snapshots to compute modes and xi
         if self._Y.shape[0] <= self.n_seen + 1:
-            self._Y = np.row_stack([self._Y, y])
+            self._Y = np.row_stack([self._Y, y_])
         if self._Y.shape[0] > self.n_seen + 1:
             self._Y = self._Y[-(self.n_seen + 1) :, :]
 
         # Initialize A and P with first self.initialize snapshot pairs
         if bool(self.initialize) and self.n_seen <= self.initialize - 1:
-            self._X_init[self.n_seen, :] = x
-            self._Y_init[self.n_seen, :] = y
+            self._X_init[self.n_seen, :] = x_
+            self._Y_init[self.n_seen, :] = y_
             if self.n_seen == self.initialize - 1:
                 self.learn_many(self._X_init, self._Y_init)
                 # revert the number of seen samples to avoid doubling
@@ -396,9 +398,9 @@ class OnlineDMD(MiniBatchRegressor, MiniBatchTransformer):
                 alpha = 1.0 / epsilon
                 self._P = alpha * np.identity(self.r)
             if self.r < self.m:
-                x, y = self._truncate_w_svd(x, y, svd_modify="update")
+                x_, y_ = self._truncate_w_svd(x_, y_, svd_modify="update")
 
-            self._update_A_P(x, y, 1.0)
+            self._update_A_P(x_, y_, 1.0)
 
         self.n_seen += 1
 
@@ -531,7 +533,14 @@ class OnlineDMD(MiniBatchRegressor, MiniBatchTransformer):
             if self.r == 0:
                 self.r = self.m
 
-            assert np.linalg.matrix_rank(X) >= self.r
+            _rank_X = np.linalg.matrix_rank(X)
+            if not _rank_X >= self.r:
+                raise ValueError(
+                    f"Failed rank(X) [{_rank_X}] >= n_modes [{self.r}].\n"
+                    "Increase the number of snapshots (increase initialize "
+                    f"[{self.initialize}] if learn_many was not called "
+                    "directly) or reduce the number of modes."
+                )
             # Exponential weighting factor - older snapshots are weighted less
             if self.exponential_weighting:
                 weights = (np.sqrt(self.w) ** np.arange(n - 1, -1, -1))[
@@ -604,13 +613,13 @@ class OnlineDMD(MiniBatchRegressor, MiniBatchTransformer):
             mat[s, :] = (A @ mat[s - 1, :]).real
         return mat[-1, :]
 
-    def predict_many(self, x: dict | np.ndarray, forecast: int) -> np.ndarray:
+    def predict_many(self, x: dict | np.ndarray, horizon: int) -> np.ndarray:
         """
         Predicts multiple future values based on the given initial value.
 
         Args:
             x: The initial value.
-            forecast (int): The number of future values to predict.
+            horizon (int): The number of future values to predict.
 
         Returns:
             np.ndarray: An array containing the predicted future values.
@@ -618,11 +627,34 @@ class OnlineDMD(MiniBatchRegressor, MiniBatchTransformer):
         TODO:
             - [ ] Align predict_many with river API
         """
-        mat = np.zeros((forecast + 1, self.m))
+        # Map A back to original space
+        if self.r < self.m:
+            A = self._svd._U @ self.A @ self._svd._U.T
+        else:
+            A = self.A
+        mat = np.zeros((horizon + 1, self.m))
         mat[0, :] = x if isinstance(x, np.ndarray) else list(x.values())
-        for s in range(1, forecast + 1):
-            mat[s, :] = (self.A @ mat[s - 1, :]).real
+        for s in range(1, horizon + 1):
+            mat[s, :] = (A @ mat[s - 1, :]).real
         return mat[1:, :]
+
+    def forecast(self, horizon: int, xs: list[dict] | None = None) -> list:
+        x = self._x_prev
+        if not hasattr(self, "m"):
+            self.m = len(x)
+        # Map A back to original space
+        if self.r < self.m:
+            if hasattr(self._svd, "_U"):
+                A = self._svd._U @ self.A @ self._svd._U.T
+            else:
+                return np.zeros((horizon, 1)).flatten().tolist()
+        else:
+            A = self.A
+        mat = np.zeros((horizon + 1, self.m))
+        mat[0, :] = x if isinstance(x, np.ndarray) else list(x.values())
+        for s in range(1, horizon + 1):
+            mat[s, :] = (A @ mat[s - 1, :]).real
+        return mat[1:, -1].flatten().tolist()
 
     def truncation_error(
         self,
@@ -807,6 +839,7 @@ class OnlineDMDwC(OnlineDMD):
         initialize: int = 1,
         exponential_weighting: bool = False,
         eig_rtol: float | None = None,
+        force_orth: bool = False,
         seed: int | None = None,
     ) -> None:
         super().__init__(
@@ -815,6 +848,7 @@ class OnlineDMDwC(OnlineDMD):
             initialize,
             exponential_weighting,
             eig_rtol,
+            force_orth,
             seed,
         )
         self.p = p
@@ -847,7 +881,7 @@ class OnlineDMDwC(OnlineDMD):
                 ] @ Phi
             else:
                 self._modes = Phi
-        return self._modes.real
+        return self._modes
 
     def _init_update(self) -> None:
         if not hasattr(self, "l"):
@@ -961,7 +995,7 @@ class OnlineDMDwC(OnlineDMD):
                 self.n_seen += 1
 
             else:
-                if self.known_B:
+                if self.known_B and self.B:
                     y = y - u @ self.B.T
                 else:
                     x = np.column_stack((x, u))
@@ -1024,7 +1058,7 @@ class OnlineDMDwC(OnlineDMD):
         if isinstance(u, dict):
             u = np.array(list(u.values()))
         u = u.reshape(1, -1)
-        if self.known_B:
+        if self.known_B and self.B:
             y = y - u @ self.B.T
         else:
             x = np.column_stack((x, u))
@@ -1093,16 +1127,6 @@ class OnlineDMDwC(OnlineDMD):
             super().learn_many(X, Y)
             return
 
-        if Y is None:
-            if isinstance(X, pd.DataFrame):
-                Y = X.shift(-1).iloc[:-1]
-                X = X.iloc[:-1]
-                U = U.iloc[:-1]
-            elif isinstance(X, np.ndarray):
-                Y = np.roll(X, -1)[:-1]
-                X = X[:-1]
-                U = U[:-1]
-
         if isinstance(X, pd.DataFrame):
             X = X.values
         if isinstance(Y, pd.DataFrame):
@@ -1110,7 +1134,12 @@ class OnlineDMDwC(OnlineDMD):
         if isinstance(U, pd.DataFrame):
             U = U.values
 
-        if self.known_B:
+        if Y is None:
+            Y = np.roll(X, -1)[:-1]
+            X = X[:-1]
+            U = U[:-1]
+
+        if self.known_B and self.B:
             Y = Y - U @ self.B.T
         else:
             X = np.column_stack((X, U))
@@ -1158,15 +1187,15 @@ class OnlineDMDwC(OnlineDMD):
         self,
         x: dict | np.ndarray,
         U: np.ndarray | pd.DataFrame,
-        forecast: int,
+        horizon: int,
     ) -> np.ndarray:
         """
         Predicts multiple future values based on the given initial value.
 
         Args:
             x: The initial value.
-            U: The control input matrix of shape (forecast, l), where l is the number of control inputs.
-            forecast (int): The number of future values to predict.
+            U: The control input matrix of shape (horizon, l), where l is the number of control inputs.
+            horizon (int): The number of future values to predict.
 
         Returns:
             np.ndarray: An array containing the predicted future values.
@@ -1179,9 +1208,9 @@ class OnlineDMDwC(OnlineDMD):
         _m = len(x)
         A, B = self._reconstruct_AB()
 
-        mat = np.zeros((forecast + 1, _m))
+        mat = np.zeros((horizon + 1, _m))
         mat[0, :] = x if isinstance(x, np.ndarray) else list(x.values())
-        for s in range(1, forecast + 1):
+        for s in range(1, horizon + 1):
             action = (B @ U[s - 1, :]).real
             mat[s, :] = (A @ mat[s - 1, :]).real + action
         return mat[1:, :]
