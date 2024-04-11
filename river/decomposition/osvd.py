@@ -231,6 +231,19 @@ class OnlineSVD(MiniBatchTransformer):
 
         return new
 
+    def _init_first_pass(self, x):
+        self.n_features_in_ = x.shape[1]
+        if self.n_components == 0:
+            self.n_components = self.n_features_in_
+        if x.shape[0] == 1:
+            # Make initialize feasible if not set and learn_one is called first
+            if not self.initialize:
+                self.initialize = self.n_components
+            self._X_init = np.empty((self.initialize, self.n_features_in_))
+            # Initialize _U with random orthonormal matrix for transform_one
+            r_mat = np.random.randn(self.n_features_in_, self.n_components)
+            self._U, _ = np.linalg.qr(r_mat)
+
     def update(self, x: dict | np.ndarray):
         if isinstance(x, dict):
             self.feature_names_in_ = list(x.keys())
@@ -239,9 +252,7 @@ class OnlineSVD(MiniBatchTransformer):
             x = x.reshape(1, -1)  # 1 x m
 
         if self.n_seen == 0:
-            self.n_features_in_ = x.shape[1]
-            if self.n_components == 0:
-                self.n_components = self.n_features_in_
+            self._init_first_pass(x)
             # Make initialize feasible if not set and learn_one is called first
             if not self.initialize:
                 self.initialize = self.n_components
@@ -355,9 +366,7 @@ class OnlineSVD(MiniBatchTransformer):
             self.feature_names_in_ = [str(i) for i in range(X.shape[0])]
 
         if self.n_seen == 0:
-            self.n_features_in_ = X.shape[1]
-            if self.n_components == 0:
-                self.n_components = self.n_features_in_
+            self._init_first_pass(X)
 
         if (
             hasattr(self, "_U")
@@ -371,7 +380,7 @@ class OnlineSVD(MiniBatchTransformer):
             assert np.linalg.matrix_rank(X.T) >= self.n_components
             self._U, self._S, self._Vt = _svd(X.T, self.n_components)
 
-        self.n_seen += X.shape[0]
+            self.n_seen = X.shape[0]
 
     def transform_one(self, x: dict | np.ndarray) -> dict:
         if isinstance(x, dict):
@@ -512,27 +521,22 @@ class OnlineSVDZhang(OnlineSVD):
 
         return new
 
+    def _init_first_pass(self, x):
+        super()._init_first_pass(x)
+        self.V = np.empty((self.n_components, 0))
+        self.Q0 = np.identity(self.n_components)
+        # TODO: Allow weighting specified by user
+        self.W = np.identity(self.n_features_in_)
+
     def update(self, x: dict | np.ndarray):
         if isinstance(x, dict):
             self.feature_names_in_ = list(x.keys())
             x = np.array(list(x.values()))
-        x = x.reshape(1, -1)
+        if len(x.shape) == 1:
+            x = x.reshape(1, -1)
 
         if self.n_seen == 0:
-            self.n_features_in_ = x.shape[1]
-            if self.n_components == 0:
-                self.n_components = self.n_features_in_
-            # Make initialize feasible if not set and learn_one is called first
-            if not self.initialize:
-                self.initialize = self.n_components
-            self._X_init = np.empty((self.initialize, self.n_features_in_))
-            # Initialize _U with random orthonormal matrix for transform_one
-            r_mat = np.random.randn(self.n_features_in_, self.n_components)
-            self._U, _ = np.linalg.qr(r_mat)
-            self.V = np.empty((self.n_components, 0))
-            self.Q0 = np.identity(self.n_components)
-            # TODO: Allow weighting specified by user
-            self.W = np.identity(self.n_features_in_)
+            self._init_first_pass(x)
 
         # Initialize if called without learn_many
         if bool(self.initialize) and self.n_seen <= self.initialize - 1:
@@ -543,19 +547,20 @@ class OnlineSVDZhang(OnlineSVD):
                 self.n_seen -= 1
         else:
             k = self.n_components
-
+            A = x.T  # m x c
+            c = A.shape[1]
             Q, Sigma, R = self._U, self._S, self._Vt.T  # m x k, k x 1, n x k
             # Step 1: Calculate d, e, p
-            d = Q.T @ (self.W @ x.T)  # k x 1
-            e = x.T - Q @ d  # m x 1
-            p = np.sqrt(e.T @ self.W @ e)
-            p[np.isnan(p)] = 1.0  # 1 x 1
+            d = Q.T @ (self.W @ A)  # k x c
+            e = A - Q @ d  # m x c
+            p = np.sqrt(e.T @ self.W @ e)  # c x c
+            p[np.isnan(p)] = 0.0  # c x c
             # Step 2: Check tolerance
-            if (p < self.tol).all():
+            if (p < self.tol).all():  # n_incr += c
                 self.q += 1  # 1 x 1
                 self.V = np.column_stack((self.V, d))  # k x n_incr
             else:
-                if self.q > 0 and self.V.shape[1] > 0:
+                if self.q > 0:
                     # Step 7: Construct Y
                     Y = np.column_stack(
                         (np.diag(Sigma), self.V)
@@ -572,23 +577,26 @@ class OnlineSVDZhang(OnlineSVD):
                     _R2 = RY[k, :-1]  # 1 x k + n_incr - 1
                     R = np.row_stack((R @ _R1, _R2))  # n + 1 x k + n_incr - 1
                     # Step 11: Calculate d
-                    d = QY.T @ d  # k x 1
+                    d = QY.T @ d  # k x c
                 # Step 13: Normalize e
-                e = e @ np.linalg.inv(p)  # m x 1
+                e = e @ np.linalg.inv(p)  # m x c
                 # Step 14: Check if |e>W*Q(:, 1)| > tol
                 if np.abs(e.T @ (self.W @ Q[:, 0])).any() > self.tol:
-                    e = e - Q @ (Q.T @ (self.W @ e))  # m x 1
-                    p1 = np.sqrt(e.T @ self.W @ e)  # 1 x 1
-                    p1[np.isnan(p1)] = 1.0  # 1 x 1
-                    e = e @ np.linalg.inv(p1)  # m x 1
+                    e = e - Q @ (Q.T @ (self.W @ e))  # m x c
+                    p1 = np.sqrt(e.T @ self.W @ e)  # c x c
+                    p1[np.isnan(p1)] = 0.0  # c x c
+                    e = e @ np.linalg.inv(p1)  # m x c
                 # Step 17: Construct Y
                 Y = np.block(
-                    [[np.diag(Sigma), d], [np.zeros_like(d.T), p]]
-                )  # k + 1 x k + 1
+                    [
+                        [np.diag(Sigma), d],
+                        [np.zeros((c, self.n_components)), p],
+                    ]
+                )  # k + c x k + c
                 QY, SigmaY, RYt = np.linalg.svd(
                     Y
-                )  # k + 1 x k + 1, k + 1 x 1, k + 1 x k + 1
-                RY = RYt.T  # k + 1 x k + 1
+                )  # k + c x k + c, k + c x 1, k + c x k + c
+                RY = RYt.T  # k + c x k + c
                 # Step 20: Update Q0
                 Q_0diff = QY.shape[0] - self.Q0.shape[0]
                 Q_1diff = QY.shape[1] - self.Q0.shape[1]
@@ -603,16 +611,16 @@ class OnlineSVDZhang(OnlineSVD):
                         ]
                     )
                     @ QY
-                )  # k + 1 x k + 1
-                Qe = np.column_stack((Q, e))  # m x k + 1
+                )  # k + c x k + c
+                Qe = np.column_stack((Q, e))  # m x k + c
                 # TODO: verify implementation of rank increasing updates
                 # Step 19: Check if rank increasing
                 if SigmaY[k] > self.tol and self.rank_updates:
                     # Step 20 - 21: Update Q, Sigma, R
-                    Q = Qe @ self.Q0  # m x k + 1
-                    Sigma = SigmaY  # k + 1 x 1
-                    _R1 = RY[:k, :]  # k x k + 1
-                    _R2 = RY[k, :]  # 1 x k + 1
+                    Q = Qe @ self.Q0  # m x k + c
+                    Sigma = SigmaY  # k + c x c
+                    _R1 = RY[:k, :]  # k x k + c
+                    _R2 = RY[k, :]  # 1 x k + c
                     R = np.row_stack((R @ _R1, _R2))  # n + 1 x k + 1
                     self.Q0 = np.eye(k + 1)  # k + 1 x k + 1
                 else:
@@ -786,25 +794,17 @@ class OnlineSVDZhang(OnlineSVD):
         if isinstance(X, pd.DataFrame):
             self.feature_names_in_ = list(X.columns)
             X = X.values
-        else:
-            self.feature_names_in_ = [str(i) for i in range(X.shape[0])]
 
         if self.n_seen == 0:
-            self.n_features_in_ = X.shape[1]
-            if self.n_components == 0:
-                self.n_components = self.n_features_in_
-            self.V = np.empty((self.n_components, 0))
-            self.Q0 = np.identity(self.n_components)
-            # TODO: Allow weighting specified by user
-            self.W = np.identity(self.n_features_in_)
+            self._init_first_pass(X)
 
         if (
             hasattr(self, "_U")
             and hasattr(self, "_S")
             and hasattr(self, "_Vt")
         ):
-            for x in X:
-                self.learn_one(x.reshape(1, -1))
+            # Learn one support multiple samples ;)
+            self.learn_one(X)
         else:
             assert np.linalg.matrix_rank(X.T) >= self.n_components
             self._U, self._S, self._Vt = _svd(X.T, self.n_components)
