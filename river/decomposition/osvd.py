@@ -159,16 +159,16 @@ class OnlineSVD(MiniBatchTransformer):
     >>> for _, x in X.iloc[10:-1].iterrows():
     ...     svd.learn_one(x.values.reshape(1, -1))
     >>> svd.transform_one(X.iloc[0].to_dict())
-    {0: ...0.0874..., 1: ...0.0086..., 2: ...0.1001...}
+    {0: ...0.0488..., 1: ...0.0613..., 2: ...0.1150...}
 
     >>> svd.update(X.iloc[-1].to_dict())
     >>> svd.transform_one(X.iloc[0].to_dict())
-    {0: ...0.0823..., 1: ...0.0129..., 2: ...0.1039...}
+    {0: ...0.0409..., 1: ...0.0336..., 2: ...0.1287...}
 
     For higher dimensional data and forced orthogonality, revert may not return us to the original state.
     >>> svd.revert(X.iloc[-1].to_dict(), idx=-1)
     >>> svd.transform_one(X.iloc[0].to_dict())
-    {0: ...0.0874..., 1: ...0.0086..., 2: ...0.1001...}
+    {0: ...0.0488..., 1: ...0.0613..., 2: ...0.1150...}
 
     >>> svd = OnlineSVD(n_components=0, initialize=3, force_orth=True)
     >>> svd.learn_many(X.iloc[:30])
@@ -366,8 +366,14 @@ class OnlineSVD(MiniBatchTransformer):
             and hasattr(self, "_S")
             and hasattr(self, "_Vt")
         ):
-            # Learn one support multiple samples ;)
-            self.learn_one(X)
+            if X.shape[0] <= self.n_features_in_:
+                self.learn_one(X)
+            else:
+                for X_part in [
+                    X[i : i + self.n_features_in_]
+                    for i in range(0, X.shape[0], self.n_features_in_)
+                ]:
+                    self.learn_one(X_part)
 
         else:
             assert np.linalg.matrix_rank(X.T) >= self.n_components
