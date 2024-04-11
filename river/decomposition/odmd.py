@@ -222,10 +222,10 @@ class OnlineDMD(MiniBatchRegressor, MiniBatchTransformer):
                 # self._modes = self._svd._U @ Phi_comp
 
                 # Proctor (2016)
-                # self._Y.T @ self._svd._V.T is increasingly more computationally expensive without rolling
+                # self._Y.T @ self._svd._Vt.T is increasingly more computationally expensive without rolling
                 self._modes = (
                     self._Y.T
-                    @ self._svd._V.T
+                    @ self._svd._Vt.T
                     @ np.diag(1 / self._svd._S)
                     @ Phi
                 )
@@ -557,7 +557,7 @@ class OnlineDMD(MiniBatchRegressor, MiniBatchTransformer):
             # Perform truncated DMD
             if self.r < self.m:
                 self._svd.learn_many(Xqhat)
-                _U, _S, _V = self._svd._U, self._svd._S, self._svd._V
+                _U, _S, _V = self._svd._U, self._svd._S, self._svd._Vt
 
                 _m = Yqhat.shape[1]
                 _l = self.m - _m
@@ -865,15 +865,15 @@ class OnlineDMDwC(OnlineDMD):
             if self.r < self.m:
                 # Sign of eigenvectors and singular vectors may change based on underlying algorithm initialization
                 # Proctor (2016)
-                # self._Y.T @ self._svd._V.T is increasingly more computationally expensive without rolling
+                # self._Y.T @ self._svd._Vt.T is increasingly more computationally expensive without rolling
                 self._modes = (
                     self._Y.T
-                    @ self._svd._V.T[:, : self.p]
+                    @ self._svd._Vt.T[:, : self.p]
                     @ np.diag(1 / self._svd._S[: self.p])
                     @ Phi
                 )
                 # Following has similar results to our modification
-                # self._modes = (self._Y.T @ self._svd._V.T @ np.diag(1/self._svd._S))[:, :self.p] @ Phi
+                # self._modes = (self._Y.T @ self._svd._Vt.T @ np.diag(1/self._svd._S))[:, :self.p] @ Phi
 
                 # This is faster but significantly alter results for OnlineDMDwC.
                 self._modes = (self._svd._U @ np.diag(1 / self._svd._S))[

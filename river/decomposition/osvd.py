@@ -296,7 +296,7 @@ class OnlineSVD(MiniBatchTransformer):
             # VVT = V @ _Vt  # n + c x n + c
             # Q = (np.eye(nc) - VVT) @ B  # n + c x c
             Q = B - V @ N  # n + c x c
-            Qot = np.linalg.qr(Q)[0].T
+            Qot = np.linalg.qr(Q)[0].T  # c x n + c
             # R_B = Q.T @ Q  # c x c
 
             Z = np.zeros((c, self.n_components))  # c x r
@@ -304,12 +304,11 @@ class OnlineSVD(MiniBatchTransformer):
 
             U_, S_, Vt_ = _svd(
                 K, self.n_components
-            )  # r + 1 x r; ...; r x r + 1
+            )  # r + c x r; ...; r x r + c
 
             U_ = np.column_stack((self._U, P)) @ U_  # m x r
-            # Vt_ = Vt_ @ np.row_stack((_Vt, qot))  # r x n + 1
-            # Append row to V (paper calls for using Qot instead of q)
-            Vt_ = Vt_ @ np.row_stack((_Vt, Qot))  # r x n + 1
+            Vt_ = Vt_ @ np.row_stack((_Vt, Qot))  # r x n + c
+
             if self.force_orth:
                 U_, S_, Vt_ = _orthogonalize(U_, S_, Vt_)
 
@@ -318,36 +317,40 @@ class OnlineSVD(MiniBatchTransformer):
         self.n_seen += x.shape[0]
 
     def revert(self, x: dict | np.ndarray, idx: int = 0):
-        # TODO: use in revert_many or remove before push
-        # S_ = np.pad(np.diag(self._S), ((0, c), (0, c)))  # r + c x r + c
-        # K = (
-        #     S_ + np.vstack((Ut @ A, R_A)) @ np.vstack((_Vt @ B, R_B)).T
-        # )  # r + c x r + c
-        b = np.zeros(self._Vt.shape[1])
-        b[-1] = 1.0
-        b = b.reshape(-1, 1)
+        c = 1 if isinstance(x, dict) else x.shape[0]
+        nc = self._Vt.shape[1]
+        B = np.zeros((nc, c))  # n + c x c
+        if idx >= 0:
+            B[idx : idx + c, :] = np.identity(c)
+        elif idx == -1:
+            B[-c:, :] = np.identity(c)
+        else:
+            B[-c + idx + 1 : idx + 1, :] = np.identity(c)
 
-        n = self._Vt[:, idx].reshape(-1, 1)
+        # Schmid takes first c columns of Vt
+        N = self._Vt @ B  # r x c
+        V = self._Vt.T  # n + c x r
+        Q = B - V @ N  # n + c x c
+        Qot = np.linalg.qr(Q)[
+            0
+        ].T  # c x n + c; Orthonormal basis of column space of q
 
-        q = b - self._Vt.T @ n
-        Q, _ = np.linalg.qr(q)  # Orthonormal basis of column space of q
-        # Rb = Q.T @ q
-        S_ = np.pad(np.diag(self._S), ((0, 1), (0, 1)))
+        S_ = np.pad(np.diag(self._S), ((0, c), (0, c)))  # r + c x r + c
         # For full-rank SVD, this results in nn == 1.
-        nn = n.T @ n
-        norm_n = np.sqrt(1.0 - nn) if nn < 1 else 0.0
+        NtN = N.T @ N  # c x c
+        norm_n = np.sqrt(1.0 - NtN) if NtN < 1 else 0.0  # c x c
         K = S_ @ (
             np.identity(S_.shape[0])
-            - np.row_stack((n, 0.0)) @ np.row_stack((n, norm_n)).T
-        )
-        U_, S_, Vt_ = _svd(K, self.n_components)
+            - np.row_stack((N, np.zeros((c, c)))) @ np.row_stack((N, norm_n)).T
+        )  # r + c x r + c
+        U_, S_, Vt_ = _svd(K, self.n_components)  # r + c x r; ...; r x r + c
 
         # Since the update is not rank-increasing, we can skip computation of P
         #  otherwise we do U_ = np.column_stack((self._U, P)) @ U_
-        U_ = self._U @ U_[: self.n_components, :]
+        U_ = self._U @ U_[: self.n_components, :]  # m x r
 
-        Vt_ = Vt_ @ np.row_stack((self._Vt, Q.T))[:, :-1]
-        # Vt_ = Vt_[:, : self.n_components] @ self._Vt[:, :-1]
+        Vt_ = Vt_ @ np.row_stack((self._Vt, Qot))[:, :-c]  # r x n
+        # Vt_ = Vt_[:, : self.n_components] @ self._Vt[:, :-c]
 
         if self.force_orth:  # and not test_orthonormality(U_):
             U_, S_, Vt_ = _orthogonalize(U_, S_, Vt_)
