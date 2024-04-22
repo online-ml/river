@@ -48,7 +48,7 @@ jobs:
           # CIBW_ARCHS_MACOS: "x86_64 arm64"
           CIBW_ARCHS_MACOS: "universal2"
           # We don't build ARM64 wheels yet because there's a Rust issue
-          CIBW_ARCHS_WINDOWS: "AMD64 x86"
+          CIBW_ARCHS_WINDOWS: "auto"
           # Rust nighlty doesn't seem to be available for musl linux on i686 and ppc64le and s390x (yet)
           CIBW_SKIP: "*-musllinux_i686 *-musllinux_ppc64le *-musllinux_s390x"
 
