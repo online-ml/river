@@ -263,7 +263,9 @@ class OnlineDMD(MiniBatchRegressor, MiniBatchTransformer):
         if self.eig_rtol is None:
             return False
         return np.allclose(
-            np.abs(self._A_last), np.abs(self.A), rtol=self.eig_rtol
+            np.abs(self._A_last[:, : self.A.shape[1]]),
+            np.abs(self.A),
+            rtol=self.eig_rtol,
         )
 
     def _init_update(self) -> None:
@@ -365,11 +367,11 @@ class OnlineDMD(MiniBatchRegressor, MiniBatchTransformer):
 
         if isinstance(x, dict):
             self.feature_names_in_ = list(x.keys())
-            x = np.array(list(x.values()))
+            x = np.array(list(x.values()), ndmin=2)
         x_ = x.reshape(1, -1)
         if isinstance(y, dict):
             assert self.feature_names_in_ == list(y.keys())
-            y = np.array(list(y.values()))
+            y = np.array(list(y.values()), ndmin=2)
         y_ = y.reshape(1, -1)
 
         # Initialize properties which depend on the shape of x

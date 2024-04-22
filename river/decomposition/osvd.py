@@ -233,11 +233,11 @@ class OnlineSVD(MiniBatchTransformer):
         self.n_features_in_ = x.shape[1]
         if self.n_components == 0:
             self.n_components = self.n_features_in_
+        self._X_init = np.empty((0, self.n_features_in_))
         if x.shape[0] == 1:
             # Make initialize feasible if not set and learn_one is called first
             if not self.initialize:
                 self.initialize = self.n_components
-            self._X_init = np.empty((self.initialize, self.n_features_in_))
             # Initialize _U with random orthonormal matrix for transform_one
             r_mat = np.random.randn(self.n_features_in_, self.n_components)
             self._U, _ = np.linalg.qr(r_mat)
@@ -254,7 +254,7 @@ class OnlineSVD(MiniBatchTransformer):
 
         # Initialize if called without learn_many
         if bool(self.initialize) and self.n_seen <= self.initialize - 1:
-            self._X_init[self.n_seen, :] = x
+            self._X_init = np.row_stack((self._X_init, x))
             if self.n_seen == self.initialize - 1:
                 self.learn_many(self._X_init)
                 # revert I seen which learn_many accounted for
