@@ -11,37 +11,48 @@ jobs:
     name: Build wheels on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
+      # https://github.com/actions/runner-images/tree/main
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-11, macos-latest]
+        os:
+          [
+            ubuntu-20.04,
+            ubuntu-22.04,
+            windows-2019,
+            windows-2022,
+            macos-12,
+            macos-13,
+            macos-14,
+          ]
 
     steps:
       - uses: actions/checkout@v3
 
       - name: Set up rust
-        if: matrix.os != 'ubuntu-latest'
+        if: matrix.os != 'ubuntu-20.04' && matrix.os != 'ubuntu-22.04'
         uses: actions-rs/toolchain@v1
         with:
           profile: minimal
           toolchain: nightly
           override: true
 
-      - run: rustup target add aarch64-apple-darwin
-        if: matrix.os == 'macos-latest' || matrix.os == 'macos-11'
+      - run: rustup target add aarch64-apple-darwin && rustup target add x86_64-apple-darwin
+        if: matrix.os == 'macos-12' || matrix.os == 'macos-13' || matrix.os == 'macos-14'
 
       - run: rustup toolchain install stable-i686-pc-windows-msvc
-        if: matrix.os == 'windows-latest'
+        if: matrix.os == 'windows-2019' || matrix.os == 'windows-2022'
 
       - run: rustup target add i686-pc-windows-msvc
-        if: matrix.os == 'windows-latest'
+        if: matrix.os == 'windows-2019' || matrix.os == 'windows-2022'
 
       - name: Set up QEMU
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.os == 'ubuntu-20.04' || matrix.os == 'ubuntu-22.04'
         uses: docker/setup-qemu-action@v3
         with:
           platforms: all
 
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.16.2
+        uses: pypa/cibuildwheel@v2.17.0
+        timeout-minutes: 720
         env:
           CIBW_BUILD: "cp39-* cp310-* cp311-* cp312-*"
           CIBW_ARCHS_LINUX: "x86_64 i686 aarch64 ppc64le s390x"
