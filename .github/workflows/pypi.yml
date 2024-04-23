@@ -52,6 +52,7 @@ jobs:
 
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.17.0
+        timeout-minutes: 720
         env:
           CIBW_BUILD: "cp39-* cp310-* cp311-* cp312-*"
           CIBW_ARCHS_LINUX: "x86_64 i686 aarch64 ppc64le s390x"
