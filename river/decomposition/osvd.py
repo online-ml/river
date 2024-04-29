@@ -52,7 +52,7 @@ def test_orthonormality(vectors, tol=1e-10):  # pragma: no cover
     return is_orthonormal
 
 
-def _orthogonalize(U, S, Vt):
+def _orthogonalize(U, S, Vt, solver="arpack", random_state=None):
     """Orthogonalize the singular value decomposition.
 
     This function orthogonalizes the singular value decomposition by performing
@@ -66,11 +66,8 @@ def _orthogonalize(U, S, Vt):
     # UQ, UR = np.linalg.qr(U, mode="complete")
     # VQ, VR = np.linalg.qr(Vt, mode="complete")
     # A = UR @ np.diag(S) @ VR
-    # if 0 < n_components and n_components < min(A.shape):
-    #     tU, tS, tV = sp.sparse.linalg.svds(A, k=n_components)
-    #     tU, tS, tV = _sort_svd(tU, tS, tV)
-    # else:
-    #     tU, tS, tV = np.linalg.svd(A, full_matrices=False)
+    # tU, tS, tV = _svd(A, 0, None, solver, random_state)
+    # return UQ @ tU_, tSigma_, VQ @ tV_
 
     # Zhang, Y. (2022)
     # if (U.T @ U > 1e-10).any():
@@ -98,30 +95,38 @@ def _sort_svd(U, S, Vt):
     return U, S, Vt
 
 
-def _truncate_svd(U, S, Vt):
+def _truncate_svd(U, S, Vt, n_components):
     """Truncate the singular value decomposition to the n components.
 
     Full SVD returns the full matrices U, S, and V in correct order. If the
     result acqisition is faster than sparse SVD, we combine the results of
     full SVD with truncation.
     """
-    n_components = S.shape[0]
     U = U[:, :n_components]
     S = S[:n_components]
     Vt = Vt[:n_components, :]
+    return U, S, Vt
 
 
-def _svd(A, n_components):
+def _svd(A, n_components, v0=None, solver="arpack", random_state=None):
     """Compute the singular value decomposition of a matrix.
 
     This function computes the singular value decomposition of a matrix A.
     If n_components < min(A.shape), the function uses sparse SVD for speed up.
     """
     if 0 < n_components and n_components < min(A.shape):
-        U, S, Vt = sp.sparse.linalg.svds(A, k=n_components)
+        U, S, Vt = sp.sparse.linalg.svds(
+            A, k=n_components, v0=v0, solver=solver, random_state=random_state
+        )
         U, S, Vt = _sort_svd(U, S, Vt)
     else:
         U, S, Vt = np.linalg.svd(A, full_matrices=False)
+        # # TODO: implement Optimal truncation if n_components is not set
+        # #  Gavish, M., & Donoho, D. L. (2014). The optimal hard threshold for singular values is 4/sqrt(3).
+        # beta = A.shape[0] / A.shape[1]
+        # omega = 0.56 * beta**3 - 0.95 * beta**2 + 1.82 * beta + 1.43
+        # n_c_opt = sum(S > omega)
+        # U, S, Vt = _truncate_svd(U, S, Vt, n_c_opt)
     return U, S, Vt
 
 
@@ -188,11 +193,13 @@ class OnlineSVD(MiniBatchTransformer):
         n_components: int = 2,
         initialize: int = 0,
         force_orth: bool = True,
+        solver="arpack",
         seed: int | None = None,
     ):
         self.n_components = n_components
         self.initialize = initialize
         self.force_orth = force_orth
+        self.solver = solver
         self.seed = seed
 
         np.random.seed(self.seed)
@@ -293,7 +300,12 @@ class OnlineSVD(MiniBatchTransformer):
             K = np.block([[np.diag(self._S), M], [Z, R_A]])  # r + c x r + c
 
             U_, S_, Vt_ = _svd(
-                K, self.n_components
+                K,
+                self.n_components,
+                # v0=np.column_stack((self._U, Pot.T))[0,:],  # N > M
+                v0=np.row_stack((_Vt, Qot))[:, 0],  # N <= M
+                solver=self.solver,
+                random_state=self.seed,
             )  # r + c x r; ...; r x r + c
 
             U_ = np.column_stack((self._U, Pot.T)) @ U_  # m x r
@@ -333,7 +345,13 @@ class OnlineSVD(MiniBatchTransformer):
             np.identity(S_.shape[0])
             - np.row_stack((N, np.zeros((c, c)))) @ np.row_stack((N, norm_n)).T
         )  # r + c x r + c
-        U_, S_, Vt_ = _svd(K, self.n_components)  # r + c x r; ...; r x r + c
+        U_, S_, Vt_ = _svd(
+            K,
+            self.n_components,
+            v0=np.row_stack((self._Vt, Qot))[:, 0],
+            solver=self.solver,
+            random_state=self.seed,
+        )  # r + c x r; ...; r x r + c
 
         # Since the update is not rank-increasing, we can skip computation of P
         #  otherwise we do U_ = np.column_stack((self._U, P)) @ U_
@@ -377,7 +395,12 @@ class OnlineSVD(MiniBatchTransformer):
 
         else:
             assert np.linalg.matrix_rank(X.T) >= self.n_components
-            self._U, self._S, self._Vt = _svd(X.T, self.n_components)
+            self._U, self._S, self._Vt = _svd(
+                X.T,
+                self.n_components,
+                solver=self.solver,
+                random_state=self.seed,
+            )
 
             self.n_seen = X.shape[0]
 
@@ -784,28 +807,3 @@ class OnlineSVDZhang(OnlineSVD):
         self._U, self._S, self._Vt = Q, Sigma, R.T
 
         self.n_seen += 1
-
-    def learn_one(self, x: dict | np.ndarray):
-        """Allias for update method."""
-        self.update(x)
-
-    def learn_many(self, X: np.ndarray | pd.DataFrame):
-        if isinstance(X, pd.DataFrame):
-            self.feature_names_in_ = list(X.columns)
-            X = X.values
-
-        if self.n_seen == 0:
-            self._init_first_pass(X)
-
-        if (
-            hasattr(self, "_U")
-            and hasattr(self, "_S")
-            and hasattr(self, "_Vt")
-        ):
-            # Learn one support multiple samples ;)
-            self.learn_one(X)
-        else:
-            assert np.linalg.matrix_rank(X.T) >= self.n_components
-            self._U, self._S, self._Vt = _svd(X.T, self.n_components)
-
-            self.n_seen = X.shape[0]

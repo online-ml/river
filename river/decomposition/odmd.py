@@ -165,12 +165,17 @@ class OnlineDMD(MiniBatchRegressor, MiniBatchTransformer):
         self.force_orth = force_orth
         if self.r != 0:
             # Forcing orthogonality makes the results more unstable
-            self._svd = OnlineSVD(n_components=self.r, force_orth=force_orth)
+            self._svd = OnlineSVD(
+                n_components=self.r,
+                force_orth=force_orth,
+                seed=seed,
+            )
         self.w = float(w)
         assert self.w > 0 and self.w <= 1
         self.initialize = int(initialize)
         self.exponential_weighting = exponential_weighting
         self.eig_rtol = eig_rtol
+        assert self.eig_rtol is None or 0.0 <= self.eig_rtol < 1.0
         self.seed = seed
 
         np.random.seed(self.seed)
@@ -898,7 +903,11 @@ class OnlineDMDwC(OnlineDMD):
         else:
             self.r = self.p + self.q
         # TODO: if p or q == 0 in __init__, we need to reinitialize SVD
-        self._svd = OnlineSVD(n_components=self.r, force_orth=False)
+        self._svd = OnlineSVD(
+            n_components=self.r,
+            force_orth=False,
+            seed=self.seed,
+        )
         if self.initialize < self.r:
             warnings.warn(
                 f"Initialization is under-constrained. Changed initialize to {self.r}."
@@ -997,7 +1006,7 @@ class OnlineDMDwC(OnlineDMD):
                 self.n_seen += 1
 
             else:
-                if self.known_B and self.B:
+                if self.known_B and self.B is not None:
                     y = y - u @ self.B.T
                 else:
                     x = np.column_stack((x, u))
@@ -1060,7 +1069,7 @@ class OnlineDMDwC(OnlineDMD):
         if isinstance(u, dict):
             u = np.array(list(u.values()))
         u = u.reshape(1, -1)
-        if self.known_B and self.B:
+        if self.known_B and self.B is not None:
             y = y - u @ self.B.T
         else:
             x = np.column_stack((x, u))
@@ -1141,7 +1150,7 @@ class OnlineDMDwC(OnlineDMD):
             X = X[:-1]
             U = U[:-1]
 
-        if self.known_B and self.B:
+        if self.known_B and self.B is not None:
             Y = Y - U @ self.B.T
         else:
             X = np.column_stack((X, U))
