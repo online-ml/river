@@ -275,7 +275,8 @@ class OnlineSVD(MiniBatchTransformer):
             P = A - self._U @ M  # m x c
             # TODO: [1] suggest computing orthogonal basis of P.
             #  Results seems to be the same for non rank-increasing updates.
-            Pot = np.linalg.qr(P)[0].T  # c x m or m x m if m < c
+            Po = np.linalg.qr(P)[0]
+            Pot = Po.T  # c x m or m x m if m < c
             R_A = np.pad(
                 Pot @ P, ((0, P.shape[1] - Pot.shape[0]), (0, 0))
             )  # c x c
@@ -308,7 +309,7 @@ class OnlineSVD(MiniBatchTransformer):
                 random_state=self.seed,
             )  # r + c x r; ...; r x r + c
 
-            U_ = np.column_stack((self._U, Pot.T)) @ U_  # m x r
+            U_ = np.column_stack((self._U, Po)) @ U_  # m x r
             Vt_ = Vt_ @ np.row_stack((_Vt, Qot))  # r x n + c
 
             if self.force_orth:
@@ -322,15 +323,15 @@ class OnlineSVD(MiniBatchTransformer):
         c = 1 if isinstance(x, dict) else x.shape[0]
         nc = self._Vt.shape[1]
         B = np.zeros((nc, c))  # n + c x c
-        if idx >= 0:
-            B[idx : idx + c, :] = np.identity(c)
-        elif idx == -1:
-            B[-c:, :] = np.identity(c)
-        else:
-            B[-c + idx + 1 : idx + 1, :] = np.identity(c)
-
+        B[-c:] = np.identity(c)
         # Schmid takes first c columns of Vt
-        N = self._Vt @ B  # r x c
+        # N = _Vt @ B  # r x c
+        if idx >= 0:
+            N = self._Vt[:, idx : idx + c]  # r x c
+        elif idx == -1:
+            N = self._Vt[:, -c:]  # r x c
+        else:
+            N = self._Vt[:, -c + idx + 1 : idx + 1]  # r x c
         V = self._Vt.T  # n + c x r
         Q = B - V @ N  # n + c x c
         Qot = np.linalg.qr(Q)[
@@ -348,6 +349,7 @@ class OnlineSVD(MiniBatchTransformer):
         U_, S_, Vt_ = _svd(
             K,
             self.n_components,
+            # Seems like this converges to different results
             v0=np.row_stack((self._Vt, Qot))[:, 0],
             solver=self.solver,
             random_state=self.seed,
@@ -576,7 +578,7 @@ class OnlineSVDZhang(OnlineSVD):
             d = Q.T @ (self.W @ A)  # k x c
             e = A - Q @ d  # m x c
             p = np.sqrt(e.T @ self.W @ e)  # c x c
-            p[np.isnan(p)] = 0.0  # c x c
+            p[np.isnan(p)] = np.zeros((c,c))  # c x c
             # Step 2: Check tolerance
             if (p < self.tol).all():  # n_incr += c
                 self.q += 1  # 1 x 1
