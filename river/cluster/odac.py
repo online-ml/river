@@ -97,66 +97,66 @@ class ODAC(base.Clusterer):
     #################
     Change detected at observation 49
     ROOT d1=0.83 d2=0.82 [NOT ACTIVE]
-    └── CH1_LVL_1 d1=<Not calculated> [0, 1, 4, 5, 6, 7, 8]
+    ├── CH1_LVL_1 d1=<Not calculated> [0, 1, 4, 5, 6, 7, 8]
     └── CH2_LVL_1 d1=<Not calculated> [2, 3, 9]
     #################
     Change detected at observation 99
     ROOT d1=0.83 d2=0.82 [NOT ACTIVE]
     ├── CH1_LVL_1 d1=0.79 d2=0.78 [NOT ACTIVE]
-        └── CH1_LVL_2 d1=<Not calculated> [0, 4, 5]
-        └── CH2_LVL_2 d1=<Not calculated> [1, 6, 7, 8]
+    │   ├── CH1_LVL_2 d1=<Not calculated> [0, 4, 5]
+    │   └── CH2_LVL_2 d1=<Not calculated> [1, 6, 7, 8]
     └── CH2_LVL_1 d1=0.79 d2=0.74 [NOT ACTIVE]
-        └── CH1_LVL_2 d1=<Not calculated> [2, 9]
+        ├── CH1_LVL_2 d1=<Not calculated> [2, 9]
         └── CH2_LVL_2 d1=<Not calculated> [3]
     #################
     Change detected at observation 149
     ROOT d1=0.83 d2=0.82 [NOT ACTIVE]
     ├── CH1_LVL_1 d1=0.79 d2=0.78 [NOT ACTIVE]
     │   ├── CH1_LVL_2 d1=0.74 d2=0.71 [NOT ACTIVE]
-    │       └── CH1_LVL_3 d1=<Not calculated> [0]
-    │       └── CH2_LVL_3 d1=<Not calculated> [4, 5]
+    │   │   ├── CH1_LVL_3 d1=<Not calculated> [0]
+    │   │   └── CH2_LVL_3 d1=<Not calculated> [4, 5]
     │   └── CH2_LVL_2 d1=0.80 d2=0.77 [NOT ACTIVE]
-    │       └── CH1_LVL_3 d1=<Not calculated> [1, 6]
+    │       ├── CH1_LVL_3 d1=<Not calculated> [1, 6]
     │       └── CH2_LVL_3 d1=<Not calculated> [7, 8]
     └── CH2_LVL_1 d1=0.79 d2=0.74 [NOT ACTIVE]
-        └── CH1_LVL_2 d1=0.74 [2, 9]
+        ├── CH1_LVL_2 d1=0.74 [2, 9]
         └── CH2_LVL_2 d1=<Not calculated> [3]
     #################
     Change detected at observation 199
     ROOT d1=0.83 d2=0.82 [NOT ACTIVE]
     ├── CH1_LVL_1 d1=0.79 d2=0.78 [NOT ACTIVE]
-        └── CH1_LVL_2 d1=0.74 d2=0.71 [0, 4, 5]
+    │   ├── CH1_LVL_2 d1=0.74 d2=0.71 [0, 4, 5]
     │   └── CH2_LVL_2 d1=0.80 d2=0.77 [NOT ACTIVE]
-    │       └── CH1_LVL_3 d1=0.76 [1, 6]
+    │       ├── CH1_LVL_3 d1=0.76 [1, 6]
     │       └── CH2_LVL_3 d1=0.67 [7, 8]
     └── CH2_LVL_1 d1=0.79 d2=0.74 [NOT ACTIVE]
-        └── CH1_LVL_2 d1=0.70 [2, 9]
+        ├── CH1_LVL_2 d1=0.70 [2, 9]
         └── CH2_LVL_2 d1=<Not calculated> [3]
     #################
     Change detected at observation 249
     ROOT d1=0.83 d2=0.82 [NOT ACTIVE]
     ├── CH1_LVL_1 d1=0.79 d2=0.78 [NOT ACTIVE]
     │   ├── CH1_LVL_2 d1=0.79 d2=0.66 [NOT ACTIVE]
-    │       └── CH1_LVL_3 d1=<Not calculated> [0, 4]
-    │       └── CH2_LVL_3 d1=<Not calculated> [5]
+    │   │   ├── CH1_LVL_3 d1=<Not calculated> [0, 4]
+    │   │   └── CH2_LVL_3 d1=<Not calculated> [5]
     │   └── CH2_LVL_2 d1=0.80 d2=0.77 [NOT ACTIVE]
-    │       └── CH1_LVL_3 d1=0.75 [1, 6]
+    │       ├── CH1_LVL_3 d1=0.75 [1, 6]
     │       └── CH2_LVL_3 d1=0.66 [7, 8]
     └── CH2_LVL_1 d1=0.79 d2=0.74 [NOT ACTIVE]
-        └── CH1_LVL_2 d1=0.69 [2, 9]
+        ├── CH1_LVL_2 d1=0.69 [2, 9]
         └── CH2_LVL_2 d1=<Not calculated> [3]
 
     >>> model.draw()
     ROOT d1=0.8336 d2=0.8173 [NOT ACTIVE]
     ├── CH1_LVL_1 d1=0.7927 d2=0.7762 [NOT ACTIVE]
     │   ├── CH1_LVL_2 d1=0.7871 d2=0.6562 [NOT ACTIVE]
-    │       └── CH1_LVL_3 d1=0.7558 [0, 4]
-    │       └── CH2_LVL_3 d1=<Not calculated> [5]
+    │   │   ├── CH1_LVL_3 d1=0.7558 [0, 4]
+    │   │   └── CH2_LVL_3 d1=<Not calculated> [5]
     │   └── CH2_LVL_2 d1=0.8014 d2=0.7718 [NOT ACTIVE]
-    │       └── CH1_LVL_3 d1=0.7459 [1, 6]
+    │       ├── CH1_LVL_3 d1=0.7459 [1, 6]
     │       └── CH2_LVL_3 d1=0.6663 [7, 8]
     └── CH2_LVL_1 d1=0.7853 d2=0.7428 [NOT ACTIVE]
-        └── CH1_LVL_2 d1=0.6908 [2, 9]
+        ├── CH1_LVL_2 d1=0.6908 [2, 9]
         └── CH2_LVL_2 d1=<Not calculated> [3]
 
     >>> print("n_clusters = {}".format(model.n_clusters))
@@ -349,11 +349,11 @@ class ODACCluster(base.Base):
         node = self
         prefix = (
             pre_2
-            if node.parent is not None and node.children is not None and id(node) != id(node.parent.children.second)
+            if node.parent is not None and id(node) != id(node.parent.children.second)
             else pre_3
         )
         while node.parent is not None and node.parent.parent is not None:
-            if node.children is not None and id(node.parent) != id(node.parent.parent.children.second):
+            if id(node.parent) != id(node.parent.parent.children.second):
                 prefix = pre_1 + prefix
             else:
                 prefix = pre_0 + prefix
