@@ -79,13 +79,13 @@ class ODAC(base.Clusterer):
     In the following example we utilize one dataset described in paper [^1].
 
     >>> from river.cluster import ODAC
-    >>> from river.stream import iter_csv
+    >>> from river.datasets import synth
 
     >>> model = ODAC(confidence_level=0.9, n_min=50)
 
-    >>> dataset = iter_csv("four_cluster_dataset.csv")
+    >>> dataset = synth.FriedmanDrift(drift_type='lea',position=(1, 2, 3),seed=42)
 
-    >>> for i, (X, _) in enumerate(dataset):
+    >>> for i, (X, _) in enumerate(dataset.take(300)):
     ...     model.learn_one(X)
     ...     if model.structure_changed:
     ...         print("#################")
@@ -93,49 +93,83 @@ class ODAC(base.Clusterer):
     ...         model.draw(n_decimal_places = 2)
     #################
     Change detected at observation 0
-    ROOT d1=<Not calculated> ['S0', 'S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'S7', 'S8', 'S9']
+    ROOT d1=<Not calculated> [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
     #################
     Change detected at observation 49
-    ROOT d1=1.00 d2=1.00 [NOT ACTIVE]
-    ├── CH1_LVL_1 d1=<Not calculated> ['S0', 'S1']
-    └── CH2_LVL_1 d1=<Not calculated> ['S2', 'S3', 'S4', 'S5', 'S6', 'S7', 'S8', 'S9']
+    ROOT d1=0.83 d2=0.82 [NOT ACTIVE]
+    └── CH1_LVL_1 d1=<Not calculated> [0, 1, 4, 5, 6, 7, 8]
+    └── CH2_LVL_1 d1=<Not calculated> [2, 3, 9]
     #################
     Change detected at observation 99
-    ROOT d1=1.00 d2=1.00 [NOT ACTIVE]
-    ├── CH1_LVL_1 d1=0.10 ['S0', 'S1']
-    └── CH2_LVL_1 d1=0.40 d2=0.40 [NOT ACTIVE]
-        ├── CH1_LVL_2 d1=<Not calculated> ['S2', 'S3', 'S4']
-        └── CH2_LVL_2 d1=<Not calculated> ['S5', 'S6', 'S7', 'S8', 'S9']
+    ROOT d1=0.83 d2=0.82 [NOT ACTIVE]
+    ├── CH1_LVL_1 d1=0.79 d2=0.78 [NOT ACTIVE]
+        └── CH1_LVL_2 d1=<Not calculated> [0, 4, 5]
+        └── CH2_LVL_2 d1=<Not calculated> [1, 6, 7, 8]
+    └── CH2_LVL_1 d1=0.79 d2=0.74 [NOT ACTIVE]
+        └── CH1_LVL_2 d1=<Not calculated> [2, 9]
+        └── CH2_LVL_2 d1=<Not calculated> [3]
+    #################
+    Change detected at observation 149
+    ROOT d1=0.83 d2=0.82 [NOT ACTIVE]
+    ├── CH1_LVL_1 d1=0.79 d2=0.78 [NOT ACTIVE]
+    │   ├── CH1_LVL_2 d1=0.74 d2=0.71 [NOT ACTIVE]
+    │       └── CH1_LVL_3 d1=<Not calculated> [0]
+    │       └── CH2_LVL_3 d1=<Not calculated> [4, 5]
+    │   └── CH2_LVL_2 d1=0.80 d2=0.77 [NOT ACTIVE]
+    │       └── CH1_LVL_3 d1=<Not calculated> [1, 6]
+    │       └── CH2_LVL_3 d1=<Not calculated> [7, 8]
+    └── CH2_LVL_1 d1=0.79 d2=0.74 [NOT ACTIVE]
+        └── CH1_LVL_2 d1=0.74 [2, 9]
+        └── CH2_LVL_2 d1=<Not calculated> [3]
+    #################
+    Change detected at observation 199
+    ROOT d1=0.83 d2=0.82 [NOT ACTIVE]
+    ├── CH1_LVL_1 d1=0.79 d2=0.78 [NOT ACTIVE]
+        └── CH1_LVL_2 d1=0.74 d2=0.71 [0, 4, 5]
+    │   └── CH2_LVL_2 d1=0.80 d2=0.77 [NOT ACTIVE]
+    │       └── CH1_LVL_3 d1=0.76 [1, 6]
+    │       └── CH2_LVL_3 d1=0.67 [7, 8]
+    └── CH2_LVL_1 d1=0.79 d2=0.74 [NOT ACTIVE]
+        └── CH1_LVL_2 d1=0.70 [2, 9]
+        └── CH2_LVL_2 d1=<Not calculated> [3]
     #################
     Change detected at observation 249
-    ROOT d1=1.00 d2=1.00 [NOT ACTIVE]
-    ├── CH1_LVL_1 d1=0.08 ['S0', 'S1']
-    └── CH2_LVL_1 d1=0.40 d2=0.40 [NOT ACTIVE]
-        ├── CH1_LVL_2 d1=0.08 d2=0.08 ['S2', 'S3', 'S4']
-        └── CH2_LVL_2 d1=0.16 d2=0.16 [NOT ACTIVE]
-            ├── CH1_LVL_3 d1=<Not calculated> ['S5']
-            └── CH2_LVL_3 d1=<Not calculated> ['S6', 'S7', 'S8', 'S9']
+    ROOT d1=0.83 d2=0.82 [NOT ACTIVE]
+    ├── CH1_LVL_1 d1=0.79 d2=0.78 [NOT ACTIVE]
+    │   ├── CH1_LVL_2 d1=0.79 d2=0.66 [NOT ACTIVE]
+    │       └── CH1_LVL_3 d1=<Not calculated> [0, 4]
+    │       └── CH2_LVL_3 d1=<Not calculated> [5]
+    │   └── CH2_LVL_2 d1=0.80 d2=0.77 [NOT ACTIVE]
+    │       └── CH1_LVL_3 d1=0.75 [1, 6]
+    │       └── CH2_LVL_3 d1=0.66 [7, 8]
+    └── CH2_LVL_1 d1=0.79 d2=0.74 [NOT ACTIVE]
+        └── CH1_LVL_2 d1=0.69 [2, 9]
+        └── CH2_LVL_2 d1=<Not calculated> [3]
 
-    >>> model.draw(n_decimal_places = 2)
-    ROOT d1=1.00 d2=1.00 [NOT ACTIVE]
-    ├── CH1_LVL_1 d1=0.08 ['S0', 'S1']
-    └── CH2_LVL_1 d1=0.40 d2=0.40 [NOT ACTIVE]
-        ├── CH1_LVL_2 d1=0.08 d2=0.08 ['S2', 'S3', 'S4']
-        └── CH2_LVL_2 d1=0.16 d2=0.16 [NOT ACTIVE]
-            ├── CH1_LVL_3 d1=<Not calculated> ['S5']
-            └── CH2_LVL_3 d1=0.08 d2=0.08 ['S6', 'S7', 'S8', 'S9']
+    >>> model.draw()
+    ROOT d1=0.8336 d2=0.8173 [NOT ACTIVE]
+    ├── CH1_LVL_1 d1=0.7927 d2=0.7762 [NOT ACTIVE]
+    │   ├── CH1_LVL_2 d1=0.7871 d2=0.6562 [NOT ACTIVE]
+    │       └── CH1_LVL_3 d1=0.7558 [0, 4]
+    │       └── CH2_LVL_3 d1=<Not calculated> [5]
+    │   └── CH2_LVL_2 d1=0.8014 d2=0.7718 [NOT ACTIVE]
+    │       └── CH1_LVL_3 d1=0.7459 [1, 6]
+    │       └── CH2_LVL_3 d1=0.6663 [7, 8]
+    └── CH2_LVL_1 d1=0.7853 d2=0.7428 [NOT ACTIVE]
+        └── CH1_LVL_2 d1=0.6908 [2, 9]
+        └── CH2_LVL_2 d1=<Not calculated> [3]
 
     >>> print("n_clusters = {}".format(model.n_clusters))
-    n_clusters = 7
+    n_clusters = 11
 
     >>> print("n_active_clusters = {}".format(model.n_active_clusters))
-    n_active_clusters = 4
+    n_active_clusters = 6
 
     >>> print("height = {}".format(model.height))
     height = 3
 
     >>> print("summary = {}".format(model.summary))
-    summary = {'n_clusters': 7, 'n_active_clusters': 4, 'height': 3}
+    summary = {'n_clusters': 11, 'n_active_clusters': 6, 'height': 3}
 
     References
     ----------
@@ -263,7 +297,7 @@ class ODAC(base.Clusterer):
     def predict_one(self, x: dict):
         raise NotImplementedError
 
-    def draw(self, n_decimal_places=4) -> str:
+    def draw(self, n_decimal_places=4) -> None:
         """Method to draw the the hierarchical cluster's structure.
 
         Parameters
@@ -289,13 +323,11 @@ class ODACCluster(base.Base):
     def __init__(self, name: str, parent: ODACCluster | None = None):
         self.active = True
         self.name = name
-        self.parent = parent
-        self.children = None
+        self.parent: ODACCluster = parent
+        self.children: ODACChildren = None
 
         self.d1: float = None
         self.d2: float = None
-
-        self.timeseries_names: list[str] = []
 
         self.e: float = 0.0
 
@@ -317,11 +349,11 @@ class ODACCluster(base.Base):
         node = self
         prefix = (
             pre_2
-            if node.parent is not None and id(node) != id(node.parent.children.second)
+            if node.parent is not None and node.children is not None and id(node) != id(node.parent.children.second)
             else pre_3
         )
         while node.parent is not None and node.parent.parent is not None:
-            if id(node.parent) != id(node.parent.parent.children.second):
+            if node.children is not None and id(node.parent) != id(node.parent.parent.children.second):
                 prefix = pre_1 + prefix
             else:
                 prefix = pre_0 + prefix
