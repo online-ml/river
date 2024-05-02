@@ -71,10 +71,13 @@ class Hankelizer(Transformer):
         self._window.append(x)
 
     def transform_one(self, x: dict):
+        # TODO: If called before learn_one, creates duplicate sample
         _window = list(self._window)
         w_past_current = len(_window)
         if w_past_current == 0:
             _window = [x]
+            # To avoid overflowing the window
+            w_past_current = 1
         if not self.return_partial and w_past_current < self.w:
             raise ValueError(
                 "The window is not full yet. Set `return_partial` to True to return partial Hankel matrices."

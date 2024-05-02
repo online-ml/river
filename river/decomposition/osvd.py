@@ -260,12 +260,13 @@ class OnlineSVD(MiniBatchTransformer):
             self._init_first_pass(x)
 
         # Initialize if called without learn_many
-        if bool(self.initialize) and self.n_seen <= self.initialize - 1:
+        if bool(self.initialize) and self.n_seen < self.initialize:
             self._X_init = np.row_stack((self._X_init, x))
-            if self.n_seen == self.initialize - 1:
+            if len(self._X_init) == self.initialize:
                 self.learn_many(self._X_init)
-                # revert I seen which learn_many accounted for
-                self.n_seen -= 1
+                # learn many updated seen, we need to revert last sample which
+                #  will be accounted for again at the end of update
+                self.n_seen -= x.shape[0]
         else:
             A = x.T  # m x c
             c = A.shape[1]
@@ -341,7 +342,8 @@ class OnlineSVD(MiniBatchTransformer):
         S_ = np.pad(np.diag(self._S), ((0, c), (0, c)))  # r + c x r + c
         # For full-rank SVD, this results in nn == 1.
         NtN = N.T @ N  # c x c
-        norm_n = np.sqrt(1.0 - NtN) if NtN < 1 else 0.0  # c x c
+        norm_n = np.sqrt(1.0 - NtN)  # c x c
+        norm_n[np.isnan(norm_n)] = 0.0
         K = S_ @ (
             np.identity(S_.shape[0])
             - np.row_stack((N, np.zeros((c, c)))) @ np.row_stack((N, norm_n)).T
@@ -366,6 +368,7 @@ class OnlineSVD(MiniBatchTransformer):
             U_, S_, Vt_ = _orthogonalize(U_, S_, Vt_)
 
         self._U, self._S, self._Vt = U_, S_, Vt_
+        self.n_seen -= c
 
     def learn_one(self, x: dict | np.ndarray):
         """Allias for update method."""
@@ -578,7 +581,7 @@ class OnlineSVDZhang(OnlineSVD):
             d = Q.T @ (self.W @ A)  # k x c
             e = A - Q @ d  # m x c
             p = np.sqrt(e.T @ self.W @ e)  # c x c
-            p[np.isnan(p)] = np.zeros((c,c))  # c x c
+            p[np.isnan(p)] = 0.0
             # Step 2: Check tolerance
             if (p < self.tol).all():  # n_incr += c
                 self.q += 1  # 1 x 1
@@ -706,7 +709,7 @@ class OnlineSVDZhang(OnlineSVD):
         d = R.T @ (W * b)  # k x 1
         e = b - R @ d  # n + 1 x 1
         p = np.sqrt(e.T @ (W * e))  # 1 x 1
-        p[np.isnan(p)] = 1.0
+        p[np.isnan(p)] = 0.0
         if (p < self.tol).all():
             self.q += 1
             self.V = np.column_stack((self.V, d))

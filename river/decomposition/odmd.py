@@ -59,7 +59,6 @@ class OnlineDMD(MiniBatchRegressor, MiniBatchTransformer):
     without `y` and `learn_many` without `Y` to learn the model.
     In that case OnlineDMD preserves previous snapshot and uses it as x while
     current snapshot is used as y, therefore, being delayed by one sample.
-    NOTE: That means `predict_one` and `predict_many` used with
 
     At time step t, define two matrices X(t) = [x(1),x(2),...,x(t)],
     Y(t) = [y(1),y(2),...,y(t)], that contain all the past snapshot pairs,
@@ -391,11 +390,12 @@ class OnlineDMD(MiniBatchRegressor, MiniBatchTransformer):
             self._Y = self._Y[-(self.n_seen + 1) :, :]
 
         # Initialize A and P with first self.initialize snapshot pairs
-        if bool(self.initialize) and self.n_seen <= self.initialize - 1:
+        if bool(self.initialize) and self.n_seen < self.initialize:
             self._X_init[self.n_seen, :] = x_
             self._Y_init[self.n_seen, :] = y_
             if self.n_seen == self.initialize - 1:
                 self.learn_many(self._X_init, self._Y_init)
+                del self._X_init, self._Y_init
                 # revert the number of seen samples to avoid doubling
                 self.n_seen -= self._X_init.shape[0]
         # Update incrementally if initialized
@@ -489,8 +489,6 @@ class OnlineDMD(MiniBatchRegressor, MiniBatchTransformer):
               when weights are used
 
         """
-        if self.n_seen == 0:
-            raise RuntimeError("Model is not initialized.")
         p = X.shape[0]
         if self.exponential_weighting:
             weights = np.sqrt(self.w) ** np.arange(p - 1, -1, -1)
@@ -500,12 +498,18 @@ class OnlineDMD(MiniBatchRegressor, MiniBatchTransformer):
         C_inv = np.diag(np.reciprocal(weights))
 
         if isinstance(X, pd.DataFrame):
-            X = X.values
+            X_ = X.values
+        else:
+            X_ = X
         if isinstance(Y, pd.DataFrame):
-            Y = Y.values
-        self._update_A_P(X, Y, C_inv)
+            Y_ = Y.values
+        else:
+            Y_ = Y
+        if self.r < self.m:
+            X_, Y_ = self._truncate_w_svd(X_, Y_, svd_modify="update")
+        self._update_A_P(X_, Y_, C_inv)
 
-    def learn_many(
+    def update_many(
         self,
         X: np.ndarray | pd.DataFrame,
         Y: np.ndarray | pd.DataFrame | None = None,
@@ -534,6 +538,17 @@ class OnlineDMD(MiniBatchRegressor, MiniBatchTransformer):
 
         # necessary condition for over-constrained initialization
         n = X.shape[0]
+        # Exponential weighting factor - older snapshots are weighted less
+        if self.exponential_weighting:
+            weights = (np.sqrt(self.w) ** np.arange(n - 1, -1, -1))[
+                :, np.newaxis
+            ]
+        else:
+            weights = np.ones((n, 1))
+        Xqhat, Yqhat = weights * X, weights * Y
+
+        self.n_seen += n
+
         # Initialize A and P with first p snapshot pairs
         if not hasattr(self, "_P"):
             self.m = X.shape[1]
@@ -548,14 +563,6 @@ class OnlineDMD(MiniBatchRegressor, MiniBatchTransformer):
                     f"[{self.initialize}] if learn_many was not called "
                     "directly) or reduce the number of modes."
                 )
-            # Exponential weighting factor - older snapshots are weighted less
-            if self.exponential_weighting:
-                weights = (np.sqrt(self.w) ** np.arange(n - 1, -1, -1))[
-                    :, np.newaxis
-                ]
-            else:
-                weights = np.ones((n, 1))
-            Xqhat, Yqhat = weights * X, weights * Y
             XX = Xqhat.T @ Xqhat
             # TODO: think about using correlation matrix to avoid scaling issues
             #  https://stats.stackexchange.com/questions/12200/normalizing-variables-for-svd-pca
@@ -589,15 +596,27 @@ class OnlineDMD(MiniBatchRegressor, MiniBatchTransformer):
                 self.A = Yqhat.T.dot(np.linalg.pinv(Xqhat.T))
                 self._P = np.linalg.inv(XX) / self.w
 
+            self._A_last = self.A.copy()
             # Store the last p snapshots for xi computation
             self._Y = Yqhat
-            self.n_seen += n
             self.initialize = 0
         # Update incrementally if initialized
         # Zhang (2019): "single rank-s update is roughly the same as applying
         #  the rank-1 formula s times"
         else:
-            self._update_many(X, Y)
+            self._update_many(Xqhat, Yqhat)
+            if self._Y.shape[0] <= self.n_seen:
+                self._Y = np.row_stack([self._Y, Yqhat])
+            if self._Y.shape[0] > self.n_seen:
+                self._Y = self._Y[-(self.n_seen) :, :]
+
+    def learn_many(
+        self,
+        X: np.ndarray | pd.DataFrame,
+        Y: np.ndarray | pd.DataFrame | None = None,
+    ) -> None:
+        """Allias for update_many method."""
+        self.update_many(X, Y)
 
     def predict_one(self, x: dict | np.ndarray) -> np.ndarray:
         """
