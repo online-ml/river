@@ -3,54 +3,38 @@ from __future__ import annotations
 import collections
 import itertools
 import math
+import typing
 
 from river import base, stats
 
 
 class ODAC(base.Clusterer):
-    """ODAC: The Online Divisive-Agglomerative Clustering (ODAC) is an
-    algorithm whose the goal is to continuously maintain a hierarchical cluster's
-    structure from evolving time series data streams.
+    """The Online Divisive-Agglomerative Clustering (ODAC) aims at continuously
+    maintaining a hierarchical cluster structure from evolving time series data
+    streams.
 
-    * Performs hierarchical clustering
-    * Continuously monitor the evolution of clusters' diameters
-    * Two Operators:
-        * Splitting: expand the structure more data, more detailed clusters
-        * Merge: contract the structure reacting to changes.
-    * Splitting and agglomerative criteria are supported by a confidence
-        level given by the Hoeffding bounds.
+    ODAC continuosly monitors the evolution of clusters' diameters and split or merge
+    them by gathering more data or reacting to concept drift. Such changes are supported
+    by a confidence level that comes from the Hoeffding bound. ODAC relies on keeping
+    the linear correlation between series to evaluate whether or not the the time series
+    hierarchy has changed.
 
-    Main Algorithm
+    The distance between time-series a and b is given by `rnomc(a, b) = sqrt((1 - corr(a, b)) / 2)`,
+    where `corr(a, b)` is the Pearson Correlation coefficient.
 
-    * ForEver
-        * Read Next Example
-        * For all the active clusters
-            * Update the sufficient statistics
-        * Time to Time
-            * Verify Merge Clusters
-            * Verify Expand Cluster
+    In the next topics, ε stands for the Hoeffding bound.
 
-    Feeding ODAC
-
-    * Each example is processed once.
-    * Only sufficient statistics at leaves are updated.
-    * Sufficient Statistics: a triangular matrix of the correlations between
-        variables in a leaf.
-
-    Similarity Distance
-
-    * Distance between time-series (a & b): rnomc(a,b) = sqrt((1-corr(a,b))/2) where
-        corr(a,b) is the Pearson Correlation coefficient.
-
-    The Merge Operator
+    **The Merge Operator**
 
     The Splitting Criteria guarantees that cluster's diameters monotonically decrease.
-        * Assume Clusters: cj with descendants ck and cs.
-        * If diameter (ck) - diameter (cj) > ε OR diameter (cs) - diameter (cj ) > ε:
-            * Change in the correlation structure!
-            * Merge clusters ck and cs into cj.
 
-    Splitting Criteria
+    * Assume Clusters: cj with descendants ck and cs.
+
+    * If diameter (ck) - diameter (cj) > ε OR diameter (cs) - diameter (cj ) > ε:
+        * There is a change in the correlation structure.
+        * Merge clusters ck and cs into cj.
+
+    **Splitting Criteria**
 
     d1 = d(a,b) the farthest distance
     d2 the second farthest distance
@@ -64,7 +48,8 @@ class ODAC(base.Clusterer):
     confidence_level
         The confidence level that user wants to work.
     n_min
-        Number of minimum observations to time to time verify Merge or Expand Clusters.
+        Number of minimum observations to gather before checking whether or not
+        clusters must be split or merged.
     tau
         The value of tau to use in the calculation of the Hoeffding bound.
 
@@ -75,8 +60,6 @@ class ODAC(base.Clusterer):
 
     Examples
     --------
-
-    In the following example we utilize one dataset described in paper [^1].
 
     >>> from river.cluster import ODAC
     >>> from river.datasets import synth
@@ -91,84 +74,22 @@ class ODAC(base.Clusterer):
     ...         print("#################")
     ...         print(f"Change detected at observation {i}")
     ...         model.draw(n_decimal_places = 2)
-    #################
-    Change detected at observation 0
-    ROOT d1=<Not calculated> [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-    #################
-    Change detected at observation 49
-    ROOT d1=0.83 d2=0.82 [NOT ACTIVE]
-    ├── CH1_LVL_1 d1=<Not calculated> [0, 1, 4, 5, 6, 7, 8]
-    └── CH2_LVL_1 d1=<Not calculated> [2, 3, 9]
-    #################
-    Change detected at observation 99
-    ROOT d1=0.83 d2=0.82 [NOT ACTIVE]
-    ├── CH1_LVL_1 d1=0.79 d2=0.78 [NOT ACTIVE]
-    │   ├── CH1_LVL_2 d1=<Not calculated> [0, 4, 5]
-    │   └── CH2_LVL_2 d1=<Not calculated> [1, 6, 7, 8]
-    └── CH2_LVL_1 d1=0.79 d2=0.74 [NOT ACTIVE]
-        ├── CH1_LVL_2 d1=<Not calculated> [2, 9]
-        └── CH2_LVL_2 d1=<Not calculated> [3]
-    #################
-    Change detected at observation 149
-    ROOT d1=0.83 d2=0.82 [NOT ACTIVE]
-    ├── CH1_LVL_1 d1=0.79 d2=0.78 [NOT ACTIVE]
-    │   ├── CH1_LVL_2 d1=0.74 d2=0.71 [NOT ACTIVE]
-    │   │   ├── CH1_LVL_3 d1=<Not calculated> [0]
-    │   │   └── CH2_LVL_3 d1=<Not calculated> [4, 5]
-    │   └── CH2_LVL_2 d1=0.80 d2=0.77 [NOT ACTIVE]
-    │       ├── CH1_LVL_3 d1=<Not calculated> [1, 6]
-    │       └── CH2_LVL_3 d1=<Not calculated> [7, 8]
-    └── CH2_LVL_1 d1=0.79 d2=0.74 [NOT ACTIVE]
-        ├── CH1_LVL_2 d1=0.74 [2, 9]
-        └── CH2_LVL_2 d1=<Not calculated> [3]
-    #################
-    Change detected at observation 199
-    ROOT d1=0.83 d2=0.82 [NOT ACTIVE]
-    ├── CH1_LVL_1 d1=0.79 d2=0.78 [NOT ACTIVE]
-    │   ├── CH1_LVL_2 d1=0.74 d2=0.71 [0, 4, 5]
-    │   └── CH2_LVL_2 d1=0.80 d2=0.77 [NOT ACTIVE]
-    │       ├── CH1_LVL_3 d1=0.76 [1, 6]
-    │       └── CH2_LVL_3 d1=0.67 [7, 8]
-    └── CH2_LVL_1 d1=0.79 d2=0.74 [NOT ACTIVE]
-        ├── CH1_LVL_2 d1=0.70 [2, 9]
-        └── CH2_LVL_2 d1=<Not calculated> [3]
-    #################
-    Change detected at observation 249
-    ROOT d1=0.83 d2=0.82 [NOT ACTIVE]
-    ├── CH1_LVL_1 d1=0.79 d2=0.78 [NOT ACTIVE]
-    │   ├── CH1_LVL_2 d1=0.79 d2=0.66 [NOT ACTIVE]
-    │   │   ├── CH1_LVL_3 d1=<Not calculated> [0, 4]
-    │   │   └── CH2_LVL_3 d1=<Not calculated> [5]
-    │   └── CH2_LVL_2 d1=0.80 d2=0.77 [NOT ACTIVE]
-    │       ├── CH1_LVL_3 d1=0.75 [1, 6]
-    │       └── CH2_LVL_3 d1=0.66 [7, 8]
-    └── CH2_LVL_1 d1=0.79 d2=0.74 [NOT ACTIVE]
-        ├── CH1_LVL_2 d1=0.69 [2, 9]
-        └── CH2_LVL_2 d1=<Not calculated> [3]
 
-    >>> model.draw()
-    ROOT d1=0.8336 d2=0.8173 [NOT ACTIVE]
-    ├── CH1_LVL_1 d1=0.7927 d2=0.7762 [NOT ACTIVE]
-    │   ├── CH1_LVL_2 d1=0.7871 d2=0.6562 [NOT ACTIVE]
-    │   │   ├── CH1_LVL_3 d1=0.7558 [0, 4]
-    │   │   └── CH2_LVL_3 d1=<Not calculated> [5]
-    │   └── CH2_LVL_2 d1=0.8014 d2=0.7718 [NOT ACTIVE]
-    │       ├── CH1_LVL_3 d1=0.7459 [1, 6]
-    │       └── CH2_LVL_3 d1=0.6663 [7, 8]
-    └── CH2_LVL_1 d1=0.7853 d2=0.7428 [NOT ACTIVE]
-        ├── CH1_LVL_2 d1=0.6908 [2, 9]
-        └── CH2_LVL_2 d1=<Not calculated> [3]
 
-    >>> print("n_clusters = {}".format(model.n_clusters))
-    n_clusters = 11
+    You can acess some properties of the clustering model directly:
 
-    >>> print("n_active_clusters = {}".format(model.n_active_clusters))
-    n_active_clusters = 6
+    >>> model.n_clusters
+    11
 
-    >>> print("height = {}".format(model.height))
+    >>> model.n_active_clusters
+    6
+
+    >>> model.height
     height = 3
 
-    >>> print("summary = {}".format(model.summary))
+    These properties are also available in a summarized form:
+
+    >>> model.summary
     summary = {'n_clusters': 11, 'n_active_clusters': 6, 'height': 3}
 
     References
@@ -179,19 +100,20 @@ class ODAC(base.Clusterer):
 
     def __init__(self, confidence_level=0.9, n_min=100, tau=0.1):
         if not (confidence_level > 0.0 and confidence_level < 1.0):
-            raise ValueError("confidence_level must be between 0 and 1")
+            raise ValueError("confidence_level must be between 0 and 1.")
         if not n_min > 0:
-            raise ValueError("n_min must be greater than 1")
+            raise ValueError("n_min must be greater than 1.")
         if not tau > 0.0:
-            raise ValueError("tau must be greater than 0")
+            raise ValueError("tau must be greater than 0.")
 
         self._root_node = ODACCluster("ROOT")
         self.confidence_level = confidence_level
         self.n_min = n_min
         self.tau = tau
 
-        self._observations_threshold = n_min
-        self._n_observations = 0
+        self._update_timer: int = n_min
+        self._n_observations: int = 0
+        self._is_init = False
 
         self._structure_changed = False
 
@@ -216,7 +138,7 @@ class ODAC(base.Clusterer):
         }
         return summary
 
-    def _calculate_height(self, node: ODACCluster):
+    def _calculate_height(self, node: ODACCluster) -> int:
         if node.children is not None:
             child_heights = [
                 self._calculate_height(child)
@@ -234,7 +156,7 @@ class ODAC(base.Clusterer):
         return count
 
     def _count_active_clusters(self, node: ODACCluster) -> int:
-        if node.active is True:
+        if node.active:
             return 1
         elif node.children is not None:
             return sum(
@@ -245,7 +167,7 @@ class ODAC(base.Clusterer):
             return 0
 
     def _find_all_active_clusters(self, node: ODACCluster):
-        if node.active is True:
+        if node.active:
             yield node
         elif node.children is not None:
             for child in [node.children.first, node.children.second]:
@@ -259,18 +181,20 @@ class ODAC(base.Clusterer):
         if self._structure_changed:
             self._structure_changed = False
 
-        # Auxiliar variable
-        pass_threshold = False
-
-        if self._n_observations == 0:
-            # Initialize the first cluster wich is the ROOT cluster
+        if not self._is_init:
+            # Initialize the first cluster which is the ROOT cluster
             self._root_node(list(x.keys()))
             self._structure_changed = True
+            self._is_init = True
 
         # Update the total observations received
         self._n_observations += 1
 
-        # For each active cluster update the statistics and time to time verify if the cluster needs to merge or expand
+        # Split control
+        self._update_timer -= 1
+
+        # For each active cluster update the statistics and time to time verify if
+        # the cluster needs to merge or expand
         for leaf in self._find_all_active_clusters(self._root_node):
             # For safety
             if not leaf.active:
@@ -280,7 +204,7 @@ class ODAC(base.Clusterer):
             leaf.update_statistics(x)
 
             # Time to time approach
-            if self._n_observations >= self._observations_threshold:
+            if self._update_timer == 0:
                 # Calculate all the crucial variables to the next procedure
                 leaf.calculate_coefficients(self.confidence_level)
 
@@ -288,16 +212,14 @@ class ODAC(base.Clusterer):
                     # Put the flag change_detected to true to indicate to the user that the structure changed
                     self._structure_changed = True
 
-                if pass_threshold is False:
-                    pass_threshold = True
-        if pass_threshold is True:
-            self._observations_threshold += self.n_min
+                # Reset the timer
+                self._update_timer = self.n_min
 
     # This algorithm does not predict anything. It builds a hierarchical cluster's structure
     def predict_one(self, x: dict):
         raise NotImplementedError
 
-    def draw(self, n_decimal_places=4) -> None:
+    def draw(self, n_decimal_places: int = 2) -> str:
         """Method to draw the the hierarchical cluster's structure.
 
         Parameters
@@ -309,7 +231,8 @@ class ODAC(base.Clusterer):
         """
         if not (n_decimal_places > 0 and n_decimal_places < 10):
             raise ValueError("n_decimal_places must be between 1 and 9")
-        print(self._root_node.design_structure(n_decimal_places), end="")
+
+        return self._root_node.design_structure(n_decimal_places)
 
     @property
     def structure_changed(self) -> bool:
@@ -317,31 +240,32 @@ class ODAC(base.Clusterer):
 
 
 class ODACCluster(base.Base):
-    """Cluster class for representing individual clusters"""
+    """Cluster class for representing individual clusters."""
 
     # Constructor method for Cluster class
     def __init__(self, name: str, parent: ODACCluster | None = None):
-        self.active = True
         self.name = name
-        self.parent: ODACCluster = parent
-        self.children: ODACChildren = None
+        self.parent: ODACCluster | None = parent
+        self.active = True
+        self.children: ODACChildren
 
-        self.d1: float = None
-        self.d2: float = None
+        self.timeseries_names: list[typing.Hashable]
+        self._statistics: dict[tuple[typing.Hashable, typing.Hashable], stats.PearsonCorr] | None
 
-        self.e: float = 0.0
+        self.d1: float | None = None
+        self.d2: float | None = None
+        self.e: float = 0
+        self.d0: float | None = None
+        self.avg: float | None = None
 
-        self.d0: float = None
-        self.avg: float = None
-
-        self.pivot_0: tuple = None
-        self.pivot_1: tuple = None
-        self.pivot_2: tuple = None
+        self.pivot_0: tuple[typing.Hashable, typing.Hashable]
+        self.pivot_1: tuple[typing.Hashable, typing.Hashable]
+        self.pivot_2: tuple[typing.Hashable, typing.Hashable]
 
         self.n = 0
 
     # Method to design the structure of the cluster tree
-    def design_structure(self, decimal_places=4) -> str:
+    def design_structure(self, decimal_places=2) -> str:
         pre_0 = "    "
         pre_1 = "│   "
         pre_2 = "├── "
@@ -359,11 +283,21 @@ class ODACCluster(base.Base):
                 prefix = pre_0 + prefix
             node = node.parent
 
-        # TODO create auxiliary variables in order to shorten the lines with "representation = " and make them more readable
-        if self.parent is None:
-            representation = f"{self.name} d1={'{:.{dp}f}'.format(self.d1, dp=decimal_places) if self.d1 is not None else '<Not calculated>'}{' d2=' + '{:.{dp}f}'.format(self.d2, dp=decimal_places) if self.d2 is not None else ''}"
+        if self.d1 is not None:
+            r_d1 = f"{self.d1:.{decimal_places}f}"
         else:
-            representation = f"{prefix}{self.name} d1={'{:.{dp}f}'.format(self.d1, dp=decimal_places) if self.d1 is not None else '<Not calculated>'}{' d2=' + '{:.{dp}f}'.format(self.d2, dp=decimal_places) if self.d2 is not None else ''}"
+            r_d1 = '<Not calculated>'
+
+        if self.d2 is not None:
+            r_d2 = f"{self.d2:.{decimal_places}f}"
+        else:
+            r_d2 = ''
+
+        if self.parent is None:
+            representation = f"{self.name} d1={r_d1} d2={r_d2}"
+        else:
+            representation = f"{prefix}{self.name} d1={r_d1} d2={r_d2}"
+
         if self.active is True:
             return representation + f" {self.timeseries_names}\n"
         else:
@@ -380,10 +314,8 @@ class ODACCluster(base.Base):
     def __repr__(self) -> str:
         return self.design_structure()
 
-    # Method that associates the time-series into the cluster and initiates the statistics using PearsonCorr
-    def __call__(self, ts_names: list[str]):
-        self.timeseries_names: list[str] = sorted(ts_names)
-        self._statistics = collections.defaultdict(
+    def _init_stats(self) -> dict[tuple[typing.Hashable, typing.Hashable], stats.PearsonCorr]:
+        return collections.defaultdict(
             stats.PearsonCorr,
             {
                 (k1, k2): stats.PearsonCorr()
@@ -391,14 +323,16 @@ class ODACCluster(base.Base):
             },
         )
 
-    # Method to update the statistics of the cluster
-    def update_statistics(self, x: dict) -> None:
-        # If x is empty, do nothing
-        if not x:
-            return
+    # TODO: not sure if this is the best design
+    def __call__(self, ts_names: list[typing.Hashable]):
+        """Method that associates the time-series into the cluster and initiates the statistics."""
+        self.timeseries_names = sorted(ts_names)  # type: ignore
+        self._statistics = self._init_stats()
 
-        # For each pair of time-series in the cluster update the correlation values with the data received
-        for (k1, k2), item in self._statistics.items():
+    def update_statistics(self, x: dict) -> None:
+        # For each pair of time-series in the cluster update the correlation
+        # values with the data received
+        for (k1, k2), item in self._statistics.items():  # type: ignore
             if x.get(k1, None) is None or x.get(k2, None) is None:
                 continue
             item.update(float(x[k1]), float(x[k2]))
@@ -406,24 +340,13 @@ class ODACCluster(base.Base):
         # Increment the number of observation in the cluster
         self.n += 1
 
-    # Method to get the correlation values of the cluster
-    def _get_correlation_dict(self) -> dict:
-        corr_dict = {}
-
-        for (k1, k2), item in self._statistics.items():
-            corr_dict[(k1, k2)] = item.get()
-
-        return corr_dict
-
     # Method to calculate the rnomc values of the cluster
-    def _calculate_rnomc_dict(self) -> dict:
-        rnomc_dict = {}
+    def _calculate_rnomc_dict(self)-> dict[tuple[typing.Hashable, typing.Hashable], float]:
         # Get the correlation values between time-series in the cluster
-        corr_dict = self._get_correlation_dict()
+        rnomc_dict = {}
 
-        for i, k1 in enumerate(self.timeseries_names):
-            for k2 in self.timeseries_names[i + 1 :]:
-                rnomc_dict[(k1, k2)] = math.sqrt((1 - corr_dict[(k1, k2)]) / 2)
+        for k1, k2 in itertools.combinations(self.timeseries_names, 2):
+            rnomc_dict[(k1, k2)] = math.sqrt((1 - self._statistics[(k1, k2)].get()) / 2.0)  # type: ignore
 
         return rnomc_dict
 
@@ -432,7 +355,7 @@ class ODACCluster(base.Base):
         # Get the rnomc values
         rnomc_dict = self._calculate_rnomc_dict()
 
-        if bool(rnomc_dict):
+        if len(rnomc_dict) > 0:
             # Get the average distance in the cluster
             self.avg = sum(rnomc_dict.values()) / self.n
 
@@ -443,39 +366,24 @@ class ODACCluster(base.Base):
 
             # Get the second maximum distance and the pivot associated in the cluster
             remaining = {k: v for k, v in rnomc_dict.items() if k != self.pivot_1}
-            if bool(remaining):
+
+            if len(remaining) > 0:
                 self.pivot_2, self.d2 = max(remaining.items(), key=lambda x: x[1])
             else:
-                self.pivot_2 = self.d2 = None
+                self.pivot_2 = self.d2 = None  # type: ignore
 
-            r_sqrd = 1  # Let's consider this value
             # Calculate the Hoeffding bound in the cluster
-            self.e = math.sqrt(r_sqrd * math.log(1 / confidence_level) / (2 * self.n))
+            self.e = math.sqrt(math.log(1 / confidence_level) / (2 * self.n))
 
-        elif None not in [
-            self.avg,
-            self.d0,
-            self.pivot_0,
-            self.d1,
-            self.pivot_1,
-            self.d2,
-            self.pivot_2,
-            self.e,
-        ]:
-            self.avg = (
-                self.d0
-            ) = self.pivot_0 = self.d1 = self.pivot_1 = self.d2 = self.pivot_2 = self.e = None
+    def _get_closest_cluster(self, pivot_1, pivot_2, current, rnormc_dict) -> int:
+        """Method that gives the closest cluster where the current time series is located."""
 
-    # Method that gives the closer cluster that the current time series is
-    def _get_closer_cluster(
-        self, pivot_1: str, pivot_2: str, current: str, rnormc_dict: dict
-    ) -> int:
         dist_1 = rnormc_dict.get((min(pivot_1, current), max(pivot_1, current)), 0)
         dist_2 = rnormc_dict.get((min(pivot_2, current), max(pivot_2, current)), 0)
         return 2 if dist_1 >= dist_2 else 1
 
-    # Method that procedes to expanding this cluster into two clusters
-    def _split_this_cluster(self, pivot_1: str, pivot_2: str, rnormc_dict: dict) -> None:
+    def _split_this_cluster(self, pivot_1: typing.Hashable, pivot_2: typing.Hashable, rnormc_dict: dict):
+        """Expand into two clusters."""
         pivot_set = {pivot_1, pivot_2}
         pivot_1_list = [pivot_1]
         pivot_2_list = [pivot_2]
@@ -483,7 +391,7 @@ class ODACCluster(base.Base):
         # For each time-series in the cluster we need to find the closest pivot, to then associate with it
         for ts_name in self.timeseries_names:
             if ts_name not in pivot_set:
-                cluster = self._get_closer_cluster(pivot_1, pivot_2, ts_name, rnormc_dict)
+                cluster = self._get_closest_cluster(pivot_1, pivot_2, ts_name, rnormc_dict)
                 if cluster == 1:
                     pivot_1_list.append(ts_name)
                 else:
@@ -500,27 +408,21 @@ class ODACCluster(base.Base):
 
         self.children = ODACChildren(cluster_child_1, cluster_child_2)
 
-        # Set the active flag to false. Since this cluster is not an active cluster no more.
+        # Set the active flag to false. Since this cluster is not an active cluster anymore.
         self.active = False
-        self.avg = self.d0 = self.pivot_0 = self.pivot_1 = self.pivot_2 = None
-        del self._statistics
+        self.avg = self.d0 = self.pivot_0 = self.pivot_1 = self.pivot_2 = None  # type: ignore
+        self._statistics = None
 
     # Method that proceeds to merge on this cluster
     def _aggregate_this_cluster(self):
         # Reset statistics
-        self._statistics = collections.defaultdict(
-            stats.PearsonCorr,
-            {
-                (k1, k2): stats.PearsonCorr()
-                for k1, k2 in itertools.combinations(self.timeseries_names, 2)
-            },
-        )
+        self._statistics = self._init_stats()
+
         # Put the active flag to true. Since this cluster is an active cluster once again.
         self.active = True
         # Delete and disassociate the children.
         if self.children is not None:
             self.children.reset_parent()
-            del self.children
             self.children = None
         # Reset the number of observations in this cluster
         self.n = 0
@@ -529,8 +431,8 @@ class ODACCluster(base.Base):
     def test_split(self, tau: float):
         # Test if the cluster should be split based on specified tau
         if self.d2 is not None:
-            if ((self.d1 - self.d2) > self.e) or (tau > self.e):
-                if ((self.d1 - self.d0) * abs(self.d1 + self.d0 - 2 * self.avg)) > self.e:
+            if ((self.d1 - self.d2) > self.e) or (tau > self.e):  # type: ignore
+                if ((self.d1 - self.d0) * abs(self.d1 + self.d0 - 2 * self.avg)) > self.e:  # type: ignore
                     # Split this cluster
                     self._split_this_cluster(
                         pivot_1=self.pivot_1[0],
@@ -551,14 +453,28 @@ class ODACCluster(base.Base):
 
 
 class ODACChildren(base.Base):
-    """Children class representing child clusters"""
+    """Children class representing child clusters."""
 
-    # Constructor method for Children class
     def __init__(self, first: ODACCluster, second: ODACCluster):
         self.first = first
         self.second = second
 
-    # Method to reset the parent of children clusters
-    def reset_parent(self) -> None:
+    def reset_parent(self):
         self.first.parent = None
         self.second.parent = None
+
+
+if __name__ == "__main__":
+    from river.cluster import ODAC
+    from river.datasets import synth
+
+    model = ODAC(confidence_level=0.9)
+
+    dataset = synth.FriedmanDrift(drift_type='gra', position=(150, 200), seed=42)
+
+    for i, (x, _) in enumerate(dataset.take(500)):
+        model.learn_one(x)
+        if model.structure_changed:
+            print(f"Structure changed at observation {i + 1}")
+
+    print(model.draw(n_decimal_places = 2))
