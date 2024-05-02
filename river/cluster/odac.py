@@ -16,7 +16,7 @@ class ODAC(base.Clusterer):
     ODAC continuosly monitors the evolution of clusters' diameters and split or merge
     them by gathering more data or reacting to concept drift. Such changes are supported
     by a confidence level that comes from the Hoeffding bound. ODAC relies on keeping
-    the linear correlation between series to evaluate whether or not the the time series
+    the linear correlation between series to evaluate whether or not the time series
     hierarchy has changed.
 
     The distance between time-series a and b is given by `rnomc(a, b) = sqrt((1 - corr(a, b)) / 2)`,
@@ -28,20 +28,30 @@ class ODAC(base.Clusterer):
 
     The Splitting Criteria guarantees that cluster's diameters monotonically decrease.
 
-    * Assume Clusters: cj with descendants ck and cs.
+    - Assume Clusters: cj with descendants ck and cs.
 
-    * If diameter (ck) - diameter (cj) > ε OR diameter (cs) - diameter (cj ) > ε:
-        * There is a change in the correlation structure.
-        * Merge clusters ck and cs into cj.
+    - If diameter (ck) - diameter (cj) > ε OR diameter (cs) - diameter (cj ) > ε:
+
+        * There is a change in the correlation structure: Merge clusters ck and cs into cj.
 
     **Splitting Criteria**
 
-    d1 = d(a,b) the farthest distance
-    d2 the second farthest distance
+    Consider:
 
-    if d1 - d2 > εk or t > εk then
-        if (d1 - d0)|(d1 - d_avg) - (d_avg - d0) > εk then
+    - d0: the minimum distance;
+
+    - d1: the farthest distance;
+
+    - d2: the second farthest distance.
+
+    Then:
+
+    - if d1 - d2 > εk or t > εk then
+
+        - if (d1 - d0)|(d1 - d_avg) - (d_avg - d0) > εk then
+
             * Split the cluster
+
 
     Parameters
     ----------
@@ -64,33 +74,41 @@ class ODAC(base.Clusterer):
     >>> from river.cluster import ODAC
     >>> from river.datasets import synth
 
-    >>> model = ODAC(confidence_level=0.9, n_min=50)
+    >>> model = ODAC(confidence_level=0.9)
 
-    >>> dataset = synth.FriedmanDrift(drift_type='lea',position=(1, 2, 3),seed=42)
+    >>> dataset = synth.FriedmanDrift(drift_type='gra', position=(150, 200), seed=42)
 
-    >>> for i, (X, _) in enumerate(dataset.take(300)):
-    ...     model.learn_one(X)
+    >>> for i, (x, _) in enumerate(dataset.take(500)):
+    ...     model.learn_one(x)
     ...     if model.structure_changed:
-    ...         print("#################")
-    ...         print(f"Change detected at observation {i}")
-    ...         model.draw(n_decimal_places = 2)
+    ...         print(f"Structure changed at observation {i + 1}")
+    Structure changed at observation 1
+    Structure changed at observation 100
+    Structure changed at observation 200
+
+    >>> print(model.draw(n_decimal_places = 2))
+    ROOT d1=0.79 d2=0.76 [NOT ACTIVE]
+    ├── CH1_LVL_1 d1=0.74 d2=0.72 [NOT ACTIVE]
+    │   ├── CH1_LVL_2 d1=<Not calculated> d2= [3]
+    │   └── CH2_LVL_2 d1=<Not calculated> d2= [2, 4]
+    └── CH2_LVL_1 d1=<Not calculated> d2= [0, 1, 5, 6, 7, 8, 9]
 
 
     You can acess some properties of the clustering model directly:
 
     >>> model.n_clusters
-    11
+    5
 
     >>> model.n_active_clusters
-    6
+    3
 
     >>> model.height
-    height = 3
+    2
 
     These properties are also available in a summarized form:
 
     >>> model.summary
-    summary = {'n_clusters': 11, 'n_active_clusters': 6, 'height': 3}
+    {'n_clusters': 5, 'n_active_clusters': 3, 'height': 2}
 
     References
     ----------
@@ -247,7 +265,7 @@ class ODACCluster(base.Base):
         self.name = name
         self.parent: ODACCluster | None = parent
         self.active = True
-        self.children: ODACChildren
+        self.children: ODACChildren | None = None
 
         self.timeseries_names: list[typing.Hashable]
         self._statistics: dict[tuple[typing.Hashable, typing.Hashable], stats.PearsonCorr] | None
@@ -462,19 +480,3 @@ class ODACChildren(base.Base):
     def reset_parent(self):
         self.first.parent = None
         self.second.parent = None
-
-
-if __name__ == "__main__":
-    from river.cluster import ODAC
-    from river.datasets import synth
-
-    model = ODAC(confidence_level=0.9)
-
-    dataset = synth.FriedmanDrift(drift_type='gra', position=(150, 200), seed=42)
-
-    for i, (x, _) in enumerate(dataset.take(500)):
-        model.learn_one(x)
-        if model.structure_changed:
-            print(f"Structure changed at observation {i + 1}")
-
-    print(model.draw(n_decimal_places = 2))
