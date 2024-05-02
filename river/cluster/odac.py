@@ -291,11 +291,11 @@ class ODACCluster(base.Base):
         node = self
         prefix = (
             pre_2
-            if node.parent is not None and id(node) != id(node.parent.children.second)
+            if node.parent is not None and id(node) != id(node.parent.children.second)  # type: ignore
             else pre_3
         )
         while node.parent is not None and node.parent.parent is not None:
-            if id(node.parent) != id(node.parent.parent.children.second):
+            if id(node.parent) != id(node.parent.parent.children.second):  # type: ignore
                 prefix = pre_1 + prefix
             else:
                 prefix = pre_0 + prefix
