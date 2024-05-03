@@ -230,8 +230,9 @@ class ODAC(base.Clusterer):
                     # Put the flag change_detected to true to indicate to the user that the structure changed
                     self._structure_changed = True
 
-                # Reset the timer
-                self._update_timer = self.n_min
+        # Reset the timer
+        if self._update_timer == 0:
+            self._update_timer = self.n_min
 
     # This algorithm does not predict anything. It builds a hierarchical cluster's structure
     def predict_one(self, x: dict):
@@ -307,14 +308,14 @@ class ODACCluster(base.Base):
             r_d1 = '<Not calculated>'
 
         if self.d2 is not None:
-            r_d2 = f"{self.d2:.{decimal_places}f}"
+            r_d2 = f" d2={self.d2:.{decimal_places}f}"
         else:
             r_d2 = ''
 
         if self.parent is None:
-            representation = f"{self.name} d1={r_d1} d2={r_d2}"
+            representation = f"{self.name} d1={r_d1}{r_d2}"
         else:
-            representation = f"{prefix}{self.name} d1={r_d1} d2={r_d2}"
+            representation = f"{prefix}{self.name} d1={r_d1}{r_d2}"
 
         if self.active is True:
             return representation + f" {self.timeseries_names}\n"
