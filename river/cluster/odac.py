@@ -85,30 +85,38 @@ class ODAC(base.Clusterer):
     Structure changed at observation 1
     Structure changed at observation 100
     Structure changed at observation 200
+    Structure changed at observation 300
 
     >>> print(model.draw(n_decimal_places = 2))
     ROOT d1=0.79 d2=0.76 [NOT ACTIVE]
     ├── CH1_LVL_1 d1=0.74 d2=0.72 [NOT ACTIVE]
-    │   ├── CH1_LVL_2 d1=<Not calculated> d2= [3]
-    │   └── CH2_LVL_2 d1=<Not calculated> d2= [2, 4]
-    └── CH2_LVL_1 d1=<Not calculated> d2= [0, 1, 5, 6, 7, 8, 9]
+    │   ├── CH1_LVL_2 d1=<Not calculated> [3]
+    │   └── CH2_LVL_2 d1=0.73 [2, 4]
+    └── CH2_LVL_1 d1=0.81 d2=0.78 [NOT ACTIVE]
+        ├── CH1_LVL_2 d1=0.73 d2=0.67 [NOT ACTIVE]
+        │   ├── CH1_LVL_3 d1=0.72 [0, 9]
+        │   └── CH2_LVL_3 d1=<Not calculated> [1]
+        └── CH2_LVL_2 d1=0.74 d2=0.73 [NOT ACTIVE]
+            ├── CH1_LVL_3 d1=0.71 [5, 6]
+            └── CH2_LVL_3 d1=0.71 [7, 8]
+    <BLANKLINE>
 
 
     You can acess some properties of the clustering model directly:
 
     >>> model.n_clusters
-    5
+    11
 
     >>> model.n_active_clusters
-    3
+    6
 
     >>> model.height
-    2
+    3
 
     These properties are also available in a summarized form:
 
     >>> model.summary
-    {'n_clusters': 5, 'n_active_clusters': 3, 'height': 2}
+    {'n_clusters': 11, 'n_active_clusters': 6, 'height': 3}
 
     References
     ----------
@@ -305,12 +313,12 @@ class ODACCluster(base.Base):
         if self.d1 is not None:
             r_d1 = f"{self.d1:.{decimal_places}f}"
         else:
-            r_d1 = '<Not calculated>'
+            r_d1 = "<Not calculated>"
 
         if self.d2 is not None:
             r_d2 = f" d2={self.d2:.{decimal_places}f}"
         else:
-            r_d2 = ''
+            r_d2 = ""
 
         if self.parent is None:
             representation = f"{self.name} d1={r_d1}{r_d2}"
