@@ -87,7 +87,7 @@ class ODAC(base.Clusterer):
     Structure changed at observation 200
     Structure changed at observation 300
 
-    >>> print(model.draw(n_decimal_places = 2))
+    >>> print(model.draw(n_decimal_places=2))
     ROOT d1=0.79 d2=0.76 [NOT ACTIVE]
     ├── CH1_LVL_1 d1=0.74 d2=0.72 [NOT ACTIVE]
     │   ├── CH1_LVL_2 d1=<Not calculated> [3]
