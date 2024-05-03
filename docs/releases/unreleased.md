@@ -6,6 +6,10 @@ This release should fix some of the installation issues when building the River 
 
 - Added `PredictiveAnomalyDetection`, a semi-supervised technique that employs a predictive model for anomaly detection.
 
+## cluster
+
+- Added `ODAC` (Online Divisive-Agglomerative Clustering) for clustering time series.
+
 ## drift
 
 - Added `FHDDM` drift detector.
