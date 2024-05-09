@@ -108,12 +108,15 @@ def _truncate_svd(U, S, Vt, n_components):
     return U, S, Vt
 
 
-def _svd(A, n_components, v0=None, solver="arpack", random_state=None):
+def _svd(A, n_components, v0=None, solver=None, random_state=None):
     """Compute the singular value decomposition of a matrix.
 
     This function computes the singular value decomposition of a matrix A.
     If n_components < min(A.shape), the function uses sparse SVD for speed up.
     """
+    # TODO: sparse is slow if not n_components << min(A.shape)
+    #  analyze performance benefits for various differencec between
+    #  n_components and min(A.shape)
     if 0 < n_components and n_components < min(A.shape):
         U, S, Vt = sp.sparse.linalg.svds(
             A, k=n_components, v0=v0, solver=solver, random_state=random_state
@@ -274,7 +277,6 @@ class OnlineSVD(MiniBatchTransformer):
             Ut = self._U.T  # r x m
             M = Ut @ A  # r x c
             P = A - self._U @ M  # m x c
-            # TODO: [1] suggest computing orthogonal basis of P.
             #  Results seems to be the same for non rank-increasing updates.
             Po = np.linalg.qr(P)[0]
             Pot = Po.T  # c x m or m x m if m < c
@@ -503,6 +505,7 @@ class OnlineSVDZhang(OnlineSVD):
         self,
         n_components: int = 2,
         initialize: int = 0,
+        tol: float = 1e-18,
         rank_updates: bool = False,
         seed: int | None = None,
     ):
@@ -512,13 +515,14 @@ class OnlineSVDZhang(OnlineSVD):
             force_orth=False,
             seed=seed,
         )
+        self.tol: float = tol
         self.rank_updates = rank_updates
 
-        self.V: np.ndarray
-        self.Q0: np.ndarray
-        self.q: float = 0.0
+        self._V_buff: np.ndarray
+        self._U0: np.ndarray
+        self._q_u: int = 0
+        self._q_r: int = 0
         self.W: np.ndarray
-        self.tol: float = 1e-15
 
     @classmethod
     def _from_state(
@@ -542,16 +546,16 @@ class OnlineSVDZhang(OnlineSVD):
         new._S = S
         new._Vt = V
 
-        new.V = np.empty((new.n_components, 0))
-        new.Q0 = np.identity(new.n_components)
+        new._V_buff = np.empty((new.n_components, 0))
+        new._U0 = np.identity(new.n_components)
         new.W = np.identity(new.n_features_in_)
 
         return new
 
     def _init_first_pass(self, x):
         super()._init_first_pass(x)
-        self.V = np.empty((self.n_components, 0))
-        self.Q0 = np.identity(self.n_components)
+        self._V_buff = np.empty((self.n_components, 0))
+        self._U0 = np.identity(self.n_components)
         # TODO: Allow weighting specified by user
         self.W = np.identity(self.n_features_in_)
 
@@ -565,250 +569,209 @@ class OnlineSVDZhang(OnlineSVD):
         if self.n_seen == 0:
             self._init_first_pass(x)
 
+        c = x.shape[0]
+
         # Initialize if called without learn_many
-        if bool(self.initialize) and self.n_seen <= self.initialize - 1:
-            self._X_init[self.n_seen, :] = x
-            if self.n_seen == self.initialize - 1:
+        if bool(self.initialize) and self.n_seen < self.initialize:
+            self._X_init = np.row_stack((self._X_init, x))
+            if len(self._X_init) == self.initialize:
                 self.learn_many(self._X_init)
-                # revert I seen which learn_many accounted for
-                self.n_seen -= 1
+                # learn many updated seen, we need to revert last sample which
+                #  will be accounted for again at the end of update
+                self.n_seen -= c
         else:
-            k = self.n_components
+            if c > 1:
+                raise NotImplementedError(
+                    "Calling learn_many multiple times errodes U."
+                )
+            r = self.n_components
             A = x.T  # m x c
-            c = A.shape[1]
-            Q, Sigma, R = self._U, self._S, self._Vt.T  # m x k, k x 1, n x k
+            _U, _S, _V = self._U, self._S, self._Vt.T  # m x r, r x 1, n x r
+            _Ut = _U.T  # r x m
             # Step 1: Calculate d, e, p
-            d = Q.T @ (self.W @ A)  # k x c
-            e = A - Q @ d  # m x c
-            p = np.sqrt(e.T @ self.W @ e)  # c x c
-            p[np.isnan(p)] = 0.0
+            M = _Ut @ (self.W @ A)  # r x c
+            P = A - _U @ M  # m x c
+            Ra = np.sqrt(P.T @ self.W @ P)  # c x c
+            Ra[np.isnan(Ra)] = 0.0
             # Step 2: Check tolerance
-            if (p < self.tol).all():  # n_incr += c
-                self.q += 1  # 1 x 1
-                self.V = np.column_stack((self.V, d))  # k x n_incr
+            if (Ra < self.tol).all():  # n_incr += c
+                self._q_u += c  # 1 x 1
+                self._V_buff = np.column_stack((self._V_buff, M))  # r x n_incr
             else:
-                if self.q > 0:
+                if self._q_u > 0:
                     # Step 7: Construct Y
                     Y = np.column_stack(
-                        (np.diag(Sigma), self.V)
-                    )  # k x k + n_incr
+                        (np.diag(_S), self._V_buff)
+                    )  # r x r + n_incr
                     # Step 8: Perform SVD on Y
-                    QY, SigmaY, RYt = np.linalg.svd(
+                    UY, SY, VYt = np.linalg.svd(
                         Y, full_matrices=False
-                    )  # k x k, k x 1, k x k + n_incr
-                    RY = RYt.T  # k + n_incr x k
-                    # Step 9: Update Q0, Sigma, R
-                    self.Q0 = self.Q0 @ QY  # k x k
-                    Sigma = SigmaY  # k x 1
-                    _R1 = RY[:k, :-1]  # k x k + n_incr - 1
-                    _R2 = RY[k, :-1]  # 1 x k + n_incr - 1
-                    R = np.row_stack((R @ _R1, _R2))  # n + 1 x k + n_incr - 1
+                    )  # r x r, r x 1, r x r + n_incr
+                    VY = VYt.T  # r + n_incr x r
+                    # Step 9: Update U0, _S, _V
+                    self._U0 = self._U0 @ UY  # r x r
+                    _S = SY  # r x 1
+                    _V1 = VY[:r, :-1]  # r x r + n_incr - 1
+                    _V2 = VY[r, :-1]  # 1 x r + n_incr - 1
+                    _V = np.row_stack(
+                        (_V @ _V1, _V2)
+                    )  # n + 1 x r + n_incr - 1
                     # Step 11: Calculate d
-                    d = QY.T @ d  # k x c
+                    M = UY.T @ M  # r x c
                 # Step 13: Normalize e
-                e = e @ np.linalg.inv(p)  # m x c
-                # Step 14: Check if |e>W*Q(:, 1)| > tol
-                if np.abs(e.T @ (self.W @ Q[:, 0])).any() > self.tol:
-                    e = e - Q @ (Q.T @ (self.W @ e))  # m x c
-                    p1 = np.sqrt(e.T @ self.W @ e)  # c x c
+                P = P @ np.linalg.inv(Ra)  # m x c
+                # Step 14: Reorthogonalize if |e>W*_U(:, 1)| > tol
+                if np.abs(P.T @ (self.W @ _U[:, 0])).any() > self.tol:
+                    P = P - _U @ (_Ut @ (self.W @ P))  # m x c
+                    p1 = np.sqrt(P.T @ self.W @ P)  # c x c
                     p1[np.isnan(p1)] = 0.0  # c x c
-                    e = e @ np.linalg.inv(p1)  # m x c
+                    P = P @ np.linalg.inv(p1)  # m x c
                 # Step 17: Construct Y
                 Y = np.block(
                     [
-                        [np.diag(Sigma), d],
-                        [np.zeros((c, self.n_components)), p],
+                        [np.diag(_S), M],
+                        [np.zeros((c, r)), Ra],
                     ]
-                )  # k + c x k + c
-                QY, SigmaY, RYt = np.linalg.svd(
+                )  # r + c x r + c
+                # Not using sp.sparse.linalg.svds for non-rank increasing
+                #  updates as it is slower than np.linalg.svd
+                UY, SY, VYt = np.linalg.svd(
                     Y
-                )  # k + c x k + c, k + c x 1, k + c x k + c
-                RY = RYt.T  # k + c x k + c
-                # Step 20: Update Q0
-                Q_0diff = QY.shape[0] - self.Q0.shape[0]
-                Q_1diff = QY.shape[1] - self.Q0.shape[1]
-                self.Q0 = (
+                )  # r + c x r + c, r + c x 1, r + c x r + c
+                VY = VYt.T  # r + c x r + c
+                # Step 20: Update U0
+                self._U0 = (
                     np.block(
                         [
-                            [self.Q0, np.zeros((self.Q0.shape[0], Q_1diff))],
                             [
-                                np.zeros((Q_0diff, self.Q0.shape[1])),
-                                np.eye(Q_0diff, Q_1diff),
+                                self._U0,
+                                np.zeros((self._U0.shape[0], c)),
+                            ],
+                            [
+                                np.zeros((c, self._U0.shape[1])),
+                                np.eye(c, c),
                             ],
                         ]
                     )
-                    @ QY
-                )  # k + c x k + c
-                Qe = np.column_stack((Q, e))  # m x k + c
-                # TODO: verify implementation of rank increasing updates
+                    @ UY
+                )  # r + c x r + c
+                _Ue = np.column_stack((_U, P))  # m x k + c
                 # Step 19: Check if rank increasing
-                if SigmaY[k] > self.tol and self.rank_updates:
-                    # Step 20 - 21: Update Q, Sigma, R
-                    Q = Qe @ self.Q0  # m x k + c
-                    Sigma = SigmaY  # k + c x c
-                    _R1 = RY[:k, :]  # k x k + c
-                    _R2 = RY[k, :]  # 1 x k + c
-                    R = np.row_stack((R @ _R1, _R2))  # n + 1 x k + 1
-                    self.Q0 = np.eye(k + 1)  # k + 1 x k + 1
+                if self.rank_updates and SY[r] > self.tol:
+                    # Step 20 - 21: Update _U, _S, _V
+                    _U = _Ue @ self._U0  # m x r + c
+                    _S = SY  # r + c x c
+                    _V1 = VY[:r, :]  # r x r + c
+                    _V2 = VY[r, :]  # 1 x r + c
+                    _V = np.row_stack((_V @ _V1, _V2))  # n + 1 x r + 1
+                    self._U0 = np.eye(r + 1)  # r + 1 x r + 1
                 else:
-                    # Step 23 - 24: Update Q, Sigma, R
-                    Q = Qe @ self.Q0[:, :k]  # m x k
-                    Sigma = SigmaY[:k]  # k x 1
-                    R_0diff = 1
-                    R_1diff = RY.shape[1] - R.shape[1]
-                    R = (
+                    # Step 23 - 24: Update _U, _S, _V
+                    _U = _Ue @ self._U0[:, :r]  # m x r
+                    _S = SY[:r]  # r x 1
+                    V_1pad = VY.shape[1] - _V.shape[1]
+                    _V = (
                         np.block(
                             [
-                                [R, np.zeros((R.shape[0], R_1diff))],
+                                [_V, np.zeros((_V.shape[0], V_1pad))],
                                 [
-                                    np.zeros((R_0diff, R.shape[1])),
-                                    np.eye(R_0diff, R_1diff),
+                                    np.zeros((c, _V.shape[1])),
+                                    np.eye(c, V_1pad),
                                 ],
                             ]
                         )
-                        @ RY[:, :k]
-                    )  # n + 1 x k
-                    self.Q0 = np.eye(k)  # k x k
-
-                self.n_components = Sigma.shape[0]
-                self.V = np.empty((self.n_components, 0))
-                self.q = 0.0
+                        @ VY[:, :r]
+                    )  # n + 1 x r
+                    self._U0 = np.eye(r)  # r x r
 
                 # Alg. 11
-                if self.q > 0:
+                #  We note that the output of Algorithm 7 (11), V , may be not empty. This implies that the output of Algorithm 7 (11) is not the SVD of U. Hence we have to update the SVD for the vectors in V
+                # This step adds rows to _V to account for the ones buffered in V
+                if self._q_u > 0 and self._V_buff.shape[1] > 0:
                     # Step 2: Construct Y
-                    Y = np.column_stack((np.diag(Sigma), self.V))
+                    Y = np.column_stack(
+                        (np.diag(_S), self._V_buff)
+                    )  # r x r + v_cols
                     # Step 3: Perform SVD on Y
-                    QY, SigmaY, RYt = np.linalg.svd(Y, full_matrices=False)
-                    RY = RYt.T  # k + 1 x k + 1
-                    # Step 4: Update Q, Sigma, R
-                    Q = Q @ QY
-                    Sigma = SigmaY
-                    _R1 = RY[:k, :-1]
-                    _R2 = RY[k, :-1]
-                    R = np.row_stack((R @ _R1, _R2))
-            self._U, self._S, self._Vt = Q, Sigma, R.T
+                    UY, SY, VYt = np.linalg.svd(Y, full_matrices=False)
+                    VY = VYt.T  # r + 1 x r + 1
+                    # Step 4: Update _U, _S, _V
+                    _U = _U @ UY
+                    _S = SY
+                    _V1 = VY[:r, :]
+                    _V2 = VY[r : r + self._q_u + c - 1, :]
+                    _V = np.row_stack((_V @ _V1, _V2))
 
-        self.n_seen += 1
+                self.n_components = _S.shape[0]
+                self._V_buff = np.empty((self.n_components, 0))
+                self._q_u = 0
+                self._U, self._S, self._Vt = _U, _S, _V.T
 
-    def revert(self, _: dict | np.ndarray, idx: int = 0):
-        # if isinstance(x, dict):
-        #     x = np.array(list(x.values()))
-        # x = x.reshape(1, -1)
+        self.n_seen += c
 
-        k = self.n_components
-        W = 1.0
-        # m = self.n_features_in_
+    def revert(self, x: dict | np.ndarray, idx: int = 0):
+        _U, _S, _V = self._U, self._S, self._Vt.T  # m x r, r x 1, n + c x r
 
-        # n = x.shape[0]
-        Q, Sigma, R = self._U, self._S, self._Vt.T  # m x k, k x 1, n + 1 x k
-        # Step 1: Calculate d, e, p
-        b = np.zeros(R.shape[0])  # n + 1 x 1
-        b[-1] = 1.0
-        b = b.reshape(-1, 1)
-        d = R.T @ (W * b)  # k x 1
-        e = b - R @ d  # n + 1 x 1
-        p = np.sqrt(e.T @ (W * e))  # 1 x 1
-        p[np.isnan(p)] = 0.0
-        if (p < self.tol).all():
-            self.q += 1
-            self.V = np.column_stack((self.V, d))
+        c = 1 if isinstance(x, dict) else x.shape[0]
+        nc = self._Vt.shape[1]
+        # Step 1: Calculate N, Q, Qot
+        B = np.zeros((nc, c))  # n + c x c
+        B[-c:] = np.identity(c)
+
+        if idx >= 0:
+            N = self._Vt[:, idx : idx + c]  # r x c
+        elif idx == -1:
+            N = self._Vt[:, -c:]  # r x c
         else:
-            if self.q > 0 and self.V.shape[1] > 0:
-                # Step 7: Construct Y
-                Y = np.column_stack((np.diag(Sigma), self.V))
-                # Step 8: Perform SVD on Y
-                QY, SigmaY, RYt = np.linalg.svd(Y, full_matrices=False)
-                RY = RYt.T
-                # Step 9: Update Q0, Sigma, R
-                self.Q0 = self.Q0 @ QY
-                Sigma = SigmaY
-                _R1 = RY[:k, :-1]
-                _R2 = RY[k, :-1]
-                R = np.row_stack((R @ _R1, _R2))
-                # Step 11: Calculate d
-                d = QY.T @ d
-            else:
-                self.V = np.column_stack((self.V, d))
-            # Step 13: Normalize e
-            e = e @ np.linalg.inv(p)
-            # Step 14: Check if |e>W*Q(:, 1)| > tol
-            if np.abs(e.T @ (W * R[:, 0])).any() > self.tol:
-                e = e - R @ (R.T @ (W * e))
-                p1 = np.sqrt(e.T @ (W * e))
-                p1[np.isnan(p1)] = 1.0
-                e = e @ np.linalg.inv(p1)
-            # Step 17: Construct Y
-            S_ = np.pad(np.diag(Sigma), ((0, 1), (0, 1)))
+            N = self._Vt[:, -c + idx + 1 : idx + 1]  # r x c
+        Q = B - _V @ N  # n + c x c
+        Ra = np.sqrt(Q.T @ Q)  # c x c
+        Ra[np.isnan(Ra)] = 0.0
+        # TODO: not activated at all, check why
+        if Ra.size > 0 and (Ra < self.tol).all():
+            self._q_r += c
+        else:
+            if self._q_r > 0:
+                c += self._q_r
+                B = np.zeros((nc, c))  # n + c x c
+                B[-c:] = np.identity(c)
+                if idx >= 0:
+                    N = self._Vt[:, idx : idx + c]  # r x c
+                elif idx == -1:
+                    N = self._Vt[:, -c:]  # r x c
+                else:
+                    N = self._Vt[:, -c + idx + 1 : idx + 1]  # r x c
+                Q = B - _V @ N  # n + c x c
+            # Step 13: Normalize Q
+            Qot = np.linalg.qr(Q)[
+                0
+            ].T  # c x n + c; Orthonormal basis of column space of q
+            # We do not touch original U therefore we leave reorthogonalization to update method :)
+
+            S_ = np.pad(np.diag(_S), ((0, c), (0, c)))  # r + c x r + c
             # For full-rank SVD, this results in nn == 1.
-            nn = d.T @ d
-            norm_d = np.sqrt(1.0 - nn) if nn < 1 else 0.0
-            Y = S_ @ (
+            NtN = N.T @ N  # c x c
+            norm_n = np.sqrt(1.0 - NtN)  # c x c
+            norm_n[np.isnan(norm_n)] = 0.0
+            K = S_ @ (
                 np.identity(S_.shape[0])
-                - np.row_stack((d, 0.0)) @ np.row_stack((d, norm_d)).T
-            )
-            QY, SigmaY, RYt = np.linalg.svd(Y)
-            RY = RYt.T
-            # Step 20: Update Q0
-            Q_0diff = QY.shape[0] - self.Q0.shape[0]
-            Q_1diff = QY.shape[1] - self.Q0.shape[1]
-            self.Q0 = (
-                np.block(
-                    [
-                        [self.Q0, np.zeros((self.Q0.shape[0], Q_1diff))],
-                        [
-                            np.zeros((Q_0diff, self.Q0.shape[1])),
-                            np.eye(Q_0diff, Q_1diff),
-                        ],
-                    ]
-                )
-                @ QY
-            )  # k + 1 x k + 1
-            # Step 19: Check if rank decreasing
-            if SigmaY[k] < self.tol and self.rank_updates:
-                Q = Q @ self.Q0[:k, : k - 1]
-                Sigma = SigmaY[: k - 1]
-                R = (
-                    np.block(
-                        [
-                            [R, np.zeros((R.shape[0], 1))],
-                            [np.zeros((1, R.shape[1])), np.eye(1, 1)],
-                        ]
-                    )
-                    @ RY[:, :k]
-                )[2:, : k - 1]
-                self.Q0 = np.eye(k - 1)
-            else:
-                # Step 23 - 24: Update Q, Sigma, R
-                Q = Q @ self.Q0[:k, :k]
-                Sigma = SigmaY[:k]
-                R = (
-                    np.block(
-                        [
-                            [R, np.zeros((R.shape[0], 1))],
-                            [np.zeros((1, R.shape[1])), np.eye(1, 1)],
-                        ]
-                    )
-                    @ RY[:, :k]
-                )[2:]
-                self.Q0 = np.eye(k)
+                - np.row_stack((N, np.zeros((c, c))))
+                @ np.row_stack((N, norm_n)).T
+            )  # r + c x r + c
+            U_, S_, Vt_ = np.linalg.svd(K, full_matrices=False)
 
-            self.n_components = Sigma.shape[0]
-            self.V = np.empty((self.n_components, 0))
-            q = 0.0
+            if self.rank_updates and S_[-1] <= self.tol:
+                self.n_components -= 1
+            U_ = (
+                self._U @ U_[: self.n_components, : self.n_components]
+            )  # m x r
+            S_ = S_[: self.n_components]
+            Vt_ = (
+                Vt_[: self.n_components, :]
+                @ np.row_stack((self._Vt, Qot))[:, :-c]
+            )  # r x n
 
-            # Alg. 11
-            if q > 0:
-                # Step 2: Construct Y
-                Y = np.column_stack((np.diag(Sigma), self.V))
-                # Step 3: Perform SVD on Y
-                QY, SigmaY, RY = np.linalg.svd(Y, full_matrices=False)
-                # Step 4: Update Q, Sigma, R
-                Q = Q @ QY
-                Sigma = SigmaY
-                _R1 = RY[:k, :-1]
-                _R2 = RY[k, :-1]
-                R = np.row_stack((R @ _R1, _R2))
-        self._U, self._S, self._Vt = Q, Sigma, R.T
+            self._q_r = 0
+            self._U, self._S, self._Vt = U_, S_, Vt_
 
-        self.n_seen += 1
+        self.n_seen -= c
