@@ -35,7 +35,7 @@ import scipy as sp
 
 from river.base import MiniBatchRegressor, MiniBatchTransformer
 
-from .osvd import OnlineSVD
+from .osvd import OnlineSVDZhang as OnlineSVD
 
 __all__ = [
     "OnlineDMD",
@@ -157,16 +157,13 @@ class OnlineDMD(MiniBatchRegressor, MiniBatchTransformer):
         initialize: int = 1,
         exponential_weighting: bool = False,
         eig_rtol: float | None = None,
-        force_orth: bool = False,
         seed: int | None = None,
     ) -> None:
         self.r = int(r)
-        self.force_orth = force_orth
         if self.r != 0:
             # Forcing orthogonality makes the results more unstable
             self._svd = OnlineSVD(
                 n_components=self.r,
-                force_orth=force_orth,
                 seed=seed,
             )
         self.w = float(w)
@@ -295,6 +292,7 @@ class OnlineDMD(MiniBatchRegressor, MiniBatchTransformer):
         svd_modify: Literal["update", "revert"] | None = None,
     ):
         U_prev = self._svd._U
+        # We can update svd on x now without leaking new sample which is in y
         if svd_modify == "update":
             self._svd.update(x)
         elif svd_modify == "revert":
@@ -315,6 +313,7 @@ class OnlineDMD(MiniBatchRegressor, MiniBatchTransformer):
             self.A = np.column_stack(
                 (_UUp @ self.A[:, :p] @ _UUp.T, _UUp @ self.A[:, p:] @ _UUq.T)
             )
+        # Understand why we divide by w
         self._P = np.linalg.inv(_UU @ np.linalg.inv(self._P) @ _UU.T) / self.w
 
         return x, y
@@ -331,7 +330,9 @@ class OnlineDMD(MiniBatchRegressor, MiniBatchTransformer):
         self.A += (Y.T - AX).dot(Gamma).dot(PXt)
         # update P, group Px*Px' to ensure positive definite
         self._P = (self._P - PX.dot(Gamma).dot(PXt)) / self.w
-        # ensure P is SPD by taking its symmetric part
+        # TODO: understand why is this needed (tests fail when commented out)
+        # Any matrix congruent to a symmetric matrix is again symmetric: if X
+        #  is a symmetric matrix, then so is A@X@A.T for any matrix A.
         self._P = (self._P + self._P.T) / 2
 
         # Reset properties
@@ -395,9 +396,9 @@ class OnlineDMD(MiniBatchRegressor, MiniBatchTransformer):
             self._Y_init[self.n_seen, :] = y_
             if self.n_seen == self.initialize - 1:
                 self.learn_many(self._X_init, self._Y_init)
-                del self._X_init, self._Y_init
                 # revert the number of seen samples to avoid doubling
                 self.n_seen -= self._X_init.shape[0]
+                del self._X_init, self._Y_init
         # Update incrementally if initialized
         else:
             if self.n_seen == 0:
@@ -865,7 +866,6 @@ class OnlineDMDwC(OnlineDMD):
         initialize: int = 1,
         exponential_weighting: bool = False,
         eig_rtol: float | None = None,
-        force_orth: bool = False,
         seed: int | None = None,
     ) -> None:
         super().__init__(
@@ -874,7 +874,6 @@ class OnlineDMDwC(OnlineDMD):
             initialize,
             exponential_weighting,
             eig_rtol,
-            force_orth,
             seed,
         )
         self.p = p
@@ -924,7 +923,6 @@ class OnlineDMDwC(OnlineDMD):
         # TODO: if p or q == 0 in __init__, we need to reinitialize SVD
         self._svd = OnlineSVD(
             n_components=self.r,
-            force_orth=False,
             seed=self.seed,
         )
         if self.initialize < self.r:
