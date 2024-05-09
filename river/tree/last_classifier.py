@@ -27,6 +27,11 @@ class LASTClassifier(HoeffdingTree, base.Classifier):
         - 'mc' - Majority Class</br>
         - 'nb' - Naive Bayes</br>
         - 'nba' - Naive Bayes Adaptive</br>
+    change_detector
+        Change detector that will be created at each leaf of the tree.
+    track_error
+        If True, the change detector will have binary inputs for error predictions, 
+        otherwise the input will be the split criteria.
     nb_threshold
         Number of instances a leaf should observe before allowing Naive Bayes.
     nominal_attributes
@@ -65,7 +70,8 @@ class LASTClassifier(HoeffdingTree, base.Classifier):
     -----
     Local Adaptive Streaming Tree [^1] (LAST) is an incremental decision tree with
     adaptive splitting mechanisms. At each leaf, LAST maintains a change detector, 
-    that in case of a change detection, it performs a split.
+    that in case of a change detection in error or the data distribution of the leaf,
+    it performs a split.
 
     
     
@@ -76,35 +82,20 @@ class LASTClassifier(HoeffdingTree, base.Classifier):
     [^1]: Daniel Nowak Assis, Jean Paul Barddal, and Fabrício Enembreck.
     Just Change on Change: Adaptive Splitting Time for Decision Trees in
     Data Stream Classification . In Proceedings of ACM SAC Conference (SAC’24).
-    
-    [^2]: G. Hulten, L. Spencer, and P. Domingos. Mining time-changing data streams.
-       In KDD’01, pages 97–106, San Francisco, CA, 2001. ACM Press.
-
-    [^3]: Albert Bifet, Geoff Holmes, Richard Kirkby, Bernhard Pfahringer.
-       MOA: Massive Online Analysis; Journal of Machine Learning Research 11: 1601-1604, 2010.
 
     Examples
     --------
 
     >>> from river.datasets import synth
+    >>> from river.datasets import synth
     >>> from river import evaluate
     >>> from river import metrics
     >>> from river import tree
 
-    >>> gen = synth.Agrawal(classification_function=0, seed=42)
-    >>> # Take 1000 instances from the infinite data generator
-    >>> dataset = iter(gen.take(1000))
-
-    >>> model = tree.HoeffdingTreeClassifier(
-    ...     grace_period=100,
-    ...     delta=1e-5,
-    ...     nominal_attributes=['elevel', 'car', 'zipcode']
-    ... )
-
-    >>> metric = metrics.Accuracy()
-
-    >>> evaluate.progressive_val_score(dataset, model, metric)
-    Accuracy: 84.58%
+    >>> gen = synth.ConceptDriftStream(stream=synth.SEA(seed=42, variant=0),
+    ...                        drift_stream=synth.SEA(seed=42, variant=1),
+    ...                        seed=1, position=500, width=50)
+    Accuracy: 91.60%
     """
 
     _GINI_SPLIT = "gini"
@@ -123,6 +114,7 @@ class LASTClassifier(HoeffdingTree, base.Classifier):
         split_criterion: str = "info_gain",
         leaf_prediction: str = "nba",
         change_detector:base.DriftDetector = drift.ADWIN(),
+        track_error : bool = True,
         nb_threshold: int = 0,
         nominal_attributes: list | None = None,
         splitter: Splitter | None = None,
@@ -146,6 +138,7 @@ class LASTClassifier(HoeffdingTree, base.Classifier):
         )
         self.split_criterion = split_criterion
         self.change_detector = change_detector
+        self.track_error = track_error
         self.leaf_prediction = leaf_prediction
         self.nb_threshold = nb_threshold
         self.nominal_attributes = nominal_attributes
@@ -199,12 +192,22 @@ class LASTClassifier(HoeffdingTree, base.Classifier):
         else:
             depth = parent.depth + 1
 
-        if self._leaf_prediction == self._MAJORITY_CLASS:
-            return LeafMajorityClassWithDetector(initial_stats, depth, self.splitter, self.change_detector.clone())
-        elif self._leaf_prediction == self._NAIVE_BAYES:
-            return LeafNaiveBayesWithDetector(initial_stats, depth, self.splitter, self.change_detector.clone())
-        else:  # Naives Bayes Adaptive (default)
-            return LeafNaiveBayesAdaptiveWithDetector(initial_stats, depth, self.splitter, self.change_detector.clone())
+        if not self.track_error:
+            if self._leaf_prediction == self._MAJORITY_CLASS:
+                return LeafMajorityClassWithDetector(initial_stats, depth, self.splitter, self.change_detector.clone())
+            elif self._leaf_prediction == self._NAIVE_BAYES:
+                return LeafNaiveBayesWithDetector(initial_stats, depth, self.splitter, self.change_detector.clone())
+            else:  # Naives Bayes Adaptive (default)
+                return LeafNaiveBayesAdaptiveWithDetector(initial_stats, depth, self.splitter, self.change_detector.clone())
+        else:
+            split_criterion = self._new_split_criterion()
+            if self._leaf_prediction == self._MAJORITY_CLASS:
+                return LeafMajorityClassWithDetector(initial_stats, depth, self.splitter, self.change_detector.clone(), split_criterion)
+            elif self._leaf_prediction == self._NAIVE_BAYES:
+                return LeafNaiveBayesWithDetector(initial_stats, depth, self.splitter, self.change_detector.clone(), split_criterion)
+            else:  # Naives Bayes Adaptive (default)
+                return LeafNaiveBayesAdaptiveWithDetector(initial_stats, depth, self.splitter, self.change_detector.clone(), split_criterion)
+    
 
     def _new_split_criterion(self):
         if self._split_criterion == self._GINI_SPLIT:
@@ -212,6 +215,9 @@ class LASTClassifier(HoeffdingTree, base.Classifier):
         elif self._split_criterion == self._INFO_GAIN_SPLIT:
             split_criterion = InfoGainSplitCriterion(self.min_branch_fraction)
         elif self._split_criterion == self._HELLINGER_SPLIT:
+            if not self.track_error:
+                raise ValueError("The Heillinger distance cannot estimate the purity of a single distribution.\
+                                 Use another split criterion or set track_error to True")
             split_criterion = HellingerDistanceCriterion(self.min_branch_fraction)
         else:
             split_criterion = InfoGainSplitCriterion(self.min_branch_fraction)

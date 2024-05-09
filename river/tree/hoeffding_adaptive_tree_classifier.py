@@ -124,12 +124,15 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
     ...     nb_threshold=10,
     ...     seed=0
     ... )
+    
+    >>> dataset = iter(gen.take(3000))
+
+    >>> model = tree.LASTClassifier()
 
     >>> metric = metrics.Accuracy()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
     Accuracy: 91.49%
-
     """
 
     def __init__(

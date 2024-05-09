@@ -31,6 +31,21 @@ class SplitCriterion(abc.ABC):
         -------
         Value of the merit of splitting
         """
+    
+    @abc.abstractmethod
+    def purity(self, dist):
+        """Compute how pure (how close the distribution is to have only a single class)
+        the distribution is.
+
+        Parameters
+        ----------
+        dist
+            The data distribution.
+
+        Returns
+        -------
+        Value of purity of the distribution according to the splitting merit
+        """
 
     @staticmethod
     @abc.abstractmethod

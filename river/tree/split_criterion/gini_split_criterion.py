@@ -27,6 +27,10 @@ class GiniSplitCriterion(SplitCriterion):
                 post_split_dist[i], dist_weights[i]
             )
         return 1.0 - gini
+    
+    
+    def purity(self, dist):
+        return self.compute_gini(dist, sum(dist.values()))
 
     @staticmethod
     def compute_gini(dist, dist_sum_of_weights):

@@ -176,7 +176,7 @@ def iter_arff(
             x = {
                 name: cast(val) if cast else val
                 for name, cast, val in zip(names, casts, r.rstrip().split(","))
-                if val != "?"
+                if val != "?" and val != ''
             }
 
         # Handle target
@@ -185,8 +185,11 @@ def iter_arff(
             if isinstance(target, list):
                 y = {name: x.pop(name, 0) for name in target}
             else:
-                y = x.pop(target) if target else None
-
+                try:
+                    y = x.pop(target) if target else None
+                except KeyError:
+                    y = None
+                
         yield x, y
 
     # Close the file if we opened it

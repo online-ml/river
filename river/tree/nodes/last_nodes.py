@@ -24,9 +24,10 @@ class LeafMajorityClassWithDetector(HTLeaf):
         Other parameters passed to the learning node.
     """
 
-    def __init__(self, stats, depth, splitter,change_detector, **kwargs):
+    def __init__(self, stats, depth, splitter,change_detector, split_criterion = None, **kwargs):
         super().__init__(stats, depth, splitter, **kwargs)
         self.change_detector = change_detector
+        self.split_criterion = split_criterion #if None, the change detector will have binary inputs
 
     @staticmethod
     def new_nominal_splitter():
@@ -34,11 +35,14 @@ class LeafMajorityClassWithDetector(HTLeaf):
     
     def learn_one(self, x, y, *, w=1, tree=None):
         self.update_stats(y, w)
-        #TODO : monitor change distribution 
         if self.is_active():
-            mc_pred = self.prediction(x)
-            detector_input = (max(mc_pred, key=mc_pred.get) != y) 
-            self.change_detector.update(detector_input)
+            if self.split_criterion is None:
+                mc_pred = self.prediction(x)
+                detector_input = (max(mc_pred, key=mc_pred.get) != y) 
+                self.change_detector.update(detector_input)
+            else:
+                detector_input = self.split_criterion.purity(self.stats)
+                self.change_detector.update(detector_input)
             self.update_splitters(x, y, w, tree.nominal_attributes)
 
 
@@ -135,16 +139,19 @@ class LeafNaiveBayesWithDetector(LeafMajorityClassWithDetector):
         Other parameters passed to the learning node.
     """
 
-    def __init__(self, stats, depth, splitter,change_detector, **kwargs):
-        super().__init__(stats, depth, splitter,change_detector,**kwargs)
+    def __init__(self, stats, depth, splitter,change_detector, split_criterion = None, **kwargs):
+        super().__init__(stats, depth, splitter,change_detector,split_criterion,**kwargs)
     
     def learn_one(self, x, y, *, w=1, tree=None):
         self.update_stats(y, w)
-        #TODO : monitor change distribution 
         if self.is_active():
-            nb_pred = self.prediction(x)
-            detector_input = (max(nb_pred, key=nb_pred.get) == y) 
-            self.change_detector.update(detector_input)
+            if self.split_criterion is None:
+                nb_pred = self.prediction(x)
+                detector_input = (max(nb_pred, key=nb_pred.get) == y) 
+                self.change_detector.update(detector_input)
+            else:
+                detector_input = self.split_criterion.purity(self.stats)
+                self.change_detector.update(detector_input)
             self.update_splitters(x, y, w, tree.nominal_attributes)
 
     def prediction(self, x, *, tree=None):
@@ -183,8 +190,8 @@ class LeafNaiveBayesAdaptiveWithDetector(LeafMajorityClassWithDetector):
         Other parameters passed to the learning node.
     """
 
-    def __init__(self, stats, depth, splitter, change_detector, **kwargs):
-        super().__init__(stats, depth, splitter, change_detector, **kwargs)
+    def __init__(self, stats, depth, splitter, change_detector,split_criterion = None, **kwargs):
+        super().__init__(stats, depth, splitter, change_detector, split_criterion,**kwargs)
         self._mc_correct_weight = 0.0
         self._nb_correct_weight = 0.0
 
@@ -218,12 +225,15 @@ class LeafNaiveBayesAdaptiveWithDetector(LeafMajorityClassWithDetector):
                 detector_input_nb = 0
 
         self.update_stats(y, w)
-        #TODO : monitor change distribution 
         if self.is_active():
-            if self._nb_correct_weight >= self._mc_correct_weight:
-                self.change_detector.update(detector_input_nb)
+            if self.split_criterion is None:
+                if self._nb_correct_weight >= self._mc_correct_weight:
+                    self.change_detector.update(detector_input_nb)
+                else:
+                    self.change_detector.update(detector_input_mc)
             else:
-                self.change_detector.update(detector_input_mc)
+                detector_input = self.split_criterion.purity(self.stats)
+                self.change_detector.update(detector_input)
             self.update_splitters(x, y, w, tree.nominal_attributes)
         
     
