@@ -108,7 +108,7 @@ def _truncate_svd(U, S, Vt, n_components):
     return U, S, Vt
 
 
-def _svd(A, n_components, v0=None, solver=None, random_state=None):
+def _svd(A, n_components, tol=0.0, v0=None, solver=None, random_state=None):
     """Compute the singular value decomposition of a matrix.
 
     This function computes the singular value decomposition of a matrix A.
@@ -117,9 +117,14 @@ def _svd(A, n_components, v0=None, solver=None, random_state=None):
     # TODO: sparse is slow if not n_components << min(A.shape)
     #  analyze performance benefits for various differencec between
     #  n_components and min(A.shape)
-    if 0 < n_components and n_components < min(A.shape) and False:
+    if 0 < n_components and n_components < min(A.shape):
         U, S, Vt = sp.sparse.linalg.svds(
-            A, k=n_components, v0=v0, solver=solver, random_state=random_state
+            A,
+            k=n_components,
+            tol=tol,
+            v0=v0,
+            solver=solver,
+            random_state=random_state,
         )
         U, S, Vt = _sort_svd(U, S, Vt)
     else:
