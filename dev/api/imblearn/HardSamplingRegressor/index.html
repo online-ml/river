@@ -3842,7 +3842,7 @@
 <h1 id="hardsamplingregressor">HardSamplingRegressor<a class="headerlink" href="#hardsamplingregressor" title="Permanent link">&para;</a></h1>
 <p>Hard sampling regressor.</p>
 <p>This wrapper enables a model to retrain on past samples who's output was hard to predict. This works by storing the hardest samples in a buffer of a fixed size. When a new sample arrives, the wrapped model is either trained on one of the buffered samples with a probability p or on the new sample with a probability (1 - p). </p>
-<p>The hardness of an observation is evaluated with a loss function that compares the sample's ground truth with the wrapped model's prediction. If the buffer is not full, then the sample is added to the buffer. If the buffer is full and the new sample has a bigger loss than the lowest loss in the buffer, then the sample takes it's place.</p>
+<p>The hardness of an observation is evaluated with a loss function that compares the sample's ground truth with the wrapped model's prediction. If the buffer is not full, then the sample is added to the buffer. If the buffer is full and the new sample has a bigger loss than the lowest loss in the buffer, then the sample takes its place.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>

@@ -4468,7 +4468,7 @@ which is 0.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">stat</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 </code></pre></div>
 <p>The output from <code>get</code> will still be 0. The reason is that <a href="../../stats/Shift"><code>stats.Shift</code></a> has not enough
-values, and therefore outputs it's default value, which is <code>None</code>. The <a href="../../stats/Mean"><code>stats.Mean</code></a>
+values, and therefore outputs its default value, which is <code>None</code>. The <a href="../../stats/Mean"><code>stats.Mean</code></a>
 instance is therefore not updated.</p>
 <p><div class="language-python highlight"><pre><span></span><code><span class="n">stat</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
 </code></pre></div>
@@ -4488,7 +4488,7 @@ only value from the past.</p>
 </code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>2.0
 </code></pre></div></p>
-<p>Note that composing statistics returns a new statistic with it's own name.</p>
+<p>Note that composing statistics returns a new statistic with its own name.</p>
 <p><div class="language-python highlight"><pre><span></span><code><span class="n">stat</span><span class="o">.</span><span class="n">name</span>
 </code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>&#39;mean_of_shift_1&#39;
