@@ -94,8 +94,15 @@ class LASTClassifier(HoeffdingTree, base.Classifier):
 
     >>> gen = synth.ConceptDriftStream(stream=synth.SEA(seed=42, variant=0),
     ...                        drift_stream=synth.SEA(seed=42, variant=1),
-    ...                        seed=1, position=500, width=50)
-    Accuracy: 91.60%
+    ...                        seed=1, position=1500, width=50)
+    >>> dataset = iter(gen.take(3000))
+
+    >>> model = tree.LASTClassifier()
+
+    >>> metric = metrics.Accuracy()
+
+    >>> evaluate.progressive_val_score(dataset, model, metric)
+    Accuracy: 92.50%
     """
 
     _GINI_SPLIT = "gini"
