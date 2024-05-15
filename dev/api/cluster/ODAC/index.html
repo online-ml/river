@@ -3840,20 +3840,17 @@
 
 
 <h1 id="odac">ODAC<a class="headerlink" href="#odac" title="Permanent link">&para;</a></h1>
-<p>The Online Divisive-Agglomerative Clustering (ODAC) aims at continuously maintaining a hierarchical cluster structure from evolving time series data streams.</p>
+<p>The Online Divisive-Agglomerative Clustering (ODAC)<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> aims at continuously maintaining a hierarchical cluster structure from evolving time series data streams.</p>
 <p>ODAC continuosly monitors the evolution of clusters' diameters and split or merge them by gathering more data or reacting to concept drift. Such changes are supported by a confidence level that comes from the Hoeffding bound. ODAC relies on keeping the linear correlation between series to evaluate whether or not the time series hierarchy has changed. </p>
 <p>The distance between time-series a and b is given by <code>rnomc(a, b) = sqrt((1 - corr(a, b)) / 2)</code>, where <code>corr(a, b)</code> is the Pearson Correlation coefficient. </p>
-<p>In the next topics, ε stands for the Hoeffding bound. </p>
+<p>In the following topics, ε stands for the Hoeffding bound and considers clusters cj with descendants ck and cs. </p>
 <p><strong>The Merge Operator</strong> </p>
 <p>The Splitting Criteria guarantees that cluster's diameters monotonically decrease. </p>
 <ul>
 <li>
-<p>Assume Clusters: cj with descendants ck and cs.</p>
-</li>
-<li>
 <p>If diameter (ck) - diameter (cj) &gt; ε OR diameter (cs) - diameter (cj ) &gt; ε:</p>
 <ul>
-<li>There is a change in the correlation structure: Merge clusters ck and cs into cj. </li>
+<li>There is a change in the correlation structure, so merge clusters ck and cs into cj. </li>
 </ul>
 </li>
 </ul>
@@ -3865,6 +3862,9 @@
 </li>
 <li>
 <p>d1: the farthest distance;</p>
+</li>
+<li>
+<p>d_avg: the average distance;</p>
 </li>
 <li>
 <p>d2: the second farthest distance.</p>
@@ -3888,18 +3888,21 @@
 <ul>
 <li>
 <p><strong>confidence_level</strong></p>
+<p><em>Type</em> → <em>float</em></p>
 <p><em>Default</em> → <code>0.9</code></p>
 <p>The confidence level that user wants to work.</p>
 </li>
 <li>
 <p><strong>n_min</strong></p>
+<p><em>Type</em> → <em>int</em></p>
 <p><em>Default</em> → <code>100</code></p>
 <p>Number of minimum observations to gather before checking whether or not clusters must be split or merged.</p>
 </li>
 <li>
 <p><strong>tau</strong></p>
+<p><em>Type</em> → <em>float</em></p>
 <p><em>Default</em> → <code>0.1</code></p>
-<p>The value of tau to use in the calculation of the Hoeffding bound.</p>
+<p>Threshold below which a split will be forced to break ties.</p>
 </li>
 </ul>
 <h2 id="attributes">Attributes<a class="headerlink" href="#attributes" title="Permanent link">&para;</a></h2>
@@ -3910,10 +3913,10 @@
 </li>
 </ul>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
-<p><div class="language-python highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">river.cluster</span> <span class="kn">import</span> <span class="n">ODAC</span>
+<p><div class="language-python highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">cluster</span>
 <span class="kn">from</span> <span class="nn">river.datasets</span> <span class="kn">import</span> <span class="n">synth</span>
 
-<span class="n">model</span> <span class="o">=</span> <span class="n">ODAC</span><span class="p">(</span><span class="n">confidence_level</span><span class="o">=</span><span class="mf">0.9</span><span class="p">)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">cluster</span><span class="o">.</span><span class="n">ODAC</span><span class="p">()</span>
 
 <span class="n">dataset</span> <span class="o">=</span> <span class="n">synth</span><span class="o">.</span><span class="n">FriedmanDrift</span><span class="p">(</span><span class="n">drift_type</span><span class="o">=</span><span class="s1">&#39;gra&#39;</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="p">(</span><span class="mi">150</span><span class="p">,</span> <span class="mi">200</span><span class="p">),</span> <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
 
@@ -3940,7 +3943,6 @@ Structure changed at observation 300
     └── CH2_LVL_2 d1=0.74 d2=0.73 [NOT ACTIVE]
         ├── CH1_LVL_3 d1=0.71 [5, 6]
         └── CH2_LVL_3 d1=0.71 [7, 8]
-&lt;BLANKLINE&gt;
 </code></pre></div></p>
 <p>You can acess some properties of the clustering model directly:</p>
 <p><div class="language-python highlight"><pre><span></span><code><span class="n">model</span><span class="o">.</span><span class="n">n_clusters</span>
@@ -3963,7 +3965,7 @@ Structure changed at observation 300
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <details class="- abstract">
 <summary>draw</summary>
-<p>Method to draw the the hierarchical cluster's structure.</p>
+<p>Method to draw the hierarchical cluster's structure.</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>n_decimal_places</strong>     — <em>'int'</em>     — defaults to <code>2</code>    </li>
@@ -3981,13 +3983,11 @@ Structure changed at observation 300
 <p><span /></p>
 <details class="- abstract">
 <summary>predict_one</summary>
-<p>Predicts the cluster number for a set of features <code>x</code>.</p>
+<p>This algorithm does not predict anything. It builds a hierarchical cluster's structure.</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>x</strong>     — <em>'dict'</em>    </li>
 </ul>
-<p><strong>Returns</strong></p>
-<p><em>int</em>:     A cluster number.</p>
 </details>
 <p><span /></p>
 <div class="footnote">
