@@ -9,7 +9,7 @@ from river import base, stats
 
 
 class ODAC(base.Clusterer):
-    """The Online Divisive-Agglomerative Clustering (ODAC) aims at continuously
+    """The Online Divisive-Agglomerative Clustering (ODAC)[^1] aims at continuously
     maintaining a hierarchical cluster structure from evolving time series data
     streams.
 
@@ -22,17 +22,16 @@ class ODAC(base.Clusterer):
     The distance between time-series a and b is given by `rnomc(a, b) = sqrt((1 - corr(a, b)) / 2)`,
     where `corr(a, b)` is the Pearson Correlation coefficient.
 
-    In the next topics, ε stands for the Hoeffding bound.
+    In the following topics, ε stands for the Hoeffding bound and considers clusters cj
+    with descendants ck and cs.
 
     **The Merge Operator**
 
     The Splitting Criteria guarantees that cluster's diameters monotonically decrease.
 
-    - Assume Clusters: cj with descendants ck and cs.
-
     - If diameter (ck) - diameter (cj) > ε OR diameter (cs) - diameter (cj ) > ε:
 
-        * There is a change in the correlation structure: Merge clusters ck and cs into cj.
+        * There is a change in the correlation structure, so merge clusters ck and cs into cj.
 
     **Splitting Criteria**
 
@@ -41,6 +40,8 @@ class ODAC(base.Clusterer):
     - d0: the minimum distance;
 
     - d1: the farthest distance;
+
+    - d_avg: the average distance;
 
     - d2: the second farthest distance.
 
@@ -61,7 +62,7 @@ class ODAC(base.Clusterer):
         Number of minimum observations to gather before checking whether or not
         clusters must be split or merged.
     tau
-        The value of tau to use in the calculation of the Hoeffding bound.
+        Threshold below which a split will be forced to break ties.
 
     Attributes
     ----------
@@ -71,10 +72,10 @@ class ODAC(base.Clusterer):
     Examples
     --------
 
-    >>> from river.cluster import ODAC
+    >>> from river import cluster
     >>> from river.datasets import synth
 
-    >>> model = ODAC(confidence_level=0.9)
+    >>> model = cluster.ODAC()
 
     >>> dataset = synth.FriedmanDrift(drift_type='gra', position=(150, 200), seed=42)
 
@@ -99,8 +100,6 @@ class ODAC(base.Clusterer):
         └── CH2_LVL_2 d1=0.74 d2=0.73 [NOT ACTIVE]
             ├── CH1_LVL_3 d1=0.71 [5, 6]
             └── CH2_LVL_3 d1=0.71 [7, 8]
-    <BLANKLINE>
-
 
     You can acess some properties of the clustering model directly:
 
@@ -124,7 +123,7 @@ class ODAC(base.Clusterer):
 
     """
 
-    def __init__(self, confidence_level=0.9, n_min=100, tau=0.1):
+    def __init__(self, confidence_level: float = 0.9, n_min: int = 100, tau: float = 0.1):
         if not (confidence_level > 0.0 and confidence_level < 1.0):
             raise ValueError("confidence_level must be between 0 and 1.")
         if not n_min > 0:
@@ -244,10 +243,18 @@ class ODAC(base.Clusterer):
 
     # This algorithm does not predict anything. It builds a hierarchical cluster's structure
     def predict_one(self, x: dict):
-        raise NotImplementedError
+        """This algorithm does not predict anything. It builds a hierarchical cluster's structure.
+
+        Parameters
+        ----------
+        x
+            A dictionary of features.
+
+        """
+        raise NotImplementedError("ODAC does not predict anything. It builds a hierarchical cluster's structure.")
 
     def draw(self, n_decimal_places: int = 2) -> str:
-        """Method to draw the the hierarchical cluster's structure.
+        """Method to draw the hierarchical cluster's structure.
 
         Parameters
         ----------
@@ -257,9 +264,9 @@ class ODAC(base.Clusterer):
 
         """
         if not (n_decimal_places > 0 and n_decimal_places < 10):
-            raise ValueError("n_decimal_places must be between 1 and 9")
+            raise ValueError("n_decimal_places must be between 1 and 9.")
 
-        return self._root_node.design_structure(n_decimal_places)
+        return self._root_node.design_structure(n_decimal_places).rstrip("\n")
 
     @property
     def structure_changed(self) -> bool:
@@ -276,7 +283,7 @@ class ODACCluster(base.Base):
         self.active = True
         self.children: ODACChildren | None = None
 
-        self.timeseries_names: list[typing.Hashable]
+        self.timeseries_names: list[typing.Hashable] = []
         self._statistics: dict[tuple[typing.Hashable, typing.Hashable], stats.PearsonCorr] | None
 
         self.d1: float | None = None
@@ -292,7 +299,7 @@ class ODACCluster(base.Base):
         self.n = 0
 
     # Method to design the structure of the cluster tree
-    def design_structure(self, decimal_places=2) -> str:
+    def design_structure(self, decimal_places:int = 2) -> str:
         pre_0 = "    "
         pre_1 = "│   "
         pre_2 = "├── "
@@ -300,11 +307,11 @@ class ODACCluster(base.Base):
         node = self
         prefix = (
             pre_2
-            if node.parent is not None and id(node) != id(node.parent.children.second)  # type: ignore
+            if node.parent is not None and (node.parent.children is None or id(node) != id(node.parent.children.second))  # type: ignore
             else pre_3
         )
         while node.parent is not None and node.parent.parent is not None:
-            if id(node.parent) != id(node.parent.parent.children.second):  # type: ignore
+            if node.parent.parent.children is None or id(node.parent) != id(node.parent.parent.children.second):  # type: ignore
                 prefix = pre_1 + prefix
             else:
                 prefix = pre_0 + prefix
@@ -402,14 +409,14 @@ class ODACCluster(base.Base):
             # Calculate the Hoeffding bound in the cluster
             self.e = math.sqrt(math.log(1 / confidence_level) / (2 * self.n))
 
-    def _get_closest_cluster(self, pivot_1, pivot_2, current, rnormc_dict) -> int:
+    def _get_closest_cluster(self, pivot_1, pivot_2, current, rnormc_dict: dict) -> int:
         """Method that gives the closest cluster where the current time series is located."""
 
         dist_1 = rnormc_dict.get((min(pivot_1, current), max(pivot_1, current)), 0)
         dist_2 = rnormc_dict.get((min(pivot_2, current), max(pivot_2, current)), 0)
         return 2 if dist_1 >= dist_2 else 1
 
-    def _split_this_cluster(self, pivot_1: typing.Hashable, pivot_2: typing.Hashable, rnormc_dict: dict):
+    def _split_this_cluster(self, pivot_1: typing.Hashable, pivot_2: typing.Hashable, rnormc_dict: dict[tuple[typing.Hashable, typing.Hashable], float]):
         """Expand into two clusters."""
         pivot_set = {pivot_1, pivot_2}
         pivot_1_list = [pivot_1]
