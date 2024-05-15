@@ -741,8 +741,10 @@ class OnlineSVDZhang(OnlineSVD):
         QtQ = Q.T @ Q
         QtQ_cond = (QtQ < 0.0).any()
         if QtQ_cond:
-            Ra = np.linalg.qr(Q)[0].T @ Q  # c x c
+            Qot = np.linalg.qr(Q)[0].T  # c x n + c
+            Ra = Qot @ Q  # c x c
         else:
+            Qot = None
             Ra = np.sqrt(Q.T @ Q)  # c x c
         # TODO: not activated at all, check why
         if Ra.size > 0 and (Ra < self.tol).all():
@@ -759,15 +761,18 @@ class OnlineSVDZhang(OnlineSVD):
                 else:
                     N = self._Vt[:, -c + idx + 1 : idx + 1]  # r x c
                 Q = B - _V @ N  # n + c x c
+                Qot = None
             # Step 13: Normalize Q
-            Qot = np.linalg.qr(Q)[
-                0
-            ].T  # c x n + c; Orthonormal basis of column space of q
+            if Qot is None:
+                Qot = np.linalg.qr(Q)[
+                    0
+                ].T  # c x n + c; Orthonormal basis of column space of q
             # We do not touch original U therefore we leave reorthogonalization to update method :)
 
             S_ = np.pad(np.diag(_S), ((0, c), (0, c)))  # r + c x r + c
             # For full-rank SVD, this results in nn == 1.
             NtN = N.T @ N  # c x c
+            # TODO: validate if correct for c > 1
             norm_n = np.sqrt(1.0 - NtN)  # c x c
             norm_n[np.isnan(norm_n)] = 0.0
             K = S_ @ (
@@ -775,6 +780,7 @@ class OnlineSVDZhang(OnlineSVD):
                 - np.row_stack((N, np.zeros((c, c))))
                 @ np.row_stack((N, norm_n)).T
             )  # r + c x r + c
+            # TODO: Maybe we can truncate and use full_matrices=True to get sqared Vt
             U_, S_, Vt_ = np.linalg.svd(K, full_matrices=False)
 
             if self.rank_updates and S_[-1] <= self.tol:

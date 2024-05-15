@@ -15,7 +15,6 @@ TODO:
           continuous time eigenvalues exp(Lambda * dt) (Zhang et al. 2019)
     - [ ] Figure out how to use as both MiniBatchRegressor and MiniBatchTransformer
     - [ ] Find out why some values of A change sign between consecutive updates
-    - [ ] Drop seed
 
 References:
     [^1]: Zhang, H., Clarence Worth Rowley, Deem, E.A. and Cattafesta, L.N.
@@ -172,7 +171,7 @@ class OnlineDMD(MiniBatchRegressor, MiniBatchTransformer):
         self.exponential_weighting = exponential_weighting
         self.eig_rtol = eig_rtol
         assert self.eig_rtol is None or 0.0 <= self.eig_rtol < 1.0
-        self.seed = seed
+        self.seed = seed  # used with sparse SVD, otherwise its deterministic
 
         np.random.seed(self.seed)
 
@@ -212,29 +211,25 @@ class OnlineDMD(MiniBatchRegressor, MiniBatchTransformer):
 
     @property
     def modes(self) -> np.ndarray:
-        """Reconstruct high dimensional DMD modes"""
+        """Reconstruct high dimensional discrete-time DMD modes"""
         if self._modes is None:
-            _, Phi = self.eig
+            _, Phi_comp = self.eig
             if self.r < self.m:
-                # Sign of eigenvectors and singular vectors may change based on underlying algorithm initialization
-                # TODO: shall we use discrete time singlar values or continuous time singlar values?
-
-                # Schmid (2010), but Phi_comp corresponds to eigenvectors of compainion matrix
-                # self._modes = self._svd._U @ Phi_comp
-
-                # Proctor (2016)
+                # Exact DMD modes (Tu et al. (2016))
                 # self._Y.T @ self._svd._Vt.T is increasingly more computationally expensive without rolling
                 self._modes = (
                     self._Y.T
-                    @ self._svd._Vt.T
+                    @ self._svd._Vt.T  # sign may change if sparse SVD is used
                     @ np.diag(1 / self._svd._S)
-                    @ Phi
+                    @ Phi_comp  # sign may change if sparse EIG is used
                 )
 
-                # This is faster and does not comprosime the results much.
-                # self._modes = self._svd._U @ np.diag(1 / self._svd._S) @ Phi
+                # Projected DMD modes (Schmid (2010)) - faster, not guaranteed
+                # self._modes = self._svd._U @ Phi_comp
+                # For some reason, this works better than the above
+                # self._modes = self._svd._U @ np.diag(1 / self._svd._S) @ Phi_comp
             else:
-                self._modes = Phi
+                self._modes = Phi_comp
         return self._modes
 
     @property
@@ -264,7 +259,7 @@ class OnlineDMD(MiniBatchRegressor, MiniBatchTransformer):
         if self.eig_rtol is None:
             return False
         return np.allclose(
-            np.abs(self._A_last[:, : self.A.shape[1]]),
+            np.abs(self._A_last[: self.A.shape[0], : self.A.shape[1]]),
             np.abs(self.A),
             rtol=self.eig_rtol,
         )
@@ -310,9 +305,10 @@ class OnlineDMD(MiniBatchRegressor, MiniBatchTransformer):
         else:
             _UUp = _UU[:p, :p]
             _UUq = _UU[p:, p:]
-            self.A = np.column_stack(
-                (_UUp @ self.A[:, :p] @ _UUp.T, _UUp @ self.A[:, p:] @ _UUq.T)
-            )
+            # self.A = np.column_stack(
+            #     (_UUp @ self.A[:, :p] @ _UUp.T, _UUp @ self.A[:, p:] @ _UUq.T)
+            # )
+            self.A = _UUp @ self.A @ _UU.T
         # Understand why we divide by w
         self._P = np.linalg.inv(_UU @ np.linalg.inv(self._P) @ _UU.T) / self.w
 
