@@ -32,7 +32,6 @@ python = "^3.9"
 numpy = "^1.23.0"
 scipy = "^1.12.1"
 pandas = "^2.1"
-polars = "^0.20.8"
 
 [tool.poetry.group.dev.dependencies]
 graphviz = "^0.20.1"
@@ -51,6 +50,7 @@ ipython = "^8.17.2"
 rich = "^13.6.0"
 jupyter = "^1.0.0"
 mike = "^2.0.0"
+polars = "^0.20.8"
 
 [tool.poetry.group.compat]
 optional = true
