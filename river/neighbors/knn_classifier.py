@@ -24,7 +24,7 @@ class KNNClassifier(base.Classifier):
         documentation of each available search engine for more details on its usage.
         By default, use the `SWINN` search engine for approximate search queries.
     weighted
-        Weight the contribution of each neighbor by it's inverse distance.
+        Weight the contribution of each neighbor by its inverse distance.
     cleanup_every
         This determines at which rate old classes are cleaned up. Classes that
         have been seen in the past but that are not present in the current

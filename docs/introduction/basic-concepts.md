@@ -22,13 +22,13 @@ The challenge for machine learning is to ensure models you train offline on proa
 
 ## Online processing
 
-Online processing is the act of processing a data stream one element at a time. In the case of machine learning, that means training a model by teaching it one sample at a time. This is completely opposite to the traditional way of doing machine learning, which is to train a model on a whole batch data at a time.
+Online processing is the act of processing a data stream one element at a time. In the case of machine learning, that means training a model by teaching it one sample at a time. This is completely opposite to the traditional way of doing machine learning, which is to train a model on whole batches of data at a time.
 
 An online model is therefore a stateful, dynamic object. It keeps learning and doesn't have to revisit past data. It's a different way of doing things, and therefore has its own set of pros and cons.
 
 ## Tasks
 
-Machine learning encompasses many different tasks: classification, regression, anomaly detection, time series forecasting, etc. The ideology behind River is to be a generic machine learning which allows to perform these tasks in a streaming manner. Indeed, many batch machine learning algorithms have online equivalents.
+Machine learning encompasses many different tasks: classification, regression, anomaly detection, time series forecasting, etc. The ideology behind River is to be a generic machine learning approach which allows these tasks to be performed in a streaming manner. Indeed, many batch machine learning algorithms have online equivalents.
 
 Note that River also supports some more basic tasks. For instance, you might just want to calculate a running average of a data stream. These are usually smaller parts of a whole stream processing pipeline.
 
@@ -36,13 +36,13 @@ Note that River also supports some more basic tasks. For instance, you might jus
 
 River is a Python library. It is composed of a bunch of classes which implement various online processing algorithms. Most of these classes are machine learning models which can process a single sample, be it for learning or for inference.
 
-We made the choice to use dictionaries as the basic building block. First of all, online processing is different to batch processing, in that vectorization doesn't bring any speedup. Therefore numeric processing libraries such as numpy and PyTorch actually bring too much overhead. Using native Python data structures is faster.
+We made the choice to use dictionaries as the basic building block. First of all, online processing is different to batch processing, in that vectorization doesn't bring any speed-up. Therefore numeric processing libraries such as NumPy and PyTorch actually bring too much overhead. Using native Python data structures is faster.
 
-Dictionaries are therefore a perfect fit. They're native to Python and have excellent support in the standard library. They allow naming each feature. They can hold any kind of data type. They allow transparent support of JSON payloads, allowing seemless integration with web apps.
+Dictionaries are therefore a perfect fit. They're native to Python and have excellent support in the standard library. They allow the naming of each feature. They can hold any kind of data type. They allow transparent support of JSON payloads, allowing seamless integration with web apps.
 
 ## Datasets
 
-In production, you're almost always going to face data streams which you have to react to. Such as users visiting your website. The advantage of online machine learning is that you can design models which make predictions as well as learn from this data stream as it flows.
+In production, you're almost always going to face data streams which you have to react to, such as users visiting your website. The advantage of online machine learning is that you can design models that make predictions as well as learn from this data stream as it flows.
 
 But of course, when you're developping a model, you don't usually have access to a real-time feed on which to evaluate your model. You usually have an offline dataset which you want to evaluate your model on. River provides some datasets which can be read in online manner, one sample at a time. It is however crucial to keep in mind that the goal is to reproduce a production scenario as closely as possible, in order to ensure your model will perform just as well in production.
 
@@ -58,4 +58,4 @@ This is what makes online machine learning powerful. By replaying datasets in th
 
 The main reason why an offline model might not perform as expected in production is because of concept drift. But this is true for all machine learning models, be they offline or online.
 
-The advantage of online models over offline models is that they can cope with drift. Indeed, because they can keep learning, they usually adapt to concept drift in a seemless manner. As opposed to batch models which have to be retrained from scratch.
+The advantage of online models over offline models is that they can cope with drift. Indeed, because they can keep learning, they usually adapt to concept drift in a seamless manner. As opposed to batch models which have to be retrained from scratch.

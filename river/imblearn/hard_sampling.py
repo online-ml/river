@@ -78,7 +78,7 @@ class HardSamplingRegressor(HardSampling, base.Regressor):
     The hardness of an observation is evaluated with a loss function that compares the sample's
     ground truth with the wrapped model's prediction. If the buffer is not full, then the sample
     is added to the buffer. If the buffer is full and the new sample has a bigger loss than the
-    lowest loss in the buffer, then the sample takes it's place.
+    lowest loss in the buffer, then the sample takes its place.
 
     Parameters
     ----------
@@ -159,7 +159,7 @@ class HardSamplingClassifier(HardSampling, base.Classifier):
     The hardness of an observation is evaluated with a loss function that compares the sample's
     ground truth with the wrapped model's prediction. If the buffer is not full, then the sample
     is added to the buffer. If the buffer is full and the new sample has a bigger loss than the
-    lowest loss in the buffer, then the sample takes it's place.
+    lowest loss in the buffer, then the sample takes its place.
 
     Parameters
     ----------

@@ -67,7 +67,7 @@ class Absolute(RegressionLoss):
 
     $$L = |p_i - y_i|$$
 
-    It's gradient w.r.t. to $p_i$ is
+    Its gradient w.r.t. to $p_i$ is
 
     $$\\frac{\\partial L}{\\partial p_i} = sgn(p_i - y_i)$$
 
@@ -203,7 +203,7 @@ class Hinge(BinaryLoss):
 
     $$L = max(0, 1 - p_i * y_i)$$
 
-    It's gradient w.r.t. to $p_i$ is
+    Its gradient w.r.t. to $p_i$ is
 
     $$
     \\frac{\\partial L}{\\partial y_i} = \\left\{
@@ -404,7 +404,7 @@ class Squared(RegressionLoss):
 
     $$L = (p_i - y_i) ^ 2$$
 
-    It's gradient w.r.t. to $p_i$ is
+    Its gradient w.r.t. to $p_i$ is
 
     $$\\frac{\\partial L}{\\partial p_i} = 2 (p_i - y_i)$$
 
@@ -539,7 +539,7 @@ class Poisson(RegressionLoss):
 
     $$L = exp(p_i) - y_i \\times p_i$$
 
-    It's gradient w.r.t. to $p_i$ is
+    Its gradient w.r.t. to $p_i$ is
 
     $$\\frac{\\partial L}{\\partial p_i} = exp(p_i) - y_i$$
 
