@@ -124,10 +124,6 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
     ...     nb_threshold=10,
     ...     seed=0
     ... )
-    
-    >>> dataset = iter(gen.take(3000))
-
-    >>> model = tree.LASTClassifier()
 
     >>> metric = metrics.Accuracy()
 
