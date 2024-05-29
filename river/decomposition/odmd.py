@@ -217,17 +217,20 @@ class OnlineDMD(MiniBatchRegressor, MiniBatchTransformer):
             if self.r < self.m:
                 # Exact DMD modes (Tu et al. (2016))
                 # self._Y.T @ self._svd._Vt.T is increasingly more computationally expensive without rolling
-                self._modes = (
-                    self._Y.T
-                    @ self._svd._Vt.T  # sign may change if sparse SVD is used
-                    @ np.diag(1 / self._svd._S)
-                    @ Phi_comp  # sign may change if sparse EIG is used
-                )
+                # self._modes = (
+                #     self._Y.T
+                #     @ self._svd._Vt.T  # sign may change if sparse SVD is used
+                #     @ np.diag(1 / self._svd._S)
+                #     @ Phi_comp  # sign may change if sparse EIG is used
+                # )
 
                 # Projected DMD modes (Schmid (2010)) - faster, not guaranteed
                 # self._modes = self._svd._U @ Phi_comp
-                # For some reason, this works better than the above
-                # self._modes = self._svd._U @ np.diag(1 / self._svd._S) @ Phi_comp
+                # This regularization works much better than the above
+                #  if high variance in svs of X
+                self._modes = (
+                    self._svd._U @ np.diag(1 / self._svd._S) @ Phi_comp
+                )
             else:
                 self._modes = Phi_comp
         return self._modes
@@ -288,10 +291,18 @@ class OnlineDMD(MiniBatchRegressor, MiniBatchTransformer):
     ):
         U_prev = self._svd._U
         # We can update svd on x now without leaking new sample which is in y
+        # try:
         if svd_modify == "update":
             self._svd.update(x)
         elif svd_modify == "revert":
             self._svd.revert(x)
+        # except np.linalg.LinAlgError:
+        #     # If the SVD update fails, we revert it back to the previous state
+        #     import warnings
+
+        #     warnings.warn(
+        #         "LinAlgWarning: SVD did not converge. Skipping the update"
+        #     )
         _U = self._svd._U
         _UU = _U.T @ U_prev
         x = x @ _U
@@ -358,13 +369,13 @@ class OnlineDMD(MiniBatchRegressor, MiniBatchTransformer):
         """
         # If Hankelizer is used, we need to use DMD without y
         if y is None:
-            if not hasattr(self, "_x_prev"):
-                self._x_prev = x
+            if not hasattr(self, "_x_last"):
+                self._x_last = x
                 return
             else:
                 y = x
-                x = self._x_prev
-        self._x_prev = y
+                x = self._x_last
+                self._x_last = y
 
         if isinstance(x, dict):
             self.feature_names_in_ = list(x.keys())
@@ -445,7 +456,7 @@ class OnlineDMD(MiniBatchRegressor, MiniBatchTransformer):
             else:
                 y = x
                 x = self._x_first
-                self._x_first = x
+                self._x_first = y
 
         if isinstance(x, dict):
             x = np.array(list(x.values()))
@@ -662,7 +673,7 @@ class OnlineDMD(MiniBatchRegressor, MiniBatchTransformer):
         return mat[1:, :]
 
     def forecast(self, horizon: int, xs: list[dict] | None = None) -> list:
-        x = self._x_prev
+        x = self._x_last
         if not hasattr(self, "m"):
             self.m = len(x)
         # Map A back to original space
@@ -974,17 +985,17 @@ class OnlineDMDwC(OnlineDMD):
             u: 1D array, shape (m, ), u(t) as in y(t) = f(t, x(t), u(t))
         """
         if y is None:
-            if not hasattr(self, "_x_prev"):
-                self._x_prev = x
-                self._u_prev = u
+            if not hasattr(self, "_x_last"):
+                self._x_last = x
+                self._u_last = u
                 return
             else:
                 y = x
-                x = self._x_prev
-                self._x_prev = y
+                x = self._x_last
+                self._x_last = y
                 _u_hold = u
-                u = self._u_prev
-                self._u_prev = _u_hold
+                u = self._u_last
+                self._u_last = _u_hold
 
         if isinstance(x, dict):
             x = np.array(list(x.values()))
@@ -1068,7 +1079,7 @@ class OnlineDMDwC(OnlineDMD):
             else:
                 y = x
                 x = self._x_first
-                self._x_first = x
+                self._x_first = y
                 _u_hold = u
                 u = self._u_first
                 self._u_first = _u_hold
