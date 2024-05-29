@@ -62,15 +62,17 @@ class Hankelizer(Transformer):
         self.n_features_in_: int
 
     def learn_one(self, x: dict):
-        if not hasattr(self, "feature_names_in_"):
+        if not hasattr(self, "feature_names_in_") and isinstance(x, dict):
             self.feature_names_in_ = list(x.keys())
             self.n_features_in_ = len(x)
-        else:
-            assert self.feature_names_in_ == list(x.keys())
 
         self._window.append(x)
 
     def transform_one(self, x: dict):
+        if not isinstance(x, dict):
+            on_arrays = True
+        else:
+            on_arrays = False
         # TODO: If called before learn_one, creates duplicate sample
         _window = list(self._window)
         w_past_current = len(_window)
@@ -88,6 +90,11 @@ class Hankelizer(Transformer):
             if not self.return_partial == "copy":
                 for i in range(n_missing):
                     _window[i] = {k: float("nan") for k in _window[0]}
+        if on_arrays:
+            import numpy as np
+
+            return np.array([v for d in _window for v in d])
+        else:
             return {
                 f"{k}_{i}": v
                 for i, d in enumerate(_window)
