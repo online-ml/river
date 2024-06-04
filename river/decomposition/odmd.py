@@ -9,12 +9,14 @@ and revert methods to operate with Rolling and TimeRolling wrapers.
 
 TODO:
 
-    - [ ] Compute amlitudes of the singular values of the input matrix.
+    - [x] Compute amlitudes of the singular values of the input matrix.
+    - [x] Benchmark on performance with np vs pd input
     - [ ] Update prediction computation for continuous time
           x(t) = Phi exp(diag(ln(Lambda) / dt) * t) Phi^+ x(0) (MIT lecture)
           continuous time eigenvalues exp(Lambda * dt) (Zhang et al. 2019)
     - [ ] Figure out how to use as both MiniBatchRegressor and MiniBatchTransformer
     - [ ] Find out why some values of A change sign between consecutive updates
+    - [ ] Fix inconsistency in xi (amplitudes) computation
 
 References:
     [^1]: Zhang, H., Clarence Worth Rowley, Deem, E.A. and Cattafesta, L.N.
@@ -25,7 +27,6 @@ References:
 
 from __future__ import annotations
 
-import warnings
 from typing import Literal
 
 import numpy as np
@@ -271,9 +272,6 @@ class OnlineDMD(MiniBatchRegressor, MiniBatchTransformer):
         if self.r == 0:
             self.r = self.m
         if self.initialize > 0 and self.initialize < self.r:
-            warnings.warn(
-                f"Initialization is under-constrained. Set initialize={self.r} to supress this Warning."
-            )
             self.initialize = self.r
 
         # Zhang (2019) suggests to initialize A with random values
@@ -296,13 +294,6 @@ class OnlineDMD(MiniBatchRegressor, MiniBatchTransformer):
             self._svd.update(x)
         elif svd_modify == "revert":
             self._svd.revert(x)
-        # except np.linalg.LinAlgError:
-        #     # If the SVD update fails, we revert it back to the previous state
-        #     import warnings
-
-        #     warnings.warn(
-        #         "LinAlgWarning: SVD did not converge. Skipping the update"
-        #     )
         _U = self._svd._U
         _UU = _U.T @ U_prev
         x = x @ _U
@@ -315,7 +306,7 @@ class OnlineDMD(MiniBatchRegressor, MiniBatchTransformer):
         # If A is not square, it is called by DMDwC
         else:
             _UUp = _UU[:p, :p]
-            _UUq = _UU[p:, p:]
+            # _UUq = _UU[p:, p:]
             # self.A = np.column_stack(
             #     (_UUp @ self.A[:, :p] @ _UUp.T, _UUp @ self.A[:, p:] @ _UUq.T)
             # )
@@ -721,7 +712,15 @@ class OnlineDMD(MiniBatchRegressor, MiniBatchTransformer):
         """
         if isinstance(x, dict):
             x = np.array(list(x.values()))
-
+        if not hasattr(self, "A") or (
+            hasattr(self, "_svd") and not hasattr(self._svd, "_U")
+        ):
+            return dict(
+                zip(
+                    range(self.r),
+                    np.zeros(self.r),
+                )
+            )
         return dict(zip(range(self.r), x @ self.modes))
 
     def transform_many(
@@ -915,6 +914,13 @@ class OnlineDMDwC(OnlineDMD):
                 self._modes = Phi
         return self._modes
 
+    @property
+    def xi(self) -> np.ndarray:
+        """Amlitudes of the singular values of the input matrix."""
+        return np.linalg.pinv(self.modes) @ np.array(
+            list(self._x_first.values())
+        )
+
     def _init_update(self) -> None:
         if not hasattr(self, "l"):
             super()._init_update()
@@ -933,9 +939,6 @@ class OnlineDMDwC(OnlineDMD):
             seed=self.seed,
         )
         if self.initialize < self.r:
-            warnings.warn(
-                f"Initialization is under-constrained. Changed initialize to {self.r}."
-            )
             self.initialize = self.r
 
         self.A = np.eye(self.p)
