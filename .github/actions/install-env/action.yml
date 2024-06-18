@@ -16,6 +16,10 @@ runs:
     - name: Check out repository
       uses: actions/checkout@v3
 
+    - name: Update Rust
+      shell: bash
+      run: rustup update
+
     - name: Set up Python
       id: set-up-python
       uses: actions/setup-python@v4
