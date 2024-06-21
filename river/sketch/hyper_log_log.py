@@ -121,7 +121,6 @@ class HyperLogLog(base.Base):
         Estimate the number of distinct elements.
         This method uses the harmonic mean of the registers to provide an estimate.
         """
-   
         est = self.alpha * self.m ** 2 / sum(2 ** (-reg) for reg in self.registers)
 
         if est <= 5 / 2 * self.m:
