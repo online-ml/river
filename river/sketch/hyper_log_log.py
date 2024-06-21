@@ -131,6 +131,7 @@ class HyperLogLog(base.Base):
             return round(est)
         else:
             return round(-2 ** 32 * math.log(1 - est / 2 ** 32))
+        return 0
 
     def __len__(self) -> int:
         """
