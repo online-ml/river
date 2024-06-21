@@ -241,17 +241,19 @@ class HierarchicalHeavyHitters(base.Base):
 
             node.fe += child_node.fe + child_node.ge
         
-        return
+        return None
             
     def __getitem__(self, key: typing.Hashable) -> int:
         """Get the count of a specific hierarchical key."""
         current = self.root
+        
+    
 
         if isinstance(key, str):
             for i in range(len(key)):
                 sub_key = key[:i + 1]
 
-                if sub_key not in current.children:
+                if current is None or sub_key not in current.children:
                     return 0
 
                 current = current.children[sub_key]
