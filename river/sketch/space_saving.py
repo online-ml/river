@@ -68,7 +68,7 @@ class SpaceSaving(base.Base):
 
     def __init__(self, k: int):
         self.k = k
-        self.counts : dict[str, int] = {}  
+        self.counts: dict[typing.Hashable, int] = {} 
 
     def update(self, x: typing.Hashable, w: int = 1):
         """Update the counts with the given element."""
@@ -77,17 +77,16 @@ class SpaceSaving(base.Base):
 
         elif len(self.counts) >= self.k:
             min_count_key = min(self.counts, key=self.counts.get)
-            self.counts[x] = self.counts.get(min_count_key) + 1
-            del self.counts[min_count_key]
+            self.counts[x] = self.counts.pop(min_count_key, 0) + 1
 
         else:
             self.counts[x] = w
 
-    def __getitem__(self, x) -> int:
+    def __getitem__(self, x: typing.Hashable) -> int:
         """Get the count of the given element."""
         return self.counts.get(x, 0)
     
-    def __len__(self):
+    def __len__(self) -> int:
         """Return the number of elements stored."""
         return len(self.counts)
     
@@ -96,6 +95,6 @@ class SpaceSaving(base.Base):
         return sum(self.counts.values())
     
     @property
-    def heavy_hitters(self):
+    def heavy_hitters(self) -> dict[typing.Hashable, int]:
         """Return the heavy hitters stored."""
         return self.counts

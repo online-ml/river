@@ -207,7 +207,7 @@ class HierarchicalHeavyHitters(base.Base):
             
     def output(self, phi: float) -> list[typing.Hashable]:
         """Generate a list of heavy hitters with frequency estimates above the given threshold."""
-        result = []
+        result: list[tuple[typing.Hashable, int]] = []
         self.root.fe = 0
         self.root.Fe = 0
 
@@ -220,6 +220,10 @@ class HierarchicalHeavyHitters(base.Base):
 
     def _output_node(self, node: HierarchicalHeavyHitters.Node, phi: float, result: list):
         """Recursively generate heavy hitters from the hierarchical tree."""
+
+        if node is None:
+            return
+
         if not node.children:
             return
         
@@ -235,6 +239,8 @@ class HierarchicalHeavyHitters(base.Base):
                 node.Fe += child_node.Fe + child_node.ge
 
             node.fe += child_node.fe + child_node.ge
+        
+        return
             
     def __getitem__(self, key: typing.Hashable) -> int:
         """Get the count of a specific hierarchical key."""
@@ -262,7 +268,10 @@ class HierarchicalHeavyHitters(base.Base):
     
     def _count_entries(self, node: HierarchicalHeavyHitters.Node) -> int:
         """Recursively count the total number of nodes in the hierarchical tree."""
-        total = 1  
+        if node is None:
+            return 0
+
+        total = 1  # Include the current node
         
         for child_node in node.children.values():
             total += self._count_entries(child_node)

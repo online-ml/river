@@ -112,11 +112,8 @@ class HyperLogLog(base.Base):
         """
         hash_val = hash(x)
         j = hash_val & (self.m - 1)
- 
         w = hash_val >> self.b
-
         self.registers[j] = max(self.registers[j], self.left_most_one(w))
-
         return
        
     def count(self) -> int:
