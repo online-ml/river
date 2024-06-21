@@ -116,6 +116,8 @@ class HyperLogLog(base.Base):
         w = hash_val >> self.b
 
         self.registers[j] = max(self.registers[j], self.left_most_one(w))
+
+        return
        
     def count(self) -> int:
         """

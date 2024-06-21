@@ -68,7 +68,7 @@ class SpaceSaving(base.Base):
 
     def __init__(self, k: int):
         self.k = k
-        self.counts = {}
+        self.counts : dict[str, int] = {}  
 
     def update(self, x: typing.Hashable, w: int = 1):
         """Update the counts with the given element."""

@@ -114,8 +114,6 @@ class HierarchicalHeavyHitters(base.Base):
 
     class Node:
         """Represents a node in the hierarchical tree structure used by HHH."""
-
-    class Node:
         def __init__(self):
             self.ge = 0
             self.delta_e = 0
@@ -273,7 +271,7 @@ class HierarchicalHeavyHitters(base.Base):
     
     def __str__(self):
         """Return a string representation of the hierarchical tree."""
-        if self.root == None:
+        if self.root is None:
             return "None"
         return self._print_node(self.root, 0)
 
