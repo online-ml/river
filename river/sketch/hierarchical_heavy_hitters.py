@@ -189,7 +189,7 @@ class HierarchicalHeavyHitters(base.Base):
         
     def _compress_node(self, node: HierarchicalHeavyHitters.Node):
         """Recursively compress nodes in the hierarchical tree."""
-        if not node.children:
+        if node is not None and not node.children:
             return
 
         for child_key, child_node in list(node.children.items()):
@@ -247,26 +247,31 @@ class HierarchicalHeavyHitters(base.Base):
         """Get the count of a specific hierarchical key."""
         current = self.root
 
-        for i in range(len(key)):
-                
+        if isinstance(key, str):
+            for i in range(len(key)):
                 sub_key = key[:i + 1]
 
                 if sub_key not in current.children:
-
                     return 0
-                
+
                 current = current.children[sub_key]
 
                 if sub_key == key:
-               
-                   return current.ge
-                
+                    return current.ge
+        else:
+   
+            return 0
+
         return 0
  
             
     def totals(self) -> int:
         """Return the total number of elements in the hierarchical tree."""
-        return self._count_entries(self.root) -1
+        if self.root is not None:
+            total = self._count_entries(self.root) - 1
+        else:
+            total = 0
+        return total
     
     def _count_entries(self, node: HierarchicalHeavyHitters.Node) -> int:
         """Recursively count the total number of nodes in the hierarchical tree."""

@@ -72,13 +72,12 @@ class SpaceSaving(base.Base):
 
     def update(self, x: typing.Hashable, w: int = 1):
         """Update the counts with the given element."""
+        
         if x in self.counts:
             self.counts[x] += w
-
         elif len(self.counts) >= self.k:
-            min_count_key = min(self.counts, key=self.counts.get)
+            min_count_key = min(self.counts, key=lambda k: self.counts[k])  # Use lambda to specify key function
             self.counts[x] = self.counts.pop(min_count_key, 0) + 1
-
         else:
             self.counts[x] = w
 
