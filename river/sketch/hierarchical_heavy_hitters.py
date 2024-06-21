@@ -205,17 +205,18 @@ class HierarchicalHeavyHitters(base.Base):
                     del node.children[child_key]
 
             
-    def output(self, phi: float) -> list[typing.Hashable]:
+    def output(self, phi: float) -> list[typing.Tuple[typing.Hashable, int]]:
         """Generate a list of heavy hitters with frequency estimates above the given threshold."""
         result: list[tuple[typing.Hashable, int]] = []
-        self.root.fe = 0
-        self.root.Fe = 0
+        if self.root:
+            self.root.fe = 0
+            self.root.Fe = 0
 
-        for _, child_node in list(self.root.children.items()):
-            child_node.fe = 0
-            child_node.Fe = 0
+            for _, child_node in list(self.root.children.items()):
+                child_node.fe = 0
+                child_node.Fe = 0
 
-        self._output_node(self.root, phi, result)
+            self._output_node(self.root, phi, result)
         return result
 
     def _output_node(self, node: HierarchicalHeavyHitters.Node, phi: float, result: list):
@@ -250,7 +251,6 @@ class HierarchicalHeavyHitters(base.Base):
                 
                 sub_key = key[:i + 1]
 
-
                 if sub_key not in current.children:
 
                     return 0
@@ -260,6 +260,8 @@ class HierarchicalHeavyHitters(base.Base):
                 if sub_key == key:
                
                    return current.ge
+                
+        return 0
  
             
     def totals(self) -> int:
