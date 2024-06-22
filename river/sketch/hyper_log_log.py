@@ -5,6 +5,7 @@ import typing
 
 from river import base
 
+
 class HyperLogLog(base.Base):
 
     """HyperLogLog algorithm for cardinality estimation.[^1][^2]
@@ -13,10 +14,10 @@ class HyperLogLog(base.Base):
     of m bytes of auxiliary memory, known as registers.
 
     Firstly, each element in the data set is hashed into a binary string, ensuring data is
-    uniformly distributed and simulating random distribution. The algorithm hashes each element 
-    into a binary string and then organizes these binary representations into registers. 
+    uniformly distributed and simulating random distribution. The algorithm hashes each element
+    into a binary string and then organizes these binary representations into registers.
 
-    HyperLogLog, represents an improvement over the original LogLog algorithm by utilizing a 
+    HyperLogLog, represents an improvement over the original LogLog algorithm by utilizing a
     technique called harmonic mean to estimate the cardinality.
 
     Parameters
@@ -59,14 +60,14 @@ class HyperLogLog(base.Base):
     ...     hyperloglog.update(i)
 
     >>> print(hyperloglog.count())
-    100 
+    100
 
     >>> hyperloglog = HyperLogLog(b=15)
 
     >>> for i in range(100):
     ...     hyperloglog.update(i%10)
 
-    >>> print(hyperloglog.count())  
+    >>> print(hyperloglog.count())
     10
 
     References

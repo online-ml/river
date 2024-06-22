@@ -2,14 +2,14 @@ from __future__ import annotations
 
 import typing
 
-
 from river import base
+
 
 class SpaceSaving(base.Base):
     """Space-Saving algorithm for finding heavy hitters.[^1]
 
     The Space-Saving algorithm is designed to find the heavy hitters in a data stream using a
-    hash map with a fixed amount of memory. It keeps track of the k most frequent items at any 
+    hash map with a fixed amount of memory. It keeps track of the k most frequent items at any
     given time, as well as their corresponding approximate frequency.
 
     Upon receiving a new item from the data stream, if it corresponds to a monitored element,
@@ -20,13 +20,13 @@ class SpaceSaving(base.Base):
     Parameters
     ----------
     k
-        The maximum number of heavy hitters to store. The higher the value of k, the higher the 
+        The maximum number of heavy hitters to store. The higher the value of k, the higher the
         accuracy of the algorithm.
 
     Attributes
     ----------
     counts : dict
-        A dictionary to store the counts of items. The keys correspond to the elements and the 
+        A dictionary to store the counts of items. The keys correspond to the elements and the
         values to their respective count.
 
     Methods
@@ -47,10 +47,10 @@ class SpaceSaving(base.Base):
     >>> from river import sketch
 
     >>> spacesaving = sketch.SpaceSaving(k=10)
-    
+
     >>> for i in range(100):
     ...     spacesaving.update(i % 10)
-    
+
     >>> print(len(spacesaving))
     10
     >>> print(spacesaving.total())
@@ -59,7 +59,7 @@ class SpaceSaving(base.Base):
     {0: 10, 1: 10, 2: 10, 3: 10, 4: 10, 5: 10, 6: 10, 7: 10, 8: 10, 9: 10}
     >>> print(spacesaving[10])
     10
-    
+
 
     References
     ----------

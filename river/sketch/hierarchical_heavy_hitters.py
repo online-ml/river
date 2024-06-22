@@ -1,9 +1,10 @@
 from __future__ import annotations
-import typing
 
 import math
+import typing
 
 from river import base
+
 
 class HierarchicalHeavyHitters(base.Base):
 
@@ -140,7 +141,7 @@ class HierarchicalHeavyHitters(base.Base):
             self.max_e = 0
             self.fe = 0
             self.m_fe = 0
-            self.children: typing.Dict[typing.Hashable, HierarchicalHeavyHitters.Node] = {}
+            self.children: typing.dict[typing.Hashable, HierarchicalHeavyHitters.Node] = {}
 
     def __init__(self, k: int, epsilon: float, parent_func: typing.Callable[[typing.Hashable, int], typing.Hashable] = None, root_value: typing.Hashable = None):
         self.k = k
@@ -219,7 +220,7 @@ class HierarchicalHeavyHitters(base.Base):
                     node.max_e = max (node.max_e, child_node.ge + child_node.delta_e)
                     del node.children[child_key]
 
-    def output(self, phi: float) -> list[typing.Tuple[typing.Hashable, int]]:
+    def output(self, phi: float) -> list[typing.tuple[typing.Hashable, int]]:
         """Generate a list of heavy hitters with frequency estimates above the given threshold."""
         result: list[tuple[typing.Hashable, int]] = []
         if self.root:
