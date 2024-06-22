@@ -63,20 +63,21 @@ class SpaceSaving(base.Base):
 
     References
     ----------
-    - [^1]: Cormode, G., & Hadjieleftheriou, M. (2008). Finding Frequent Items in Data Streams. AT&T Labs–Research, Florham Park, NJ.
+    - [^1]: Cormode, G., & Hadjieleftheriou, M. (2008).
+    Finding Frequent Items in Data Streams. AT&T Labs–Research, Florham Park, NJ.
     """
 
     def __init__(self, k: int):
         self.k = k
-        self.counts: dict[typing.Hashable, int] = {} 
+        self.counts: dict[typing.Hashable, int] = {}
 
     def update(self, x: typing.Hashable, w: int = 1):
         """Update the counts with the given element."""
-        
+
         if x in self.counts:
             self.counts[x] += w
         elif len(self.counts) >= self.k:
-            min_count_key = min(self.counts, key=lambda k: self.counts[k])  # Use lambda to specify key function
+            min_count_key = min(self.counts, key=lambda k: self.counts[k])
             self.counts[x] = self.counts.pop(min_count_key, 0) + 1
         else:
             self.counts[x] = w
@@ -84,15 +85,15 @@ class SpaceSaving(base.Base):
     def __getitem__(self, x: typing.Hashable) -> int:
         """Get the count of the given element."""
         return self.counts.get(x, 0)
-    
+
     def __len__(self) -> int:
         """Return the number of elements stored."""
         return len(self.counts)
-    
+
     def total(self) -> int:
         """Return the total count."""
         return sum(self.counts.values())
-    
+
     @property
     def heavy_hitters(self) -> dict[typing.Hashable, int]:
         """Return the heavy hitters stored."""

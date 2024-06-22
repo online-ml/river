@@ -72,11 +72,15 @@ class HyperLogLog(base.Base):
     References
     ----------
 
-    - [^1]: Marianne Durand and Philippe Flajolet. Loglog counting of large cardinalities (extended abstract). Algorithms Project, INRIA–Rocquencourt, 2003.
-    - [^2]: Philippe Flajolet,  ́Eric Fusy, Olivier Gandouet, and Fr ́ed ́eric Meunier. Hyperloglog: the analysis of a near-optimal cardinality estimation algorithm. Algorithms Project, IN-RIA–Rocquencourt. 
+    - [^1]: Marianne Durand and Philippe Flajolet.
+    Loglog counting of large cardinalities (extended abstract).
+    Algorithms Project, INRIA–Rocquencourt, 2003.
+    - [^2]: Philippe Flajolet,  ́Eric Fusy, Olivier Gandouet, and Fr ́ed ́eric Meunier.
+    Hyperloglog: the analysis of a near-optimal cardinality estimation algorithm.
+    Algorithms Project, IN-RIA–Rocquencourt.
 
     """
-    
+
     def __init__(self, b: int):
         self.b = b
         self.m = 2 ** b
@@ -115,7 +119,7 @@ class HyperLogLog(base.Base):
         w = hash_val >> self.b
         self.registers[j] = max(self.registers[j], self.left_most_one(w))
 
-       
+
     def count(self) -> int:
         """
         Estimate the number of distinct elements.
