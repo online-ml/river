@@ -37,9 +37,6 @@ jobs:
           path: ~/scikit_learn_data
           key: ${{ runner.os }}
 
-      - name: Update Rust
-        run: rustup update
-
       - name: Download datasets
         run: |
           poetry run python -c "from river import datasets; datasets.CreditCard().download(); datasets.Elec2().download(); datasets.SMSSpam().download()"
