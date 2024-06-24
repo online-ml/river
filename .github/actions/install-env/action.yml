@@ -16,12 +16,12 @@ runs:
     - name: Check out repository
       uses: actions/checkout@v3
 
-    - name: Install GCC 13
+    - name: Install GCC and GFortran 9 and 13
       shell: bash
       run: |
         sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
         sudo apt-get update -y
-        sudo apt-get install gcc-13
+        sudo apt-get install gcc-9 gcc-13 gfortran-9 gfortran-13 -y
 
     - name: Set up Python
       id: set-up-python
@@ -33,7 +33,7 @@ runs:
       uses: actions/cache@v3
       with:
         path: ~/.local # the path depends on the OS
-        key: poetry-2 # increment to reset cache
+        key: poetry-3 # increment to reset cache
 
     - name: Install poetry
       uses: snok/install-poetry@v1
