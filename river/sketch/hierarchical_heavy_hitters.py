@@ -60,7 +60,7 @@ class HierarchicalHeavyHitters(base.Base):
 
     >>> from river import sketch
 
-    >>> def custom_parent_func(x, i): 
+    >>> def custom_parent_func(x, i):
     ...     if i < len(x):
     ...         return None  #root value
     ...     return x[:i]
@@ -72,23 +72,23 @@ class HierarchicalHeavyHitters(base.Base):
 
     >>> print(hhh)
     ge: 0, delta_e: 0, max_e: 0
-    : 
+    :
         ge: 0, delta_e: 0, max_e: 0
-        1: 
+        1:
             ge: 1, delta_e: 0, max_e: 0
-        2: 
+        2:
             ge: 1, delta_e: 0, max_e: 0
-            21: 
+            21:
                 ge: 1, delta_e: 0, max_e: 0
-                212: 
+                212:
                     ge: 1, delta_e: 0, max_e: 0
-            24: 
+            24:
                 ge: 1, delta_e: 0, max_e: 0
-        3: 
+        3:
             ge: 1, delta_e: 0, max_e: 0
-            31: 
+            31:
                 ge: 1, delta_e: 0, max_e: 0
-            34: 
+            34:
                 ge: 1, delta_e: 0, max_e: 0
 
     >>> print( hhh['212'])
@@ -99,10 +99,10 @@ class HierarchicalHeavyHitters(base.Base):
     >>> print(heavy_hitters)
     [('1', 1), ('212', 1), ('21', 2), ('24', 1), ('2', 4), ('31', 1), ('34', 1), ('3', 3)]
 
-    >>> def custom_parent_func2(x, i): 
+    >>> def custom_parent_func2(x, i):
     ...     parts = x.split('.')
     ...     if i >= len(parts):
-    ...         return None  
+    ...         return None
     ...     return '.'.join(parts[:i+1])
 
     >>> hhh = sketch.HierarchicalHeavyHitters(k=10, epsilon=0.001, parent_func=custom_parent_func2)
@@ -112,17 +112,17 @@ class HierarchicalHeavyHitters(base.Base):
 
     >>> print(hhh)
     ge: 0, delta_e: 0, max_e: 0
-    123: 
+    123:
         ge: 2, delta_e: 0, max_e: 0
-        123.456: 
+        123.456:
             ge: 1, delta_e: 0, max_e: 0
-        123.123: 
+        123.123:
             ge: 1, delta_e: 0, max_e: 0
-    456: 
+    456:
         ge: 0, delta_e: 0, max_e: 0
-        456.123: 
+        456.123:
             ge: 1, delta_e: 0, max_e: 0
-    
+
     >>> heavy_hitters = hhh.output(phi)
     [('123.456', 1), ('123.123', 1), ('123', 4), ('456.123', 1)]
 
@@ -143,7 +143,7 @@ class HierarchicalHeavyHitters(base.Base):
             self.m_fe = 0
             self.children: typing.dict[typing.Hashable, HierarchicalHeavyHitters.Node] = {}
 
-    def __init__(self, k: int, epsilon: float, parent_func: typing.Optional[typing.Callable[[typing.Hashable, int], typing.Hashable]] = None, root_value: typing.Optional[typing.Hashable] = None):
+    def __init__(self, k: int, epsilon: float, parent_func: typing.Callable[[typing.Hashable, int], typing.Hashable] | None = None, root_value: typing.Hashable | None = None):
         self.k = k
         self.epsilon = epsilon
         self.bucket_size = math.floor(1 / epsilon)
