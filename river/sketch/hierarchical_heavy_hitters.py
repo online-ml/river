@@ -143,7 +143,7 @@ class HierarchicalHeavyHitters(base.Base):
             self.m_fe = 0
             self.children: typing.dict[typing.Hashable, HierarchicalHeavyHitters.Node] = {}
 
-    def __init__(self, k: int, epsilon: float, parent_func: typing.Callable[[typing.Hashable, int], typing.Hashable] = None, root_value: typing.Hashable = None):
+    def __init__(self, k: int, epsilon: float, parent_func: typing.Optional[typing.Callable[[typing.Hashable, int], typing.Hashable]] = None, root_value: typing.Optional[typing.Hashable] = None):
         self.k = k
         self.epsilon = epsilon
         self.bucket_size = math.floor(1 / epsilon)
@@ -220,7 +220,7 @@ class HierarchicalHeavyHitters(base.Base):
                     node.max_e = max (node.max_e, child_node.ge + child_node.delta_e)
                     del node.children[child_key]
 
-    def output(self, phi: float) -> list[typing.tuple[typing.Hashable, int]]:
+    def output(self, phi: float) -> list[tuple[typing.Hashable, int]]:
         """Generate a list of heavy hitters with frequency estimates above the given threshold."""
         result: list[tuple[typing.Hashable, int]] = []
         if self.root:
@@ -269,7 +269,7 @@ class HierarchicalHeavyHitters(base.Base):
 
                 current = current.children[sub_key]
 
-                if sub_key == key:
+                if sub_key == key and current is not None:
                     return current.ge
         else:
             return 0
