@@ -59,7 +59,7 @@ class StandardAbsoluteDeviation(anomaly.base.SupervisedAnomalyDetector):
 
     """
 
-    def __init__(self, sub_stat: stats.base.Univariate = None):
+    def __init__(self, sub_stat: stats.base.Univariate | None = None):
         self.variance = stats.Var()
         self.sub_stat = sub_stat or stats.Mean()
 

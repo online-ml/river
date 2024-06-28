@@ -253,7 +253,7 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
     def __init__(
         self,
         n_neighbors: int = 10,
-        distance_func: DistanceFunc = None,
+        distance_func: DistanceFunc | None = None,
     ):
         self.n_neighbors = n_neighbors
         self.x_list: list = []

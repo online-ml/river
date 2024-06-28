@@ -42,7 +42,7 @@ class MondrianTreeRegressor(MondrianTree, base.Regressor):
         step: float = 0.1,
         use_aggregation: bool = True,
         iteration: int = 0,
-        seed: int = None,
+        seed: int | None = None,
     ):
         super().__init__(
             step=step,

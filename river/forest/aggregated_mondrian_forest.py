@@ -275,7 +275,7 @@ class AMFRegressor(AMFLearner, base.Regressor):
         n_estimators: int = 10,
         step: float = 1.0,
         use_aggregation: bool = True,
-        seed: int = None,
+        seed: int | None = None,
     ):
         super().__init__(
             n_estimators=n_estimators,
