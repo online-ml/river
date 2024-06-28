@@ -971,6 +971,15 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#forest" class="md-nav__link">
+    <span class="md-ellipsis">
+      forest
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1816,6 +1825,15 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#forest" class="md-nav__link">
+    <span class="md-ellipsis">
+      forest
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1836,6 +1854,10 @@
 <h2 id="cluster">cluster<a class="headerlink" href="#cluster" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Added <code>ODAC</code> (Online Divisive-Agglomerative Clustering) for clustering time series.</li>
+</ul>
+<h2 id="forest">forest<a class="headerlink" href="#forest" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Fix error in <code>forest.ARFClassifer</code> and <a href="../../api/forest/ARFRegressor"><code>forest.ARFRegressor</code></a> where the algorithms would crash in case the number of features available for learning went below the value of the <code>max_features</code> parameter (#1560).</li>
 </ul>
 
 
