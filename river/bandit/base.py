@@ -162,7 +162,7 @@ class ContextualPolicy(Policy):
     def _pull(self, arm_ids: list[ArmID], context: dict) -> ArmID:  # type: ignore[override]
         ...
 
-    def pull(self, arm_ids: list[ArmID], context: dict = None) -> ArmID:
+    def pull(self, arm_ids: list[ArmID], context: dict | None = None) -> ArmID:
         """Pull arm(s).
 
         This method is a generator that yields the arm(s) that should be pulled. During the burn-in

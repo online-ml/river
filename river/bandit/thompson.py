@@ -73,7 +73,7 @@ class ThompsonSampling(bandit.base.Policy):
 
     def __init__(
         self,
-        reward_obj: proba.base.Distribution = None,
+        reward_obj: proba.base.Distribution | None = None,
         burn_in=0,
         seed: int | None = None,
     ):

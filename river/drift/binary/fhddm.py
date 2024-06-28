@@ -66,7 +66,7 @@ class FHDDM(base.BinaryDriftAndWarningDetector):
 
     """
     def __init__(
-        self, sliding_window_size: int = 100, confidence_level: float = 0.000001, short_window_size: int = None
+        self, sliding_window_size: int = 100, confidence_level: float = 0.000001, short_window_size: int | None = None
     ):
 
         super().__init__()
