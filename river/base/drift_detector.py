@@ -22,12 +22,12 @@ class _BaseDriftDetector(base.Base):
     def __init__(self):
         self._drift_detected = False
 
-    def _reset(self):
+    def _reset(self) -> None:
         """Reset the detector's state."""
         self._drift_detected = False
 
     @property
-    def drift_detected(self):
+    def drift_detected(self) -> bool:
         """Whether or not a drift is detected following the last update."""
         return self._drift_detected
 
@@ -57,7 +57,7 @@ class DriftDetector(_BaseDriftDetector):
     """A drift detector."""
 
     @abc.abstractmethod
-    def update(self, x: int | float) -> DriftDetector:
+    def update(self, x: int | float) -> None:
         """Update the detector with a single data point.
 
         Parameters

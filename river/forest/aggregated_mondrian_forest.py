@@ -169,7 +169,7 @@ class AMFClassifier(AMFLearner, base.Classifier):
         # memory of the classes
         self._classes: set[base.typing.ClfTarget] = set()
 
-    def _initialize_trees(self):
+    def _initialize_trees(self) -> None:
         self.data: list[MondrianTreeClassifier] = []
         for _ in range(self.n_estimators):
             tree = MondrianTreeClassifier(
@@ -287,7 +287,7 @@ class AMFRegressor(AMFLearner, base.Regressor):
 
         self.iteration = 0
 
-    def _initialize_trees(self):
+    def _initialize_trees(self) -> None:
         """Initialize the forest."""
 
         self.data: list[MondrianTreeRegressor] = []
