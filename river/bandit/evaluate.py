@@ -167,7 +167,7 @@ History = typing.Iterator[
 def evaluate_offline(
     policy: bandit.base.Policy,
     history: History | bandit.datasets.BanditDataset,
-    reward_stat: stats.base.Univariate = None,
+    reward_stat: stats.base.Univariate | None = None,
 ) -> tuple[stats.base.Univariate, int]:
     """Evaluate a policy on historical logs using replay.
 
