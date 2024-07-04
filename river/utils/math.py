@@ -8,6 +8,7 @@ from __future__ import annotations
 import functools
 import itertools
 import math
+import numbers
 import operator
 
 import numpy as np
@@ -162,7 +163,23 @@ def minkowski_distance(a: dict, b: dict, p: int):
         Manhattan distance. When `p=2`, this is equivalent to using the Euclidean distance.
 
     """
-    return sum((abs(a.get(k, 0.0) - b.get(k, 0.0))) ** p for k in {*a.keys(), *b.keys()}) ** (1 / p)
+
+    def abs_diff(a, b) -> float:
+        """Naïve absolute difference of two objects.
+
+        If a and b are both numbers, this is the regular absolute difference.
+
+        Otherwise, the difference is 0 is the objects are the same and 1 if they are different.
+        """
+        if isinstance(a, numbers.Real) and isinstance(b, numbers.Real):
+            return float(abs(a - b))
+        elif a == b:
+            return 0.0
+        return 1.0
+
+    return sum((abs_diff(a.get(k, 0.0), b.get(k, 0.0))) ** p for k in {*a.keys(), *b.keys()}) ** (
+        1 / p
+    )
 
 
 def softmax(y_pred: dict):
