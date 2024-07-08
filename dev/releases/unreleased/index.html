@@ -18,7 +18,7 @@
         <link rel="prev" href="../../faq/">
       
       
-        <link rel="next" href="../0.21.1/">
+        <link rel="next" href="../0.21.2/">
       
       
       <link rel="icon" href="../../img/favicon.ico">
@@ -874,6 +874,8 @@
       
         
       
+        
+      
     
     
       
@@ -926,17 +928,6 @@
         
       
       
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  <span class="md-ellipsis">
-    Unreleased
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -947,43 +938,27 @@
 
       </a>
       
-        
+    </li>
+  
 
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+              
+            
+              
+                
   
   
   
-    
   
+    <li class="md-nav__item">
+      <a href="../0.21.2/" class="md-nav__link">
+        
   
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#cluster" class="md-nav__link">
-    <span class="md-ellipsis">
-      cluster
-    </span>
-  </a>
+  <span class="md-ellipsis">
+    0.21.2 - 2024-07-08
+  </span>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#forest" class="md-nav__link">
-    <span class="md-ellipsis">
-      forest
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
+
+      </a>
     </li>
   
 
@@ -1810,32 +1785,6 @@
     
   
   
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#cluster" class="md-nav__link">
-    <span class="md-ellipsis">
-      cluster
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#forest" class="md-nav__link">
-    <span class="md-ellipsis">
-      forest
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
 </nav>
                   </div>
                 </div>
@@ -1850,15 +1799,6 @@
 
 
 <h1 id="unreleased">Unreleased<a class="headerlink" href="#unreleased" title="Permanent link">&para;</a></h1>
-<p>This release makes Polars an optional dependency instead of a required one.</p>
-<h2 id="cluster">cluster<a class="headerlink" href="#cluster" title="Permanent link">&para;</a></h2>
-<ul>
-<li>Added <code>ODAC</code> (Online Divisive-Agglomerative Clustering) for clustering time series.</li>
-</ul>
-<h2 id="forest">forest<a class="headerlink" href="#forest" title="Permanent link">&para;</a></h2>
-<ul>
-<li>Fix error in <code>forest.ARFClassifer</code> and <a href="../../api/forest/ARFRegressor"><code>forest.ARFRegressor</code></a> where the algorithms would crash in case the number of features available for learning went below the value of the <code>max_features</code> parameter (#1560).</li>
-</ul>
 
 
 
