@@ -51,17 +51,17 @@ jobs:
           platforms: all
 
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.17.0
+        uses: pypa/cibuildwheel@v2.19.2
         timeout-minutes: 720
         env:
           CIBW_BUILD: "cp39-* cp310-* cp311-* cp312-*"
-          CIBW_ARCHS_LINUX: "x86_64 i686 aarch64 ppc64le s390x"
+          CIBW_ARCHS_LINUX: "x86_64 i686 aarch64"
           # CIBW_ARCHS_MACOS: "x86_64 arm64"
           CIBW_ARCHS_MACOS: "universal2"
           # We don't build ARM64 wheels yet because there's a Rust issue
           CIBW_ARCHS_WINDOWS: "AMD64 x86"
-          # Rust nighlty doesn't seem to be available for musl linux on i686 and ppc64le and s390x (yet)
-          CIBW_SKIP: "*-musllinux_i686 *-musllinux_ppc64le *-musllinux_s390x"
+          # Rust nighlty doesn't seem to be available for musl linux on i686
+          CIBW_SKIP: "*-musllinux_i686"
 
           # arm64 and universal2 wheels are tagged with x86_64 because there's an issue with Poetry
           # More information here: https://cibuildwheel.readthedocs.io/en/stable/faq/#how-to-cross-compile (CTRL + F "poetry")
@@ -74,8 +74,6 @@ jobs:
           CIBW_MANYLINUX_X86_64_IMAGE: "manylinux2014"
           CIBW_MANYLINUX_I686_IMAGE: "manylinux2014"
           CIBW_MANYLINUX_AARCH64_IMAGE: "manylinux2014"
-          CIBW_MANYLINUX_PPC64LE_IMAGE: "manylinux2014"
-          CIBW_MANYLINUX_S390X_IMAGE: "manylinux2014"
           CIBW_MANYLINUX_PYPY_X86_64_IMAGE: "manylinux2014"
           CIBW_MANYLINUX_PYPY_I686_IMAGE: "manylinux2014"
           CIBW_MANYLINUX_PYPY_AARCH64_IMAGE: "manylinux2014"
@@ -83,8 +81,6 @@ jobs:
           CIBW_MUSLLINUX_X86_64_IMAGE: "musllinux_1_1"
           CIBW_MUSLLINUX_I686_IMAGE: "musllinux_1_1"
           CIBW_MUSLLINUX_AARCH64_IMAGE: "musllinux_1_1"
-          CIBW_MUSLLINUX_PPC64LE_IMAGE: "musllinux_1_1"
-          CIBW_MUSLLINUX_S390X_IMAGE: "musllinux_1_1"
 
           CIBW_ENVIRONMENT: 'PATH="$HOME/.cargo/bin:$PATH"'
           # Fix the following error: error: cargo rustc --lib --message-format=json-render-diagnostics --manifest-path Cargo.toml --release -v --features pyo3/extension-module -- --crate-type cdylibfailed with code -9
