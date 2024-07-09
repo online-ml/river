@@ -51,7 +51,7 @@ jobs:
           platforms: all
 
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.17.0
+        uses: pypa/cibuildwheel@v2.19.2
         timeout-minutes: 720
         env:
           CIBW_BUILD: "cp39-* cp310-* cp311-* cp312-*"
