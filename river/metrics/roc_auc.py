@@ -100,10 +100,4 @@ class ROCAUC(metrics.base.BinaryMetric):
             tprs[i] = safe_div(a=tp, b=tp + fn)
             fprs[i] = safe_div(a=fp, b=fp + tn)
 
-        trapezoid = (
-            integrate.trapz  # For older/outdated versions of SciPy.
-            if hasattr(integrate, "trapz")
-            else integrate.trapezoid
-        )
-
-        return -trapezoid(x=fprs, y=tprs)
+        return -integrate.trapezoid(x=fprs, y=tprs)
