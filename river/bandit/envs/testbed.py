@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import math
 
-import gym
+import gymnasium as gym
 
 
 class KArmedTestbed(gym.Env):
