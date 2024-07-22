@@ -35,7 +35,7 @@ pandas = "^2.1"
 
 [tool.poetry.group.dev.dependencies]
 graphviz = "^0.20.1"
-gym = "^0.26.2"
+gymnasium = "^0.26.2"
 matplotlib = "^3.0.2"
 mypy = "^1.6.1"
 pre-commit = "^3.5.0"

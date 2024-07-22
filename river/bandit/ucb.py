@@ -32,7 +32,7 @@ class UCB(bandit.base.Policy):
     Examples
     --------
 
-    >>> import gym
+    >>> import gymnasium as gym
     >>> from river import bandit
     >>> from river import preprocessing
     >>> from river import stats

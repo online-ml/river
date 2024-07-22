@@ -5,7 +5,7 @@ import importlib
 import inspect
 import random
 
-import gym
+import gymnasium as gym
 import pytest
 
 from river import bandit, metrics
