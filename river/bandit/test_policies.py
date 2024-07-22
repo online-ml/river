@@ -111,7 +111,7 @@ def test_better_than_random_policy(policy: bandit.base.Policy, env: gym.Env):
             arm_id = policy.pull(arm_ids)  # type: ignore
             observation, reward, terminated, truncated, info = env.step(arm_id)
             policy.update(arm_id, reward)
-            policy_reward += reward
+            policy_reward += float(reward)
 
             random_arm_id = random_policy.pull(arm_ids)  # type: ignore
             (
@@ -122,7 +122,7 @@ def test_better_than_random_policy(policy: bandit.base.Policy, env: gym.Env):
                 info,
             ) = random_env.step(random_arm_id)
             random_policy.update(random_arm_id, reward)
-            random_reward += reward
+            random_reward += float(reward)
 
         n_successes += policy_reward > random_reward
 
