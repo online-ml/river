@@ -122,8 +122,6 @@ class GLM:
 
             self._update_weights(x)
 
-        return self
-
     def _update_weights(self, x):
         # L1 cumulative penalty helper
 

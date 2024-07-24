@@ -83,8 +83,6 @@ class HorizonMetric(ForecastingMetric):
 
             metric.update(yt, yp)
 
-        return self
-
     def get(self):
         return [metric.get() for metric in self.metrics]
 

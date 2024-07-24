@@ -36,11 +36,11 @@ class RandomSplitter(Splitter):
         """This attribute observer does not support probability density estimation."""
         raise NotImplementedError
 
-    def update(self, att_val, target_val, w) -> Splitter:
+    def update(self, att_val, target_val, w) -> None:
         if self.threshold is None:
             if len(self._buffer) < self.buffer_size:
                 self._buffer.append((att_val, target_val, w))
-                return self
+                return
 
             mn = min(self._buffer, key=lambda t: t[0])[0]
             mx = max(self._buffer, key=lambda t: t[0])[0]
@@ -51,11 +51,9 @@ class RandomSplitter(Splitter):
                 self._update_stats(0 if a <= self.threshold else 1, t, w)
             self._buffer = None
 
-            return self
+            return
 
         self._update_stats(0 if att_val <= self.threshold else 1, target_val, w)
-
-        return self
 
     def best_evaluated_split_suggestion(self, criterion, pre_split_dist, att_idx, binary_only):
         post_split_dist = [self.stats[0], self.stats[1]]
