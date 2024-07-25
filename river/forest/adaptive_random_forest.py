@@ -534,7 +534,7 @@ class ARFClassifier(BaseForest, base.Classifier):
         in the majority class is smaller than this parameter value. This parameter avoids
         performing splits when most of the data belongs to a single class.
     max_size
-        [*Tree parameter*] Maximum memory (MB) consumed by the tree.
+        [*Tree parameter*] Maximum memory (MiB) consumed by the tree.
     memory_estimate_period
         [*Tree parameter*] Number of instances between memory consumption checks.
     stop_mem_management
@@ -808,7 +808,7 @@ class ARFRegressor(BaseForest, base.Regressor):
     binary_split
         [*Tree parameter*] If True, only allow binary splits.
     max_size
-        [*Tree parameter*] Maximum memory (MB) consumed by the tree.
+        [*Tree parameter*] Maximum memory (MiB) consumed by the tree.
     memory_estimate_period
         [*Tree parameter*] Number of instances between memory consumption checks.
     stop_mem_management

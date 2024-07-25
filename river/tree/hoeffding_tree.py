@@ -34,7 +34,7 @@ class HoeffdingTree(ABC):
     binary_split
         If True, only allow binary splits.
     max_size
-        The max size of the tree, in Megabytes (MB).
+        The max size of the tree, in mebibytes (MiB).
     memory_estimate_period
         Interval (number of processed instances) between memory consumption checks.
     stop_mem_management
@@ -111,7 +111,7 @@ class HoeffdingTree(ABC):
 
     @property
     def max_size(self):
-        """Max allowed size tree can reach (in MB)."""
+        """Max allowed size tree can reach (in MiB)."""
         return self._max_size
 
     @max_size.setter

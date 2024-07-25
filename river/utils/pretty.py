@@ -68,7 +68,7 @@ def humanize_bytes(n_bytes: int):
     n_bytes
 
     """
-    suffixes = ["B", "KB", "MB", "GB", "TB", "PB"]
+    suffixes = ["B", "KiB", "MiB", "GiB", "TiB", "PiB"]
     human = float(n_bytes)
     rank = 0
     if n_bytes != 0:

@@ -46,7 +46,7 @@ class TwitchChatStream:
     channels
         A list of channel names like `["asmongold", "shroud"]` you want to collect messages from.
     buffer_size
-        Size of buffer in bytes used for receiving responses from Twitch with IRC (default 2 kB).
+        Size of buffer in bytes used for receiving responses from Twitch with IRC (default 2 KiB).
     timeout
         A timeout value in seconds for waiting response from Twitch (default 60s). It can be useful if all requested channels are offline or chat is not active enough.
 
