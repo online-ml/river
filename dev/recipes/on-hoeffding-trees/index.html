@@ -1585,12 +1585,12 @@
 
 This dataset contains features from web pages that are classified as phishing or not.
 
-    Name  Phishing                                                          
-    Task  Binary classification                                             
- Samples  1,250                                                             
-Features  9                                                                 
-  Sparse  False                                                             
-    Path  /Users/max/projects/online-ml/river/river/datasets/phishing.csv.gz
+    Name  Phishing                                                       
+    Task  Binary classification                                          
+ Samples  1,250                                                          
+Features  9                                                              
+  Sparse  False                                                          
+    Path  /Users/mastelini/Documents/river/river/datasets/phishing.csv.gz
 </code></pre></div>
 <p>We are going to train an instance of <code>HoeffdingTreeClassifier</code> using this dataset. As everything else in River, training an iDT is a piece of cake!</p>
 <div class="language-python highlight"><pre><span></span><code><span class="o">%%</span><span class="n">time</span>
@@ -1602,8 +1602,8 @@ Features  9
 
 <span class="n">model</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>CPU times: user 37.6 ms, sys: 569 µs, total: 38.2 ms
-Wall time: 39.1 ms
+<div class="language-text highlight"><pre><span></span><code>CPU times: user 64.8 ms, sys: 2.75 ms, total: 67.6 ms
+Wall time: 68.1 ms
 </code></pre></div>
 <div><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">HoeffdingTreeClassifier</pre></summary><code class="river-estimator-params">HoeffdingTreeClassifier (
   grace_period=50
@@ -1878,7 +1878,7 @@ Class True:
 
             <span class="c1"># Convert timedelta object into seconds</span>
             <span class="n">r_time</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">checkpoint</span><span class="p">[</span><span class="s2">&quot;Time&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">())</span>
-            <span class="c1"># Make sure the memory measurements are in MB</span>
+            <span class="c1"># Make sure the memory measurements are in MiB</span>
             <span class="n">raw_memory</span> <span class="o">=</span> <span class="n">checkpoint</span><span class="p">[</span><span class="s2">&quot;Memory&quot;</span><span class="p">]</span>
             <span class="n">memory</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">raw_memory</span> <span class="o">*</span> <span class="mi">2</span><span class="o">**-</span><span class="mi">20</span><span class="p">)</span>
 
@@ -1888,7 +1888,7 @@ Class True:
 
     <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">metric_name</span><span class="p">)</span>
     <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Time (seconds)&#39;</span><span class="p">)</span>
-    <span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Memory (MB)&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Memory (MiB)&#39;</span><span class="p">)</span>
     <span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Instances&#39;</span><span class="p">)</span>
 
     <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
@@ -1917,14 +1917,14 @@ Class True:
 </code></pre></div>
 <p><img alt="png" src="../on-hoeffding-trees_files/on-hoeffding-trees_19_0.png" /></p>
 <p>In our example we use the <code>EBSTSplitter</code>, which is going to discussed later. For now, is enough to know that it is a mechanism to evaluate split candidates in the trees.</p>
-<p>As we can see, our tree uses almost 10 MB to keep its structure. Let's say we wanted to limit our memory usage to 5 MB. How could we do that?</p>
+<p>As we can see, our tree uses almost 10 MiB to keep its structure. Let's say we wanted to limit our memory usage to 5 MiB. How could we do that?</p>
 <p>Note that we are using a illustration case here. In real applications, data may be unbounded, so the trees might grow indefinitely.</p>
 <p>HTs expose some parameters related to memory management. The user can refer to the documentation for more details on that matter. Here, we are going to focus on two parameters:</p>
 <ul>
-<li><code>max_size</code>: determines the maximum amount of memory (in MB) that the HT can use.</li>
+<li><code>max_size</code>: determines the maximum amount of memory (in MiB) that the HT can use.</li>
 <li><code>memory_estimate_period</code>: intervals after which the memory-management is triggered.</li>
 </ul>
-<p>We are going to limit our HTR to 5 MB and perform memory checks at intervals of 500 instances.</p>
+<p>We are going to limit our HTR to 5 MiB and perform memory checks at intervals of 500 instances.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">plot_performance</span><span class="p">(</span>
     <span class="n">synth</span><span class="o">.</span><span class="n">Friedman</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="mi">10_000</span><span class="p">),</span>
     <span class="n">metrics</span><span class="o">.</span><span class="n">MAE</span><span class="p">(),</span>
