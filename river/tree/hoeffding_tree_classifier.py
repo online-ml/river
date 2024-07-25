@@ -58,7 +58,7 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
         smaller than this parameter value. This parameter avoids performing splits when most
         of the data belongs to a single class.
     max_size
-        The max size of the tree, in Megabytes (MB).
+        The max size of the tree, in mebibytes (MiB).
     memory_estimate_period
         Interval (number of processed instances) between memory consumption checks.
     stop_mem_management
