@@ -252,9 +252,9 @@ class ODAC(base.Clusterer):
           List of cluster information to show. Valid options are:
           - "timeseries_indexes": Shows the indexes of the timeseries.
           - "timeseries_names": Shows the names of the timeseries.
-          - "d1": Shows the d1 distance.
-          - "d2": Shows the d2 distance.
-          - "e": Shows the error measure.
+          - "d1": Shows the d1 (the largest distance in each cluster).
+          - "d2": Shows the d2 (the second largest distance in each cluster).
+          - "e": Shows the error bound.
       n_decimal_places
           The number of decimal places to show for numerical values.
 
@@ -294,7 +294,7 @@ class ODAC(base.Clusterer):
 
           show_clusters_info_copy = show_clusters_info.copy()
 
-          # checks
+          # checks if user wants to see information about clusters
           if len(show_clusters_info_copy) > 0:
             if "timeseries_indexes" in show_clusters_info_copy:
                 # Convert timeseries names to indexes
