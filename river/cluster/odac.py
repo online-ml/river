@@ -241,7 +241,7 @@ class ODAC(base.Clusterer):
 
         return self._root_node.design_structure(n_decimal_places).rstrip("\n")
 
-    def draw(self, max_depth: int | None = None, show_clusters_info: list[str] = ["timeseries_names", "d1", "d2", "e"], n_decimal_places: int = 2):
+    def draw(self, max_depth: int | None = None, show_clusters_info: list[typing.Hashable] = ["timeseries_names", "d1", "d2", "e"], n_decimal_places: int = 2):
       """Method to draw the hierarchical cluster's structure as a Graphviz graph.
 
       Parameters
@@ -250,10 +250,11 @@ class ODAC(base.Clusterer):
           The maximum depth of the tree to display.
       show_clusters_info
           List of cluster information to show. Valid options are:
-          - "timeseries_indexes": Shows the indexes of the timeseries.
-          - "timeseries_names": Shows the names of the timeseries.
-          - "d1": Shows the d1 (the largest distance in each cluster).
-          - "d2": Shows the d2 (the second largest distance in each cluster).
+          - "timeseries_indexes": Shows the indexes of the timeseries in the cluster.
+          - "timeseries_names": Shows the names of the timeseries in the cluster.
+          - "name": Shows the cluster's name.
+          - "d1": Shows the d1 (the largest distance in the cluster).
+          - "d2": Shows the d2 (the second largest distance in the cluster).
           - "e": Shows the error bound.
       n_decimal_places
           The number of decimal places to show for numerical values.
@@ -292,15 +293,20 @@ class ODAC(base.Clusterer):
 
           label = ""
 
-          show_clusters_info_copy = show_clusters_info.copy()
-
           # checks if user wants to see information about clusters
-          if len(show_clusters_info_copy) > 0:
+          if len(show_clusters_info) > 0:
+            show_clusters_info_copy = show_clusters_info.copy()
+
+            if "name" in show_clusters_info_copy:
+                label += f"{node.name}"
+                show_clusters_info_copy.remove("name")
+                if len(show_clusters_info_copy) > 0:
+                    label += "\n"
             if "timeseries_indexes" in show_clusters_info_copy:
                 # Convert timeseries names to indexes
                 name_to_index = {name: index for index, name in enumerate(self._root_node.timeseries_names)}
                 timeseries_indexes = [name_to_index[_name] for _name in node.timeseries_names if _name in name_to_index]
-
+                
                 label += f"{timeseries_indexes}"
                 show_clusters_info_copy.remove("timeseries_indexes")
                 if len(show_clusters_info_copy) > 0:
@@ -326,9 +332,9 @@ class ODAC(base.Clusterer):
             if "e" in show_clusters_info_copy:
                 label += f"e={node.e:.{n_decimal_places}f}"
 
-          show_clusters_info_copy.clear()
+            show_clusters_info_copy.clear()
 
-          # Creates a node with different colors to differentiate the active clusters from the non-active
+          # Creates a node with different color to differentiate the active clusters from the non-active
           if node.active:
               dot.node(node_n, label, style="filled", fillcolor="#76b5c5")
           else:
@@ -360,7 +366,7 @@ class ODACCluster(base.Base):
         self.children: ODACChildren | None = None
 
         self.timeseries_names: list[typing.Hashable] = []
-        self._statistics: dict[tuple[typing.Hashable, typing.Hashable], stats.PearsonCorr] | stats.Var
+        self._statistics: dict[tuple[typing.Hashable, typing.Hashable], stats.PearsonCorr] | stats.Var | None
 
         self.d1: float | None = None
         self.d2: float | None = None
@@ -524,7 +530,9 @@ class ODACCluster(base.Base):
 
         # Set the active flag to false. Since this cluster is not an active cluster anymore.
         self.active = False
-        self.avg = self.d0 = self.pivot_0 = self.pivot_1 = self.pivot_2 = None  # type: ignore
+
+        # Reset some attributes
+        self.avg = self.d0 = self.pivot_0 = self.pivot_1 = self.pivot_2 = self._statistics = None  # type: ignore
 
     # Method that proceeds to merge on this cluster
     def _aggregate_this_cluster(self):
