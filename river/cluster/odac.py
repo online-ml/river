@@ -306,7 +306,7 @@ class ODAC(base.Clusterer):
                 # Convert timeseries names to indexes
                 name_to_index = {name: index for index, name in enumerate(self._root_node.timeseries_names)}
                 timeseries_indexes = [name_to_index[_name] for _name in node.timeseries_names if _name in name_to_index]
-                
+
                 label += f"{timeseries_indexes}"
                 show_clusters_info_copy.remove("timeseries_indexes")
                 if len(show_clusters_info_copy) > 0:
