@@ -928,6 +928,17 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Unreleased
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -937,6 +948,34 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#tree" class="md-nav__link">
+    <span class="md-ellipsis">
+      tree
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -1785,6 +1824,23 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#tree" class="md-nav__link">
+    <span class="md-ellipsis">
+      tree
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -1801,6 +1857,10 @@
 <h1 id="unreleased">Unreleased<a class="headerlink" href="#unreleased" title="Permanent link">&para;</a></h1>
 <ul>
 <li>The units used in River have been corrected to be based on powers of 2 (KiB, MiB). This only changes the display, the behaviour is unchanged.</li>
+</ul>
+<h2 id="tree">tree<a class="headerlink" href="#tree" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Instead of letting trees grow indefinitely, setting the <code>max_depth</code> parameter to <code>None</code> will stop the trees from growing when they reach the system recursion limit.</li>
 </ul>
 
 
