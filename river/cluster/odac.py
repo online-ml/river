@@ -24,7 +24,7 @@ class ODAC(base.Clusterer):
     So, the split operator, where the Hoeffding bound is applied, occurs when the difference between
     the largest distance (diameter) and the second largest difference is greater than a constant.
     Furthermore, the merge operator checks if one of the cluster's children has a diameter greater
-    than him - applying the Hoeffding bound again.
+    than it - applying the Hoeffding bound again.
 
     Parameters
     ----------
