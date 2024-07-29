@@ -1564,14 +1564,6 @@
 <td style="text-align: left;">Multi-target version of HTR</td>
 <td style="text-align: center;"><a href="https://link.springer.com/article/10.1007/s10844-017-0462-7">[5]</a></td>
 </tr>
-<tr>
-<td style="text-align: left;">Label Combination Hoeffding Tree Classifier</td>
-<td style="text-align: center;">LCHTC</td>
-<td style="text-align: left;">Multi-label classification</td>
-<td style="text-align: center;">No</td>
-<td style="text-align: left;">Creates a numerical code for each combination of the binary labels and uses HTC to learn from this encoded representation. At prediction time, decodes the modified representation to obtain the original label set</td>
-<td style="text-align: center;">-</td>
-</tr>
 </tbody>
 </table>
 <p>As we can see, although their application fields might overlap sometimes, the HT variations have specific situations in which they are better suited to work. Moreover, in River we provide a standardized API access to all the HT variants since they share many properties in common.</p>
@@ -1944,7 +1936,7 @@ Class True:
 <p>Note that as soon the memory usage reaches the limit that we determined (at the memory check intervals), HTR starts managing its resource usage to reduce the size. As a consequence, the running time also decreases. For more accurate management, the intervals between memory checks should be decreased. This action, however, has costs since the tree stops the learning process to estimate its size and alter its own structure. Too frequent memory checks might end up result in a slow learning process. Besides, by using fewer resources, the predictive performance can be negatively impacted. So, use this tool with caution!</p>
 <p><strong>But how that works at all?</strong></p>
 <p>HTs monitor the incoming feature values to perform split attempts. To do so, they rely on a class of algorithms called <em>Attribute Observers</em> (AO) or <em>Splitters</em> (spoiler alert!). Each leaf node in an HT keeps one AO per incoming feature. After pre-determined intervals (<code>grace_period</code> parameter), leaves query their AOs for split candidates. Well, there are costs to monitor input features (mainly the numerical ones). In fact, AOs correspond to one of the most time and memory-consuming portions of the HTs. To manage memory usage, an HT firstly determines its least promising leaves, w.r.t. how likely they will be split. Then, these leaves' AOs are removed, and the tree nodes are said to be "deactivated." That's it! The deactivated leaves do not perform split attempts anymore, but they continue to be updated to provide responses. They will be kept as leaves as long as there are not available resources to enable tree growth. These leaves can be activated again (meaning that new AOs will be created for them) if there is available memory, so don't worry!</p>
-<p><strong>Hint:</strong> another indirect way to bound memory usage is to limit the tree depth. By default, the trees can grow indefinitely, but the <code>max_depth</code> parameter can control this behavior.</p>
+<p><strong>Hint:</strong> another indirect way to bound memory usage is to limit the tree depth. By default, the trees can grow until they get close to the maximum recursion limit enabled in the system, but the <code>max_depth</code> parameter can control this behavior.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">plot_performance</span><span class="p">(</span>
     <span class="n">synth</span><span class="o">.</span><span class="n">Friedman</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="mi">10_000</span><span class="p">),</span>
     <span class="n">metrics</span><span class="o">.</span><span class="n">MAE</span><span class="p">(),</span>
