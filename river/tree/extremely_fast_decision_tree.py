@@ -38,7 +38,8 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
     grace_period
         Number of instances a leaf should observe between split attempts.
     max_depth
-        The maximum depth a tree can reach. If `None`, the tree will grow indefinitely.
+        The maximum depth a tree can reach. If `None`, the tree will grow until
+          the system recursion limit.
     min_samples_reevaluate
         Number of instances a node should observe before reevaluating the best split.
     split_criterion

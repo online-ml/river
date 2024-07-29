@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import abc
-import math
+import sys
 
 from scipy.stats import f as f_dist
 
@@ -38,7 +38,7 @@ class StochasticGradientTree(base.Estimator, abc.ABC):
         self.delta = delta
         self.grace_period = grace_period
         self.init_pred = init_pred
-        self.max_depth = max_depth if max_depth else math.inf
+        self.max_depth = max_depth if max_depth else (sys.getrecursionlimit() - 20)
 
         if lambda_value < 0.0:
             raise ValueError('Invalid value: "lambda_value" must be positive.')

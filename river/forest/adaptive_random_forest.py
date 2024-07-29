@@ -490,7 +490,7 @@ class ARFClassifier(BaseForest, base.Classifier):
         split attempts.
     max_depth
         [*Tree parameter*] The maximum depth a tree can reach. If `None`, the
-        tree will grow indefinitely.
+        tree will grow until the system recursion limit.
     split_criterion
         [*Tree parameter*] Split criterion to use.<br/>
         - 'gini' - Gini<br/>
@@ -767,7 +767,7 @@ class ARFRegressor(BaseForest, base.Regressor):
         split attempts.
     max_depth
         [*Tree parameter*] The maximum depth a tree can reach. If `None`, the
-        tree will grow indefinitely.
+        tree will grow until the system recursion limit.
     delta
         [*Tree parameter*] Allowed error in split decision, a value closer to 0
         takes longer to decide.
