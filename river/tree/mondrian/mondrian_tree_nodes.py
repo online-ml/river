@@ -69,8 +69,8 @@ class MondrianNode(base.Base):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.memory_range_min = collections.defaultdict(int)
-        self.memory_range_max = collections.defaultdict(int)
+        self.memory_range_min = collections.defaultdict(float)
+        self.memory_range_max = collections.defaultdict(float)
 
         self.weight = 0.0
         self.log_weight_tree = 0.0
