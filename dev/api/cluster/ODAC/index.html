@@ -3845,49 +3845,9 @@
 
 <h1 id="odac">ODAC<a class="headerlink" href="#odac" title="Permanent link">&para;</a></h1>
 <p>The Online Divisive-Agglomerative Clustering (ODAC)<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> aims at continuously maintaining a hierarchical cluster structure from evolving time series data streams.</p>
-<p>ODAC continuosly monitors the evolution of clusters' diameters and split or merge them by gathering more data or reacting to concept drift. Such changes are supported by a confidence level that comes from the Hoeffding bound. ODAC relies on keeping the linear correlation between series to evaluate whether or not the time series hierarchy has changed. </p>
-<p>The distance between time-series a and b is given by <code>rnomc(a, b) = sqrt((1 - corr(a, b)) / 2)</code>, where <code>corr(a, b)</code> is the Pearson Correlation coefficient. </p>
-<p>In the following topics, ε stands for the Hoeffding bound and considers clusters cj with descendants ck and cs. </p>
-<p><strong>The Merge Operator</strong> </p>
-<p>The Splitting Criteria guarantees that cluster's diameters monotonically decrease. </p>
-<ul>
-<li>
-<p>If diameter (ck) - diameter (cj) &gt; ε OR diameter (cs) - diameter (cj ) &gt; ε:</p>
-<ul>
-<li>There is a change in the correlation structure, so merge clusters ck and cs into cj. </li>
-</ul>
-</li>
-</ul>
-<p><strong>Splitting Criteria</strong> </p>
-<p>Consider: </p>
-<ul>
-<li>
-<p>d0: the minimum distance;</p>
-</li>
-<li>
-<p>d1: the farthest distance;</p>
-</li>
-<li>
-<p>d_avg: the average distance;</p>
-</li>
-<li>
-<p>d2: the second farthest distance.</p>
-</li>
-</ul>
-<p>Then: </p>
-<ul>
-<li>
-<p>if d1 - d2 &gt; εk or t &gt; εk then</p>
-<ul>
-<li>
-<p>if (d1 - d0)|(d1 - d_avg) - (d_avg - d0) &gt; εk then</p>
-<ul>
-<li>Split the cluster</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
+<p>The distance between time-series a and b is given by <code>rnomc(a, b) = sqrt((1 - corr(a, b)) / 2)</code>, where <code>corr(a, b)</code> is the Pearson Correlation coefficient. If the cluster has only one time-series, the diameter is given by the time-series variance. The cluster's diameter is given by the largest distance between the cluster's time-series. </p>
+<p>ODAC continuously monitors the evolution of diameters, only of the leaves, and splits or merges them by gathering more data or reacting to concept drift - a confidence level from the Hoeffding bound supports such changes. </p>
+<p>So, the split operator, where the Hoeffding bound is applied, occurs when the difference between the largest distance (diameter) and the second largest difference is greater than a constant. Furthermore, the merge operator checks if one of the cluster's children has a diameter bigger than their parent - applying the Hoeffding bound again.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
@@ -3934,16 +3894,16 @@ Structure changed at observation 100
 Structure changed at observation 200
 Structure changed at observation 300
 </code></pre></div></p>
-<p><div class="language-python highlight"><pre><span></span><code><span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">n_decimal_places</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+<p><div class="language-python highlight"><pre><span></span><code><span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">render_ascii</span><span class="p">())</span>
 </code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>ROOT d1=0.79 d2=0.76 [NOT ACTIVE]
 ├── CH1_LVL_1 d1=0.74 d2=0.72 [NOT ACTIVE]
-│   ├── CH1_LVL_2 d1=&lt;Not calculated&gt; [3]
+│   ├── CH1_LVL_2 d1=0.08 [3]
 │   └── CH2_LVL_2 d1=0.73 [2, 4]
 └── CH2_LVL_1 d1=0.81 d2=0.78 [NOT ACTIVE]
     ├── CH1_LVL_2 d1=0.73 d2=0.67 [NOT ACTIVE]
     │   ├── CH1_LVL_3 d1=0.72 [0, 9]
-    │   └── CH2_LVL_3 d1=&lt;Not calculated&gt; [1]
+    │   └── CH2_LVL_3 d1=0.08 [1]
     └── CH2_LVL_2 d1=0.74 d2=0.73 [NOT ACTIVE]
         ├── CH1_LVL_3 d1=0.71 [5, 6]
         └── CH2_LVL_3 d1=0.71 [7, 8]
@@ -3969,9 +3929,11 @@ Structure changed at observation 300
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <details class="- abstract">
 <summary>draw</summary>
-<p>Method to draw the hierarchical cluster's structure.</p>
+<p>Method to draw the hierarchical cluster's structure as a Graphviz graph.</p>
 <p><strong>Parameters</strong></p>
 <ul>
+<li><strong>max_depth</strong>     — <em>'int | None'</em>     — defaults to <code>None</code>    </li>
+<li><strong>show_clusters_info</strong>     — <em>'list[typing.Hashable]'</em>     — defaults to <code>['timeseries_names', 'd1', 'd2', 'e']</code>    </li>
 <li><strong>n_decimal_places</strong>     — <em>'int'</em>     — defaults to <code>2</code>    </li>
 </ul>
 </details>
@@ -3994,11 +3956,21 @@ Structure changed at observation 300
 </ul>
 </details>
 <p><span /></p>
+<details class="- abstract">
+<summary>render_ascii</summary>
+<p>Method to render the hierarchical cluster's structure in text format.</p>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><strong>n_decimal_places</strong>     — <em>'int'</em>     — defaults to <code>2</code>    </li>
+</ul>
+</details>
+<p><span /></p>
 <div class="footnote">
 <hr />
 <ol>
 <li id="fn:1">
-<p><a href="http://doi.org/10.1109/TKDE.2007.190727">Hierarchical clustering of time-series data streams.</a>&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+<p>P. P. Rodrigues, J. Gama and J. Pedroso, "Hierarchical Clustering of Time-Series Data Streams" in IEEE Transactions
+on Knowledge and Data Engineering, vol. 20, no. 5, pp. 615-627, May 2008, doi: 10.1109/TKDE.2007.190727.&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
 </li>
 </ol>
 </div>
