@@ -2,6 +2,13 @@
 
 - The units used in River have been corrected to be based on powers of 2 (KiB, MiB). This only changes the display, the behaviour is unchanged.
 
+## cluster
+
+- Update the description of `cluster.ODAC`.
+- Change `draw` in `cluster.ODAC` to draw the hierarchical cluster's structure as a Graphviz graph.
+- Add `render_ascii` in `cluster.ODAC` to render the hierarchical cluster's structure in text format.
+- Work with `stats.Var` in `cluster.ODAC` when cluster has only one time-series.
+
 ## tree
 
 - Instead of letting trees grow indefinitely, setting the `max_depth` parameter to `None` will stop the trees from growing when they reach the system recursion limit.
