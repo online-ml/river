@@ -7,7 +7,7 @@
 - Update the description of `cluster.ODAC`.
 - Change `draw` in `cluster.ODAC` to draw the hierarchical cluster's structure as a Graphviz graph.
 - Add `render_ascii` in `cluster.ODAC` to render the hierarchical cluster's structure in text format.
-- Work with `stats.Var` in `cluster.ODAC` when cluster has only one time-series.
+- Work with `stats.Var` in `cluster.ODAC` when cluster has only one time series.
 
 ## tree
 
