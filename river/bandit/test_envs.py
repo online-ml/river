@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-import gym.utils.env_checker
+import gymnasium as gym
+import gymnasium.utils.env_checker
 import pytest
 
 from river import bandit

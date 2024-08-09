@@ -10,7 +10,7 @@ In the streaming setting, data can evolve. Adaptive methods are specifically des
 
 ## General purpose
 
-River supports different machine learning tasks, including regression, classification, and unsupervised learning. It can also be used for adhoc tasks, such as computing online metrics, as well as concept drift detection.
+River supports different machine learning tasks, including regression, classification, and unsupervised learning. It can also be used for ad hoc tasks, such as computing online metrics, as well as concept drift detection.
 
 ## User experience
 

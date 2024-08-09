@@ -33,7 +33,7 @@ class EpsilonGreedy(bandit.base.Policy):
     Examples
     --------
 
-    >>> import gym
+    >>> import gymnasium as gym
     >>> from river import bandit
     >>> from river import stats
 

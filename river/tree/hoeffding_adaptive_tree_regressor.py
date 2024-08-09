@@ -36,7 +36,8 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
     grace_period
         Number of instances a leaf should observe between split attempts.
     max_depth
-        The maximum depth a tree can reach. If `None`, the tree will grow indefinitely.
+        The maximum depth a tree can reach. If `None`, the tree will grow until
+          the system recursion limit.
     delta
         Significance level to calculate the Hoeffding bound. The significance level is given by
         `1 - delta`. Values closer to zero imply longer split decision delays.
@@ -84,7 +85,7 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
     binary_split
         If True, only allow binary splits.
     max_size
-        The max size of the tree, in Megabytes (MB).
+        The max size of the tree, in mebibytes (MiB).
     memory_estimate_period
         Interval (number of processed instances) between memory consumption checks.
     stop_mem_management

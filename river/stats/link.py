@@ -37,7 +37,7 @@ class Link(stats.base.Univariate):
     >>> stat.update(1)
 
     The output from `get` will still be 0. The reason is that `stats.Shift` has not enough
-    values, and therefore outputs it's default value, which is `None`. The `stats.Mean`
+    values, and therefore outputs its default value, which is `None`. The `stats.Mean`
     instance is therefore not updated.
 
     >>> stat.get()
@@ -57,7 +57,7 @@ class Link(stats.base.Univariate):
     >>> stat.get()
     2.0
 
-    Note that composing statistics returns a new statistic with it's own name.
+    Note that composing statistics returns a new statistic with its own name.
 
     >>> stat.name
     'mean_of_shift_1'
