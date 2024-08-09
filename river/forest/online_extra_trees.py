@@ -583,7 +583,7 @@ class OXTRegressor(ExtraTrees, base.Regressor):
     binary_split
         [*Tree parameter*] If True, only allow binary splits.
     max_size
-        [*Tree parameter*] Maximum memory (MB) consumed by the tree.
+        [*Tree parameter*] Maximum memory (MiB) consumed by the tree.
     memory_estimate_period
         [*Tree parameter*] Number of instances between memory consumption checks.
     stop_mem_management

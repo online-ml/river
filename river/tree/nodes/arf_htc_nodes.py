@@ -44,7 +44,9 @@ class BaseRandomLeaf(HTLeaf):
                 yield att_id, x[att_id]
 
     def _sample_features(self, x, max_features):
-        return self.rng.sample(sorted(x.keys()), k=max_features)
+        if len(x) >= max_features:
+            return self.rng.sample(sorted(x.keys()), k=max_features)
+        return sorted(x.keys())
 
 
 class RandomLeafMajorityClass(BaseRandomLeaf, LeafMajorityClass):

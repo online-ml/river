@@ -18,7 +18,8 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
     grace_period
         Number of instances a leaf should observe between split attempts.
     max_depth
-        The maximum depth a tree can reach. If `None`, the tree will grow indefinitely.
+        The maximum depth a tree can reach. If `None`, the tree will grow until
+          the system recursion limit.
     split_criterion
         Split criterion to use.</br>
         - 'gini' - Gini</br>
@@ -58,7 +59,7 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
         smaller than this parameter value. This parameter avoids performing splits when most
         of the data belongs to a single class.
     max_size
-        The max size of the tree, in Megabytes (MB).
+        The max size of the tree, in mebibytes (MiB).
     memory_estimate_period
         Interval (number of processed instances) between memory consumption checks.
     stop_mem_management

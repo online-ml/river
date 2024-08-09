@@ -11,6 +11,7 @@ distribution of a target variable, and optionally include the distribution of th
 model.
 
 """
+
 from __future__ import annotations
 
 from . import base
@@ -18,6 +19,7 @@ from .filter import QuantileFilter, ThresholdFilter
 from .gaussian import GaussianScorer
 from .hst import HalfSpaceTrees
 from .lof import LocalOutlierFactor
+from .pad import PredictiveAnomalyDetection
 from .sad import StandardAbsoluteDeviation
 from .svm import OneClassSVM
 
@@ -31,4 +33,5 @@ __all__ = [
     "StandardAbsoluteDeviation",
     "ThresholdFilter",
     "LocalOutlierFactor",
+    "PredictiveAnomalyDetection",
 ]

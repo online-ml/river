@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import dataclasses
 
-import gym
+import gymnasium as gym
 
 
 @dataclasses.dataclass
@@ -25,7 +25,7 @@ class CandyCaneContest(gym.Env):
     Examples
     --------
 
-    >>> import gym
+    >>> import gymnasium as gym
     >>> from river import stats
 
     >>> env = gym.make('river_bandits/CandyCaneContest-v0')

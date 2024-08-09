@@ -40,7 +40,7 @@ class ThompsonSampling(bandit.base.Policy):
     Examples
     --------
 
-    >>> import gym
+    >>> import gymnasium as gym
     >>> from river import bandit
     >>> from river import proba
     >>> from river import stats
@@ -73,7 +73,7 @@ class ThompsonSampling(bandit.base.Policy):
 
     def __init__(
         self,
-        reward_obj: proba.base.Distribution = None,
+        reward_obj: proba.base.Distribution | None = None,
         burn_in=0,
         seed: int | None = None,
     ):

@@ -79,6 +79,7 @@ class RandomUnderSampler(ClassificationSampler):
         super().__init__(classifier=classifier, seed=seed)
         self.desired_dist = desired_dist
         self._actual_dist: typing.Counter = collections.Counter()
+        self._trained_on_dist: typing.Counter = collections.Counter()
         self._pivot = None
 
     def learn_one(self, x, y, **kwargs):
@@ -90,6 +91,7 @@ class RandomUnderSampler(ClassificationSampler):
         if y != self._pivot:
             self._pivot = max(g.keys(), key=lambda y: f[y] / g[y])
         else:
+            self._trained_on_dist[y] += 1
             self.classifier.learn_one(x, y, **kwargs)
             return
 
@@ -98,6 +100,7 @@ class RandomUnderSampler(ClassificationSampler):
         ratio = f[y] / (M * g[y])
 
         if ratio < 1 and self._rng.random() < ratio:
+            self._trained_on_dist[y] += 1
             self.classifier.learn_one(x, y, **kwargs)
 
 
@@ -151,6 +154,7 @@ class RandomOverSampler(ClassificationSampler):
     def __init__(self, classifier: base.Classifier, desired_dist: dict, seed: int | None = None):
         super().__init__(classifier=classifier, seed=seed)
         self.desired_dist = desired_dist
+        self._trained_on_dist: typing.Counter = collections.Counter()
         self._actual_dist: typing.Counter = collections.Counter()
         self._pivot = None
 
@@ -163,6 +167,7 @@ class RandomOverSampler(ClassificationSampler):
         if y != self._pivot:
             self._pivot = max(g.keys(), key=lambda y: g[y] / f[y])
         else:
+            self._trained_on_dist[y] += 1
             self.classifier.learn_one(x, y, **kwargs)
             return
 
@@ -170,6 +175,7 @@ class RandomOverSampler(ClassificationSampler):
         rate = M * f[y] / g[y]
 
         for _ in range(utils.random.poisson(rate, rng=self._rng)):
+            self._trained_on_dist[y] += 1
             self.classifier.learn_one(x, y, **kwargs)
 
 
@@ -233,6 +239,7 @@ class RandomSampler(ClassificationSampler):
     ):
         super().__init__(classifier=classifier, seed=seed)
         self.sampling_rate = sampling_rate
+        self._trained_on_dist: typing.Counter = collections.Counter()
         self._actual_dist: typing.Counter = collections.Counter()
         if desired_dist is None:
             desired_dist = self._actual_dist
@@ -248,4 +255,5 @@ class RandomSampler(ClassificationSampler):
         rate = self.sampling_rate * f[y] / (g[y] / self._n)
 
         for _ in range(utils.random.poisson(rate, rng=self._rng)):
+            self._trained_on_dist[y] += 1
             self.classifier.learn_one(x, y, **kwargs)

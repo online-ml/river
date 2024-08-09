@@ -4,6 +4,7 @@ import collections
 import functools
 import io
 import math
+import sys
 from abc import ABC, abstractmethod
 
 from river import base
@@ -30,11 +31,12 @@ class HoeffdingTree(ABC):
     Parameters
     ----------
     max_depth
-        The maximum depth a tree can reach. If `None`, the tree will grow indefinitely.
+        The maximum depth a tree can reach. If `None`, the tree will grow until
+          the system recursion limit.
     binary_split
         If True, only allow binary splits.
     max_size
-        The max size of the tree, in Megabytes (MB).
+        The max size of the tree, in mebibytes (MiB).
     memory_estimate_period
         Interval (number of processed instances) between memory consumption checks.
     stop_mem_management
@@ -60,7 +62,7 @@ class HoeffdingTree(ABC):
         self._split_criterion: str = ""
         self._leaf_prediction: str = ""
 
-        self.max_depth: float = max_depth if max_depth is not None else math.inf
+        self.max_depth: int = max_depth if max_depth is not None else (sys.getrecursionlimit() - 20)
         self.binary_split: bool = binary_split
         self._max_size: float = max_size
         self._max_byte_size: float = self._max_size * (2**20)  # convert to byte
@@ -111,7 +113,7 @@ class HoeffdingTree(ABC):
 
     @property
     def max_size(self):
-        """Max allowed size tree can reach (in MB)."""
+        """Max allowed size tree can reach (in MiB)."""
         return self._max_size
 
     @max_size.setter

@@ -31,7 +31,7 @@ class SGTLeaf(Leaf):
         Parameters passed to the feature quantizers.
     """
 
-    def __init__(self, prediction=0.0, depth=0, split_params=None):
+    def __init__(self, prediction: float = 0.0, depth: int = 0, split_params: dict | None = None):
         super().__init__()
         self._prediction = prediction
         self.depth = depth
@@ -52,7 +52,7 @@ class SGTLeaf(Leaf):
         self._update_stats = GradHessStats()
 
     @staticmethod
-    def is_categorical(idx, x_val, nominal_attributes):
+    def is_categorical(idx: str, x_val, nominal_attributes: list[str]) -> bool:
         return not isinstance(x_val, numbers.Number) or idx in nominal_attributes
 
     def update(self, x: dict, gh: GradHess, sgt, w: float = 1.0):
