@@ -5,6 +5,7 @@ import importlib
 import inspect
 
 import pytest
+from sklearn import linear_model as sk_linear_model
 
 from river import (
     anomaly,
@@ -24,9 +25,6 @@ from river import (
     preprocessing,
     time_series,
 )
-
-from sklearn import linear_model as sk_linear_model
-
 from river.compat.river_to_sklearn import River2SKLBase
 from river.compat.sklearn_to_river import SKL2RiverBase
 
