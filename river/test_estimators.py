@@ -5,6 +5,7 @@ import importlib
 import inspect
 
 import pytest
+from sklearn import linear_model as sk_linear_model
 
 from river import (
     anomaly,
@@ -24,15 +25,6 @@ from river import (
     preprocessing,
     time_series,
 )
-
-try:
-    from river.compat.pytorch import PyTorch2RiverBase
-
-    PYTORCH_INSTALLED = True
-except ImportError:
-    PYTORCH_INSTALLED = False
-from sklearn import linear_model as sk_linear_model
-
 from river.compat.river_to_sklearn import River2SKLBase
 from river.compat.sklearn_to_river import SKL2RiverBase
 
@@ -83,9 +75,6 @@ def iter_estimators_which_can_be_tested():
         preprocessing.StatImputer,
         time_series.base.Forecaster,
     )
-
-    if PYTORCH_INSTALLED:
-        ignored = (*ignored, PyTorch2RiverBase)
 
     def can_be_tested(estimator):
         return not inspect.isabstract(estimator) and not issubclass(estimator, ignored)
