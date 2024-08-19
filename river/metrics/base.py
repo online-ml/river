@@ -89,14 +89,14 @@ class ClassificationMetric(Metric):
             cm = metrics.ConfusionMatrix()
         self.cm = cm
 
-    def update(self, y_true, y_pred, w=1.0):
+    def update(self, y_true, y_pred, w=1.0) -> None:
         self.cm.update(
             y_true,
             y_pred,
             w=w,
         )
 
-    def revert(self, y_true, y_pred, w=1.0):
+    def revert(self, y_true, y_pred, w=1.0) -> None:
         self.cm.revert(
             y_true,
             y_pred,
@@ -152,7 +152,7 @@ class BinaryMetric(ClassificationMetric):
         y_true: bool,
         y_pred: bool | float | dict[bool, float],
         w=1.0,
-    ) -> BinaryMetric:
+    ) -> None:
         if self.requires_labels:
             y_pred = y_pred == self.pos_val
         return super().update(y_true == self.pos_val, y_pred, w)
@@ -162,7 +162,7 @@ class BinaryMetric(ClassificationMetric):
         y_true: bool,
         y_pred: bool | float | dict[bool, float],
         w=1.0,
-    ) -> BinaryMetric:
+    ) -> None:
         if self.requires_labels:
             y_pred = y_pred == self.pos_val
         return super().revert(y_true == self.pos_val, y_pred, w)
@@ -190,11 +190,11 @@ class RegressionMetric(Metric):
     _fmt = ",.6f"  # use commas to separate big numbers and show 6 decimals
 
     @abc.abstractmethod
-    def update(self, y_true: numbers.Number, y_pred: numbers.Number) -> RegressionMetric:
+    def update(self, y_true: numbers.Number, y_pred: numbers.Number) -> None:
         """Update the metric."""
 
     @abc.abstractmethod
-    def revert(self, y_true: numbers.Number, y_pred: numbers.Number) -> RegressionMetric:
+    def revert(self, y_true: numbers.Number, y_pred: numbers.Number) -> None:
         """Revert the metric."""
 
     @property
@@ -227,7 +227,7 @@ class Metrics(Metric, collections.UserList):
         super().__init__(metrics)
         self.str_sep = str_sep
 
-    def update(self, y_true, y_pred, w=1.0):
+    def update(self, y_true, y_pred, w=1.0) -> None:
         # If the metrics are classification metrics, then we have to handle the case where some
         # of the metrics require labels, whilst others need to be fed probabilities
         if hasattr(self, "requires_labels") and not self.requires_labels:
@@ -241,7 +241,7 @@ class Metrics(Metric, collections.UserList):
         for m in self:
             m.update(y_true, y_pred)
 
-    def revert(self, y_true, y_pred, w=1.0):
+    def revert(self, y_true, y_pred, w=1.0) -> None:
         # If the metrics are classification metrics, then we have to handle the case where some
         # of the metrics require labels, whilst others need to be fed probabilities
         if hasattr(self, "requires_labels") and not self.requires_labels:
