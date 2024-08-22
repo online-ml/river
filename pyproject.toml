@@ -130,7 +130,6 @@ files = "river"
 
 [[tool.mypy.overrides]]
 module = [
-    "river.*",
     "mmh3.*",
     "numpy.*",
     "sklearn.*",
