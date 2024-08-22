@@ -14,7 +14,7 @@ repos:
       - id: ruff
         name: ruff
         language: python
-        types: [python]
+        types: [python, pyi]
         entry: ruff
         args: 
           - --fix
@@ -22,5 +22,5 @@ repos:
       - id: mypy
         name: mypy
         language: python
-        types: [python]
+        types: [python, pyi]
         entry: mypy --implicit-optional
