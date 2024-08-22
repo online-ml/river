@@ -9,6 +9,10 @@
 - Add `render_ascii` in `cluster.ODAC` to render the hierarchical cluster's structure in text format.
 - Work with `stats.Var` in `cluster.ODAC` when cluster has only one time series.
 
+## stats
+
+- Removed the unexported class `stats.CentralMoments`.
+
 ## tree
 
 - Instead of letting trees grow indefinitely, setting the `max_depth` parameter to `None` will stop the trees from growing when they reach the system recursion limit.
