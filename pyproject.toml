@@ -193,15 +193,11 @@ module = [
 ]
 # The strict option is global, the checks must be disabled one by one
 warn_unused_ignores = false
-strict_equality = false
-strict_concatenate = false
 check_untyped_defs = false
 allow_subclassing_any = true
-allow_untyped_decorators = true
 allow_any_generics = true
 allow_untyped_calls = true
 allow_incomplete_defs = true
 allow_untyped_defs = true
 implicit_reexport = true
 warn_return_any = false
-extra_checks = false
