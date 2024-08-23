@@ -89,15 +89,6 @@ class OneHotEncoder(base.MiniBatchTransformer):
     This is handy when you want to constrain category encoding space
     to e.g. top 20% most popular category values you've picked in advance.
 
-    X = [
-        {
-            'c1': random.choice(alphabet),
-            'c2': random.choice(alphabet),
-        }
-        for _ in range(4)
-    ]
-    pprint(X)
-
     >>> categories = {'c1': {'a', 'h'}, 'c2': {'x', 'e'}}
     >>> oh = preprocessing.OneHotEncoder(categories=categories)
     >>> # oh = preprocessing.OneHotEncoder()
@@ -116,13 +107,6 @@ class OneHotEncoder(base.MiniBatchTransformer):
     ['a', 'h']
     c2
     ['e', 'x']
-
-
-    oh.values.items()
-    [{'c1': {'a', 'h'}, 'c2': {'e', 'x'}}]
-    [{'c1': {'a', 'h'}, 'c2': {'e', 'x'}}]
-
-    {'c1': {'a', 'h', 'i', 'u'}, 'c2': {'d', 'e', 'h', 'x'}}
 
     A subset of the features can be one-hot encoded by piping a `compose.Select` into the
     `OneHotEncoder`.
@@ -243,19 +227,9 @@ class OneHotEncoder(base.MiniBatchTransformer):
     0     0     0     0     0
     1     1     0     0     1
     2     0     0     0     0
-
-    #     c1_a  c1_i  c1_u  c2_d  c2_h  c2_x
-    # 0     0     0     1     1     0     0
-    # 1     1     0     0     0     0     1
-    # 2     0     1     0     0     1     0
-
-        c1_a  c1_h  c2_e  c2_x
-    0     0     0     0     0
-    1     1     0     0     1
-    2     0     0     0     0
     """
 
-    def __init__(self, categories: str | dict = "auto", drop_zeros=False, drop_first=False):
+    def __init__(self, categories = "auto", drop_zeros=False, drop_first=False):
         self.drop_zeros = drop_zeros
         self.drop_first = drop_first
         self.categories = categories
