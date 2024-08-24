@@ -82,7 +82,7 @@ class OrdinalEncoder(base.MiniBatchTransformer):
     {'country': 0, 'place': 3}
     {'country': 0, 'place': 0}
     {'country': -1, 'place': -1}
-    
+
     >>> import pandas as pd
     >>> xb1 = pd.DataFrame(X[0:4], index=[0, 1, 2, 3])
     >>> xb2 = pd.DataFrame(X[4:8], index=[4, 5, 6, 7])
@@ -107,13 +107,14 @@ class OrdinalEncoder(base.MiniBatchTransformer):
 
     def __init__(
         self,
-        categories: str | dict = "auto",
+        categories = "auto",
         unknown_value: int | None = 0,
         none_value: int = -1,
     ):
         self.unknown_value = unknown_value
         self.none_value = none_value
         self.categories = categories
+        self.values: collections.defaultdict | dict | None = None
 
         if self.categories == "auto":
             # We're going to have one auto-incrementing counter per feature. This counter will generate
@@ -124,9 +125,9 @@ class OrdinalEncoder(base.MiniBatchTransformer):
 
             # We're going to store the categories in a dict of dicts. The outer dict will map each
             # feature to its inner dict. The inner dict will map each category to its code.
-            self.values: collections.defaultdict = collections.defaultdict(dict)
+            self.values = collections.defaultdict(dict)
         else:
-            self.values: dict = self.categories 
+            self.values = self.categories
 
 
     def transform_one(self, x):
