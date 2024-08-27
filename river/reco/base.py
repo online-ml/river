@@ -33,7 +33,7 @@ class Ranker(base.Estimator):
         return False
 
     @abc.abstractmethod
-    def learn_one(self, user: ID, item: ID, y: Reward, x: dict | None = None):
+    def learn_one(self, user: ID, item: ID, y: Reward, x: dict | None = None) -> None:
         """Fits a `user`-`item` pair and a real-valued target `y`.
 
         Parameters

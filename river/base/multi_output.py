@@ -10,7 +10,7 @@ class MultiLabelClassifier(Estimator, abc.ABC):
     """Multi-label classifier."""
 
     @abc.abstractmethod
-    def learn_one(self, x: dict, y: dict[FeatureName, bool]):
+    def learn_one(self, x: dict, y: dict[FeatureName, bool]) -> None:
         """Update the model with a set of features `x` and the labels `y`.
 
         Parameters
@@ -68,7 +68,7 @@ class MultiTargetRegressor(Estimator, abc.ABC):
     """Multi-target regressor."""
 
     @abc.abstractmethod
-    def learn_one(self, x: dict, y: dict[FeatureName, RegTarget], **kwargs):
+    def learn_one(self, x: dict, y: dict[FeatureName, RegTarget], **kwargs) -> None:
         """Fits to a set of features `x` and a real-valued target `y`.
 
         Parameters

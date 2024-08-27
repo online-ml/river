@@ -22,11 +22,11 @@ class Metric(base.Base, abc.ABC):
     """Mother class for all metrics."""
 
     @abc.abstractmethod
-    def update(self, y_true, y_pred) -> Metric:
+    def update(self, y_true, y_pred) -> None:
         """Update the metric."""
 
     @abc.abstractmethod
-    def revert(self, y_true, y_pred) -> Metric:
+    def revert(self, y_true, y_pred) -> None:
         """Revert the metric."""
 
     @abc.abstractmethod
@@ -334,10 +334,10 @@ class MeanMetric(abc.ABC):
     def _eval(self, y_true, y_pred):
         pass
 
-    def update(self, y_true, y_pred, w=1.0):
+    def update(self, y_true, y_pred, w=1.0) -> None:
         self._mean.update(x=self._eval(y_true, y_pred), w=w)
 
-    def revert(self, y_true, y_pred, w=1.0):
+    def revert(self, y_true, y_pred, w=1.0) -> None:
         self._mean.revert(x=self._eval(y_true, y_pred), w=w)
 
     def get(self):
@@ -353,11 +353,11 @@ class ClusteringMetric(base.Base, abc.ABC):
     _fmt = ",.6f"  # Use commas to separate big numbers and show 6 decimals
 
     @abc.abstractmethod
-    def update(self, x, y_pred, centers, w=1.0) -> ClusteringMetric:
+    def update(self, x, y_pred, centers, w=1.0) -> None:
         """Update the metric."""
 
     @abc.abstractmethod
-    def revert(self, x, y_pred, centers, w=1.0) -> ClusteringMetric:
+    def revert(self, x, y_pred, centers, w=1.0) -> None:
         """Revert the metric."""
 
     @abc.abstractmethod

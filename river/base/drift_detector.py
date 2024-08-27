@@ -77,7 +77,7 @@ class BinaryDriftDetector(_BaseDriftDetector):
     """A drift detector for binary data."""
 
     @abc.abstractmethod
-    def update(self, x: bool) -> BinaryDriftDetector:
+    def update(self, x: bool) -> None:
         """Update the detector with a single boolean input.
 
         Parameters

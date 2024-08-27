@@ -56,11 +56,11 @@ class DiscreteDistribution(Distribution):
     """
 
     @abc.abstractmethod
-    def update(self, x: typing.Hashable):
+    def update(self, x: typing.Hashable) -> None:
         """Updates the parameters of the distribution given a new observation."""
 
     @abc.abstractmethod
-    def revert(self, x: typing.Hashable):
+    def revert(self, x: typing.Hashable) -> None:
         """Reverts the parameters of the distribution for a given observation."""
 
 
@@ -75,11 +75,11 @@ class BinaryDistribution(Distribution):
     """
 
     @abc.abstractmethod
-    def update(self, x: bool):
+    def update(self, x: bool) -> None:
         """Updates the parameters of the distribution given a new observation."""
 
     @abc.abstractmethod
-    def revert(self, x: bool):
+    def revert(self, x: bool) -> None:
         """Reverts the parameters of the distribution for a given observation."""
 
 
@@ -94,11 +94,11 @@ class ContinuousDistribution(Distribution):
     """
 
     @abc.abstractmethod
-    def update(self, x: float):
+    def update(self, x: float) -> None:
         """Updates the parameters of the distribution given a new observation."""
 
     @abc.abstractmethod
-    def revert(self, x: float):
+    def revert(self, x: float) -> None:
         """Reverts the parameters of the distribution for a given observation."""
 
     @abc.abstractmethod
@@ -117,11 +117,11 @@ class MultivariateContinuousDistribution(Distribution):
     """
 
     @abc.abstractmethod
-    def update(self, x: dict[str, float]):
+    def update(self, x: dict[str, float]) -> None:
         """Updates the parameters of the distribution given a new observation."""
 
     @abc.abstractmethod
-    def revert(self, x: dict[str, float]):
+    def revert(self, x: dict[str, float]) -> None:
         """Reverts the parameters of the distribution for a given observation."""
 
     @abc.abstractmethod
