@@ -26,6 +26,7 @@ Accuracy: 100.00%
 ```
 
 """
+
 from __future__ import annotations
 
 from . import base, multioutput

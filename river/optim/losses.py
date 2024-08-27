@@ -3,6 +3,7 @@
 Each loss function is intended to work with both single values as well as numpy vectors.
 
 """
+
 from __future__ import annotations
 
 import math

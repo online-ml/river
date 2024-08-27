@@ -63,9 +63,9 @@ class GaussianRandomProjector(base.Transformer):
         self.n_components = n_components
         self.seed = seed
         self._rng = random.Random(seed)
-        self._projection_matrix: collections.defaultdict[
-            base.typing.FeatureName, float
-        ] = collections.defaultdict(self._rand_gauss)
+        self._projection_matrix: collections.defaultdict[base.typing.FeatureName, float] = (
+            collections.defaultdict(self._rand_gauss)
+        )
 
     def _rand_gauss(self):
         return self._rng.gauss(0, 1 / (self.n_components**0.5))

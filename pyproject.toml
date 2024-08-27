@@ -38,7 +38,7 @@ polars = "^0.20.8"
 graphviz = "^0.20.1"
 gym = "^0.26.2"
 matplotlib = "^3.0.2"
-mypy = "^1.6.1"
+mypy = "^1.11.1"
 pre-commit = "^3.5.0"
 pytest = "^7.4.2"
 ruff = "^0.4.10"
@@ -139,14 +139,12 @@ fixable = ["ALL"]
 quote-style = "double"
 indent-style = "space"
 
-[tool.ruff.isort]
+[tool.ruff.lint.isort]
 required-imports = ["from __future__ import annotations"]
-
-[tool.mypy]
-files = "river"
 
 [[tool.mypy.overrides]]
 module = [
+    "gym.*",
     "river.*",
     "mmh3.*",
     "numpy.*",
@@ -158,6 +156,8 @@ module = [
     "vaex.*",
     "torch.*",
     "sqlalchemy.*",
-    "requests.*"
+    "requests.*",
+    "polars.*",
+    "sympy.*"
 ]
 ignore_missing_imports = true

@@ -65,8 +65,7 @@ class Policy(base.Base, abc.ABC):
             )
 
     @abc.abstractmethod
-    def _pull(self, arm_ids: list[ArmID]) -> ArmID:
-        ...
+    def _pull(self, arm_ids: list[ArmID]) -> ArmID: ...
 
     def pull(self, arm_ids: list[ArmID]) -> ArmID:
         """Pull arm(s).

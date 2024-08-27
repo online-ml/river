@@ -7,8 +7,7 @@ from river import base
 
 
 class DistanceFunc(typing.Protocol):
-    def __call__(self, a: typing.Any, b: typing.Any, **kwargs) -> float:
-        ...
+    def __call__(self, a: typing.Any, b: typing.Any, **kwargs) -> float: ...
 
 
 class FunctionWrapper:

@@ -11,6 +11,7 @@ non-mixin base class.
 This module also contains utilities for type hinting and tagging estimators.
 
 """
+
 from __future__ import annotations
 
 from . import tags, typing

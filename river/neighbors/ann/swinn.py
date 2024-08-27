@@ -264,8 +264,12 @@ class SWINN(BaseNN):
                             continue
 
                         dist = self.dist_func(self[n1].item, self[n2].item)
-                        total_changes += self[n1].push_edge(self[n2], dist, self.graph_k, self._data)
-                        total_changes += self[n2].push_edge(self[n1], dist, self.graph_k, self._data)
+                        total_changes += self[n1].push_edge(
+                            self[n2], dist, self.graph_k, self._data
+                        )
+                        total_changes += self[n2].push_edge(
+                            self[n1], dist, self.graph_k, self._data
+                        )
 
                         tried.add((n1, n2))
 
@@ -278,8 +282,12 @@ class SWINN(BaseNN):
                             continue
 
                         dist = self.dist_func(self[n1].item, self[n2].item)
-                        total_changes += self[n1].push_edge(self[n2], dist, self.graph_k, self._data)
-                        total_changes += self[n2].push_edge(self[n1], dist, self.graph_k, self._data)
+                        total_changes += self[n1].push_edge(
+                            self[n2], dist, self.graph_k, self._data
+                        )
+                        total_changes += self[n2].push_edge(
+                            self[n1], dist, self.graph_k, self._data
+                        )
 
                         tried.add((n1, n2))
 
@@ -343,7 +351,9 @@ class SWINN(BaseNN):
 
         return None
 
-    def _search(self, item, k, epsilon: float = 0.1, seed: Vertex = None, exclude: set[int] | None = None) -> tuple[list, list]:
+    def _search(
+        self, item, k, epsilon: float = 0.1, seed: Vertex = None, exclude: set[int] | None = None
+    ) -> tuple[list, list]:
         # Limiter for the distance bound
         distance_scale = 1 + epsilon
         # Distance threshold for early stops

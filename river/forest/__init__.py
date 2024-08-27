@@ -1,4 +1,5 @@
 """This module implements forest-based classifiers and regressors."""
+
 from __future__ import annotations
 
 from .adaptive_random_forest import ARFClassifier, ARFRegressor

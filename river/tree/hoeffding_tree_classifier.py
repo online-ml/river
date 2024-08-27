@@ -184,9 +184,7 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
     def split_criterion(self, split_criterion):
         if split_criterion not in self._VALID_SPLIT_CRITERIA:
             print(
-                "Invalid split_criterion option {}', will use default '{}'".format(
-                    split_criterion, self._INFO_GAIN_SPLIT
-                )
+                f"Invalid split_criterion option {split_criterion}', will use default '{self._INFO_GAIN_SPLIT}'"
             )
             self._split_criterion = self._INFO_GAIN_SPLIT
         else:
@@ -196,9 +194,7 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
     def leaf_prediction(self, leaf_prediction):
         if leaf_prediction not in self._VALID_LEAF_PREDICTION:
             print(
-                "Invalid leaf_prediction option {}', will use default '{}'".format(
-                    leaf_prediction, self._NAIVE_BAYES_ADAPTIVE
-                )
+                f"Invalid leaf_prediction option {leaf_prediction}', will use default '{self._NAIVE_BAYES_ADAPTIVE}'"
             )
             self._leaf_prediction = self._NAIVE_BAYES_ADAPTIVE
         else:

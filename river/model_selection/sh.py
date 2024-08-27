@@ -36,8 +36,7 @@ class SuccessiveHalving(abc.ABC):
         self._best_model_idx = 0
 
     @abc.abstractmethod
-    def _pred_func(self, model):
-        ...
+    def _pred_func(self, model): ...
 
     @property
     def best_model(self):
