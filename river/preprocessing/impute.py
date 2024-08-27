@@ -237,8 +237,7 @@ class Constant(stats.base.Univariate):
     def __init__(self, value: typing.Any):
         self.value = value
 
-    def update(self, x):
-        ...
+    def update(self, x): ...
 
     def get(self):
         return self.value

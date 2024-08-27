@@ -5,6 +5,7 @@ and are exposed through the corresponding properties. This is done for documenta
 purposes. The properties are not meant to be modified by the user.
 
 """
+
 from __future__ import annotations
 
 import abc

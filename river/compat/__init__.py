@@ -6,6 +6,7 @@ necessary library. For instance, you have to install scikit-learn in order to us
 `compat.convert_sklearn_to_river` function.
 
 """
+
 from __future__ import annotations
 
 __all__: list[str] = []

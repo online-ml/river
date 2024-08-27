@@ -1,4 +1,5 @@
 """Multi-class classification."""
+
 from __future__ import annotations
 
 from .occ import OutputCodeClassifier

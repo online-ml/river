@@ -1,4 +1,5 @@
 """Naive Bayes algorithms."""
+
 from __future__ import annotations
 
 from .bernoulli import BernoulliNB

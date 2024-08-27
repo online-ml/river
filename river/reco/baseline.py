@@ -103,12 +103,12 @@ class Baseline(reco.base.Ranker):
 
         self.clip_gradient = clip_gradient
         self.global_mean = stats.Mean()
-        self.u_biases: collections.defaultdict[
-            int, optim.initializers.Initializer
-        ] = collections.defaultdict(initializer)
-        self.i_biases: collections.defaultdict[
-            int, optim.initializers.Initializer
-        ] = collections.defaultdict(initializer)
+        self.u_biases: collections.defaultdict[int, optim.initializers.Initializer] = (
+            collections.defaultdict(initializer)
+        )
+        self.i_biases: collections.defaultdict[int, optim.initializers.Initializer] = (
+            collections.defaultdict(initializer)
+        )
 
     def predict_one(self, user, item, x=None):
         return self.global_mean.get() + self.u_biases[user] + self.i_biases[item]

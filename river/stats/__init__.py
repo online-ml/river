@@ -1,4 +1,5 @@
 """Running statistics"""
+
 from __future__ import annotations
 
 from . import base

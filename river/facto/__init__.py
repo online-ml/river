@@ -1,4 +1,5 @@
 """Factorization machines."""
+
 from __future__ import annotations
 
 from .ffm import FFMClassifier, FFMRegressor

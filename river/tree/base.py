@@ -8,6 +8,7 @@ This module defines a bunch of methods to ease the manipulation and diagnostic o
 intention is to provide utilities for walking over a tree and visualizing it.
 
 """
+
 from __future__ import annotations
 
 import abc
