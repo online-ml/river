@@ -163,9 +163,7 @@ class HoeffdingTreeRegressor(HoeffdingTree, base.Regressor):
     def leaf_prediction(self, leaf_prediction):
         if leaf_prediction not in self._VALID_LEAF_PREDICTION:
             print(
-                'Invalid leaf_prediction option "{}", will use default "{}"'.format(
-                    leaf_prediction, self._MODEL
-                )
+                f'Invalid leaf_prediction option "{leaf_prediction}", will use default "{self._MODEL}"'
             )
             self._leaf_prediction = self._MODEL
         else:

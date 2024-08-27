@@ -100,7 +100,6 @@ class PredictiveAnomalyDetection(anomaly.base.SupervisedAnomalyDetector):
         n_std: float = 3.0,
         warmup_period: int = 0,
     ):
-
         self.predictive_model = (
             predictive_model
             if predictive_model is not None
@@ -123,9 +122,7 @@ class PredictiveAnomalyDetection(anomaly.base.SupervisedAnomalyDetector):
         self.iter += 1
 
         # Check whether the model is a time-series forecasting or regression/classification model
-        if isinstance(
-            self.predictive_model, time_series.base.Forecaster
-        ) and isinstance(y, float):
+        if isinstance(self.predictive_model, time_series.base.Forecaster) and isinstance(y, float):
             # When there's no data point as dict of features, the target will be passed
             # to the forecaster as an exogenous variable.
             if not x:

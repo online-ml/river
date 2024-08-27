@@ -1,4 +1,5 @@
 """Unsupervised clustering."""
+
 from __future__ import annotations
 
 from .clustream import CluStream

@@ -8,11 +8,9 @@ import typing
 
 @typing.runtime_checkable
 class Rollable(typing.Protocol):
-    def update(self, *args, **kwargs):
-        ...
+    def update(self, *args, **kwargs): ...
 
-    def revert(self, *args, **kwargs):
-        ...
+    def revert(self, *args, **kwargs): ...
 
 
 class BaseRolling:
