@@ -5,7 +5,7 @@ import importlib
 import inspect
 import random
 
-import gym
+import gymnasium as gym
 import pytest
 
 from river import bandit, metrics
@@ -25,21 +25,17 @@ def test_ranking():
         def bigger_is_better(self):
             return False
 
-        def revert(self):
-            ...
+        def revert(self): ...
 
-        def update(self):
-            ...
+        def update(self): ...
 
-        def works_with(self):
-            ...
+        def works_with(self): ...
 
     class DummyPolicy(bandit.base.Policy):
         def __init__(self):
             super().__init__(reward_obj=DummyMetric())
 
-        def _pull(self, arms):
-            ...
+        def _pull(self, arms): ...
 
     policy = DummyPolicy()
     policy._rewards[0].value = 0
@@ -111,7 +107,7 @@ def test_better_than_random_policy(policy: bandit.base.Policy, env: gym.Env):
             arm_id = policy.pull(arm_ids)  # type: ignore
             observation, reward, terminated, truncated, info = env.step(arm_id)
             policy.update(arm_id, reward)
-            policy_reward += reward
+            policy_reward += float(reward)
 
             random_arm_id = random_policy.pull(arm_ids)  # type: ignore
             (
@@ -122,7 +118,7 @@ def test_better_than_random_policy(policy: bandit.base.Policy, env: gym.Env):
                 info,
             ) = random_env.step(random_arm_id)
             random_policy.update(random_arm_id, reward)
-            random_reward += reward
+            random_reward += float(reward)
 
         n_successes += policy_reward > random_reward
 

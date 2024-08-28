@@ -1,4 +1,5 @@
 """Time series forecasting."""
+
 from __future__ import annotations
 
 from . import base

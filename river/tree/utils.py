@@ -78,9 +78,12 @@ class BranchFactory:
 
     merit: float = -math.inf
     feature: FeatureName | None = None
-    split_info: typing.Hashable | list[typing.Hashable] | tuple[
-        typing.Hashable, list[typing.Hashable]
-    ] | None = None
+    split_info: (
+        typing.Hashable
+        | list[typing.Hashable]
+        | tuple[typing.Hashable, list[typing.Hashable]]
+        | None
+    ) = None
     children_stats: list | None = None
     numerical_feature: bool = True
     multiway_split: bool = False
@@ -251,7 +254,7 @@ def calculate_object_size(obj: typing.Any, unit: str = "byte") -> int:
         Object to evaluate.
     unit
         The unit in which the accounted value is going to be returned.
-        Values: 'byte', 'kB', 'MB' (Default: 'byte').
+        Values: 'byte', 'KiB', 'MiB' (Default: 'byte').
 
     Returns
     -------
@@ -295,9 +298,9 @@ def calculate_object_size(obj: typing.Any, unit: str = "byte") -> int:
             for i in obj:
                 to_visit.append(i)
 
-    if unit == "kB":
+    if unit == "KiB":
         final_size = byte_size / 1024
-    elif unit == "MB":
+    elif unit == "MiB":
         final_size = byte_size / (2**20)
     else:
         final_size = byte_size

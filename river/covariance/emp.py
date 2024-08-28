@@ -14,8 +14,7 @@ class SymmetricMatrix(abc.ABC):
 
     @property
     @abc.abstractmethod
-    def matrix(self) -> dict:
-        ...
+    def matrix(self) -> dict: ...
 
     def __getitem__(self, key):
         """
@@ -178,9 +177,7 @@ class EmpiricalCovariance(SymmetricMatrix):
         mean = dict(zip(X.columns, mean_arr))
         cov = {
             (i, j): cov_arr[r, c]
-            for (r, i), (c, j) in itertools.combinations_with_replacement(
-                enumerate(X.columns), r=2
-            )
+            for (r, i), (c, j) in itertools.combinations_with_replacement(enumerate(X.columns), r=2)
         }
 
         self._update_from_state(n=n, mean=mean, cov=cov)
@@ -331,10 +328,7 @@ class EmpiricalPrecision(SymmetricMatrix):
         # Fortran order is necessary for scipy's linalg.blas.dger
         inv_cov = np.array(
             [
-                [
-                    self._inv_cov.get(min((i, j), (j, i)), 1.0 if i == j else 0.0)
-                    for j in x
-                ]
+                [self._inv_cov.get(min((i, j), (j, i)), 1.0 if i == j else 0.0) for j in x]
                 for i in x
             ],
             order="F",
@@ -369,13 +363,7 @@ class EmpiricalPrecision(SymmetricMatrix):
         loc = np.array([self._loc.get(feature, 0.0) for feature in X])
         w = np.array([self._w.get(feature, 0.0) for feature in X])
         inv_cov = np.array(
-            [
-                [
-                    self._inv_cov.get(min((i, j), (j, i)), 1.0 if i == j else 0.0)
-                    for j in X
-                ]
-                for i in X
-            ]
+            [[self._inv_cov.get(min((i, j), (j, i)), 1.0 if i == j else 0.0) for j in X] for i in X]
         ) / np.maximum(w, 1)
 
         # update formulas

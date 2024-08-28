@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import math
 
+from river import base
 from river import stats as st
 from river.utils.norm import normalize_values_in_dict
 from river.utils.random import poisson
@@ -133,7 +134,7 @@ class AdaBranchClassifier(DTBranch):
         Other parameters passed to the split node.
     """
 
-    def __init__(self, stats, *children, drift_detector, **attributes):
+    def __init__(self, stats: dict, *children, drift_detector: base.DriftDetector, **attributes):
         super().__init__(stats, *children, **attributes)
         self.drift_detector = drift_detector
         self._alternate_tree = None

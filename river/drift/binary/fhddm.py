@@ -65,10 +65,13 @@ class FHDDM(base.BinaryDriftAndWarningDetector):
     [^2]: Reservoir of Diverse Adaptive Learners and Stacking Fast Hoeffding Drift Detection Methods for Evolving Data Streams.
 
     """
-    def __init__(
-        self, sliding_window_size: int = 100, confidence_level: float = 0.000001, short_window_size: int | None = None
-    ):
 
+    def __init__(
+        self,
+        sliding_window_size: int = 100,
+        confidence_level: float = 0.000001,
+        short_window_size: int | None = None,
+    ):
         super().__init__()
         self.sliding_window_size = sliding_window_size
         self.confidence_level = confidence_level
@@ -107,8 +110,14 @@ class FHDDM(base.BinaryDriftAndWarningDetector):
 
             if self.short_window_size is not None:
                 u_s = (
-                    sum (itertools.islice(self._sliding_window, self.sliding_window_size - self.short_window_size, self.sliding_window_size))
-                / self.short_window_size
+                    sum(
+                        itertools.islice(
+                            self._sliding_window,
+                            self.sliding_window_size - self.short_window_size,
+                            self.sliding_window_size,
+                        )
+                    )
+                    / self.short_window_size
                 )
                 self._u_short_max = u_s if self._u_short_max < u_s else self._u_short_max
                 short_win_drift_status = (

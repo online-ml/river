@@ -20,7 +20,8 @@ class HoeffdingTreeRegressor(HoeffdingTree, base.Regressor):
     grace_period
         Number of instances a leaf should observe between split attempts.
     max_depth
-        The maximum depth a tree can reach. If `None`, the tree will grow indefinitely.
+        The maximum depth a tree can reach. If `None`, the tree will grow until
+          the system recursion limit.
     delta
         Significance level to calculate the Hoeffding bound. The significance level is given by
         `1 - delta`. Values closer to zero imply longer split decision delays.
@@ -57,7 +58,7 @@ class HoeffdingTreeRegressor(HoeffdingTree, base.Regressor):
     binary_split
         If True, only allow binary splits.
     max_size
-        The max size of the tree, in Megabytes (MB).
+        The max size of the tree, in mebibytes (MiB).
     memory_estimate_period
         Interval (number of processed instances) between memory consumption checks.
     stop_mem_management
@@ -162,9 +163,7 @@ class HoeffdingTreeRegressor(HoeffdingTree, base.Regressor):
     def leaf_prediction(self, leaf_prediction):
         if leaf_prediction not in self._VALID_LEAF_PREDICTION:
             print(
-                'Invalid leaf_prediction option "{}", will use default "{}"'.format(
-                    leaf_prediction, self._MODEL
-                )
+                f'Invalid leaf_prediction option "{leaf_prediction}", will use default "{self._MODEL}"'
             )
             self._leaf_prediction = self._MODEL
         else:

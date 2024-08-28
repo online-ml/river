@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import dataclasses
 
-import gym
+import gymnasium as gym
 
 
 @dataclasses.dataclass
@@ -25,7 +25,7 @@ class CandyCaneContest(gym.Env):
     Examples
     --------
 
-    >>> import gym
+    >>> import gymnasium as gym
     >>> from river import stats
 
     >>> env = gym.make('river_bandits/CandyCaneContest-v0')
@@ -58,12 +58,8 @@ class CandyCaneContest(gym.Env):
         self.action_space = gym.spaces.Discrete(n_machines)
         self.observation_space = gym.spaces.Dict(
             {
-                "attempts": gym.spaces.Tuple(
-                    [gym.spaces.Discrete(self.n_steps)] * n_machines
-                ),
-                "successes": gym.spaces.Tuple(
-                    [gym.spaces.Discrete(self.n_steps)] * n_machines
-                ),
+                "attempts": gym.spaces.Tuple([gym.spaces.Discrete(self.n_steps)] * n_machines),
+                "successes": gym.spaces.Tuple([gym.spaces.Discrete(self.n_steps)] * n_machines),
             }
         )
         self.reward_range = (0.0, 1.0)

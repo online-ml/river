@@ -1,13 +1,13 @@
 from __future__ import annotations
 
 import abc
-import math
+import sys
 
 from scipy.stats import f as f_dist
 
 from river import base, tree
 
-from .losses import BinaryCrossEntropyLoss, SquaredErrorLoss
+from .losses import BinaryCrossEntropyLoss, Loss, SquaredErrorLoss
 from .nodes.branch import DTBranch, NominalMultiwayBranch, NumericBinaryBranch
 from .nodes.sgt_nodes import SGTLeaf
 from .utils import BranchFactory, GradHessMerit
@@ -23,22 +23,22 @@ class StochasticGradientTree(base.Estimator, abc.ABC):
 
     def __init__(
         self,
-        loss_func,
-        delta,
-        grace_period,
-        init_pred,
-        max_depth,
-        lambda_value,
-        gamma,
-        nominal_attributes,
-        feature_quantizer,
+        loss_func: Loss,
+        delta: float,
+        grace_period: int,
+        init_pred: float,
+        max_depth: int | None,
+        lambda_value: float,
+        gamma: float,
+        nominal_attributes: list[str] | None,
+        feature_quantizer: tree.splitter.Quantizer | None,
     ):
         # What really defines how a SGT works is its loss function
         self.loss_func = loss_func
         self.delta = delta
         self.grace_period = grace_period
         self.init_pred = init_pred
-        self.max_depth = max_depth if max_depth else math.inf
+        self.max_depth = max_depth if max_depth else (sys.getrecursionlimit() - 20)
 
         if lambda_value < 0.0:
             raise ValueError('Invalid value: "lambda_value" must be positive.')
@@ -56,7 +56,7 @@ class StochasticGradientTree(base.Estimator, abc.ABC):
         self._root: SGTLeaf | DTBranch = SGTLeaf(prediction=self.init_pred)
 
         # set used to check whether categorical feature has been already split
-        self._split_features = set()
+        self._split_features: set[str] = set()
         self._n_splits = 0
         self._n_node_updates = 0
         self._n_observations = 0

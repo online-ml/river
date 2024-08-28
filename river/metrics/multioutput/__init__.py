@@ -1,4 +1,5 @@
 """Metrics for multi-output learning."""
+
 from __future__ import annotations
 
 from . import base

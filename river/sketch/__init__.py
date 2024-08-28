@@ -4,6 +4,7 @@ This module has summary and sketch structures that operate with constrained amou
 of memory and processing time.
 
 """
+
 from __future__ import annotations
 
 from .counter import Counter

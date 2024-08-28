@@ -5,7 +5,7 @@ import random
 import typing
 
 try:
-    import gym
+    import gymnasium as gym
 except ImportError:
     ...
 
@@ -52,7 +52,7 @@ def evaluate(
     Examples
     --------
 
-    >>> import gym
+    >>> import gymnasium as gym
     >>> from river import bandit
 
     >>> trace = bandit.evaluate(

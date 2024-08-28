@@ -5,6 +5,7 @@ situations. For instance, they can be used for model selection
 (see `model_selection.BanditRegressor`).
 
 """
+
 from __future__ import annotations
 
 from . import base, datasets, envs
