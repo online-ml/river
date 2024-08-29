@@ -20,7 +20,8 @@ class SortedWindow(collections.UserList):
     >>> window = utils.SortedWindow(size=3)
 
     >>> for i in reversed(range(9)):
-    ...     print(window.append(i))
+    ...     window.append(i)
+    ...     print(window)
     [8]
     [7, 8]
     [6, 7, 8]
@@ -45,7 +46,7 @@ class SortedWindow(collections.UserList):
     def size(self):
         return self.unsorted_window.maxlen
 
-    def append(self, x):
+    def append(self, x) -> None:
         if len(self) >= self.size:
             # The window is sorted, and a binary search is more optimized than linear search
             start_deque = bisect.bisect_left(self, self.unsorted_window[0])
@@ -53,5 +54,3 @@ class SortedWindow(collections.UserList):
 
         bisect.insort_left(self, x)
         self.unsorted_window.append(x)
-
-        return self
