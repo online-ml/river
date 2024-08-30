@@ -61,6 +61,10 @@ class IQR(stats.base.Univariate):
             self._is_updated = True
 
     def get(self):
+        # HACK: Avoid crash if get is called before update
+        # panicked at 'index out of bounds: the len is 0 but the index is 0'
+        if not self._is_updated:
+            return None
         return self._iqr.get()
 
     def __repr__(self):
