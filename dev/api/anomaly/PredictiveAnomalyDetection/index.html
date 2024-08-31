@@ -3995,7 +3995,7 @@
 
 <span class="k">for</span> <span class="n">t</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">datasets</span><span class="o">.</span><span class="n">AirlinePassengers</span><span class="p">()):</span>
     <span class="n">score</span> <span class="o">=</span> <span class="n">PAD</span><span class="o">.</span><span class="n">score_one</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-    <span class="n">PAD</span> <span class="o">=</span> <span class="n">PAD</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+    <span class="n">PAD</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
     <span class="n">scores</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">score</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="n">scores</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
