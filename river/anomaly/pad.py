@@ -80,7 +80,7 @@ class PredictiveAnomalyDetection(anomaly.base.SupervisedAnomalyDetector):
 
     >>> for t, (x, y) in enumerate(datasets.AirlinePassengers()):
     ...     score = PAD.score_one(None, y)
-    ...     PAD = PAD.learn_one(None, y)
+    ...     PAD.learn_one(None, y)
     ...     scores.append(score)
 
     >>> print(scores[-1])
@@ -131,7 +131,6 @@ class PredictiveAnomalyDetection(anomaly.base.SupervisedAnomalyDetector):
                 self.predictive_model.learn_one(y=y, x=x)
         else:
             self.predictive_model.learn_one(x=x, y=y)
-        return self
 
     def score_one(self, x: dict, y: base.typing.Target):
         # Return the predicted value of x from the predictive model, first by checking whether

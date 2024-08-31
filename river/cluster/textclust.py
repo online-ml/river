@@ -213,7 +213,6 @@ class TextClust(base.Clusterer):
 
         ## increment observation counter
         self.n += 1
-        return clusterId
 
     ## predicts the cluster number. The type specifies whether this should happen on micro-cluster
     ## or macro-cluster level

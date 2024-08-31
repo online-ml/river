@@ -122,8 +122,6 @@ class GLM:
 
             self._update_weights(x)
 
-        return self
-
     def _update_weights(self, x):
         # L1 cumulative penalty helper
 
@@ -161,7 +159,7 @@ class GLM:
 
         return (loss_gradient * utils.VectorDict(x), loss_gradient)
 
-    def learn_one(self, x, y, w=1.0):
+    def learn_one(self, x, y, w=1.0) -> None:
         with self._learn_mode(x):
             self._fit(x, y, w, get_grad=self._eval_gradient_one)
 
@@ -188,7 +186,7 @@ class GLM:
 
         return dict(zip(X.columns, gradient)), loss_gradient.mean()
 
-    def learn_many(self, X: pd.DataFrame, y: pd.Series, w: float | pd.Series = 1):
+    def learn_many(self, X: pd.DataFrame, y: pd.Series, w: float | pd.Series = 1) -> None:
         self._y_name = y.name
         with self._learn_mode(set(X)):
             self._fit(X, y, w, get_grad=self._eval_gradient_many)

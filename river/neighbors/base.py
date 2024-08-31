@@ -37,7 +37,7 @@ class BaseNN(base.Estimator, abc.ABC):
         self.dist_func = dist_func
 
     @abc.abstractmethod
-    def append(self, item: typing.Any, **kwargs):
+    def append(self, item: typing.Any, **kwargs) -> None:
         pass
 
     @abc.abstractmethod

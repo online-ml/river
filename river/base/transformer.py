@@ -57,7 +57,7 @@ class Transformer(base.Estimator, BaseTransformer):
     def _supervised(self):
         return False
 
-    def learn_one(self, x: dict):
+    def learn_one(self, x: dict) -> None:
         """Update with a set of features `x`.
 
         A lot of transformers don't actually have to do anything during the `learn_one` step
@@ -81,7 +81,7 @@ class SupervisedTransformer(base.Estimator, BaseTransformer):
     def _supervised(self):
         return True
 
-    def learn_one(self, x: dict, y: base.typing.Target):
+    def learn_one(self, x: dict, y: base.typing.Target) -> None:
         """Update with a set of features `x` and a target `y`.
 
         Parameters
@@ -113,7 +113,7 @@ class MiniBatchTransformer(Transformer):
 
         """
 
-    def learn_many(self, X: pd.DataFrame):
+    def learn_many(self, X: pd.DataFrame) -> None:
         """Update with a mini-batch of features.
 
         A lot of transformers don't actually have to do anything during the `learn_many` step
@@ -138,7 +138,7 @@ class MiniBatchSupervisedTransformer(Transformer):
         return True
 
     @abc.abstractmethod
-    def learn_many(self, X: pd.DataFrame, y: pd.Series):
+    def learn_many(self, X: pd.DataFrame, y: pd.Series) -> None:
         """Update the model with a mini-batch of features `X` and targets `y`.
 
         Parameters
