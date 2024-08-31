@@ -14,4 +14,4 @@ River supports different machine learning tasks, including regression, classific
 
 ## User experience
 
-River is not the only library allowing you to do online machine learning. But it might just the simplest one to use in the Python ecosystem. River plays nicely with Python dictionaries, therefore making it easy to use in the context of web applications where JSON payloads are aplenty.
+River is not the only library allowing you to do online machine learning. But it might just be the simplest one to use in the Python ecosystem. River plays nicely with Python dictionaries, therefore making it easy to use in the context of web applications where JSON payloads are aplenty.
