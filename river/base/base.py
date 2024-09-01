@@ -31,7 +31,7 @@ class Base:
         return _repr_obj(obj=self)
 
     @classmethod
-    def _unit_test_params(cls) -> typing.Iterator[dict[str, typing.Any]]:
+    def _unit_test_params(cls) -> collections.abc.Iterator[dict[str, typing.Any]]:
         """Instantiates an object with default arguments.
 
         Most parameters of each object have a default value. However, this isn't always the case,
