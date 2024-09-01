@@ -47,11 +47,11 @@ class Estimator(base.Base, abc.ABC):
         div_str = ET.tostring(div, encoding="unicode")
         return f"<div>{div_str}<style scoped>{viz.CSS}</style></div>"
 
-    def _more_tags(self):
+    def _more_tags(self) -> set[str]:
         return set()
 
     @property
-    def _tags(self) -> dict[str, bool]:
+    def _tags(self) -> set[str]:
         """Return the estimator's tags.
 
         Tags can be used to specify what kind of inputs an estimator is able to process. For
@@ -67,7 +67,7 @@ class Estimator(base.Base, abc.ABC):
 
         for parent in self.__class__.__mro__:
             try:
-                tags |= parent._more_tags(self)  # type: ignore
+                tags |= parent._more_tags(self)  # type: ignore[attr-defined]
             except AttributeError:
                 pass
 
