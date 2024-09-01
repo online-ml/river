@@ -102,4 +102,4 @@ def iter_sql(
     for row in result_proxy:
         x = dict(row._mapping.items())
         y = x.pop(target_name)
-        yield x, y # type: ignore[misc]
+        yield x, y  # type: ignore[misc]

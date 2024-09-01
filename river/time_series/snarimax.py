@@ -4,7 +4,7 @@ import collections
 import itertools
 import math
 
-from river import base, linear_model, preprocessing, time_series, compose
+from river import base, compose, linear_model, preprocessing, time_series
 
 __all__ = ["SNARIMAX"]
 

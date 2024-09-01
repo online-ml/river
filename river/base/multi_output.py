@@ -23,7 +23,9 @@ class MultiLabelClassifier(Estimator, abc.ABC):
 
         """
 
-    def predict_proba_one(self, x: dict[FeatureName, typing.Any], **kwargs: typing.Any) -> dict[FeatureName, dict[bool, float]]:
+    def predict_proba_one(
+        self, x: dict[FeatureName, typing.Any], **kwargs: typing.Any
+    ) -> dict[FeatureName, dict[bool, float]]:
         """Predict the probability of each label appearing given dictionary of features `x`.
 
         Parameters
@@ -40,7 +42,9 @@ class MultiLabelClassifier(Estimator, abc.ABC):
         # In case the multi-label classifier does not support probabilities
         raise NotImplementedError
 
-    def predict_one(self, x: dict[FeatureName, typing.Any], **kwargs: typing.Any) -> dict[FeatureName, bool]:
+    def predict_one(
+        self, x: dict[FeatureName, typing.Any], **kwargs: typing.Any
+    ) -> dict[FeatureName, bool]:
         """Predict the labels of a set of features `x`.
 
         Parameters
@@ -69,7 +73,12 @@ class MultiTargetRegressor(Estimator, abc.ABC):
     """Multi-target regressor."""
 
     @abc.abstractmethod
-    def learn_one(self, x: dict[FeatureName, typing.Any], y: dict[FeatureName, RegTarget], **kwargs: typing.Any) -> None:
+    def learn_one(
+        self,
+        x: dict[FeatureName, typing.Any],
+        y: dict[FeatureName, RegTarget],
+        **kwargs: typing.Any,
+    ) -> None:
         """Fits to a set of features `x` and a real-valued target `y`.
 
         Parameters

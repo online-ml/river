@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-# This import is not cyclic because 'viz' is not exported by 'base'
-from river import base, compose
-
 import inspect
 import textwrap
 from xml.etree import ElementTree as ET
+
+# This import is not cyclic because 'viz' is not exported by 'base'
+from river import base, compose
 
 
 def to_html(obj: base.Estimator) -> ET.Element:

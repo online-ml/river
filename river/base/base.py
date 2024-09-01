@@ -73,7 +73,9 @@ class Base:
 
         return params
 
-    def clone(self, new_params: dict[str, typing.Any] | None = None, include_attributes: bool = False) -> typing_extensions.Self:
+    def clone(
+        self, new_params: dict[str, typing.Any] | None = None, include_attributes: bool = False
+    ) -> typing_extensions.Self:
         """Return a fresh estimator with the same parameters.
 
         The clone has the same parameters but has not been updated with any data.
@@ -371,7 +373,7 @@ class Base:
                 buffer.extend([k for k in obj.keys()])
                 buffer.extend([v for v in obj.values()])
             elif hasattr(obj, "__dict__"):  # Save object contents
-                contents= vars(obj)
+                contents = vars(obj)
                 size += sys.getsizeof(contents)
                 buffer.extend([k for k in contents.keys()])
                 buffer.extend([v for v in contents.values()])
@@ -398,7 +400,12 @@ class Base:
         return utils.pretty.humanize_bytes(self._raw_memory_usage)
 
 
-def _log_method_calls(self: typing.Any, name: str, class_condition: typing.Callable[[typing.Any], bool], method_condition: typing.Callable[[typing.Any], bool]) -> typing.Any:
+def _log_method_calls(
+    self: typing.Any,
+    name: str,
+    class_condition: typing.Callable[[typing.Any], bool],
+    method_condition: typing.Callable[[typing.Any], bool],
+) -> typing.Any:
     method = object.__getattribute__(self, name)
     if (
         not name.startswith("_")

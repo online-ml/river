@@ -8,6 +8,7 @@ from river import base
 
 if typing.TYPE_CHECKING:
     import pandas as pd
+
     from river import compose
 
 
@@ -24,20 +25,34 @@ class BaseTransformer:
 
         return compose.TransformerUnion(other, self)
 
-    def __mul__(self, other: BaseTransformer | compose.Pipeline | base.typing.FeatureName | list[base.typing.FeatureName]) -> compose.Grouper | compose.TransformerProduct:
+    def __mul__(
+        self,
+        other: BaseTransformer
+        | compose.Pipeline
+        | base.typing.FeatureName
+        | list[base.typing.FeatureName],
+    ) -> compose.Grouper | compose.TransformerProduct:
         from river import compose
 
         if isinstance(other, BaseTransformer) or isinstance(other, compose.Pipeline):
             return compose.TransformerProduct(self, other)
 
-        return compose.Grouper(transformer=self, by=other) # type: ignore[arg-type]
+        return compose.Grouper(transformer=self, by=other)
 
-    def __rmul__(self, other: BaseTransformer | compose.Pipeline | base.typing.FeatureName | list[base.typing.FeatureName]) -> compose.Grouper | compose.TransformerProduct:
+    def __rmul__(
+        self,
+        other: BaseTransformer
+        | compose.Pipeline
+        | base.typing.FeatureName
+        | list[base.typing.FeatureName],
+    ) -> compose.Grouper | compose.TransformerProduct:
         """Creates a Grouper."""
         return self * other
 
     @abc.abstractmethod
-    def transform_one(self, x: dict[base.typing.FeatureName, Any]) -> dict[base.typing.FeatureName, Any]:
+    def transform_one(
+        self, x: dict[base.typing.FeatureName, Any]
+    ) -> dict[base.typing.FeatureName, Any]:
         """Transform a set of features `x`.
 
         Parameters

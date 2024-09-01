@@ -28,7 +28,9 @@ class Classifier(estimator.Estimator):
 
         """
 
-    def predict_proba_one(self, x: dict[base.typing.FeatureName, Any], **kwargs: Any) -> dict[base.typing.ClfTarget, float]:
+    def predict_proba_one(
+        self, x: dict[base.typing.FeatureName, Any], **kwargs: Any
+    ) -> dict[base.typing.ClfTarget, float]:
         """Predict the probability of each label for a dictionary of features `x`.
 
         Parameters
@@ -48,7 +50,9 @@ class Classifier(estimator.Estimator):
         # that a classifier does not support predict_proba_one.
         raise NotImplementedError
 
-    def predict_one(self, x: dict[base.typing.FeatureName, Any], **kwargs: Any) -> base.typing.ClfTarget | None:
+    def predict_one(
+        self, x: dict[base.typing.FeatureName, Any], **kwargs: Any
+    ) -> base.typing.ClfTarget | None:
         """Predict the label of a set of features `x`.
 
         Parameters

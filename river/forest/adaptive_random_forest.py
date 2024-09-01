@@ -663,7 +663,9 @@ class ARFClassifier(BaseForest, base.Classifier):
     def _multiclass(self):
         return True
 
-    def predict_proba_one(self, x: dict, **kwargs: typing.Any) -> dict[base.typing.ClfTarget, float]:
+    def predict_proba_one(
+        self, x: dict, **kwargs: typing.Any
+    ) -> dict[base.typing.ClfTarget, float]:
         y_pred: typing.Counter = collections.Counter()
 
         if len(self) == 0:
