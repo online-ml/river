@@ -15,7 +15,7 @@ class AnomalyDetector(base.Estimator):
         return False
 
     @abc.abstractmethod
-    def learn_one(self, x: dict):
+    def learn_one(self, x: dict) -> None:
         """Update the model.
 
         Parameters
@@ -48,7 +48,7 @@ class SupervisedAnomalyDetector(base.Estimator):
     """A supervised anomaly detector."""
 
     @abc.abstractmethod
-    def learn_one(self, x: dict, y: base.typing.Target):
+    def learn_one(self, x: dict, y: base.typing.Target) -> None:
         """Update the model.
 
         Parameters
@@ -137,7 +137,7 @@ class AnomalyFilter(base.Wrapper, base.Estimator):
         """
         return self.anomaly_detector.score_one(*args, **kwargs)
 
-    def learn_one(self, *args, **learn_kwargs):
+    def learn_one(self, *args, **learn_kwargs) -> None:
         """Update the anomaly filter and the underlying anomaly detector.
 
         Parameters

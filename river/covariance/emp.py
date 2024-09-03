@@ -379,5 +379,3 @@ class EmpiricalPrecision(SymmetricMatrix):
             row = self._w[fi] * inv_cov[i]
             for j, fj in enumerate(X):
                 self._inv_cov[min((fi, fj), (fj, fi))] = row[j]
-
-        return self

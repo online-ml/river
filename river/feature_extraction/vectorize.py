@@ -203,7 +203,7 @@ class VectorizerMixin:
         # Stop word removal
         if self.stop_words:
             self.processing_steps.append(
-                functools.partial(remove_stop_words, stop_words=stop_words)
+                functools.partial(remove_stop_words, stop_words=self.stop_words)
             )
 
         # n-grams
