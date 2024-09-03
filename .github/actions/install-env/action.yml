@@ -14,19 +14,19 @@ runs:
   using: "composite"
   steps:
     - name: Check out repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Set up Python
       id: set-up-python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ inputs.python-version }}
 
     - name: Load cached Poetry installation
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: ~/.local # the path depends on the OS
-        key: poetry-1 # increment to reset cache
+        key: poetry-2 # increment to reset cache
 
     - name: Install poetry
       uses: snok/install-poetry@v1
@@ -37,7 +37,7 @@ runs:
 
     - name: Load cached virtual env
       id: cached-poetry-dependencies
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: .venv
         key: venv-${{ runner.os }}-${{ steps.set-up-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}

@@ -143,8 +143,6 @@ class KNNClassifier(base.Classifier):
                 self.clean_up_classes()
                 self._cleanup_counter = self.cleanup_every
 
-        return self
-
     def predict_proba_one(self, x, **kwargs):
         nearest = self._nn.search((x, None), n_neighbors=self.n_neighbors, **kwargs)
 

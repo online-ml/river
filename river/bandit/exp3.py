@@ -35,7 +35,7 @@ class Exp3(bandit.base.Policy):
     Examples
     --------
 
-    >>> import gym
+    >>> import gymnasium as gym
     >>> from river import bandit
     >>> from river import proba
     >>> from river import stats
@@ -77,9 +77,7 @@ class Exp3(bandit.base.Policy):
         burn_in=0,
         seed: int | None = None,
     ):
-        super().__init__(
-            reward_obj=reward_obj, reward_scaler=reward_scaler, burn_in=burn_in
-        )
+        super().__init__(reward_obj=reward_obj, reward_scaler=reward_scaler, burn_in=burn_in)
         self.seed = seed
         self.gamma = gamma
         self._rng = random.Random(seed)
@@ -91,8 +89,7 @@ class Exp3(bandit.base.Policy):
     def _pull(self, arm_ids):
         total = sum(self._weights[arm_id] for arm_id in arm_ids)
         self._probabilities = {
-            arm_id: (1 - self.gamma) * (self._weights[arm_id] / total)
-            + self.gamma / len(arm_ids)
+            arm_id: (1 - self.gamma) * (self._weights[arm_id] / total) + self.gamma / len(arm_ids)
             for arm_id in arm_ids
         }
         return self._rng.choices(arm_ids, weights=self._probabilities.values())[0]

@@ -327,9 +327,7 @@ class BOLEClassifier(AdaBoostClassifier):
 
     def predict_proba_one(self, x, **kwargs):
         y_proba = collections.Counter()
-        y_proba_all = (
-            collections.Counter()
-        )  # stores prediction of every model of the ensemble, if y_proba is null, returns y_proba_all
+        y_proba_all = collections.Counter()  # stores prediction of every model of the ensemble, if y_proba is null, returns y_proba_all
         for i, model in enumerate(self):
             model_weight = 0.0
             if self.correct_weight[i] > 0.0 and self.wrong_weight[i] > 0.0:

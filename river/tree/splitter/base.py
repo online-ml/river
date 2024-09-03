@@ -21,7 +21,7 @@ class Splitter(base.Estimator, abc.ABC):
     """
 
     @abc.abstractmethod
-    def update(self, att_val, target_val: base.typing.Target, w: float):
+    def update(self, att_val, target_val: base.typing.Target, w: float) -> None:
         """Update statistics of this observer given an attribute value, its target value
         and the weight of the instance observed.
 
@@ -109,7 +109,7 @@ class Quantizer(base.Estimator, abc.ABC):
         pass
 
     @abc.abstractmethod
-    def update(self, x_val, gh: GradHess, w: float):
+    def update(self, x_val, gh: GradHess, w: float) -> None:
         pass
 
     @abc.abstractmethod

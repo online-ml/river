@@ -109,7 +109,7 @@ class BayesianLinearRegression(base.Regressor):
 
     """
 
-    def __init__(self, alpha=1, beta=1, smoothing: float = None):
+    def __init__(self, alpha=1, beta=1, smoothing: float | None = None):
         self.alpha = alpha
         self.beta = beta
         self.smoothing = smoothing

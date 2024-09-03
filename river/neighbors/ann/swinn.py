@@ -93,11 +93,11 @@ class SWINN(BaseNN):
         dist_func: DistanceFunc | FunctionWrapper | None = None,
         maxlen: int = 1000,
         warm_up: int = 500,
-        max_candidates: int = None,
+        max_candidates: int | None = None,
         delta: float = 0.0001,
         prune_prob: float = 0.0,
         n_iters: int = 10,
-        seed: int = None,
+        seed: int | None = None,
     ):
         self.graph_k = graph_k
         if dist_func is None:
@@ -203,7 +203,7 @@ class SWINN(BaseNN):
 
         self._refine(affected)
 
-    def _refine(self, nodes: list[int] = None):
+    def _refine(self, nodes: list[int] | None = None):
         """Update the nearest neighbor graph to improve the edge distances.
 
         Parameters
@@ -264,8 +264,12 @@ class SWINN(BaseNN):
                             continue
 
                         dist = self.dist_func(self[n1].item, self[n2].item)
-                        total_changes += self[n1].push_edge(self[n2], dist, self.graph_k, self._data)
-                        total_changes += self[n2].push_edge(self[n1], dist, self.graph_k, self._data)
+                        total_changes += self[n1].push_edge(
+                            self[n2], dist, self.graph_k, self._data
+                        )
+                        total_changes += self[n2].push_edge(
+                            self[n1], dist, self.graph_k, self._data
+                        )
 
                         tried.add((n1, n2))
 
@@ -278,8 +282,12 @@ class SWINN(BaseNN):
                             continue
 
                         dist = self.dist_func(self[n1].item, self[n2].item)
-                        total_changes += self[n1].push_edge(self[n2], dist, self.graph_k, self._data)
-                        total_changes += self[n2].push_edge(self[n1], dist, self.graph_k, self._data)
+                        total_changes += self[n1].push_edge(
+                            self[n2], dist, self.graph_k, self._data
+                        )
+                        total_changes += self[n2].push_edge(
+                            self[n1], dist, self.graph_k, self._data
+                        )
 
                         tried.add((n1, n2))
 
@@ -343,7 +351,14 @@ class SWINN(BaseNN):
 
         return None
 
-    def _search(self, item, k, epsilon: float = 0.1, seed: Vertex = None, exclude: set[int] | None = None) -> tuple[list, list]:
+    def _search(
+        self,
+        item,
+        k,
+        epsilon: float = 0.1,
+        seed: Vertex | None = None,
+        exclude: set[int] | None = None,
+    ) -> tuple[list, list]:
         # Limiter for the distance bound
         distance_scale = 1 + epsilon
         # Distance threshold for early stops

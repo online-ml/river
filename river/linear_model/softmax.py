@@ -70,9 +70,7 @@ class SoftmaxRegression(base.Classifier):
         self.optimizers = collections.defaultdict(new_optimizer)  # type: ignore
         self.loss = optim.losses.CrossEntropy() if loss is None else loss
         self.l2 = l2
-        self.weights = collections.defaultdict(
-            functools.partial(collections.defaultdict, float)
-        )  # type: ignore
+        self.weights = collections.defaultdict(functools.partial(collections.defaultdict, float))  # type: ignore
 
     @property
     def _multiclass(self):

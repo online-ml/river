@@ -490,7 +490,7 @@ class ARFClassifier(BaseForest, base.Classifier):
         split attempts.
     max_depth
         [*Tree parameter*] The maximum depth a tree can reach. If `None`, the
-        tree will grow indefinitely.
+        tree will grow until the system recursion limit.
     split_criterion
         [*Tree parameter*] Split criterion to use.<br/>
         - 'gini' - Gini<br/>
@@ -534,7 +534,7 @@ class ARFClassifier(BaseForest, base.Classifier):
         in the majority class is smaller than this parameter value. This parameter avoids
         performing splits when most of the data belongs to a single class.
     max_size
-        [*Tree parameter*] Maximum memory (MB) consumed by the tree.
+        [*Tree parameter*] Maximum memory (MiB) consumed by the tree.
     memory_estimate_period
         [*Tree parameter*] Number of instances between memory consumption checks.
     stop_mem_management
@@ -767,7 +767,7 @@ class ARFRegressor(BaseForest, base.Regressor):
         split attempts.
     max_depth
         [*Tree parameter*] The maximum depth a tree can reach. If `None`, the
-        tree will grow indefinitely.
+        tree will grow until the system recursion limit.
     delta
         [*Tree parameter*] Allowed error in split decision, a value closer to 0
         takes longer to decide.
@@ -808,7 +808,7 @@ class ARFRegressor(BaseForest, base.Regressor):
     binary_split
         [*Tree parameter*] If True, only allow binary splits.
     max_size
-        [*Tree parameter*] Maximum memory (MB) consumed by the tree.
+        [*Tree parameter*] Maximum memory (MiB) consumed by the tree.
     memory_estimate_period
         [*Tree parameter*] Number of instances between memory consumption checks.
     stop_mem_management

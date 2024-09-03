@@ -32,7 +32,7 @@ class UCB(bandit.base.Policy):
     Examples
     --------
 
-    >>> import gym
+    >>> import gymnasium as gym
     >>> from river import bandit
     >>> from river import preprocessing
     >>> from river import stats
@@ -75,11 +75,9 @@ class UCB(bandit.base.Policy):
         reward_obj=None,
         reward_scaler=None,
         burn_in=0,
-        seed: int = None,
+        seed: int | None = None,
     ):
-        super().__init__(
-            reward_obj=reward_obj, reward_scaler=reward_scaler, burn_in=burn_in
-        )
+        super().__init__(reward_obj=reward_obj, reward_scaler=reward_scaler, burn_in=burn_in)
         self.delta = delta
         self.seed = seed
         self._rng = random.Random(seed)

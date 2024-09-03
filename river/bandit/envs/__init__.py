@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 try:
-    import gym
+    import gymnasium as gym
 
     GYM_INSTALLED = True
 except ImportError:
