@@ -29,4 +29,4 @@ class Wrapper(ABC):
 
     @property
     def _multiclass(self) -> bool:
-        return self._wrapped_model._multiclass
+        return isinstance(self._wrapped_model, base.Classifier) and self._wrapped_model._multiclass
