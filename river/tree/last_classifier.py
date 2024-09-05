@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from river import base, drift
 
-from .hoeffding_tree import HoeffdingTree
+from .hoeffding_tree_classifier import HoeffdingTreeClassifier
 from .nodes.branch import DTBranch
 from .nodes.last_nodes import LeafMajorityClassWithDetector, LeafNaiveBayesWithDetector, LeafNaiveBayesAdaptiveWithDetector
 from .nodes.leaf import HTLeaf
@@ -10,7 +10,7 @@ from .split_criterion import GiniSplitCriterion, HellingerDistanceCriterion, Inf
 from .splitter import GaussianSplitter, Splitter
 
 
-class LASTClassifier(HoeffdingTree, base.Classifier):
+class LASTClassifier(HoeffdingTreeClassifier, base.Classifier):
     """Local Adaptive Streaming Tree classifier.
 
     Parameters
@@ -69,12 +69,8 @@ class LASTClassifier(HoeffdingTree, base.Classifier):
     Notes
     -----
     Local Adaptive Streaming Tree [^1] (LAST) is an incremental decision tree with
-    adaptive splitting mechanisms. At each leaf, LAST maintains a change detector, 
-    that in case of a change detection in error or the data distribution of the leaf,
-    it performs a split.
-
-    
-    
+    adaptive splitting mechanisms. LAST maintains a change detector at each leaf and splits
+    this node if a change is detected in the error or the leaf`s data distribution.
 
     References
     ----------
@@ -86,7 +82,6 @@ class LASTClassifier(HoeffdingTree, base.Classifier):
     Examples
     --------
 
-    >>> from river.datasets import synth
     >>> from river.datasets import synth
     >>> from river import evaluate
     >>> from river import metrics
@@ -104,16 +99,6 @@ class LASTClassifier(HoeffdingTree, base.Classifier):
     >>> evaluate.progressive_val_score(dataset, model, metric)
     Accuracy: 92.50%
     """
-
-    _GINI_SPLIT = "gini"
-    _INFO_GAIN_SPLIT = "info_gain"
-    _HELLINGER_SPLIT = "hellinger"
-    _VALID_SPLIT_CRITERIA = [_GINI_SPLIT, _INFO_GAIN_SPLIT, _HELLINGER_SPLIT]
-
-    _MAJORITY_CLASS = "mc"
-    _NAIVE_BAYES = "nb"
-    _NAIVE_BAYES_ADAPTIVE = "nba"
-    _VALID_LEAF_PREDICTION = [_MAJORITY_CLASS, _NAIVE_BAYES, _NAIVE_BAYES_ADAPTIVE]
 
     def __init__(
         self,
@@ -135,30 +120,26 @@ class LASTClassifier(HoeffdingTree, base.Classifier):
         merit_preprune: bool = True,
     ):
         super().__init__(
+            grace_period=None,
             max_depth=max_depth,
+            split_criterion=split_criterion,
+            delta=None,
+            tau=None,
+            leaf_prediction=leaf_prediction,
+            nb_threshold = nb_threshold,
             binary_split=binary_split,
             max_size=max_size,
             memory_estimate_period=memory_estimate_period,
             stop_mem_management=stop_mem_management,
             remove_poor_attrs=remove_poor_attrs,
             merit_preprune=merit_preprune,
+            nominal_attributes = nominal_attributes,
+            splitter = splitter,
+            min_branch_fraction = min_branch_fraction,
+            max_share_to_split = max_share_to_split,
         )
-        self.split_criterion = split_criterion
         self.change_detector = change_detector if change_detector is not None else drift.ADWIN()
         self.track_error = track_error
-        self.leaf_prediction = leaf_prediction
-        self.nb_threshold = nb_threshold
-        self.nominal_attributes = nominal_attributes
-
-        if splitter is None:
-            self.splitter = GaussianSplitter()
-        else:
-            if not splitter.is_target_class:
-                raise ValueError("The chosen splitter cannot be used in classification tasks.")
-            self.splitter = splitter  # type: ignore
-
-        self.min_branch_fraction = min_branch_fraction
-        self.max_share_to_split = max_share_to_split
 
         # To keep track of the observed classes
         self.classes: set = set()
@@ -167,29 +148,6 @@ class LASTClassifier(HoeffdingTree, base.Classifier):
     def _mutable_attributes(self):
         return {}
 
-    @HoeffdingTree.split_criterion.setter  # type: ignore
-    def split_criterion(self, split_criterion):
-        if split_criterion not in self._VALID_SPLIT_CRITERIA:
-            print(
-                "Invalid split_criterion option {}', will use default '{}'".format(
-                    split_criterion, self._INFO_GAIN_SPLIT
-                )
-            )
-            self._split_criterion = self._INFO_GAIN_SPLIT
-        else:
-            self._split_criterion = split_criterion
-
-    @HoeffdingTree.leaf_prediction.setter  # type: ignore
-    def leaf_prediction(self, leaf_prediction):
-        if leaf_prediction not in self._VALID_LEAF_PREDICTION:
-            print(
-                "Invalid leaf_prediction option {}', will use default '{}'".format(
-                    leaf_prediction, self._NAIVE_BAYES_ADAPTIVE
-                )
-            )
-            self._leaf_prediction = self._NAIVE_BAYES_ADAPTIVE
-        else:
-            self._leaf_prediction = leaf_prediction
 
     def _new_leaf(self, initial_stats=None, parent=None):
         if initial_stats is None:
@@ -388,17 +346,3 @@ class LASTClassifier(HoeffdingTree, base.Classifier):
         if self._train_weight_seen_by_model % self.memory_estimate_period == 0:
             self._estimate_model_size()
 
-    def predict_proba_one(self, x):
-        proba = {c: 0.0 for c in sorted(self.classes)}
-        if self._root is not None:
-            if isinstance(self._root, DTBranch):
-                leaf = self._root.traverse(x, until_leaf=True)
-            else:
-                leaf = self._root
-
-            proba.update(leaf.prediction(x, tree=self))
-        return proba
-
-    @property
-    def _multiclass(self):
-        return True

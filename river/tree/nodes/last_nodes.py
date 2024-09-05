@@ -5,10 +5,10 @@ from river.utils.norm import normalize_values_in_dict
 
 from ..splitter.nominal_splitter_classif import NominalSplitterClassif
 from ..utils import do_naive_bayes_prediction, round_sig_fig
-from .leaf import HTLeaf
+from .htc_nodes import LeafMajorityClass
 
 
-class LeafMajorityClassWithDetector(HTLeaf):
+class LeafMajorityClassWithDetector(LeafMajorityClass):
     """Leaf that always predicts the majority class.
 
     Parameters
@@ -28,10 +28,6 @@ class LeafMajorityClassWithDetector(HTLeaf):
         super().__init__(stats, depth, splitter, **kwargs)
         self.change_detector = change_detector
         self.split_criterion = split_criterion #if None, the change detector will have binary inputs
-
-    @staticmethod
-    def new_nominal_splitter():
-        return NominalSplitterClassif()
     
     def learn_one(self, x, y, *, w=1, tree=None):
         self.update_stats(y, w)
@@ -44,83 +40,6 @@ class LeafMajorityClassWithDetector(HTLeaf):
                 detector_input = self.split_criterion.purity(self.stats)
                 self.change_detector.update(detector_input)
             self.update_splitters(x, y, w, tree.nominal_attributes)
-
-
-    def update_stats(self, y, w):
-        try:
-            self.stats[y] += w
-        except KeyError:
-            self.stats[y] = w
-
-    def prediction(self, x, *, tree=None):
-        return normalize_values_in_dict(self.stats, inplace=False)
-
-    @property
-    def total_weight(self):
-        """Calculate the total weight seen by the node.
-
-        Returns
-        -------
-            Total weight seen.
-
-        """
-        return sum(self.stats.values()) if self.stats else 0
-
-    def best_split_suggestions(self, criterion, tree) -> list[BranchFactory]:
-        maj_class = max(self.stats.values())
-        # Only perform split attempts when the majority class does not dominate
-        # the amount of observed instances
-        if maj_class and maj_class / self.total_weight > tree.max_share_to_split:
-            return [BranchFactory()]
-
-        return super().best_split_suggestions(criterion, tree)
-
-    def calculate_promise(self):
-        """Calculate how likely a node is going to be split.
-
-        A node with a (close to) pure class distribution will less likely be split.
-
-        Returns
-        -------
-            A small value indicates that the node has seen more samples of a
-            given class than the other classes.
-
-        """
-        total_seen = sum(self.stats.values())
-        if total_seen > 0:
-            return total_seen - max(self.stats.values())
-        else:
-            return 0
-
-    def observed_class_distribution_is_pure(self):
-        """Check if observed class distribution is pure, i.e. if all samples
-        belong to the same class.
-
-        Returns
-        -------
-            True if observed number of classes is less than 2, False otherwise.
-        """
-        count = 0
-        for weight in self.stats.values():
-            if weight != 0:
-                count += 1
-                if count == 2:  # No need to count beyond this point
-                    break
-        return count < 2
-
-    def __repr__(self):
-        if not self.stats:
-            return ""
-
-        text = f"Class {max(self.stats, key=self.stats.get)}:"
-        for label, proba in sorted(normalize_values_in_dict(self.stats, inplace=False).items()):
-            text += f"\n\tP({label}) = {round_sig_fig(proba)}"
-
-        return text
-
-    def deactivate(self):
-        super().deactivate()
-
 
 class LeafNaiveBayesWithDetector(LeafMajorityClassWithDetector):
     """Leaf that uses Naive Bayes models.
