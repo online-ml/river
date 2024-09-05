@@ -16,7 +16,7 @@ class LASTClassifier(HoeffdingTree, base.Classifier):
     Parameters
     ----------
     max_depth
-        The maximum depth a tree can reach. If `None`, the tree will grow indefinitely.
+        The maximum depth a tree can reach. If `None`, the tree will grow until the system recursion limit.
     split_criterion
         Split criterion to use.</br>
         - 'gini' - Gini</br>
@@ -28,7 +28,7 @@ class LASTClassifier(HoeffdingTree, base.Classifier):
         - 'nb' - Naive Bayes</br>
         - 'nba' - Naive Bayes Adaptive</br>
     change_detector
-        Change detector that will be created at each leaf of the tree.
+        Change detector that will be created at each leaf of the tree.  
     track_error
         If True, the change detector will have binary inputs for error predictions, 
         otherwise the input will be the split criteria.
@@ -120,7 +120,7 @@ class LASTClassifier(HoeffdingTree, base.Classifier):
         max_depth: int | None = None,
         split_criterion: str = "info_gain",
         leaf_prediction: str = "nba",
-        change_detector:base.DriftDetector = drift.ADWIN(),
+        change_detector:base.DriftDetector| None = None,
         track_error : bool = True,
         nb_threshold: int = 0,
         nominal_attributes: list | None = None,
@@ -144,7 +144,7 @@ class LASTClassifier(HoeffdingTree, base.Classifier):
             merit_preprune=merit_preprune,
         )
         self.split_criterion = split_criterion
-        self.change_detector = change_detector
+        self.change_detector = change_detector if change_detector is not None else drift.ADWIN()
         self.track_error = track_error
         self.leaf_prediction = leaf_prediction
         self.nb_threshold = nb_threshold
@@ -165,7 +165,7 @@ class LASTClassifier(HoeffdingTree, base.Classifier):
 
     @property
     def _mutable_attributes(self):
-        return {"grace_period", "delta", "tau"}
+        return {}
 
     @HoeffdingTree.split_criterion.setter  # type: ignore
     def split_criterion(self, split_criterion):
@@ -236,9 +236,8 @@ class LASTClassifier(HoeffdingTree, base.Classifier):
 
         If the samples seen so far are not from the same class then:
 
-        1. Find split candidates and select the top 2.
-        2. Compute the Hoeffding bound.
-        3. If the difference between the top 2 split candidates is larger than the Hoeffding bound:
+        1. Find split candidates and select the top 1.
+        2. If the top1 is greater than zero:
            3.1 Replace the leaf node by a split node (branch node).
            3.2 Add a new leaf node on each branch of the new split node.
            3.3 Update tree's metrics
@@ -322,8 +321,8 @@ class LASTClassifier(HoeffdingTree, base.Classifier):
         * If the tree is empty, create a leaf node as the root.
         * If the tree is already initialized, find the corresponding leaf for
           the instance and update the leaf node statistics.
-        * If growth is allowed and the number of instances that the leaf has
-          observed between split attempts exceed the grace period then attempt
+        * Update the leaf change detector with (1 if the tree misclassified the instance, or 0 if it correctly classified) or the data distribution purity
+        * If growth is allowed and the  then attempt
           to split.
         """
 
@@ -358,6 +357,7 @@ class LASTClassifier(HoeffdingTree, base.Classifier):
                     self._n_inactive_leaves += 1
                 else:
                     weight_seen = node.total_weight
+                    #check if the change detector triggered a change
                     if node.change_detector.drift_detected:
                         p_branch = p_node.branch_no(x) if isinstance(p_node, DTBranch) else None
                         self._attempt_to_split(node, p_node, p_branch)

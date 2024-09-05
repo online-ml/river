@@ -119,7 +119,6 @@ class LeafMajorityClassWithDetector(HTLeaf):
         return text
 
     def deactivate(self):
-        self.change_detector = None
         super().deactivate()
 
 
