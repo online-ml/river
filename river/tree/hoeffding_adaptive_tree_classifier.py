@@ -129,7 +129,6 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
     >>> metric = metrics.Accuracy()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-
     Accuracy: 91.49%
 
     """
