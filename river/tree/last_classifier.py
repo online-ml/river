@@ -15,7 +15,11 @@ from .splitter import Splitter
 
 
 class LASTClassifier(HoeffdingTreeClassifier, base.Classifier):
-    """Local Adaptive Streaming Tree classifier.
+    """Local Adaptive Streaming Tree Classifier.
+
+    Local Adaptive Streaming Tree [^1] (LAST) is an incremental decision tree with
+    adaptive splitting mechanisms. LAST maintains a change detector at each leaf and splits
+    this node if a change is detected in the error or the leaf`s data distribution.
 
     Parameters
     ----------
@@ -70,12 +74,6 @@ class LASTClassifier(HoeffdingTreeClassifier, base.Classifier):
     merit_preprune
         If True, enable merit-based tree pre-pruning.
 
-    Notes
-    -----
-    Local Adaptive Streaming Tree [^1] (LAST) is an incremental decision tree with
-    adaptive splitting mechanisms. LAST maintains a change detector at each leaf and splits
-    this node if a change is detected in the error or the leaf`s data distribution.
-
     References
     ----------
 
@@ -103,6 +101,7 @@ class LASTClassifier(HoeffdingTreeClassifier, base.Classifier):
     >>> evaluate.progressive_val_score(dataset, model, metric)
 
     Accuracy: 92.50%
+
     """
 
     def __init__(
@@ -125,11 +124,11 @@ class LASTClassifier(HoeffdingTreeClassifier, base.Classifier):
         merit_preprune: bool = True,
     ):
         super().__init__(
-            grace_period=1, #no usage
+            grace_period=1,  # no usage
             max_depth=max_depth,
             split_criterion=split_criterion,
-            delta=1., #no usage
-            tau=1, #no usage
+            delta=1.0,  # no usage
+            tau=1,  # no usage
             leaf_prediction=leaf_prediction,
             nb_threshold=nb_threshold,
             binary_split=binary_split,
@@ -308,8 +307,9 @@ class LASTClassifier(HoeffdingTreeClassifier, base.Classifier):
         * If the tree is empty, create a leaf node as the root.
         * If the tree is already initialized, find the corresponding leaf for
           the instance and update the leaf node statistics.
-        * Update the leaf change detector with (1 if the tree misclassified the instance, or 0 if it correctly classified) or the data distribution purity
-        * If growth is allowed and the  then attempt
+        * Update the leaf change detector with (1 if the tree misclassified the instance,
+          or 0 if it correctly classified) or the data distribution purity
+        * If growth is allowed, then attempt
           to split.
         """
 

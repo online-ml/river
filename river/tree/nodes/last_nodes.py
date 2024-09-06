@@ -16,6 +16,12 @@ class LeafMajorityClassWithDetector(LeafMajorityClass):
     splitter
         The numeric attribute observer algorithm used to monitor target statistics
         and perform split attempts.
+    change_detector
+        Change detector that monitors the leaf error rate or class distribution and
+        determines when the leaf will split.
+    split_criterion
+        Split criterion used in the tree for updating the change detector if it
+        monitors the class distribution.
     kwargs
         Other parameters passed to the learning node.
     """
@@ -52,6 +58,12 @@ class LeafNaiveBayesWithDetector(LeafMajorityClassWithDetector):
     splitter
         The numeric attribute observer algorithm used to monitor target statistics
         and perform split attempts.
+    change_detector
+        Change detector that monitors the leaf error rate or class distribution and
+        determines when the leaf will split.
+    split_criterion
+        Split criterion used in the tree for updating the change detector if it
+        monitors the class distribution.
     kwargs
         Other parameters passed to the learning node.
     """
@@ -103,6 +115,12 @@ class LeafNaiveBayesAdaptiveWithDetector(LeafMajorityClassWithDetector):
     splitter
         The numeric attribute observer algorithm used to monitor target statistics
         and perform split attempts.
+    change_detector
+        Change detector that monitors the leaf error rate or class distribution and
+        determines when the leaf will split.
+    split_criterion
+        Split criterion used in the tree for updating the change detector if it
+        monitors the class distribution.
     kwargs
         Other parameters passed to the learning node.
     """
@@ -124,7 +142,7 @@ class LeafNaiveBayesAdaptiveWithDetector(LeafMajorityClassWithDetector):
         w
             The instance's weight.
         tree
-            The Hoeffding Tree to update.
+            The tree to update.
 
         """
         detector_input_mc = 1
@@ -161,7 +179,7 @@ class LeafNaiveBayesAdaptiveWithDetector(LeafMajorityClassWithDetector):
         x
             Instance attributes.
         tree
-            Hoeffding Tree.
+            LAST Tree.
 
         Returns
         -------
