@@ -100,7 +100,7 @@ class LASTClassifier(HoeffdingTreeClassifier, base.Classifier):
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
 
-    Accuracy: 92.50%
+    Accuracy: 91.10%
 
     """
 
@@ -160,45 +160,30 @@ class LASTClassifier(HoeffdingTreeClassifier, base.Classifier):
         else:
             depth = parent.depth + 1
 
-        if not self.track_error:
-            if self._leaf_prediction == self._MAJORITY_CLASS:
-                return LeafMajorityClassWithDetector(
-                    initial_stats, depth, self.splitter, self.change_detector.clone()
-                )
-            elif self._leaf_prediction == self._NAIVE_BAYES:
-                return LeafNaiveBayesWithDetector(
-                    initial_stats, depth, self.splitter, self.change_detector.clone()
-                )
-            else:  # Naives Bayes Adaptive (default)
-                return LeafNaiveBayesAdaptiveWithDetector(
-                    initial_stats, depth, self.splitter, self.change_detector.clone()
-                )
-        else:
-            split_criterion = self._new_split_criterion()
-            if self._leaf_prediction == self._MAJORITY_CLASS:
-                return LeafMajorityClassWithDetector(
-                    initial_stats,
-                    depth,
-                    self.splitter,
-                    self.change_detector.clone(),
-                    split_criterion,
-                )
-            elif self._leaf_prediction == self._NAIVE_BAYES:
-                return LeafNaiveBayesWithDetector(
-                    initial_stats,
-                    depth,
-                    self.splitter,
-                    self.change_detector.clone(),
-                    split_criterion,
-                )
-            else:  # Naives Bayes Adaptive (default)
-                return LeafNaiveBayesAdaptiveWithDetector(
-                    initial_stats,
-                    depth,
-                    self.splitter,
-                    self.change_detector.clone(),
-                    split_criterion,
-                )
+        if self._leaf_prediction == self._MAJORITY_CLASS:
+            return LeafMajorityClassWithDetector(
+                initial_stats,
+                depth,
+                self.splitter,
+                self.change_detector.clone(),
+                split_criterion=self._new_split_criterion() if not self.track_error else None,
+            )
+        elif self._leaf_prediction == self._NAIVE_BAYES:
+            return LeafNaiveBayesWithDetector(
+                initial_stats,
+                depth,
+                self.splitter,
+                self.change_detector.clone(),
+                split_criterion=self._new_split_criterion() if not self.track_error else None,
+            )
+        else:  # Naives Bayes Adaptive (default)
+            return LeafNaiveBayesAdaptiveWithDetector(
+                initial_stats,
+                depth,
+                self.splitter,
+                self.change_detector.clone(),
+                split_criterion=self._new_split_criterion() if not self.track_error else None,
+            )
 
     def _new_split_criterion(self):
         if self._split_criterion == self._GINI_SPLIT:
