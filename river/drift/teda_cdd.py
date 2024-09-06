@@ -77,7 +77,7 @@ class TEDACDD(DriftDetector):
         self._evolving_model_mean = 0.0
         self._evolving_model_var = 0.0
 
-        self.__min_samples = math.ceil(1.0 / (1.0 - self.alpha))
+        self._min_samples = math.ceil(1.0 / (1.0 - self.alpha))
 
         if self.m <= 0.0:
             raise ValueError("Parameter `m` must be greater than 0")
@@ -123,7 +123,7 @@ class TEDACDD(DriftDetector):
 
     @property
     def min_samples(self):
-        return self.__min_samples
+        return self._min_samples
 
     def _reset(self):
         """Reset the detector's state replacing the reference model by the evoling model."""
@@ -137,7 +137,7 @@ class TEDACDD(DriftDetector):
         reference_model_teda_threshold = self._reference_model_teda_threshold()
         if (
             reference_model_teda_score <= reference_model_teda_threshold
-            or self.reference_model_n <= self.__min_samples
+            or self.reference_model_n <= self._min_samples
         ):
             self._update_reference_model(x)
 
@@ -162,8 +162,8 @@ class TEDACDD(DriftDetector):
         self._drift_detected = _drift_detected
 
     def _is_detection_enabled(self):
-        if (self._evolving_model_n < self.__min_samples) or (
-            self._reference_model_n < self.__min_samples
+        if (self._evolving_model_n < self._min_samples) or (
+            self._reference_model_n < self._min_samples
         ):
             return False
         return True
@@ -201,7 +201,7 @@ class TEDACDD(DriftDetector):
             )
 
     def _update_evolving_model(self, value):
-        if self.evolving_model_n < self.__min_samples:
+        if self.evolving_model_n < self._min_samples:
             self._evolving_model_n += 1.0
         if self._evolving_model_mean != value:
             alpha_weight = (
@@ -220,7 +220,7 @@ class TEDACDD(DriftDetector):
             )
 
     def _replace_reference_model(self):
-        self._reference_model_n = min(self._evolving_model_n, self.__min_samples)
+        self._reference_model_n = min(self._evolving_model_n, self._min_samples)
         self._reference_model_mean = self._evolving_model_mean
         self._reference_model_var = self._evolving_model_var
 
