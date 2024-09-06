@@ -21,8 +21,8 @@ class LASTClassifier(HoeffdingTreeClassifier, base.Classifier):
     adaptive splitting mechanisms. LAST maintains a change detector at each leaf and splits
     this node if a change is detected in the error or the leaf`s data distribution.
 
-    LAST is still not suitable as classifiers of an ensemble due to the change detectors.
-    The authors in [^1] are working in a version of LAST that overcomes this.
+    LAST is still not suitable for use as a base classifier in ensembles due to the change detectors.
+    The authors in [^1] are working on a version of LAST that overcomes this limitation.
 
     Parameters
     ----------
