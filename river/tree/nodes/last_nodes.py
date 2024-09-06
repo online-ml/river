@@ -1,10 +1,6 @@
 from __future__ import annotations
 
-from river.tree.utils import BranchFactory
-from river.utils.norm import normalize_values_in_dict
-
-from ..splitter.nominal_splitter_classif import NominalSplitterClassif
-from ..utils import do_naive_bayes_prediction, round_sig_fig
+from ..utils import do_naive_bayes_prediction
 from .htc_nodes import LeafMajorityClass
 
 
@@ -24,22 +20,25 @@ class LeafMajorityClassWithDetector(LeafMajorityClass):
         Other parameters passed to the learning node.
     """
 
-    def __init__(self, stats, depth, splitter,change_detector, split_criterion = None, **kwargs):
+    def __init__(self, stats, depth, splitter, change_detector, split_criterion=None, **kwargs):
         super().__init__(stats, depth, splitter, **kwargs)
         self.change_detector = change_detector
-        self.split_criterion = split_criterion #if None, the change detector will have binary inputs
-    
+        self.split_criterion = (
+            split_criterion  # if None, the change detector will have binary inputs
+        )
+
     def learn_one(self, x, y, *, w=1, tree=None):
         self.update_stats(y, w)
         if self.is_active():
             if self.split_criterion is None:
                 mc_pred = self.prediction(x)
-                detector_input = (max(mc_pred, key=mc_pred.get) != y) 
+                detector_input = max(mc_pred, key=mc_pred.get) != y
                 self.change_detector.update(detector_input)
             else:
-                detector_input = self.split_criterion.purity(self.stats)
+                detector_input = self.split_criterion.current_merit(self.stats)
                 self.change_detector.update(detector_input)
             self.update_splitters(x, y, w, tree.nominal_attributes)
+
 
 class LeafNaiveBayesWithDetector(LeafMajorityClassWithDetector):
     """Leaf that uses Naive Bayes models.
@@ -57,18 +56,18 @@ class LeafNaiveBayesWithDetector(LeafMajorityClassWithDetector):
         Other parameters passed to the learning node.
     """
 
-    def __init__(self, stats, depth, splitter,change_detector, split_criterion = None, **kwargs):
-        super().__init__(stats, depth, splitter,change_detector,split_criterion,**kwargs)
-    
+    def __init__(self, stats, depth, splitter, change_detector, split_criterion=None, **kwargs):
+        super().__init__(stats, depth, splitter, change_detector, split_criterion, **kwargs)
+
     def learn_one(self, x, y, *, w=1, tree=None):
         self.update_stats(y, w)
         if self.is_active():
             if self.split_criterion is None:
                 nb_pred = self.prediction(x)
-                detector_input = (max(nb_pred, key=nb_pred.get) == y) 
+                detector_input = max(nb_pred, key=nb_pred.get) == y
                 self.change_detector.update(detector_input)
             else:
-                detector_input = self.split_criterion.purity(self.stats)
+                detector_input = self.split_criterion.current_merit(self.stats)
                 self.change_detector.update(detector_input)
             self.update_splitters(x, y, w, tree.nominal_attributes)
 
@@ -108,8 +107,8 @@ class LeafNaiveBayesAdaptiveWithDetector(LeafMajorityClassWithDetector):
         Other parameters passed to the learning node.
     """
 
-    def __init__(self, stats, depth, splitter, change_detector,split_criterion = None, **kwargs):
-        super().__init__(stats, depth, splitter, change_detector, split_criterion,**kwargs)
+    def __init__(self, stats, depth, splitter, change_detector, split_criterion=None, **kwargs):
+        super().__init__(stats, depth, splitter, change_detector, split_criterion, **kwargs)
         self._mc_correct_weight = 0.0
         self._nb_correct_weight = 0.0
 
@@ -150,13 +149,10 @@ class LeafNaiveBayesAdaptiveWithDetector(LeafMajorityClassWithDetector):
                 else:
                     self.change_detector.update(detector_input_mc)
             else:
-                detector_input = self.split_criterion.purity(self.stats)
+                detector_input = self.split_criterion.current_merit(self.stats)
                 self.change_detector.update(detector_input)
             self.update_splitters(x, y, w, tree.nominal_attributes)
-        
-    
 
-        
     def prediction(self, x, *, tree=None):
         """Get the probabilities per class for a given instance.
 

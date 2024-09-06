@@ -31,11 +31,10 @@ class SplitCriterion(abc.ABC):
         -------
         Value of the merit of splitting
         """
-    
+
     @abc.abstractmethod
-    def purity(self, dist):
-        """Compute how pure (how close the distribution is to have only a single class)
-        the distribution is.
+    def current_merit(self, dist):
+        """Compute the merit of the distribution.
 
         Parameters
         ----------
@@ -44,7 +43,7 @@ class SplitCriterion(abc.ABC):
 
         Returns
         -------
-        Value of purity of the distribution according to the splitting merit
+        Value of merit of the distribution according to the splitting criterion
         """
 
     @staticmethod
