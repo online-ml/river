@@ -309,7 +309,7 @@ class LASTClassifier(HoeffdingTreeClassifier, base.Classifier):
           the instance and update the leaf node statistics.
         * Update the leaf change detector with (1 if the tree misclassified the instance,
           or 0 if it correctly classified) or the data distribution purity
-        * If growth is allowed, then attempt
+        * If growth is allowed then attempt
           to split.
         """
 

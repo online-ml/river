@@ -27,6 +27,9 @@ class IntraClusterVarianceReductionSplitCriterion(VarianceReductionSplitCriterio
                 icvr -= n_i / n * self.compute_var(dist)
         return icvr
 
+    def current_merit(self, dist):
+        return self.compute_var(dist)
+
     @staticmethod
     def compute_var(dist):
         icvr = [vr.get() for vr in dist.values()]

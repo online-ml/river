@@ -17,3 +17,9 @@
 ## tree
 
 - Instead of letting trees grow indefinitely, setting the `max_depth` parameter to `None` will stop the trees from growing when they reach the system recursion limit.
+
+-Added `LASTClassifier` (Local Adaptive Streaming Tree Classifier)
+
+## stream
+
+- `stream.iter_arff` now supports blank values (treated as missing values).
