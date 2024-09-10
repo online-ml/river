@@ -91,7 +91,6 @@ class OneHotEncoder(base.MiniBatchTransformer):
 
     >>> categories = {'c1': {'a', 'h'}, 'c2': {'x', 'e'}}
     >>> oh = preprocessing.OneHotEncoder(categories=categories)
-    >>> # oh = preprocessing.OneHotEncoder()
     >>> for x in X:
     ...     oh.learn_one(x)
     ...     pprint(oh.transform_one(x))
