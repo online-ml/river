@@ -226,6 +226,7 @@ class OneHotEncoder(base.MiniBatchTransformer):
     0     0     0     0     0
     1     1     0     0     1
     2     0     0     0     0
+    
     """
 
     def __init__(self, categories = "auto", drop_zeros=False, drop_first=False):
