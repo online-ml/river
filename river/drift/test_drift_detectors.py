@@ -28,8 +28,7 @@ data_stream_3 = np.concatenate(
 
 
 def test_adwin():
-    # expected_indices = [1055]
-    expected_indices = [1023] # DMVS - after fixing as MOA, the expected change point is different
+    expected_indices = [1023]
     detected_indices = perform_test(drift.ADWIN(), data_stream_1)
 
     assert detected_indices == expected_indices
