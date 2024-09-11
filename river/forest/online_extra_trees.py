@@ -614,7 +614,7 @@ class OXTRegressor(ExtraTrees, base.Regressor):
     >>> metric = metrics.RMSE()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    RMSE: 3.127311
+    RMSE: 3.16212
 
     References
     ----------

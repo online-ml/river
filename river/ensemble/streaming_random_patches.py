@@ -407,7 +407,7 @@ class SRPClassifier(BaseSRPEnsemble, base.Classifier):
     >>> metric = metrics.Accuracy()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    Accuracy: 71.97%
+    Accuracy: 72.17%
 
     Notes
     -----
