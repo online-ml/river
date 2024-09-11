@@ -10,6 +10,10 @@
 - Add `render_ascii` in `cluster.ODAC` to render the hierarchical cluster's structure in text format.
 - Work with `stats.Var` in `cluster.ODAC` when cluster has only one time series.
 
+## drift
+
+- Make `drift.ADWIN` comply with the reference MOA implementation.
+
 ## stats
 
 - Removed the unexported class `stats.CentralMoments`.
