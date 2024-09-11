@@ -65,7 +65,7 @@ def _iter_policies():
             yield policy(**params)
 
 
-@pytest.mark.parametrize(
+@pytest.mark.parametrize(  # type: ignore[misc]
     "policy,env",
     [
         pytest.param(
@@ -76,7 +76,7 @@ def _iter_policies():
         for env in _iter_envs()
     ],
 )
-@pytest.mark.skip(reason="flaky")
+@pytest.mark.skip(reason="flaky")  # type: ignore[misc]
 def test_better_than_random_policy(policy: bandit.base.Policy, env: gym.Env):
     """Test that the policy is better than random."""
 
