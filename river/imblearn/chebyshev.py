@@ -162,10 +162,10 @@ class ChebyshevOverSampler(base.Wrapper, base.Regressor):
     ...     metrics.MAE(),
     ...     print_every=500
     ... )
-    [500] MAE: 1.673902
-    [1,000] MAE: 1.743046
-    [1,001] MAE: 1.741335
-    MAE: 1.741335
+    [500] MAE: 1.629786
+    [1,000] MAE: 1.663799
+    [1,001] MAE: 1.66253
+    MAE: 1.66253
 
     References
     ----------
