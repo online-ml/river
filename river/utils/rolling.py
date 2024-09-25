@@ -14,7 +14,7 @@ class Rollable(typing.Protocol):
 
 
 class BaseRolling:
-    def __init__(self, obj: Rollable):
+    def __init__(self, obj: Rollable) -> None:
         if not isinstance(obj, Rollable):
             raise ValueError(f"{obj} does not satisfy the necessary protocol")
 
@@ -29,7 +29,7 @@ class BaseRolling:
     def __getitem__(self, idx):
         return self.obj[idx]
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return repr(self.obj)
 
 
@@ -67,7 +67,7 @@ class Rolling(BaseRolling):
 
     """
 
-    def __init__(self, obj: Rollable, window_size: int):
+    def __init__(self, obj: Rollable, window_size: int) -> None:
         super().__init__(obj)
         self.window: collections.deque = collections.deque(maxlen=window_size)
 
@@ -75,7 +75,7 @@ class Rolling(BaseRolling):
     def window_size(self):
         return self.window.maxlen
 
-    def update(self, *args, **kwargs):
+    def update(self, *args, **kwargs) -> None:
         if len(self.window) == self.window_size:
             self.obj.revert(*self.window[0][0], **self.window[0][1])
         self.obj.update(*args, **kwargs)
@@ -121,14 +121,14 @@ class TimeRolling(BaseRolling):
 
     """
 
-    def __init__(self, obj: Rollable, period: dt.timedelta):
+    def __init__(self, obj: Rollable, period: dt.timedelta) -> None:
         super().__init__(obj)
         self.period = period
         self._timestamps: list[dt.datetime] = []
         self._datum: list[typing.Any] = []
         self._latest = dt.datetime(1, 1, 1)
 
-    def update(self, *args, t: dt.datetime, **kwargs):
+    def update(self, *args, t: dt.datetime, **kwargs) -> None:
         self.obj.update(*args, **kwargs)
         i = bisect.bisect_left(self._timestamps, t)
         self._timestamps.insert(i, t)

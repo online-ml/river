@@ -316,7 +316,7 @@ def argmax(lst: list):
     return max(range(len(lst)), key=lst.__getitem__)
 
 
-def sherman_morrison(A: np.ndarray, u: np.ndarray, v: np.ndarray):
+def sherman_morrison(A: np.ndarray, u: np.ndarray, v: np.ndarray) -> None:
     """Sherman-Morrison formula.
 
     This is an inplace function.
@@ -337,7 +337,7 @@ def sherman_morrison(A: np.ndarray, u: np.ndarray, v: np.ndarray):
     sp.linalg.blas.dger(alpha, Au, v.T @ A, a=A, overwrite_a=1)
 
 
-def woodbury_matrix(A: np.ndarray, U: np.ndarray, V: np.ndarray):
+def woodbury_matrix(A: np.ndarray, U: np.ndarray, V: np.ndarray) -> None:
     """Woodbury matrix identity.
 
     This is an inplace function.

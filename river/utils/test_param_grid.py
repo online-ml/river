@@ -56,11 +56,11 @@ from river import compose, linear_model, optim, preprocessing, tree, utils
         ),
     ],
 )
-def test_expand_param_grid_count(model, param_grid, count):
+def test_expand_param_grid_count(model, param_grid, count) -> None:
     assert len(utils.expand_param_grid(model, param_grid)) == count
 
 
-def test_decision_tree_max_depth():
+def test_decision_tree_max_depth() -> None:
     model = tree.HoeffdingTreeClassifier()
 
     max_depths = [1, 2, 3, 4, 5, 6]

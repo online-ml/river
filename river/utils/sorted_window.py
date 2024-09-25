@@ -38,7 +38,7 @@ class SortedWindow(collections.UserList):
 
     """
 
-    def __init__(self, size: int):
+    def __init__(self, size: int) -> None:
         super().__init__()
         self.unsorted_window: collections.deque = collections.deque(maxlen=size)
 

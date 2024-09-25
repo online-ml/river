@@ -6,7 +6,7 @@ import pytest
 from river.utils import VectorDict
 
 
-def test_vectordict():
+def test_vectordict() -> None:
     # test empty init
     x = dict()
     vx = VectorDict()
