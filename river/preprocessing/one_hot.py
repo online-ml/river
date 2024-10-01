@@ -19,12 +19,26 @@ class OneHotEncoder(base.MiniBatchTransformer):
 
     Parameters
     ----------
+    categories
+        Categories (unique values) per feature:
+            `None` : Determine categories automatically from the training data.
+
+            dict of dicts : Expected categories for each feature. The outer dict maps each feature to its inner dict.
+            The inner dict maps each category to its code.
+
+        The used categories can be found in the `values` attribute.
     drop_zeros
         Whether or not 0s should be made explicit or not.
     drop_first
         Whether to get `k - 1` dummies out of `k` categorical levels by removing the first key.
         This is useful in some statistical models where perfectly collinear features cause
         problems.
+
+    Attributes
+    ----------
+    values
+        A dict of dicts. The outer dict maps each feature to its inner dict. The inner dict maps
+        each category to its code.
 
     Examples
     --------
@@ -157,6 +171,7 @@ class OneHotEncoder(base.MiniBatchTransformer):
     >>> from pprint import pprint
     >>> import random
     >>> import string
+    >>> import pandas as pd
 
     >>> random.seed(42)
     >>> alphabet = list(string.ascii_lowercase)
@@ -218,7 +233,7 @@ class OneHotEncoder(base.MiniBatchTransformer):
 
     >>> oh = preprocessing.OneHotEncoder(categories=categories)
 
-    # oh = preprocessing.OneHotEncoder()
+
     >>> oh.learn_many(X)
     >>> df = oh.transform_many(X)
     >>> df.sort_index(axis="columns")
@@ -226,15 +241,15 @@ class OneHotEncoder(base.MiniBatchTransformer):
     0     0     0     0     0
     1     1     0     0     1
     2     0     0     0     0
-    
+
     """
 
-    def __init__(self, categories = "auto", drop_zeros=False, drop_first=False):
+    def __init__(self, categories: dict | None = None, drop_zeros=False, drop_first=False):
         self.drop_zeros = drop_zeros
         self.drop_first = drop_first
         self.categories = categories
 
-        if self.categories == "auto":
+        if self.categories is None:
             self.values = collections.defaultdict(set)
         else:
             self.values = self.categories
@@ -245,7 +260,7 @@ class OneHotEncoder(base.MiniBatchTransformer):
 
         # NOTE: assume if category mappings are explicitly provided,
         # they're intended to be kept fixed.
-        if self.categories == "auto":
+        if self.categories is None:
             for i, xi in x.items():
                 if isinstance(xi, list) or isinstance(xi, set):
                     for xj in xi:
@@ -263,7 +278,7 @@ class OneHotEncoder(base.MiniBatchTransformer):
         # Add 1
         # NOTE: assume if category mappings are explicitly provided,
         # no other category values are allowed for output. Aligns with `sklearn` behavior.
-        if self.categories == "auto":
+        if self.categories is None:
             for i, xi in x.items():
                 if isinstance(xi, list) or isinstance(xi, set):
                     for xj in xi:
@@ -291,7 +306,7 @@ class OneHotEncoder(base.MiniBatchTransformer):
 
         # NOTE: assume if category mappings are explicitly provided,
         # they're intended to be kept fixed.
-        if self.categories == "auto":
+        if self.categories is None:
             for col in X.columns:
                 self.values[col].update(X[col].unique())
 
@@ -300,7 +315,7 @@ class OneHotEncoder(base.MiniBatchTransformer):
 
         # NOTE: assume if category mappings are explicitly provided,
         # no other category values are allowed for output. Aligns with `sklearn` behavior.
-        if self.categories != "auto":
+        if self.categories is not None:
             seen_in_the_past = {f"{col}_{val}" for col, vals in self.values.items() for val in vals}
             to_remove = set(oh.columns) - seen_in_the_past
             oh.drop(columns=list(to_remove), inplace=True)

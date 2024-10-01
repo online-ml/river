@@ -22,6 +22,14 @@ class OrdinalEncoder(base.MiniBatchTransformer):
 
     Parameters
     ----------
+    categories
+        Categories (unique values) per feature:
+            `None` : Determine categories automatically from the training data.
+
+            dict of dicts : Expected categories for each feature. The outer dict maps each feature to its inner dict.
+            The inner dict maps each category to its code.
+
+        The used categories can be found in the `values` attribute.
     unknown_value
         The value to use for unknown categories seen during `transform_one`. Unknown categories
         will be mapped to an integer once they are seen during `learn_one`. This value can be set
@@ -31,7 +39,7 @@ class OrdinalEncoder(base.MiniBatchTransformer):
 
     Attributes
     ----------
-    categories
+    values
         A dict of dicts. The outer dict maps each feature to its inner dict. The inner dict maps
         each category to its code.
 
@@ -107,7 +115,7 @@ class OrdinalEncoder(base.MiniBatchTransformer):
 
     def __init__(
         self,
-        categories = "auto",
+        categories: dict | None = None,
         unknown_value: int | None = 0,
         none_value: int = -1,
     ):
@@ -116,7 +124,7 @@ class OrdinalEncoder(base.MiniBatchTransformer):
         self.categories = categories
         self.values: collections.defaultdict | dict | None = None
 
-        if self.categories == "auto":
+        if self.categories is None:
             # We're going to have one auto-incrementing counter per feature. This counter will generate
             # the category codes for each feature.
             self._counters: collections.defaultdict = collections.defaultdict(
@@ -129,7 +137,6 @@ class OrdinalEncoder(base.MiniBatchTransformer):
         else:
             self.values = self.categories
 
-
     def transform_one(self, x):
         return {
             i: self.none_value if xi is None else self.values[i].get(xi, self.unknown_value)
@@ -137,7 +144,7 @@ class OrdinalEncoder(base.MiniBatchTransformer):
         }
 
     def learn_one(self, x):
-        if self.categories == "auto":
+        if self.categories is None:
             for i, xi in x.items():
                 if xi is not None and xi not in self.values[i]:
                     self.values[i][xi] = next(self._counters[i])
@@ -146,9 +153,7 @@ class OrdinalEncoder(base.MiniBatchTransformer):
         return pd.DataFrame(
             {
                 i: pd.Series(
-                    X[i]
-                    .map({**self.values[i], None: self.none_value})
-                    .fillna(self.unknown_value),
+                    X[i].map({**self.values[i], None: self.none_value}).fillna(self.unknown_value),
                     dtype=np.int64,
                 )
                 for i in X.columns
@@ -156,7 +161,7 @@ class OrdinalEncoder(base.MiniBatchTransformer):
         )
 
     def learn_many(self, X, y=None):
-        if self.categories == "auto":
+        if self.categories is None:
             for i in X.columns:
                 for xi in X[i].dropna().unique():
                     if xi not in self.values[i]:
