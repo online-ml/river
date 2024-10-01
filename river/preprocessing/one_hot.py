@@ -248,6 +248,7 @@ class OneHotEncoder(base.MiniBatchTransformer):
         self.drop_zeros = drop_zeros
         self.drop_first = drop_first
         self.categories = categories
+        self.values: collections.defaultdict | dict | None = None
 
         if self.categories is None:
             self.values = collections.defaultdict(set)
