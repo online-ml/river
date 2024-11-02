@@ -275,7 +275,7 @@ class Pipeline(base.Estimator):
     _LEARN_UNSUPERVISED_DURING_PREDICT = False
 
     def __init__(self, *steps) -> None:
-        self.steps = collections.OrderedDict()
+        self.steps: collections.OrderedDict = collections.OrderedDict()
         for step in steps:
             self |= step
 

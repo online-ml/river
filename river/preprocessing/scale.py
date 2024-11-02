@@ -154,9 +154,9 @@ class StandardScaler(base.MiniBatchTransformer):
 
     def __init__(self, with_std=True) -> None:
         self.with_std = with_std
-        self.counts = collections.Counter()
-        self.means = collections.defaultdict(float)
-        self.vars = collections.defaultdict(float)
+        self.counts: collections.Counter = collections.Counter()
+        self.means: collections.defaultdict = collections.defaultdict(float)
+        self.vars: collections.defaultdict = collections.defaultdict(float)
 
     def learn_one(self, x):
         for i, xi in x.items():
