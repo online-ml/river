@@ -4,10 +4,11 @@ import abc
 import typing
 from typing import Any
 
-from river import base, compose
+from river import base
 
 if typing.TYPE_CHECKING:
     import pandas as pd
+    from river import compose
 
 
 class BaseTransformer:

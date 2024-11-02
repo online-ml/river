@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 import abc
-from typing import Any
+from typing import Any, TYPE_CHECKING
 from collections.abc import Iterator
 
 from . import base
-from river import compose
+
+if TYPE_CHECKING:
+    from river import compose
 
 
 class Estimator(base.Base, abc.ABC):
