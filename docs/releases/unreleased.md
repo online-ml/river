@@ -12,3 +12,7 @@
 ## tree
 
 - Instead of letting trees grow indefinitely, setting the `max_depth` parameter to `None` will stop the trees from growing when they reach the system recursion limit.
+
+## preprocessing
+
+- Add support for expected categories in `preprocessing.OneHotEncoder`, `preprocessing.OrdinalEncoder`, akin to scikit-learn API for respective encoders.
