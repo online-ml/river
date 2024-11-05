@@ -1,11 +1,12 @@
 import numpy as np
 
+
 class RLS(object):
 
     def __init__(self, p: int, l: float, delta: float):
-        self.p = p
-        self.l = l
-        self.delta = delta
+        self.p = p  # Filter order
+        self.l = l  # Forgetting factor
+        self.delta = delta  # Value to initialise P(0)
 
         self.currentStep = 0
 
