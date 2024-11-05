@@ -1,40 +1,48 @@
 from __future__ import annotations
 
-from river import base
+from river import base, drift
 
-from .hoeffding_tree import HoeffdingTree
+from .hoeffding_tree_classifier import HoeffdingTreeClassifier
 from .nodes.branch import DTBranch
-from .nodes.htc_nodes import LeafMajorityClass, LeafNaiveBayes, LeafNaiveBayesAdaptive
+from .nodes.last_nodes import (
+    LeafMajorityClassWithDetector,
+    LeafNaiveBayesAdaptiveWithDetector,
+    LeafNaiveBayesWithDetector,
+)
 from .nodes.leaf import HTLeaf
 from .split_criterion import GiniSplitCriterion, HellingerDistanceCriterion, InfoGainSplitCriterion
-from .splitter import GaussianSplitter, Splitter
+from .splitter import Splitter
 
 
-class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
-    """Hoeffding Tree or Very Fast Decision Tree classifier.
+class LASTClassifier(HoeffdingTreeClassifier, base.Classifier):
+    """Local Adaptive Streaming Tree Classifier.
+
+    Local Adaptive Streaming Tree [^1] (LAST) is an incremental decision tree with
+    adaptive splitting mechanisms. LAST maintains a change detector at each leaf and splits
+    this node if a change is detected in the error or the leaf`s data distribution.
+
+    LAST is still not suitable for use as a base classifier in ensembles due to the change detectors.
+    The authors in [^1] are working on a version of LAST that overcomes this limitation.
 
     Parameters
     ----------
-    grace_period
-        Number of instances a leaf should observe between split attempts.
     max_depth
-        The maximum depth a tree can reach. If `None`, the tree will grow until
-          the system recursion limit.
+        The maximum depth a tree can reach. If `None`, the tree will grow until the system recursion limit.
     split_criterion
         Split criterion to use.</br>
         - 'gini' - Gini</br>
         - 'info_gain' - Information Gain</br>
         - 'hellinger' - Helinger Distance</br>
-    delta
-        Significance level to calculate the Hoeffding bound. The significance level is given by
-        `1 - delta`. Values closer to zero imply longer split decision delays.
-    tau
-        Threshold below which a split will be forced to break ties.
     leaf_prediction
         Prediction mechanism used at leafs.</br>
         - 'mc' - Majority Class</br>
         - 'nb' - Naive Bayes</br>
         - 'nba' - Naive Bayes Adaptive</br>
+    change_detector
+        Change detector that will be created at each leaf of the tree.
+    track_error
+        If True, the change detector will have binary inputs for error predictions,
+        otherwise the input will be the split criteria.
     nb_threshold
         Number of instances a leaf should observe before allowing Naive Bayes.
     nominal_attributes
@@ -59,7 +67,7 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
         smaller than this parameter value. This parameter avoids performing splits when most
         of the data belongs to a single class.
     max_size
-        The max size of the tree, in mebibytes (MiB).
+        The max size of the tree, in Megabytes (MB).
     memory_estimate_period
         Interval (number of processed instances) between memory consumption checks.
     stop_mem_management
@@ -69,29 +77,12 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
     merit_preprune
         If True, enable merit-based tree pre-pruning.
 
-    Notes
-    -----
-    A Hoeffding Tree [^1] is an incremental, anytime decision tree induction algorithm that is
-    capable of learning from massive data streams, assuming that the distribution generating
-    examples does not change over time. Hoeffding trees exploit the fact that a small sample can
-    often be enough to choose an optimal splitting attribute. This idea is supported mathematically
-    by the Hoeffding bound, which quantifies the number of observations (in our case, examples)
-    needed to estimate some statistics within a prescribed precision (in our case, the goodness of
-    an attribute).
-
-    A theoretically appealing feature of Hoeffding Trees not shared by other incremental decision
-    tree learners is that it has sound guarantees of performance. Using the Hoeffding bound one
-    can show that its output is asymptotically nearly identical to that of a non-incremental
-    learner using infinitely many examples. Implementation based on MOA [^2].
-
     References
     ----------
 
-    [^1]: G. Hulten, L. Spencer, and P. Domingos. Mining time-changing data streams.
-       In KDD’01, pages 97–106, San Francisco, CA, 2001. ACM Press.
-
-    [^2]: Albert Bifet, Geoff Holmes, Richard Kirkby, Bernhard Pfahringer.
-       MOA: Massive Online Analysis; Journal of Machine Learning Research 11: 1601-1604, 2010.
+    [^1]: Daniel Nowak Assis, Jean Paul Barddal, and Fabrício Enembreck.
+    Just Change on Change: Adaptive Splitting Time for Decision Trees in
+    Data Stream Classification . In Proceedings of ACM SAC Conference (SAC’24).
 
     Examples
     --------
@@ -101,40 +92,27 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
     >>> from river import metrics
     >>> from river import tree
 
-    >>> gen = synth.Agrawal(classification_function=0, seed=42)
-    >>> # Take 1000 instances from the infinite data generator
-    >>> dataset = iter(gen.take(1000))
+    >>> gen = synth.ConceptDriftStream(stream=synth.SEA(seed=42, variant=0),
+    ...                        drift_stream=synth.SEA(seed=42, variant=1),
+    ...                        seed=1, position=1500, width=50)
+    >>> dataset = iter(gen.take(3000))
 
-    >>> model = tree.HoeffdingTreeClassifier(
-    ...     grace_period=100,
-    ...     delta=1e-5,
-    ...     nominal_attributes=['elevel', 'car', 'zipcode']
-    ... )
+    >>> model = tree.LASTClassifier()
 
     >>> metric = metrics.Accuracy()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    Accuracy: 84.58%
+    Accuracy: 91.10%
+
     """
-
-    _GINI_SPLIT = "gini"
-    _INFO_GAIN_SPLIT = "info_gain"
-    _HELLINGER_SPLIT = "hellinger"
-    _VALID_SPLIT_CRITERIA = [_GINI_SPLIT, _INFO_GAIN_SPLIT, _HELLINGER_SPLIT]
-
-    _MAJORITY_CLASS = "mc"
-    _NAIVE_BAYES = "nb"
-    _NAIVE_BAYES_ADAPTIVE = "nba"
-    _VALID_LEAF_PREDICTION = [_MAJORITY_CLASS, _NAIVE_BAYES, _NAIVE_BAYES_ADAPTIVE]
 
     def __init__(
         self,
-        grace_period: int = 200,
         max_depth: int | None = None,
         split_criterion: str = "info_gain",
-        delta: float = 1e-7,
-        tau: float = 0.05,
         leaf_prediction: str = "nba",
+        change_detector: base.DriftDetector | None = None,
+        track_error: bool = True,
         nb_threshold: int = 0,
         nominal_attributes: list | None = None,
         splitter: Splitter | None = None,
@@ -148,58 +126,33 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
         merit_preprune: bool = True,
     ):
         super().__init__(
+            grace_period=1,  # no usage
             max_depth=max_depth,
+            split_criterion=split_criterion,
+            delta=1.0,  # no usage
+            tau=1,  # no usage
+            leaf_prediction=leaf_prediction,
+            nb_threshold=nb_threshold,
             binary_split=binary_split,
             max_size=max_size,
             memory_estimate_period=memory_estimate_period,
             stop_mem_management=stop_mem_management,
             remove_poor_attrs=remove_poor_attrs,
             merit_preprune=merit_preprune,
+            nominal_attributes=nominal_attributes,
+            splitter=splitter,
+            min_branch_fraction=min_branch_fraction,
+            max_share_to_split=max_share_to_split,
         )
-        self.grace_period = grace_period
-        self.split_criterion = split_criterion
-        self.delta = delta
-        self.tau = tau
-        self.leaf_prediction = leaf_prediction
-        self.nb_threshold = nb_threshold
-        self.nominal_attributes = nominal_attributes
-
-        if splitter is None:
-            self.splitter = GaussianSplitter()
-        else:
-            if not splitter.is_target_class:
-                raise ValueError("The chosen splitter cannot be used in classification tasks.")
-            self.splitter = splitter  # type: ignore
-
-        self.min_branch_fraction = min_branch_fraction
-        self.max_share_to_split = max_share_to_split
+        self.change_detector = change_detector if change_detector is not None else drift.ADWIN()
+        self.track_error = track_error
 
         # To keep track of the observed classes
         self.classes: set = set()
 
     @property
     def _mutable_attributes(self):
-        return {"grace_period", "delta", "tau"}
-
-    @HoeffdingTree.split_criterion.setter  # type: ignore
-    def split_criterion(self, split_criterion):
-        if split_criterion not in self._VALID_SPLIT_CRITERIA:
-            print(
-                f"Invalid split_criterion option {split_criterion}', will use default '{self._INFO_GAIN_SPLIT}'"
-            )
-            self._split_criterion = self._INFO_GAIN_SPLIT
-        else:
-            self._split_criterion = split_criterion
-
-    @HoeffdingTree.leaf_prediction.setter  # type: ignore
-    def leaf_prediction(self, leaf_prediction):
-        if leaf_prediction not in self._VALID_LEAF_PREDICTION:
-            print(
-                f"Invalid leaf_prediction option {leaf_prediction}', will use default '{self._NAIVE_BAYES_ADAPTIVE}'"
-            )
-            self._leaf_prediction = self._NAIVE_BAYES_ADAPTIVE
-        else:
-            self._leaf_prediction = leaf_prediction
+        return {}
 
     def _new_leaf(self, initial_stats=None, parent=None):
         if initial_stats is None:
@@ -210,11 +163,29 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
             depth = parent.depth + 1
 
         if self._leaf_prediction == self._MAJORITY_CLASS:
-            return LeafMajorityClass(initial_stats, depth, self.splitter)
+            return LeafMajorityClassWithDetector(
+                initial_stats,
+                depth,
+                self.splitter,
+                self.change_detector.clone(),
+                split_criterion=self._new_split_criterion() if not self.track_error else None,
+            )
         elif self._leaf_prediction == self._NAIVE_BAYES:
-            return LeafNaiveBayes(initial_stats, depth, self.splitter)
+            return LeafNaiveBayesWithDetector(
+                initial_stats,
+                depth,
+                self.splitter,
+                self.change_detector.clone(),
+                split_criterion=self._new_split_criterion() if not self.track_error else None,
+            )
         else:  # Naives Bayes Adaptive (default)
-            return LeafNaiveBayesAdaptive(initial_stats, depth, self.splitter)
+            return LeafNaiveBayesAdaptiveWithDetector(
+                initial_stats,
+                depth,
+                self.splitter,
+                self.change_detector.clone(),
+                split_criterion=self._new_split_criterion() if not self.track_error else None,
+            )
 
     def _new_split_criterion(self):
         if self._split_criterion == self._GINI_SPLIT:
@@ -222,6 +193,11 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
         elif self._split_criterion == self._INFO_GAIN_SPLIT:
             split_criterion = InfoGainSplitCriterion(self.min_branch_fraction)
         elif self._split_criterion == self._HELLINGER_SPLIT:
+            if not self.track_error:
+                raise ValueError(
+                    "The Heillinger distance cannot estimate the purity of a single distribution.\
+                                 Use another split criterion or set track_error to True"
+                )
             split_criterion = HellingerDistanceCriterion(self.min_branch_fraction)
         else:
             split_criterion = InfoGainSplitCriterion(self.min_branch_fraction)
@@ -233,9 +209,8 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
 
         If the samples seen so far are not from the same class then:
 
-        1. Find split candidates and select the top 2.
-        2. Compute the Hoeffding bound.
-        3. If the difference between the top 2 split candidates is larger than the Hoeffding bound:
+        1. Find split candidates and select the top 1.
+        2. If the top1 is greater than zero:
            3.1 Replace the leaf node by a split node (branch node).
            3.2 Add a new leaf node on each branch of the new split node.
            3.3 Update tree's metrics
@@ -257,36 +232,21 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
             split_criterion = self._new_split_criterion()
 
             best_split_suggestions = leaf.best_split_suggestions(split_criterion, self)
-            best_split_suggestions.sort()
             should_split = False
             if len(best_split_suggestions) < 2:
                 should_split = len(best_split_suggestions) > 0
             else:
-                hoeffding_bound = self._hoeffding_bound(
-                    split_criterion.range_of_merit(leaf.stats),
-                    self.delta,
-                    leaf.total_weight,
-                )
-                best_suggestion = best_split_suggestions[-1]
-                second_best_suggestion = best_split_suggestions[-2]
-                if (
-                    best_suggestion.merit - second_best_suggestion.merit > hoeffding_bound
-                    or hoeffding_bound < self.tau
-                ):
-                    should_split = True
+                best_suggestion = max(best_split_suggestions)
+                should_split = best_suggestion.merit > 0.0
                 if self.remove_poor_attrs:
                     poor_atts = set()
                     # Add any poor attribute to set
                     for suggestion in best_split_suggestions:
-                        if (
-                            suggestion.feature
-                            and best_suggestion.merit - suggestion.merit > hoeffding_bound
-                        ):
-                            poor_atts.add(suggestion.feature)
+                        poor_atts.add(suggestion.feature)
                     for poor_att in poor_atts:
                         leaf.disable_attribute(poor_att)
             if should_split:
-                split_decision = best_split_suggestions[-1]
+                split_decision = max(best_split_suggestions)
                 if split_decision.feature is None:
                     # Pre-pruning - null wins
                     leaf.deactivate()
@@ -334,8 +294,9 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
         * If the tree is empty, create a leaf node as the root.
         * If the tree is already initialized, find the corresponding leaf for
           the instance and update the leaf node statistics.
-        * If growth is allowed and the number of instances that the leaf has
-          observed between split attempts exceed the grace period then attempt
+        * Update the leaf change detector with (1 if the tree misclassified the instance,
+          or 0 if it correctly classified) or the data distribution purity
+        * If growth is allowed then attempt
           to split.
         """
 
@@ -370,8 +331,8 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
                     self._n_inactive_leaves += 1
                 else:
                     weight_seen = node.total_weight
-                    weight_diff = weight_seen - node.last_split_attempt_at
-                    if weight_diff >= self.grace_period:
+                    # check if the change detector triggered a change
+                    if node.change_detector.drift_detected:
                         p_branch = p_node.branch_no(x) if isinstance(p_node, DTBranch) else None
                         self._attempt_to_split(node, p_node, p_branch)
                         node.last_split_attempt_at = weight_seen
@@ -400,18 +361,3 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
 
         if self._train_weight_seen_by_model % self.memory_estimate_period == 0:
             self._estimate_model_size()
-
-    def predict_proba_one(self, x):
-        proba = {c: 0.0 for c in sorted(self.classes)}
-        if self._root is not None:
-            if isinstance(self._root, DTBranch):
-                leaf = self._root.traverse(x, until_leaf=True)
-            else:
-                leaf = self._root
-
-            proba.update(leaf.prediction(x, tree=self))
-        return proba
-
-    @property
-    def _multiclass(self):
-        return True

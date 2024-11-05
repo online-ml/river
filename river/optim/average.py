@@ -6,7 +6,6 @@ from river import optim
 
 
 class Averager(optim.base.Optimizer):
-
     """Averaged stochastic gradient descent.
 
     This is a wrapper that can be applied to any stochastic gradient descent optimiser. Note that

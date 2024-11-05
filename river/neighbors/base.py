@@ -7,8 +7,7 @@ from river import base
 
 
 class DistanceFunc(typing.Protocol):
-    def __call__(self, a: typing.Any, b: typing.Any, **kwargs) -> float:
-        ...
+    def __call__(self, a: typing.Any, b: typing.Any, **kwargs) -> float: ...
 
 
 class FunctionWrapper:
@@ -38,7 +37,7 @@ class BaseNN(base.Estimator, abc.ABC):
         self.dist_func = dist_func
 
     @abc.abstractmethod
-    def append(self, item: typing.Any, **kwargs):
+    def append(self, item: typing.Any, **kwargs) -> None:
         pass
 
     @abc.abstractmethod

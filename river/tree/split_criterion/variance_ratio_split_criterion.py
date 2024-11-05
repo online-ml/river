@@ -34,6 +34,9 @@ class VarianceRatioSplitCriterion(SplitCriterion):
                 vr -= (n_i / n) * (self.compute_var(post_split_dist[i]) / var)
         return vr
 
+    def current_merit(self, dist):
+        return self.compute_var(dist)
+
     @staticmethod
     def compute_var(dist):
         return dist.get()

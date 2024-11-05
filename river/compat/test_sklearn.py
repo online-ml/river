@@ -10,7 +10,7 @@ from river import base, cluster, compat, linear_model, preprocessing
 
 
 @pytest.mark.parametrize(
-    "estimator",
+    "estimator",  # type: ignore[misc]
     [
         pytest.param(estimator, id=str(estimator))
         for estimator in [
@@ -21,7 +21,7 @@ from river import base, cluster, compat, linear_model, preprocessing
         ]
     ],
 )
-@pytest.mark.filterwarnings("ignore::sklearn.utils.estimator_checks.SkipTestWarning")
+@pytest.mark.filterwarnings("ignore::sklearn.utils.estimator_checks.SkipTestWarning")  # type: ignore[misc]
 def test_river_to_sklearn_check_estimator(estimator: base.Estimator):
     skl_estimator = compat.convert_river_to_sklearn(estimator)
     estimator_checks.check_estimator(skl_estimator)

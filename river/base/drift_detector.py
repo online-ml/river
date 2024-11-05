@@ -5,6 +5,7 @@ and are exposed through the corresponding properties. This is done for documenta
 purposes. The properties are not meant to be modified by the user.
 
 """
+
 from __future__ import annotations
 
 import abc
@@ -76,7 +77,7 @@ class BinaryDriftDetector(_BaseDriftDetector):
     """A drift detector for binary data."""
 
     @abc.abstractmethod
-    def update(self, x: bool) -> BinaryDriftDetector:
+    def update(self, x: bool) -> None:
         """Update the detector with a single boolean input.
 
         Parameters

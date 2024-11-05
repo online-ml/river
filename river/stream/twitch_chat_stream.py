@@ -145,7 +145,7 @@ class TwitchChatStream:
                     continue
                 resp = data.decode(ENCODING)
                 now = dt.datetime.now()
-            except socket.timeout as e:
+            except TimeoutError as e:
                 raise TimeoutError(f"Twitch did not respond in {self.timeout:,d} seconds") from e
             except UnicodeDecodeError:
                 continue

@@ -407,7 +407,7 @@ class SRPClassifier(BaseSRPEnsemble, base.Classifier):
     >>> metric = metrics.Accuracy()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    Accuracy: 71.97%
+    Accuracy: 72.17%
 
     Notes
     -----
@@ -550,7 +550,10 @@ class BaseSRPClassifier(BaseSRPEstimator):
             # Note: Pass the original instance x so features are correctly
             # selected based on the corresponding subspace
             self._background_learner.learn_one(
-                x=x, y=y, w=w, n_samples_seen=n_samples_seen  # type: ignore
+                x=x,
+                y=y,  # type: ignore[arg-type]
+                w=w,
+                n_samples_seen=n_samples_seen,  # type: ignore
             )
 
         if not self.disable_drift_detector and not self.is_background_learner:
@@ -858,7 +861,10 @@ class BaseSRPRegressor(BaseSRPEstimator):
             # Note: Pass the original instance x so features are correctly
             # selected based on the corresponding subspace
             self._background_learner.learn_one(
-                x=x, y=y, w=w, n_samples_seen=n_samples_seen  # type: ignore
+                x=x,
+                y=y,  # type: ignore[arg-type]
+                w=w,
+                n_samples_seen=n_samples_seen,  # type: ignore
             )
 
         if not self.disable_drift_detector and not self.is_background_learner:

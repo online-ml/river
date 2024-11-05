@@ -52,9 +52,9 @@ class RandomPolicy(bandit.base.Policy):
 
     def __init__(self, reward_obj=None, burn_in=0, seed: int | None = None):
         super().__init__(reward_obj, burn_in)
-        self._posteriors: collections.defaultdict[
-            bandit.base.ArmID, proba.Beta
-        ] = collections.defaultdict(proba.Beta)
+        self._posteriors: collections.defaultdict[bandit.base.ArmID, proba.Beta] = (
+            collections.defaultdict(proba.Beta)
+        )
         self.seed = seed
         self._rng = random.Random(seed)
 

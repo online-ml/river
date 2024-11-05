@@ -32,6 +32,20 @@ class SplitCriterion(abc.ABC):
         Value of the merit of splitting
         """
 
+    @abc.abstractmethod
+    def current_merit(self, dist):
+        """Compute the merit of the distribution.
+
+        Parameters
+        ----------
+        dist
+            The data distribution.
+
+        Returns
+        -------
+        Value of merit of the distribution according to the splitting criterion
+        """
+
     @staticmethod
     @abc.abstractmethod
     def range_of_merit(pre_split_dist):

@@ -80,7 +80,7 @@ class PredictiveAnomalyDetection(anomaly.base.SupervisedAnomalyDetector):
 
     >>> for t, (x, y) in enumerate(datasets.AirlinePassengers()):
     ...     score = PAD.score_one(None, y)
-    ...     PAD = PAD.learn_one(None, y)
+    ...     PAD.learn_one(None, y)
     ...     scores.append(score)
 
     >>> print(scores[-1])
@@ -100,7 +100,6 @@ class PredictiveAnomalyDetection(anomaly.base.SupervisedAnomalyDetector):
         n_std: float = 3.0,
         warmup_period: int = 0,
     ):
-
         self.predictive_model = (
             predictive_model
             if predictive_model is not None
@@ -123,9 +122,7 @@ class PredictiveAnomalyDetection(anomaly.base.SupervisedAnomalyDetector):
         self.iter += 1
 
         # Check whether the model is a time-series forecasting or regression/classification model
-        if isinstance(
-            self.predictive_model, time_series.base.Forecaster
-        ) and isinstance(y, float):
+        if isinstance(self.predictive_model, time_series.base.Forecaster) and isinstance(y, float):
             # When there's no data point as dict of features, the target will be passed
             # to the forecaster as an exogenous variable.
             if not x:
@@ -134,7 +131,6 @@ class PredictiveAnomalyDetection(anomaly.base.SupervisedAnomalyDetector):
                 self.predictive_model.learn_one(y=y, x=x)
         else:
             self.predictive_model.learn_one(x=x, y=y)
-        return self
 
     def score_one(self, x: dict, y: base.typing.Target):
         # Return the predicted value of x from the predictive model, first by checking whether

@@ -4,6 +4,7 @@ Also known as *lazy* methods. In these methods, generalisation of the training d
 until a query is received.
 
 """
+
 from __future__ import annotations
 
 from .ann import SWINN

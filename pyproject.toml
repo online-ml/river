@@ -37,10 +37,10 @@ pandas = "^2.1"
 graphviz = "^0.20.1"
 gymnasium = "^0.29.0"
 matplotlib = "^3.0.2"
-mypy = "^1.6.1"
+mypy = "^1.11.1"
 pre-commit = "^3.5.0"
 pytest = "^7.4.2"
-ruff = "^0.1.1"
+ruff = "^0.4.10"
 scikit-learn = "^1.3.1"
 sqlalchemy = "^2.0.22"
 sympy = "^1.10.1"
@@ -117,20 +117,37 @@ markers = [
 ]
 
 [tool.ruff]
-select = ["E", "F", "I", "UP"]  # https://beta.ruff.rs/docs/rules/
 line-length = 100
 target-version = 'py310'
-ignore = ["E501"]
+extend-include = ["*.ipynb"]
 
-[tool.ruff.isort]
+[tool.ruff.lint]
+select = [
+    # pycodestyle
+    "E",
+    # Pyflakes
+    "F",
+    # pyupgrade
+    "UP",
+    # isort
+    "I",
+]
+ignore = ["E501"]
+fixable = ["ALL"]
+
+[tool.ruff.lint.isort]
 required-imports = ["from __future__ import annotations"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
 
 [tool.mypy]
 files = "river"
+strict = true
 
 [[tool.mypy.overrides]]
 module = [
-    "river.*",
     "mmh3.*",
     "numpy.*",
     "sklearn.*",
@@ -141,6 +158,65 @@ module = [
     "vaex.*",
     "torch.*",
     "sqlalchemy.*",
-    "requests.*"
+    "requests.*",
+    "gymnasium.*",
+    "sympy.*",
+    "polars.*"
 ]
 ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+# Disable strict mode for all non fully-typed modules
+module = [
+    "river.base.*",
+    "river.metrics.*",
+    "river.utils.*",
+    "river.stats.*",
+    "river.optim.*",
+    "river.datasets.*",
+    "river.tree.*",
+    "river.preprocessing.*",
+    "river.stream.*",
+    "river.linear_model.*",
+    "river.evaluate.*",
+    "river.drift.*",
+    "river.compose.*",
+    "river.bandit.*",
+    "river.cluster.*",
+    "river.anomaly.*",
+    "river.time_series.*",
+    "river.feature_extraction.*",
+    "river.ensemble.*",
+    "river.proba.*",
+    "river.multioutput.*",
+    "river.naive_bayes.*",
+    "river.checks.*",
+    "river.rules.*",
+    "river.model_selection.*",
+    "river.forest.*",
+    "river.neighbors.*",
+    "river.sketch.*",
+    "river.facto.*",
+    "river.covariance.*",
+    "river.compat.*",
+    "river.multiclass.*",
+    "river.reco.*",
+    "river.imblearn.*",
+    "river.feature_selection.*",
+    "river.misc.*",
+    "river.active.*",
+    "river.conf.*",
+    "river.neural_net.*",
+    "river.test_estimators",
+    "river.dummy",
+]
+# The strict option is global, the checks must be disabled one by one
+warn_unused_ignores = false
+check_untyped_defs = false
+allow_subclassing_any = true
+allow_any_generics = true
+allow_untyped_calls = true
+allow_incomplete_defs = true
+allow_untyped_defs = true
+implicit_reexport = true
+warn_return_any = false

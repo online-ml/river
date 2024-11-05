@@ -9,8 +9,7 @@ from river import time_series
 __all__ = ["HoltWinters"]
 
 
-class Component(deque):
-    ...
+class Component(deque): ...
 
 
 class AdditiveLevel(Component):

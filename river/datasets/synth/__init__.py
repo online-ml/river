@@ -5,6 +5,7 @@ store the data and each data sample is generated on the fly. Except for a couple
 the majority of these methods are infinite data generators.
 
 """
+
 from __future__ import annotations
 
 from .agrawal import Agrawal

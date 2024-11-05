@@ -1,6 +1,7 @@
 # Unreleased
 
 - The units used in River have been corrected to be based on powers of 2 (KiB, MiB). This only changes the display, the behaviour is unchanged.
+- The methods `learn_one`, `learn_many`, `update`, `revert`, and `append` now return `None`.
 
 ## cluster
 
@@ -9,9 +10,22 @@
 - Add `render_ascii` in `cluster.ODAC` to render the hierarchical cluster's structure in text format.
 - Work with `stats.Var` in `cluster.ODAC` when cluster has only one time series.
 
+## drift
+
+- Make `drift.ADWIN` comply with the reference MOA implementation.
+
+## stats
+
+- Removed the unexported class `stats.CentralMoments`.
+
 ## tree
 
 - Instead of letting trees grow indefinitely, setting the `max_depth` parameter to `None` will stop the trees from growing when they reach the system recursion limit.
+- Added `tree.LASTClassifier` (Local Adaptive Streaming Tree Classifier).
+
+## stream
+
+- `stream.iter_arff` now supports blank values (treated as missing values).
 
 ## preprocessing
 
