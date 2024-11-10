@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import functools
-import numpy as np
 
 from river import base, utils
 from river.neighbors.base import DistanceFunc, FunctionWrapper
@@ -9,7 +8,7 @@ from river.neighbors.base import DistanceFunc, FunctionWrapper
 
 # Node of a binary tree for Hierarchical Clustering
 class BinaryTreeNode:
-    def __init__(self, key: int, data: np.ndarray = None):
+    def __init__(self, key: int, data: dict = None):
         self.data = data
         self.key = key
         # Children and parent
@@ -61,7 +60,7 @@ class HierarchicalClustering(base.Clusterer):
     >>> from river import cluster
     >>> from river import stream
 
-    >>> X = [[1, 1, 1], [1, 1, 0], [20, 20, 20], [20, 20, 20.1], [0 , 1, 1]]
+    >>> X = [[1, 2, 1], [2, 1, 0], [3, 2, 1], [2, 2, 1], [5, 2, 3]]
 
     >>> hierarchical_clustering = cluster.HierarchicalClustering()
 
@@ -69,43 +68,55 @@ class HierarchicalClustering(base.Clusterer):
     ...     hierarchical_clustering = hierarchical_clustering.learn_one(x)
 
     >>> hierarchical_clustering.x_clusters
-    {'[1 1 1]': 1, '[1 1 0]': 2, '[20 20 20]': 4, '[20.  20.  20.1]': 6, '[0 1 1]': 8}
+    {'[1, 2, 1]': 1, '[2, 1, 0]': 2, '[3, 2, 1]': 4, '[2, 2, 1]': 6, '[5, 2, 3]': 8}
 
     >>> hierarchical_clustering.n
     9
 
     >>> print(hierarchical_clustering)
-            -> 6
-        -> 7
-            -> 4
-    -> 5
-            -> 8
-        -> 9
+        -> 8
+    -> 9
+                -> 6
+            -> 7
+                -> 4
+        -> 5
                 -> 2
             -> 3
                 -> 1
     Printed Hierarchical Clustering Tree.
 
     >>> hierarchical_clustering.get_all_clusters()
-    [(1, [array([1, 1, 1])]), (2, [array([1, 1, 0])]), (4, [array([20, 20, 20])]), (6, [array([20. , 20. , 20.1])]), (8, [array([0, 1, 1])]), (3, [1, 2]), (5, [9, 7]), (7, [4, 6]), (9, [3, 8])]
+    [(1, ['[1, 2, 1]']),
+    (2, ['[2, 1, 0]']),
+    (4, ['[3, 2, 1]']),
+    (6, ['[2, 2, 1]']),
+    (8, ['[5, 2, 3]']),
+    (3, [1, 2]),
+    (5, [3, 7]),
+    (7, [4, 6]),
+    (9, [5, 8])]
 
     >>> hierarchical_clustering.get_clusters_by_point()
-    {'[1 1 1]': [1, 3, 9, 5], '[1 1 0]': [2, 3, 9, 5], '[20 20 20]': [4, 7, 5], '[20.  20.  20.1]': [6, 7, 5], '[0 1 1]': [8, 9, 5]}
+    {'[1, 2, 1]': [1, 3, 5, 9],
+    '[2, 1, 0]': [2, 3, 5, 9],
+    '[3, 2, 1]': [4, 7, 5, 9],
+    '[2, 2, 1]': [6, 7, 5, 9],
+    '[5, 2, 3]': [8, 9]}
 
-    >>> hierarchical_clustering.predict_one({0 : 20.1, 1: 20, 2: 20 })
-    ([10, 11, 5], 7)
+    >>> hierarchical_clustering.predict_one({0: 4, 1: 3, 2: 1})
+    ([10, 11, 9], 8)
 
-    >>> hierarchical_clustering = hierarchical_clustering.learn_one({0: 20.1, 1: 20, 2: 20})
+    >>> hierarchical_clustering = hierarchical_clustering.learn_one({0: 4, 1: 3, 2: 1})
 
     >>> print(hierarchical_clustering)
             -> 10
         -> 11
+            -> 8
+    -> 9
                 -> 6
             -> 7
                 -> 4
-    -> 5
-            -> 8
-        -> 9
+        -> 5
                 -> 2
             -> 3
                 -> 1
@@ -117,7 +128,7 @@ class HierarchicalClustering(base.Clusterer):
     ...     hierarchical_clustering = hierarchical_clustering.learn_one(x)
 
     >>> hierarchical_clustering.x_clusters
-    {'[20.  20.  20.1]': 2, '[0 1 1]': 1}
+    {'[2, 2, 1]': 2, '[5, 2, 3]': 1}
 
     >>> hierarchical_clustering.n
     3
@@ -152,7 +163,7 @@ class HierarchicalClustering(base.Clusterer):
     def otd_clustering(self, tree, x):
         # Online top down clustering (OTD), the first algorithm for online hierarchical clustering.
         # The algorithm performs highly efficient online updates and provably approximates Moseley-Wang revenue.
-        x_string = np.array2string(x)
+        x_string = str(list(x.values()))
         if self.n == 1:
             # First node in the tree
             self.root = self.nodes[1]
@@ -207,7 +218,6 @@ class HierarchicalClustering(base.Clusterer):
             self.root = self.nodes[self.n]
 
     def learn_one(self, x):
-        x = utils.dict2numpy(x)
         # We create the node for x and add it to the tree
         if len(self.x_clusters.keys()) >= self.window_size:
             # Delete the oldest data point and add a node with the same key as the one deleted
@@ -219,12 +229,12 @@ class HierarchicalClustering(base.Clusterer):
                 oldest.parent.right = None
             del self.nodes[oldest_key]
             del self.x_clusters[list(self.x_clusters.keys())[0]]
-            self.x_clusters[np.array2string(x)] = oldest_key
+            self.x_clusters[str(list(x.values()))] = oldest_key
             self.nodes[oldest_key] = BinaryTreeNode(oldest_key, x)
         else:
             # Else, add a node
             self.n += 1
-            self.x_clusters[np.array2string(x)] = self.n
+            self.x_clusters[str(list(x.values()))] = self.n
             self.nodes[self.n] = BinaryTreeNode(self.n, x)
         # We add it to the tree
         self.otd_clustering(self.root, x)
@@ -270,7 +280,6 @@ class HierarchicalClustering(base.Clusterer):
             A list of clusters (from node `x` to root) and the node to which it would have been merged.
 
         """
-        x = utils.dict2numpy(x)
         # We predict to which cluster x would be if we added in the tree
         r, merged = self.predict_otd(x, self.root, [])
         r.reverse()
@@ -319,7 +328,7 @@ class HierarchicalClustering(base.Clusterer):
         for i, w_i in enumerate(leaves_a):
             for j, w_j in enumerate(leaves_b):
                 nb += 1
-                r += self.dist_func(utils.numpy2dict(w_i.data), utils.numpy2dict(w_j.data))
+                r += self.dist_func(w_i.data, w_j.data)
         return r / nb
 
     def intra_subtree_similarity(self, tree):
@@ -333,7 +342,7 @@ class HierarchicalClustering(base.Clusterer):
             for j, w_j in enumerate(leaves):
                 if i < j:
                     nb += 1
-                    r += self.dist_func(utils.numpy2dict(w_i.data), utils.numpy2dict(w_j.data))
+                    r += self.dist_func(w_i.data, w_j.data)
         return r / nb
 
     def __str__(self):
@@ -383,7 +392,7 @@ class HierarchicalClustering(base.Clusterer):
         clusters = {}
         for i in range(1, self.n + 1):
             if self.nodes[i].data is not None:
-                clusters[i] = [self.nodes[i].data]
+                clusters[i] = [str(list(self.nodes[i].data.values()))]
             else:
                 clusters[i] = [self.nodes[i].left.key, self.nodes[i].right.key]
         return sorted(clusters.items(), key=lambda x: len(x[1]))
