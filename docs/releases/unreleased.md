@@ -1,5 +1,4 @@
-## cluster
-- Added `cluster.HierarchicalClustering`.
+# Unreleased
 
 - The units used in River have been corrected to be based on powers of 2 (KiB, MiB). This only changes the display, the behaviour is unchanged.
 - The methods `learn_one`, `learn_many`, `update`, `revert`, and `append` now return `None`.
@@ -10,7 +9,6 @@
 - Change `draw` in `cluster.ODAC` to draw the hierarchical cluster's structure as a Graphviz graph.
 - Add `render_ascii` in `cluster.ODAC` to render the hierarchical cluster's structure in text format.
 - Work with `stats.Var` in `cluster.ODAC` when cluster has only one time series.
-- Added `cluster.HierarchicalClustering`.
 
 ## drift
 

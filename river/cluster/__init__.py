@@ -10,12 +10,4 @@ from .odac import ODAC
 from .streamkmeans import STREAMKMeans
 from .textclust import TextClust
 
-__all__ = [
-    "CluStream",
-    "DBSTREAM",
-    "DenStream",
-    "KMeans",
-    "ODAC",
-    "STREAMKMeans",
-    "TextClust",
-]
+__all__ = ["CluStream", "DBSTREAM", "DenStream", "KMeans", "ODAC", "STREAMKMeans", "TextClust"]
