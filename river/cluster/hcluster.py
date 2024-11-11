@@ -68,7 +68,11 @@ class HierarchicalClustering(base.Clusterer):
     ...     hierarchical_clustering = hierarchical_clustering.learn_one(x)
 
     >>> hierarchical_clustering.x_clusters
-    {'[1, 2, 1]': 1, '[2, 1, 0]': 2, '[3, 2, 1]': 4, '[2, 2, 1]': 6, '[5, 2, 3]': 8}
+    {'[1, 2, 1]': 1,
+    '[2, 1, 0]': 2,
+    '[3, 2, 1]': 4,
+    '[2, 2, 1]': 6,
+    '[5, 2, 3]': 8}
 
     >>> hierarchical_clustering.n
     9
