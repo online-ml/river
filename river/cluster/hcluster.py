@@ -107,10 +107,10 @@ class HierarchicalClustering(base.Clusterer):
     '[2, 2, 1]': [6, 7, 5, 9],
     '[5, 2, 3]': [8, 9]}
 
-    >>> hierarchical_clustering.predict_one({0: 4, 1: 3, 2: 1})
+    >>> hierarchical_clustering.predict_one({0: 3, 1: 3, 2: 3})
     ([10, 11, 9], 8)
 
-    >>> hierarchical_clustering = hierarchical_clustering.learn_one({0: 4, 1: 3, 2: 1})
+    >>> hierarchical_clustering = hierarchical_clustering.learn_one({0: 3, 1: 3, 2: 3})
 
     >>> print(hierarchical_clustering)
             -> 10
