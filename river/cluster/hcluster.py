@@ -60,7 +60,7 @@ class HierarchicalClustering(base.Clusterer):
     >>> from river import cluster
     >>> from river import stream
 
-    >>> X = [[1, 2, 1], [2, 1, 0], [3, 2, 1], [2, 2, 1], [5, 2, 3]]
+    >>> X = [[1, 2, 1], [2, 1, 0], [3, 2, 1], [2, 2, 1], [4, 4, 4]]
 
     >>> hierarchical_clustering = cluster.HierarchicalClustering()
 
@@ -72,7 +72,7 @@ class HierarchicalClustering(base.Clusterer):
     '[2, 1, 0]': 2,
     '[3, 2, 1]': 4,
     '[2, 2, 1]': 6,
-    '[5, 2, 3]': 8}
+    '[4, 4, 4]': 8}
 
     >>> hierarchical_clustering.n
     9
@@ -94,7 +94,7 @@ class HierarchicalClustering(base.Clusterer):
     (2, ['[2, 1, 0]']),
     (4, ['[3, 2, 1]']),
     (6, ['[2, 2, 1]']),
-    (8, ['[5, 2, 3]']),
+    (8, ['[4, 4, 4]']),
     (3, [1, 2]),
     (5, [3, 7]),
     (7, [4, 6]),
@@ -105,7 +105,7 @@ class HierarchicalClustering(base.Clusterer):
     '[2, 1, 0]': [2, 3, 5, 9],
     '[3, 2, 1]': [4, 7, 5, 9],
     '[2, 2, 1]': [6, 7, 5, 9],
-    '[5, 2, 3]': [8, 9]}
+    '[4, 4, 4]': [8, 9]}
 
     >>> hierarchical_clustering.predict_one({0: 3, 1: 3, 2: 3})
     ([10, 11, 9], 8)
@@ -132,7 +132,7 @@ class HierarchicalClustering(base.Clusterer):
     ...     hierarchical_clustering = hierarchical_clustering.learn_one(x)
 
     >>> hierarchical_clustering.x_clusters
-    {'[2, 2, 1]': 2, '[5, 2, 3]': 1}
+    {'[2, 2, 1]': 2, '[4, 4, 4]': 1}
 
     >>> hierarchical_clustering.n
     3
