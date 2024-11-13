@@ -10,11 +10,8 @@ from .log_reg import LogisticRegression
 from .pa import PAClassifier, PARegressor
 from .perceptron import Perceptron
 from .softmax import SoftmaxRegression
-<<<<<<< Updated upstream
-=======
 from .rls import RLS
 from .incrementalAUC import IncrementalAUC
->>>>>>> Stashed changes
 
 __all__ = [
     "base",
@@ -26,9 +23,6 @@ __all__ = [
     "PARegressor",
     "Perceptron",
     "SoftmaxRegression",
-<<<<<<< Updated upstream
-=======
     "RLS",
     "IncrementalAUC",
->>>>>>> Stashed changes
 ]
