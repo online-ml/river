@@ -35,7 +35,7 @@ script = "build.py"
 
 [tool.poetry.dependencies]
 python = "^3.9"
-numpy = "^1.23.0"
+numpy = ">=1.23.0"
 scipy = "^1.12.1"
 pandas = "^2.1"
 
