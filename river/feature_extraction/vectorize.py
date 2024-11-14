@@ -489,3 +489,12 @@ class TFIDF(BagOfWords):
             norm = math.sqrt(sum(tfidf**2 for tfidf in tfidfs.values()))
             return {term: tfidf / norm for term, tfidf in tfidfs.items()}
         return tfidfs
+
+    # Mini-batch methods should be done well™ and not just be a loop over the *_one equivalent.
+    def learn_many(self, X):
+        "Not available, will raise an exception."
+        raise NotImplementedError
+
+    def transform_many(self, X):
+        "Not available, will raise an exception."
+        raise NotImplementedError
