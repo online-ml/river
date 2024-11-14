@@ -451,6 +451,8 @@ class TFIDF(BagOfWords):
         strip_accents=True,
         lowercase=True,
         preprocessor: typing.Callable | None = None,
+        stop_words: set[str] | None = None,
+        tokenizer_pattern=r"(?u)\b\w[\w\-]+\b",
         tokenizer: typing.Callable | None = None,
         ngram_range=(1, 1),
     ):
@@ -459,6 +461,8 @@ class TFIDF(BagOfWords):
             strip_accents=strip_accents,
             lowercase=lowercase,
             preprocessor=preprocessor,
+            stop_words=stop_words,
+            tokenizer_pattern=tokenizer_pattern,
             tokenizer=tokenizer,
             ngram_range=ngram_range,
         )
