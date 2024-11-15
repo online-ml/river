@@ -26,7 +26,7 @@ runs:
       uses: actions/cache@v4
       with:
         path: ~/.local # the path depends on the OS
-        key: poetry-3 # increment to reset cache
+        key: poetry-4 # increment to reset cache
 
     - name: Install poetry
       uses: snok/install-poetry@v1
@@ -40,7 +40,7 @@ runs:
       uses: actions/cache@v4
       with:
         path: .venv
-        key: venv-${{ runner.os }}-${{ steps.set-up-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}-1 # increment to reset cache
+        key: venv-${{ runner.os }}-${{ steps.set-up-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
 
     - name: Install dependencies
       shell: bash
