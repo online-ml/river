@@ -236,12 +236,12 @@ class CluStream(base.Clusterer):
 
         if closest_dist < radius:
             closest_mc.insert(x, w, self._timestamp)
-            return
+        else:
 
-        # If the new point does not fit in the micro-cluster, micro-clusters
-        # whose relevance stamps are less than the threshold are deleted.
-        # Otherwise, closest micro-clusters are merged with each other.
-        self._maintain_micro_clusters(x=x, w=w)
+            # If the new point does not fit in the micro-cluster, micro-clusters
+            # whose relevance stamps are less than the threshold are deleted.
+            # Otherwise, closest micro-clusters are merged with each other.
+            self._maintain_micro_clusters(x=x, w=w)
 
         # Apply incremental K-Means on micro-clusters after each time_gap
         if self._timestamp % self.time_gap == self.time_gap - 1:
