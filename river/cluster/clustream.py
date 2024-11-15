@@ -260,7 +260,7 @@ class CluStream(base.Clusterer):
     def predict_one(self, x):
         index, _ = self._get_closest_mc(x)
         try:
-            return self._kmeans_mc.predict_one(self._mc_centers[index])
+            return self._kmeans_mc.predict_one(self.micro_clusters[index].center)
         except (KeyError, AttributeError):
             return 0
 
