@@ -35,8 +35,10 @@ from .transformer import (
     Transformer,
 )
 from .wrapper import Wrapper
+from .adpredictor import AdPredictor
 
 __all__ = [
+    "AdPredictor",
     "Base",
     "BinaryDriftDetector",
     "BinaryDriftAndWarningDetector",
