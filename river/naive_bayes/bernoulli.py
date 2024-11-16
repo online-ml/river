@@ -252,18 +252,24 @@ class BernoulliNB(base.BaseNB):
         unknown = [x for x in X.columns if x not in self.feature_counts]
         missing = [x for x in self.feature_counts if x not in X.columns]
 
+        is_sparse = hasattr(X, "sparse")
+
         if unknown:
             X = X.drop(unknown, axis="columns")
 
         if missing:
-            X[missing] = False
+            X[missing] = 0
+            if is_sparse:
+                # The new values need to be converted to preserve the sparseness of the dataframe.
+                # Input values can be intergers or floats, converting all to float preserves the behaviour without the need for complex conversion logic.
+                X = X.astype(pd.SparseDtype(float, 0.0))
 
         index, columns = X.index, X.columns
 
         if not self.class_counts or not self.feature_counts:
             return pd.DataFrame(index=index)
 
-        if hasattr(X, "sparse"):
+        if is_sparse:
             X = sparse.csr_matrix(X.sparse.to_coo())
             X.data = X.data > self.true_threshold
         else:
