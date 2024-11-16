@@ -72,7 +72,7 @@ class Gaussian(base.ContinuousDistribution):
     def revert(self, x, w=1.0):
         self._var.revert(x, w)
 
-    def __call__(self, x):
+    def __call__(self, x) -> float:
         var = self._var.get()
         if var:
             try:
@@ -83,17 +83,17 @@ class Gaussian(base.ContinuousDistribution):
                 return 0.0
         return 0.0
 
-    def cdf(self, x):
+    def cdf(self, x) -> float:
         try:
             return 0.5 * (1.0 + math.erf((x - self.mu) / (self.sigma * math.sqrt(2.0))))
         except ZeroDivisionError:
             return 0.0
 
-    def sample(self):
+    def sample(self) -> float:
         return self._rng.gauss(self.mu, self.sigma)
 
     @property
-    def mode(self):
+    def mode(self) -> float:
         return self.mu
 
 
@@ -207,7 +207,7 @@ class MultivariateGaussian(base.MultivariateContinuousDistribution):
     >>> multi.mu['blue'] == single.mu
     True
     >>> multi.sigma['blue']['blue'] == single.sigma
-    True
+    np.True_
 
     """
 
