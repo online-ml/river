@@ -211,11 +211,7 @@ class BayesianLinearRegression(base.Regressor):
         """
 
         # Bishop equation 3.58
-        y_pred_mean = (
-            0.0
-            if not len(self._m)
-            else utils.math.dot(self._m, x).item()
-        )
+        y_pred_mean = 0.0 if not len(self._m) else utils.math.dot(self._m, x).item()
         if not with_dist:
             return y_pred_mean
 
