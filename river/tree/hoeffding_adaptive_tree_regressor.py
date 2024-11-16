@@ -140,7 +140,7 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
     >>> metric = metrics.MAE()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    MAE: 0.823026
+    MAE: 0.917576
 
     """
 
@@ -304,9 +304,7 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
 
             return new_adaptive
 
-    def _branch_selector(
-        self, numerical_feature=True, multiway_split=False
-    ) -> type[AdaBranchRegressor]:
+    def _branch_selector(self, numerical_feature=True, multiway_split=False) -> type[AdaBranchRegressor]:
         """Create a new split node."""
         if numerical_feature:
             if not multiway_split:

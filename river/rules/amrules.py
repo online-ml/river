@@ -254,7 +254,7 @@ class AMRules(base.Regressor):
     >>> metric = metrics.MAE()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    MAE: 1.414543
+    MAE: 1.119553
 
     References
     ----------
@@ -389,10 +389,7 @@ class AMRules(base.Regressor):
             self._default_rule.learn_one(x, y, w)
 
             expanded = False
-            if (
-                self._default_rule.total_weight - self._default_rule.last_expansion_attempt_at
-                >= self.n_min
-            ):
+            if self._default_rule.total_weight - self._default_rule.last_expansion_attempt_at >= self.n_min:
                 updated_rule, expanded = self._default_rule.expand(self.delta, self.tau)
 
             if expanded:

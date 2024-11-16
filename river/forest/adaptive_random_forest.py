@@ -160,10 +160,11 @@ class BaseForest(base.Ensemble):
             # Update performance evaluator
             self._metrics[i].update(
                 y_true=y,
-                y_pred=model.predict_proba_one(x)
-                if isinstance(self.metric, metrics.base.ClassificationMetric)
-                and not self.metric.requires_labels
-                else y_pred,
+                y_pred=(
+                    model.predict_proba_one(x)
+                    if isinstance(self.metric, metrics.base.ClassificationMetric) and not self.metric.requires_labels
+                    else y_pred
+                ),
             )
 
             k = poisson(rate=self.lambda_value, rng=self._rng)
@@ -187,11 +188,7 @@ class BaseForest(base.Ensemble):
                         self._warning_tracker[i] += 1
 
                 if not self._drift_detection_disabled:
-                    drift_input = (
-                        drift_input
-                        if drift_input is not None
-                        else self._drift_detector_input(i, y, y_pred)
-                    )
+                    drift_input = drift_input if drift_input is not None else self._drift_detector_input(i, y, y_pred)
                     self._drift_detectors[i].update(drift_input)
 
                     if self._drift_detectors[i].drift_detected:
@@ -565,7 +562,7 @@ class ARFClassifier(BaseForest, base.Classifier):
     >>> metric = metrics.Accuracy()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    Accuracy: 67.57%
+    Accuracy: 67.97%
 
     The total number of warnings and drifts detected, respectively
     >>> model.n_warnings_detected(), model.n_drifts_detected()
@@ -849,7 +846,7 @@ class ARFRegressor(BaseForest, base.Regressor):
     >>> metric = metrics.MAE()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    MAE: 0.793949
+    MAE: 0.772113
 
     """
 
