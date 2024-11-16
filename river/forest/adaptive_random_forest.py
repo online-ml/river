@@ -162,7 +162,8 @@ class BaseForest(base.Ensemble):
                 y_true=y,
                 y_pred=(
                     model.predict_proba_one(x)
-                    if isinstance(self.metric, metrics.base.ClassificationMetric) and not self.metric.requires_labels
+                    if isinstance(self.metric, metrics.base.ClassificationMetric)
+                    and not self.metric.requires_labels
                     else y_pred
                 ),
             )
@@ -188,7 +189,11 @@ class BaseForest(base.Ensemble):
                         self._warning_tracker[i] += 1
 
                 if not self._drift_detection_disabled:
-                    drift_input = drift_input if drift_input is not None else self._drift_detector_input(i, y, y_pred)
+                    drift_input = (
+                        drift_input
+                        if drift_input is not None
+                        else self._drift_detector_input(i, y, y_pred)
+                    )
                     self._drift_detectors[i].update(drift_input)
 
                     if self._drift_detectors[i].drift_detected:
