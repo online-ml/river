@@ -130,7 +130,7 @@ class Counter(base.Base):
     >>> def cosine_dist(cms_a, cms_b):
     ...     num = cms_a @ cms_b
     ...     den = math.sqrt(cms_a @ cms_a) * math.sqrt(cms_b @ cms_b)
-    ...     return num / den
+    ...     return (num / den).item()
 
     And use it to calculate the cosine distance between the elements monitored in `cms_a` and `cms_b`:
 
@@ -162,7 +162,7 @@ class Counter(base.Base):
 
     def __getitem__(self, x) -> int:
         # Point query
-        return min(self._cms[self._hash(x)])
+        return min(self._cms[self._hash(x)]).item()
 
     def __matmul__(self, other: Counter) -> int:
         # Dot product
@@ -183,7 +183,7 @@ class Counter(base.Base):
 
     def total(self) -> int:
         """Return the total count."""
-        return sum(self._cms[0, :])
+        return sum(self._cms[0, :]).item()
 
     @property
     def n_slots(self) -> int:

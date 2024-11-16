@@ -191,7 +191,7 @@ def softmax(y_pred: dict):
     return y_pred
 
 
-def prod(iterable):
+def prod(iterable) -> float:
     """Product function.
 
     Parameters
@@ -202,7 +202,7 @@ def prod(iterable):
     return functools.reduce(operator.mul, iterable, 1)
 
 
-def dot(x: dict, y: dict):
+def dot(x: dict, y: dict) -> float:
     """Returns the dot product of two vectors represented as dicts.
 
     Parameters
@@ -282,7 +282,7 @@ def clamp(x: float, minimum=0.0, maximum=1.0):
     return max(min(x, maximum), minimum)
 
 
-def norm(x: dict, order=None):
+def norm(x: dict, order=None) -> float:
     """Compute the norm of a dictionaries values.
 
     Parameters
@@ -291,7 +291,7 @@ def norm(x: dict, order=None):
     order
 
     """
-    return np.linalg.norm(list(x.values()), ord=order)
+    return np.linalg.norm(list(x.values()), ord=order).item()
 
 
 def sign(x: float):

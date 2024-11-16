@@ -254,7 +254,7 @@ class AMRules(base.Regressor):
     >>> metric = metrics.MAE()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    MAE: 1.119553
+    MAE: 1.414543
 
     References
     ----------
