@@ -11,7 +11,7 @@ from .pa import PAClassifier, PARegressor
 from .perceptron import Perceptron
 from .softmax import SoftmaxRegression
 from .rls import RLS
-from .adpredictor import AdPredictor
+
 
 __all__ = [
     "base",
@@ -24,5 +24,5 @@ __all__ = [
     "Perceptron",
     "SoftmaxRegression",
     "RLS",
-    "AdPredictor",
+
 ]
