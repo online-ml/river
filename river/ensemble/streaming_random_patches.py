@@ -161,7 +161,9 @@ class BaseSRPEnsemble(base.Wrapper, base.Ensemble):
                     # Generate n_models subspaces from all possible
                     # feature combinations of size k
                     self._subspaces = []
-                    for i, combination in enumerate(itertools.cycle(itertools.combinations(features, k))):
+                    for i, combination in enumerate(
+                        itertools.cycle(itertools.combinations(features, k))
+                    ):
                         if i == self.n_models:
                             break
                         self._subspaces.append(list(combination))
@@ -171,7 +173,8 @@ class BaseSRPEnsemble(base.Wrapper, base.Ensemble):
                 # subspaces without worrying about repetitions.
                 else:
                     self._subspaces = [
-                        random_subspace(all_features=features, k=k, rng=self._rng) for _ in range(self.n_models)
+                        random_subspace(all_features=features, k=k, rng=self._rng)
+                        for _ in range(self.n_models)
                     ]
             else:
                 # k == 0 or k > n_features (subspace size is larger than the
@@ -180,8 +183,13 @@ class BaseSRPEnsemble(base.Wrapper, base.Ensemble):
 
     def _init_ensemble(self, features: list):
         self._generate_subspaces(features=features)
-        subspace_indexes = list(range(self.n_models))  # For matching subspaces with ensemble members
-        if self.training_method == self._TRAIN_RANDOM_PATCHES or self.training_method == self._TRAIN_RANDOM_SUBSPACES:
+        subspace_indexes = list(
+            range(self.n_models)
+        )  # For matching subspaces with ensemble members
+        if (
+            self.training_method == self._TRAIN_RANDOM_PATCHES
+            or self.training_method == self._TRAIN_RANDOM_SUBSPACES
+        ):
             # Shuffle indexes
             self._rng.shuffle(subspace_indexes)
 
