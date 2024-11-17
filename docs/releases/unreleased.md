@@ -14,6 +14,10 @@
 
 - Make `drift.ADWIN` comply with the reference MOA implementation.
 
+## feature extraction
+
+- The mini-batch methods for `feature_extraction.TFIDF` now systematically raise an exception, as they are not implemented.
+
 ## stats
 
 - Removed the unexported class `stats.CentralMoments`.
