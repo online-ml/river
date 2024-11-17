@@ -4,7 +4,7 @@ from collections import defaultdict, namedtuple
 
 import numpy as np
 
-from river.base import Classifier
+from river.base.classifier import Classifier
 
 
 def default_weight():
