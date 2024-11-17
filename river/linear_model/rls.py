@@ -23,7 +23,7 @@ class RLS:
     ----------
     p : int
         Filter order.
-    l : float
+    forgetting_factor : float
         Forgetting factor.
     delta : float
         Initialization value for P(0).
@@ -50,7 +50,7 @@ class RLS:
     >>> import numpy as np
 
     >>> # Initialize the RLS filter with order 2, forgetting factor 0.98, and delta 1e6
-    >>> rls = linear_model.RLS(p=2, l=0.98, delta=1e6)
+    >>> rls = linear_model.RLS(p=2, forgetting_factor=0.98, delta=1e6)
 
     >>> # Simulate some data
     >>> np.random.seed(42)
@@ -65,7 +65,7 @@ class RLS:
     >>> print("Final Weights:", rls.estimates[-1].flatten())
     Final Weights: [ 3.48065382 -6.15301727  3.3361416 ]
     """
-    def __init__(self, p: int, l=0.99, delta=1000000):
+    def __init__(self, p: int, forgetting_factor=0.99, delta=1000000):
         """
             Initializes the Recursive Least Squares (RLS) filter.
 
@@ -73,13 +73,13 @@ class RLS:
             ----------
             p : int
                 Filter order (number of coefficients).
-            l : float, optional
+            forgetting_factor : float, optional
                 Forgetting factor (default is 0.99).
             delta : float, optional
                 Initial value for the inverse correlation matrix (default is 1,000,000).
         """
         self.p = p  # Filter order
-        self.l = l  # Forgetting factor
+        self.forgetting_factor = forgetting_factor  # Forgetting factor
         self.delta = delta  # Value to initialise P(0)
 
         self.currentStep = 0
@@ -117,14 +117,14 @@ class RLS:
         wn_prev = self.estimates[-1]
 
         # Compute gain vector
-        denominator = self.l + self.x.T @ self.Pks[-1] @ self.x
+        denominator = self.forgetting_factor + self.x.T @ self.Pks[-1] @ self.x
         gn = (self.Pks[-1] @ self.x) / denominator
 
         # Compute a priori error
         alpha = dn - (self.x.T @ wn_prev)
 
         # Update inverse correlation matrix
-        Pn = (self.Pks[-1] - gn @ self.x.T @ self.Pks[-1]) / self.l
+        Pn = (self.Pks[-1] - gn @ self.x.T @ self.Pks[-1]) / self.forgetting_factor
         self.Pks.append(Pn)
 
         # Update weight vector
