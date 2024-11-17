@@ -74,11 +74,8 @@ class AdPredictor(Classifier):
         self.epsilon = epsilon
         self.num_features = num_features
         # Initialize weights as a defaultdict for each feature, with mean and variance attributes
-        #self.weights = defaultdict(lambda: {"mean": 0.0, "variance": 1.0})
-        # Initialize bias weight based on prior probability
-
-
         self.weights = defaultdict(default_weight)
+        # Initialize bias weight based on prior probability
         self.bias_weight = self.prior_bias_weight()
 
     def prior_bias_weight(self):
