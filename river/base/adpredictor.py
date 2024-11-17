@@ -7,6 +7,9 @@ import numpy as np
 from river.base import Classifier
 
 
+def default_weight():
+    return {"mean": 0.0, "variance": 1.0}
+
 class AdPredictor(Classifier):
     """AdPredictor, developed by Microsoft, is a machine learning algorithm designed to predict the probability of user
     clicks on online advertisements. This algorithm plays a crucial role in computational advertising, where predicting
@@ -42,22 +45,16 @@ class AdPredictor(Classifier):
 
     Examples:
     ----------
-    >>> adpredictor = AdPredictor(beta=0.1, prior_probability=0.5, epsilon=0.1, num_features=5)
-    >>> data = [
-    ({"feature1": 1, "feature2": 1}, 1),
-    ({"feature1": 1, "feature3": 1}, 0),
-    ({"feature2": 1, "feature4": 1}, 1),
-    ({"feature1": 1, "feature2": 1, "feature3": 1}, 0),
-    ({"feature4": 1, "feature5": 1}, 1),
-    ]
-    >>> def train_and_test(model, data):
+    adpredictor = AdPredictor(beta=0.1, prior_probability=0.5, epsilon=0.1, num_features=5)
+    data = [({"feature1": 1, "feature2": 1}, 1),({"feature1": 1, "feature3": 1}, 0),({"feature2": 1, "feature4": 1}, 1),({"feature1": 1, "feature2": 1, "feature3": 1}, 0),({"feature4": 1, "feature5": 1}, 1),]
+    def train_and_test(model, data):
     for x, y in data:
-        pred_before = model.predict_one(x)
+    pred_before = model.predict_one(x)
         model.learn_one(x, y)
         pred_after = model.predict_one(x)
         print(f"Features: {x} | True label: {y} | Prediction before training: {pred_before:.4f} | Prediction after training: {pred_after:.4f}")
 
-    >>> train_and_test(adpredictor, data)
+    train_and_test(adpredictor, data)
 
     Features: {'feature1': 1, 'feature2': 1} | True label: 1 | Prediction before training: 0.5000 | Prediction after training: 0.7230
     Features: {'feature1': 1, 'feature3': 1} | True label: 0 | Prediction before training: 0.6065 | Prediction after training: 0.3650
@@ -69,6 +66,7 @@ class AdPredictor(Classifier):
 
     config = namedtuple("config", ["beta", "prior_probability", "epsilon", "num_features"])
 
+
     def __init__(self, beta=0.1, prior_probability=0.5, epsilon=0.1, num_features=10):
         # Initialization of model parameters
         self.beta = beta
@@ -76,8 +74,11 @@ class AdPredictor(Classifier):
         self.epsilon = epsilon
         self.num_features = num_features
         # Initialize weights as a defaultdict for each feature, with mean and variance attributes
-        self.weights = defaultdict(lambda: {"mean": 0.0, "variance": 1.0})
+        #self.weights = defaultdict(lambda: {"mean": 0.0, "variance": 1.0})
         # Initialize bias weight based on prior probability
+
+
+        self.weights = defaultdict(default_weight)
         self.bias_weight = self.prior_bias_weight()
 
     def prior_bias_weight(self):
