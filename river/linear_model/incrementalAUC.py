@@ -1,5 +1,9 @@
-from river import metrics
+from __future__ import annotations
+
 import numpy as np
+
+from river import metrics
+
 
 class IncrementalAUC(metrics.base.BinaryMetric):
     """Calculates AUC incrementally."""
@@ -17,7 +21,9 @@ class IncrementalAUC(metrics.base.BinaryMetric):
             self.negative_scores.append(y_pred)
         return self
 
-    def get(self, X_train, y_train, X_test, y_test, epochs=900, lr=0.5, n_mc=500, gamma=1e-4, eps=0.01):
+    def get(
+        self, X_train, y_train, X_test, y_test, epochs=900, lr=0.5, n_mc=500, gamma=1e-4, eps=0.01
+    ):
         """
         Implements the stochastic gradient ascent method to optimize theta and computes the AUC
         based on the accumulated scores.
@@ -37,6 +43,7 @@ class IncrementalAUC(metrics.base.BinaryMetric):
         - auc: Final AUC score based on the accumulated scores.
         """
         from sklearn.metrics import roc_auc_score
+
         # Separate the classes
         X1 = X_train[y_train == 1]
         X0 = X_train[y_train == 0]
@@ -56,7 +63,9 @@ class IncrementalAUC(metrics.base.BinaryMetric):
             current_lr = current_lr / (1 + gamma)
 
             # Update theta using stochastic gradient ascent
-            theta -= current_lr * self.stochastic_gradient(theta, X1, X0, N=n_mc, eps=eps, random_state=seed)
+            theta -= current_lr * self.stochastic_gradient(
+                theta, X1, X0, N=n_mc, eps=eps, random_state=seed
+            )
 
         # After training, compute the scores on the test set
         y_scores = np.dot(X_test, theta)
@@ -79,7 +88,7 @@ class IncrementalAUC(metrics.base.BinaryMetric):
         elif z < -35:
             return 0
         else:
-            return 1.0 / (1.0 + np.exp(- z))
+            return 1.0 / (1.0 + np.exp(-z))
 
     def reg_u_statistic(self, y_true, y_probs, eps=0.01):
         p = y_probs[y_true == 1]
@@ -94,7 +103,6 @@ class IncrementalAUC(metrics.base.BinaryMetric):
         return u
 
     def stochastic_gradient(self, theta, X1, X0, N=1000, eps=0.01, random_state=1):
-
         np.random.seed(random_state)
 
         indices_1 = np.random.choice(np.arange(X1.shape[0]), size=N)

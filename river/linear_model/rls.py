@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import numpy as np
 
 
@@ -13,7 +15,7 @@ class RLS:
     ----------
     p : int
         The order of the filter (number of coefficients to be estimated).
-    l : float, optional, default=0.99
+    forgetting_factor : float, optional, default=0.99
         Forgetting factor (0 < l ≤ 1). Controls how quickly the algorithm forgets past data.
         A smaller value makes the algorithm more responsive to recent data.
     delta : float, optional, default=1000000
@@ -65,18 +67,19 @@ class RLS:
     >>> print("Final Weights:", rls.estimates[-1].flatten())
     Final Weights: [ 3.48065382 -6.15301727  3.3361416 ]
     """
+
     def __init__(self, p: int, forgetting_factor=0.99, delta=1000000):
         """
-            Initializes the Recursive Least Squares (RLS) filter.
+        Initializes the Recursive Least Squares (RLS) filter.
 
-            Parameters
-            ----------
-            p : int
-                Filter order (number of coefficients).
-            forgetting_factor : float, optional
-                Forgetting factor (default is 0.99).
-            delta : float, optional
-                Initial value for the inverse correlation matrix (default is 1,000,000).
+        Parameters
+        ----------
+        p : int
+            Filter order (number of coefficients).
+        forgetting_factor : float, optional
+            Forgetting factor (default is 0.99).
+        delta : float, optional
+            Initial value for the inverse correlation matrix (default is 1,000,000).
         """
         self.p = p  # Filter order
         self.forgetting_factor = forgetting_factor  # Forgetting factor
@@ -95,20 +98,20 @@ class RLS:
 
     def estimate(self, xn: float, dn: float):
         """
-            Performs one iteration of the RLS algorithm to update filter coefficients.
+        Performs one iteration of the RLS algorithm to update filter coefficients.
 
-            Parameters
-            ----------
-            xn : float
-                The current input sample.
-            dn : float
-                The desired output corresponding to the current input.
+        Parameters
+        ----------
+        xn : float
+            The current input sample.
+        dn : float
+            The desired output corresponding to the current input.
 
-            Returns
-            -------
-            numpy.ndarray
-                Updated weight vector (filter coefficients) after the current iteration.
-            """
+        Returns
+        -------
+        numpy.ndarray
+            Updated weight vector (filter coefficients) after the current iteration.
+        """
         # Update input vector
         self.x = np.roll(self.x, -1)
         self.x[-1, 0] = xn
