@@ -10,7 +10,7 @@ from .log_reg import LogisticRegression
 from .pa import PAClassifier, PARegressor
 from .perceptron import Perceptron
 from .softmax import SoftmaxRegression
-from .rls import RLS
+
 
 
 __all__ = [
@@ -23,6 +23,6 @@ __all__ = [
     "PARegressor",
     "Perceptron",
     "SoftmaxRegression",
-    "RLS",
+
 
 ]
