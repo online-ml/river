@@ -1,7 +1,7 @@
 import numpy as np
 
 
-class RLS(object):
+class RLS:
     """
     Recursive Least Squares (RLS)
 
@@ -46,10 +46,11 @@ class RLS(object):
 
     Examples
     --------
+    >>> from river import linear_model
     >>> import numpy as np
 
     >>> # Initialize the RLS filter with order 2, forgetting factor 0.98, and delta 1e6
-    >>> rls = RLS(p=2, l=0.98, delta=1e6)
+    >>> rls = linear_model.RLS(p=2, l=0.98, delta=1e6)
 
     >>> # Simulate some data
     >>> np.random.seed(42)
@@ -61,10 +62,8 @@ class RLS(object):
     >>> # Apply RLS algorithm
     >>> for xn, dn in zip(x_data, d_data):
     ...     weights = rls.estimate(xn, dn)
-    ...     print("Updated Weights:", weights.flatten())
-
-    >>> # Final weights after adaptation
     >>> print("Final Weights:", rls.estimates[-1].flatten())
+    Final Weights: [ 3.48065382 -6.15301727  3.3361416 ]
     """
     def __init__(self, p: int, l=0.99, delta=1000000):
         """
