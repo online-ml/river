@@ -10,6 +10,7 @@ from river.base import Classifier
 def default_weight():
     return {"mean": 0.0, "variance": 1.0}
 
+
 class AdPredictor(Classifier):
     """AdPredictor, developed by Microsoft, is a machine learning algorithm designed to predict the probability of user
     clicks on online advertisements. This algorithm plays a crucial role in computational advertising, where predicting
@@ -65,7 +66,6 @@ class AdPredictor(Classifier):
     """
 
     config = namedtuple("config", ["beta", "prior_probability", "epsilon", "num_features"])
-
 
     def __init__(self, beta=0.1, prior_probability=0.5, epsilon=0.1, num_features=10):
         # Initialization of model parameters
