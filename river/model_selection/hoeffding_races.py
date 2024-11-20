@@ -1,11 +1,12 @@
 import math
-from river import metrics, base
+from river import metrics, base, neighbors
 
 
 
 
 class HoeffdingRace(base.Classifier):
     """
+
 
     >>> from river import model_selection
     >>> from river.linear_model import LogisticRegression
@@ -29,7 +30,7 @@ class HoeffdingRace(base.Classifier):
     {'KNN'}
     
     """
-    def __init__(self, models, delta=0.05, metric=metrics.Accuracy()):
+    def __init__(self, models={"KNN":neighbors.KNNClassifier()}, delta=0.05, metric=metrics.Accuracy()):
        
         self.models = models
         self.delta = delta
