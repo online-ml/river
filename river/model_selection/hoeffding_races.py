@@ -1,10 +1,10 @@
 import math
 from river import metrics, base
-from river.base import Classifier
 
 
 
-class HoeffdingRace(Classifier):
+
+class HoeffdingRace(base.Classifier):
     """
 
     >>> from river import model_selection
