@@ -19,7 +19,7 @@ from . import base
 from .bandit import BanditClassifier, BanditRegressor
 from .greedy import GreedyRegressor
 from .sh import SuccessiveHalvingClassifier, SuccessiveHalvingRegressor
-from .hoeffding_races import HoeffdingRace_classifier
+from .hoeffding_races import HoeffdingRaceClassifier
 
 
 
@@ -30,5 +30,5 @@ __all__ = [
     "GreedyRegressor",
     "SuccessiveHalvingClassifier",
     "SuccessiveHalvingRegressor",
-    "HoeffdingRace_Classifier",
+    "HoeffdingRaceClassifier",
 ]
