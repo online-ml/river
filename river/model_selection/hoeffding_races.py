@@ -4,7 +4,7 @@ from river import metrics, base, neighbors,linear_model
 
 
 
-class HoeffdingRace_classifier(base.Classifier):
+class HoeffdingRaceClassifier(base.Classifier):
     """
 
     Tests on Binary Classification
@@ -12,7 +12,7 @@ class HoeffdingRace_classifier(base.Classifier):
     >>> from river import model_selection
     >>> from river import linear_model, neighbors, tree, metrics, datasets
 
-    >>> hoeffding_race = model_selection.HoeffdingRace_classifier(
+    >>> hoeffding_race = model_selection.HoeffdingRaceClassifier(
     ...     models = {
     ...     "KNN": neighbors.KNNClassifier(),
     ...     "Log_Reg":linear_model.LogisticRegression()},
@@ -74,7 +74,7 @@ class HoeffdingRace_classifier(base.Classifier):
 
 
 
-class HoeffdingRace_regressor(base.Regressor):
+class HoeffdingRaceRegressor(base.Regressor):
     """
 
     
