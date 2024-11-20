@@ -1,28 +1,24 @@
-from river import linear_model, neighbors, tree
-from river.datasets import synth
-from river import datasets
-from river import metrics
+
 from hoeffding_races import HoeffdingRace
+from river.linear_model import LogisticRegression
+from river.metrics import Accuracy
+from river import linear_model, neighbors, tree, metrics, datasets
+from river import naive_bayes
 
-metric = metrics.Accuracy()
 
-# Modèles candidats
-models = {
-    'Regression': linear_model.LogisticRegression(),
-    'KNN': neighbors.KNNClassifier(),
-    'DecisionTree': tree.HoeffdingTreeClassifier()
-}
 
-# Initialisation de HoeffdingRace
+# Instantiate a HoeffdingRace object with a single candidate model
+hoeffding_race = HoeffdingRace(
+    models = {"LogisticRegression": linear_model.LogisticRegression()},
+    metric=Accuracy(),
+    delta=0.05
+)
 
-hoeffding_race = HoeffdingRace(models=models,metric=metric)
-
-# Exécution sur un flux de données
-dataset = datasets.CreditCard()
-n=0
-for x,y in dataset:
-    selected_model = hoeffding_race.learn_one(x, y)
-    if selected_model:
+dataset = datasets.AirlinePassengers()
+print(dataset)
+for x, y in dataset:
+    hoeffding_race.learn_one(x, y)
+    #print(hoeffding_race.model_metrics["KNN"].get())
+    if len(hoeffding_race.remaining_models) == 1:
         break
-print(n)
 print(hoeffding_race.model_performance)
