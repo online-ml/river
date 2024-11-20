@@ -18,10 +18,8 @@ from __future__ import annotations
 from . import base
 from .bandit import BanditClassifier, BanditRegressor
 from .greedy import GreedyRegressor
-from .sh import SuccessiveHalvingClassifier, SuccessiveHalvingRegressor
 from .hoeffding_races import HoeffdingRaceClassifier
-
-
+from .sh import SuccessiveHalvingClassifier, SuccessiveHalvingRegressor
 
 __all__ = [
     "base",
