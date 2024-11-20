@@ -9,18 +9,16 @@ class HoeffdingRace(base.Classifier):
 
 
     >>> from river import model_selection
-    >>> from river.linear_model import LogisticRegression
-    >>> from river.metrics import Accuracy
     >>> from river import linear_model, neighbors, tree, metrics, datasets
-    >>> from river import naive_bayes
+
     >>> hoeffding_race = model_selection.HoeffdingRace(
     ...     models = {
     ...     "KNN": neighbors.KNNClassifier(),
-    ...     "DecisionTree":tree.HoeffdingAdaptiveTreeRegressor()},
-    ...     metric=Accuracy(),
+    ...     "Log_Reg":linear_model.LogisticRegression()},
+    ...     metric=metrics.Accuracy(),
     ...     delta=0.05
     ... )
-    >>> dataset = datasets.Bananas()
+    >>> dataset = datasets.Phishing()
     >>> for x, y in dataset:
     ...     hoeffding_race.learn_one(x, y)
     ...     if hoeffding_race.single_model_remaining():
