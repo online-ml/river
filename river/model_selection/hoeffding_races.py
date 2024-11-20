@@ -1,17 +1,20 @@
 import math
-from river import metrics, base, neighbors
+from river import metrics, base, neighbors,linear_model
 
 
 
 
-class HoeffdingRace(base.Classifier):
+class HoeffdingRace_classifier(base.Classifier):
     """
+    
 
+
+    Tests on Binary Classification
 
     >>> from river import model_selection
     >>> from river import linear_model, neighbors, tree, metrics, datasets
 
-    >>> hoeffding_race = model_selection.HoeffdingRace(
+    >>> hoeffding_race = model_selection.HoeffdingRace_classifier(
     ...     models = {
     ...     "KNN": neighbors.KNNClassifier(),
     ...     "Log_Reg":linear_model.LogisticRegression()},
@@ -28,7 +31,8 @@ class HoeffdingRace(base.Classifier):
     {'KNN'}
     
     """
-    def __init__(self, models={"KNN":neighbors.KNNClassifier()}, delta=0.05, metric=metrics.Accuracy()):
+    def __init__(self, models={"KNN":neighbors.KNNClassifier(),
+                               "Log_Reg":linear_model.LogisticRegression()}, delta=0.05, metric=metrics.Accuracy()):
        
         self.models = models
         self.delta = delta
