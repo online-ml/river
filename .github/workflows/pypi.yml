@@ -54,7 +54,7 @@ jobs:
         uses: pypa/cibuildwheel@v2.19.2
         timeout-minutes: 720
         env:
-          CIBW_BUILD: "cp39-* cp310-* cp311-* cp312-*"
+          CIBW_BUILD: "cp310-* cp311-* cp312-* cp313-*"
           CIBW_ARCHS_LINUX: "x86_64 i686 aarch64"
           # CIBW_ARCHS_MACOS: "x86_64 arm64"
           CIBW_ARCHS_MACOS: "universal2"
@@ -109,7 +109,7 @@ jobs:
       - name: Build River
         uses: ./.github/actions/install-env
         with:
-          python-version: "3.12"
+          python-version: "3.13"
 
       - name: Build dist
         run: poetry build
