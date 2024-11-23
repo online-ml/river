@@ -1371,14 +1371,14 @@
 <h1 id="multi-armed-bandits">Multi-armed bandits<a class="headerlink" href="#multi-armed-bandits" title="Permanent link">&para;</a></h1>
 <p>River has a <code>bandit</code> module. It contains several multi-armed bandit policies, bandit environments, and utilities to benchmark policies on bandit problems.</p>
 <p>Bandit environments in River implement the <a href="https://www.gymlibrary.dev/">Gym</a> interface. You can thus load them with <code>gym.make</code>. Note that Gym is intended for reinforcement learning algorithms, while bandit policies are the simplest form of reinforcement learing. Bandit policies learn by receiving a reward after each step, while reinforcement learning algorithms have to learn from feedback that may arrive at the end of a (long) sequence of steps.</p>
-<div class="language-python highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">gym</span>
+<div class="language-python highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">gymnasium</span> <span class="k">as</span> <span class="nn">gym</span>
 
 <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">gym</span><span class="o">.</span><span class="n">envs</span><span class="o">.</span><span class="n">registry</span><span class="p">:</span>
     <span class="k">if</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;river_bandits&#39;</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
 </code></pre></div>
 <p>River's bandit module offers the <a href="../../api/bandit/evaluate"><code>bandit.evaluate</code></a> function to benchmark several policies on a given environment. It takes as input a list of bandit policies, a bandit environment (the problem to solve), and a reward object.</p>
-<div class="language-python highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">gym</span>
+<div class="language-python highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">gymnasium</span> <span class="k">as</span> <span class="nn">gym</span>
 <span class="kn">from</span> <span class="nn">river</span> <span class="kn">import</span> <span class="n">bandit</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
