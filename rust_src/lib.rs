@@ -17,13 +17,12 @@ pub struct RsQuantile {
 #[pymethods]
 impl RsQuantile {
     #[new]
+    #[pyo3(signature = (q=None))]
     pub fn new(q: Option<f64>) -> RsQuantile {
         match q {
-            Some(q) => {
-                return RsQuantile {
-                    quantile: Quantile::new(q).expect("q should between 0 and 1"),
-                }
-            }
+            Some(q) => RsQuantile {
+                quantile: Quantile::new(q).expect("q should be between 0 and 1"),
+            },
             None => RsQuantile {
                 quantile: Quantile::default(),
             },
@@ -36,11 +35,11 @@ impl RsQuantile {
         self.quantile.get()
     }
 
-    pub fn __setstate__(&mut self, state: &PyBytes) -> PyResult<()> {
+    pub fn __setstate__(&mut self, state: Bound<'_, PyBytes>) -> PyResult<()> {
         *self = deserialize(state.as_bytes()).unwrap();
         Ok(())
     }
-    pub fn __getstate__<'py>(&self, py: Python<'py>) -> PyResult<&'py PyBytes> {
+    pub fn __getstate__<'py>(&self, py: Python<'py>) -> PyResult<Bound<'py, PyBytes>> {
         Ok(PyBytes::new(py, &serialize(&self).unwrap()))
     }
 }
@@ -67,11 +66,11 @@ impl RsEWMean {
         self.ewmean.get()
     }
 
-    pub fn __setstate__(&mut self, state: &PyBytes) -> PyResult<()> {
+    pub fn __setstate__(&mut self, state: Bound<'_, PyBytes>) -> PyResult<()> {
         *self = deserialize(state.as_bytes()).unwrap();
         Ok(())
     }
-    pub fn __getstate__<'py>(&self, py: Python<'py>) -> PyResult<&'py PyBytes> {
+    pub fn __getstate__<'py>(&self, py: Python<'py>) -> PyResult<Bound<'py, PyBytes>> {
         Ok(PyBytes::new(py, &serialize(&self).unwrap()))
     }
     pub fn __getnewargs__(&self) -> PyResult<(f64,)> {
@@ -101,11 +100,11 @@ impl RsEWVar {
         self.ewvar.get()
     }
 
-    pub fn __setstate__(&mut self, state: &PyBytes) -> PyResult<()> {
+    pub fn __setstate__(&mut self, state: Bound<'_, PyBytes>) -> PyResult<()> {
         *self = deserialize(state.as_bytes()).unwrap();
         Ok(())
     }
-    pub fn __getstate__<'py>(&self, py: Python<'py>) -> PyResult<&'py PyBytes> {
+    pub fn __getstate__<'py>(&self, py: Python<'py>) -> PyResult<Bound<'py, PyBytes>> {
         Ok(PyBytes::new(py, &serialize(&self).unwrap()))
     }
     pub fn __getnewargs__(&self) -> PyResult<(f64,)> {
@@ -138,11 +137,11 @@ impl RsIQR {
         self.iqr.get()
     }
 
-    pub fn __setstate__(&mut self, state: &PyBytes) -> PyResult<()> {
+    pub fn __setstate__(&mut self, state: Bound<'_, PyBytes>) -> PyResult<()> {
         *self = deserialize(state.as_bytes()).unwrap();
         Ok(())
     }
-    pub fn __getstate__<'py>(&self, py: Python<'py>) -> PyResult<&'py PyBytes> {
+    pub fn __getstate__<'py>(&self, py: Python<'py>) -> PyResult<Bound<'py, PyBytes>> {
         Ok(PyBytes::new(py, &serialize(&self).unwrap()))
     }
     pub fn __getnewargs__(&self) -> PyResult<(f64, f64)> {
@@ -171,11 +170,11 @@ impl RsKurtosis {
     pub fn get(&self) -> f64 {
         self.kurtosis.get()
     }
-    pub fn __setstate__(&mut self, state: &PyBytes) -> PyResult<()> {
+    pub fn __setstate__(&mut self, state: Bound<'_, PyBytes>) -> PyResult<()> {
         *self = deserialize(state.as_bytes()).unwrap();
         Ok(())
     }
-    pub fn __getstate__<'py>(&self, py: Python<'py>) -> PyResult<&'py PyBytes> {
+    pub fn __getstate__<'py>(&self, py: Python<'py>) -> PyResult<Bound<'py, PyBytes>> {
         Ok(PyBytes::new(py, &serialize(&self).unwrap()))
     }
     pub fn __getnewargs__(&self) -> PyResult<(bool,)> {
@@ -205,11 +204,11 @@ impl RsPeakToPeak {
         self.ptp.get()
     }
 
-    pub fn __setstate__(&mut self, state: &PyBytes) -> PyResult<()> {
+    pub fn __setstate__(&mut self, state: Bound<'_, PyBytes>) -> PyResult<()> {
         *self = deserialize(state.as_bytes()).unwrap();
         Ok(())
     }
-    pub fn __getstate__<'py>(&self, py: Python<'py>) -> PyResult<&'py PyBytes> {
+    pub fn __getstate__<'py>(&self, py: Python<'py>) -> PyResult<Bound<'py, PyBytes>> {
         Ok(PyBytes::new(py, &serialize(&self).unwrap()))
     }
 }
@@ -236,11 +235,11 @@ impl RsSkew {
         self.skew.get()
     }
 
-    pub fn __setstate__(&mut self, state: &PyBytes) -> PyResult<()> {
+    pub fn __setstate__(&mut self, state: Bound<'_, PyBytes>) -> PyResult<()> {
         *self = deserialize(state.as_bytes()).unwrap();
         Ok(())
     }
-    pub fn __getstate__<'py>(&self, py: Python<'py>) -> PyResult<&'py PyBytes> {
+    pub fn __getstate__<'py>(&self, py: Python<'py>) -> PyResult<Bound<'py, PyBytes>> {
         Ok(PyBytes::new(py, &serialize(&self).unwrap()))
     }
     pub fn __getnewargs__(&self) -> PyResult<(bool,)> {
@@ -271,11 +270,11 @@ impl RsRollingQuantile {
     pub fn get(&self) -> f64 {
         self.stat.get()
     }
-    pub fn __setstate__(&mut self, state: &PyBytes) -> PyResult<()> {
+    pub fn __setstate__(&mut self, state: Bound<'_, PyBytes>) -> PyResult<()> {
         *self = deserialize(state.as_bytes()).unwrap();
         Ok(())
     }
-    pub fn __getstate__<'py>(&self, py: Python<'py>) -> PyResult<&'py PyBytes> {
+    pub fn __getstate__<'py>(&self, py: Python<'py>) -> PyResult<Bound<'py, PyBytes>> {
         Ok(PyBytes::new(py, &serialize(&self).unwrap()))
     }
     pub fn __getnewargs__(&self) -> PyResult<(f64, usize)> {
@@ -309,11 +308,11 @@ impl RsRollingIQR {
     pub fn get(&self) -> f64 {
         self.stat.get()
     }
-    pub fn __setstate__(&mut self, state: &PyBytes) -> PyResult<()> {
+    pub fn __setstate__(&mut self, state: Bound<'_, PyBytes>) -> PyResult<()> {
         *self = deserialize(state.as_bytes()).unwrap();
         Ok(())
     }
-    pub fn __getstate__<'py>(&self, py: Python<'py>) -> PyResult<&'py PyBytes> {
+    pub fn __getstate__<'py>(&self, py: Python<'py>) -> PyResult<Bound<'py, PyBytes>> {
         Ok(PyBytes::new(py, &serialize(&self).unwrap()))
     }
     pub fn __getnewargs__(&self) -> PyResult<(f64, f64, usize)> {
@@ -323,7 +322,7 @@ impl RsRollingIQR {
 
 /// A Python module implemented in Rust.
 #[pymodule]
-fn _rust_stats(_py: Python, m: &PyModule) -> PyResult<()> {
+fn _rust_stats(_py: Python, m: &Bound<PyModule>) -> PyResult<()> {
     m.add_class::<RsQuantile>()?;
     m.add_class::<RsEWMean>()?;
     m.add_class::<RsEWVar>()?;
