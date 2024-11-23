@@ -29,11 +29,9 @@ jobs:
 
       - name: Set up rust
         if: matrix.os != 'ubuntu-20.04' && matrix.os != 'ubuntu-22.04'
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@stable
         with:
-          profile: minimal
           toolchain: nightly
-          override: true
 
       - run: rustup target add aarch64-apple-darwin && rustup target add x86_64-apple-darwin
         if: matrix.os == 'macos-12' || matrix.os == 'macos-13' || matrix.os == 'macos-14'
