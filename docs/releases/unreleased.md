@@ -31,3 +31,7 @@
 ## stream
 
 - `stream.iter_arff` now supports blank values (treated as missing values).
+
+## preprocessing
+
+- Add support for expected categories in `preprocessing.OneHotEncoder`, `preprocessing.OrdinalEncoder`, akin to scikit-learn API for respective encoders.
