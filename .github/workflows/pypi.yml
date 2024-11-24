@@ -94,6 +94,10 @@ jobs:
             curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain=nightly --profile=minimal -y &&
             rustup show
 
+          # Fixes delocate.libsana.DelocationError:
+          # river/stats/_rust_stats.cpython-310-darwin.so has a minimum target of 10.12
+          MACOSX_DEPLOYMENT_TARGET: 10.12
+
       - uses: actions/upload-artifact@v4
         with:
           name: artifact-${{ matrix.os }}
