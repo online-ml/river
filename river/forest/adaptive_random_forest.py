@@ -159,7 +159,7 @@ class BaseForest(base.Ensemble):
 
             # Update performance evaluator
             self._metrics[i].update(
-                y_true=y,
+                y_true=y,  # type:ignore[arg-type]
                 y_pred=(
                     model.predict_proba_one(x)
                     if isinstance(self.metric, metrics.base.ClassificationMetric)

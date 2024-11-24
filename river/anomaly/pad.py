@@ -130,7 +130,7 @@ class PredictiveAnomalyDetection(anomaly.base.SupervisedAnomalyDetector):
             else:
                 self.predictive_model.learn_one(y=y, x=x)
         else:
-            self.predictive_model.learn_one(x=x, y=y)  # type: ignore[union-attr]
+            self.predictive_model.learn_one(x=x, y=y)  # type:ignore[attr-defined]
 
     def score_one(self, x: dict, y: base.typing.Target):
         # Return the predicted value of x from the predictive model, first by checking whether
@@ -138,7 +138,7 @@ class PredictiveAnomalyDetection(anomaly.base.SupervisedAnomalyDetector):
         if isinstance(self.predictive_model, time_series.base.Forecaster):
             y_pred = self.predictive_model.forecast(self.horizon)[0]
         else:
-            y_pred = self.predictive_model.predict_one(x)  # type: ignore[union-attr]
+            y_pred = self.predictive_model.predict_one(x)  # type:ignore[attr-defined]
 
         # Calculate the squared error
         squared_error = (y_pred - y) ** 2
