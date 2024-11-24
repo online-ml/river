@@ -17,8 +17,6 @@ jobs:
         with:
           # Use 3.12 for the docs env waiting for spaCy and srsly to support 3.13
           python-version: "3.12"
-          # To be removed once going back to the latest Python version supported by River
-          build-root: false
 
       - name: Install extra Ubuntu dependencies
         run: sudo apt-get install graphviz pandoc
