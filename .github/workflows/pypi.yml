@@ -15,9 +15,7 @@ jobs:
       matrix:
         os:
           [
-            ubuntu-20.04,
-            ubuntu-22.04,
-            ubuntu-24.04,
+            ubuntu-latest,
             windows-2019,
             windows-2022,
             macos-13,
@@ -34,7 +32,7 @@ jobs:
           toolchain: nightly
 
       - run: rustup target add aarch64-apple-darwin && rustup target add x86_64-apple-darwin
-        if: matrix.os == 'macos-12' || matrix.os == 'macos-13' || matrix.os == 'macos-14'
+        if: matrix.os == 'macos-13' || matrix.os == 'macos-14'
 
       - run: rustup toolchain install stable-i686-pc-windows-msvc
         if: matrix.os == 'windows-2019' || matrix.os == 'windows-2022'
@@ -52,6 +50,7 @@ jobs:
         uses: pypa/cibuildwheel@v2.22.0
         timeout-minutes: 720
         env:
+          CIBW_BUILD_VERBOSITY: 2
           CIBW_BUILD: "cp310-* cp311-* cp312-* cp313-*"
           CIBW_ARCHS_LINUX: "x86_64 i686 aarch64"
           # CIBW_ARCHS_MACOS: "x86_64 arm64"
