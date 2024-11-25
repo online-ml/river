@@ -71,7 +71,8 @@ jobs:
 
           CIBW_MANYLINUX_X86_64_IMAGE: "manylinux2014"
           CIBW_MANYLINUX_I686_IMAGE: "manylinux2014"
-          CIBW_MANYLINUX_AARCH64_IMAGE: "manylinux2014"
+          # Taking forever to build on ubuntu-22.04
+          # CIBW_MANYLINUX_AARCH64_IMAGE: "manylinux2014"
           CIBW_MANYLINUX_PYPY_X86_64_IMAGE: "manylinux2014"
           CIBW_MANYLINUX_PYPY_I686_IMAGE: "manylinux2014"
           CIBW_MANYLINUX_PYPY_AARCH64_IMAGE: "manylinux2014"
@@ -96,7 +97,7 @@ jobs:
 
           # Fixes delocate.libsana.DelocationError:
           # river/stats/_rust_stats.cpython-310-darwin.so has a minimum target of 10.12
-          MACOSX_DEPLOYMENT_TARGET: 10.12
+          MACOSX_DEPLOYMENT_TARGET: 10.13
 
       - uses: actions/upload-artifact@v4
         with:
