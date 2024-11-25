@@ -133,7 +133,7 @@ jobs:
           pattern: artifact-*
 
   upload_pypi:
-    needs: [build_wheels, build_sdist]
+    needs: merge_artifacts
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v4.1.7
