@@ -76,7 +76,6 @@ jobs:
           CIBW_BEFORE_BUILD: >
             rustup default nightly &&
             rustup show
-          MACOSX_DEPLOYMENT_TARGET: 10.13
       - uses: actions/upload-artifact@v4
         with:
           name: artifact-${{ matrix.os }}
