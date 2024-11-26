@@ -69,7 +69,7 @@ class Mean(stats.base.Univariate):
     def update_many(self, X: np.ndarray):
         a = self.n / (self.n + len(X))
         b = len(X) / (self.n + len(X))
-        self._mean = a * self._mean + b * np.mean(X)
+        self._mean = a * self._mean + b * np.mean(X).item()
         self.n += len(X)
 
     def revert(self, x, w=1.0):

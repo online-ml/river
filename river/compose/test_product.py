@@ -83,10 +83,10 @@ def test_issue_1253():
     >>> model = group1 + group1 * group2
     >>> XT = model.transform_many(X)
 
-    >>> XT.memory_usage().sum() // 1000
+    >>> XT.memory_usage().sum().item() // 1000
     85
 
-    >>> XT.sparse.to_dense().memory_usage().sum() // 1000
+    >>> XT.sparse.to_dense().memory_usage().sum().item() // 1000
     4455
 
     >>> X, y = datasets.make_regression(n_samples=6, n_features=2)

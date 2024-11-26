@@ -103,7 +103,7 @@ Of course, this is just a contrived example. We welcome you to check the [introd
 
 ## 🛠 Installation
 
-River is intended to work with **Python 3.8 and above**. Installation can be done with `pip`:
+River is intended to work with **Python 3.10 and above**. Installation can be done with `pip`:
 
 ```sh
 pip install river

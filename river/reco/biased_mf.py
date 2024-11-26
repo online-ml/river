@@ -199,7 +199,7 @@ class BiasedMF(Ranker):
         # Add the dot product of the user and the item latent vectors
         y_pred += np.dot(self.u_latents[user], self.i_latents[item])
 
-        return y_pred
+        return y_pred.item()
 
     def learn_one(self, user, item, y, x=None):
         # Update the global mean

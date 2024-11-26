@@ -67,7 +67,10 @@ class Logical(datasets.base.SyntheticDataset):
         X, Y = self._make_logical(n_tiles=self.n_tiles, shuffle=self.shuffle)
 
         for xi, yi in itertools.zip_longest(X, Y if hasattr(Y, "__iter__") else []):
-            yield dict(zip(self.feature_names, xi)), dict(zip(self.target_names, yi))
+            yield (
+                dict(zip(self.feature_names, xi.tolist())),
+                dict(zip(self.target_names, yi.tolist())),
+            )
 
     def _make_logical(self, n_tiles: int = 1, shuffle: bool = True):
         """Make toy dataset"""
