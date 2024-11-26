@@ -267,7 +267,7 @@ class HOFMRegressor(HOFM, base.Regressor):
 
     def predict_one(self, x):
         x = self._ohe_cat_features(x)
-        return self._raw_dot(x)
+        return self._raw_dot(x).item()
 
 
 class HOFMClassifier(HOFM, base.Classifier):

@@ -212,10 +212,12 @@ class StandardScaler(base.MiniBatchTransformer):
             a = old_count / (old_count + new_count)
             b = new_count / (old_count + new_count)
 
-            self.means[col] = a * old_mean + b * new_mean
+            self.means[col] = (a * old_mean + b * new_mean).item()
             if self.with_std:
-                self.vars[col] = a * old_var + b * new_var + a * b * (old_mean - new_mean) ** 2
-            self.counts[col] += new_count
+                self.vars[col] = (
+                    a * old_var + b * new_var + a * b * (old_mean - new_mean) ** 2
+                ).item()
+            self.counts[col] += new_count.item()
 
     def transform_many(self, X: pd.DataFrame):
         """Scale a mini-batch of features.

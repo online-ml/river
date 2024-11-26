@@ -22,11 +22,12 @@ runs:
       with:
         python-version: ${{ inputs.python-version }}
 
-    - name: Load cached Poetry installation
-      uses: actions/cache@v4
-      with:
-        path: ~/.local # the path depends on the OS
-        key: poetry-2 # increment to reset cache
+    # Getting errors since using not the latest Python version in docs workflows
+    # - name: Load cached Poetry installation
+    #   uses: actions/cache@v4
+    #   with:
+    #     path: ~/.local # the path depends on the OS
+    #     key: poetry-3  # modify to reset cache
 
     - name: Install poetry
       uses: snok/install-poetry@v1

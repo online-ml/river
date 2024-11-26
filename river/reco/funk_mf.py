@@ -127,7 +127,7 @@ class FunkMF(reco.base.Ranker):
         return {"optimizer", "l2", "loss", "clip_gradient", "initializer"}
 
     def predict_one(self, user, item, x=None):
-        return np.dot(self.u_latents[user], self.i_latents[item])
+        return np.dot(self.u_latents[user], self.i_latents[item]).item()
 
     def learn_one(self, user, item, y, x=None):
         # Calculate the gradient of the loss with respect to the prediction

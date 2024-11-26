@@ -209,7 +209,7 @@ class LDA(base.Transformer):
         # Sample empirical topic assignment:
         _, components = self._compute_statistics_components(words_indexes_list)
 
-        return dict(enumerate(components))
+        return dict(enumerate(components.tolist()))
 
     def _update_indexes(self, word_list: typing.Iterable[str]):
         """
