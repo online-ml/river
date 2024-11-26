@@ -15,6 +15,7 @@ jobs:
       - name: Build River
         uses: ./.github/actions/install-env
         with:
+          # Use 3.12 for the docs env waiting for spaCy and srsly to support 3.13
           python-version: "3.12"
 
       - name: Install extra Ubuntu dependencies

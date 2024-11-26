@@ -12,12 +12,12 @@ jobs:
   ubuntu:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Build River
         uses: ./.github/actions/install-env
         with:
-          python-version: "3.12"
+          python-version: "3.13"
           build-root: false
 
       - name: Run pre-commit on all files
