@@ -1,12 +1,14 @@
-import math
+from __future__ import annotations
 
-from collections import *
+import collections
+import math
 
 from river.base.classifier import Classifier
 
 
 def default_mean():
     return 0.0
+
 
 def default_variance():
     return 1.0
@@ -68,8 +70,6 @@ class AdPredictor(Classifier):
 
     """
 
-
-
     def __init__(self, beta=0.1, prior_probability=0.5, epsilon=0.1, num_features=10):
         # Initialization of model parameters
         self.beta = beta
@@ -78,9 +78,8 @@ class AdPredictor(Classifier):
         self.num_features = num_features
         # Initialize weights as a defaultdict for each feature, with mean and variance attributes
 
-        self.means = defaultdict(default_mean)
-        self.variances = defaultdict(default_variance)
-
+        self.means = collections.defaultdict(default_mean)
+        self.variances = collections.defaultdict(default_variance)
 
         # Initialize bias weight based on prior probability
         self.bias_weight = self.prior_bias_weight()
@@ -97,7 +96,7 @@ class AdPredictor(Classifier):
         # Calculate total mean and variance for all active features
 
         total_mean = sum(self.means[f] for f in features) + self.bias_weight
-        total_variance = sum(self.variances[f] for f in features) + self.beta ** 2
+        total_variance = sum(self.variances[f] for f in features) + self.beta**2
         return total_mean, total_variance
 
     def predict_one(self, x):
@@ -119,13 +118,12 @@ class AdPredictor(Classifier):
             mean = self.means[feature]
             variance = self.variances[feature]
 
-            mean_delta = y * variance / math.sqrt(total_variance) * v # Update mean
-            variance_multiplier = 1.0 - variance / total_variance * w # Update variance
+            mean_delta = y * variance / math.sqrt(total_variance) * v  # Update mean
+            variance_multiplier = 1.0 - variance / total_variance * w  # Update variance
 
             # Update weight
             self.means[feature] = mean + mean_delta
-            self.variances[feature]= variance * variance_multiplier
-
+            self.variances[feature] = variance * variance_multiplier
 
     def gaussian_corrections(self, score):
         """gaussian_corrections(score) (method):
@@ -146,14 +144,13 @@ class AdPredictor(Classifier):
         prior_variance = 1.0
         # Adjust variance to manage prior knowledge and current learning balance
         adjusted_variance = (
-                weight["variance"]
-                * prior_variance
-                / ((1.0 - self.epsilon) * prior_variance + self.epsilon * weight["variance"]))
+            weight["variance"]
+            * prior_variance
+            / ((1.0 - self.epsilon) * prior_variance + self.epsilon * weight["variance"])
+        )
         # Adjust mean based on the dynamics, balancing previous and current knowledge
         adjusted_mean = adjusted_variance * (
-                (1.0 - self.epsilon) * weight["mean"] / weight["variance"]
-                + self.epsilon * 0 / prior_variance
+            (1.0 - self.epsilon) * weight["mean"] / weight["variance"]
+            + self.epsilon * 0 / prior_variance
         )
         return {"mean": adjusted_mean, "variance": adjusted_variance}
-
-
