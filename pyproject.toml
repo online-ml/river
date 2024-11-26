@@ -10,7 +10,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "river"
-version = "0.21.2"
+version = "0.22.0"
 description = "Online machine learning in Python"
 readme = "README.md"
 homepage = "https://riverml.xyz/"
@@ -34,9 +34,9 @@ generate-setup-file = true
 script = "build.py"
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.10"
 numpy = ">=1.23.0"
-scipy = "^1.13.1"
+scipy = "^1.14.1"
 pandas = "^2.2.3"
 
 [tool.poetry.group.dev.dependencies]
