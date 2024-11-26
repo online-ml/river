@@ -2,7 +2,7 @@ import math
 
 from collections import *
 
-from river.base import Classifier
+from river.base.classifier import Classifier
 
 
 def default_mean():
