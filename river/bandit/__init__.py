@@ -17,6 +17,7 @@ from .lin_ucb import LinUCBDisjoint
 from .random import RandomPolicy
 from .thompson import ThompsonSampling
 from .ucb import UCB
+from .kl_ucb import Klucb
 
 __all__ = [
     "base",
@@ -31,4 +32,6 @@ __all__ = [
     "ThompsonSampling",
     "UCB",
     "RandomPolicy",
+    "Klucb",
+
 ]

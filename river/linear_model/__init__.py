@@ -12,6 +12,7 @@ from .pa import PAClassifier, PARegressor
 from .perceptron import Perceptron
 from .softmax import SoftmaxRegression
 
+
 __all__ = [
     "base",
     "ALMAClassifier",
@@ -23,4 +24,5 @@ __all__ = [
     "Perceptron",
     "SoftmaxRegression",
     "AdPredictor",
+
 ]
