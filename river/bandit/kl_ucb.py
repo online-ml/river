@@ -5,13 +5,16 @@ import river.bandit
 class KLUCB():
     "define the main class for the Klucb"
 
-    def __init__(self, n_arms, horizon, c=0):
+    def __init__(self, n_arms, horizon, c):
         self.n_arms = n_arms
         self.horizon = horizon
         self.c = c
         self.arm_count = [1 for _ in range (n_arms)]
         self.rewards = [0.0 for _ in range (n_arms)]
         self.arm = 0
+
+    def calculate_reward(self, arm):
+        return 1 if random.random() < self.rewards[arm] else 0
 
     def update(self, arm, reward):
         self.arm_count[arm] += 1
@@ -32,7 +35,7 @@ class KLUCB():
         if n_t == 0:
             return float('inf')  # Unseen arm
         empirical_mean = self.rewards[arm] / n_t
-        log_t_over_n = math.log(self.t) / n_t
+        log_t_over_n = math.log(math.log(arm)) / n_t
         c_factor = self.c * log_t_over_n
 
         # Binary search to find the q that satisfies the KL-UCB condition
@@ -45,7 +48,6 @@ class KLUCB():
                 high = mid
             else:
                 low = mid
-        return low
 
-    def pull_arm(self, arm):
-        return 1 if random.random() < self.rewards[arm] else 0
+        selected_arm = low
+        return selected_arm
