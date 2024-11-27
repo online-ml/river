@@ -41,7 +41,7 @@ class HoeffdingRaceClassifier(base.Classifier):
     ...             break
     ...
     >>> hoeffding_race.remaining_models
-    {'KNN'}
+    ['KNN']
     """
 
     def __init__(
@@ -122,8 +122,8 @@ class HoeffdingRaceRegressor(base.Regressor):
     ...     if hoeffding_race.single_model_remaining():
     ...         break
     ...
->>> print(hoeffding_race.remaining_models)
-['Log_Reg']
+    >>> print(hoeffding_race.remaining_models)
+    ['Log_Reg']
     
     """
 
