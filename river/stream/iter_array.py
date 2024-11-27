@@ -75,14 +75,14 @@ def iter_array(
     if isinstance(X[0], str):
 
         def handle_features(x):
-            return x
+            return x.tolist() if isinstance(x, np.ndarray) else x
 
     # If not we assume each row if a set of features, and will convert them to a dictionary
     else:
         feature_names = list(range(len(X[0]))) if feature_names is None else feature_names
 
         def handle_features(x):
-            return dict(zip(feature_names, xi))
+            return dict(zip(feature_names, xi.tolist() if isinstance(xi, np.ndarray) else xi))
 
     multioutput = y is not None and not np.isscalar(y[0])
     if multioutput and target_names is None:
@@ -97,8 +97,8 @@ def iter_array(
 
     if multioutput:
         for xi, yi in itertools.zip_longest(X, y if hasattr(y, "__iter__") else []):  # type: ignore
-            yield handle_features(xi), dict(zip(target_names, yi))  # type: ignore
+            yield handle_features(xi), dict(zip(target_names, yi.tolist()))  # type: ignore
 
     else:
         for xi, yi in itertools.zip_longest(X, y if hasattr(y, "__iter__") else []):  # type: ignore
-            yield handle_features(xi), yi
+            yield handle_features(xi), yi.item() if isinstance(yi, np.generic) else yi

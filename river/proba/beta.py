@@ -92,20 +92,20 @@ class Beta(base.ContinuousDistribution):
         else:
             self.beta -= 1
 
-    def __call__(self, p: float):
+    def __call__(self, p: float) -> float:
         return (
             p ** (self.alpha - 1) * (1 - p) ** (self.beta - 1) / _beta_func(self.alpha, self.beta)
         )
 
-    def sample(self):
+    def sample(self) -> float:
         return self._rng.betavariate(self.alpha, self.beta)
 
     @property
-    def mode(self):
+    def mode(self) -> float:
         try:
             return (self.alpha - 1) / (self.alpha + self.beta - 2)
         except ZeroDivisionError:
             return 0.5
 
-    def cdf(self, x):
-        return scipy.special.betainc(self.alpha, self.beta, x)
+    def cdf(self, x) -> float:
+        return scipy.special.betainc(self.alpha, self.beta, x).item()

@@ -7,62 +7,64 @@ on:
       - "*"
 
 jobs:
-  build_wheels:
-    name: Build wheels on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
+  build_linux_wheels:
+    name: Build ${{ matrix.linux_tag }} wheels with cp${{ matrix.python-version }}
+    runs-on: ubuntu-latest
     strategy:
-      # https://github.com/actions/runner-images/tree/main
       matrix:
-        os:
-          [
-            ubuntu-20.04,
-            ubuntu-22.04,
-            windows-2019,
-            windows-2022,
-            macos-12,
-            macos-13,
-            macos-14,
-          ]
-
+        linux_tag: ["manylinux", "musllinux"]
+        python-version: ["310", "311", "312", "313"]
     steps:
-      - uses: actions/checkout@v3
-
-      - name: Set up rust
-        if: matrix.os != 'ubuntu-20.04' && matrix.os != 'ubuntu-22.04'
-        uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: nightly
-          override: true
-
-      - run: rustup target add aarch64-apple-darwin && rustup target add x86_64-apple-darwin
-        if: matrix.os == 'macos-12' || matrix.os == 'macos-13' || matrix.os == 'macos-14'
-
-      - run: rustup toolchain install stable-i686-pc-windows-msvc
-        if: matrix.os == 'windows-2019' || matrix.os == 'windows-2022'
-
-      - run: rustup target add i686-pc-windows-msvc
-        if: matrix.os == 'windows-2019' || matrix.os == 'windows-2022'
-
+      - uses: actions/checkout@v4
       - name: Set up QEMU
-        if: matrix.os == 'ubuntu-20.04' || matrix.os == 'ubuntu-22.04'
         uses: docker/setup-qemu-action@v3
         with:
           platforms: all
-
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.19.2
+        uses: pypa/cibuildwheel@v2.22.0
         timeout-minutes: 720
         env:
-          CIBW_BUILD: "cp39-* cp310-* cp311-* cp312-*"
+          CIBW_BUILD: "cp${{ matrix.python-version }}-${{ matrix.linux_tag }}_*"
           CIBW_ARCHS_LINUX: "x86_64 i686 aarch64"
-          # CIBW_ARCHS_MACOS: "x86_64 arm64"
-          CIBW_ARCHS_MACOS: "universal2"
-          # We don't build ARM64 wheels yet because there's a Rust issue
-          CIBW_ARCHS_WINDOWS: "AMD64 x86"
-          # Rust nighlty doesn't seem to be available for musl linux on i686
           CIBW_SKIP: "*-musllinux_i686"
+          CIBW_MANYLINUX_X86_64_IMAGE: "manylinux2014"
+          CIBW_MANYLINUX_I686_IMAGE: "manylinux2014"
+          CIBW_MANYLINUX_AARCH64_IMAGE: "manylinux2014"
+          CIBW_MUSLLINUX_X86_64_IMAGE: "musllinux_1_1"
+          CIBW_MUSLLINUX_I686_IMAGE: "musllinux_1_1"
+          CIBW_MUSLLINUX_AARCH64_IMAGE: "musllinux_1_1"
+          CIBW_ENVIRONMENT: 'PATH="$HOME/.cargo/bin:$PATH"'
+          CIBW_ENVIRONMENT_LINUX: 'PATH="$HOME/.cargo/bin:$PATH" CARGO_NET_GIT_FETCH_WITH_CLI="true"'
+          CIBW_BEFORE_BUILD: >
+            rustup default nightly &&
+            rustup show
+          CIBW_BEFORE_BUILD_LINUX: >
+            curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain=nightly --profile=minimal -y &&
+            rustup show
+      - uses: actions/upload-artifact@v4
+        with:
+          name: artifact-${{ matrix.linux_tag }}-cp${{ matrix.python-version }}
+          path: ./wheelhouse/*.whl
 
+  build_macos_wheels:
+    name: Build wheels on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-13, macos-14]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: nightly
+      - run: rustup target add aarch64-apple-darwin && rustup target add x86_64-apple-darwin
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v2.22.0
+        timeout-minutes: 720
+        env:
+          CIBW_BUILD: "cp310-* cp311-* cp312-* cp313-*"
+          CIBW_ARCHS_MACOS: "universal2"
           # arm64 and universal2 wheels are tagged with x86_64 because there's an issue with Poetry
           # More information here: https://cibuildwheel.readthedocs.io/en/stable/faq/#how-to-cross-compile (CTRL + F "poetry")
           # https://github.com/pypa/cibuildwheel/issues/1415
@@ -70,56 +72,78 @@ jobs:
             ls {dest_dir} &&
             delocate-wheel --require-archs {delocate_archs} -w {dest_dir} -v {wheel} &&
             for file in {dest_dir}/*.whl ; do mv $file ${file//x86_64/universal2} ; done
-
-          CIBW_MANYLINUX_X86_64_IMAGE: "manylinux2014"
-          CIBW_MANYLINUX_I686_IMAGE: "manylinux2014"
-          CIBW_MANYLINUX_AARCH64_IMAGE: "manylinux2014"
-          CIBW_MANYLINUX_PYPY_X86_64_IMAGE: "manylinux2014"
-          CIBW_MANYLINUX_PYPY_I686_IMAGE: "manylinux2014"
-          CIBW_MANYLINUX_PYPY_AARCH64_IMAGE: "manylinux2014"
-
-          CIBW_MUSLLINUX_X86_64_IMAGE: "musllinux_1_1"
-          CIBW_MUSLLINUX_I686_IMAGE: "musllinux_1_1"
-          CIBW_MUSLLINUX_AARCH64_IMAGE: "musllinux_1_1"
-
           CIBW_ENVIRONMENT: 'PATH="$HOME/.cargo/bin:$PATH"'
-          # Fix the following error: error: cargo rustc --lib --message-format=json-render-diagnostics --manifest-path Cargo.toml --release -v --features pyo3/extension-module -- --crate-type cdylibfailed with code -9
-          # You need to set a second environment variable CARGO_NET_GIT_FETCH_WITH_CLI="true" for linux environments
-          # Solutio found here: https://github.com/rust-lang/cargo/issues/10583
-          CIBW_ENVIRONMENT_LINUX: 'PATH="$HOME/.cargo/bin:$PATH" CARGO_NET_GIT_FETCH_WITH_CLI="true"'
-          CIBW_ENVIRONMENT_WINDOWS: 'PATH="$UserProfile\.cargo\bin;$PATH"'
-
           CIBW_BEFORE_BUILD: >
             rustup default nightly &&
             rustup show
-          CIBW_BEFORE_BUILD_LINUX: >
-            curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain=nightly --profile=minimal -y &&
-            rustup show
-
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v4
         with:
+          name: artifact-${{ matrix.os }}
+          path: ./wheelhouse/*.whl
+
+  build_windows_wheels:
+    name: Build wheels on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-2019, windows-2022]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: nightly
+      - run: rustup toolchain install stable-i686-pc-windows-msvc
+      - run: rustup target add i686-pc-windows-msvc
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v2.22.0
+        timeout-minutes: 720
+        env:
+          CIBW_BUILD: "cp310-* cp311-* cp312-* cp313-*"
+          CIBW_ARCHS_WINDOWS: "AMD64 x86"
+          CIBW_ENVIRONMENT: 'PATH="$HOME/.cargo/bin:$PATH"'
+          CIBW_ENVIRONMENT_WINDOWS: 'PATH="$UserProfile\.cargo\bin;$PATH"'
+          CIBW_BEFORE_BUILD: >
+            rustup default nightly &&
+            rustup show
+      - uses: actions/upload-artifact@v4
+        with:
+          name: artifact-${{ matrix.os }}
           path: ./wheelhouse/*.whl
 
   build_sdist:
     name: Build source distribution
+    # Can't use more than 12 jobs in parallel
+    needs: [build_macos_wheels]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Build River
         uses: ./.github/actions/install-env
         with:
-          python-version: "3.12"
+          python-version: "3.13"
 
       - name: Build dist
         run: poetry build
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
+          name: artifact-sdist
           path: dist/*.tar.gz
 
+  merge_artifacts:
+    runs-on: ubuntu-latest
+    needs: [build_linux_wheels, build_macos_wheels, build_windows_wheels, build_sdist]
+    steps:
+      - name: Merge Artifacts
+        uses: actions/upload-artifact/merge@v4
+        with:
+          name: artifact
+          pattern: artifact-*
+
   upload_pypi:
-    needs: [build_wheels, build_sdist]
+    needs: merge_artifacts
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v4.1.7
@@ -127,7 +151,7 @@ jobs:
           name: artifact
           path: dist
 
-      - uses: pypa/gh-action-pypi-publish@v1.8.10
+      - uses: pypa/gh-action-pypi-publish@v1.12.2
         with:
           user: __token__
           password: ${{ secrets.PYPI_API_TOKEN }}

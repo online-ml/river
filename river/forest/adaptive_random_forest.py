@@ -160,10 +160,12 @@ class BaseForest(base.Ensemble):
             # Update performance evaluator
             self._metrics[i].update(
                 y_true=y,
-                y_pred=model.predict_proba_one(x)
-                if isinstance(self.metric, metrics.base.ClassificationMetric)
-                and not self.metric.requires_labels
-                else y_pred,
+                y_pred=(
+                    model.predict_proba_one(x)
+                    if isinstance(self.metric, metrics.base.ClassificationMetric)
+                    and not self.metric.requires_labels
+                    else y_pred
+                ),
             )
 
             k = poisson(rate=self.lambda_value, rng=self._rng)
