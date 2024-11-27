@@ -2,7 +2,7 @@ import math
 import river.bandit
 
 class Klucb(river.bandit):
-    "define the main class for the Klucb algorithm"
+    "define the main class for the Klucb"
 
     def __init__(self, n_arms, horizon, c=0):
         self.n_arms = n_arms
