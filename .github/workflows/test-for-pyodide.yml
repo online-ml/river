@@ -28,9 +28,7 @@ jobs:
           CIBW_ENVIRONMENT_LINUX: 'PATH="$HOME/.cargo/bin:$PATH" CARGO_NET_GIT_FETCH_WITH_CLI="true"'
           CIBW_BEFORE_BUILD: >
             rustup default nightly &&
-            rustup show
-          CIBW_BEFORE_BUILD_LINUX: >
-            curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain=nightly --profile=minimal -y &&
+            rustup target add wasm32-unknown-emscripten &&
             rustup show
           CIBW_TEST_REQUIRES: pytest pytest-xdist
           CIBW_TEST_COMMAND: pytest {project} -m "not datasets" --durations=10 -n logical
