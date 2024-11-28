@@ -84,17 +84,16 @@ class HoeffdingRaceClassifier(base.Classifier):
                     break
 
     def predict_one(self, x):
-        
         if len(self.remaining_models) == 1:
             return self.models[list(self.remaining_models)[0]].predict_one(x)
-        return None  
+        return None
 
     def single_model_remaining(self):
         return len(self.remaining_models) == 1
 
 
 class HoeffdingRaceRegressor(base.Regressor):
-    """ 
+    """
     HoeffdingRace-based model selection for regression.
 
     Each models is associated to a performance (here its accuracy). When the model is considered too inaccurate by the hoeffding bound,
@@ -124,7 +123,7 @@ class HoeffdingRaceRegressor(base.Regressor):
     ...
     >>> print(hoeffding_race.remaining_models)
     ['Log_Reg']
-    
+
     """
 
     def __init__(
@@ -165,7 +164,7 @@ class HoeffdingRaceRegressor(base.Regressor):
     def predict_one(self, x):
         if len(self.remaining_models) == 1:
             return self.models[list(self.remaining_models)[0]].predict_one(x)
-        return None  
+        return None
 
     def single_model_remaining(self):
         """
