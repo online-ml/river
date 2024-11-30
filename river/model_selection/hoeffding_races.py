@@ -44,12 +44,16 @@ class HoeffdingRaceClassifier(base.Classifier):
     ['KNN']
     """
 
-    def __init__(
-        self,
-        models={"KNN": neighbors.KNNClassifier(), "Log_Reg": linear_model.LogisticRegression()},
-        delta=0.05,
-        metric=metrics.Accuracy(),
-    ):
+    def __init__(self, models=None, delta=0.05, metric=None):
+        if models is None:
+            models = {
+                "KNN": neighbors.KNNClassifier(),
+                "Log_Reg": linear_model.LogisticRegression(),
+            }
+        if metric is None:
+            metric = metrics.Accuracy()
+
+        # Assign to instance variables
         self.models = models
         self.delta = delta
         self.metric = metric
@@ -126,12 +130,16 @@ class HoeffdingRaceRegressor(base.Regressor):
 
     """
 
-    def __init__(
-        self,
-        models={"KNN": neighbors.KNNRegressor(), "Log_Reg": linear_model.LinearRegression()},
-        delta=0.05,
-        metric=metrics.MAE(),
-    ):
+    def __init__(self, models=None, delta=0.05, metric=None):
+        if models is None:
+            models = {
+                "KNN": neighbors.KNNRegressor(),
+                "Log_Reg": linear_model.LinearRegression(),
+            }
+        if metric is None:
+            metric = metrics.MAE()
+
+        # Assign to instance variables
         self.models = models
         self.delta = delta
         self.metric = metric
