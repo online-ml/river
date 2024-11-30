@@ -11,12 +11,14 @@ class KLUCB():
         self.c = c
         self.arm_count = [1 for _ in range (n_arms)]
         self.rewards = [0.0 for _ in range (n_arms)]
-        self.arm = 0
+        self.t = 0
+
+
 
     def update(self, arm, reward):
         self.arm_count[arm] += 1
         self.rewards[arm] += reward
-        self.arm = arm
+        self.t += 1
 
     def kl_divergence(self, p, q):
         if p == 0 :
@@ -28,11 +30,12 @@ class KLUCB():
         return p*math.log(p/q) + (1-p)*math.log((1-p)/(1-q))
 
     def kl_index(self, arm):
+
         n_t = self.arm_count[arm]
         if n_t == 0:
             return float('inf')  # Unseen arm
         empirical_mean = self.rewards[arm] / n_t
-        log_t_over_n = math.log(self.t) / n_t
+        log_t_over_n = math.log(self.t+1) / n_t
         c_factor = self.c * log_t_over_n
 
         # Binary search to find the q that satisfies the KL-UCB condition
@@ -48,4 +51,5 @@ class KLUCB():
         return low
 
     def pull_arm(self, arm):
-        return 1 if random.random() < self.rewards[arm] else 0
+        prob = self.rewards[arm] / self.arm_count[arm] #if self.arm_count[arm] > 0 else 0
+        return 1 if random.random() < prob else 0
