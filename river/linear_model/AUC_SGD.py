@@ -132,7 +132,7 @@ class AUC_SGD:
 
     def getTrain(self, X_train, y_train):
         """
-        Implements the stochastic gradient ascent method to optimize theta for a maximised AUC training score.
+        Implements the stochastic gradient ascent method to optimize theta for a maximized AUC training score.
 
         Parameters:
         - X_train: Training feature matrix.
@@ -146,7 +146,7 @@ class AUC_SGD:
 
     def getTest(self, X_train, X_test, y_train):
         """
-        Implements the stochastic gradient ascent method to optimize theta for a maximised AUC testing score.
+        Implements the stochastic gradient ascent method to optimize theta for a maximized AUC testing score.
 
         Parameters:
         - X_train: Training feature matrix.
