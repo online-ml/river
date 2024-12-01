@@ -48,10 +48,10 @@ class AUC_SGD:
     >>> theta = np.random.randn(X_train[0].shape[0])
     >>> test_auc = model.getTest(X_train, X_test, y_train)
     >>> train_auc = model.getTrain(X_train, y_train)
-    >>> print(f"{round(roc_auc_score(y_train, train_auc) * 100)}" + "%")
+    >>> print(f"{round(roc_auc_score(y_train, train_auc) * 100)}%")
     89%
-    >>> print(f"{round(roc_auc_score(y_test, test_auc) * 100)}" + "%")
-    88%
+    >>> print(f"{round(roc_auc_score(y_test, test_auc) * 100)}%")
+    89%
     """
 
     def __init__(self, epochs=900, lr=0.5, n_mc=500, gamma=1e-4, eps=0.01):
