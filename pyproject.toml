@@ -175,7 +175,6 @@ ignore_missing_imports = true
 [[tool.mypy.overrides]]
 # Disable strict mode for all non fully-typed modules
 module = [
-    "river.base.*",
     "river.metrics.*",
     "river.utils.*",
     "river.stats.*",
