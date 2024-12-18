@@ -152,7 +152,7 @@ class StandardScaler(base.MiniBatchTransformer):
 
     """
 
-    def __init__(self, with_std=True):
+    def __init__(self, with_std=True) -> None:
         self.with_std = with_std
         self.counts = collections.Counter()
         self.means = collections.defaultdict(float)

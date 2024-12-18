@@ -274,7 +274,7 @@ class Pipeline(base.Estimator):
 
     _LEARN_UNSUPERVISED_DURING_PREDICT = False
 
-    def __init__(self, *steps):
+    def __init__(self, *steps) -> None:
         self.steps = collections.OrderedDict()
         for step in steps:
             self |= step
@@ -289,12 +289,12 @@ class Pipeline(base.Estimator):
         """Just for convenience."""
         return len(self.steps)
 
-    def __or__(self, other):
+    def __or__(self, other) -> Pipeline:
         """Insert a step at the end of the pipeline."""
         self._add_step(other, at_start=False)
         return self
 
-    def __ror__(self, other):
+    def __ror__(self, other) -> Pipeline:
         """Insert a step at the start of the pipeline."""
         self._add_step(other, at_start=True)
         return self

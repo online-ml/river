@@ -334,6 +334,7 @@ class AMRules(base.Regressor):
         return self._n_drifts_detected
 
     def _new_rule(self) -> RegRule:
+        predictor: base.Regressor
         if self.pred_type == self._PRED_MEAN:
             predictor = MeanRegressor()
         elif self.pred_type == self._PRED_MODEL:

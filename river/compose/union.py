@@ -156,7 +156,7 @@ class TransformerUnion(base.MiniBatchTransformer):
 
     """
 
-    def __init__(self, *transformers):
+    def __init__(self, *transformers) -> None:
         self.transformers = {}
         for transformer in transformers:
             if transformer.__class__ == self.__class__:

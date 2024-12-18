@@ -4,7 +4,7 @@ import collections
 import itertools
 import math
 
-from river import base, linear_model, preprocessing, time_series
+from river import base, linear_model, preprocessing, time_series, compose
 
 __all__ = ["SNARIMAX"]
 
@@ -280,7 +280,7 @@ class SNARIMAX(time_series.base.Forecaster):
         sp: int = 0,
         sd: int = 0,
         sq: int = 0,
-        regressor: base.Regressor | None = None,
+        regressor: base.Regressor | compose.Pipeline | None = None,
     ):
         self.p = p
         self.d = d
