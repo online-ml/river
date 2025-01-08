@@ -9,7 +9,7 @@ class Estimator(base.Base, abc.ABC):
     """An estimator."""
 
     @property
-    def _supervised(self):
+    def _supervised(self) -> bool:
         """Indicates whether or not the estimator is supervised or not.
 
         This is useful internally for determining if an estimator expects to be provided with a `y`
@@ -35,7 +35,7 @@ class Estimator(base.Base, abc.ABC):
             return other.__or__(self)
         return compose.Pipeline(other, self)
 
-    def _repr_html_(self):
+    def _repr_html_(self) -> str:
         from xml.etree import ElementTree as ET
 
         from river.base import viz

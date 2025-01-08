@@ -22,10 +22,10 @@ class Base:
 
     """
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.__class__.__name__
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return _repr_obj(obj=self)
 
     @classmethod
@@ -71,7 +71,7 @@ class Base:
 
         return params
 
-    def clone(self, new_params: dict | None = None, include_attributes=False):
+    def clone(self, new_params: dict | None = None, include_attributes: bool = False):
         """Return a fresh estimator with the same parameters.
 
         The clone has the same parameters but has not been updated with any data.
@@ -205,7 +205,7 @@ class Base:
     def _mutable_attributes(self) -> set:
         return set()
 
-    def mutate(self, new_attrs: dict):
+    def mutate(self, new_attrs: dict) -> None:
         """Modify attributes.
 
         This changes parameters inplace. Although you can change attributes yourself, this is the
@@ -297,7 +297,7 @@ class Base:
         """
 
         def _mutate(obj, new_attrs):
-            def is_class_attr(name, attr):
+            def is_class_attr(name: str, attr):
                 return hasattr(getattr(obj, name), "mutate") and isinstance(attr, dict)
 
             for name, attr in new_attrs.items():
@@ -336,7 +336,7 @@ class Base:
                 and isinstance(param[1], dict)
             )
 
-        def find(params):
+        def find(params) -> bool:
             if not isinstance(params, dict):
                 return False
             for name, param in params.items():
@@ -396,7 +396,7 @@ class Base:
         return utils.pretty.humanize_bytes(self._raw_memory_usage)
 
 
-def _log_method_calls(self, name, class_condition, method_condition):
+def _log_method_calls(self, name: str, class_condition, method_condition):
     method = object.__getattribute__(self, name)
     if (
         not name.startswith("_")

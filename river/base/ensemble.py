@@ -17,7 +17,7 @@ class Ensemble(UserList):
 
     """
 
-    def __init__(self, models: Iterator[Estimator]):
+    def __init__(self, models: Iterator[Estimator]) -> None:
         super().__init__(models)
 
         if len(self) < self._min_number_of_models:
@@ -27,7 +27,7 @@ class Ensemble(UserList):
             )
 
     @property
-    def _min_number_of_models(self):
+    def _min_number_of_models(self) -> int:
         return 2
 
     @property
@@ -49,7 +49,7 @@ class WrapperEnsemble(Ensemble, Wrapper):
 
     """
 
-    def __init__(self, model, n_models, seed):
+    def __init__(self, model, n_models: int, seed: int) -> None:
         super().__init__(model.clone() for _ in range(n_models))
         self.model = model
         self.n_models = n_models

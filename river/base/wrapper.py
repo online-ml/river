@@ -12,11 +12,11 @@ class Wrapper(ABC):
         """Provides access to the wrapped model."""
 
     @property
-    def _labelloc(self):
+    def _labelloc(self) -> str:
         """Indicates location of the wrapper name when drawing pipelines."""
         return "t"  # for top
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{type(self).__name__}({self._wrapped_model})"
 
     def _more_tags(self):

@@ -9,7 +9,7 @@ class Clusterer(estimator.Estimator):
     """A clustering model."""
 
     @property
-    def _supervised(self):
+    def _supervised(self) -> bool:
         return False
 
     @abc.abstractmethod

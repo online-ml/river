@@ -69,11 +69,11 @@ class Classifier(estimator.Estimator):
         return None
 
     @property
-    def _multiclass(self):
+    def _multiclass(self) -> bool:
         return False
 
     @property
-    def _supervised(self):
+    def _supervised(self) -> bool:
         return True
 
 

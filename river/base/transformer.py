@@ -54,7 +54,7 @@ class Transformer(base.Estimator, BaseTransformer):
     """A transformer."""
 
     @property
-    def _supervised(self):
+    def _supervised(self) -> bool:
         return False
 
     def learn_one(self, x: dict) -> None:
@@ -78,7 +78,7 @@ class SupervisedTransformer(base.Estimator, BaseTransformer):
     """A supervised transformer."""
 
     @property
-    def _supervised(self):
+    def _supervised(self) -> bool:
         return True
 
     def learn_one(self, x: dict, y: base.typing.Target) -> None:
@@ -134,7 +134,7 @@ class MiniBatchSupervisedTransformer(Transformer):
     """A supervised transformer that can operate on mini-batches."""
 
     @property
-    def _supervised(self):
+    def _supervised(self) -> bool:
         return True
 
     @abc.abstractmethod

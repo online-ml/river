@@ -3,7 +3,7 @@ from __future__ import annotations
 from river import compose, datasets, linear_model, optim, preprocessing, stats, time_series
 
 
-def test_clone_estimator():
+def test_clone_estimator() -> None:
     obj = linear_model.LinearRegression(l2=42)
     obj.learn_one({"x": 3}, 6)
 
@@ -14,7 +14,7 @@ def test_clone_estimator():
     assert new.weights != obj.weights
 
 
-def test_clone_include_attributes():
+def test_clone_include_attributes() -> None:
     var = stats.Var()
     var.update(1)
     var.update(2)
@@ -25,7 +25,7 @@ def test_clone_include_attributes():
     assert var.clone(include_attributes=True)._S == 2
 
 
-def test_clone_pipeline():
+def test_clone_pipeline() -> None:
     obj = preprocessing.StandardScaler() | linear_model.LinearRegression(l2=42)
     obj.learn_one({"x": 3}, 6)
 
@@ -37,7 +37,7 @@ def test_clone_pipeline():
     assert new["LinearRegression"].weights != obj["LinearRegression"].weights
 
 
-def test_clone_idempotent():
+def test_clone_idempotent() -> None:
     model = preprocessing.StandardScaler() | linear_model.LogisticRegression(
         optimizer=optim.Adam(), l2=0.1
     )
@@ -53,7 +53,7 @@ def test_clone_idempotent():
         clone.learn_one(x, y)
 
 
-def test_memory_usage():
+def test_memory_usage() -> None:
     model = preprocessing.StandardScaler() | linear_model.LogisticRegression()
 
     # We can't test the exact value because it depends on the platform and the Python version
@@ -61,7 +61,7 @@ def test_memory_usage():
     assert isinstance(model._memory_usage, str)
 
 
-def test_mutate():
+def test_mutate() -> None:
     """
 
     >>> from river import datasets, linear_model, optim, preprocessing
@@ -114,13 +114,13 @@ def test_mutate():
     """
 
 
-def test_clone_positional_args():
+def test_clone_positional_args() -> None:
     assert compose.Select(1, 2, 3).clone().keys == {1, 2, 3}
     assert compose.Discard("a", "b", "c").clone().keys == {"a", "b", "c"}
     assert compose.SelectType(float, int).clone().types == (float, int)
 
 
-def test_clone_nested_pipeline():
+def test_clone_nested_pipeline() -> None:
     model = time_series.SNARIMAX(
         p=2,
         d=1,

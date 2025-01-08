@@ -20,7 +20,7 @@ class _BaseDriftDetector(base.Base):
 
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self._drift_detected = False
 
     def _reset(self) -> None:
@@ -40,11 +40,11 @@ class _BaseDriftAndWarningDetector(_BaseDriftDetector):
 
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         self._warning_detected = False
 
-    def _reset(self):
+    def _reset(self) -> None:
         super()._reset()
         self._warning_detected = False
 
