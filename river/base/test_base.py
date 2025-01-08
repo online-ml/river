@@ -8,6 +8,7 @@ def test_clone_estimator() -> None:
     obj.learn_one({"x": 3}, 6)
 
     new = obj.clone({"l2": 21})
+    assert type(new) is type(obj)
     assert new.l2 == 21
     assert obj.l2 == 42
     assert new.weights == {}

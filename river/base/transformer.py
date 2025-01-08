@@ -25,10 +25,10 @@ class BaseTransformer:
     def __mul__(self, other):
         from river import compose
 
-        if isinstance(other, Transformer) or isinstance(other, compose.Pipeline):
+        if isinstance(other, BaseTransformer) or isinstance(other, compose.Pipeline):
             return compose.TransformerProduct(self, other)
 
-        return compose.Grouper(transformer=self, by=other)
+        return compose.Grouper(transformer=self, by=other) # type: ignore[arg-type]
 
     def __rmul__(self, other):
         """Creates a Grouper."""

@@ -10,6 +10,8 @@ import sys
 import types
 import typing
 
+import typing_extensions
+
 
 class Base:
     """Base class that is inherited by the majority of classes in River.
@@ -29,7 +31,7 @@ class Base:
         return _repr_obj(obj=self)
 
     @classmethod
-    def _unit_test_params(cls):
+    def _unit_test_params(cls) -> typing.Iterator[dict[str, typing.Any]]:
         """Instantiates an object with default arguments.
 
         Most parameters of each object have a default value. However, this isn't always the case,
@@ -71,7 +73,7 @@ class Base:
 
         return params
 
-    def clone(self, new_params: dict | None = None, include_attributes: bool = False):
+    def clone(self, new_params: dict[str, typing.Any] | None = None, include_attributes: bool = False) -> typing_extensions.Self:
         """Return a fresh estimator with the same parameters.
 
         The clone has the same parameters but has not been updated with any data.
@@ -167,7 +169,7 @@ class Base:
 
         """
 
-        def is_class_param(param):
+        def is_class_param(param) -> bool:
             # See expand_param_grid to understand why this is necessary
             return (
                 isinstance(param, tuple)
@@ -202,10 +204,10 @@ class Base:
         return clone
 
     @property
-    def _mutable_attributes(self) -> set:
+    def _mutable_attributes(self) -> set[str]:
         return set()
 
-    def mutate(self, new_attrs: dict) -> None:
+    def mutate(self, new_attrs: dict[str, typing.Any]) -> None:
         """Modify attributes.
 
         This changes parameters inplace. Although you can change attributes yourself, this is the
@@ -296,8 +298,8 @@ class Base:
 
         """
 
-        def _mutate(obj, new_attrs):
-            def is_class_attr(name: str, attr):
+        def _mutate(obj, new_attrs) -> None:
+            def is_class_attr(name: str, attr) -> bool:
                 return hasattr(getattr(obj, name), "mutate") and isinstance(attr, dict)
 
             for name, attr in new_attrs.items():
@@ -318,7 +320,7 @@ class Base:
         _mutate(obj=self, new_attrs=new_attrs)
 
     @property
-    def _is_stochastic(self):
+    def _is_stochastic(self) -> bool:
         """Indicates if the model contains an unset seed parameter.
 
         The convention in River is to control randomness by exposing a seed parameter. This seed
@@ -329,14 +331,14 @@ class Base:
 
         """
 
-        def is_class_param(param):
+        def is_class_param(param) -> bool:
             return (
                 isinstance(param, tuple)
                 and inspect.isclass(param[0])
                 and isinstance(param[1], dict)
             )
 
-        def find(params) -> bool:
+        def find(params: dict[str, typing.Any]) -> bool:
             if not isinstance(params, dict):
                 return False
             for name, param in params.items():
@@ -354,7 +356,7 @@ class Base:
 
         import numpy as np
 
-        buffer = collections.deque([self])
+        buffer: collections.deque[typing.Any] = collections.deque([self])
         seen = set()
         size = 0
         while len(buffer) > 0:
@@ -369,7 +371,7 @@ class Base:
                 buffer.extend([k for k in obj.keys()])
                 buffer.extend([v for v in obj.values()])
             elif hasattr(obj, "__dict__"):  # Save object contents
-                contents: dict = vars(obj)
+                contents= vars(obj)
                 size += sys.getsizeof(contents)
                 buffer.extend([k for k in contents.keys()])
                 buffer.extend([v for v in contents.values()])
