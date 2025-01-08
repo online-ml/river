@@ -384,7 +384,7 @@ class Base:
             elif hasattr(obj, "__iter__") and not (
                 isinstance(obj, str) or isinstance(obj, bytes) or isinstance(obj, bytearray)
             ):
-                buffer.extend([i for i in obj])  # type: ignore
+                buffer.extend([i for i in obj])
 
         return size
 
@@ -487,7 +487,7 @@ def _repr_obj(obj, show_modules: bool = False, depth: int = 0) -> str:
 
     params = {
         name: getattr(obj, name)
-        for name, param in inspect.signature(obj.__init__).parameters.items()  # type: ignore
+        for name, param in inspect.signature(obj.__init__).parameters.items()
         if not (
             param.name == "args"
             and param.kind == param.VAR_POSITIONAL
