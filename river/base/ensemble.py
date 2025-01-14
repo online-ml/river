@@ -8,7 +8,7 @@ from .estimator import Estimator
 from .wrapper import Wrapper
 
 
-class Ensemble(UserList):
+class Ensemble(UserList[Estimator]):
     """An ensemble is a model which is composed of a list of models.
 
     Parameters
@@ -31,7 +31,7 @@ class Ensemble(UserList):
         return 2
 
     @property
-    def models(self) -> list:
+    def models(self) -> list[Estimator]:
         return self.data
 
 

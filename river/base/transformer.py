@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import abc
 import typing
+from typing import Any
 
 from river import base, compose
 
@@ -35,7 +36,7 @@ class BaseTransformer:
         return self * other
 
     @abc.abstractmethod
-    def transform_one(self, x: dict) -> dict:
+    def transform_one(self, x: dict[base.typing.FeatureName, Any]) -> dict[base.typing.FeatureName, Any]:
         """Transform a set of features `x`.
 
         Parameters
@@ -57,7 +58,7 @@ class Transformer(base.Estimator, BaseTransformer):
     def _supervised(self) -> bool:
         return False
 
-    def learn_one(self, x: dict) -> None:
+    def learn_one(self, x: dict[base.typing.FeatureName, Any]) -> None:
         """Update with a set of features `x`.
 
         A lot of transformers don't actually have to do anything during the `learn_one` step
@@ -81,7 +82,7 @@ class SupervisedTransformer(base.Estimator, BaseTransformer):
     def _supervised(self) -> bool:
         return True
 
-    def learn_one(self, x: dict, y: base.typing.Target) -> None:
+    def learn_one(self, x: dict[base.typing.FeatureName, Any], y: base.typing.Target) -> None:
         """Update with a set of features `x` and a target `y`.
 
         Parameters
