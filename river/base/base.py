@@ -169,7 +169,7 @@ class Base:
 
         """
 
-        def is_class_param(param) -> bool:
+        def is_class_param(param: typing.Any) -> bool:
             # See expand_param_grid to understand why this is necessary
             return (
                 isinstance(param, tuple)
@@ -298,8 +298,8 @@ class Base:
 
         """
 
-        def _mutate(obj, new_attrs) -> None:
-            def is_class_attr(name: str, attr) -> bool:
+        def _mutate(obj: typing.Any, new_attrs: dict[str, typing.Any]) -> None:
+            def is_class_attr(name: str, attr: typing.Any) -> bool:
                 return hasattr(getattr(obj, name), "mutate") and isinstance(attr, dict)
 
             for name, attr in new_attrs.items():
@@ -331,7 +331,7 @@ class Base:
 
         """
 
-        def is_class_param(param) -> bool:
+        def is_class_param(param: typing.Any) -> bool:
             return (
                 isinstance(param, tuple)
                 and inspect.isclass(param[0])
@@ -398,7 +398,7 @@ class Base:
         return utils.pretty.humanize_bytes(self._raw_memory_usage)
 
 
-def _log_method_calls(self, name: str, class_condition, method_condition):
+def _log_method_calls(self: typing.Any, name: str, class_condition: typing.Callable[[typing.Any], bool], method_condition: typing.Callable[[typing.Any], bool]) -> typing.Any:
     method = object.__getattribute__(self, name)
     if (
         not name.startswith("_")
@@ -414,7 +414,7 @@ def _log_method_calls(self, name: str, class_condition, method_condition):
 def log_method_calls(
     class_condition: typing.Callable[[typing.Any], bool] | None = None,
     method_condition: typing.Callable[[typing.Any], bool] | None = None,
-):
+) -> collections.abc.Iterator[None]:
     """A context manager to log method calls.
 
     All method calls will be logged by default. This behavior can be overridden by passing filtering
@@ -479,7 +479,7 @@ def log_method_calls(
         Base.__getattribute__ = old  # type: ignore
 
 
-def _repr_obj(obj, show_modules: bool = False, depth: int = 0) -> str:
+def _repr_obj(obj: typing.Any, show_modules: bool = False, depth: int = 0) -> str:
     """Return a pretty representation of an object."""
 
     rep = f"{obj.__class__.__name__} ("

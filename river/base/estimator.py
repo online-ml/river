@@ -1,8 +1,11 @@
 from __future__ import annotations
 
 import abc
+from typing import Any
+from collections.abc import Iterator
 
 from . import base
+from river import compose
 
 
 class Estimator(base.Base, abc.ABC):
@@ -19,7 +22,7 @@ class Estimator(base.Base, abc.ABC):
         """
         return True
 
-    def __or__(self, other):
+    def __or__(self, other: Estimator | compose.Pipeline) -> compose.Pipeline:
         """Merge with another Transformer into a Pipeline."""
         from river import compose
 
@@ -27,7 +30,7 @@ class Estimator(base.Base, abc.ABC):
             return other.__ror__(self)
         return compose.Pipeline(self, other)
 
-    def __ror__(self, other):
+    def __ror__(self, other: Estimator | compose.Pipeline) -> compose.Pipeline:
         """Merge with another Transformer into a Pipeline."""
         from river import compose
 
@@ -71,7 +74,7 @@ class Estimator(base.Base, abc.ABC):
         return tags
 
     @classmethod
-    def _unit_test_params(self):
+    def _unit_test_params(self) -> Iterator[dict[str, Any]]:
         """Indicates which parameters to use during unit testing.
 
         Most estimators have a default value for each of their parameters. However, in some cases,
@@ -84,7 +87,7 @@ class Estimator(base.Base, abc.ABC):
         """
         yield {}
 
-    def _unit_test_skips(self):
+    def _unit_test_skips(self) -> set[str]:
         """Indicates which checks to skip during unit testing.
 
         Most estimators pass the full test suite. However, in some cases, some estimators might not

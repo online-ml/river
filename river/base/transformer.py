@@ -3,26 +3,26 @@ from __future__ import annotations
 import abc
 import typing
 
-from river import base
+from river import base, compose
 
 if typing.TYPE_CHECKING:
     import pandas as pd
 
 
 class BaseTransformer:
-    def __add__(self, other):
+    def __add__(self, other: BaseTransformer) -> compose.TransformerUnion:
         """Fuses with another Transformer into a TransformerUnion."""
         from river import compose
 
         return compose.TransformerUnion(self, other)
 
-    def __radd__(self, other):
+    def __radd__(self, other: BaseTransformer) -> compose.TransformerUnion:
         """Fuses with another Transformer into a TransformerUnion."""
         from river import compose
 
         return compose.TransformerUnion(other, self)
 
-    def __mul__(self, other):
+    def __mul__(self, other: BaseTransformer | compose.Pipeline | base.typing.FeatureName | list[base.typing.FeatureName]) -> compose.Grouper | compose.TransformerProduct:
         from river import compose
 
         if isinstance(other, BaseTransformer) or isinstance(other, compose.Pipeline):
@@ -30,7 +30,7 @@ class BaseTransformer:
 
         return compose.Grouper(transformer=self, by=other) # type: ignore[arg-type]
 
-    def __rmul__(self, other):
+    def __rmul__(self, other: BaseTransformer | compose.Pipeline | base.typing.FeatureName | list[base.typing.FeatureName]) -> compose.Grouper | compose.TransformerProduct:
         """Creates a Grouper."""
         return self * other
 

@@ -49,7 +49,7 @@ class _BaseDriftAndWarningDetector(_BaseDriftDetector):
         self._warning_detected = False
 
     @property
-    def warning_detected(self):
+    def warning_detected(self) -> bool:
         """Whether or not a drift is detected following the last update."""
         return self._warning_detected
 

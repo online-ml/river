@@ -31,7 +31,7 @@ class Ensemble(UserList):
         return 2
 
     @property
-    def models(self):
+    def models(self) -> list:
         return self.data
 
 
@@ -49,7 +49,7 @@ class WrapperEnsemble(Ensemble, Wrapper):
 
     """
 
-    def __init__(self, model, n_models: int, seed: int) -> None:
+    def __init__(self, model: Estimator, n_models: int, seed: int | None) -> None:
         super().__init__(model.clone() for _ in range(n_models))
         self.model = model
         self.n_models = n_models
@@ -57,5 +57,5 @@ class WrapperEnsemble(Ensemble, Wrapper):
         self._rng = Random(seed)
 
     @property
-    def _wrapped_model(self):
+    def _wrapped_model(self) -> Estimator:
         return self.model

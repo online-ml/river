@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from river import base
 
 
 class Wrapper(ABC):
@@ -8,7 +9,7 @@ class Wrapper(ABC):
 
     @property
     @abstractmethod
-    def _wrapped_model(self):
+    def _wrapped_model(self) -> base.Estimator:
         """Provides access to the wrapped model."""
 
     @property
@@ -19,13 +20,13 @@ class Wrapper(ABC):
     def __str__(self) -> str:
         return f"{type(self).__name__}({self._wrapped_model})"
 
-    def _more_tags(self):
+    def _more_tags(self) -> set[str]:
         return self._wrapped_model._tags
 
     @property
-    def _supervised(self):
+    def _supervised(self) -> bool:
         return self._wrapped_model._supervised
 
     @property
-    def _multiclass(self):
+    def _multiclass(self) -> bool:
         return self._wrapped_model._multiclass
