@@ -20,5 +20,11 @@ jobs:
           python-version: "3.13"
           build-root: false
 
-      - name: Run pre-commit on all files
-        run: poetry run pre-commit run --all-files
+      - name: MyPy type check
+        run: poetry run mypy
+
+      - name: Ruff code linting
+        run: poetry run ruff check --output-format=github river/
+
+      - name: Ruff code formatting
+        run: poetry run ruff format --check river/
