@@ -58,4 +58,4 @@ There are many great open-source libraries for building neural network models. W
 
 ## Who are the authors of this library?
 
-We are research engineers, graduate students, PhDs and machine learning researchers. The members of the develompent team are mainly located in France, Brazil and New Zealand.
+We are research engineers, graduate students, PhDs and machine learning researchers. The members of the development team are mainly located in France, Brazil and New Zealand.
