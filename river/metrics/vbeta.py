@@ -120,7 +120,7 @@ class Completeness(metrics.base.MultiClassMetric):
     the proposed cluster distribution given the class of the component data points.
     However, in the worst case scenario, each class is represented by every cluster
     with a distribution equal to the distribution of cluster sizes. Therefore,
-    symmetric to the claculation above, we define completeness as:
+    symmetric to the calculation above, we define completeness as:
 
     $$
     c = \begin{cases}
@@ -209,7 +209,7 @@ class VBeta(metrics.base.MultiClassMetric):
     It provides an elegant solution to many problems that affect previously defined
     cluster evaluation measures including
 
-    * Dependance of clustering algorithm or dataset,
+    * Dependence of clustering algorithm or dataset,
 
     * The "problem of matching", where the clustering of only a portion of data
     points are evaluated, and

@@ -92,7 +92,7 @@ class KNNRegressor(base.Regressor):
         Parameters
         ----------
         method
-            The suplied aggregration method.
+            The supplied aggreration method.
         """
         if method not in {self._MEAN, self._MEDIAN, self._WEIGHTED_MEAN}:
             raise ValueError(

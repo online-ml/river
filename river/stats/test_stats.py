@@ -251,7 +251,7 @@ def test_bivariate(stat, func):
     ],
 )
 def test_rolling_bivariate(stat, func):
-    # Enough alread
+    # Enough already
 
     def tail(iterable, n):
         return collections.deque(iterable, maxlen=n)

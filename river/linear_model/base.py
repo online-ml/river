@@ -125,7 +125,7 @@ class GLM:
     def _update_weights(self, x):
         # L1 cumulative penalty helper
 
-        # Apply penalty to each weight iteratively, with the potential of being parrallelized by using VectorDict
+        # Apply penalty to each weight iteratively, with the potential of being parallelized by using VectorDict
         for j, xj in x.items():
             wj_temp = self._weights[j]
 
