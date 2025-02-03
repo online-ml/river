@@ -144,7 +144,7 @@ class MondrianTreeRegressor(MondrianTree, base.Regressor):
             if isinstance(node, MondrianLeafRegressor):
                 return split_time
             # Otherwise we apply Mondrian process dark magic :)
-            # 1. We get the creation time of the childs (left and right is the same)
+            # 1. We get the creation time of the children (left and right is the same)
             left, _ = node.children
             child_time = left.time
             # 2. We check if splitting time occurs before child creation time
@@ -326,7 +326,7 @@ class MondrianTreeRegressor(MondrianTree, base.Regressor):
                         current_node = left
 
                     # This is the leaf containing the sample point (we've just
-                    # splitted the current node with the data point)
+                    # split the current node with the data point)
                     leaf = current_node
                     self._update_downwards(leaf, False)
                     return leaf

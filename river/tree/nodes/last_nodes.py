@@ -29,7 +29,7 @@ class LeafMajorityClassWithDetector(LeafMajorityClass):
     def __init__(self, stats, depth, splitter, change_detector, split_criterion=None, **kwargs):
         super().__init__(stats, depth, splitter, **kwargs)
         self.change_detector = change_detector
-        # change this in future PR's by acessing the tree parameter in the leaf
+        # change this in future PR's by accessing the tree parameter in the leaf
         self.split_criterion = (
             split_criterion  # if None, the change detector will have binary inputs
         )

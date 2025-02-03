@@ -270,11 +270,11 @@ class MultivariateGaussian(base.MultivariateContinuousDistribution):
         return f"𝒩(\n    μ=({mu_str}),\n    σ^2=(\n{var_str}\n    )\n)"
 
     def update(self, x):
-        # TODO: add support for weigthed samples
+        # TODO: add support for weighted samples
         self._var.update(x)
 
     def revert(self, x):
-        # TODO: add support for weigthed samples
+        # TODO: add support for weighted samples
         self._var.revert(x)
 
     def __call__(self, x: dict[str, float]):
@@ -285,11 +285,11 @@ class MultivariateGaussian(base.MultivariateContinuousDistribution):
             try:
                 pdf_ = multivariate_normal([*self.mu.values()], var).pdf(x_)
                 return float(pdf_)
-            # TODO: validate occurence of ValueError
+            # TODO: validate occurrence of ValueError
             # The input matrix must be symmetric positive semidefinite.
             except ValueError:  # pragma: no cover
                 return 0.0
-            # TODO: validate occurence of OverflowError
+            # TODO: validate occurrence of OverflowError
             except OverflowError:  # pragma: no cover
                 return 0.0
         return 0.0  # pragma: no cover

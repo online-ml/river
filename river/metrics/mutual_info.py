@@ -119,7 +119,7 @@ class NormalizedMutualInfo(metrics.base.MultiClassMetric):
     agreement solely due to chance); as a result, the Adjusted Mutual Info Score will mostly be preferred.
     However, this metric is still symmetric, which means that switching true and predicted labels will not
     alter the score value. This fact can be useful when the metric is used to measure the agreement between
-    two indepedent label solutions on the same dataset, when the ground truth remains unknown.
+    two independent label solutions on the same dataset, when the ground truth remains unknown.
 
     Another advantage of the metric is that as it is based on the calculation of entropy-related measures,
     it is independent of the permutation of class/cluster labels.

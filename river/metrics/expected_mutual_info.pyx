@@ -41,7 +41,7 @@ def expected_mutual_info(confusion_matrix):
     the AMI will be one order of magnitude slower than most other implemented metrics.
 
     Note that, different form most of the implementations of other mutual information metrics,
-    the expected mutual information wil be implemented using numpy arrays. This implementation
+    the expected mutual information will be implemented using numpy arrays. This implementation
     inherits from the implementation of the expected mutual information in scikit-learn.
 
     Parameters

@@ -119,7 +119,7 @@ class AdjustedRand(metrics.base.MultiClassMetric):
 
     The Adjusted Rand Index is the corrected-for-chance version of the Rand Index [^1] [^2].
     Such a correction for chance establishes a baseline by using the expected similarity
-    of all pair-wise comparisions between clusterings specified by a random model.
+    of all pair-wise comparisons between clusterings specified by a random model.
 
     Traditionally, the Rand Index was corrected using the Permutation Model for Clustering.
     However, the premises of the permutation model are frequently violated; in many

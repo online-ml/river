@@ -87,7 +87,7 @@ class Counter(base.Base):
     >>> cms[532]
     15
 
-    Keep in mind that CMS is an approximate sketch algorithm. Couting estimates for unseen values
+    Keep in mind that CMS is an approximate sketch algorithm. Counting estimates for unseen values
     might not be always reliable:
 
     >>> cms[1001]
