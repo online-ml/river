@@ -1481,7 +1481,7 @@
 <span class="n">evaluate_model</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 </code></pre></div>
 <p><img alt="png" src="../building-a-simple-nowcasting-model_files/building-a-simple-nowcasting-model_18_0.png" /></p>
-<p>We've managed to get a good looking prediction curve with a reasonably simple model. What's more our model has the advantage of being interpretable and easy to debug. There surely are more rocks to squeeze (e.g. tune the hyperparameters, use an ensemble model, etc.) but we'll leave that as an exercice to the reader.</p>
+<p>We've managed to get a good looking prediction curve with a reasonably simple model. What's more our model has the advantage of being interpretable and easy to debug. There surely are more rocks to squeeze (e.g. tune the hyperparameters, use an ensemble model, etc.) but we'll leave that as an exercise to the reader.</p>
 <p>As a finishing touch we'll rewrite our pipeline using the <code>|</code> operator, which is called a "pipe".</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">extract_features</span> <span class="o">=</span> <span class="n">compose</span><span class="o">.</span><span class="n">TransformerUnion</span><span class="p">(</span><span class="n">get_ordinal_date</span><span class="p">,</span> <span class="n">get_month_distances</span><span class="p">)</span>
 

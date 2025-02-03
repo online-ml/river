@@ -1740,7 +1740,7 @@ False   4,584    243
 <p>The results of the logistic regression are quite good but still inferior to the naive Bayes model.</p>
 <p>Let's try to use word embeddings to improve our logistic regression. Word embeddings allow you to represent a word as a vector. Embeddings are developed to build semantically rich vectors. For instance, the vector which represents the word <strong>python</strong> should be close to the vector which represents the word <strong>programming</strong>. We will use <a href="https://spacy.io/">spaCy</a> to convert our sentence to vectors. spaCy converts a sentence to a vector by calculating the average of the embeddings of the words in the sentence.</p>
 <p>You can download pre-trained embeddings in many languages. We will use English pre-trained embeddings as our SMS are in English.</p>
-<p>The command below allows you to download the pre-trained embeddings that spaCy makes available. More informations about spaCy and its installation may be found here <a href="https://spacy.io/usage">here</a>.</p>
+<p>The command below allows you to download the pre-trained embeddings that spaCy makes available. More information about spaCy and its installation may be found here <a href="https://spacy.io/usage">here</a>.</p>
 <div class="language-sh highlight"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>spacy<span class="w"> </span>download<span class="w"> </span>en_core_web_sm
 </code></pre></div>
 <p>Here, we create a custom transformer to convert an input sentence to a dict of floats. We will integrate this transformer into our pipeline.</p>

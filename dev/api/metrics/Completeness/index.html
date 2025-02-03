@@ -4850,7 +4850,7 @@
 <h1 id="completeness">Completeness<a class="headerlink" href="#completeness" title="Permanent link">&para;</a></h1>
 <p>Completeness Score.</p>
 <p>Completeness <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> is symmetrical to homogeneity. In order to satisfy the completeness criteria, a clustering must assign all of those datapoints that are members of a single class to a single cluster. To evaluate completeness, we examine the distribution cluster assignments within each class. In a perfectly complete clustering solution, each of these distributions will be completely skewed to a single cluster. </p>
-<p>We can evaluate this degree of skew by calculating the conditional entropy of the proposed cluster distribution given the class of the component data points. However, in the worst case scenario, each class is represented by every cluster with a distribution equal to the distribution of cluster sizes. Therefore, symmetric to the claculation above, we define completeness as: </p>
+<p>We can evaluate this degree of skew by calculating the conditional entropy of the proposed cluster distribution given the class of the component data points. However, in the worst case scenario, each class is represented by every cluster with a distribution equal to the distribution of cluster sizes. Therefore, symmetric to the calculation above, we define completeness as: </p>
 <div class="arithmatex">\[ c = \begin{cases} 1 if H(K) = 0, \\ 1 - \frac{H(K|C)}{H(K)} otherwise. \end{cases}. \]</div>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>

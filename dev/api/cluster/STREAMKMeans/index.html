@@ -3850,7 +3850,7 @@
 <h1 id="streamkmeans">STREAMKMeans<a class="headerlink" href="#streamkmeans" title="Permanent link">&para;</a></h1>
 <p>STREAMKMeans</p>
 <p>STREAMKMeans is an alternative version of the original algorithm STREAMLSEARCH proposed by O'Callaghan et al. <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>, by replacing the k-medians using <code>LSEARCH</code> by the k-means algorithm. </p>
-<p>However, instead of using the traditional k-means, which requires a total reclustering each time the temporary chunk of data points is full, the implementation of this algorithm uses an increamental k-means. </p>
+<p>However, instead of using the traditional k-means, which requires a total reclustering each time the temporary chunk of data points is full, the implementation of this algorithm uses an incremental k-means. </p>
 <p>At first, the cluster centers are initialized with a <code>KMeans</code> instance. For a new point <code>p</code>: </p>
 <ul>
 <li>

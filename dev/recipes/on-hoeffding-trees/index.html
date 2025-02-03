@@ -1487,7 +1487,7 @@
 <p>This brief introduction to HT does not aims at being extensive nor delving into algorithmic or implementation details of the HTs. Instead, we intend to provide a high-level overview of the HTs as they are envisioned in River, as well as their shared properties and important hyperparameters.</p>
 <p>In this guide, we are going to:</p>
 <ol>
-<li>summarize the differences accross the multiple HT versions available;</li>
+<li>summarize the differences across the multiple HT versions available;</li>
 <li>learn how to inspect tree models;</li>
 <li>learn how to manage the memory usage of HTs;</li>
 <li>compare numerical tree splitters and understand their impact on the iDT induction process.</li>
@@ -1964,7 +1964,7 @@ Class True:
 <li><span class="arithmatex">\(n\)</span>: Number of observations seen so far.</li>
 <li><span class="arithmatex">\(c\)</span>: the number of classes.</li>
 <li><span class="arithmatex">\(s\)</span>: the number of split points to evaluate (which means that this is a user-given parameter).</li>
-<li><span class="arithmatex">\(h\)</span>: the number of histogram bins or hash slots. Tipically, <span class="arithmatex">\(h \ll n\)</span>.</li>
+<li><span class="arithmatex">\(h\)</span>: the number of histogram bins or hash slots. Typically, <span class="arithmatex">\(h \ll n\)</span>.</li>
 </ul>
 <h3 id="41-classification-tree-splitters">4.1. Classification tree splitters<a class="headerlink" href="#41-classification-tree-splitters" title="Permanent link">&para;</a></h3>
 <p>The following table summarizes the available classification splitters. The user might refer to the documentation of each splitter for more details about their functioning.</p>
@@ -2011,7 +2011,7 @@ Class True:
 <li>The number of split points can be configured in the Gaussian splitter. Increasing this number makes this splitter slower, but it also potentially increases the quality of the obtained query points, implying enhanced tree accuracy. </li>
 <li>The number of stored bins can be selected in the Histogram splitter. Increasing this number increases the memory footprint and running time of this splitter, but it also potentially makes its split candidates more accurate and positively impacts on the tree's final predictive performance.</li>
 </ul>
-<p>Next, we provide a brief comparison of the classification splitters using 10K instances of the Random RBF synthetic dataset. Note that the tree equiped with the Exhaustive splitter does not use Naive Bayes leaves.</p>
+<p>Next, we provide a brief comparison of the classification splitters using 10K instances of the Random RBF synthetic dataset. Note that the tree equipped with the Exhaustive splitter does not use Naive Bayes leaves.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">plot_performance</span><span class="p">(</span>
     <span class="n">synth</span><span class="o">.</span><span class="n">RandomRBF</span><span class="p">(</span><span class="n">seed_model</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span> <span class="n">seed_sample</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="mi">10_000</span><span class="p">),</span>
     <span class="n">metrics</span><span class="o">.</span><span class="n">Accuracy</span><span class="p">(),</span>

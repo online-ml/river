@@ -4053,7 +4053,7 @@ Drift detected at instance 817.
 <div class="language-text highlight"><pre><span></span><code>The &#39;w&#39; value must be greater than zero when &#39;trigger_method&#39; is &#39;random&#39;.
 </code></pre></div></p>
 <p>Since we set <code>dynamic_cloning</code> to <code>True</code>, a clone of the periodic trigger will
-have its internal paramenters changed:</p>
+have its internal parameters changed:</p>
 <p><div class="language-python highlight"><pre><span></span><code><span class="n">rtrigger</span> <span class="o">=</span> <span class="n">rtrigger</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
 <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
     <span class="n">rtrigger</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
