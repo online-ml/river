@@ -16,6 +16,7 @@ readme = "README.md"
 homepage = "https://riverml.xyz/"
 repository = "https://github.com/online-ml/river/"
 authors = ["Max Halford <maxhalford25@gmail.com>"]
+license = "BSD-3-Clause"
 
 include = [
     "**/*.cpp",
