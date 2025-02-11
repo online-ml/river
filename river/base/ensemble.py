@@ -3,12 +3,15 @@ from __future__ import annotations
 from collections import UserList
 from collections.abc import Iterator
 from random import Random
+from typing import TypeVar
 
 from .estimator import Estimator
 from .wrapper import Wrapper
 
+T = TypeVar("T", bound=Estimator)
 
-class Ensemble(UserList[Estimator]):
+
+class Ensemble(UserList[T]):
     """An ensemble is a model which is composed of a list of models.
 
     Parameters
@@ -17,7 +20,7 @@ class Ensemble(UserList[Estimator]):
 
     """
 
-    def __init__(self, models: Iterator[Estimator]) -> None:
+    def __init__(self, models: Iterator[T]) -> None:
         super().__init__(models)
 
         if len(self) < self._min_number_of_models:
@@ -31,11 +34,11 @@ class Ensemble(UserList[Estimator]):
         return 2
 
     @property
-    def models(self) -> list[Estimator]:
+    def models(self) -> list[T]:
         return self.data
 
 
-class WrapperEnsemble(Ensemble, Wrapper):
+class WrapperEnsemble(Ensemble[T], Wrapper[T]):
     """A wrapper ensemble is an ensemble composed of multiple copies of the same model.
 
     Parameters
@@ -49,7 +52,7 @@ class WrapperEnsemble(Ensemble, Wrapper):
 
     """
 
-    def __init__(self, model: Estimator, n_models: int, seed: int | None) -> None:
+    def __init__(self, model: T, n_models: int, seed: int | None) -> None:
         super().__init__(model.clone() for _ in range(n_models))
         self.model = model
         self.n_models = n_models
@@ -57,5 +60,5 @@ class WrapperEnsemble(Ensemble, Wrapper):
         self._rng = Random(seed)
 
     @property
-    def _wrapped_model(self) -> Estimator:
+    def _wrapped_model(self) -> T:
         return self.model

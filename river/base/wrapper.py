@@ -1,15 +1,21 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from typing import Generic, TypeVar
+
 from river import base
 
+from .estimator import Estimator  # Prevent a circular import of module base
 
-class Wrapper(ABC):
+T = TypeVar("T", bound=Estimator)
+
+
+class Wrapper(ABC, Generic[T]):
     """A wrapper model."""
 
     @property
     @abstractmethod
-    def _wrapped_model(self) -> base.Estimator:
+    def _wrapped_model(self) -> T:
         """Provides access to the wrapped model."""
 
     @property

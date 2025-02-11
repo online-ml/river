@@ -62,7 +62,7 @@ def union_to_html(union: compose.TransformerUnion) -> ET.Element:
     return div
 
 
-def wrapper_to_html(wrapper: base.Wrapper) -> ET.Element:
+def wrapper_to_html(wrapper: base.Wrapper[base.Estimator]) -> ET.Element:
     div = ET.Element("div", attrib={"class": "river-component river-wrapper"})
 
     details = ET.Element("details", attrib={"class": "river-details"})
