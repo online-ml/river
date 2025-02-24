@@ -237,7 +237,7 @@ class StandardScaler(base.MiniBatchTransformer):
         # Check if the dtype is integer type and convert to corresponding float type
         if np.issubdtype(dtype, np.integer):
             bytes_size = dtype.itemsize
-            dtype = np.dtype(f"float{bytes_size * 8}")
+            dtype = np.dtype(f"float{bytes_size * 8}")  # type: ignore[operator]
 
         means = np.array([self.means[c] for c in X.columns], dtype=dtype)
         Xt = X.values - means
