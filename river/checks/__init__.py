@@ -145,6 +145,7 @@ def yield_checks(model: Estimator) -> typing.Iterator[typing.Callable]:
         common.check_shuffle_features_no_impact,
         common.check_emerging_features,
         common.check_disappearing_features,
+        common.check_radically_disappearing_features,
     ]
 
     if hasattr(model, "debug_one"):
