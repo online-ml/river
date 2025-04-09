@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from . import base
+from .adpredictor import AdPredictor
 from .alma import ALMAClassifier
 from .bayesian_lin_reg import BayesianLinearRegression
 from .lin_reg import LinearRegression
@@ -21,4 +22,5 @@ __all__ = [
     "PARegressor",
     "Perceptron",
     "SoftmaxRegression",
+    "AdPredictor",
 ]
