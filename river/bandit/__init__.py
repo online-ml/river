@@ -13,6 +13,7 @@ from .bayes_ucb import BayesUCB
 from .epsilon_greedy import EpsilonGreedy
 from .evaluate import evaluate, evaluate_offline
 from .exp3 import Exp3
+from .kl_ucb import KLUCB
 from .lin_ucb import LinUCBDisjoint
 from .random import RandomPolicy
 from .thompson import ThompsonSampling
@@ -31,4 +32,5 @@ __all__ = [
     "ThompsonSampling",
     "UCB",
     "RandomPolicy",
+    "KLUCB",
 ]
