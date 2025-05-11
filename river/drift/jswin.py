@@ -119,9 +119,7 @@ class JSWIN(DriftDetector):
                 itertools.islice(self.window, self.window_size // 2, self.window_size)
             )
 
-            self._js_value = self._jensen_shannon_divergence(
-                first_window, second_window
-            )
+            self._js_value = self._jensen_shannon_divergence(first_window, second_window)
 
             if self._js_value > self.alpha:
                 self._drift_detected = True
@@ -145,10 +143,7 @@ class JSWIN(DriftDetector):
             Kullback-Leibler divergence.
         """
         points = sorted(set(p + q))
-        bins = [
-            points[i]
-            for i in range(0, len(points), max(1, len(points) // self.bin_size))
-        ]
+        bins = [points[i] for i in range(0, len(points), max(1, len(points) // self.bin_size))]
         p_hist, _ = np.histogram(p, bins=bins, density=True)
         q_hist, _ = np.histogram(q, bins=bins, density=True)
         p_hist = p_hist / np.sum(p_hist)
@@ -176,6 +171,5 @@ class JSWIN(DriftDetector):
         """
         m = [(p[i] + q[i]) / 2 for i in range(len(p))]
         return 0.5 * (
-            self._kullback_leibler_divergence(p, m)
-            + self._kullback_leibler_divergence(q, m)
+            self._kullback_leibler_divergence(p, m) + self._kullback_leibler_divergence(q, m)
         )
