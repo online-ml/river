@@ -42,10 +42,10 @@ class Discard(base.Transformer):
 
     """
 
-    def __init__(self, *keys: tuple[base.typing.FeatureName]):
+    def __init__(self, *keys: base.typing.FeatureName):
         self.keys = set(keys)
 
-    def transform_one(self, x):
+    def transform_one(self, x: dict) -> dict:
         return {i: xi for i, xi in x.items() if i not in self.keys}
 
     def __str__(self):
