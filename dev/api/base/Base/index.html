@@ -18,7 +18,7 @@
         <link rel="prev" href="../../bandit/envs/KArmedTestbed/">
       
       
-        <link rel="next" href="../BaseTransformer/">
+        <link rel="next" href="../BinaryDriftAndWarningDetector/">
       
       
       <link rel="icon" href="../../../img/favicon.ico">
@@ -939,8 +939,6 @@
       
         
       
-        
-      
     
     
       
@@ -1039,27 +1037,6 @@
   
 </nav>
       
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../BaseTransformer/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    BaseTransformer
-  </span>
-  
-
-      </a>
     </li>
   
 
@@ -4110,8 +4087,8 @@
 <p>The clone has the same parameters but has not been updated with any data.  This works by looking at the parameters from the class signature. Each parameter is either  - recursively cloned if its a class. - deep-copied via <code>copy.deepcopy</code> if not.  If the calling object is stochastic (i.e. it accepts a seed parameter) and has not been seeded, then the clone will not be idempotent. Indeed, this method's purpose if simply to return a new instance with the same input parameters.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>new_params</strong>     — <em>'dict[str, typing.Any] | None'</em>     — defaults to <code>None</code>    </li>
-<li><strong>include_attributes</strong>     — <em>'bool'</em>     — defaults to <code>False</code>    </li>
+<li><strong>new_params</strong>     — <em>'dict | None'</em>     — defaults to <code>None</code>    </li>
+<li><strong>include_attributes</strong>     — defaults to <code>False</code>    </li>
 </ul>
 </details>
 <p><span /></p>
@@ -4121,7 +4098,7 @@
 <p>This changes parameters inplace. Although you can change attributes yourself, this is the recommended way to proceed. By default, all attributes are immutable, meaning they shouldn't be mutated. Calling <code>mutate</code> on an immutable attribute raises a <code>ValueError</code>. Mutable attributes are specified via the <code>_mutable_attributes</code> property, and are thus specified on a per-estimator basis.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>new_attrs</strong>     — <em>'dict[str, typing.Any]'</em>    </li>
+<li><strong>new_attrs</strong>     — <em>'dict'</em>    </li>
 </ul>
 </details>
 <p><span /></p>

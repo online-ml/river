@@ -937,8 +937,6 @@
       
         
       
-        
-      
     
     
       
@@ -4046,7 +4044,7 @@ this in a pure way by unpacking the input <code>dict</code> into the output <cod
 <p>A lot of transformers don't actually have to do anything during the <code>learn_one</code> step because they are stateless. For this reason the default behavior of this function is to do nothing. Transformers that however do something during the <code>learn_one</code> can override this method.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     — <em>'dict[base.typing.FeatureName, Any]'</em>    </li>
+<li><strong>x</strong>     — <em>'dict'</em>    </li>
 </ul>
 </details>
 <p><span /></p>
@@ -4066,10 +4064,10 @@ this in a pure way by unpacking the input <code>dict</code> into the output <cod
 <p>Transform a set of features <code>x</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     — <em>'dict[base.typing.FeatureName, Any]'</em>    </li>
+<li><strong>x</strong>     — <em>'dict'</em>    </li>
 </ul>
 <p><strong>Returns</strong></p>
-<p><em>dict[base.typing.FeatureName, Any]</em>:     The transformed values.</p>
+<p><em>dict</em>:     The transformed values.</p>
 </details>
 <p><span /></p>
 

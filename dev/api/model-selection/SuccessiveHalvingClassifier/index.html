@@ -937,8 +937,6 @@
       
         
       
-        
-      
     
     
       
@@ -4005,7 +4003,7 @@ ROCAUC: 95.22%
 <p>Update the model with a set of features <code>x</code> and a label <code>y</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     — <em>'dict[base.typing.FeatureName, Any]'</em>    </li>
+<li><strong>x</strong>     — <em>'dict'</em>    </li>
 <li><strong>y</strong>     — <em>'base.typing.ClfTarget'</em>    </li>
 </ul>
 </details>
@@ -4015,8 +4013,8 @@ ROCAUC: 95.22%
 <p>Predict the label of a set of features <code>x</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     — <em>'dict[base.typing.FeatureName, Any]'</em>    </li>
-<li><strong>kwargs</strong>     — <em>'Any'</em>    </li>
+<li><strong>x</strong>     — <em>'dict'</em>    </li>
+<li><strong>kwargs</strong>    </li>
 </ul>
 <p><strong>Returns</strong></p>
 <p><em>base.typing.ClfTarget | None</em>:     The predicted label.</p>
