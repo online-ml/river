@@ -317,7 +317,9 @@ class BaseSRPEstimator:
 
 
 def random_subspace(all_features: list, k: int, rng: random.Random):
-    """Utility function to generate a random feature subspace of length k
+    """Utility function to generate a random feature subspace of length k.
+
+    If the number of features is smaller than k , the result is a shuffled version of the input list.
 
     Parameters
     ----------
@@ -328,7 +330,8 @@ def random_subspace(all_features: list, k: int, rng: random.Random):
     rng
         Random number generator (initialized).
     """
-    return rng.sample(all_features, k=k)
+    corrected_k = min(len(all_features), k)
+    return rng.sample(all_features, k=corrected_k)
 
 
 class SRPClassifier(BaseSRPEnsemble, base.Classifier):
