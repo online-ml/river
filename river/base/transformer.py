@@ -2,40 +2,57 @@ from __future__ import annotations
 
 import abc
 import typing
+from typing import Any
 
 from river import base
 
 if typing.TYPE_CHECKING:
     import pandas as pd
 
+    from river import compose
+
 
 class BaseTransformer:
-    def __add__(self, other):
+    def __add__(self, other: BaseTransformer) -> compose.TransformerUnion:
         """Fuses with another Transformer into a TransformerUnion."""
         from river import compose
 
         return compose.TransformerUnion(self, other)
 
-    def __radd__(self, other):
+    def __radd__(self, other: BaseTransformer) -> compose.TransformerUnion:
         """Fuses with another Transformer into a TransformerUnion."""
         from river import compose
 
         return compose.TransformerUnion(other, self)
 
-    def __mul__(self, other):
+    def __mul__(
+        self,
+        other: BaseTransformer
+        | compose.Pipeline
+        | base.typing.FeatureName
+        | list[base.typing.FeatureName],
+    ) -> compose.Grouper | compose.TransformerProduct:
         from river import compose
 
-        if isinstance(other, Transformer) or isinstance(other, compose.Pipeline):
+        if isinstance(other, BaseTransformer) or isinstance(other, compose.Pipeline):
             return compose.TransformerProduct(self, other)
 
         return compose.Grouper(transformer=self, by=other)
 
-    def __rmul__(self, other):
+    def __rmul__(
+        self,
+        other: BaseTransformer
+        | compose.Pipeline
+        | base.typing.FeatureName
+        | list[base.typing.FeatureName],
+    ) -> compose.Grouper | compose.TransformerProduct:
         """Creates a Grouper."""
         return self * other
 
     @abc.abstractmethod
-    def transform_one(self, x: dict) -> dict:
+    def transform_one(
+        self, x: dict[base.typing.FeatureName, Any]
+    ) -> dict[base.typing.FeatureName, Any]:
         """Transform a set of features `x`.
 
         Parameters
@@ -54,10 +71,10 @@ class Transformer(base.Estimator, BaseTransformer):
     """A transformer."""
 
     @property
-    def _supervised(self):
+    def _supervised(self) -> bool:
         return False
 
-    def learn_one(self, x: dict) -> None:
+    def learn_one(self, x: dict[base.typing.FeatureName, Any]) -> None:
         """Update with a set of features `x`.
 
         A lot of transformers don't actually have to do anything during the `learn_one` step
@@ -78,10 +95,10 @@ class SupervisedTransformer(base.Estimator, BaseTransformer):
     """A supervised transformer."""
 
     @property
-    def _supervised(self):
+    def _supervised(self) -> bool:
         return True
 
-    def learn_one(self, x: dict, y: base.typing.Target) -> None:
+    def learn_one(self, x: dict[base.typing.FeatureName, Any], y: base.typing.Target) -> None:
         """Update with a set of features `x` and a target `y`.
 
         Parameters
@@ -134,7 +151,7 @@ class MiniBatchSupervisedTransformer(Transformer):
     """A supervised transformer that can operate on mini-batches."""
 
     @property
-    def _supervised(self):
+    def _supervised(self) -> bool:
         return True
 
     @abc.abstractmethod

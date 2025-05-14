@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import abc
 import collections
-import numbers
 import operator
 
 from river import base, stats, utils
@@ -190,11 +189,11 @@ class RegressionMetric(Metric):
     _fmt = ",.6f"  # use commas to separate big numbers and show 6 decimals
 
     @abc.abstractmethod
-    def update(self, y_true: numbers.Number, y_pred: numbers.Number) -> None:
+    def update(self, y_true: float, y_pred: float) -> None:
         """Update the metric."""
 
     @abc.abstractmethod
-    def revert(self, y_true: numbers.Number, y_pred: numbers.Number) -> None:
+    def revert(self, y_true: float, y_pred: float) -> None:
         """Revert the metric."""
 
     @property

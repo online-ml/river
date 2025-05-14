@@ -16,7 +16,7 @@ class Phishing(base.FileDataset):
 
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(
             n_samples=1_250,
             n_features=9,
