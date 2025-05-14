@@ -125,6 +125,10 @@
          <lastmod>2025-05-14</lastmod>
     </url>
     <url>
+         <loc>https://riverml.xyz/dev/api/base/BaseTransformer/</loc>
+         <lastmod>2025-05-14</lastmod>
+    </url>
+    <url>
          <loc>https://riverml.xyz/dev/api/base/BinaryDriftAndWarningDetector/</loc>
          <lastmod>2025-05-14</lastmod>
     </url>

@@ -937,6 +937,8 @@
       
         
       
+        
+      
     
     
       
@@ -3957,7 +3959,7 @@ instance, we can calculate the average (how) revenue (on) for each place (by) ov
 <p>Update with a set of features <code>x</code> and a target <code>y</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     — <em>'dict'</em>    </li>
+<li><strong>x</strong>     — <em>'dict[base.typing.FeatureName, Any]'</em>    </li>
 <li><strong>y</strong>     — <em>'base.typing.Target'</em>    </li>
 <li><strong>t</strong>     — defaults to <code>None</code>    </li>
 </ul>
@@ -3968,10 +3970,10 @@ instance, we can calculate the average (how) revenue (on) for each place (by) ov
 <p>Transform a set of features <code>x</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     — <em>'dict'</em>    </li>
+<li><strong>x</strong>     — <em>'dict[base.typing.FeatureName, Any]'</em>    </li>
 </ul>
 <p><strong>Returns</strong></p>
-<p><em>dict</em>:     The transformed values.</p>
+<p><em>dict[base.typing.FeatureName, Any]</em>:     The transformed values.</p>
 </details>
 <p><span />
 1. <a href="https://maxhalford.github.io/blog/streaming-groupbys-in-pandas-for-big-datasets/">Streaming groupbys in pandas for big datasets</a></p>
