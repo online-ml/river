@@ -188,7 +188,10 @@ class SAMkNNMemory:
         self.dist_func = dist_func
 
         self.items: list[tuple[dict, base.typing.ClfTarget]] = []
-        self.last_search_item: tuple[dict, base.typing.ClfTarget] = None
+        self.last_search_item: tuple[dict, base.typing.ClfTarget] | None = None
+        self.last_search_result: list[tuple[tuple[dict, base.typing.ClfTarget], float]] | None = (
+            None
+        )
 
     def append(
         self, item: list[tuple[dict, base.typing.ClfTarget]] | tuple[dict, base.typing.ClfTarget]
@@ -236,7 +239,7 @@ class SAMkNNShortTermMemory(SAMkNNMemory):
         self.weighted = weighted
         self.recalculate_stm_error = recalculate_stm_error
 
-        self.prediction_histories: list[bool] = {}
+        self.prediction_histories: dict[int, list[bool]] = {}
 
     def pop_n(self, n: int):
         # Invalidate cache and prediction histories as items are changed
@@ -268,10 +271,10 @@ class SAMkNNShortTermMemory(SAMkNNMemory):
             items_distances = ((p, self.dist_func(item, p)) for p in self.items[start_idx:-1])
             nearest = sorted(items_distances, key=operator.itemgetter(1))[: self.n_neighbors]
 
-            probas = collections.defaultdict(lambda: 0)
+            probas: dict[base.typing.ClfTarget, float] = collections.defaultdict(lambda: 0)
             for item, dist in nearest:
                 probas[item[1]] += 1 / dist if self.weighted else 1
-            prediction = max(probas, key=probas.get)
+            prediction = max(probas, key=probas.__getitem__)
             self.prediction_histories[start_idx].append(prediction == item[1])
 
         elif start_idx - 1 in self.prediction_histories.keys() and not self.recalculate_stm_error:
@@ -288,7 +291,7 @@ class SAMkNNShortTermMemory(SAMkNNMemory):
             probas = collections.defaultdict(lambda: 0)
             for item, dist in nearest:
                 probas[item[1]] += 1 / dist if self.weighted else 1
-            prediction = max(probas, key=probas.get)
+            prediction = max(probas, key=probas.__getitem__)
             self.prediction_histories[start_idx].append(prediction == item[1])
 
         else:
@@ -304,7 +307,7 @@ class SAMkNNShortTermMemory(SAMkNNMemory):
                 for item, dist in nearest:
                     probas[item[1]] += 1 / dist if self.weighted else 1
 
-                prediction = max(probas, key=probas.get)
+                prediction = max(probas, key=probas.__getitem__)
                 self.prediction_histories[start_idx].append(prediction == item[1])
 
         # Return interleaved-test-then-train accuracy
