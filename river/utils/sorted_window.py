@@ -2,9 +2,12 @@ from __future__ import annotations
 
 import bisect
 import collections
+from typing import Any, TypeVar
+
+T = TypeVar("T", bound=Any)
 
 
-class SortedWindow(collections.UserList):
+class SortedWindow(collections.UserList[T]):
     """Sorted running window data structure.
 
     Parameters
@@ -40,7 +43,7 @@ class SortedWindow(collections.UserList):
 
     def __init__(self, size: int) -> None:
         super().__init__()
-        self.unsorted_window: collections.deque = collections.deque(maxlen=size)
+        self.unsorted_window: collections.deque[T] = collections.deque(maxlen=size)
 
     @property
     def size(self):
