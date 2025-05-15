@@ -9,8 +9,10 @@ from river import base
 
 __all__ = ["expand_param_grid"]
 
+T = typing.TypeVar("T", bound=base.Estimator)
 
-def expand_param_grid(model: base.Estimator, grid: dict) -> list[base.Estimator]:
+
+def expand_param_grid(model: T, grid: dict) -> list[T]:
     """Expands a grid of parameters.
 
     This method can be used to generate a list of model parametrizations from a dictionary where
