@@ -12,28 +12,28 @@
         <meta name="author" content="The Fellowship of Online Machine Learning">
       
       
-        <link rel="canonical" href="https://riverml.xyz/dev/api/datasets/synth/LEDDrift/">
+        <link rel="canonical" href="https://riverml.xyz/dev/api/base/BaseTransformer/">
       
       
-        <link rel="prev" href="../LED/">
+        <link rel="prev" href="../Base/">
       
       
-        <link rel="next" href="../Logical/">
+        <link rel="next" href="../BinaryDriftAndWarningDetector/">
       
       
-      <link rel="icon" href="../../../../img/favicon.ico">
+      <link rel="icon" href="../../../img/favicon.ico">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.45">
     
     
       
-        <title>LEDDrift - River</title>
+        <title>BaseTransformer - River</title>
       
     
     
-      <link rel="stylesheet" href="../../../../assets/stylesheets/main.0253249f.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.0253249f.min.css">
       
         
-        <link rel="stylesheet" href="../../../../assets/stylesheets/palette.06af60db.min.css">
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
       
       
 
@@ -52,9 +52,9 @@
       
     
     
-      <link rel="stylesheet" href="../../../../stylesheets/extra.css">
+      <link rel="stylesheet" href="../../../stylesheets/extra.css">
     
-    <script>__md_scope=new URL("../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       <script
   defer
@@ -83,7 +83,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#leddrift" class="md-skip">
+        <a href="#basetransformer" class="md-skip">
           Skip to content
         </a>
       
@@ -101,9 +101,9 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../../../.." title="River" class="md-header__button md-logo" aria-label="River" data-md-component="logo">
+    <a href="../../.." title="River" class="md-header__button md-logo" aria-label="River" data-md-component="logo">
       
-  <img src="../../../../img/icon.png" alt="logo">
+  <img src="../../../img/icon.png" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -120,7 +120,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              LEDDrift
+              BaseTransformer
             
           </span>
         </div>
@@ -229,7 +229,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../../introduction/installation/" class="md-tabs__link">
+        <a href="../../../introduction/installation/" class="md-tabs__link">
           
   
     
@@ -249,7 +249,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../../recipes/reading-data/" class="md-tabs__link">
+        <a href="../../../recipes/reading-data/" class="md-tabs__link">
           
   
     
@@ -271,7 +271,7 @@
     
     
       <li class="md-tabs__item md-tabs__item--active">
-        <a href="../../../overview/" class="md-tabs__link">
+        <a href="../../overview/" class="md-tabs__link">
           
   
     
@@ -291,7 +291,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../../examples/batch-to-online/" class="md-tabs__link">
+        <a href="../../../examples/batch-to-online/" class="md-tabs__link">
           
   
     
@@ -311,7 +311,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../../faq/" class="md-tabs__link">
+        <a href="../../../faq/" class="md-tabs__link">
           
   
     
@@ -331,7 +331,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../../releases/unreleased/" class="md-tabs__link">
+        <a href="../../../releases/unreleased/" class="md-tabs__link">
           
   
     
@@ -357,7 +357,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../../benchmarks/Binary%20classification/" class="md-tabs__link">
+        <a href="../../../benchmarks/Binary%20classification/" class="md-tabs__link">
           
   
     
@@ -380,7 +380,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../../license/license/" class="md-tabs__link">
+        <a href="../../../license/license/" class="md-tabs__link">
           
   
     
@@ -415,9 +415,9 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../../../.." title="River" class="md-nav__button md-logo" aria-label="River" data-md-component="logo">
+    <a href="../../.." title="River" class="md-nav__button md-logo" aria-label="River" data-md-component="logo">
       
-  <img src="../../../../img/icon.png" alt="logo">
+  <img src="../../../img/icon.png" alt="logo">
 
     </a>
     River
@@ -474,7 +474,7 @@
         
   
   
-    <a href="../../../../introduction/installation/" class="md-nav__link">
+    <a href="../../../introduction/installation/" class="md-nav__link">
       
   
   <span class="md-ellipsis">
@@ -540,7 +540,7 @@
         
   
   
-    <a href="../../../../recipes/reading-data/" class="md-nav__link">
+    <a href="../../../recipes/reading-data/" class="md-nav__link">
       
   
   <span class="md-ellipsis">
@@ -693,7 +693,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../overview/" class="md-nav__link">
+      <a href="../../overview/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -736,7 +736,7 @@
         
   
   
-    <a href="../../../active/EntropySampler/" class="md-nav__link">
+    <a href="../../active/EntropySampler/" class="md-nav__link">
       
   
   <span class="md-ellipsis">
@@ -799,7 +799,7 @@
         
   
   
-    <a href="../../../anomaly/GaussianScorer/" class="md-nav__link">
+    <a href="../../anomaly/GaussianScorer/" class="md-nav__link">
       
   
   <span class="md-ellipsis">
@@ -868,7 +868,7 @@
         
   
   
-    <a href="../../../bandit/BayesUCB/" class="md-nav__link">
+    <a href="../../bandit/BayesUCB/" class="md-nav__link">
       
   
   <span class="md-ellipsis">
@@ -892,83 +892,580 @@
                 
   
   
+    
   
   
-    
-    
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-    
-    
-      
-      
-    
-    
-      
-        
-        
-      
-    
-    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
-      
-        
   
-  
-    <a href="../../../base/Base/" class="md-nav__link">
+    
+    
       
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3_5" id="__nav_3_5_label" tabindex="0">
+            
   
   <span class="md-ellipsis">
     base
   </span>
   
 
-      
-        <span class="md-nav__icon md-icon"></span>
-      
-    </a>
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3_5">
+            <span class="md-nav__icon md-icon"></span>
+            base
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Base/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Base
+  </span>
   
 
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    BaseTransformer
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    BaseTransformer
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      Methods
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BinaryDriftAndWarningDetector/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    BinaryDriftAndWarningDetector
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BinaryDriftDetector/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    BinaryDriftDetector
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Classifier/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Classifier
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Clusterer/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Clusterer
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DriftAndWarningDetector/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DriftAndWarningDetector
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DriftDetector/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DriftDetector
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Ensemble/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Ensemble
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Estimator/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Estimator
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MiniBatchClassifier/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    MiniBatchClassifier
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MiniBatchRegressor/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    MiniBatchRegressor
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MiniBatchSupervisedTransformer/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    MiniBatchSupervisedTransformer
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MiniBatchTransformer/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    MiniBatchTransformer
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MultiLabelClassifier/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    MultiLabelClassifier
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MultiTargetRegressor/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    MultiTargetRegressor
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Regressor/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Regressor
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SupervisedTransformer/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    SupervisedTransformer
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Transformer/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Transformer
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Wrapper/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Wrapper
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../WrapperEnsemble/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    WrapperEnsemble
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
       
     </li>
   
@@ -1014,7 +1511,7 @@
         
   
   
-    <a href="../../../cluster/CluStream/" class="md-nav__link">
+    <a href="../../cluster/CluStream/" class="md-nav__link">
       
   
   <span class="md-ellipsis">
@@ -1075,7 +1572,7 @@
         
   
   
-    <a href="../../../compat/River2SKLClassifier/" class="md-nav__link">
+    <a href="../../compat/River2SKLClassifier/" class="md-nav__link">
       
   
   <span class="md-ellipsis">
@@ -1146,7 +1643,7 @@
         
   
   
-    <a href="../../../compose/Discard/" class="md-nav__link">
+    <a href="../../compose/Discard/" class="md-nav__link">
       
   
   <span class="md-ellipsis">
@@ -1195,7 +1692,7 @@
         
   
   
-    <a href="../../../conf/Interval/" class="md-nav__link">
+    <a href="../../conf/Interval/" class="md-nav__link">
       
   
   <span class="md-ellipsis">
@@ -1244,7 +1741,7 @@
         
   
   
-    <a href="../../../covariance/EmpiricalCovariance/" class="md-nav__link">
+    <a href="../../covariance/EmpiricalCovariance/" class="md-nav__link">
       
   
   <span class="md-ellipsis">
@@ -1268,8 +1765,6 @@
                 
   
   
-    
-  
   
   
     
@@ -1318,560 +1813,6 @@
         
       
         
-      
-        
-      
-        
-      
-        
-      
-        
-      
-    
-    
-      
-      
-    
-    
-      
-    
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
-      
-        
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_11" checked>
-        
-          
-          <label class="md-nav__link" for="__nav_3_11" id="__nav_3_11_label" tabindex="0">
-            
-  
-  <span class="md-ellipsis">
-    datasets
-  </span>
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_11_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_3_11">
-            <span class="md-nav__icon md-icon"></span>
-            datasets
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../AirlinePassengers/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    AirlinePassengers
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../Bananas/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Bananas
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../Bikes/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Bikes
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../ChickWeights/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    ChickWeights
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../CreditCard/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    CreditCard
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../Elec2/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Elec2
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../HTTP/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    HTTP
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../Higgs/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Higgs
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../ImageSegments/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    ImageSegments
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../Insects/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Insects
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../Keystroke/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Keystroke
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../MaliciousURL/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    MaliciousURL
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../MovieLens100K/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    MovieLens100K
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../Music/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Music
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../Phishing/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Phishing
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../Restaurants/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Restaurants
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../SMSSpam/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    SMSSpam
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../SMTP/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    SMTP
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../SolarFlare/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    SolarFlare
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../TREC07/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    TREC07
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../Taxis/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Taxis
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../TrumpApproval/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    TrumpApproval
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../WaterFlow/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    WaterFlow
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../WebTraffic/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    WebTraffic
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    
-    
       
         
       
@@ -1897,11 +1838,11 @@
         
   
   
-    <a href="../../base/Dataset/" class="md-nav__link">
+    <a href="../../datasets/AirlinePassengers/" class="md-nav__link">
       
   
   <span class="md-ellipsis">
-    base
+    datasets
   </span>
   
 
@@ -1921,588 +1862,6 @@
                 
   
   
-    
-  
-  
-  
-    
-    
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-    
-    
-      
-      
-    
-    
-      
-    
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
-      
-        
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_11_26" checked>
-        
-          
-          <label class="md-nav__link" for="__nav_3_11_26" id="__nav_3_11_26_label" tabindex="0">
-            
-  
-  <span class="md-ellipsis">
-    synth
-  </span>
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_11_26_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_3_11_26">
-            <span class="md-nav__icon md-icon"></span>
-            synth
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../Agrawal/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Agrawal
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../AnomalySine/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    AnomalySine
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../ConceptDriftStream/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    ConceptDriftStream
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../Friedman/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Friedman
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../FriedmanDrift/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    FriedmanDrift
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../Hyperplane/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Hyperplane
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../LED/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    LED
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-    
-  
-  
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  <span class="md-ellipsis">
-    LEDDrift
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
-        
-  
-  <span class="md-ellipsis">
-    LEDDrift
-  </span>
-  
-
-      </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#attributes" class="md-nav__link">
-    <span class="md-ellipsis">
-      Attributes
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#examples" class="md-nav__link">
-    <span class="md-ellipsis">
-      Examples
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#methods" class="md-nav__link">
-    <span class="md-ellipsis">
-      Methods
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#notes" class="md-nav__link">
-    <span class="md-ellipsis">
-      Notes
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../Logical/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Logical
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../Mixed/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Mixed
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../Mv/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Mv
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../Planes2D/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Planes2D
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../RandomRBF/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    RandomRBF
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../RandomRBFDrift/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    RandomRBFDrift
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../RandomTree/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    RandomTree
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../SEA/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    SEA
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../STAGGER/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    STAGGER
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../Sine/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Sine
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../Waveform/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Waveform
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
   
   
     
@@ -2540,7 +1899,7 @@
         
   
   
-    <a href="../../../drift/ADWIN/" class="md-nav__link">
+    <a href="../../drift/ADWIN/" class="md-nav__link">
       
   
   <span class="md-ellipsis">
@@ -2591,7 +1950,7 @@
         
   
   
-    <a href="../../../dummy/NoChangeClassifier/" class="md-nav__link">
+    <a href="../../dummy/NoChangeClassifier/" class="md-nav__link">
       
   
   <span class="md-ellipsis">
@@ -2660,7 +2019,7 @@
         
   
   
-    <a href="../../../ensemble/ADWINBaggingClassifier/" class="md-nav__link">
+    <a href="../../ensemble/ADWINBaggingClassifier/" class="md-nav__link">
       
   
   <span class="md-ellipsis">
@@ -2717,7 +2076,7 @@
         
   
   
-    <a href="../../../evaluate/BinaryClassificationTrack/" class="md-nav__link">
+    <a href="../../evaluate/BinaryClassificationTrack/" class="md-nav__link">
       
   
   <span class="md-ellipsis">
@@ -2778,7 +2137,7 @@
         
   
   
-    <a href="../../../facto/FFMClassifier/" class="md-nav__link">
+    <a href="../../facto/FFMClassifier/" class="md-nav__link">
       
   
   <span class="md-ellipsis">
@@ -2835,7 +2194,7 @@
         
   
   
-    <a href="../../../feature-extraction/Agg/" class="md-nav__link">
+    <a href="../../feature-extraction/Agg/" class="md-nav__link">
       
   
   <span class="md-ellipsis">
@@ -2886,7 +2245,7 @@
         
   
   
-    <a href="../../../feature-selection/PoissonInclusion/" class="md-nav__link">
+    <a href="../../feature-selection/PoissonInclusion/" class="md-nav__link">
       
   
   <span class="md-ellipsis">
@@ -2941,7 +2300,7 @@
         
   
   
-    <a href="../../../forest/AMFClassifier/" class="md-nav__link">
+    <a href="../../forest/AMFClassifier/" class="md-nav__link">
       
   
   <span class="md-ellipsis">
@@ -3000,7 +2359,7 @@
         
   
   
-    <a href="../../../imblearn/ChebyshevOverSampler/" class="md-nav__link">
+    <a href="../../imblearn/ChebyshevOverSampler/" class="md-nav__link">
       
   
   <span class="md-ellipsis">
@@ -3063,7 +2422,7 @@
         
   
   
-    <a href="../../../linear-model/ALMAClassifier/" class="md-nav__link">
+    <a href="../../linear-model/ALMAClassifier/" class="md-nav__link">
       
   
   <span class="md-ellipsis">
@@ -3210,7 +2569,7 @@
         
   
   
-    <a href="../../../metrics/Accuracy/" class="md-nav__link">
+    <a href="../../metrics/Accuracy/" class="md-nav__link">
       
   
   <span class="md-ellipsis">
@@ -3259,7 +2618,7 @@
         
   
   
-    <a href="../../../misc/SDFT/" class="md-nav__link">
+    <a href="../../misc/SDFT/" class="md-nav__link">
       
   
   <span class="md-ellipsis">
@@ -3316,7 +2675,7 @@
         
   
   
-    <a href="../../../model-selection/BanditClassifier/" class="md-nav__link">
+    <a href="../../model-selection/BanditClassifier/" class="md-nav__link">
       
   
   <span class="md-ellipsis">
@@ -3367,7 +2726,7 @@
         
   
   
-    <a href="../../../multiclass/OneVsOneClassifier/" class="md-nav__link">
+    <a href="../../multiclass/OneVsOneClassifier/" class="md-nav__link">
       
   
   <span class="md-ellipsis">
@@ -3422,7 +2781,7 @@
         
   
   
-    <a href="../../../multioutput/ClassifierChain/" class="md-nav__link">
+    <a href="../../multioutput/ClassifierChain/" class="md-nav__link">
       
   
   <span class="md-ellipsis">
@@ -3475,7 +2834,7 @@
         
   
   
-    <a href="../../../naive-bayes/BernoulliNB/" class="md-nav__link">
+    <a href="../../naive-bayes/BernoulliNB/" class="md-nav__link">
       
   
   <span class="md-ellipsis">
@@ -3528,7 +2887,7 @@
         
   
   
-    <a href="../../../neighbors/KNNClassifier/" class="md-nav__link">
+    <a href="../../neighbors/KNNClassifier/" class="md-nav__link">
       
   
   <span class="md-ellipsis">
@@ -3577,7 +2936,7 @@
         
   
   
-    <a href="../../../neural-net/MLPRegressor/" class="md-nav__link">
+    <a href="../../neural-net/MLPRegressor/" class="md-nav__link">
       
   
   <span class="md-ellipsis">
@@ -3656,7 +3015,7 @@
         
   
   
-    <a href="../../../optim/AMSGrad/" class="md-nav__link">
+    <a href="../../optim/AMSGrad/" class="md-nav__link">
       
   
   <span class="md-ellipsis">
@@ -3737,7 +3096,7 @@
         
   
   
-    <a href="../../../preprocessing/AdaptiveStandardScaler/" class="md-nav__link">
+    <a href="../../preprocessing/AdaptiveStandardScaler/" class="md-nav__link">
       
   
   <span class="md-ellipsis">
@@ -3792,7 +3151,7 @@
         
   
   
-    <a href="../../../proba/Beta/" class="md-nav__link">
+    <a href="../../proba/Beta/" class="md-nav__link">
       
   
   <span class="md-ellipsis">
@@ -3847,7 +3206,7 @@
         
   
   
-    <a href="../../../reco/Baseline/" class="md-nav__link">
+    <a href="../../reco/Baseline/" class="md-nav__link">
       
   
   <span class="md-ellipsis">
@@ -3894,7 +3253,7 @@
         
   
   
-    <a href="../../../rules/AMRules/" class="md-nav__link">
+    <a href="../../rules/AMRules/" class="md-nav__link">
       
   
   <span class="md-ellipsis">
@@ -3947,7 +3306,7 @@
         
   
   
-    <a href="../../../sketch/Counter/" class="md-nav__link">
+    <a href="../../sketch/Counter/" class="md-nav__link">
       
   
   <span class="md-ellipsis">
@@ -4060,7 +3419,7 @@
         
   
   
-    <a href="../../../stats/AbsMax/" class="md-nav__link">
+    <a href="../../stats/AbsMax/" class="md-nav__link">
       
   
   <span class="md-ellipsis">
@@ -4131,7 +3490,7 @@
         
   
   
-    <a href="../../../stream/Cache/" class="md-nav__link">
+    <a href="../../stream/Cache/" class="md-nav__link">
       
   
   <span class="md-ellipsis">
@@ -4192,7 +3551,7 @@
         
   
   
-    <a href="../../../time-series/ForecastingMetric/" class="md-nav__link">
+    <a href="../../time-series/ForecastingMetric/" class="md-nav__link">
       
   
   <span class="md-ellipsis">
@@ -4259,7 +3618,7 @@
         
   
   
-    <a href="../../../tree/ExtremelyFastDecisionTreeClassifier/" class="md-nav__link">
+    <a href="../../tree/ExtremelyFastDecisionTreeClassifier/" class="md-nav__link">
       
   
   <span class="md-ellipsis">
@@ -4324,7 +3683,7 @@
         
   
   
-    <a href="../../../utils/Rolling/" class="md-nav__link">
+    <a href="../../utils/Rolling/" class="md-nav__link">
       
   
   <span class="md-ellipsis">
@@ -4396,7 +3755,7 @@
         
   
   
-    <a href="../../../../examples/batch-to-online/" class="md-nav__link">
+    <a href="../../../examples/batch-to-online/" class="md-nav__link">
       
   
   <span class="md-ellipsis">
@@ -4444,7 +3803,7 @@
         
   
   
-    <a href="../../../../faq/" class="md-nav__link">
+    <a href="../../../faq/" class="md-nav__link">
       
   
   <span class="md-ellipsis">
@@ -4560,7 +3919,7 @@
         
   
   
-    <a href="../../../../releases/unreleased/" class="md-nav__link">
+    <a href="../../../releases/unreleased/" class="md-nav__link">
       
   
   <span class="md-ellipsis">
@@ -4613,7 +3972,7 @@
     
   
   
-    <a href="../../../../benchmarks/Binary%20classification/" class="md-nav__link">
+    <a href="../../../benchmarks/Binary%20classification/" class="md-nav__link">
       
   
   <span class="md-ellipsis">
@@ -4661,7 +4020,7 @@
         
   
   
-    <a href="../../../../license/license/" class="md-nav__link">
+    <a href="../../../license/license/" class="md-nav__link">
       
   
   <span class="md-ellipsis">
@@ -4707,45 +4066,9 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#attributes" class="md-nav__link">
-    <span class="md-ellipsis">
-      Attributes
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#examples" class="md-nav__link">
-    <span class="md-ellipsis">
-      Examples
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#methods" class="md-nav__link">
     <span class="md-ellipsis">
       Methods
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#notes" class="md-nav__link">
-    <span class="md-ellipsis">
-      Notes
     </span>
   </a>
   
@@ -4766,72 +4089,19 @@
                   
 
 
-<h1 id="leddrift">LEDDrift<a class="headerlink" href="#leddrift" title="Permanent link">&para;</a></h1>
-<p>LED stream generator with concept drift.</p>
-<p>This class is an extension of the <code>LED</code> generator whose purpose is to add concept drift to the stream.</p>
-<h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
-<ul>
-<li>
-<p><strong>seed</strong></p>
-<p><em>Type</em> → <em>int | None</em></p>
-<p><em>Default</em> → <code>None</code></p>
-<p>Random seed for reproducibility.</p>
-</li>
-<li>
-<p><strong>noise_percentage</strong></p>
-<p><em>Type</em> → <em>float</em></p>
-<p><em>Default</em> → <code>0.0</code></p>
-<p>The probability that noise will happen in the generation. At each new sample generated, a random number is generated, and if it is equal or less than the noise_percentage, the led value  will be switched</p>
-</li>
-<li>
-<p><strong>irrelevant_features</strong></p>
-<p><em>Type</em> → <em>bool</em></p>
-<p><em>Default</em> → <code>False</code></p>
-<p>Adds 17 non-relevant attributes to the stream.</p>
-</li>
-<li>
-<p><strong>n_drift_features</strong></p>
-<p><em>Type</em> → <em>int</em></p>
-<p><em>Default</em> → <code>0</code></p>
-<p>The number of attributes that have drift.</p>
-</li>
-</ul>
-<h2 id="attributes">Attributes<a class="headerlink" href="#attributes" title="Permanent link">&para;</a></h2>
-<ul>
-<li>
-<p><strong>desc</strong></p>
-<p>Return the description from the docstring.</p>
-</li>
-</ul>
-<h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
-<p><div class="language-python highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">river.datasets</span> <span class="kn">import</span> <span class="n">synth</span>
-
-<span class="n">dataset</span> <span class="o">=</span> <span class="n">synth</span><span class="o">.</span><span class="n">LEDDrift</span><span class="p">(</span><span class="n">seed</span> <span class="o">=</span> <span class="mi">112</span><span class="p">,</span> <span class="n">noise_percentage</span> <span class="o">=</span> <span class="mf">0.28</span><span class="p">,</span>
-                         <span class="n">irrelevant_features</span><span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">n_drift_features</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
-
-<span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">dataset</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
-    <span class="nb">print</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">values</span><span class="p">()),</span> <span class="n">y</span><span class="p">)</span>
-</code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>[1, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 1, 0, 0, 0, 0, 1] 7
-[1, 1, 0, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0] 6
-[0, 0, 0, 1, 1, 0, 1, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0, 1] 1
-[1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 0, 1] 6
-[1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0] 7
-</code></pre></div></p>
+<h1 id="basetransformer">BaseTransformer<a class="headerlink" href="#basetransformer" title="Permanent link">&para;</a></h1>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <details class="- abstract">
-<summary>take</summary>
-<p>Iterate over the k samples.</p>
+<summary>transform_one</summary>
+<p>Transform a set of features <code>x</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>k</strong>     — <em>'int'</em>    </li>
+<li><strong>x</strong>     — <em>'dict[base.typing.FeatureName, Any]'</em>    </li>
 </ul>
+<p><strong>Returns</strong></p>
+<p><em>dict[base.typing.FeatureName, Any]</em>:     The transformed values.</p>
 </details>
 <p><span /></p>
-<h2 id="notes">Notes<a class="headerlink" href="#notes" title="Permanent link">&para;</a></h2>
-<p>An instance is generated based on the parameters passed. If <code>has_noise</code>
-is set then the total number of attributes will be 24, otherwise there will
-be 7 attributes.</p>
 
 
 
@@ -4906,14 +4176,14 @@ be 7 attributes.</p>
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "../../../..", "features": ["content.code.copy", "navigation.tabs", "navigation.instant", "navigation.indexes", "navigation.prune"], "search": "../../../../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["content.code.copy", "navigation.tabs", "navigation.instant", "navigation.indexes", "navigation.prune"], "search": "../../../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../../../assets/javascripts/bundle.83f73b43.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.83f73b43.min.js"></script>
       
-        <script src="../../../../js/mkdocs-charts-plugin.js"></script>
+        <script src="../../../js/mkdocs-charts-plugin.js"></script>
       
-        <script src="../../../../javascripts/config.js"></script>
+        <script src="../../../javascripts/config.js"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2/es5/tex-mml-chtml.js"></script>
       
@@ -4925,7 +4195,7 @@ be 7 attributes.</p>
       
         <script src="https://unpkg.com/tablesort@5.3.0/dist/tablesort.min.js"></script>
       
-        <script src="../../../../javascripts/tablesort.js"></script>
+        <script src="../../../javascripts/tablesort.js"></script>
       
     
   </body>

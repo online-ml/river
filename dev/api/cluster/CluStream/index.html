@@ -937,6 +937,8 @@
       
         
       
+        
+      
     
     
       
@@ -3968,7 +3970,7 @@ The <code>halflife</code> is set at 0.4, to show that you can pass <a href="../.
 <p>Update the model with a set of features <code>x</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     — <em>'dict'</em>    </li>
+<li><strong>x</strong>     — <em>'dict[typing.FeatureName, Any]'</em>    </li>
 <li><strong>w</strong>     — defaults to <code>1.0</code>    </li>
 </ul>
 </details>
@@ -3978,7 +3980,7 @@ The <code>halflife</code> is set at 0.4, to show that you can pass <a href="../.
 <p>Predicts the cluster number for a set of features <code>x</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     — <em>'dict'</em>    </li>
+<li><strong>x</strong>     — <em>'dict[typing.FeatureName, Any]'</em>    </li>
 </ul>
 <p><strong>Returns</strong></p>
 <p><em>int</em>:     A cluster number.</p>

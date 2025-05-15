@@ -937,6 +937,8 @@
       
         
       
+        
+      
     
     
       
@@ -3829,7 +3831,7 @@
 <p>Update the model with a set of features <code>x</code> and the labels <code>y</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     — <em>'dict'</em>    </li>
+<li><strong>x</strong>     — <em>'dict[FeatureName, typing.Any]'</em>    </li>
 <li><strong>y</strong>     — <em>'dict[FeatureName, bool]'</em>    </li>
 </ul>
 </details>
@@ -3839,8 +3841,8 @@
 <p>Predict the labels of a set of features <code>x</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     — <em>'dict'</em>    </li>
-<li><strong>kwargs</strong>    </li>
+<li><strong>x</strong>     — <em>'dict[FeatureName, typing.Any]'</em>    </li>
+<li><strong>kwargs</strong>     — <em>'typing.Any'</em>    </li>
 </ul>
 <p><strong>Returns</strong></p>
 <p><em>dict[FeatureName, bool]</em>:     The predicted labels.</p>
@@ -3851,8 +3853,8 @@
 <p>Predict the probability of each label appearing given dictionary of features <code>x</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     — <em>'dict'</em>    </li>
-<li><strong>kwargs</strong>    </li>
+<li><strong>x</strong>     — <em>'dict[FeatureName, typing.Any]'</em>    </li>
+<li><strong>kwargs</strong>     — <em>'typing.Any'</em>    </li>
 </ul>
 <p><strong>Returns</strong></p>
 <p><em>dict[FeatureName, dict[bool, float]]</em>:     A dictionary that associates a probability which each label.</p>
