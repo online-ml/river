@@ -138,7 +138,7 @@ class SAMkNNClassifier(base.Classifier):
                     [
                         clean_dist == 0
                         or new_ltm_item[1] != stm_item[1]
-                        or self.ltm.dist_func(new_ltm_item, stm_item) > clean_dist
+                        or self.dist_func(new_ltm_item, stm_item) > clean_dist
                         for stm_item, clean_dist in zip(
                             self.stm, map(self.stm.get_clean_distance, self.stm)
                         )
