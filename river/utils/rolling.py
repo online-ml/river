@@ -27,7 +27,8 @@ class BaseRolling:
             return super().__getattribute__("obj").__getattribute__(name)
 
     def __getitem__(self, idx):
-        return self.obj[idx]
+        # Enable for when it needs, throws a runtime error as usual if tried on a type that can't.
+        return self.obj[idx]  # type: ignore[index]
 
     def __repr__(self) -> str:
         return repr(self.obj)
