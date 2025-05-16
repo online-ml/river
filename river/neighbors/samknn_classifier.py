@@ -43,8 +43,7 @@ class SAMkNNClassifier(base.Classifier):
     Notes
     -----
     As the LTM compression mechanism uses kmeans, SAM-kNN only works with
-    nummerical features and every datapoint is required to have a value for
-    every feature.
+    nummerical features and all datapoints are required to have the same features.
 
     Examples
     --------
@@ -94,6 +93,9 @@ class SAMkNNClassifier(base.Classifier):
             recalculate_stm_error=self.recalculate_stm_error,
         )
         self.ltm = SAMkNNLongTermMemory(self.n_neighbors, dist_func=self.dist_func)
+
+    def _unit_test_skips(self):
+        return {"check_emerging_features", "check_disappearing_features"}
 
     @property
     def _multiclass(self):
@@ -373,7 +375,7 @@ class SAMkNNLongTermMemory(SAMkNNMemory):
             fields = set(fields)
             assert (
                 len(fields) == 1
-            ), "Not all datapoints have the same fields. Can not compress LTM!"
+            ), "Not all datapoints have the same features. Can not compress LTM!"
             fields = fields.pop()
 
             # Generate and add compressed data
