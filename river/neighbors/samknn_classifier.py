@@ -75,23 +75,25 @@ class SAMkNNClassifier(base.Classifier):
         self.min_stm_size = min_stm_size
         self.weighted = weighted
         self.softmax = softmax
+        self.dist_func = dist_func
+        self.recalculate_stm_error = recalculate_stm_error
 
         self.classes: set[base.typing.ClfTarget] = set()
         self.weights: dict[str, int] = {"stm": 0, "ltm": 0, "cm": 0}
 
-        if dist_func is None:
-            dist_func = functools.partial(utils.math.minkowski_distance, p=2)
-        if not isinstance(dist_func, FunctionWrapper):
-            dist_func = FunctionWrapper(dist_func)
+        if self.dist_func is None:
+            self.dist_func = functools.partial(utils.math.minkowski_distance, p=2)
+        if not isinstance(self.dist_func, FunctionWrapper):
+            self.dist_func = FunctionWrapper(self.dist_func)
 
         self.stm = SAMkNNShortTermMemory(
             n_neighbors=self.n_neighbors,
-            dist_func=dist_func,
+            dist_func=self.dist_func,
             min_stm_size=self.min_stm_size,
             weighted=self.weighted,
-            recalculate_stm_error=recalculate_stm_error,
+            recalculate_stm_error=self.recalculate_stm_error,
         )
-        self.ltm = SAMkNNLongTermMemory(self.n_neighbors, dist_func=dist_func)
+        self.ltm = SAMkNNLongTermMemory(self.n_neighbors, dist_func=self.dist_func)
 
     @property
     def _multiclass(self):
