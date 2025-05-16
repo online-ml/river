@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import itertools
 import typing
+from collections.abc import Iterator
 
 import numpy as np
 
@@ -109,7 +110,7 @@ def expand_param_grid(model: T, grid: dict) -> list[T]:
     return [model.clone(params) for params in _expand_param_grid(grid)]
 
 
-def _expand_param_grid(grid: dict) -> typing.Iterator[dict]:
+def _expand_param_grid(grid: dict) -> Iterator[dict]:
     def expand_tuple(t):
         klass, params = t
 
