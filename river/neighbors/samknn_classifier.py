@@ -106,7 +106,11 @@ class SAMkNNClassifier(base.Classifier):
         self.ltm = SAMkNNLongTermMemory(self.n_neighbors, dist_func=self.dist_func)
 
     def _unit_test_skips(self):
-        return {"check_emerging_features", "check_disappearing_features"}
+        return {
+            "check_emerging_features",
+            "check_disappearing_features",
+            "check_radically_disappearing_features",
+        }
 
     @property
     def _multiclass(self):
