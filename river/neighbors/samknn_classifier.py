@@ -171,6 +171,10 @@ class SAMkNNClassifier(base.Classifier):
         # If no neighbors are found, return a uniform distribution
         if not nearest:
             return {cls: 1 / len(self.classes) for cls in self.classes}
+        
+        # If closest neighbor is exact match, assign it a probability of 1
+        if nearest[0][1] == 0:
+            return {cls: 1 if cls == nearest[0][0][1] else 0 for cls in self.classes}
 
         # Add up unnormalized probas
         for item, dist in nearest:
@@ -273,10 +277,13 @@ class SAMkNNShortTermMemory(SAMkNNMemory):
             items_distances = ((p, self.dist_func(item, p)) for p in self.items[start_idx:-1])
             nearest = sorted(items_distances, key=operator.itemgetter(1))[: self.n_neighbors]
 
-            probas: dict[base.typing.ClfTarget, float] = collections.defaultdict(lambda: 0)
-            for item, dist in nearest:
-                probas[item[1]] += 1 / dist if self.weighted else 1
-            prediction = max(probas, key=probas.__getitem__)
+            if nearest[0][1] == 0:
+                prediction = nearest[0][0][1]
+            else:
+                probas: dict[base.typing.ClfTarget, float] = collections.defaultdict(lambda: 0)
+                for item, dist in nearest:
+                    probas[item[1]] += 1 / dist if self.weighted else 1
+                prediction = max(probas, key=probas.__getitem__)
             self.prediction_histories[start_idx].append(prediction == item[1])
 
         elif start_idx - 1 in self.prediction_histories.keys() and not self.recalculate_stm_error:
@@ -290,10 +297,13 @@ class SAMkNNShortTermMemory(SAMkNNMemory):
             items_distances = ((p, self.dist_func(item, p)) for p in self.items[start_idx:-1])
             nearest = sorted(items_distances, key=operator.itemgetter(1))[: self.n_neighbors]
 
-            probas = collections.defaultdict(lambda: 0)
-            for item, dist in nearest:
-                probas[item[1]] += 1 / dist if self.weighted else 1
-            prediction = max(probas, key=probas.__getitem__)
+            if nearest[0][1] == 0:
+                prediction = nearest[0][0][1]
+            else:
+                probas = collections.defaultdict(lambda: 0)
+                for item, dist in nearest:
+                    probas[item[1]] += 1 / dist if self.weighted else 1
+                prediction = max(probas, key=probas.__getitem__)
             self.prediction_histories[start_idx].append(prediction == item[1])
 
         else:
@@ -305,9 +315,12 @@ class SAMkNNShortTermMemory(SAMkNNMemory):
                     (p, self.dist_func(item, p)) for p in self.items[start_idx:cur_idx]
                 )
                 nearest = sorted(items_distances, key=operator.itemgetter(1))[: self.n_neighbors]
-                probas = collections.defaultdict(lambda: 0)
-                for item, dist in nearest:
-                    probas[item[1]] += 1 / dist if self.weighted else 1
+                if nearest[0][1] == 0:
+                    prediction = nearest[0][0][1]
+                else:
+                    probas = collections.defaultdict(lambda: 0)
+                    for item, dist in nearest:
+                        probas[item[1]] += 1 / dist if self.weighted else 1
 
                 prediction = max(probas, key=probas.__getitem__)
                 self.prediction_histories[start_idx].append(prediction == item[1])
