@@ -56,7 +56,7 @@ class SAMkNNClassifier(base.Classifier):
 
     >>> evaluate.progressive_val_score(dataset, samknn, metrics.Accuracy())
     Accuracy: 77.18%
-    
+
     """
 
     def __init__(
@@ -175,7 +175,7 @@ class SAMkNNClassifier(base.Classifier):
         # If no neighbors are found, return a uniform distribution
         if not nearest:
             return {cls: 1 / len(self.classes) for cls in self.classes}
-        
+
         # If closest neighbor is exact match, assign it a probability of 1
         if nearest[0][1] == 0:
             return {cls: 1 if cls == nearest[0][0][1] else 0 for cls in self.classes}
