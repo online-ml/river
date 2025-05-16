@@ -12,9 +12,14 @@ from .base import DistanceFunc, FunctionWrapper
 
 
 class SAMkNNClassifier(base.Classifier):
-    """Self Adjusting Memory k-Nearest Neighbors (SAMkNN) for classification.
+    """Self Adjusting Memory k-Nearest Neighbors (SAMkNN) [^1] for classification.
 
-    High level description.
+    SAM-kNN is a neighbors based online classifier designed to handle 
+    heterogeneous concept drift. To do so, it splits up its memory into Short 
+    Term Memory (STM) and Long Term Memory (LTM). The STM tracks the currently
+    active concept and is continually resized to best represent it. Observations
+    discarded from the STM are transferred to LTM. To limit the memory size 
+    without the need to discard observations, the LTM is regularly compressed.
 
     Parameters
     ----------
@@ -56,6 +61,10 @@ class SAMkNNClassifier(base.Classifier):
 
     >>> evaluate.progressive_val_score(dataset, samknn, metrics.Accuracy())
     Accuracy: 77.18%
+
+    References
+    ----------
+    [^1]: [KNN Classifier with Self Adjusting Memory for Heterogeneous Concept Drift — V. Losing, B. Hammer and H. Wersing](https://doi.org/10.1109/ICDM.2016.0040)
 
     """
 
