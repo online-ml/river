@@ -55,6 +55,8 @@ class SAMkNNClassifier(base.Classifier):
     >>> dataset = Bananas()
 
     >>> evaluate.progressive_val_score(dataset, samknn, metrics.Accuracy())
+    
+    Accuracy: 77.18%
     """
 
     def __init__(
