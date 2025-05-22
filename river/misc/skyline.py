@@ -142,7 +142,7 @@ class Skyline(collections.UserList[dict[base.typing.FeatureName, Any]], base.Bas
         if len(self.minimize) + len(self.maximize) == 0:
             raise ValueError("At least one name has to be specified")
 
-    def _count_diffs(self, a, b):
+    def _count_diffs(self, a: dict[base.typing.FeatureName, Any], b: dict[base.typing.FeatureName, Any]) -> tuple[int, int]:
         n_better = 0
         n_worse = 0
 
