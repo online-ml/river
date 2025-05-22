@@ -43,9 +43,9 @@ class SDFT(base.Base):
 
     """
 
-    def __init__(self, window_size):
-        self.coefficients = collections.deque(maxlen=window_size)
-        self.window = collections.deque(maxlen=window_size)
+    def __init__(self, window_size: int):
+        self.coefficients: collections.deque[complex] = collections.deque(maxlen=window_size)
+        self.window: collections.deque[float] = collections.deque(maxlen=window_size)
 
     @property
     def window_size(self):
