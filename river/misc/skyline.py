@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 import collections
+from typing import Any
 
 from river import base
 
 
-class Skyline(collections.UserList, base.Base):
+class Skyline(collections.UserList[dict[base.typing.FeatureName, Any]], base.Base):
     """A skyline is set of points which is not dominated by any other point.
 
     This implementation uses a block nested loop. Identical observations are all part of the
@@ -132,7 +133,7 @@ class Skyline(collections.UserList, base.Base):
 
     """
 
-    def __init__(self, minimize: list | None = None, maximize: list | None = None):
+    def __init__(self, minimize: list[base.typing.FeatureName] | None = None, maximize: list[base.typing.FeatureName] | None = None):
         super().__init__()
 
         self.minimize = [] if minimize is None else minimize
