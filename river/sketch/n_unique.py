@@ -5,10 +5,10 @@ import math
 
 import numpy as np
 
-from river import stats
+from river import base
 
 
-class NUnique(stats.base.Univariate):
+class NUnique(base.Base):
     """Approximate number of unique values counter.
 
     This is basically an implementation of the HyperLogLog algorithm. Adapted from
@@ -32,10 +32,10 @@ class NUnique(stats.base.Univariate):
     --------
 
     >>> import string
-    >>> from river import stats
+    >>> from river import sketch
 
     >>> alphabet = string.ascii_lowercase
-    >>> n_unique = stats.NUnique(error_rate=0.2, seed=42)
+    >>> n_unique = sketch.NUnique(error_rate=0.2, seed=42)
 
     >>> n_unique.update('a')
     >>> n_unique.get()
@@ -52,7 +52,7 @@ class NUnique(stats.base.Univariate):
 
     Lowering the `error_rate` parameter will increase the precision.
 
-    >>> n_unique = stats.NUnique(error_rate=0.01, seed=42)
+    >>> n_unique = sketch.NUnique(error_rate=0.01, seed=42)
     >>> for letter in alphabet:
     ...     n_unique.update(letter)
     >>> n_unique.get()
