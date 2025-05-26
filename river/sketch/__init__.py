@@ -10,6 +10,7 @@ from __future__ import annotations
 from .counter import Counter
 from .heavy_hitters import HeavyHitters
 from .histogram import Histogram
+from .n_unique import NUnique
 from .set import Set
 
-__all__ = ["Counter", "HeavyHitters", "Histogram", "Set"]
+__all__ = ["Counter", "HeavyHitters", "Histogram", "NUnique", "Set"]
