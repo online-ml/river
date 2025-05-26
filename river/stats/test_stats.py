@@ -55,8 +55,6 @@ def test_pickling_value(stat):
     for i in range(10):
         if isinstance(stat, stats.base.Bivariate):
             stat.update(i, i)
-        elif isinstance(stat, stats.NUnique):  # takes string in input
-            stat.update(str(i))
         else:
             stat.update(i)
 
