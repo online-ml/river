@@ -270,7 +270,7 @@ class KolmogorovSmirnov(stats.base.Bivariate):
         if self.statistic == "ks":
             return max(self.treap.max_value, -self.treap.min_value) / self.n_samples
         elif self.statistic == "kuiper":
-            return max(self.treap.max_value - self.treap.min_value) / self.n_samples
+            return (self.treap.max_value - self.treap.min_value) / self.n_samples
         else:
             raise ValueError(f"Unknown statistic {self.statistic}, expected one of: ks, kuiper")
 
