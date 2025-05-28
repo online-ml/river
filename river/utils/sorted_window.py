@@ -46,10 +46,10 @@ class SortedWindow(collections.UserList[T]):
         self.unsorted_window: collections.deque[T] = collections.deque(maxlen=size)
 
     @property
-    def size(self):
-        return self.unsorted_window.maxlen
+    def size(self) -> int:
+        return self.unsorted_window.maxlen  # type: ignore[return-value] # The window always has a maxlen
 
-    def append(self, x) -> None:
+    def append(self, x: T) -> None:
         if len(self) >= self.size:
             # The window is sorted, and a binary search is more optimized than linear search
             start_deque = bisect.bisect_left(self, self.unsorted_window[0])
