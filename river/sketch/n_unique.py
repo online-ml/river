@@ -67,7 +67,7 @@ class NUnique(base.Base):
 
     P32 = 2**32
 
-    def __init__(self, error_rate=0.01, seed: int | None = None):
+    def __init__(self, error_rate: float = 0.01, seed: int | None = None):
         self.error_rate = error_rate
         self.seed = seed
 
@@ -77,20 +77,20 @@ class NUnique(base.Base):
         self._salt = np.random.RandomState(seed).bytes(hashlib.blake2s.SALT_SIZE)
 
     @property
-    def name(self):
+    def name(self) -> str:
         return "n_unique"
 
-    def _hash(self, x):
+    def _hash(self, x: str) -> int:
         hexa = hashlib.blake2s(bytes(x, encoding="utf8"), salt=self._salt).hexdigest()
         return int(hexa, 16)
 
-    def update(self, x):
+    def update(self, x: str) -> None:
         h = self._hash(x)
         i = h & NUnique.P32 - 1 >> 32 - self.n_bits
         z = 35 - len(bin(NUnique.P32 - 1 & h << self.n_bits | 1 << self.n_bits - 1))
         self.buckets[i] = max(self.buckets[i], z)
 
-    def get(self):
+    def get(self) -> int:
         a = (
             {16: 0.673, 32: 0.697, 64: 0.709}[self.n_buckets]
             if self.n_buckets <= 64
