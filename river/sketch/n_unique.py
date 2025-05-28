@@ -85,9 +85,9 @@ class NUnique(base.Base):
         return int(hexa, 16)
 
     def update(self, x):
-        x = self._hash(x)
-        i = x & NUnique.P32 - 1 >> 32 - self.n_bits
-        z = 35 - len(bin(NUnique.P32 - 1 & x << self.n_bits | 1 << self.n_bits - 1))
+        h = self._hash(x)
+        i = h & NUnique.P32 - 1 >> 32 - self.n_bits
+        z = 35 - len(bin(NUnique.P32 - 1 & h << self.n_bits | 1 << self.n_bits - 1))
         self.buckets[i] = max(self.buckets[i], z)
 
     def get(self):
