@@ -5,10 +5,10 @@ import math
 
 import numpy as np
 
-from river import stats
+from river import base
 
 
-class NUnique(stats.base.Univariate):
+class NUnique(base.Base):
     """Approximate number of unique values counter.
 
     This is basically an implementation of the HyperLogLog algorithm. Adapted from
@@ -32,10 +32,10 @@ class NUnique(stats.base.Univariate):
     --------
 
     >>> import string
-    >>> from river import stats
+    >>> from river import sketch
 
     >>> alphabet = string.ascii_lowercase
-    >>> n_unique = stats.NUnique(error_rate=0.2, seed=42)
+    >>> n_unique = sketch.NUnique(error_rate=0.2, seed=42)
 
     >>> n_unique.update('a')
     >>> n_unique.get()
@@ -52,7 +52,7 @@ class NUnique(stats.base.Univariate):
 
     Lowering the `error_rate` parameter will increase the precision.
 
-    >>> n_unique = stats.NUnique(error_rate=0.01, seed=42)
+    >>> n_unique = sketch.NUnique(error_rate=0.01, seed=42)
     >>> for letter in alphabet:
     ...     n_unique.update(letter)
     >>> n_unique.get()
@@ -67,7 +67,7 @@ class NUnique(stats.base.Univariate):
 
     P32 = 2**32
 
-    def __init__(self, error_rate=0.01, seed: int | None = None):
+    def __init__(self, error_rate: float = 0.01, seed: int | None = None):
         self.error_rate = error_rate
         self.seed = seed
 
@@ -77,20 +77,20 @@ class NUnique(stats.base.Univariate):
         self._salt = np.random.RandomState(seed).bytes(hashlib.blake2s.SALT_SIZE)
 
     @property
-    def name(self):
+    def name(self) -> str:
         return "n_unique"
 
-    def _hash(self, x):
+    def _hash(self, x: str) -> int:
         hexa = hashlib.blake2s(bytes(x, encoding="utf8"), salt=self._salt).hexdigest()
         return int(hexa, 16)
 
-    def update(self, x):
-        x = self._hash(x)
-        i = x & NUnique.P32 - 1 >> 32 - self.n_bits
-        z = 35 - len(bin(NUnique.P32 - 1 & x << self.n_bits | 1 << self.n_bits - 1))
+    def update(self, x: str) -> None:
+        h = self._hash(x)
+        i = h & NUnique.P32 - 1 >> 32 - self.n_bits
+        z = 35 - len(bin(NUnique.P32 - 1 & h << self.n_bits | 1 << self.n_bits - 1))
         self.buckets[i] = max(self.buckets[i], z)
 
-    def get(self):
+    def get(self) -> int:
         a = (
             {16: 0.673, 32: 0.697, 64: 0.709}[self.n_buckets]
             if self.n_buckets <= 64
