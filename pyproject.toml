@@ -211,7 +211,6 @@ module = [
     "river.feature_selection.*",
     "river.misc.*",
     "river.active.*",
-    "river.conf.*",
     "river.neural_net.*",
     "river.test_estimators",
     "river.dummy",
