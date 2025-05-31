@@ -1,11 +1,15 @@
 from __future__ import annotations
 
+from typing import TypeVar
+
 from river import base, stats
 
 from . import interval
 
+T = TypeVar("T", bound=base.Regressor)
 
-class RegressionJackknife(base.Wrapper, base.Regressor):
+
+class RegressionJackknife(base.Wrapper[T], base.Regressor):
     """Jackknife method for regression.
 
     This is a conformal prediction method for regression. It is based on the jackknife method. The
@@ -81,7 +85,7 @@ class RegressionJackknife(base.Wrapper, base.Regressor):
 
     def __init__(
         self,
-        regressor: base.Regressor,
+        regressor: T,
         confidence_level: float = 0.95,
         window_size: int | None = None,
     ):
@@ -100,7 +104,7 @@ class RegressionJackknife(base.Wrapper, base.Regressor):
         )
 
     @property
-    def _wrapped_model(self):
+    def _wrapped_model(self) -> T:
         return self.regressor
 
     @classmethod
