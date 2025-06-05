@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+from collections.abc import Iterator
 from typing import TypeVar
 
-from river import base, stats
+from river import base, compose, stats
 
 from . import interval
 
@@ -108,12 +109,14 @@ class RegressionJackknife(base.Wrapper[T], base.Regressor):
         return self.regressor
 
     @classmethod
-    def _unit_test_params(cls):
+    def _unit_test_params(cls) -> Iterator[dict[str, compose.Pipeline]]:
         from river import linear_model, preprocessing
 
         yield {"regressor": (preprocessing.StandardScaler() | linear_model.LinearRegression())}
 
-    def learn_one(self, x, y, **kwargs):
+    def learn_one(
+        self, x: dict[base.typing.FeatureName, object], y: base.typing.RegTarget, **kwargs: object
+    ) -> None:
         # Update the quantiles
         error = y - self.regressor.predict_one(x)
         self._lower.update(error)
@@ -121,7 +124,12 @@ class RegressionJackknife(base.Wrapper[T], base.Regressor):
 
         self.regressor.learn_one(x, y, **kwargs)
 
-    def predict_one(self, x, with_interval=False, **kwargs):
+    def predict_one(
+        self,
+        x: dict[base.typing.FeatureName, object],
+        with_interval: bool = False,
+        **kwargs: object,
+    ) -> float | interval.Interval:
         """Predict the output of features `x`.
 
         Parameters
