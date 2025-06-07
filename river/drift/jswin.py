@@ -49,8 +49,23 @@ class JSWIN(DriftDetector):
     where $D_{KL}$ is the Kullback-Leibler divergence and $M$ is the average of the two distributions:
     $$
 
+    Examples
+    --------
+    >>> import random
+    >>> from river import drift
 
-    Examples TODO
+    >>> rng = random.Random(12345)
+    >>> jswin = drift.JSWIN(alpha=0.6)
+
+    >>> # Simulate a data stream composed by two data distributions
+    >>> data_stream = rng.choices([0, 1], k=1000) + rng.choices(range(4, 8), k=1000)
+
+    >>> # Update drift detector and verify if change is detected
+    >>> for i, val in enumerate(data_stream):
+    ...     jswin.update(val)
+    ...     if jswin.drift_detected:
+    ...         print(f"Change detected at index {i}, input value: {val}")
+    Change detected at index 1026, input value: 7
     --------
     """
 
@@ -63,7 +78,6 @@ class JSWIN(DriftDetector):
         window: typing.Iterable | None = None,
     ):
         super().__init__()
-        # TODO: assrts for alpha, window_size, bin_size
         if alpha < 0 or alpha > 1:
             raise ValueError("Alpha must be between 0 and 1.")
 
@@ -119,7 +133,9 @@ class JSWIN(DriftDetector):
                 itertools.islice(self.window, self.window_size // 2, self.window_size)
             )
 
-            self._js_value = self._jensen_shannon_divergence(first_window, second_window)
+            self._js_value = self._jensen_shannon_divergence(
+                first_window, second_window
+            )
 
             if self._js_value > self.alpha:
                 self._drift_detected = True
@@ -143,7 +159,10 @@ class JSWIN(DriftDetector):
             Kullback-Leibler divergence.
         """
         points = sorted(set(p + q))
-        bins = [points[i] for i in range(0, len(points), max(1, len(points) // self.bin_size))]
+        bins = [
+            points[i]
+            for i in range(0, len(points), max(1, len(points) // self.bin_size))
+        ]
         p_hist, _ = np.histogram(p, bins=bins, density=True)
         q_hist, _ = np.histogram(q, bins=bins, density=True)
         p_hist = p_hist / np.sum(p_hist)
@@ -171,5 +190,6 @@ class JSWIN(DriftDetector):
         """
         m = [(p[i] + q[i]) / 2 for i in range(len(p))]
         return 0.5 * (
-            self._kullback_leibler_divergence(p, m) + self._kullback_leibler_divergence(q, m)
+            self._kullback_leibler_divergence(p, m)
+            + self._kullback_leibler_divergence(q, m)
         )
