@@ -66,7 +66,6 @@ class JSWIN(DriftDetector):
     ...     if jswin.drift_detected:
     ...         print(f"Change detected at index {i}, input value: {val}")
     Change detected at index 1026, input value: 7
-    --------
     """
 
     def __init__(
