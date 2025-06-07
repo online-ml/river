@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import copy
 import inspect
+import itertools
 import pickle
 import random
 
@@ -105,6 +106,32 @@ def check_disappearing_features(model, dataset):
         else:
             model.predict_one({i: x[i] for i in features[:-3]})
             model.learn_one(x, y)
+
+
+def check_radically_disappearing_features(model, dataset):
+    """The model should work fine when nearly all features disappear."""
+
+    from river import utils
+
+    # First give all the data to prime the model
+    for x, y in itertools.islice(dataset, 20):
+        if utils.inspect.isanomalydetector(model):
+            model.score_one(x)
+            model.learn_one(x)
+        else:
+            model.predict_one(x)
+            model.learn_one(x, y)
+
+    # And suddenly remove almost everything
+    for x, y in itertools.islice(dataset, 10, None):
+        features = list(x.keys())
+        feat = random.choice(list(features))  # keep only 1 feature, at random
+        if utils.inspect.isanomalydetector(model):
+            model.score_one({feat: x[feat]})
+            model.learn_one({feat: x[feat]})
+        else:
+            model.predict_one({feat: x[feat]})
+            model.learn_one({feat: x[feat]}, y)
 
 
 def check_debug_one(model, dataset):
