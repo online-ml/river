@@ -3,7 +3,6 @@ from __future__ import annotations
 import collections
 import functools
 import heapq
-import itertools
 import math
 import operator
 import random
@@ -118,7 +117,7 @@ class SWINN(BaseNN):
         self.seed = seed
 
         self._data: collections.deque[Vertex | None] = collections.deque(maxlen=self.maxlen)
-        self._uuid = itertools.cycle(range(self.maxlen))
+        self._uuid: int = 0
         self._rng = random.Random(self.seed)
         self._index = False
 
@@ -319,7 +318,11 @@ class SWINN(BaseNN):
             Not used in this implementation.
 
         """
-        node = Vertex(item, next(self._uuid))
+        node = Vertex(item, self._uuid)
+
+        # Cyclical update of the uuid: SWINN currently only supports a FIFO data ingestion policy.
+        self._uuid = self._uuid + 1 if self._uuid < self.maxlen - 1 else 0
+
         if not self._index:
             self._data.append(node)
             if len(self) >= self.warm_up:
