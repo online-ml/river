@@ -9,3 +9,7 @@
 ## neighbors
 
 - Remove the `itertools.cycle` usage from the `neighbors.ann.SWINN` search engine, as pickling `cycle` objects will not be supported anymore, starting from Python 3.14. This change has no effect from the user standpoint, as the 'cycle' usage was more of a gimmick than a necessity.
+
+## stats
+
+- Changed the calculation of the Kuiper statistic in `base.KolmogorovSmirnov` to correspond to the reference implementation. The Kuiper statistic uses the difference between the maximum value and the minimum value.
