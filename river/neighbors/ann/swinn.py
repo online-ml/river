@@ -3,7 +3,6 @@ from __future__ import annotations
 import collections
 import functools
 import heapq
-import itertools
 import math
 import operator
 import random
