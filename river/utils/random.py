@@ -23,7 +23,7 @@ def poisson(rate: float, rng: random.Random | Any = random) -> int:
 
     L = math.exp(-rate)
     k = 0
-    p = 1
+    p = 1.0
 
     while p > L:
         k += 1
