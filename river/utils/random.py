@@ -2,11 +2,12 @@ from __future__ import annotations
 
 import math
 import random
+from typing import Any
 
 __all__ = ["poisson", "exponential"]
 
 
-def poisson(rate: float, rng=random) -> int:
+def poisson(rate: float, rng: random.Random | Any = random) -> int:
     """Sample a random value from a Poisson distribution.
 
     Parameters
@@ -31,7 +32,7 @@ def poisson(rate: float, rng=random) -> int:
     return k - 1
 
 
-def exponential(rate: float = 1.0, rng=random) -> float:
+def exponential(rate: float = 1.0, rng: random.Random | Any = random) -> float:
     """Sample a random value from a Poisson distribution.
 
     Parameters
