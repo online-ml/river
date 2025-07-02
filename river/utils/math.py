@@ -10,8 +10,8 @@ import functools
 import itertools
 import math
 import operator
-from collections.abc import Mapping, MutableMapping, Sequence
-from typing import Any
+from collections.abc import Iterable, Mapping, MutableMapping, Sequence
+from typing import Any, Literal
 
 import numpy as np
 import numpy.typing as npt
@@ -156,7 +156,7 @@ def outer(u: Mapping[Any, float], v: Mapping[Any, float]) -> dict[tuple[Any, Any
     return {(ki, kj): vi * vj for (ki, vi), (kj, vj) in itertools.product(u.items(), v.items())}
 
 
-def minkowski_distance(a: Mapping[Any, float], b: Mapping[Any, float], p: int):
+def minkowski_distance(a: Mapping[Any, float], b: Mapping[Any, float], p: int) -> float:
     """Minkowski distance.
 
     Parameters
@@ -196,7 +196,7 @@ def softmax(y_pred: MutableMapping[Any, float]) -> MutableMapping[Any, float]:
     return y_pred
 
 
-def prod(iterable) -> float:
+def prod(iterable: Iterable[Any]) -> Any:
     """Product function.
 
     Parameters
@@ -233,7 +233,7 @@ def dot(x: Mapping[Any, float], y: Mapping[Any, float]) -> float:
     return sum(x[i] * yi for i, yi in y.items() if i in x)
 
 
-def chain_dot(*xs: Mapping[Any, float]):
+def chain_dot(*xs: Mapping[Any, float]) -> float:
     """Returns the dot product of multiple vectors represented as dicts.
 
     Parameters
@@ -257,7 +257,7 @@ def chain_dot(*xs: Mapping[Any, float]):
     return sum(prod(x.get(i, 0) for x in xs) for i in keys)
 
 
-def sigmoid(x: float):
+def sigmoid(x: float) -> float:
     """Sigmoid function.
 
     Parameters
@@ -272,7 +272,7 @@ def sigmoid(x: float):
     return 1 / (1 + math.exp(-x))
 
 
-def clamp(x: float, minimum=0.0, maximum=1.0):
+def clamp(x: float, minimum: float = 0.0, maximum: float = 1.0) -> float:
     """Clamp a number.
 
     This is a synonym of clipping.
@@ -287,7 +287,7 @@ def clamp(x: float, minimum=0.0, maximum=1.0):
     return max(min(x, maximum), minimum)
 
 
-def norm(x: Mapping[Any, float], order=None) -> float:
+def norm(x: Mapping[Any, float], order: Literal["fro", "nuc"] | float | None = None) -> float:
     """Compute the norm of a dictionaries values.
 
     Parameters
@@ -299,7 +299,7 @@ def norm(x: Mapping[Any, float], order=None) -> float:
     return np.linalg.norm(list(x.values()), ord=order).item()
 
 
-def sign(x: float):
+def sign(x: float) -> int:
     """Sign function.
 
     Parameters
@@ -310,7 +310,7 @@ def sign(x: float):
     return -1 if x < 0 else (1 if x > 0 else 0)
 
 
-def argmax(lst: Sequence[Any]):
+def argmax(lst: Sequence[Any]) -> int:
     """Argmax function.
 
     Parameters
