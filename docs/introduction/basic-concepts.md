@@ -44,7 +44,7 @@ Dictionaries are therefore a perfect fit. They're native to Python and have exce
 
 In production, you're almost always going to face data streams which you have to react to, such as users visiting your website. The advantage of online machine learning is that you can design models that make predictions as well as learn from this data stream as it flows.
 
-But of course, when you're developping a model, you don't usually have access to a real-time feed on which to evaluate your model. You usually have an offline dataset which you want to evaluate your model on. River provides some datasets which can be read in online manner, one sample at a time. It is however crucial to keep in mind that the goal is to reproduce a production scenario as closely as possible, in order to ensure your model will perform just as well in production.
+But of course, when you're developing a model, you don't usually have access to a real-time feed on which to evaluate your model. You usually have an offline dataset which you want to evaluate your model on. River provides some datasets which can be read in online manner, one sample at a time. It is however crucial to keep in mind that the goal is to reproduce a production scenario as closely as possible, in order to ensure your model will perform just as well in production.
 
 ## Model evaluation
 

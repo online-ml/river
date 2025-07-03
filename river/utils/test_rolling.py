@@ -47,6 +47,6 @@ def test_issue_1343():
 
     """
     rmean = utils.TimeRolling(proba.MultivariateGaussian(), period=dt.timedelta(microseconds=1))
-    t = dt.datetime.utcnow()
+    t = dt.datetime.now()
     rmean.update({"a": 0}, t=t)
     rmean.update({"a": 1}, t=t)

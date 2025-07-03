@@ -25,21 +25,17 @@ def test_ranking():
         def bigger_is_better(self):
             return False
 
-        def revert(self):
-            ...
+        def revert(self): ...
 
-        def update(self):
-            ...
+        def update(self): ...
 
-        def works_with(self):
-            ...
+        def works_with(self): ...
 
     class DummyPolicy(bandit.base.Policy):
         def __init__(self):
             super().__init__(reward_obj=DummyMetric())
 
-        def _pull(self, arms):
-            ...
+        def _pull(self, arms): ...
 
     policy = DummyPolicy()
     policy._rewards[0].value = 0
@@ -69,7 +65,7 @@ def _iter_policies():
             yield policy(**params)
 
 
-@pytest.mark.parametrize(
+@pytest.mark.parametrize(  # type: ignore[misc]
     "policy,env",
     [
         pytest.param(
@@ -80,7 +76,7 @@ def _iter_policies():
         for env in _iter_envs()
     ],
 )
-@pytest.mark.skip(reason="flaky")
+@pytest.mark.skip(reason="flaky")  # type: ignore[misc]
 def test_better_than_random_policy(policy: bandit.base.Policy, env: gym.Env):
     """Test that the policy is better than random."""
 

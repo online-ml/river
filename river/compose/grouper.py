@@ -28,7 +28,7 @@ class Grouper(base.Transformer):
 
     def __init__(
         self,
-        transformer: base.Transformer,
+        transformer: base.BaseTransformer,
         by: base.typing.FeatureName | list[base.typing.FeatureName],
     ):
         self.transformer = transformer

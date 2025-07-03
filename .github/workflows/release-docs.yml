@@ -15,7 +15,8 @@ jobs:
       - name: Build River
         uses: ./.github/actions/install-env
         with:
-          python-version: "3.12.3"
+          # Use 3.12 for the docs env waiting for spaCy and srsly to support 3.13
+          python-version: "3.12"
 
       - name: Install extra Ubuntu dependencies
         run: sudo apt-get install graphviz pandoc

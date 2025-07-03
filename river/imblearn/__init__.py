@@ -1,4 +1,5 @@
 """Sampling methods."""
+
 from __future__ import annotations
 
 from .chebyshev import ChebyshevOverSampler, ChebyshevUnderSampler

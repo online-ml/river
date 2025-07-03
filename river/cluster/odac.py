@@ -73,7 +73,7 @@ class ODAC(base.Clusterer):
             ├── CH1_LVL_3 d1=0.71 [5, 6]
             └── CH2_LVL_3 d1=0.71 [7, 8]
 
-    You can acess some properties of the clustering model directly:
+    You can access some properties of the clustering model directly:
 
     >>> model.n_clusters
     11
@@ -241,119 +241,131 @@ class ODAC(base.Clusterer):
 
         return self._root_node.design_structure(n_decimal_places).rstrip("\n")
 
-    def draw(self, max_depth: int | None = None, show_clusters_info: list[typing.Hashable] = ["timeseries_names", "d1", "d2", "e"], n_decimal_places: int = 2):
-      """Method to draw the hierarchical cluster's structure as a Graphviz graph.
+    def draw(
+        self,
+        max_depth: int | None = None,
+        show_clusters_info: list[typing.Hashable] = ["timeseries_names", "d1", "d2", "e"],
+        n_decimal_places: int = 2,
+    ):
+        """Method to draw the hierarchical cluster's structure as a Graphviz graph.
 
-      Parameters
-      ----------
-      max_depth
-          The maximum depth of the tree to display.
-      show_clusters_info
-          List of cluster information to show. Valid options are:
-          - "timeseries_indexes": Shows the indexes of the timeseries in the cluster.
-          - "timeseries_names": Shows the names of the timeseries in the cluster.
-          - "name": Shows the cluster's name.
-          - "d1": Shows the d1 (the largest distance in the cluster).
-          - "d2": Shows the d2 (the second largest distance in the cluster).
-          - "e": Shows the error bound.
-      n_decimal_places
-          The number of decimal places to show for numerical values.
+        Parameters
+        ----------
+        max_depth
+            The maximum depth of the tree to display.
+        show_clusters_info
+            List of cluster information to show. Valid options are:
+            - "timeseries_indexes": Shows the indexes of the timeseries in the cluster.
+            - "timeseries_names": Shows the names of the timeseries in the cluster.
+            - "name": Shows the cluster's name.
+            - "d1": Shows the d1 (the largest distance in the cluster).
+            - "d2": Shows the d2 (the second largest distance in the cluster).
+            - "e": Shows the error bound.
+        n_decimal_places
+            The number of decimal places to show for numerical values.
 
-      """
-      if not (n_decimal_places > 0 and n_decimal_places < 10):
+        """
+        if not (n_decimal_places > 0 and n_decimal_places < 10):
             raise ValueError("n_decimal_places must be between 1 and 9.")
 
-      try:
-          import graphviz
-      except ImportError as e:
-          raise ValueError("You have to install graphviz to use the draw method.") from e
+        try:
+            import graphviz
+        except ImportError as e:
+            raise ValueError("You have to install graphviz to use the draw method.") from e
 
-      counter = 0
+        counter = 0
 
-      dot = graphviz.Digraph(
-          graph_attr={"splines": "ortho", "forcelabels": "true", "overlap": "false"},
-          node_attr={
-              "shape": "box",
-              "penwidth": "1.2",
-              "fontname": "trebuchet",
-              "fontsize": "11",
-              "margin": "0.1,0.0",
-          },
-          edge_attr={"penwidth": "0.6", "center": "true", "fontsize": "7  "},
-      )
+        dot = graphviz.Digraph(
+            graph_attr={"splines": "ortho", "forcelabels": "true", "overlap": "false"},
+            node_attr={
+                "shape": "box",
+                "penwidth": "1.2",
+                "fontname": "trebuchet",
+                "fontsize": "11",
+                "margin": "0.1,0.0",
+            },
+            edge_attr={"penwidth": "0.6", "center": "true", "fontsize": "7  "},
+        )
 
-      def iterate(node: ODACCluster, parent_node: str | None = None, depth: int = 0):
-          nonlocal counter, max_depth, show_clusters_info, n_decimal_places
+        def iterate(node: ODACCluster, parent_node: str | None = None, depth: int = 0):
+            nonlocal counter, max_depth, show_clusters_info, n_decimal_places
 
-          if max_depth is not None and depth > max_depth:
-              return
+            if max_depth is not None and depth > max_depth:
+                return
 
-          node_n = str(counter)
-          counter += 1
+            node_n = str(counter)
+            counter += 1
 
-          label = ""
+            label = ""
 
-          # checks if user wants to see information about clusters
-          if len(show_clusters_info) > 0:
-            show_clusters_info_copy = show_clusters_info.copy()
+            # checks if user wants to see information about clusters
+            if len(show_clusters_info) > 0:
+                show_clusters_info_copy = show_clusters_info.copy()
 
-            if "name" in show_clusters_info_copy:
-                label += f"{node.name}"
-                show_clusters_info_copy.remove("name")
-                if len(show_clusters_info_copy) > 0:
-                    label += "\n"
-            if "timeseries_indexes" in show_clusters_info_copy:
-                # Convert timeseries names to indexes
-                name_to_index = {name: index for index, name in enumerate(self._root_node.timeseries_names)}
-                timeseries_indexes = [name_to_index[_name] for _name in node.timeseries_names if _name in name_to_index]
+                if "name" in show_clusters_info_copy:
+                    label += f"{node.name}"
+                    show_clusters_info_copy.remove("name")
+                    if len(show_clusters_info_copy) > 0:
+                        label += "\n"
+                if "timeseries_indexes" in show_clusters_info_copy:
+                    # Convert timeseries names to indexes
+                    name_to_index = {
+                        name: index for index, name in enumerate(self._root_node.timeseries_names)
+                    }
+                    timeseries_indexes = [
+                        name_to_index[_name]
+                        for _name in node.timeseries_names
+                        if _name in name_to_index
+                    ]
 
-                label += f"{timeseries_indexes}"
-                show_clusters_info_copy.remove("timeseries_indexes")
-                if len(show_clusters_info_copy) > 0:
-                    label += "\n"
-            if "timeseries_names" in show_clusters_info_copy:
-                label += f"{node.timeseries_names}"
-                show_clusters_info_copy.remove("timeseries_names")
-                if len(show_clusters_info_copy) > 0:
-                    label += "\n"
-            if "d1" in show_clusters_info_copy:
-                if node.d1 is not None:
-                    label += f"d1={node.d1:.{n_decimal_places}f}"
-                else:
-                    label += "d1=<Not calculated>"
-                show_clusters_info_copy.remove("d1")
-                if len(show_clusters_info_copy) > 0:
-                    label += "\n"
-            if "d2" in show_clusters_info_copy and node.d2 is not None:
-                label += f"d2={node.d2:.{n_decimal_places}f}"
-                show_clusters_info_copy.remove("d2")
-                if len(show_clusters_info_copy) > 0:
-                    label += "\n"
-            if "e" in show_clusters_info_copy:
-                label += f"e={node.e:.{n_decimal_places}f}"
+                    label += f"{timeseries_indexes}"
+                    show_clusters_info_copy.remove("timeseries_indexes")
+                    if len(show_clusters_info_copy) > 0:
+                        label += "\n"
+                if "timeseries_names" in show_clusters_info_copy:
+                    label += f"{node.timeseries_names}"
+                    show_clusters_info_copy.remove("timeseries_names")
+                    if len(show_clusters_info_copy) > 0:
+                        label += "\n"
+                if "d1" in show_clusters_info_copy:
+                    if node.d1 is not None:
+                        label += f"d1={node.d1:.{n_decimal_places}f}"
+                    else:
+                        label += "d1=<Not calculated>"
+                    show_clusters_info_copy.remove("d1")
+                    if len(show_clusters_info_copy) > 0:
+                        label += "\n"
+                if "d2" in show_clusters_info_copy and node.d2 is not None:
+                    label += f"d2={node.d2:.{n_decimal_places}f}"
+                    show_clusters_info_copy.remove("d2")
+                    if len(show_clusters_info_copy) > 0:
+                        label += "\n"
+                if "e" in show_clusters_info_copy:
+                    label += f"e={node.e:.{n_decimal_places}f}"
 
-            show_clusters_info_copy.clear()
+                show_clusters_info_copy.clear()
 
-          # Creates a node with different color to differentiate the active clusters from the non-active
-          if node.active:
-              dot.node(node_n, label, style="filled", fillcolor="#76b5c5")
-          else:
-              dot.node(node_n, label, style="filled", fillcolor="#f2f2f2")
+            # Creates a node with different color to differentiate the active clusters from the non-active
+            if node.active:
+                dot.node(node_n, label, style="filled", fillcolor="#76b5c5")
+            else:
+                dot.node(node_n, label, style="filled", fillcolor="#f2f2f2")
 
-          if parent_node is not None:
-              dot.edge(parent_node, node_n)
+            if parent_node is not None:
+                dot.edge(parent_node, node_n)
 
-          if node.children is not None:
-              iterate(node=node.children.first, parent_node=node_n, depth=depth + 1)
-              iterate(node.children.second, parent_node=node_n, depth=depth + 1)
+            if node.children is not None:
+                iterate(node=node.children.first, parent_node=node_n, depth=depth + 1)
+                iterate(node.children.second, parent_node=node_n, depth=depth + 1)
 
-      iterate(node=self._root_node)
+        iterate(node=self._root_node)
 
-      return dot
+        return dot
 
     @property
     def structure_changed(self) -> bool:
         return self._structure_changed
+
 
 class ODACCluster(base.Base):
     """Cluster class for representing individual clusters."""
@@ -366,7 +378,9 @@ class ODACCluster(base.Base):
         self.children: ODACChildren | None = None
 
         self.timeseries_names: list[typing.Hashable] = []
-        self._statistics: dict[tuple[typing.Hashable, typing.Hashable], stats.PearsonCorr] | stats.Var | None
+        self._statistics: (
+            dict[tuple[typing.Hashable, typing.Hashable], stats.PearsonCorr] | stats.Var | None
+        )
 
         self.d1: float | None = None
         self.d2: float | None = None
@@ -381,7 +395,7 @@ class ODACCluster(base.Base):
         self.n = 0
 
     # Method to design the structure of the cluster tree
-    def design_structure(self, decimal_places:int = 2) -> str:
+    def design_structure(self, decimal_places: int = 2) -> str:
         pre_0 = "    "
         pre_1 = "│   "
         pre_2 = "├── "
@@ -389,11 +403,14 @@ class ODACCluster(base.Base):
         node = self
         prefix = (
             pre_2
-            if node.parent is not None and (node.parent.children is None or id(node) != id(node.parent.children.second))  # type: ignore
+            if node.parent is not None
+            and (node.parent.children is None or id(node) != id(node.parent.children.second))  # type: ignore
             else pre_3
         )
         while node.parent is not None and node.parent.parent is not None:
-            if node.parent.parent.children is None or id(node.parent) != id(node.parent.parent.children.second):  # type: ignore
+            if node.parent.parent.children is None or id(node.parent) != id(
+                node.parent.parent.children.second
+            ):  # type: ignore
                 prefix = pre_1 + prefix
             else:
                 prefix = pre_0 + prefix
@@ -430,14 +447,20 @@ class ODACCluster(base.Base):
     def __repr__(self) -> str:
         return self.design_structure()
 
-    def _init_stats(self) -> dict[tuple[typing.Hashable, typing.Hashable], stats.PearsonCorr] | stats.Var:
-        return collections.defaultdict(
-            stats.PearsonCorr,
-            {
-                (k1, k2): stats.PearsonCorr()
-                for k1, k2 in itertools.combinations(self.timeseries_names, 2)
-            },
-        ) if len(self.timeseries_names) > 1 else stats.Var()
+    def _init_stats(
+        self,
+    ) -> dict[tuple[typing.Hashable, typing.Hashable], stats.PearsonCorr] | stats.Var:
+        return (
+            collections.defaultdict(
+                stats.PearsonCorr,
+                {
+                    (k1, k2): stats.PearsonCorr()
+                    for k1, k2 in itertools.combinations(self.timeseries_names, 2)
+                },
+            )
+            if len(self.timeseries_names) > 1
+            else stats.Var()
+        )
 
     # TODO: not sure if this is the best design
     def __call__(self, ts_names: list[typing.Hashable]):
@@ -454,18 +477,18 @@ class ODACCluster(base.Base):
                     continue
                 item.update(float(x[k1]), float(x[k2]))
         else:
-            self._statistics.update(float(x.get(self.timeseries_names[0]))) # type: ignore
+            self._statistics.update(float(x.get(self.timeseries_names[0])))  # type: ignore
 
         # Increment the number of observation in the cluster
         self.n += 1
 
     # Method to calculate the rnomc values of the cluster
-    def _calculate_rnomc_dict(self)-> dict[tuple[typing.Hashable, typing.Hashable], float]:
+    def _calculate_rnomc_dict(self) -> dict[tuple[typing.Hashable, typing.Hashable], float]:
         # Get the correlation values between time-series in the cluster
         rnomc_dict = {}
 
         for k1, k2 in itertools.combinations(self.timeseries_names, 2):
-            value = abs((1 - self._statistics[(k1, k2)].get()) / 2.0) # type: ignore
+            value = abs((1 - self._statistics[(k1, k2)].get()) / 2.0)  # type: ignore
             rnomc_dict[(k1, k2)] = math.sqrt(value)
 
         return rnomc_dict
@@ -492,7 +515,7 @@ class ODACCluster(base.Base):
             else:
                 self.pivot_2 = self.d2 = None  # type: ignore
         else:
-            self.d1 = self._statistics.get() # type: ignore
+            self.d1 = self._statistics.get()  # type: ignore
         # Calculate the Hoeffding bound in the cluster
         self.e = math.sqrt(math.log(1 / confidence_level) / (2 * self.n))
 
@@ -502,7 +525,12 @@ class ODACCluster(base.Base):
         dist_2 = rnormc_dict.get((min(pivot_2, current), max(pivot_2, current)), 0)
         return 2 if dist_1 >= dist_2 else 1
 
-    def _split_this_cluster(self, pivot_1: typing.Hashable, pivot_2: typing.Hashable, rnormc_dict: dict[tuple[typing.Hashable, typing.Hashable], float]):
+    def _split_this_cluster(
+        self,
+        pivot_1: typing.Hashable,
+        pivot_2: typing.Hashable,
+        rnormc_dict: dict[tuple[typing.Hashable, typing.Hashable], float],
+    ):
         """Expand into two clusters."""
         pivot_set = {pivot_1, pivot_2}
         pivot_1_list = [pivot_1]
@@ -571,6 +599,7 @@ class ODACCluster(base.Base):
                 self.parent._aggregate_this_cluster()
                 return True
         return False
+
 
 class ODACChildren(base.Base):
     """Children class representing child clusters."""

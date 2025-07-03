@@ -1,14 +1,11 @@
 # Unreleased
 
-- The units used in River have been corrected to be based on powers of 2 (KiB, MiB). This only changes the display, the behaviour is unchanged.
+## base
 
-## cluster
+- The `tags` and `more_tags` properties of `base.Estimator` are now both a set of strings.
+- The `base` module is now fully type-annotated. Some type hints have changed, but this does not impact the behaviour of the code. For instance, the regression target is now indicated as a float instead of a Number.
+- `base.Ensemble`, `base.Wrapper`, and `base.WrapperEnsemble` became generic with regard to the type they encapsulate.
 
-- Update the description of `cluster.ODAC`.
-- Change `draw` in `cluster.ODAC` to draw the hierarchical cluster's structure as a Graphviz graph.
-- Add `render_ascii` in `cluster.ODAC` to render the hierarchical cluster's structure in text format.
-- Work with `stats.Var` in `cluster.ODAC` when cluster has only one time series.
+## neighbors
 
-## tree
-
-- Instead of letting trees grow indefinitely, setting the `max_depth` parameter to `None` will stop the trees from growing when they reach the system recursion limit.
+- Remove the `itertools.cycle` usage from the `neighbors.ann.SWINN` search engine, as pickling `cycle` objects will not be supported anymore, starting from Python 3.14. This change has no effect from the user standpoint, as the 'cycle' usage was more of a gimmick than a necessity.

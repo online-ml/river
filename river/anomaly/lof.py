@@ -149,17 +149,17 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
 
     The algorithm take into account the following elements:
         - `NewPoints`: new points;
-        - `kNN(p)`: the k-nearest neighboors of `p` (the k-closest points to `p`);
-        - `RkNN(p)`: the reverse-k-nearest neighboors of `p` (points that have `p` as one of their neighboors);
+        - `kNN(p)`: the k-nearest neighbors of `p` (the k-closest points to `p`);
+        - `RkNN(p)`: the reverse-k-nearest neighbors of `p` (points that have `p` as one of their neighbors);
         - `set_upd_lrd`: Set of points that need to have the local reachability distance updated;
         - `set_upd_lof`: Set of points that need to have the local outlier factor updated.
 
     This current implementation within `River`, based on the original one in the paper, follows the following steps:
         1) Insert new data points (`NewPoints`) and calculate its distance to existing points;
-        2) Update the nreaest neighboors and reverse nearest neighboors of all the points;
+        2) Update the nearest neighbors and reverse nearest neighbors of all the points;
         3) Define sets of affected points that required updates;
-        4) Calculate the reachability-distance from new point to neighboors (`NewPoints` -> `kNN(NewPoints)`)
-           and from rev-neighboors to new point (`RkNN(NewPoints)` -> `NewPoints`);
+        4) Calculate the reachability-distance from new point to neighbors (`NewPoints` -> `kNN(NewPoints)`)
+           and from rev-neighbors to new point (`RkNN(NewPoints)` -> `NewPoints`);
         5) Update the reachability-distance for affected points: `RkNN(RkNN(NewPoints))` -> `RkNN(NewPoints)`
         6) Update local reachability distance of affected points: `lrd(set_upd_lrd)`;
         7) Update local outlier factor: `lof(set_upd_lof)`.

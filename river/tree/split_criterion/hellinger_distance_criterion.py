@@ -28,6 +28,9 @@ class HellingerDistanceCriterion(SplitCriterion):
             return -math.inf
         return self.compute_hellinger(post_split_dist)
 
+    def current_merit(self, dist):
+        raise ValueError("The Heillinger distance is for 2 or more sets of data.")
+
     @staticmethod
     def compute_hellinger(dist):
         try:

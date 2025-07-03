@@ -4,6 +4,7 @@ This module contains utilities for merging multiple modeling steps into a single
 pipelines are not the only way to process a stream of data, we highly encourage you to use them.
 
 """
+
 from __future__ import annotations
 
 from .func import FuncTransformer

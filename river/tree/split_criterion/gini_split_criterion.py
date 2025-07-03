@@ -28,6 +28,9 @@ class GiniSplitCriterion(SplitCriterion):
             )
         return 1.0 - gini
 
+    def current_merit(self, dist):
+        return self.compute_gini(dist, sum(dist.values()))
+
     @staticmethod
     def compute_gini(dist, dist_sum_of_weights):
         gini = 1.0

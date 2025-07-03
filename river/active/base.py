@@ -30,8 +30,7 @@ class ActiveLearningClassifier(base.Wrapper, base.Classifier):
         return self.classifier
 
     @abc.abstractmethod
-    def _ask_for_label(self, x, y_pred) -> bool:
-        ...
+    def _ask_for_label(self, x, y_pred) -> bool: ...
 
     def predict_proba_one(self, x, **kwargs):
         """Predict the probability of each label for `x` and indicate whether a label is needed.

@@ -26,9 +26,7 @@ def _pair_confusion(cm):
 
     false_negatives -= sum_squares
 
-    true_negatives = (
-        cm.n_samples * cm.n_samples - (false_positives + false_negatives) - sum_squares
-    )
+    true_negatives = cm.n_samples * cm.n_samples - (false_positives + false_negatives) - sum_squares
 
     pair_confusion_matrix[0][0] = true_negatives
     pair_confusion_matrix[0][1] = false_positives
@@ -121,7 +119,7 @@ class AdjustedRand(metrics.base.MultiClassMetric):
 
     The Adjusted Rand Index is the corrected-for-chance version of the Rand Index [^1] [^2].
     Such a correction for chance establishes a baseline by using the expected similarity
-    of all pair-wise comparisions between clusterings specified by a random model.
+    of all pair-wise comparisons between clusterings specified by a random model.
 
     Traditionally, the Rand Index was corrected using the Permutation Model for Clustering.
     However, the premises of the permutation model are frequently violated; in many
@@ -189,10 +187,8 @@ class AdjustedRand(metrics.base.MultiClassMetric):
                 2.0
                 * (true_positives * true_negatives - false_negatives * false_positives)
                 / (
-                    (true_positives + false_negatives)
-                    * (false_negatives + true_negatives)
-                    + (true_positives + false_positives)
-                    * (false_positives + true_negatives)
+                    (true_positives + false_negatives) * (false_negatives + true_negatives)
+                    + (true_positives + false_positives) * (false_positives + true_negatives)
                 )
             )
         except ZeroDivisionError:

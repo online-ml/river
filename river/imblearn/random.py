@@ -194,7 +194,7 @@ class RandomSampler(ClassificationSampler):
     desired_dist
         The desired class distribution. The keys are the classes whilst the values are the desired
         class percentages. The values must sum up to 1. If set to `None`, then the observations
-        will be sampled uniformly at random, which is stricly equivalent to using
+        will be sampled uniformly at random, which is strictly equivalent to using
         `ensemble.BaggingClassifier`.
     sampling_rate
         The desired ratio of data to sample.

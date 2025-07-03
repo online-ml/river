@@ -3,6 +3,7 @@
 The module includes tools to iterate over data streams.
 
 """
+
 from __future__ import annotations
 
 from .cache import Cache

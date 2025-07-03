@@ -303,7 +303,7 @@ class BOLEClassifier(AdaBoostClassifier):
         # the best model's not yet trained will receive lambda values for training from the model's that correctly classified an instance.
         # the values of lambda increase in case a mistake is made and decrease in case a right prediction is made.
         # the worst models are more likely to make mistakes, increasing the value of lambda.
-        # Then, the best's model are likely to receive a high value of lambda and decreasing gradually throughout the remaning models to be trained
+        # Then, the best's model are likely to receive a high value of lambda and decreasing gradually throughout the remaining models to be trained
         # It's similar to a system where the rich get richer.
         for i in range(self.n_models):
             if correct:
@@ -327,9 +327,7 @@ class BOLEClassifier(AdaBoostClassifier):
 
     def predict_proba_one(self, x, **kwargs):
         y_proba = collections.Counter()
-        y_proba_all = (
-            collections.Counter()
-        )  # stores prediction of every model of the ensemble, if y_proba is null, returns y_proba_all
+        y_proba_all = collections.Counter()  # stores prediction of every model of the ensemble, if y_proba is null, returns y_proba_all
         for i, model in enumerate(self):
             model_weight = 0.0
             if self.correct_weight[i] > 0.0 and self.wrong_weight[i] > 0.0:

@@ -53,8 +53,8 @@ class BayesUCB(bandit.base.Policy):
     >>> metric
     Sum: 841.
 
-    Reference
-    ---------
+    References
+    ----------
     [^1]: [Kaufmann, Emilie, Olivier Cappé, and Aurélien Garivier. "On Bayesian upper confidence bounds for bandit problems." Artificial intelligence and statistics. PMLR, 2012.](http://proceedings.mlr.press/v22/kaufmann12/kaufmann12.pdf)
 
     """
@@ -63,9 +63,9 @@ class BayesUCB(bandit.base.Policy):
 
     def __init__(self, reward_obj=None, burn_in=0, seed: int | None = None):
         super().__init__(reward_obj, burn_in)
-        self._posteriors: collections.defaultdict[
-            bandit.base.ArmID, proba.Beta
-        ] = collections.defaultdict(proba.Beta)
+        self._posteriors: collections.defaultdict[bandit.base.ArmID, proba.Beta] = (
+            collections.defaultdict(proba.Beta)
+        )
         self.seed = seed
         self._rng = random.Random(seed)
 
@@ -79,7 +79,7 @@ class BayesUCB(bandit.base.Policy):
         """the p-th quantile of the beta distribution for the arm"""
         p = 1 - 1 / (self._n + 1)
         posterior = self._posteriors[arm_id]
-        return scipy.special.btdtri(posterior.alpha, posterior.beta, p)
+        return scipy.special.betaincinv(posterior.alpha, posterior.beta, p)
 
     def update(self, arm_id, *reward_args, **reward_kwargs):
         """Rewrite update function"""

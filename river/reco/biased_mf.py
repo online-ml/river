@@ -158,20 +158,20 @@ class BiasedMF(Ranker):
         self.clip_gradient = clip_gradient
         self.global_mean = stats.Mean()
 
-        self.u_biases: collections.defaultdict[
-            int, optim.initializers.Initializer
-        ] = collections.defaultdict(weight_initializer)
-        self.i_biases: collections.defaultdict[
-            int, optim.initializers.Initializer
-        ] = collections.defaultdict(weight_initializer)
+        self.u_biases: collections.defaultdict[int, optim.initializers.Initializer] = (
+            collections.defaultdict(weight_initializer)
+        )
+        self.i_biases: collections.defaultdict[int, optim.initializers.Initializer] = (
+            collections.defaultdict(weight_initializer)
+        )
 
         random_latents = functools.partial(self.latent_initializer, shape=self.n_factors)
-        self.u_latents: collections.defaultdict[
-            int, optim.initializers.Initializer
-        ] = collections.defaultdict(random_latents)
-        self.i_latents: collections.defaultdict[
-            int, optim.initializers.Initializer
-        ] = collections.defaultdict(random_latents)
+        self.u_latents: collections.defaultdict[int, optim.initializers.Initializer] = (
+            collections.defaultdict(random_latents)
+        )
+        self.i_latents: collections.defaultdict[int, optim.initializers.Initializer] = (
+            collections.defaultdict(random_latents)
+        )
 
     @property
     def _mutable_attributes(self):
@@ -199,7 +199,7 @@ class BiasedMF(Ranker):
         # Add the dot product of the user and the item latent vectors
         y_pred += np.dot(self.u_latents[user], self.i_latents[item])
 
-        return y_pred
+        return y_pred.item()
 
     def learn_one(self, user, item, y, x=None):
         # Update the global mean

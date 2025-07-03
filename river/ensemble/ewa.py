@@ -122,7 +122,6 @@ class EWARegressor(base.Ensemble, base.Regressor):
 
     def learn_one(self, x, y):
         self.learn_predict_one(x, y)
-        return self
 
     def predict_one(self, x):
         return sum(model.predict_one(x) * weight for model, weight in zip(self, self.weights))

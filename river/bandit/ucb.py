@@ -77,9 +77,7 @@ class UCB(bandit.base.Policy):
         burn_in=0,
         seed: int | None = None,
     ):
-        super().__init__(
-            reward_obj=reward_obj, reward_scaler=reward_scaler, burn_in=burn_in
-        )
+        super().__init__(reward_obj=reward_obj, reward_scaler=reward_scaler, burn_in=burn_in)
         self.delta = delta
         self.seed = seed
         self._rng = random.Random(seed)

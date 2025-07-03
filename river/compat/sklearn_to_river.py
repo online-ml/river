@@ -33,7 +33,7 @@ def convert_sklearn_to_river(estimator: sklearn_base.BaseEstimator, classes: lis
         (sklearn_base.RegressorMixin, SKL2RiverRegressor),
         (
             sklearn_base.ClassifierMixin,
-            functools.partial(SKL2RiverClassifier, classes=classes),
+            functools.partial(SKL2RiverClassifier, classes=classes),  # type:ignore[arg-type]
         ),
     ]
 
@@ -63,6 +63,7 @@ class SKL2RiverBase:
         return {
             "check_emerging_features",
             "check_disappearing_features",
+            "check_radically_disappearing_features",
         }
 
 

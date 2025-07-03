@@ -39,6 +39,9 @@ class InfoGainSplitCriterion(SplitCriterion):
         elif isinstance(dist, list):
             return self._compute_entropy_list(dist)
 
+    def current_merit(self, dist):
+        return self.compute_entropy(dist)
+
     @staticmethod
     def _compute_entropy_dict(dist):
         entropy = 0.0

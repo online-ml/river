@@ -427,8 +427,8 @@ cdef class VectorDict:
                 return NotImplemented
         return self
 
-    def __pow__(left, right, modulo):
-        if not isinstance(left, VectorDict) or modulo is not None:
+    def __pow__(left, right):
+        if not isinstance(left, VectorDict):
             return NotImplemented
         left_ = <VectorDict> left
         res = left_._to_dict(force_copy=True)

@@ -11,6 +11,7 @@ non-mixin base class.
 This module also contains utilities for type hinting and tagging estimators.
 
 """
+
 from __future__ import annotations
 
 from . import tags, typing
@@ -28,6 +29,7 @@ from .estimator import Estimator
 from .multi_output import MultiLabelClassifier, MultiTargetRegressor
 from .regressor import MiniBatchRegressor, Regressor
 from .transformer import (
+    BaseTransformer,
     MiniBatchSupervisedTransformer,
     MiniBatchTransformer,
     SupervisedTransformer,
@@ -37,6 +39,7 @@ from .wrapper import Wrapper
 
 __all__ = [
     "Base",
+    "BaseTransformer",
     "BinaryDriftDetector",
     "BinaryDriftAndWarningDetector",
     "Classifier",

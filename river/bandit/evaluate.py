@@ -136,10 +136,10 @@ def evaluate(
                 if done[policy_idx]:
                     continue
 
-                arm = policy_.pull(range(env_.action_space.n))  # type: ignore[attr-defined]
+                arm = policy_.pull(range(env_.action_space.n))  # type: ignore[attr-defined, arg-type]
                 observation, reward, terminated, truncated, info = env_.step(arm)
                 policy_.update(arm, reward)
-                reward_stat_.update(reward)
+                reward_stat_.update(reward)  # type: ignore[arg-type]
 
                 yield {
                     "episode": episode,

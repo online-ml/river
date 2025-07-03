@@ -38,7 +38,7 @@ class SDFT(base.Base):
 
     References
     ----------
-    [^1]: [Jacobsen, E. asample_average.pynd Lyons, R., 2003. The sliding DFT. IEEE Signal Processing Magazine, 20(2), pp.74-80.](https://www.comm.utoronto.ca/~dimitris/ece431/slidingdft.pdf)
+    [^1]: [Jacobsen, E. and Lyons, R., 2003. The sliding DFT. IEEE Signal Processing Magazine, 20(2), pp.74-80.](https://www.comm.utoronto.ca/~dimitris/ece431/slidingdft.pdf)
     [^2]: [Understanding and Implementing the Sliding DFT](https://www.dsprelated.com/showarticle/776.php)
 
     """

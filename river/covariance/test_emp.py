@@ -95,7 +95,7 @@ def test_covariance_update_sampled():
 def test_covariance_update_many(ddof):
     cov = covariance.EmpiricalCovariance(ddof=ddof)
     p = 5
-    X_all = pd.DataFrame(columns=range(p))
+    X_all = None
 
     for _ in range(p):
         n = np.random.randint(1, 31)
@@ -123,7 +123,7 @@ def test_covariance_update_many(ddof):
 def test_covariance_update_many_shuffled(ddof):
     cov = covariance.EmpiricalCovariance(ddof=ddof)
     p = 5
-    X_all = pd.DataFrame(columns=range(p))
+    X_all = None
 
     for _ in range(p):
         n = np.random.randint(5, 31)
@@ -143,7 +143,7 @@ def test_covariance_update_many_sampled():
     ddof = 1
     cov = covariance.EmpiricalCovariance(ddof=ddof)
     p = 5
-    X_all = pd.DataFrame(columns=range(p))
+    X_all = None
 
     for _ in range(p):
         n = np.random.randint(5, 31)

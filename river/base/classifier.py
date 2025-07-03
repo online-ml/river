@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import abc
 import typing
+from typing import Any
 
 from river import base
 
@@ -15,7 +16,7 @@ class Classifier(estimator.Estimator):
     """A classifier."""
 
     @abc.abstractmethod
-    def learn_one(self, x: dict, y: base.typing.ClfTarget) -> Classifier:
+    def learn_one(self, x: dict[base.typing.FeatureName, Any], y: base.typing.ClfTarget) -> None:
         """Update the model with a set of features `x` and a label `y`.
 
         Parameters
@@ -27,7 +28,9 @@ class Classifier(estimator.Estimator):
 
         """
 
-    def predict_proba_one(self, x: dict) -> dict[base.typing.ClfTarget, float]:
+    def predict_proba_one(
+        self, x: dict[base.typing.FeatureName, Any], **kwargs: Any
+    ) -> dict[base.typing.ClfTarget, float]:
         """Predict the probability of each label for a dictionary of features `x`.
 
         Parameters
@@ -47,7 +50,9 @@ class Classifier(estimator.Estimator):
         # that a classifier does not support predict_proba_one.
         raise NotImplementedError
 
-    def predict_one(self, x: dict, **kwargs) -> base.typing.ClfTarget | None:
+    def predict_one(
+        self, x: dict[base.typing.FeatureName, Any], **kwargs: Any
+    ) -> base.typing.ClfTarget | None:
         """Predict the label of a set of features `x`.
 
         Parameters
@@ -69,11 +74,11 @@ class Classifier(estimator.Estimator):
         return None
 
     @property
-    def _multiclass(self):
+    def _multiclass(self) -> bool:
         return False
 
     @property
-    def _supervised(self):
+    def _supervised(self) -> bool:
         return True
 
 
@@ -81,7 +86,7 @@ class MiniBatchClassifier(Classifier):
     """A classifier that can operate on mini-batches."""
 
     @abc.abstractmethod
-    def learn_many(self, X: pd.DataFrame, y: pd.Series):
+    def learn_many(self, X: pd.DataFrame, y: pd.Series) -> None:
         """Update the model with a mini-batch of features `X` and boolean targets `y`.
 
         Parameters

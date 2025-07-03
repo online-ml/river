@@ -37,8 +37,8 @@ class Univariate(Statistic):
     """A univariate statistic measures a property of a variable."""
 
     @abc.abstractmethod
-    def update(self, x: numbers.Number):
-        """Update and return the called instance."""
+    def update(self, x: numbers.Number) -> None:
+        """Update the called instance."""
         raise NotImplementedError
 
     @property
@@ -68,5 +68,5 @@ class Bivariate(Statistic):
     """A bivariate statistic measures a relationship between two variables."""
 
     @abc.abstractmethod
-    def update(self, x, y):
-        """Update and return the called instance."""
+    def update(self, x, y) -> None:
+        """Update the called instance."""
