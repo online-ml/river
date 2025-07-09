@@ -156,7 +156,7 @@ class Skyline(collections.UserList[dict[base.typing.FeatureName, Any]], base.Bas
 
         return n_better, n_worse
 
-    def update(self, x):
+    def update(self, x: dict[base.typing.FeatureName, Any]) -> None:
         # If the skyline is empty then the first element is part of the skyline
         if not self:
             self.append(x)

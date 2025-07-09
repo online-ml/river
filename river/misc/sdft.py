@@ -48,10 +48,10 @@ class SDFT(base.Base):
         self.window: collections.deque[float] = collections.deque(maxlen=window_size)
 
     @property
-    def window_size(self):
+    def window_size(self) -> int:
         return self.coefficients.maxlen
 
-    def update(self, x):
+    def update(self, x: float) -> None:
         # Simply append the new value if the window isn't full yet
         if len(self.window) < self.window.maxlen - 1:
             self.window.append(x)
