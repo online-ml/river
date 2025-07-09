@@ -133,7 +133,11 @@ class Skyline(collections.UserList[dict[base.typing.FeatureName, Any]], base.Bas
 
     """
 
-    def __init__(self, minimize: list[base.typing.FeatureName] | None = None, maximize: list[base.typing.FeatureName] | None = None):
+    def __init__(
+        self,
+        minimize: list[base.typing.FeatureName] | None = None,
+        maximize: list[base.typing.FeatureName] | None = None,
+    ):
         super().__init__()
 
         self.minimize = [] if minimize is None else minimize
@@ -142,7 +146,9 @@ class Skyline(collections.UserList[dict[base.typing.FeatureName, Any]], base.Bas
         if len(self.minimize) + len(self.maximize) == 0:
             raise ValueError("At least one name has to be specified")
 
-    def _count_diffs(self, a: dict[base.typing.FeatureName, Any], b: dict[base.typing.FeatureName, Any]) -> tuple[int, int]:
+    def _count_diffs(
+        self, a: dict[base.typing.FeatureName, Any], b: dict[base.typing.FeatureName, Any]
+    ) -> tuple[int, int]:
         n_better = 0
         n_worse = 0
 
