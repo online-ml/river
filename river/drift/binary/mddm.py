@@ -32,17 +32,19 @@ class _MDDMBase(base.BinaryDriftAndWarningDetector, ABC):
         Reset the learning state of the model.
         """
         super()._reset()
-        self._sliding_window = deque(maxlen=self.sliding_window_size)
+        self._sliding_window: deque = deque(maxlen=self.sliding_window_size)
         self._SUM_OF_WEIGHTS = self._calculate_sum_of_weights()
         self._drift_epsilon = self._mcdiarmid_inequality_bound(self.drift_confidence)
         self._warning_epsilon = self._mcdiarmid_inequality_bound(self.warning_confidence)
         self._max_weighted_mean = 0.0
 
     def _mcdiarmid_inequality_bound(self, confidence: float) -> float:
-        return math.sqrt(0.5 * self._calculate_vi_value() * math.log(1 / confidence))
+        return math.sqrt(
+            0.5 * self._calculate_sum_of_normalized_weights() * math.log(1 / confidence)
+        )
 
     @abstractmethod
-    def _calculate_sum_of_weights() -> float: ...
+    def _calculate_sum_of_weights(self) -> float: ...
 
     @abstractmethod
     def _calculate_sum_of_normalized_weights(self) -> float: ...
@@ -115,8 +117,8 @@ class MDDM_E(_MDDMBase):
         self.lambda_val = lambda_val
 
     def _calculate_sum_of_weights(self) -> float:
-        sum_exp = 0
-        r = 1
+        sum_exp = 0.0
+        r = 1.0
         ratio = math.exp(self.lambda_val)
         for _ in range(len(self._sliding_window)):
             sum_exp += r
@@ -124,8 +126,8 @@ class MDDM_E(_MDDMBase):
         return sum_exp
 
     def _calculate_sum_of_normalized_weights(self) -> float:
-        bound_sum = 0
-        r = 1
+        bound_sum = 0.0
+        r = 1.0
         ratio = math.exp(self.lambda_val)
         for _ in range(len(self._sliding_window)):
             bound_sum += (r / self._SUM_OF_WEIGHTS) ** 2
@@ -139,8 +141,8 @@ class MDDM_E(_MDDMBase):
         Returns:
             float: Calculated weighted mean.
         """
-        win_sum = 0
-        r = 1
+        win_sum = 0.0
+        r = 1.0
         ratio = math.exp(self.lambda_val)
         for i in range(len(self._sliding_window)):
             win_sum += self._sliding_window[i] * r
@@ -160,7 +162,7 @@ class MDDM_G(_MDDMBase):
         self.ratio = ratio
 
     def _calculate_sum_of_weights(self):
-        sum_exp = 0
+        sum_exp = 0.0
         r = self.ratio
         for _ in range(len(self._sliding_window)):
             sum_exp += r
@@ -168,7 +170,7 @@ class MDDM_G(_MDDMBase):
         return sum_exp
 
     def _calculate_sum_of_normalized_weights(self) -> float:
-        bound_sum = 0
+        bound_sum = 0.0
         r = self.ratio
         for _ in range(len(self._sliding_window)):
             bound_sum += (r / self._SUM_OF_WEIGHTS) ** 2
@@ -182,7 +184,7 @@ class MDDM_G(_MDDMBase):
         Returns:
             float: Calculated weighted mean.
         """
-        win_sum = 0
+        win_sum = 0.0
         r = self.ratio
         for i in range(len(self._sliding_window)):
             win_sum += self._sliding_window[i] * r
