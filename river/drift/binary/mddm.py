@@ -53,7 +53,7 @@ class _MDDMBase(base.BinaryDriftAndWarningDetector, ABC):
         if self.drift_detected:
             self._reset()
 
-        self._sliding_window.append(1 if x == 0 else 0)
+        self._sliding_window.append(x)
 
         if len(self._sliding_window) == self.sliding_window_size:
             current_weighted_mean = self._calculate_current_weighted_mean()
