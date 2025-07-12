@@ -83,12 +83,12 @@ class MDDM_A(_MDDMBase):
         self.difference = difference
 
     def _calculate_sum_of_weights(self) -> float:
-        return sum(1 + i * self.difference for i in range(len(self._sliding_window)))
+        return sum(1 + i * self.difference for i in range(self.sliding_window_size))
 
     def _calculate_sum_of_normalized_weights(self):
         return sum(
             ((1 + i * self.difference) / self._SUM_OF_WEIGHTS) ** 2
-            for i in range(len(self._sliding_window))
+            for i in range(self.sliding_window_size)
         )
 
     def _calculate_current_weighted_mean(self) -> float:
@@ -120,7 +120,7 @@ class MDDM_E(_MDDMBase):
         sum_exp = 0.0
         r = 1.0
         ratio = math.exp(self.lambda_val)
-        for _ in range(len(self._sliding_window)):
+        for _ in range(self.sliding_window_size):
             sum_exp += r
             r *= ratio
         return sum_exp
@@ -129,7 +129,7 @@ class MDDM_E(_MDDMBase):
         bound_sum = 0.0
         r = 1.0
         ratio = math.exp(self.lambda_val)
-        for _ in range(len(self._sliding_window)):
+        for _ in range(self.sliding_window_size):
             bound_sum += (r / self._SUM_OF_WEIGHTS) ** 2
             r *= ratio
         return bound_sum
@@ -164,7 +164,7 @@ class MDDM_G(_MDDMBase):
     def _calculate_sum_of_weights(self):
         sum_exp = 0.0
         r = self.ratio
-        for _ in range(len(self._sliding_window)):
+        for _ in range(self.sliding_window_size):
             sum_exp += r
             r *= self.ratio
         return sum_exp
@@ -172,7 +172,7 @@ class MDDM_G(_MDDMBase):
     def _calculate_sum_of_normalized_weights(self) -> float:
         bound_sum = 0.0
         r = self.ratio
-        for _ in range(len(self._sliding_window)):
+        for _ in range(self.sliding_window_size):
             bound_sum += (r / self._SUM_OF_WEIGHTS) ** 2
             r *= self.ratio
         return bound_sum
