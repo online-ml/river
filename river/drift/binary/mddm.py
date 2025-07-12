@@ -65,8 +65,6 @@ class _MDDMBase(base.BinaryDriftAndWarningDetector, ABC):
                 self._warning_detected = True
                 self._drift_detected = False
 
-            self._sliding_window.popleft()
-
     @abstractmethod
     def _calculate_current_weighted_mean(self) -> float: ...
 
