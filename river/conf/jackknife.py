@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Iterator
-from typing import TypeVar
+from typing import Literal, TypeVar, overload
 
 from river import base, compose, stats
 
@@ -123,6 +123,21 @@ class RegressionJackknife(base.Wrapper[T], base.Regressor):
         self._upper.update(error)
 
         self.regressor.learn_one(x, y, **kwargs)
+
+    @overload
+    def predict_one(
+        self,
+        x: dict[base.typing.FeatureName, object],
+        with_interval: Literal[False] = False,
+        **kwargs: object,
+    ) -> float: ...
+    @overload
+    def predict_one(
+        self,
+        x: dict[base.typing.FeatureName, object],
+        with_interval: Literal[True],
+        **kwargs: object,
+    ) -> interval.Interval: ...
 
     def predict_one(
         self,
