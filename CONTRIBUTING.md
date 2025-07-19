@@ -91,7 +91,7 @@ model = linear_model.LinearRegression()
 
 ## Documenting your change
 
-If you're adding a class or a function, then you'll need to add a docstring. We follow the [Google docstring convention](https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_google.html), so please do too.
+If you're adding a class or a function, then you'll need to add a docstring. We follow the [Numpy docstring convention](https://numpydoc.readthedocs.io/en/latest/format.html), so please do too.
 
 To build the documentation, you need to install some extra dependencies:
 
