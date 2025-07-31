@@ -11,8 +11,6 @@ exclude = [".github", ".pre-commit-config.yaml"]
 readme = "README.md"
 [dependencies]
 num = "0.4"
-ordered-float = { version = "3.9", features = ["serde"] }
-
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 
