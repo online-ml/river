@@ -77,6 +77,11 @@ class PearsonCorr(stats.base.Bivariate):
         self.var_y.update(y)
         self.cov_xy.update(x, y)
 
+    def update_many(self, X: np.ndarray, Y: np.ndarray):
+        self.var_x.update_many(X)
+        self.var_y.update_many(Y)
+        self.cov_xy.update_many(X, Y)
+
     def revert(self, x, y):
         self.var_x.revert(x)
         self.var_y.revert(y)
