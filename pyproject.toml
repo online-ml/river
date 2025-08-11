@@ -209,7 +209,6 @@ module = [
     "river.reco.*",
     "river.imblearn.*",
     "river.feature_selection.*",
-    "river.misc.*",
     "river.active.*",
     "river.conf.*",
     "river.neural_net.*",
