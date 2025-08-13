@@ -69,46 +69,44 @@ class SelectKBest(base.SupervisedTransformer):
 
     >>> # Example demonstrating the `use_abs` parameter
 
-    >>> import numpy as np
+    >>> import random
 
-    >>> np.random.seed(42)
-    >>> X_abs = np.random.rand(100, 3)
-    >>> y_abs = (
-    ...     0.6 * X_abs[:, 0]
-    ...     - 0.9 * X_abs[:, 1]
-    ...     + 0.1 * X_abs[:, 2]
-    ...     + np.random.normal(0, 0.1, 100)
-    ... )
+    >>> random.seed(42)
+    >>> X_abs = [[random.random() for _ in range(3)] for _ in range(100)]
+    >>> y_abs = [
+    ...     0.6 * x[0]
+    ...     - 0.9 * x[1]
+    ...     + 0.1 * x[2]
+    ...     + random.gauss(0, 0.1)
+    ...     for x in X_abs
+    ... ]
 
-    >>> # With use_abs=False (the default), feature 0 is selected.
     >>> selector_no_abs = feature_selection.SelectKBest(
     ...     stats.PearsonCorr(),
     ...     k=1,
     ...     use_abs=False
     ... )
-
     >>> for xi, yi in stream.iter_array(X_abs, y_abs):
     ...     selector_no_abs.learn_one(xi, yi)
-
     >>> pprint(selector_no_abs.leaderboard)
-    Counter({0: 0.46719795106878087,
-            2: 0.09739583197225814,
-            1: -0.8018812540692073})
-
+    Counter({0: 0.5683236302249015,
+             2: -0.09937590098236333,
+             1: -0.7655616041162767})
     >>> selector_no_abs.transform_one({i: v for i, v in enumerate(X_abs[-1])})
-    {0: np.float64(0.21582102749684318)}
+    {0: 0.009669699608339966}
 
-    >>> # With use_abs=True, feature 1 is selected due to its larger absolute correlation.
-    >>> selector_with_abs = feature_selection.SelectKBest(stats.PearsonCorr(), k=1, use_abs=True)
-
+    >>> selector_with_abs = feature_selection.SelectKBest(
+    ...     stats.PearsonCorr(),
+    ...     k=1,
+    ...     use_abs=True
+    ... )
     >>> for xi, yi in stream.iter_array(X_abs, y_abs):
     ...     selector_with_abs.learn_one(xi, yi)
-
     >>> selector_with_abs.transform_one({i: v for i, v in enumerate(X_abs[-1])})
-    {1: np.float64(0.6228904758190003)}
+    {1: 0.07524386007376704}
     """
 
-    def __init__(self, similarity: stats.base.Bivariate, use_abs: bool = False, k=10):
+    def __init__(self, similarity: stats.base.Bivariate, k=10, use_abs: bool = False):
         self.k = k
         self.similarity = similarity
         self.similarities: collections.defaultdict = collections.defaultdict(
