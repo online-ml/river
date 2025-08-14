@@ -43,21 +43,21 @@ class SDFT(base.Base):
 
     """
 
-    def __init__(self, window_size):
-        self.coefficients = collections.deque(maxlen=window_size)
-        self.window = collections.deque(maxlen=window_size)
+    def __init__(self, window_size: int):
+        self.coefficients: collections.deque[complex] = collections.deque(maxlen=window_size)
+        self.window: collections.deque[float] = collections.deque(maxlen=window_size)
 
     @property
-    def window_size(self):
-        return self.coefficients.maxlen
+    def window_size(self) -> int:
+        return self.coefficients.maxlen  # type: ignore[return-value] # The window has a max length
 
-    def update(self, x):
+    def update(self, x: float) -> None:
         # Simply append the new value if the window isn't full yet
-        if len(self.window) < self.window.maxlen - 1:
+        if len(self.window) < self.window.maxlen - 1:  # type: ignore[operator] # The window has a max length
             self.window.append(x)
 
         # Compute an initial FFT the first time the window is full
-        elif len(self.window) == self.window.maxlen - 1:
+        elif len(self.window) == self.window.maxlen - 1:  # type: ignore[operator] # The window has a max length
             self.window.append(x)
             self.coefficients.extend(np.fft.fft(self.window))
 
