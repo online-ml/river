@@ -91,13 +91,12 @@ model = linear_model.LinearRegression()
 
 ## Documenting your change
 
-If you're adding a class or a function, then you'll need to add a docstring. We follow the [Google docstring convention](https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_google.html), so please do too.
+If you're adding a class or a function, then you'll need to add a docstring. We follow the [Numpy docstring convention](https://numpydoc.readthedocs.io/en/latest/format.html), so please do too.
 
 To build the documentation, you need to install some extra dependencies:
 
 ```sh
 poetry install --with docs
-pip install git+https://github.com/MaxHalford/yamp
 ```
 
 From the root of the repository, you can then run the `make livedoc` command to take a look at the documentation in your browser. This will run a custom script which parses all the docstrings and generate MarkDown files that [MkDocs](https://www.mkdocs.org/) can render.
