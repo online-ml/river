@@ -993,6 +993,15 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#feature-selection" class="md-nav__link">
+    <span class="md-ellipsis">
+      feature selection
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1898,6 +1907,15 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#feature-selection" class="md-nav__link">
+    <span class="md-ellipsis">
+      feature selection
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1927,6 +1945,10 @@
 <h2 id="neighbors">neighbors<a class="headerlink" href="#neighbors" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Remove the <code>itertools.cycle</code> usage from the <code>neighbors.ann.SWINN</code> search engine, as pickling <code>cycle</code> objects will not be supported anymore, starting from Python 3.14. This change has no effect from the user standpoint, as the 'cycle' usage was more of a gimmick than a necessity.</li>
+</ul>
+<h2 id="feature-selection">feature selection<a class="headerlink" href="#feature-selection" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../../api/feature-selection/SelectKBest"><code>feature_selection.SelectKBest</code></a> now supports <code>use_abs</code> parameter for the absolute value of the score statistics.</li>
 </ul>
 
 
