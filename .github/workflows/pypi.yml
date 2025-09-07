@@ -40,7 +40,8 @@ jobs:
             rustup show
           CIBW_BEFORE_BUILD_LINUX: >
             curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain=nightly --profile=minimal -y &&
-            rustup show
+            rustup show &&
+            pip install numpy cython setuptools-rust
       - uses: actions/upload-artifact@v4
         with:
           name: artifact-${{ matrix.linux_tag }}-cp${{ matrix.python-version }}
@@ -106,7 +107,8 @@ jobs:
           CIBW_ENVIRONMENT_WINDOWS: 'PATH="$UserProfile\.cargo\bin;$PATH"'
           CIBW_BEFORE_BUILD: >
             rustup default nightly &&
-            rustup show
+            rustup show &&
+            pip install numpy cython setuptools-rust
       - uses: actions/upload-artifact@v4
         with:
           name: artifact-${{ matrix.os }}
