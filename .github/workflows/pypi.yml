@@ -27,12 +27,12 @@ jobs:
           CIBW_BUILD: "cp${{ matrix.python-version }}-${{ matrix.linux_tag }}_*"
           CIBW_ARCHS_LINUX: "x86_64 i686 aarch64"
           CIBW_SKIP: "*-musllinux_i686"
-          CIBW_MANYLINUX_X86_64_IMAGE: "manylinux2014"
-          CIBW_MANYLINUX_I686_IMAGE: "manylinux2014"
-          CIBW_MANYLINUX_AARCH64_IMAGE: "manylinux2014"
-          CIBW_MUSLLINUX_X86_64_IMAGE: "musllinux_1_1"
-          CIBW_MUSLLINUX_I686_IMAGE: "musllinux_1_1"
-          CIBW_MUSLLINUX_AARCH64_IMAGE: "musllinux_1_1"
+        #   CIBW_MANYLINUX_X86_64_IMAGE: "manylinux_2_28"
+        #   CIBW_MANYLINUX_I686_IMAGE: "manylinux_2_28"
+        #   CIBW_MANYLINUX_AARCH64_IMAGE: "manylinux_2_28"
+        #   CIBW_MUSLLINUX_X86_64_IMAGE: "musllinux_1_2"
+        #   CIBW_MUSLLINUX_I686_IMAGE: "musllinux_1_2"
+        #   CIBW_MUSLLINUX_AARCH64_IMAGE: "musllinux_1_2"
           CIBW_ENVIRONMENT: 'PATH="$HOME/.cargo/bin:$PATH"'
           CIBW_ENVIRONMENT_LINUX: 'PATH="$HOME/.cargo/bin:$PATH" CARGO_NET_GIT_FETCH_WITH_CLI="true"'
           CIBW_BEFORE_BUILD: >
