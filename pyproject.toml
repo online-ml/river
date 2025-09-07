@@ -225,6 +225,3 @@ allow_incomplete_defs = true
 allow_untyped_defs = true
 implicit_reexport = true
 warn_return_any = false
-
-[tool.cibuildwheel]
-before-build = "pip install numpy cython setuptools-rust"

@@ -75,7 +75,8 @@ jobs:
           CIBW_ENVIRONMENT: 'PATH="$HOME/.cargo/bin:$PATH"'
           CIBW_BEFORE_BUILD: >
             rustup default nightly &&
-            rustup show
+            rustup show &&
+            pip install numpy cython setuptools-rust
       - uses: actions/upload-artifact@v4
         with:
           name: artifact-${{ matrix.os }}
