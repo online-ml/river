@@ -13,7 +13,7 @@ jobs:
     strategy:
       matrix:
         linux_tag: ["manylinux", "musllinux"]
-        python-version: ["310", "311", "312", "313"]
+        python-version: ["311", "312", "313"]
     steps:
       - uses: actions/checkout@v4
       - name: Set up QEMU
@@ -21,7 +21,7 @@ jobs:
         with:
           platforms: all
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.22.0
+        uses: pypa/cibuildwheel@v3.1.4
         timeout-minutes: 720
         env:
           CIBW_BUILD: "cp${{ matrix.python-version }}-${{ matrix.linux_tag }}_*"
@@ -63,7 +63,7 @@ jobs:
         uses: pypa/cibuildwheel@v2.22.0
         timeout-minutes: 720
         env:
-          CIBW_BUILD: "cp310-* cp311-* cp312-* cp313-*"
+          CIBW_BUILD: "cp311-* cp312-* cp313-*"
           CIBW_ARCHS_MACOS: "universal2"
           # arm64 and universal2 wheels are tagged with x86_64 because there's an issue with Poetry
           # More information here: https://cibuildwheel.readthedocs.io/en/stable/faq/#how-to-cross-compile (CTRL + F "poetry")
