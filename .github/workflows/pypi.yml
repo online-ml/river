@@ -21,7 +21,7 @@ jobs:
         with:
           platforms: all
       - name: Build wheels
-        uses: pypa/cibuildwheel@v3.1.4
+        uses: pypa/cibuildwheel@v2.23.3
         timeout-minutes: 720
         env:
           CIBW_BUILD: "cp${{ matrix.python-version }}-${{ matrix.linux_tag }}_*"
@@ -60,7 +60,7 @@ jobs:
           toolchain: nightly
       - run: rustup target add aarch64-apple-darwin && rustup target add x86_64-apple-darwin
       - name: Build wheels
-        uses: pypa/cibuildwheel@v3.1.4
+        uses: pypa/cibuildwheel@v2.23.3
         timeout-minutes: 720
         env:
           CIBW_BUILD: "cp311-* cp312-* cp313-*"
@@ -96,7 +96,7 @@ jobs:
       - run: rustup toolchain install stable-i686-pc-windows-msvc
       - run: rustup target add i686-pc-windows-msvc
       - name: Build wheels
-        uses: pypa/cibuildwheel@v3.1.4
+        uses: pypa/cibuildwheel@v2.23.3
         timeout-minutes: 720
         env:
           CIBW_BUILD: "cp310-* cp311-* cp312-* cp313-*"
