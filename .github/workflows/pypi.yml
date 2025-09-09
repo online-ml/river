@@ -60,13 +60,6 @@ jobs:
         env:
           CIBW_BUILD: "cp${{ matrix.python-version }}-*"
           CIBW_ARCHS_MACOS: "universal2"
-          # arm64 and universal2 wheels are tagged with x86_64 because there's an issue with Poetry
-          # More information here: https://cibuildwheel.readthedocs.io/en/stable/faq/#how-to-cross-compile (CTRL + F "poetry")
-          # https://github.com/pypa/cibuildwheel/issues/1415
-          CIBW_REPAIR_WHEEL_COMMAND_MACOS: >
-            ls {dest_dir} &&
-            delocate-wheel --require-archs {delocate_archs} -w {dest_dir} -v {wheel} &&
-            for file in {dest_dir}/*.whl ; do mv $file ${file//x86_64/universal2} ; done
           CIBW_ENVIRONMENT: 'PATH="$HOME/.cargo/bin:$PATH"'
           CIBW_BEFORE_BUILD: >
             rustup default nightly &&
