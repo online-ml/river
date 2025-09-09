@@ -46,6 +46,7 @@ jobs:
     strategy:
       matrix:
         os: [macos-14, macos-15]
+        python-version: ["311", "312", "313"]
     steps:
       - uses: actions/checkout@v4
       - name: Set up rust
@@ -57,7 +58,7 @@ jobs:
         uses: pypa/cibuildwheel@v2.23.3
         timeout-minutes: 720
         env:
-          CIBW_BUILD: "cp311-* cp312-* cp313-*"
+          CIBW_BUILD: "cp${{ matrix.python-version }}-*"
           CIBW_ARCHS_MACOS: "universal2"
           # arm64 and universal2 wheels are tagged with x86_64 because there's an issue with Poetry
           # More information here: https://cibuildwheel.readthedocs.io/en/stable/faq/#how-to-cross-compile (CTRL + F "poetry")
@@ -73,7 +74,7 @@ jobs:
           MACOSX_DEPLOYMENT_TARGET: 10.13
       - uses: actions/upload-artifact@v4
         with:
-          name: cibw-wheels-${{ matrix.os }}-${{ strategy.job-index }}
+          name: cibw-wheels-${{ matrix.os }}-${{ matrix.python-version }}-${{ strategy.job-index }}
           path: ./wheelhouse/*.whl
 
   build_windows_wheels:
@@ -82,6 +83,7 @@ jobs:
     strategy:
       matrix:
         os: [windows-2022, windows-2025]
+        python-version: ["311", "312", "313"]
     steps:
       - uses: actions/checkout@v4
       - name: Set up rust
@@ -94,7 +96,7 @@ jobs:
         uses: pypa/cibuildwheel@v2.23.3
         timeout-minutes: 720
         env:
-          CIBW_BUILD: "cp310-* cp311-* cp312-* cp313-*"
+          CIBW_BUILD: "cp${{ matrix.python-version }}-*"
           CIBW_ARCHS_WINDOWS: "AMD64 x86"
           CIBW_ENVIRONMENT: 'PATH="$HOME/.cargo/bin:$PATH"'
           CIBW_ENVIRONMENT_WINDOWS: 'PATH="$UserProfile\.cargo\bin;$PATH"'
@@ -103,13 +105,11 @@ jobs:
             rustup show
       - uses: actions/upload-artifact@v4
         with:
-          name: cibw-wheels-${{ matrix.os }}-${{ strategy.job-index }}
+          name: cibw-wheels-${{ matrix.os }}-${{ matrix.python-version }}-${{ strategy.job-index }}
           path: ./wheelhouse/*.whl
 
   build_sdist:
     name: Build source distribution
-    # Can't use more than 12 jobs in parallel
-    needs: [build_macos_wheels]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
