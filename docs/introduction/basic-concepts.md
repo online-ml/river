@@ -16,7 +16,7 @@ Reactive data streams are ones where the data comes to you. For instance, when a
 
 Proactive data streams are ones where you have control on the data stream. For example, you might be reading the data from a file. You decide at which speed you want to read the data, in what order, etc.
 
-If you consider data analysis as a whole, you're realize that the general approach is to turn reactive streams into proactive datasets. Events are usually logged into a database and are processed offline. Be it for building KPIs or training models.
+If you consider data analysis as a whole, you realize that the general approach is to turn reactive streams into proactive datasets. Events are usually logged into a database and are processed offline. Be it for building KPIs or training models.
 
 The challenge for machine learning is to ensure models you train offline on proactive datasets will perform correctly in production on reactive data streams.
 
