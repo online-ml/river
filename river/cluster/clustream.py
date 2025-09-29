@@ -237,7 +237,6 @@ class CluStream(base.Clusterer):
         if closest_dist < radius:
             closest_mc.insert(x, w, self._timestamp)
         else:
-
             # If the new point does not fit in the micro-cluster, micro-clusters
             # whose relevance stamps are less than the threshold are deleted.
             # Otherwise, closest micro-clusters are merged with each other.
