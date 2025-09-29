@@ -72,7 +72,7 @@ class Gaussian(base.ContinuousDistribution):
     def revert(self, x, w=1.0):
         self._var.revert(x, w)
 
-    def __call__(self, x):
+    def __call__(self, x) -> float:
         var = self._var.get()
         if var:
             try:
@@ -83,17 +83,17 @@ class Gaussian(base.ContinuousDistribution):
                 return 0.0
         return 0.0
 
-    def cdf(self, x):
+    def cdf(self, x) -> float:
         try:
             return 0.5 * (1.0 + math.erf((x - self.mu) / (self.sigma * math.sqrt(2.0))))
         except ZeroDivisionError:
             return 0.0
 
-    def sample(self):
+    def sample(self) -> float:
         return self._rng.gauss(self.mu, self.sigma)
 
     @property
-    def mode(self):
+    def mode(self) -> float:
         return self.mu
 
 
@@ -207,7 +207,7 @@ class MultivariateGaussian(base.MultivariateContinuousDistribution):
     >>> multi.mu['blue'] == single.mu
     True
     >>> multi.sigma['blue']['blue'] == single.sigma
-    True
+    np.True_
 
     """
 
@@ -270,11 +270,11 @@ class MultivariateGaussian(base.MultivariateContinuousDistribution):
         return f"𝒩(\n    μ=({mu_str}),\n    σ^2=(\n{var_str}\n    )\n)"
 
     def update(self, x):
-        # TODO: add support for weigthed samples
+        # TODO: add support for weighted samples
         self._var.update(x)
 
     def revert(self, x):
-        # TODO: add support for weigthed samples
+        # TODO: add support for weighted samples
         self._var.revert(x)
 
     def __call__(self, x: dict[str, float]):
@@ -285,11 +285,11 @@ class MultivariateGaussian(base.MultivariateContinuousDistribution):
             try:
                 pdf_ = multivariate_normal([*self.mu.values()], var).pdf(x_)
                 return float(pdf_)
-            # TODO: validate occurence of ValueError
+            # TODO: validate occurrence of ValueError
             # The input matrix must be symmetric positive semidefinite.
             except ValueError:  # pragma: no cover
                 return 0.0
-            # TODO: validate occurence of OverflowError
+            # TODO: validate occurrence of OverflowError
             except OverflowError:  # pragma: no cover
                 return 0.0
         return 0.0  # pragma: no cover

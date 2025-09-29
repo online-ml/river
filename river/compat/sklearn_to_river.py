@@ -63,6 +63,7 @@ class SKL2RiverBase:
         return {
             "check_emerging_features",
             "check_disappearing_features",
+            "check_radically_disappearing_features",
         }
 
 

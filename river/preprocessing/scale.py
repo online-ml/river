@@ -152,11 +152,11 @@ class StandardScaler(base.MiniBatchTransformer):
 
     """
 
-    def __init__(self, with_std=True):
+    def __init__(self, with_std=True) -> None:
         self.with_std = with_std
-        self.counts = collections.Counter()
-        self.means = collections.defaultdict(float)
-        self.vars = collections.defaultdict(float)
+        self.counts: collections.Counter = collections.Counter()
+        self.means: collections.defaultdict = collections.defaultdict(float)
+        self.vars: collections.defaultdict = collections.defaultdict(float)
 
     def learn_one(self, x):
         for i, xi in x.items():
@@ -212,10 +212,12 @@ class StandardScaler(base.MiniBatchTransformer):
             a = old_count / (old_count + new_count)
             b = new_count / (old_count + new_count)
 
-            self.means[col] = a * old_mean + b * new_mean
+            self.means[col] = (a * old_mean + b * new_mean).item()
             if self.with_std:
-                self.vars[col] = a * old_var + b * new_var + a * b * (old_mean - new_mean) ** 2
-            self.counts[col] += new_count
+                self.vars[col] = (
+                    a * old_var + b * new_var + a * b * (old_mean - new_mean) ** 2
+                ).item()
+            self.counts[col] += new_count.item()
 
     def transform_many(self, X: pd.DataFrame):
         """Scale a mini-batch of features.
@@ -235,7 +237,7 @@ class StandardScaler(base.MiniBatchTransformer):
         # Check if the dtype is integer type and convert to corresponding float type
         if np.issubdtype(dtype, np.integer):
             bytes_size = dtype.itemsize
-            dtype = np.dtype(f"float{bytes_size * 8}")
+            dtype = np.dtype(f"float{bytes_size * 8}")  # type: ignore[operator]
 
         means = np.array([self.means[c] for c in X.columns], dtype=dtype)
         Xt = X.values - means

@@ -82,7 +82,7 @@ class DummyDriftDetector(base.DriftDetector):
     The 'w' value must be greater than zero when 'trigger_method' is 'random'.
 
     Since we set `dynamic_cloning` to `True`, a clone of the periodic trigger will
-    have its internal paramenters changed:
+    have its internal parameters changed:
 
     >>> rtrigger = rtrigger.clone()
     >>> for i, v in enumerate(data):

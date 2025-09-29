@@ -80,7 +80,7 @@ class Normal(Initializer):
     >>> init = optim.initializers.Normal(mu=0, sigma=1, seed=42)
 
     >>> init(shape=1)
-    0.496714
+    np.float64(0.4967141...)
 
     >>> init(shape=2)
     array([-0.1382643 ,  0.64768854])

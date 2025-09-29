@@ -51,7 +51,7 @@ class Adam(optim.base.Optimizer):
 
     """
 
-    def __init__(self, lr=0.1, beta_1=0.9, beta_2=0.999, eps=1e-8):
+    def __init__(self, lr=0.1, beta_1=0.9, beta_2=0.999, eps=1e-8) -> None:
         super().__init__(lr)
         self.beta_1 = beta_1
         self.beta_2 = beta_2

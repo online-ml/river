@@ -10,6 +10,8 @@ import sys
 import types
 import typing
 
+import typing_extensions
+
 
 class Base:
     """Base class that is inherited by the majority of classes in River.
@@ -22,14 +24,14 @@ class Base:
 
     """
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.__class__.__name__
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return _repr_obj(obj=self)
 
     @classmethod
-    def _unit_test_params(cls):
+    def _unit_test_params(cls) -> collections.abc.Iterator[dict[str, typing.Any]]:
         """Instantiates an object with default arguments.
 
         Most parameters of each object have a default value. However, this isn't always the case,
@@ -71,7 +73,9 @@ class Base:
 
         return params
 
-    def clone(self, new_params: dict | None = None, include_attributes=False):
+    def clone(
+        self, new_params: dict[str, typing.Any] | None = None, include_attributes: bool = False
+    ) -> typing_extensions.Self:
         """Return a fresh estimator with the same parameters.
 
         The clone has the same parameters but has not been updated with any data.
@@ -167,7 +171,7 @@ class Base:
 
         """
 
-        def is_class_param(param):
+        def is_class_param(param: typing.Any) -> bool:
             # See expand_param_grid to understand why this is necessary
             return (
                 isinstance(param, tuple)
@@ -202,10 +206,10 @@ class Base:
         return clone
 
     @property
-    def _mutable_attributes(self) -> set:
+    def _mutable_attributes(self) -> set[str]:
         return set()
 
-    def mutate(self, new_attrs: dict):
+    def mutate(self, new_attrs: dict[str, typing.Any]) -> None:
         """Modify attributes.
 
         This changes parameters inplace. Although you can change attributes yourself, this is the
@@ -296,8 +300,8 @@ class Base:
 
         """
 
-        def _mutate(obj, new_attrs):
-            def is_class_attr(name, attr):
+        def _mutate(obj: typing.Any, new_attrs: dict[str, typing.Any]) -> None:
+            def is_class_attr(name: str, attr: typing.Any) -> bool:
                 return hasattr(getattr(obj, name), "mutate") and isinstance(attr, dict)
 
             for name, attr in new_attrs.items():
@@ -318,7 +322,7 @@ class Base:
         _mutate(obj=self, new_attrs=new_attrs)
 
     @property
-    def _is_stochastic(self):
+    def _is_stochastic(self) -> bool:
         """Indicates if the model contains an unset seed parameter.
 
         The convention in River is to control randomness by exposing a seed parameter. This seed
@@ -329,14 +333,14 @@ class Base:
 
         """
 
-        def is_class_param(param):
+        def is_class_param(param: typing.Any) -> bool:
             return (
                 isinstance(param, tuple)
                 and inspect.isclass(param[0])
                 and isinstance(param[1], dict)
             )
 
-        def find(params):
+        def find(params: dict[str, typing.Any]) -> bool:
             if not isinstance(params, dict):
                 return False
             for name, param in params.items():
@@ -354,7 +358,7 @@ class Base:
 
         import numpy as np
 
-        buffer = collections.deque([self])
+        buffer: collections.deque[typing.Any] = collections.deque([self])
         seen = set()
         size = 0
         while len(buffer) > 0:
@@ -369,7 +373,7 @@ class Base:
                 buffer.extend([k for k in obj.keys()])
                 buffer.extend([v for v in obj.values()])
             elif hasattr(obj, "__dict__"):  # Save object contents
-                contents: dict = vars(obj)
+                contents = vars(obj)
                 size += sys.getsizeof(contents)
                 buffer.extend([k for k in contents.keys()])
                 buffer.extend([v for v in contents.values()])
@@ -384,7 +388,7 @@ class Base:
             elif hasattr(obj, "__iter__") and not (
                 isinstance(obj, str) or isinstance(obj, bytes) or isinstance(obj, bytearray)
             ):
-                buffer.extend([i for i in obj])  # type: ignore
+                buffer.extend([i for i in obj])
 
         return size
 
@@ -396,7 +400,12 @@ class Base:
         return utils.pretty.humanize_bytes(self._raw_memory_usage)
 
 
-def _log_method_calls(self, name, class_condition, method_condition):
+def _log_method_calls(
+    self: typing.Any,
+    name: str,
+    class_condition: typing.Callable[[typing.Any], bool],
+    method_condition: typing.Callable[[typing.Any], bool],
+) -> typing.Any:
     method = object.__getattribute__(self, name)
     if (
         not name.startswith("_")
@@ -412,10 +421,10 @@ def _log_method_calls(self, name, class_condition, method_condition):
 def log_method_calls(
     class_condition: typing.Callable[[typing.Any], bool] | None = None,
     method_condition: typing.Callable[[typing.Any], bool] | None = None,
-):
+) -> collections.abc.Iterator[None]:
     """A context manager to log method calls.
 
-    All method calls will be logged by default. This behavior can be overriden by passing filtering
+    All method calls will be logged by default. This behavior can be overridden by passing filtering
     functions.
 
     Parameters
@@ -477,7 +486,7 @@ def log_method_calls(
         Base.__getattribute__ = old  # type: ignore
 
 
-def _repr_obj(obj, show_modules: bool = False, depth: int = 0) -> str:
+def _repr_obj(obj: typing.Any, show_modules: bool = False, depth: int = 0) -> str:
     """Return a pretty representation of an object."""
 
     rep = f"{obj.__class__.__name__} ("
@@ -487,7 +496,7 @@ def _repr_obj(obj, show_modules: bool = False, depth: int = 0) -> str:
 
     params = {
         name: getattr(obj, name)
-        for name, param in inspect.signature(obj.__init__).parameters.items()  # type: ignore
+        for name, param in inspect.signature(obj.__init__).parameters.items()
         if not (
             param.name == "args"
             and param.kind == param.VAR_POSITIONAL

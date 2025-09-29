@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 import collections
+from typing import Any
 
 from river import base
 
 
-class Skyline(collections.UserList, base.Base):
+class Skyline(collections.UserList[dict[base.typing.FeatureName, Any]], base.Base):
     """A skyline is set of points which is not dominated by any other point.
 
     This implementation uses a block nested loop. Identical observations are all part of the
@@ -132,7 +133,11 @@ class Skyline(collections.UserList, base.Base):
 
     """
 
-    def __init__(self, minimize: list | None = None, maximize: list | None = None):
+    def __init__(
+        self,
+        minimize: list[base.typing.FeatureName] | None = None,
+        maximize: list[base.typing.FeatureName] | None = None,
+    ):
         super().__init__()
 
         self.minimize = [] if minimize is None else minimize
@@ -141,7 +146,9 @@ class Skyline(collections.UserList, base.Base):
         if len(self.minimize) + len(self.maximize) == 0:
             raise ValueError("At least one name has to be specified")
 
-    def _count_diffs(self, a, b):
+    def _count_diffs(
+        self, a: dict[base.typing.FeatureName, Any], b: dict[base.typing.FeatureName, Any]
+    ) -> tuple[int, int]:
         n_better = 0
         n_worse = 0
 
@@ -155,7 +162,7 @@ class Skyline(collections.UserList, base.Base):
 
         return n_better, n_worse
 
-    def update(self, x):
+    def update(self, x: dict[base.typing.FeatureName, Any]) -> None:
         # If the skyline is empty then the first element is part of the skyline
         if not self:
             self.append(x)

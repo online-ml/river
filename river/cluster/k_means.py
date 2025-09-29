@@ -27,7 +27,7 @@ class KMeans(base.Clusterer):
     n_clusters
         Maximum number of clusters to assign.
     halflife
-        Amount by which to move the cluster centers, a reasonable value if between 0 and 1.
+        Amount by which to move the cluster centers, a reasonable value is between 0 and 1.
     mu
         Mean of the normal distribution used to instantiate cluster positions.
     sigma
@@ -47,7 +47,7 @@ class KMeans(base.Clusterer):
     --------
 
     In the following example the cluster assignments are exactly the same as when using
-    `sklearn`'s batch implementation. However changing the `halflife` parameter will
+    `sklearn`'s batch implementation. However, changing the `halflife` parameter will
     produce different outputs.
 
     >>> from river import cluster
@@ -83,7 +83,7 @@ class KMeans(base.Clusterer):
     References
     ----------
     [^1]: [Sequential k-Means Clustering](http://www.cs.princeton.edu/courses/archive/fall08/cos436/Duda/C/sk_means.htm)
-    [^2]: [Sculley, D., 2010, April. Web-scale k-means clustering. In Proceedings of the 19th international conference on World wide web (pp. 1177-1178](https://www.eecs.tufts.edu/~dsculley/papers/fastkmeans.pdf)
+    [^2]: [Sculley, D., 2010, April. Web-scale k-means clustering. In Proceedings of the 19th international conference on World Wide Web (pp. 1177-1178)](https://www.eecs.tufts.edu/~dsculley/papers/fastkmeans.pdf)
 
     """
 
