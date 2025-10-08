@@ -168,7 +168,7 @@ def minkowski_distance(a: Mapping[Any, float], b: Mapping[Any, float], p: int) -
         Manhattan distance. When `p=2`, this is equivalent to using the Euclidean distance.
 
     """
-    return sum((abs(a.get(k, 0.0) - b.get(k, 0.0))) ** p for k in {*a.keys(), *b.keys()}) ** (1 / p)
+    return sum((abs(a.get(k, 0.0) - b.get(k, 0.0))) ** p for k in {*a.keys(), *b.keys()}) ** (1 / p)  # type: ignore[no-any-return] # If the values are numbers, the return value should always be a number
 
 
 def softmax(y_pred: MutableMapping[Any, float]) -> MutableMapping[Any, float]:
@@ -254,7 +254,7 @@ def chain_dot(*xs: Mapping[Any, float]) -> float:
 
     """
     keys = min(xs, key=len)
-    return sum(prod(x.get(i, 0) for x in xs) for i in keys)
+    return sum(prod(x.get(i, 0) for x in xs) for i in keys)  # type: ignore[no-any-return] # If the values are numbers, the return value should always be a number
 
 
 def sigmoid(x: float) -> float:
