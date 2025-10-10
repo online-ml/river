@@ -19,12 +19,14 @@ from . import base
 from .bandit import BanditClassifier, BanditRegressor
 from .greedy import GreedyRegressor
 from .sh import SuccessiveHalvingClassifier, SuccessiveHalvingRegressor
+from .sspt import SSPT
 
 __all__ = [
     "base",
     "BanditClassifier",
     "BanditRegressor",
     "GreedyRegressor",
+    "SSPT",
     "SuccessiveHalvingClassifier",
     "SuccessiveHalvingRegressor",
 ]
