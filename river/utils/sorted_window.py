@@ -2,9 +2,11 @@ from __future__ import annotations
 
 import bisect
 import collections
-from typing import Any, TypeVar
+from typing import TypeVar
 
-T = TypeVar("T", bound=Any)
+from river import base
+
+T = TypeVar("T", bound=base.typing.SupportsComparison)
 
 
 class SortedWindow(collections.UserList[T]):

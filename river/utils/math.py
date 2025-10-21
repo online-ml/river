@@ -17,6 +17,8 @@ import numpy as np
 import numpy.typing as npt
 import scipy as sp
 
+from river import base
+
 __all__ = [
     "argmax",
     "chain_dot",
@@ -310,7 +312,7 @@ def sign(x: float) -> int:
     return -1 if x < 0 else (1 if x > 0 else 0)
 
 
-def argmax(lst: Sequence[Any]) -> int:
+def argmax(lst: Sequence[base.typing.SupportsComparison]) -> int:
     """Argmax function.
 
     Parameters
