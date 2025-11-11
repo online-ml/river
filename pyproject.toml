@@ -6,7 +6,10 @@ requires = [
     "setuptools>=70.1.0",
     "setuptools-rust",
 ]
-build-backend = "poetry.core.masonry.api"
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["river"]
 
 [tool.poetry]
 name = "river"
