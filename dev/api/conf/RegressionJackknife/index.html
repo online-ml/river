@@ -3737,7 +3737,7 @@
 <ul>
 <li>
 <p><strong>regressor</strong></p>
-<p><em>Type</em> → <em><a href="../../base/Regressor">base.Regressor</a></em></p>
+<p><em>Type</em> → <em>T</em></p>
 <p>The regressor to be wrapped.</p>
 </li>
 <li>
@@ -3798,9 +3798,9 @@ specified a confidence level of 90%, so we expect the validity to be around 90%.
 <p>Fits to a set of features <code>x</code> and a real-valued target <code>y</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>    </li>
-<li><strong>y</strong>    </li>
-<li><strong>kwargs</strong>    </li>
+<li><strong>x</strong>     — <em>'dict[base.typing.FeatureName, object]'</em>    </li>
+<li><strong>y</strong>     — <em>'base.typing.RegTarget'</em>    </li>
+<li><strong>kwargs</strong>     — <em>'object'</em>    </li>
 </ul>
 </details>
 <p><span /></p>
@@ -3809,12 +3809,12 @@ specified a confidence level of 90%, so we expect the validity to be around 90%.
 <p>Predict the output of features <code>x</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>    </li>
-<li><strong>with_interval</strong>     — defaults to <code>False</code>    </li>
-<li><strong>kwargs</strong>    </li>
+<li><strong>x</strong>     — <em>'dict[base.typing.FeatureName, object]'</em>    </li>
+<li><strong>with_interval</strong>     — <em>'bool'</em>     — defaults to <code>False</code>    </li>
+<li><strong>kwargs</strong>     — <em>'object'</em>    </li>
 </ul>
 <p><strong>Returns</strong></p>
-<p>The prediction.</p>
+<p><em>float | interval.Interval</em>:     The prediction.</p>
 </details>
 <p><span /></p>
 <div class="footnote">
