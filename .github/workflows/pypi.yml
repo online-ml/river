@@ -31,7 +31,8 @@ jobs:
           CIBW_ENVIRONMENT_LINUX: 'PATH="$HOME/.cargo/bin:$PATH" CARGO_NET_GIT_FETCH_WITH_CLI="true"'
           CIBW_BEFORE_BUILD: >
             rustup default nightly &&
-            rustup show
+            rustup show &&
+            pip install numpy
           CIBW_BEFORE_BUILD_LINUX: >
             curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain=nightly --profile=minimal -y &&
             rustup show
@@ -55,7 +56,7 @@ jobs:
           toolchain: nightly
       - run: rustup target add aarch64-apple-darwin && rustup target add x86_64-apple-darwin
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.23.3
+        uses: pypa/cibuildwheel@v3.2.1
         timeout-minutes: 720
         env:
           CIBW_BUILD: "cp${{ matrix.python-version }}-*"
@@ -86,7 +87,7 @@ jobs:
       - run: rustup toolchain install stable-i686-pc-windows-msvc
       - run: rustup target add i686-pc-windows-msvc
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.23.3
+        uses: pypa/cibuildwheel@v3.2.1
         timeout-minutes: 720
         env:
           CIBW_BUILD: "cp${{ matrix.python-version }}-*"
