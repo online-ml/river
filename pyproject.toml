@@ -88,6 +88,8 @@ optional = true
 "spacy" = "*"
 "tabulate" = "*"
 "watermark" = "*"
+"notebook" = "<7"
+"jupyter-contrib-nbextensions" = "^0.7.0"
 
 [tool.poetry.group.benchmark]
 optional = true
