@@ -1,3 +1,21 @@
+[project]
+name = "river"
+version = "0.23.0"
+description = "Online machine learning in Python"
+authors = [{ name = "Max Halford", email = "maxhalford25@gmail.com" }]
+requires-python = "~=3.10"
+readme = "README.md"
+license = "BSD-3-Clause"
+dependencies = [
+    "numpy>=1.23.0",
+    "scipy>=1.14.1,<2",
+    "pandas>=2.2.3,<3",
+]
+
+[project.urls]
+Homepage = "https://riverml.xyz/"
+Repository = "https://github.com/online-ml/river/"
+
 [build-system]
 requires = [
     "poetry-core>=1.0.0",
@@ -6,28 +24,57 @@ requires = [
     "setuptools>=70.1.0",
     "setuptools-rust",
 ]
-build-backend = "poetry.core.masonry.api"
+build-backend = "setuptools.build_meta"
 
-[tool.poetry]
-name = "river"
-version = "0.23.0"
-description = "Online machine learning in Python"
-readme = "README.md"
-homepage = "https://riverml.xyz/"
-repository = "https://github.com/online-ml/river/"
-authors = ["Max Halford <maxhalford25@gmail.com>"]
-license = "BSD-3-Clause"
-
-include = [
-    "**/*.cpp",
-    "**/*.pyx",
-    "**/*.pxd",
-    "river/datasets/*.csv",
-    "river/datasets/*.gz",
-    "river/datasets/*.zip",
-    "river/stream/*.zip",
-    "Cargo.toml",
-    "rust_src/**/*",
+[dependency-groups]
+dev = [
+    "graphviz>=0.20.1,<0.21",
+    "gymnasium>=0.29.0,<0.30",
+    "matplotlib>=3.8.4,<4",
+    "mypy>=1.11.1,<2",
+    "pre-commit>=3.5.0,<4",
+    "pytest>=7.4.2,<8",
+    "ruff>=0.4.10,<0.5",
+    "scikit-learn>=1.5.1,<2",
+    "sqlalchemy>=2.0.22,<3",
+    "sympy>=1.12.1,<2",
+    "pytest-xdist[psutil]>=3.3.1,<4",
+    "ipykernel>=6.26.0,<7",
+    "ipython>=8.17.2,<9",
+    "rich>=13.6.0,<14",
+    "jupyter>=1.0.0,<2",
+    "mike>=2.0.0,<3",
+    "polars>=1.1.0,<2",
+]
+compat = [
+    "scikit-learn>=1.5.1,<2",
+    "sqlalchemy>=2.0.0,<3",
+]
+docs = [
+    "dominate",
+    "flask",
+    "ipykernel",
+    "jupyter-client",
+    "mike",
+    "mkdocs",
+    "mkdocs-awesome-pages-plugin",
+    "mkdocs-charts-plugin",
+    "mkdocs-material",
+    "nbconvert",
+    "numpydoc",
+    "python-slugify",
+    "spacy",
+    "tabulate",
+    "watermark",
+    "notebook<7",
+    "jupyter-contrib-nbextensions>=0.7.0,<0.8",
+]
+benchmark = [
+    "dominate==2.8.0",
+    "scikit-learn==1.5.1",
+    "tabulate==0.9.0",
+    "vowpalwabbit==9.9.0",
+    "watermark==2.4.3",
 ]
 
 [tool.poetry.build]
@@ -92,12 +139,46 @@ optional = true
 [tool.poetry.group.benchmark]
 optional = true
 
-[tool.poetry.group.benchmark.dependencies]
-"dominate" = "2.8.0"
-"scikit-learn" = "1.5.1"
-"tabulate" = "0.9.0"
-"vowpalwabbit" = "9.9.0"
-"watermark" = "2.4.3"
+
+
+
+
+[tool.setuptools]
+packages = ["river"]
+
+[tool.uv]
+default-groups = [
+    "dev",
+    "compat",
+    "docs",
+    "benchmark",
+]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "**/*.cpp",
+    "**/*.pyx",
+    "**/*.pxd",
+    "river/datasets/*.csv",
+    "river/datasets/*.gz",
+    "river/datasets/*.zip",
+    "river/stream/*.zip",
+    "Cargo.toml",
+    "rust_src/**/*",
+]
+
+[tool.hatch.build.targets.wheel]
+include = [
+    "**/*.cpp",
+    "**/*.pyx",
+    "**/*.pxd",
+    "river/datasets/*.csv",
+    "river/datasets/*.gz",
+    "river/datasets/*.zip",
+    "river/stream/*.zip",
+    "Cargo.toml",
+    "rust_src/**/*",
+]
 
 [tool.pytest.ini_options]
 addopts = [
