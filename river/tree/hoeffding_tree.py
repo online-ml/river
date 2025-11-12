@@ -298,7 +298,7 @@ class HoeffdingTree(ABC):
                 total_inactive_size += calculate_object_size(leaf)
         if total_active_size > 0 and self._n_active_leaves > 0:
             self._active_leaf_size_estimate = total_active_size / self._n_active_leaves
-        if total_inactive_size > 0:
+        if total_inactive_size > 0 and self._n_inactive_leaves > 0:
             self._inactive_leaf_size_estimate = total_inactive_size / self._n_inactive_leaves
         actual_model_size = calculate_object_size(self)
         estimated_model_size = (
