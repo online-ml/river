@@ -36,6 +36,7 @@ jobs:
           CIBW_BEFORE_BUILD_LINUX: >
             curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain=nightly --profile=minimal -y &&
             rustup show
+          CIBW_BUILD_FRONTEND: "pip"
       - uses: actions/upload-artifact@v5
         with:
           name: cibw-wheels-${{ matrix.linux_tag }}-${{ matrix.python-version }}-${{ strategy.job-index }}
@@ -66,6 +67,7 @@ jobs:
             rustup default nightly &&
             rustup show
           MACOSX_DEPLOYMENT_TARGET: 10.13
+          CIBW_BUILD_FRONTEND: "pip"
       - uses: actions/upload-artifact@v5
         with:
           name: cibw-wheels-${{ matrix.os }}-${{ matrix.python-version }}-${{ strategy.job-index }}
@@ -97,6 +99,7 @@ jobs:
           CIBW_BEFORE_BUILD: >
             rustup default nightly &&
             rustup show
+          CIBW_BUILD_FRONTEND: "pip"
       - uses: actions/upload-artifact@v5
         with:
           name: cibw-wheels-${{ matrix.os }}-${{ matrix.python-version }}-${{ strategy.job-index }}
