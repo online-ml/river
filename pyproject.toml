@@ -88,6 +88,8 @@ optional = true
 "spacy" = "*"
 "tabulate" = "*"
 "watermark" = "*"
+"notebook" = "<7"
+"jupyter-contrib-nbextensions" = "^0.7.0"
 
 [tool.poetry.group.benchmark]
 optional = true
@@ -213,7 +215,6 @@ module = [
     "river.imblearn.*",
     "river.feature_selection.*",
     "river.active.*",
-    "river.conf.*",
     "river.neural_net.*",
     "river.test_estimators",
     "river.dummy",
