@@ -36,6 +36,7 @@ jobs:
           CIBW_BEFORE_BUILD_LINUX: >
             curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain=nightly --profile=minimal -y &&
             rustup show
+          CIBW_BUILD_FRONTEND: "pip"
       - uses: actions/upload-artifact@v5
         with:
           name: cibw-wheels-${{ matrix.linux_tag }}-${{ matrix.python-version }}-${{ strategy.job-index }}
@@ -46,7 +47,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-14, macos-15]
+        os: [macos-15]
         python-version: ["311", "312", "313"]
     steps:
       - uses: actions/checkout@v4
@@ -66,6 +67,7 @@ jobs:
             rustup default nightly &&
             rustup show
           MACOSX_DEPLOYMENT_TARGET: 10.13
+          CIBW_BUILD_FRONTEND: "pip"
       - uses: actions/upload-artifact@v5
         with:
           name: cibw-wheels-${{ matrix.os }}-${{ matrix.python-version }}-${{ strategy.job-index }}
@@ -76,7 +78,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [windows-2022, windows-2025]
+        os: [windows-2025]
         python-version: ["311", "312", "313"]
     steps:
       - uses: actions/checkout@v4
@@ -97,6 +99,7 @@ jobs:
           CIBW_BEFORE_BUILD: >
             rustup default nightly &&
             rustup show
+          CIBW_BUILD_FRONTEND: "pip"
       - uses: actions/upload-artifact@v5
         with:
           name: cibw-wheels-${{ matrix.os }}-${{ matrix.python-version }}-${{ strategy.job-index }}
