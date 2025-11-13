@@ -1,11 +1,16 @@
 from __future__ import annotations
 
-from river import base, stats
+from collections.abc import Iterator
+from typing import Literal, TypeVar, overload
+
+from river import base, compose, stats
 
 from . import interval
 
+T = TypeVar("T", bound=base.Regressor)
 
-class RegressionJackknife(base.Wrapper, base.Regressor):
+
+class RegressionJackknife(base.Wrapper[T], base.Regressor):
     """Jackknife method for regression.
 
     This is a conformal prediction method for regression. It is based on the jackknife method. The
@@ -81,7 +86,7 @@ class RegressionJackknife(base.Wrapper, base.Regressor):
 
     def __init__(
         self,
-        regressor: base.Regressor,
+        regressor: T,
         confidence_level: float = 0.95,
         window_size: int | None = None,
     ):
@@ -100,16 +105,18 @@ class RegressionJackknife(base.Wrapper, base.Regressor):
         )
 
     @property
-    def _wrapped_model(self):
+    def _wrapped_model(self) -> T:
         return self.regressor
 
     @classmethod
-    def _unit_test_params(cls):
+    def _unit_test_params(cls) -> Iterator[dict[str, compose.Pipeline]]:
         from river import linear_model, preprocessing
 
         yield {"regressor": (preprocessing.StandardScaler() | linear_model.LinearRegression())}
 
-    def learn_one(self, x, y, **kwargs):
+    def learn_one(
+        self, x: dict[base.typing.FeatureName, object], y: base.typing.RegTarget, **kwargs: object
+    ) -> None:
         # Update the quantiles
         error = y - self.regressor.predict_one(x)
         self._lower.update(error)
@@ -117,7 +124,27 @@ class RegressionJackknife(base.Wrapper, base.Regressor):
 
         self.regressor.learn_one(x, y, **kwargs)
 
-    def predict_one(self, x, with_interval=False, **kwargs):
+    @overload
+    def predict_one(
+        self,
+        x: dict[base.typing.FeatureName, object],
+        with_interval: Literal[False] = False,
+        **kwargs: object,
+    ) -> float: ...
+    @overload
+    def predict_one(
+        self,
+        x: dict[base.typing.FeatureName, object],
+        with_interval: Literal[True],
+        **kwargs: object,
+    ) -> interval.Interval: ...
+
+    def predict_one(
+        self,
+        x: dict[base.typing.FeatureName, object],
+        with_interval: bool = False,
+        **kwargs: object,
+    ) -> float | interval.Interval:
         """Predict the output of features `x`.
 
         Parameters
