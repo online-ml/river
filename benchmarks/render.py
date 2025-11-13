@@ -67,12 +67,14 @@ def render_df(dataset_df: pd.DataFrame, measures: List[str], models: List[str],
                 )
 
     # Layout
+    # Increase bottom margin to accommodate legend below the chart
+    bottom_margin = 150 if measures else 48
     fig.update_layout(
-        height=max(420, 180 * nrows),
+        height=max(500, 180 * nrows + 150),
         showlegend=bool(measures),
         # No Plotly title; the page shows a Markdown heading instead
         template="plotly_white",
-        margin=dict(l=56, r=36, t=36, b=48),
+        margin=dict(l=56, r=36, t=36, b=bottom_margin),
         hovermode="x unified",
         plot_bgcolor="rgba(245, 245, 245, 0.5)",
         paper_bgcolor="rgba(255, 255, 255, 0)",
@@ -82,12 +84,12 @@ def render_df(dataset_df: pd.DataFrame, measures: List[str], models: List[str],
             color="#424242"),
         legend=dict(
             orientation="h",
-            yanchor="bottom",
-            y=-0.25,
+            yanchor="top",
+            y=-0.12,
             xanchor="center",
             x=0.5,
             bgcolor="rgba(255, 255, 255, 0.8)",
-            borderwidth=0),
+        ),
     )
 
     # Axes and empty-state annotation
