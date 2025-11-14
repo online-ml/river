@@ -59,22 +59,20 @@ def render_df(dataset_df: pd.DataFrame, measures: List[str], models: List[str],
                         showlegend=(i == 0),  # one legend entry per model
                         line=dict(color=model_colors[model], width=2.5),
                         hovertemplate=(
-                            f"Model: {model}<br>Step: %{{x}}<br>{measure.replace('_', ' ').title()}: %{{y:.4f}}<extra></extra>"
+                            f"<b>{model}</b><br>"
+                            f"<b>{measure.replace('_', ' ').title()}</b>: %{{y:.6f}}"
+                            f"<extra></extra>"
                         ),
                     ),
                     row=(i + 1),
                     col=1,
                 )
 
-    # Layout
-    # Increase bottom margin to accommodate legend below the chart
-    bottom_margin = 150 if measures else 48
     fig.update_layout(
-        height=max(500, 180 * nrows + 150),
+        height=max(700, 180 * nrows + 200),
         showlegend=bool(measures),
-        # No Plotly title; the page shows a Markdown heading instead
         template="plotly_white",
-        margin=dict(l=56, r=36, t=36, b=bottom_margin),
+        margin=dict(l=56, r=36, t=36, b=48),
         hovermode="x unified",
         plot_bgcolor="rgba(245, 245, 245, 0.5)",
         paper_bgcolor="rgba(255, 255, 255, 0)",
@@ -82,6 +80,13 @@ def render_df(dataset_df: pd.DataFrame, measures: List[str], models: List[str],
             family="Inter, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
             size=12,
             color="#424242"),
+        hoverlabel=dict(
+            namelength=-1,  # Show full model names
+            bgcolor="rgba(255, 255, 255, 0.98)",
+            bordercolor="rgba(0, 0, 0, 0.3)",
+            font=dict(size=11, family="monospace", color="#333333"),
+            align="left"
+        ),
         legend=dict(
             orientation="h",
             yanchor="top",
@@ -92,7 +97,7 @@ def render_df(dataset_df: pd.DataFrame, measures: List[str], models: List[str],
         ),
     )
 
-    # Axes and empty-state annotation
+
     if measures:
         fig.update_xaxes(title_text="Instance", row=nrows, col=1)
         for i, measure in enumerate(measures):
