@@ -74,19 +74,20 @@ optional = true
 "flask" = "*"
 "ipykernel" = "*"
 "jupyter-client" = "*"
+"jupyter-contrib-nbextensions" = "^0.7.0"
 "mike" = "*"
 "mkdocs" = "*"
 "mkdocs-awesome-pages-plugin" = "*"
 "mkdocs-charts-plugin" = "*"
 "mkdocs-material" = "*"
 "nbconvert" = "*"
+"notebook" = "<7"
 "numpydoc" = "*"
+"plotly" = ">6.3.0"
 "python-slugify" = "*"
 "spacy" = "*"
 "tabulate" = "*"
 "watermark" = "*"
-"notebook" = "<7"
-"jupyter-contrib-nbextensions" = "^0.7.0"
 
 [tool.poetry.group.benchmark]
 optional = true
