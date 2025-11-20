@@ -10,8 +10,11 @@ import functools
 import itertools
 import math
 import operator
+from collections.abc import Mapping, MutableMapping, Sequence
+from typing import Any
 
 import numpy as np
+import numpy.typing as npt
 import scipy as sp
 
 __all__ = [
@@ -34,7 +37,7 @@ __all__ = [
 ]
 
 
-def dotvecmat(x, A):
+def dotvecmat(x: Mapping[Any, float], A: Mapping[tuple[Any, Any], float]) -> dict[Any, float]:
     """Vector times matrix from left side, i.e. transpose(x)A.
 
     Parameters
@@ -60,7 +63,7 @@ def dotvecmat(x, A):
 
     """
 
-    C = {}
+    C: dict[Any, float] = {}
 
     for (i, xi), ((j, k), ai) in itertools.product(x.items(), A.items()):
         if i != j:
@@ -71,7 +74,9 @@ def dotvecmat(x, A):
     return C
 
 
-def matmul2d(A, B):
+def matmul2d(
+    A: Mapping[tuple[Any, Any], float], B: Mapping[tuple[Any, Any], float]
+) -> dict[tuple[Any, Any], float]:
     """Multiplication for 2D matrices.
 
     Parameters
@@ -108,7 +113,7 @@ def matmul2d(A, B):
         (1, 3): 18.0}
 
     """
-    C = {}
+    C: dict[tuple[Any, Any], float] = {}
 
     for ((i, k1), x), ((k2, j), y) in itertools.product(A.items(), B.items()):
         if k1 != k2:
@@ -118,7 +123,7 @@ def matmul2d(A, B):
     return C
 
 
-def outer(u: dict, v: dict) -> dict:
+def outer(u: Mapping[Any, float], v: Mapping[Any, float]) -> dict[tuple[Any, Any], float]:
     """Outer-product between two vectors.
 
     Parameters
@@ -151,7 +156,7 @@ def outer(u: dict, v: dict) -> dict:
     return {(ki, kj): vi * vj for (ki, vi), (kj, vj) in itertools.product(u.items(), v.items())}
 
 
-def minkowski_distance(a: dict, b: dict, p: int):
+def minkowski_distance(a: Mapping[Any, float], b: Mapping[Any, float], p: int):
     """Minkowski distance.
 
     Parameters
@@ -166,7 +171,7 @@ def minkowski_distance(a: dict, b: dict, p: int):
     return sum((abs(a.get(k, 0.0) - b.get(k, 0.0))) ** p for k in {*a.keys(), *b.keys()}) ** (1 / p)
 
 
-def softmax(y_pred: dict):
+def softmax(y_pred: MutableMapping[Any, float]) -> MutableMapping[Any, float]:
     """Normalizes a dictionary of predicted probabilities, in-place.
 
     Parameters
@@ -202,7 +207,7 @@ def prod(iterable) -> float:
     return functools.reduce(operator.mul, iterable, 1)
 
 
-def dot(x: dict, y: dict) -> float:
+def dot(x: Mapping[Any, float], y: Mapping[Any, float]) -> float:
     """Returns the dot product of two vectors represented as dicts.
 
     Parameters
@@ -228,7 +233,7 @@ def dot(x: dict, y: dict) -> float:
     return sum(x[i] * yi for i, yi in y.items() if i in x)
 
 
-def chain_dot(*xs):
+def chain_dot(*xs: Mapping[Any, float]):
     """Returns the dot product of multiple vectors represented as dicts.
 
     Parameters
@@ -282,7 +287,7 @@ def clamp(x: float, minimum=0.0, maximum=1.0):
     return max(min(x, maximum), minimum)
 
 
-def norm(x: dict, order=None) -> float:
+def norm(x: Mapping[Any, float], order=None) -> float:
     """Compute the norm of a dictionaries values.
 
     Parameters
@@ -305,7 +310,7 @@ def sign(x: float):
     return -1 if x < 0 else (1 if x > 0 else 0)
 
 
-def argmax(lst: list):
+def argmax(lst: Sequence[Any]):
     """Argmax function.
 
     Parameters
@@ -316,7 +321,7 @@ def argmax(lst: list):
     return max(range(len(lst)), key=lst.__getitem__)
 
 
-def sherman_morrison(A: np.ndarray, u: np.ndarray, v: np.ndarray) -> None:
+def sherman_morrison(A: npt.NDArray[Any], u: npt.NDArray[Any], v: npt.NDArray[Any]) -> None:
     """Sherman-Morrison formula.
 
     This is an inplace function.
@@ -337,7 +342,7 @@ def sherman_morrison(A: np.ndarray, u: np.ndarray, v: np.ndarray) -> None:
     sp.linalg.blas.dger(alpha, Au, v.T @ A, a=A, overwrite_a=1)
 
 
-def woodbury_matrix(A: np.ndarray, U: np.ndarray, V: np.ndarray) -> None:
+def woodbury_matrix(A: npt.NDArray[Any], U: npt.NDArray[Any], V: npt.NDArray[Any]) -> None:
     """Woodbury matrix identity.
 
     This is an inplace function.
