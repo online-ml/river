@@ -315,7 +315,6 @@ class RemoteDataset(FileDataset):
         """Indicate whether or the data has been correctly downloaded."""
         if self.path.exists():
             if self.path.is_file():
-                print(f"Expecting size: {self.size}, got: {self.path.stat().st_size}")
                 return self.path.stat().st_size == self.size
             return sum(f.stat().st_size for f in self.path.glob("**/*") if f.is_file())
 
