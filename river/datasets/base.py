@@ -267,7 +267,7 @@ class RemoteDataset(FileDataset):
         # Determine where to download the archive
         directory = self.path.parent
         directory.mkdir(parents=True, exist_ok=True)
-        archive_path = directory.joinpath(os.path.basename(self.url))
+        archive_path = directory.joinpath(os.path.basename(self.filename))
 
         with request.urlopen(self.url) as r:
             # Notify the user
@@ -315,6 +315,7 @@ class RemoteDataset(FileDataset):
         """Indicate whether or the data has been correctly downloaded."""
         if self.path.exists():
             if self.path.is_file():
+                print(f"Expecting size: {self.size}, got: {self.path.stat().st_size}")
                 return self.path.stat().st_size == self.size
             return sum(f.stat().st_size for f in self.path.glob("**/*") if f.is_file())
 
