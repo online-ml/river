@@ -33,6 +33,7 @@ class Insects(base.RemoteDataset):
     [^2]: [Souza, V., Reis, D.M.D., Maletzke, A.G. and Batista, G.E., 2020. Challenges in Benchmarking Stream Learning Algorithms with Real-world Data. arXiv preprint arXiv:2005.00113.](https://arxiv.org/abs/2005.00113)
 
     """
+
     variant_configs = {
         "abrupt_balanced": {
             "n_samples": 52_848,
@@ -64,36 +65,36 @@ class Insects(base.RemoteDataset):
             "url": "https://drive.google.com/uc?export=download&id=1-J5WIBN8_F_tomdcrOaiLCxk9nzxtFsf&confirm=t",
             "filename": "incremental_abrupt_balanced.csv",
         },
-        #"incremental_abrupt_imbalanced": {
+        # "incremental_abrupt_imbalanced": {
         #    "n_samples": 452_044,
         #    "size": 140_004_225,
         #    "url": "https://drive.google.com/uc?export=download&id=1M6QfsernUlM0qvqXdbo9bPYAsHCcfuhb&confirm=t",
         #    "filename": "incremental_abrupt_imbalanced.csv",
-        #},
+        # },
         "incremental_reoccurring_balanced": {
             "n_samples": 79_986,
             "size": 21_433_047,
             "url": "https://drive.google.com/uc?export=download&id=1mSKTSsxzYMjdV005AJqrcMGajuu7dUfW&confirm=t",
             "filename": "incremental_reoccurring_balanced.csv",
         },
-        #"incremental_reoccurring_imbalanced": {
+        # "incremental_reoccurring_imbalanced": {
         #    "n_samples": 452_044,
         #    "size": 140_004_230,
         #    "url": "https://drive.google.com/uc?export=download&id=1aSqdxvZvug-SwQw5NLY_9nTPhhEjB2ig&confirm=t",
         #    "filename": "incremental_reoccurring_imbalanced.csv",
-        #},
+        # },
         "incremental_balanced": {
             "n_samples": 57_018,
             "size": 15_258_997,
             "url": "https://drive.google.com/uc?export=download&id=1tKQ2KL4m-ACHCVKUDLFPrM4cyhioiOpu&confirm=t",
             "filename": "incremental_balanced.csv",
         },
-        #"incremental_imbalanced": {
+        # "incremental_imbalanced": {
         #    "n_samples": 452_044,
         #    "size": 140_004_218,
         #    "url": "https://drive.google.com/uc?export=download&id=1K3vp0EjA4FPDeSgffiBe4CMosbB4CKbL&confirm=t",
         #    "filename": "incremental_imbalanced.csv",
-        #}
+        # }
     }
 
     def __init__(self, variant="abrupt_balanced"):
@@ -116,7 +117,7 @@ class Insects(base.RemoteDataset):
             url=url,
             size=size,
             unpack=False,
-            filename=filename
+            filename=filename,
         )
         self.variant = variant
 
