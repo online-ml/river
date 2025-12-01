@@ -33,7 +33,6 @@ class Insects(base.RemoteDataset):
     [^2]: [Souza, V., Reis, D.M.D., Maletzke, A.G. and Batista, G.E., 2020. Challenges in Benchmarking Stream Learning Algorithms with Real-world Data. arXiv preprint arXiv:2005.00113.](https://arxiv.org/abs/2005.00113)
 
     """
-
     variant_configs = {
         "abrupt_balanced": {
             "n_samples": 52_848,
@@ -96,6 +95,7 @@ class Insects(base.RemoteDataset):
         #    "filename": "incremental_imbalanced.csv",
         # }
     }
+    variants = variant_configs.keys()
 
     def __init__(self, variant="abrupt_balanced"):
         if variant not in self.variant_configs:
