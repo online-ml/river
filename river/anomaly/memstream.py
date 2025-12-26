@@ -5,15 +5,17 @@ and adapted to fit into the River framework.
 """
 
 from __future__ import annotations
-from river import anomaly, proba, utils
-from river.optim import Adam
+
 import abc
 import warnings
 
 import numpy as np
 from sklearn import metrics
-from tqdm import tqdm
 from sklearn.decomposition import PCA
+from tqdm import tqdm  # type: ignore[import-untyped]
+
+from river import anomaly, utils
+from river.optim import Adam
 
 
 class EncoderType:
