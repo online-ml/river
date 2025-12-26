@@ -22,6 +22,7 @@ from .lof import LocalOutlierFactor
 from .pad import PredictiveAnomalyDetection
 from .sad import StandardAbsoluteDeviation
 from .svm import OneClassSVM
+from .memstream import MemStream, MemStreamAutoencoder, MemStreamPCA
 
 __all__ = [
     "base",
@@ -34,4 +35,7 @@ __all__ = [
     "ThresholdFilter",
     "LocalOutlierFactor",
     "PredictiveAnomalyDetection",
+    "MemStream",
+    "MemStreamAutoencoder",
+    "MemStreamPCA",
 ]
