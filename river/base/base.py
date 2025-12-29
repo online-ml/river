@@ -10,8 +10,6 @@ import sys
 import types
 import typing
 
-import typing_extensions
-
 
 class Base:
     """Base class that is inherited by the majority of classes in River.
@@ -75,7 +73,7 @@ class Base:
 
     def clone(
         self, new_params: dict[str, typing.Any] | None = None, include_attributes: bool = False
-    ) -> typing_extensions.Self:
+    ) -> typing.Self:
         """Return a fresh estimator with the same parameters.
 
         The clone has the same parameters but has not been updated with any data.
