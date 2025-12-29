@@ -4328,7 +4328,7 @@
 
 <h1 id="insects">Insects<a class="headerlink" href="#insects" title="Permanent link">&para;</a></h1>
 <p>Insects dataset.</p>
-<p>This dataset has different variants, which are: </p>
+<p>This dataset has different variants for concept drift evaluation: </p>
 <ul>
 <li>
 <p>abrupt_balanced</p>
@@ -4343,25 +4343,13 @@
 <p>gradual_imbalanced</p>
 </li>
 <li>
-<p>incremental-abrupt_balanced</p>
+<p>incremental_abrupt_balanced</p>
 </li>
 <li>
-<p>incremental-abrupt_imbalanced</p>
-</li>
-<li>
-<p>incremental-reoccurring_balanced</p>
-</li>
-<li>
-<p>incremental-reoccurring_imbalanced</p>
+<p>incremental_reoccurring_balanced</p>
 </li>
 <li>
 <p>incremental_balanced</p>
-</li>
-<li>
-<p>incremental_imbalanced</p>
-</li>
-<li>
-<p>out-of-control</p>
 </li>
 </ul>
 <p>The number of samples and the difficulty change from one variant to another. The number of classes is always the same (6), except for the last variant (24).</p>
@@ -4370,7 +4358,7 @@
 <li>
 <p><strong>variant</strong></p>
 <p><em>Default</em> → <code>abrupt_balanced</code></p>
-<p>Indicates which variant of the dataset to load.</p>
+<p>Indicates which variant of the dataset to load. Defaults to "abrupt_balanced".</p>
 </li>
 </ul>
 <h2 id="attributes">Attributes<a class="headerlink" href="#attributes" title="Permanent link">&para;</a></h2>
