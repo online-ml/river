@@ -4,70 +4,147 @@ import json
 import shutil
 import textwrap
 from pathlib import Path
+from typing import List
+from plotly.subplots import make_subplots
+import plotly.graph_objects as go
 
 import pandas as pd
 from dominate.tags import pre
+from slugify.slugify import slugify
 from watermark import watermark
 
+# Professional color palette for models (Material Design inspired)
+COLOR_PALETTE = [
+    "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2",
+    "#7f7f7f", "#bcbd22", "#17becf", "#aec7e8", "#ffbb78", "#98df8a", "#ff9896",
+    "#c5b0d5", "#c49c94", "#f7b6d2", "#c7c7c7", "#dbdb8d", "#9edae5",
+]
 
-def render_df(df_path: Path) -> dict:
-    df = pd.read_csv(str(df_path))
 
-    unique_datasets = list(df["dataset"].unique())
-    measures = list(df.columns)[4:]
+def render_df(dataset_df: pd.DataFrame, measures: List[str], models: List[str],
+              dataset: str, include_plotlyjs: bool = True) -> str:
+    nrows = max(1, len(measures))
+    fig = make_subplots(
+        rows=nrows,
+        cols=1,
+        subplot_titles=[m.replace("_", " ").title() for m in
+                        measures] if measures else None,
+        shared_xaxes=True,
+        vertical_spacing=0.06,
+    )
 
-    res = {
-        "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-        "data": {
-            "values": df.to_dict(orient="records")
-            # "url": f"benchmarks/{df_path.name}"
+    # Assign colors to models based on their index
+    model_colors = {model: COLOR_PALETTE[i % len(COLOR_PALETTE)] for i, model in
+                    enumerate(models)}
+
+    for model in models:
+        model_df = dataset_df[dataset_df["model"] == model]
+        if model_df.empty:
+            continue
+        # Ensure sorted by step for nice lines
+        model_df = model_df.sort_values("step")
+
+        if measures:
+            for i, measure in enumerate(measures):
+                y = model_df[measure]
+                if y.isna().all():
+                    continue
+                fig.add_trace(
+                    go.Scatter(
+                        x=model_df["step"],
+                        y=y,
+                        name=str(model),
+                        mode="lines",
+                        legendgroup=str(model),
+                        showlegend=(i == 0),  # one legend entry per model
+                        line=dict(color=model_colors[model], width=2.5),
+                        hovertemplate=(
+                            f"<b>{model}</b><br>"
+                            f"<b>{measure.replace('_', ' ').title()}</b>: %{{y:.6f}}"
+                            f"<extra></extra>"
+                        ),
+                    ),
+                    row=(i + 1),
+                    col=1,
+                )
+
+    fig.update_layout(
+        height=max(700, 180 * nrows + 200),
+        showlegend=bool(measures),
+        template="plotly_white",
+        margin=dict(l=56, r=36, t=36, b=48),
+        hovermode="x unified",
+        plot_bgcolor="rgba(245, 245, 245, 0.5)",
+        paper_bgcolor="rgba(255, 255, 255, 0)",
+        font=dict(
+            family="Inter, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
+            size=12,
+            color="#424242"),
+        hoverlabel=dict(
+            namelength=-1,  # Show full model names
+            bgcolor="rgba(255, 255, 255, 0.98)",
+            bordercolor="rgba(0, 0, 0, 0.3)",
+            font=dict(size=11, family="monospace", color="#333333"),
+            align="left"
+        ),
+        legend=dict(
+            orientation="h",
+            yanchor="top",
+            y=-0.12,
+            xanchor="center",
+            x=0.5,
+            bgcolor="rgba(255, 255, 255, 0.8)",
+        ),
+    )
+
+
+    if measures:
+        fig.update_xaxes(title_text="Instance", row=nrows, col=1)
+        for i, measure in enumerate(measures):
+            fig.update_yaxes(title_text=measure.replace("_", " ").title(),
+                             row=i + 1, col=1)
+    else:
+        fig.add_annotation(
+            text="No numeric metrics found in CSV.",
+            x=0.5,
+            y=0.5,
+            xref="paper",
+            yref="paper",
+            showarrow=False,
+            font=dict(size=14),
+        )
+
+    # HTML conversion
+    dataset_slug = slugify(dataset)
+    fig_div_id = f"plot-{dataset_slug}"
+    config = {
+        "responsive": True,
+        "displayModeBar": True,
+        "displaylogo": False,
+        "modeBarButtonsToRemove": ["pan2d", "lasso2d", "select2d",
+                                   "autoScale2d"],
+        "toImageButtonOptions": {
+            "format": "png",
+            "filename": f"{dataset_slug}_benchmark",
+            "height": 600,
+            "width": 1000,
+            "scale": 2,
         },
-        "params": [
-            {"name": "models", "select": {"type": "point", "fields": ["model"]}, "bind": "legend"},
-            {
-                "name": "Dataset",
-                "value": unique_datasets[0],
-                "bind": {"input": "select", "options": unique_datasets},
-            },
-            {"name": "grid", "select": "interval", "bind": "scales"},
-        ],
-        "transform": [{"filter": {"field": "dataset", "equal": {"expr": "Dataset"}}}],
-        "repeat": {"row": measures},
-        "spec": {
-            "width": "container",
-            # "height": "container",
-            "mark": "line",
-            "encoding": {
-                "x": {
-                    "field": "step",
-                    "type": "quantitative",
-                    "axis": {
-                        "titleFontSize": 18,
-                        "labelFontSize": 18,
-                        "title": "Instance",
-                    },
-                },
-                "y": {
-                    "field": {"repeat": "row"},
-                    "type": "quantitative",
-                    "axis": {"titleFontSize": 18, "labelFontSize": 18},
-                },
-                "color": {
-                    "field": "model",
-                    "type": "ordinal",
-                    "scale": {"scheme": "category20b"},
-                    "title": "Models",
-                    "legend": {
-                        "titleFontSize": 18,
-                        "labelFontSize": 18,
-                        "labelLimit": 500,
-                    },
-                },
-                "opacity": {"condition": {"param": "models", "value": 1}, "value": 0.2},
-            },
-        },
+        "scrollZoom": False,
+        "staticPlot": False,
     }
-    return res
+    plotlyjs_setting = "require" if include_plotlyjs else False
+
+    html = fig.to_html(
+        include_plotlyjs=plotlyjs_setting,
+        full_html=False,
+        config=config,
+        div_id=fig_div_id,
+        validate=False,
+    )
+
+    return (
+        f"""<div class=\"benchmark-plot\" id=\"{fig_div_id}-container\">\n  {html}\n</div>\n""")
 
 
 if __name__ == "__main__":
@@ -77,49 +154,55 @@ if __name__ == "__main__":
     for track_name, track_details in details.items():
         track_dir = Path(f"../docs/benchmarks/{track_name}")
         track_dir.mkdir(exist_ok=True)
-        with open(f"../docs/benchmarks/{track_name}/index.md", "w", encoding="utf-8") as f:
+        with open(f"../docs/benchmarks/{track_name}/index.md", "w",
+                  encoding="utf-8") as f:
 
             def print_(x):
                 return print(x, file=f, end="\n\n")
+
 
             print_(f"# {track_name}")
 
             # Move the dataset from the benchmarks folder to the docs folder
             csv_name = track_name.replace(" ", "_").lower()
-            shutil.copy(f"{csv_name}.csv", f"../docs/benchmarks/{track_name}/{csv_name}.csv")
+            shutil.copy(f"{csv_name}.csv",
+                        f"../docs/benchmarks/{track_name}/{csv_name}.csv")
 
             df_path = Path(f"../docs/benchmarks/{track_name}/{csv_name}.csv")
 
-            df_md = (
-                pd.read_csv(str(df_path))
-                .groupby(["model", "dataset"])
-                .last()
-                .drop(columns=["track", "step"])
-                .reset_index()
-                .rename(columns={"model": "Model", "dataset": "Dataset"})
-                .to_markdown(index=False)
-            )
+            df = pd.read_csv(str(df_path))
 
-            print_(
-                f"""
+            unique_datasets = list(df["dataset"].unique())
+            measures = list(df.columns)[4:]
+            unique_models = sorted(df["model"].unique())
 
-=== "Table"
+            # Track whether we've already included Plotly.js
+            first_plot = True
 
-{textwrap.indent(df_md, '    ')}
+            for dataset in unique_datasets:
+                dataset_df = df[df["dataset"] == dataset]
+                print_(f"## {dataset}")
 
-=== "Chart"
-
-    *Try reloading the page if something is buggy*
-
-    ```vegalite
-{textwrap.indent(json.dumps(render_df(df_path), indent=2), '    ')}
-    ```
-
-            """
-            )
+                print_(f"### Summary")
+                df_md = (
+                    dataset_df
+                    .groupby(["model"])
+                    .last()
+                    .drop(columns=["track", "step", "dataset"])
+                    .reset_index()
+                    .rename(columns={"model": "Model"})
+                    .to_markdown(index=False)
+                )
+                print_(df_md)
+                print_(f"### Charts")
+                print_(render_df(dataset_df=dataset_df, measures=measures,
+                                 models=unique_models, dataset=dataset,
+                                 include_plotlyjs=first_plot))
+                first_plot = False
 
             print_("## Datasets")
-            for dataset_name, dataset_details in track_details["Dataset"].items():
+            for dataset_name, dataset_details in track_details[
+                "Dataset"].items():
                 print_(f'???- abstract "{dataset_name}"')
                 print_(textwrap.indent(dataset_details, "    "))
                 print_("<span />")
@@ -135,7 +218,9 @@ if __name__ == "__main__":
             print_(
                 pre(
                     watermark(
-                        python=True, packages="river,numpy,scikit-learn,pandas,scipy", machine=True
+                        python=True,
+                        packages="river,numpy,scikit-learn,pandas,scipy",
+                        machine=True
                     )
                 )
             )

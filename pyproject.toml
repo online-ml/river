@@ -10,7 +10,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "river"
-version = "0.22.0"
+version = "0.23.0"
 description = "Online machine learning in Python"
 readme = "README.md"
 homepage = "https://riverml.xyz/"
@@ -74,13 +74,16 @@ optional = true
 "flask" = "*"
 "ipykernel" = "*"
 "jupyter-client" = "*"
+"jupyter-contrib-nbextensions" = "^0.7.0"
 "mike" = "*"
 "mkdocs" = "*"
 "mkdocs-awesome-pages-plugin" = "*"
 "mkdocs-charts-plugin" = "*"
 "mkdocs-material" = "*"
 "nbconvert" = "*"
+"notebook" = "<7"
 "numpydoc" = "*"
+"plotly" = ">6.3.0"
 "python-slugify" = "*"
 "spacy" = "*"
 "tabulate" = "*"
@@ -209,9 +212,7 @@ module = [
     "river.reco.*",
     "river.imblearn.*",
     "river.feature_selection.*",
-    "river.misc.*",
     "river.active.*",
-    "river.conf.*",
     "river.neural_net.*",
     "river.test_estimators",
     "river.dummy",
