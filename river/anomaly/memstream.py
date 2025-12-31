@@ -209,9 +209,7 @@ class MemStream(anomaly.base.AnomalyDetector):
                 )
                 return False
             elif self.sample_count >= self.grace_period:
-                self.define_encoder(
-                    [(self.mem_data[i], 0) for i in range(self.count)]
-                )
+                self.define_encoder([(self.mem_data[i], 0) for i in range(self.count)])
                 return True
         else:
             return True
@@ -459,9 +457,7 @@ class MemStreamPCA(MemStream):
         x_train, y_train = zip(*train_data)
         x_train = np.array([self.__format_x__(x) for x in x_train])
         y_train = np.array([y for y in y_train])
-        self.n_components = min(
-            min(x_train.shape[0], x_train.shape[1]), self.n_components
-        )
+        self.n_components = min(min(x_train.shape[0], x_train.shape[1]), self.n_components)
         self.pca = PCA(n_components=self.n_components)
         self.mean, self.std = x_train.mean(0), x_train.std(0)
         new = (x_train - self.mean) / self.std
