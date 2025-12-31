@@ -2,6 +2,7 @@
 This is an adaptation of the MemStream algorithm for anomaly detection in data streams.
 The code was extracted form https://github.com/Stream-AD/MemStream/
 and adapted to fit into the River framework.
+The original paper can be found: https://arxiv.org/pdf/2106.03837
 """
 
 from __future__ import annotations
@@ -45,7 +46,7 @@ class MemStream(anomaly.base.AnomalyDetector):
     2. A **memory module** that maintains a collection of encoded representations
         of recent **normal** data points. This memory acts as a dynamic model
         of the current data distribution and evolves over time to adapt to drift
-        without requiring explicit labels. :contentReference[oaicite:2]{index=2}
+        without requiring explicit labels.
 
     For each incoming data point, MemStream computes an **anomaly score** by
     measuring the similarity between the encoded input and the stored memory. If
@@ -53,7 +54,7 @@ class MemStream(anomaly.base.AnomalyDetector):
     (i.e., similar to previously seen normal data), it is considered normal and
     may be added to memory. Otherwise, it is flagged as anomalous. The memory
     module uses a replacement policy to adapt to changing trends (concept drift)
-    and avoid memory poisoning. :contentReference[oaicite:3]{index=3}
+    and avoid memory poisoning.
 
     Parameters
     ----------
@@ -99,24 +100,25 @@ class MemStream(anomaly.base.AnomalyDetector):
     def define_memory(self):
         """Define the memory structure and initialization."""
 
-    @abc.abstractmethod
     def learn_many(self, x_train, y_train):
         """Function to learn multiple data points at once.
         The input should be a list of numpy arrays.
 
         Args:
-            x_train (np.ndarray): Training data samples.
-            y_train (np.ndarray): Corresponding labels for training data.
+            x_train: List of data points to learn.
+            y_train: List of corresponding labels.
         """
+        for elem in range(len(y_train)):
+            if y_train[elem] == 0:
+                self.learn_one(x_train[elem])
 
     @abc.abstractmethod
-    def define_encoder(self, x_train, y_train):
+    def define_encoder(self, train_data):
         """Function to define the encoder model, its input
-        is a matrix of training samples and corresponding labels.
+        is a list of training samples and corresponding labels.
 
         Args:
-            x_train (np.ndarray): Training data samples.
-            y_train (np.ndarray): Corresponding labels for training data.
+            train_data: List of tuples (x, y) where x is a data point and y is its label.
         """
 
     @abc.abstractmethod
@@ -145,7 +147,9 @@ class MemStream(anomaly.base.AnomalyDetector):
         return 0
 
     def __reorder_memory__(self, memory_index):
-        """Reorder the memory to move the accessed memory to the most recently used position."""
+        """Reorder the memory to move the accessed memory to the most recently used position.
+        This function will be used for the LRU replacement strategy.
+        """
         self.memory = np.r_[
             self.memory[memory_index],
             self.memory[:memory_index],
@@ -205,7 +209,9 @@ class MemStream(anomaly.base.AnomalyDetector):
                 )
                 return False
             elif self.sample_count >= self.grace_period:
-                self.define_encoder([(self.mem_data[i], 0) for i in range(self.count)])
+                self.define_encoder(
+                    [(self.mem_data[i], 0) for i in range(self.count)]
+                )
                 return True
         else:
             return True
@@ -322,9 +328,9 @@ class MemStreamAutoencoder(MemStream):
                 x_batch = x_batch - self.mean
                 x_batch = x_batch / (self.std + self.eps)
                 # x_batch[:, self.std == 0] = 0
-                output = self.forward(x_batch)
+                output = self.__forward__(x_batch)
                 batch_loss = metrics.mean_squared_error(x_batch, output)
-                self.backward(x_batch, output)
+                self.__backward__(x_batch, output)
                 (
                     self.update_memory(0, self.__encode__(x), x)
                     for x, y in zip(x_batch, y_batch)
@@ -341,11 +347,7 @@ class MemStreamAutoencoder(MemStream):
         else:
             return np.zeros((1, self.out_dim))
 
-    def learn_many(self, x_train, y_train):
-        for elem in range(len(y_train)):
-            self.learn_one(x_train[elem], y_train[elem])
-
-    def forward(self, x):
+    def __forward__(self, x):
         # Encoder
         self.z1 = np.dot(x, self.W1) + self.b1
         self.a1 = np.tanh(self.z1)
@@ -354,7 +356,7 @@ class MemStreamAutoencoder(MemStream):
         output = z2
         return output
 
-    def backward(self, x, output):
+    def __backward__(self, x, output):
         """Backpropagation to update weights. The loss used will be MSE.
         Args:
             x (np.ndarray): Input data.
@@ -457,7 +459,9 @@ class MemStreamPCA(MemStream):
         x_train, y_train = zip(*train_data)
         x_train = np.array([self.__format_x__(x) for x in x_train])
         y_train = np.array([y for y in y_train])
-        self.n_components = min(min(x_train.shape[0], x_train.shape[1]), self.n_components)
+        self.n_components = min(
+            min(x_train.shape[0], x_train.shape[1]), self.n_components
+        )
         self.pca = PCA(n_components=self.n_components)
         self.mean, self.std = x_train.mean(0), x_train.std(0)
         new = (x_train - self.mean) / self.std
@@ -467,11 +471,6 @@ class MemStreamPCA(MemStream):
             elem = elem.reshape(1, -1)
             encoded_elem = self.__encode__(elem)
             self.update_memory(0, encoded_elem, elem)
-
-    def learn_many(self, x_train, y_train):
-        for elem in range(len(y_train)):
-            if y_train[elem] == 0:
-                self.learn_one(x_train[elem])
 
     def __encode__(self, x):
         defined_encoder = self.__manage_non_encoded__(x, 0)
