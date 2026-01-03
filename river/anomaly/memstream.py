@@ -95,6 +95,7 @@ class MemStream(anomaly.base.AnomalyDetector):
         self.defined_encoder = False
         self.mean = None
         self.std = None
+        self.initialized = False
 
     @abc.abstractmethod
     def define_memory(self):
@@ -174,22 +175,26 @@ class MemStream(anomaly.base.AnomalyDetector):
             x = x.to_numpy(self._feature_order)
         return x
 
+    def __process_x__(self, x):
+        x = self.__format_x__(x)
+        new = (x - self.mean) / (self.std + self.eps)
+        encode_x = self.__encode__(new)
+        norms = np.linalg.norm(self.memory - encode_x, ord=1, axis=1)
+        loss_value = np.min(norms)
+        if self.replace_strategy == ReplaceStrategy.LRU:
+            memory_index = np.argmin(norms)
+            self.__reorder_memory__(memory_index)
+        return loss_value, encode_x, x
+
     def score_one(self, x, y=None):
         """Compute the anomaly score for a new data point."""
-        np.random.seed(42)
-        defined_encoder = self.__manage_non_encoded__(x, y)
-        if defined_encoder:
-            x = self.__format_x__(x)
-            new = (x - self.mean) / (self.std + self.eps)
-            # new[:, self.std == 0] = 0
-            encode_x = self.__encode__(new)
-            norms = np.linalg.norm(self.memory - encode_x, ord=1, axis=1)
-            loss_value = np.min(norms)
-            if self.replace_strategy == ReplaceStrategy.LRU:
-                memory_index = np.argmin(norms)
-                self.__reorder_memory__(memory_index)
-            self.update_memory(loss_value, encode_x, x)
-            return loss_value if self.count >= self.grace_period else 0
+        if self.initialized:
+            defined_encoder = self.__manage_non_encoded__(x, y)
+            if defined_encoder:
+                loss_value, _, _ = self.__process_x__(x)
+                return loss_value if self.count >= self.grace_period else 0
+            else:
+                return 0
         else:
             return 0
 
@@ -209,18 +214,24 @@ class MemStream(anomaly.base.AnomalyDetector):
                 )
                 return False
             elif self.sample_count >= self.grace_period:
-                self.define_encoder([(self.mem_data[i], 0) for i in range(self.count)])
+                self.define_encoder(
+                    [(self.mem_data[i], 0) for i in range(self.count)]
+                )
                 return True
         else:
             return True
 
     def learn_one(self, x, y=None):
-        x = self.__format_x__(x)
+        if not self.initialized:
+            self.initialized = True
         encoder_defined = self.__manage_non_encoded__(x, y)
         if encoder_defined:
+            loss_value, encode_x, x = self.__process_x__(x)
             if y is not None and y == 1:
                 return  # Do not learn from anomalies
-            self.update_memory(0, self.__encode__(x), x)
+            self.update_memory(
+                0 if self.count < self.grace_period else loss_value, encode_x, x
+            )
 
 
 class MemStreamAutoencoder(MemStream):
@@ -266,7 +277,7 @@ class MemStreamAutoencoder(MemStream):
     ...     model.learn_one(x)
     ...     auc.update(y, is_anomaly)
     >>> auc
-    ROCAUC: 93.74%
+    ROCAUC: 93.27%
 
     """
 
@@ -302,6 +313,8 @@ class MemStreamAutoencoder(MemStream):
         return out_dim, memory, mem_data
 
     def define_encoder(self, train_data):
+        if not self.initialized:
+            self.initialized = True
         x_train, y_train = zip(*train_data)
         x_train = np.array([self.__format_x__(x) for x in x_train])
         y_train = np.array([y for y in y_train])
@@ -422,7 +435,7 @@ class MemStreamPCA(MemStream):
     ...     model.learn_one(x)
     ...     auc.update(y, is_anomaly)
     >>> auc
-    ROCAUC: 63.79%
+    ROCAUC: 73.44%
     """
 
     def __init__(
@@ -453,11 +466,15 @@ class MemStreamPCA(MemStream):
         return out_dim, memory, mem_data
 
     def define_encoder(self, train_data):
+        if not self.initialized:
+            self.initialized = True
         self.defined_encoder = True
         x_train, y_train = zip(*train_data)
         x_train = np.array([self.__format_x__(x) for x in x_train])
         y_train = np.array([y for y in y_train])
-        self.n_components = min(min(x_train.shape[0], x_train.shape[1]), self.n_components)
+        self.n_components = min(
+            min(x_train.shape[0], x_train.shape[1]), self.n_components
+        )
         self.pca = PCA(n_components=self.n_components)
         self.mean, self.std = x_train.mean(0), x_train.std(0)
         new = (x_train - self.mean) / self.std
