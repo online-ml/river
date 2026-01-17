@@ -18,8 +18,11 @@ jobs:
           # Use 3.12 for the docs env waiting for spaCy and srsly to support 3.13
           python-version: "3.12"
 
-      - name: Install Ubuntu dependencies
-        run: sudo apt-get install graphviz pandoc
+      - name: Install pandoc
+        uses: pandoc/actions/setup@v1
+
+      - name: Setup Graphviz
+        uses: ts-graphviz/setup-graphviz@v2
 
       - name: Install dependencies
         run: |
