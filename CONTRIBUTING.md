@@ -30,29 +30,28 @@ Next, you'll need a Python environment. A nice way to manage your Python version
 pyenv install -v $(cat .python-version)
 ```
 
-You need a `Rust` compiler you can install it by following this [link](https://www.rust-lang.org/fr/tools/install). You'll also need [Poetry](https://python-poetry.org/):
+You need a `Rust` compiler you can install it by following this [link](https://www.rust-lang.org/fr/tools/install). You'll also need [uv](https://docs.astral.sh/uv/):
 
 ```sh
-curl -sSL https://install.python-poetry.org | python3 -
+curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
-Now you're set to install River and activate the virtual environment:
+Now you're set to install River:
 
 ```sh
-poetry install
-poetry shell
+uv sync
 ```
 
 Finally, install the [pre-commit](https://pre-commit.com/) push hooks. This will run some code quality checks every time you push to GitHub.
 
 ```sh
-pre-commit install --hook-type pre-push
+uv run pre-commit install --hook-type pre-push
 ```
 
 You can optionally run `pre-commit` at any time as so:
 
 ```sh
-pre-commit run --all-files
+uv run pre-commit run --all-files
 ```
 
 ## Making changes
@@ -96,7 +95,7 @@ If you're adding a class or a function, then you'll need to add a docstring. We 
 To build the documentation, you need to install some extra dependencies:
 
 ```sh
-poetry install --with docs
+uv sync --group docs
 ```
 
 From the root of the repository, you can then run the `make livedoc` command to take a look at the documentation in your browser. This will run a custom script which parses all the docstrings and generate MarkDown files that [MkDocs](https://www.mkdocs.org/) can render.
@@ -108,7 +107,7 @@ All classes and function are automatically picked up and added to the documentat
 ## Build Cython and Rust extensions
 
 ```sh
-poetry install
+uv sync
 ```
 
 ## Testing
@@ -118,7 +117,7 @@ poetry install
 These tests absolutely have to pass.
 
 ```sh
-pytest
+uv run pytest
 ```
 
 **Static typing**
@@ -126,7 +125,7 @@ pytest
 These tests absolutely have to pass.
 
 ```sh
-mypy river
+uv run mypy river
 ```
 
 **Web dependent tests**
@@ -134,7 +133,7 @@ mypy river
 This involves tests that need an internet connection, such as those in the `datasets` module which requires downloading some files. In most cases you probably don't need to run these.
 
 ```sh
-pytest -m web
+uv run pytest -m web
 ```
 
 **Notebook tests**
@@ -142,13 +141,13 @@ pytest -m web
 You don't have to worry too much about these, as we only check them before each release. If you break them because you changed some code, then it's probably because the notebooks have to be modified, not the other way around.
 
 ```sh
-make execute-notebooks
+uv run make execute-notebooks
 ```
 
 ## Making a new release
 
 1. Checkout `main`
-2. Run `make execute-notebooks` just to be safe
+2. Run `uv run make execute-notebooks` just to be safe
 3. Run the [benchmarks](benchmarks)
 4. Bump the version in `river/__version__.py`
 5. Bump the version in `pyproject.toml`
@@ -158,7 +157,7 @@ make execute-notebooks
 9. Push the tag:
 
 ```sh
-RIVER_VERSION=$(python -c "import river; print(river.__version__)")
+RIVER_VERSION=$(uv run python -c "import river; print(river.__version__)")
 echo $RIVER_VERSION
 ```
 
