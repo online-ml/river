@@ -12,16 +12,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Build River
-        uses: ./.github/actions/install-env
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
         with:
           # Use 3.12 for the docs env waiting for spaCy and srsly to support 3.13
           python-version: "3.12"
 
-      - name: Install extra Ubuntu dependencies
+      - name: Install Ubuntu dependencies
         run: sudo apt-get install graphviz pandoc
 
-      - name: Install extra Python dependencies
+      - name: Install dependencies
         run: |
           uv sync --group docs --group compat
           uv run python -m spacy download en_core_web_sm
@@ -32,20 +32,15 @@ jobs:
           echo "%load_ext rich" > ~/.ipython/profile_default/startup/00_rich.ipy
 
       - name: Execute notebooks
-        run: |
-          source .venv/bin/activate
-          make execute-notebooks
+        run: uv run make execute-notebooks
 
       - name: Build docs
-        run: |
-          source .venv/bin/activate
-          make doc
+        run: uv run make doc
 
       - name: Deploy docs
         env:
           GH_TOKEN: ${{ secrets.GitHubToken }}
         run: |
-          source .venv/bin/activate
           git config user.name github-actions
           git config user.email github-actions@github.com
           git config pull.rebase false
@@ -55,5 +50,5 @@ jobs:
           git checkout gh-pages
           git pull
           git checkout main
-          RIVER_VERSION=$(python -c "import river; print(river.__version__)")
-          mike deploy ${RIVER_VERSION} latest --update-aliases --push --remote https://${GH_TOKEN}@github.com/online-ml/river.git
+          RIVER_VERSION=$(uv run python -c "import river; print(river.__version__)")
+          uv run mike deploy ${RIVER_VERSION} latest --update-aliases --push --remote https://${GH_TOKEN}@github.com/online-ml/river.git
