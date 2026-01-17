@@ -21,11 +21,8 @@ jobs:
       - name: Install Ubuntu dependencies
         run: sudo apt-get install graphviz pandoc
 
-      - name: Install dependencies
-        run: uv sync --group docs
-
       - name: Build docs
-        run: uv run make doc
+        run: uv run --group docs make doc
 
       - name: Deploy docs
         env:
@@ -40,4 +37,4 @@ jobs:
           git checkout gh-pages
           git pull
           git checkout main
-          uv run mike deploy dev --push --remote https://github.com/${{ github.repository }}.git
+          uv run --group docs mike deploy dev --push --remote https://github.com/${{ github.repository }}.git

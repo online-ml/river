@@ -23,19 +23,18 @@ jobs:
 
       - name: Install dependencies
         run: |
-          uv sync --group docs --group compat
-          uv run python -m spacy download en_core_web_sm
+          uv run --group docs python -m spacy download en_core_web_sm
 
       - name: Use Rich in notebooks
         run: |
-          uv run ipython profile create
+          uv run --group docs ipython profile create
           echo "%load_ext rich" > ~/.ipython/profile_default/startup/00_rich.ipy
 
       - name: Execute notebooks
-        run: uv run make execute-notebooks
+        run: uv run --group docs make execute-notebooks
 
       - name: Build docs
-        run: uv run make doc
+        run: uv run --group docs make doc
 
       - name: Deploy docs
         env:
@@ -50,5 +49,5 @@ jobs:
           git checkout gh-pages
           git pull
           git checkout main
-          RIVER_VERSION=$(uv run python -c "import river; print(river.__version__)")
-          uv run mike deploy ${RIVER_VERSION} latest --update-aliases --push --remote https://${GH_TOKEN}@github.com/online-ml/river.git
+          RIVER_VERSION=$(uv run --group docs python -c "import river; print(river.__version__)")
+          uv run --group docs mike deploy ${RIVER_VERSION} latest --update-aliases --push --remote https://${GH_TOKEN}@github.com/online-ml/river.git
