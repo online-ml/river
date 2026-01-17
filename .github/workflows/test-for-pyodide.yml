@@ -1,0 +1,34 @@
+name: test-for-pyodide
+
+on:
+  pull_request:
+    branches:
+      - "*"
+  push:
+    branches:
+      - main
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: all
+
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v2.22.0
+        timeout-minutes: 720
+        env:
+          CIBW_PLATFORM: "pyodide"
+          CIBW_ENVIRONMENT: 'PATH="$HOME/.cargo/bin:$PATH"'
+          CIBW_ENVIRONMENT_LINUX: 'PATH="$HOME/.cargo/bin:$PATH" CARGO_NET_GIT_FETCH_WITH_CLI="true"'
+          CIBW_BEFORE_BUILD: >
+            rustup default nightly &&
+            rustup target add wasm32-unknown-emscripten &&
+            rustup show
+          CIBW_TEST_REQUIRES: pytest pytest-xdist
+          CIBW_TEST_COMMAND: pytest {project} -m "not datasets" --durations=10 -n logical
