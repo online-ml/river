@@ -25,3 +25,6 @@ livedoc: doc
 
 rebase:
 	git fetch && git rebase origin/main
+
+fomo:
+	git fetch && git rebase origin/main
