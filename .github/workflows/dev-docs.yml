@@ -12,21 +12,23 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install uv
-        uses: astral-sh/setup-uv@v7
-        with:
-          # Use 3.12 for the docs env waiting for spaCy and srsly to support 3.13
-          python-version: "3.12"
-
       - name: Install pandoc
         uses: pandoc/actions/setup@v1
 
       - name: Setup Graphviz
         uses: ts-graphviz/setup-graphviz@v2
 
-      - name: Build docs
-        run: uv run --group docs make doc
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          # Use 3.12 for the docs env waiting for spaCy and srsly to support 3.13
+          python-version: "3.12"
 
+      - name: Install the project
+        run: uv sync --locked --all-extras --dev
+
+      - name: Build docs
+        run: uv run make doc
       - name: Deploy docs
         env:
           GH_TOKEN: ${{ secrets.GitHubToken }}
@@ -40,4 +42,4 @@ jobs:
           git checkout gh-pages
           git pull
           git checkout main
-          uv run --group docs mike deploy dev --push --remote https://github.com/${{ github.repository }}.git
+          uv run mike deploy dev --push --remote https://github.com/${{ github.repository }}.git
