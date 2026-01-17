@@ -19,10 +19,13 @@ jobs:
         uses: astral-sh/setup-uv@v7
         with:
           enable-cache: true
-          python-version-file: pyproject.toml
+          version-file: pyproject.toml
 
       - name: Install dependencies
         run: uv sync --locked --all-extras --dev
+
+      - name: Download datasets
+        run: uv run make download-datasets
 
       - name: Run tests
         run: uv run pytest
