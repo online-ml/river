@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import platform
 
 import numpy
@@ -34,7 +36,7 @@ class ExtBuilder(build_ext):
     def run(self):
         try:
             build_ext.run(self)
-        except (FileNotFoundError):
+        except FileNotFoundError:
             raise BuildFailed("File not found. Could not compile C extension.")
 
     def build_extension(self, ext):
@@ -44,16 +46,10 @@ class ExtBuilder(build_ext):
             raise BuildFailed("Could not compile C extension.")
 
 
-def build(setup_kwargs):
-    """
-    This function is mandatory in order to build the extensions.
-    """
-    setup_kwargs.update(
-        {
-            "ext_modules": ext_modules,
-            "cmdclass": {"build_ext": ExtBuilder},
-            "rust_extensions": rust_extensions,
-            "zip_safe": False,
-            "include_package_data": True,
-        }
-    )
+setuptools.setup(
+    ext_modules=ext_modules,
+    rust_extensions=rust_extensions,
+    cmdclass={"build_ext": ExtBuilder},
+    zip_safe=False,
+    include_package_data=True,
+)

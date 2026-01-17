@@ -1,5 +1,8 @@
 COMMIT_HASH := $(shell eval git rev-parse HEAD)
 
+download-datasets:
+	python -c "from river import datasets, bandit; datasets.Elec2().download(); datasets.SMSSpam().download(); bandit.datasets.NewsArticles().download()"
+
 format:
 	pre-commit run --all-files
 
@@ -24,4 +27,7 @@ livedoc: doc
 	mkdocs serve --dirtyreload
 
 rebase:
+	git fetch && git rebase origin/main
+
+fomo:
 	git fetch && git rebase origin/main

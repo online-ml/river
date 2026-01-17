@@ -71,9 +71,6 @@ coverage.xml
 profile_default/
 ipython_config.py
 
-# pyenv
-.python-version
-
 # Environments
 .env
 .venv
