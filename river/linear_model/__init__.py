@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from . import base
 from .alma import ALMAClassifier
+from .AUC_SGD import AUC_SGD
 from .bayesian_lin_reg import BayesianLinearRegression
 from .lin_reg import LinearRegression
 from .log_reg import LogisticRegression
@@ -21,4 +22,5 @@ __all__ = [
     "PARegressor",
     "Perceptron",
     "SoftmaxRegression",
+    "AUC_SGD",
 ]
