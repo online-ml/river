@@ -16,6 +16,7 @@ from .kswin import KSWIN
 from .no_drift import NoDrift
 from .page_hinkley import PageHinkley
 from .retrain import DriftRetrainingClassifier
+from .teda_cdd import TEDACDD
 
 __all__ = [
     "binary",
@@ -27,4 +28,5 @@ __all__ = [
     "NoDrift",
     "PageHinkley",
     "PeriodicTrigger",
+    "TEDACDD",
 ]
