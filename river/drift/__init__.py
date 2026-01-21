@@ -12,6 +12,7 @@ from __future__ import annotations
 from . import binary, datasets
 from .adwin import ADWIN
 from .dummy import DummyDriftDetector
+from .jswin import JSWIN
 from .kswin import KSWIN
 from .no_drift import NoDrift
 from .page_hinkley import PageHinkley
@@ -23,6 +24,7 @@ __all__ = [
     "ADWIN",
     "DriftRetrainingClassifier",
     "DummyDriftDetector",
+    "JSWIN",
     "KSWIN",
     "NoDrift",
     "PageHinkley",
