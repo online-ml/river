@@ -177,7 +177,7 @@ class MemStream(anomaly.base.AnomalyDetector):
 
     def __process_x__(self, x):
         x = self.__format_x__(x)
-        new = (x - self.mean) / (self.std)
+        new = (x - self.mean) / (self.std + self.eps)
         new[self.std == 0] = 0
         encode_x = self.__encode__(new)
         norms = np.linalg.norm(self.memory - encode_x, ord=1, axis=1)
@@ -215,7 +215,13 @@ class MemStream(anomaly.base.AnomalyDetector):
                 )
                 return False
             elif self.count >= self.grace_period:
-                print("Grace period ended", self.count, len(self.mem_data))
+                print(
+                    "Grace period ended",
+                    "Grace Period: ",
+                    self.count,
+                    "Memory Size: ",
+                    len(self.mem_data),
+                )
                 self.define_encoder(
                     [(self.mem_data[i], 0) for i in range(len(self.mem_data))]
                 )
