@@ -194,15 +194,10 @@ class MemStream(anomaly.base.AnomalyDetector):
             loss_values = np.sort(
                 norms,
             )[: self.k]
-            loss_value = np.sum(loss_values * self.exp) / (
-                np.sum(self.exp) + self.eps
-            )
+            loss_value = np.sum(loss_values * self.exp) / (np.sum(self.exp) + self.eps)
         if self.replace_strategy == ReplaceStrategy.LRU:
             memory_indeces = np.argsort(norms)[: self.k]
-            (
-                self.__reorder_memory__(memory_index)
-                for memory_index in memory_indeces
-            )
+            (self.__reorder_memory__(memory_index) for memory_index in memory_indeces)
         return loss_value, encode_x, x
 
     def score_one(self, x, y=None):
@@ -223,9 +218,7 @@ class MemStream(anomaly.base.AnomalyDetector):
                 if (y is not None and y != 1) or y is None:
                     self.__update_memory__(0, np.zeros((1, self.out_dim)), x)
             elif self.count >= self.grace_period:
-                self.__define_encoder__(
-                    [(self.mem_data[i], 0) for i in range(len(self.mem_data))]
-                )
+                self.__define_encoder__([(self.mem_data[i], 0) for i in range(len(self.mem_data))])
                 self.initialized = True
 
     def learn_one(self, x, y=None):
@@ -235,9 +228,7 @@ class MemStream(anomaly.base.AnomalyDetector):
             loss_value, encode_x, x = self.__process_x__(x)
             if y is not None and y == 1:
                 return  # Do not learn from anomalies
-            self.__update_memory__(
-                0 if self.count < self.grace_period else loss_value, encode_x, x
-            )
+            self.__update_memory__(0 if self.count < self.grace_period else loss_value, encode_x, x)
 
 
 class MemStreamPCA(MemStream):
