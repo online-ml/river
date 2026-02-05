@@ -3,7 +3,6 @@ from __future__ import annotations
 import itertools
 import shutil
 import zipfile
-from typing import Iterator
 from urllib import request
 
 from river import stream
