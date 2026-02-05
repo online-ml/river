@@ -12,6 +12,7 @@ from __future__ import annotations
 from . import base, synth
 from .airline_passengers import AirlinePassengers
 from .bananas import Bananas
+from .beth import BETH
 from .bikes import Bikes
 from .chick_weights import ChickWeights
 from .credit_card import CreditCard
@@ -38,6 +39,7 @@ from .web_traffic import WebTraffic
 __all__ = [
     "AirlinePassengers",
     "Bananas",
+    "BETH",
     "base",
     "Bikes",
     "ChickWeights",
