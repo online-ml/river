@@ -13,7 +13,7 @@ jobs:
     strategy:
       matrix:
         linux_tag: ["manylinux", "musllinux"]
-        python-version: ["311", "312", "313"]
+        python-version: ["311", "312", "313", "314"]
     steps:
       - uses: actions/checkout@v4
       - name: Set up QEMU
@@ -47,7 +47,7 @@ jobs:
     strategy:
       matrix:
         os: [macos-15]
-        python-version: ["311", "312", "313"]
+        python-version: ["311", "312", "313", "314"]
     steps:
       - uses: actions/checkout@v4
       - name: Set up rust
@@ -78,7 +78,7 @@ jobs:
     strategy:
       matrix:
         os: [windows-2025]
-        python-version: ["311", "312", "313"]
+        python-version: ["311", "312", "313", "314"]
     steps:
       - uses: actions/checkout@v4
       - name: Set up rust
