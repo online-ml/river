@@ -7,7 +7,6 @@ The original paper can be found: https://arxiv.org/pdf/2106.03837
 
 from __future__ import annotations
 
-import abc
 import warnings
 
 import numpy as np
@@ -255,9 +254,7 @@ class MemStream(anomaly.base.AnomalyDetector):
                 if (y is not None and y != 1) or y is None:
                     self.__update_memory__(0, np.zeros((1, self.out_dim)), x)
             elif self.count >= self.grace_period:
-                self.__define_encoder__(
-                    list(zip(self.mem_data, [0] * len((self.mem_data))))
-                )
+                self.__define_encoder__(list(zip(self.mem_data, [0] * len(self.mem_data))))
                 self.initialized = True
 
     def learn_one(self, x, y=None):
@@ -271,6 +268,4 @@ class MemStream(anomaly.base.AnomalyDetector):
             loss_value, encode_x, x = self.__process_x__(x)
             if y is not None and y == 1:
                 return  # Do not learn from anomalies
-            self.__update_memory__(
-                0 if self.count < self.grace_period else loss_value, encode_x, x
-            )
+            self.__update_memory__(0 if self.count < self.grace_period else loss_value, encode_x, x)
