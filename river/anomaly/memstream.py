@@ -60,8 +60,6 @@ class MemStream(anomaly.base.AnomalyDetector):
         The maximum number of encoded normal data points to store in memory.
     max_threshold
         The maximum anomaly score threshold for accepting a new data point into memory.
-    eps
-        A small value to prevent division by zero during normalization.
     replace_strategy
         The memory replacement strategy: FIFO, LRU, or RANDOM.
     grace_period
@@ -85,28 +83,26 @@ class MemStream(anomaly.base.AnomalyDetector):
     ...     q=0.9
     ... )
     >>> auc = metrics.ROCAUC()
-    >>> for x, y in datasets.CreditCard().take(35_000):
+    >>> for x, y in datasets.CreditCard().take(50_000):
     ...     score = model.score_one(x)
     ...     is_anomaly = model.classify(score)
     ...     model.learn_one(x)
     ...     auc.update(y, is_anomaly)
     >>> auc
-    ROCAUC: 90.51%
+    ROCAUC: 87.96%
     """
 
     def __init__(
         self,
-        memory_size=5_000,
-        max_threshold=0.1,
-        eps=1e-8,
+        memory_size=1_000,
+        max_threshold=10,
         replace_strategy=ReplaceStrategy.FIFO,
-        grace_period=5_000,
+        grace_period=1_000,
         k=5,
-        gamma=0.1,
+        gamma=0.25,
         n_components=20,
     ):
         self.out_dim, self.memory, self.mem_data = None, None, None
-        self.eps = eps
         self.memory_size = memory_size
         self.max_threshold = max_threshold
         self.replace_strategy = replace_strategy
@@ -120,10 +116,7 @@ class MemStream(anomaly.base.AnomalyDetector):
         self.k = k
         self.gamma = gamma
         self.exp = np.array([self.gamma**i for i in np.arange(self.k)])
-        self.sum_exp = np.sum(self.exp)
         self.n_components = n_components
-        self.components_ = None
-        self.mean_ = None
 
     def __define_memory__(self):
         """Define the memory structure and initialization."""
@@ -159,19 +152,16 @@ class MemStream(anomaly.base.AnomalyDetector):
         new[:, self.std == 0] = 0
         self.pca.fit(np.nan_to_num(new, nan=0.0))
         for elem in x_train[y_train == 0]:  # Fill memory with normal samples
-            elem = elem.reshape(1, -1)
-            encoded_elem = self.__encode__(elem)
+            new = (elem - self.mean) / self.std
+            new = new.reshape(1, -1)
+            new[:, self.std == 0] = 0
+            encoded_elem = self.__encode__(new)
             self.__update_memory__(0, encoded_elem, elem)
 
     def __encode__(self, x):
         """Encode the input data point."""
         if self.defined_encoder:
-            new = (x - self.mean) / (self.std)
-            new = new.reshape(1, -1)
-            new[:, self.std == 0] = 0
-            if len(new.shape) <= 1:
-                new = new.reshape(1, -1)
-            encoder_output = self.pca.transform(np.nan_to_num(new, nan=0.0))
+            encoder_output = self.pca.transform(np.nan_to_num(x, nan=0.0))
             return np.array(encoder_output)
         else:
             return np.zeros((1, self.n_components))
@@ -213,10 +203,6 @@ class MemStream(anomaly.base.AnomalyDetector):
         ]
 
     def __format_x__(self, x):
-        if not hasattr(self, "_feature_order"):
-            self._feature_order = sorted(x.keys())
-            self.in_dim = len(self._feature_order)
-            self.out_dim, self.memory, self.mem_data = self.__define_memory__()
         if not isinstance(x, np.ndarray):
             x = utils.VectorDict(x)
             x = x.to_numpy(self._feature_order)
@@ -231,7 +217,7 @@ class MemStream(anomaly.base.AnomalyDetector):
         Returns:
             loss_value: The computed anomaly score.
             encode_x: The encoded representation of the input.
-            x: The normalized input data point.
+            x: The input data point.
         """
         x = self.__format_x__(x)
         new = (x - self.mean) / (self.std)
@@ -245,24 +231,19 @@ class MemStream(anomaly.base.AnomalyDetector):
             loss_values = np.sort(
                 norms,
             )[: self.k]
-            loss_value = np.sum(loss_values * self.exp) / (
-                np.sum(self.exp) + self.eps
-            )
+            loss_value = np.sum(loss_values * self.exp) / (np.sum(self.exp))
         if self.replace_strategy == ReplaceStrategy.LRU:
             memory_indeces = np.argsort(norms)[: self.k]
-            (
-                self.__reorder_memory__(memory_index)
-                for memory_index in memory_indeces
-            )
+            for index in memory_indeces:
+                self.__reorder_memory__(index)
         return loss_value, encode_x, x
 
     def score_one(self, x, y=None):
         """Compute the anomaly score for a new data point."""
-        if self.initialized:
+        if self.initialized and hasattr(self, "_feature_order"):
             loss_value, _, _ = self.__process_x__(x)
             return loss_value if self.count >= self.grace_period else 0
-        else:
-            return 0
+        return 0
 
     def __manage_non_encoded__(self, x, y):
         """Handle the case when the encoder is not yet defined.
@@ -275,11 +256,15 @@ class MemStream(anomaly.base.AnomalyDetector):
                     self.__update_memory__(0, np.zeros((1, self.out_dim)), x)
             elif self.count >= self.grace_period:
                 self.__define_encoder__(
-                    [(self.mem_data[i], 0) for i in range(len(self.mem_data))]
+                    list(zip(self.mem_data, [0] * len((self.mem_data))))
                 )
                 self.initialized = True
 
     def learn_one(self, x, y=None):
+        if not hasattr(self, "_feature_order"):
+            self._feature_order = sorted(x.keys())
+            self.in_dim = len(self._feature_order)
+            self.out_dim, self.memory, self.mem_data = self.__define_memory__()
         x = self.__format_x__(x)
         self.__manage_non_encoded__(x, y)
         if self.initialized:
