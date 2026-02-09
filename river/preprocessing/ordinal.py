@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import collections
 import functools
-import itertools
 
 import numpy as np
 import pandas as pd
@@ -10,8 +9,32 @@ import pandas as pd
 from river import base
 
 
-def make_counter(skip):
-    return (i for i in itertools.count() if i not in skip)
+class SkipCounter:
+    """A picklable auto-incrementing counter that skips specified values.
+
+    This replaces the previous generator-based ``make_counter`` which could not
+    be pickled.
+
+    Parameters
+    ----------
+    skip
+        A set of integer values that should be skipped when counting.
+
+    """
+
+    def __init__(self, skip: set):
+        self.skip = skip
+        self.current = 0
+
+    def __iter__(self):
+        return self
+
+    def __next__(self) -> int:
+        while self.current in self.skip:
+            self.current += 1
+        value = self.current
+        self.current += 1
+        return value
 
 
 class OrdinalEncoder(base.MiniBatchTransformer):
@@ -96,7 +119,7 @@ class OrdinalEncoder(base.MiniBatchTransformer):
         # We're going to have one auto-incrementing counter per feature. This counter will generate
         # the category codes for each feature.
         self._counters: collections.defaultdict = collections.defaultdict(
-            functools.partial(make_counter, {unknown_value, none_value})
+            functools.partial(SkipCounter, {unknown_value, none_value})
         )
 
         # We're going to store the categories in a dict of dicts. The outer dict will map each
