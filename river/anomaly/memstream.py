@@ -99,9 +99,9 @@ class MemStream(anomaly.base.AnomalyDetector):
         grace_period=1_000,
         k=5,
         gamma=0.25,
-        n_components=20,
+        n_comp=20,
     ):
-        self.out_dim, self.memory, self.mem_data = None, None, None
+        self.memory, self.mem_data = None, None
         self.memory_size = memory_size
         self.max_threshold = max_threshold
         self.rpl_stg = rpl_stg
@@ -115,18 +115,17 @@ class MemStream(anomaly.base.AnomalyDetector):
         self.k = k
         self.gamma = gamma
         self.exp = np.array([self.gamma**i for i in np.arange(self.k)])
-        self.n_components = n_components
+        self.n_comp = n_comp
 
     def _define_memory(self):
-        """Define the memory structure and initialization."""
-        memory = np.zeros((self.memory_size, self.n_components))
-        mem_data = np.zeros((self.memory_size, self.in_dim))
-        return self.n_components, memory, mem_data
+        """Define the memory structure at the time of the first call."""
+        self.memory = np.zeros((self.memory_size, self.n_comp))
+        self.mem_data = np.zeros((self.memory_size, self.in_dim))
 
-    def _normalize(self, x):
+    def _normalize(self, x, b=1):
         """Normalize the input data point."""
         new = (x - self.mean) / self.std
-        new = new.reshape(1, -1)
+        new = new.reshape(b, -1)
         new[:, self.std == 0] = 0
         return new
 
@@ -140,27 +139,22 @@ class MemStream(anomaly.base.AnomalyDetector):
         self.defined_encoder = True
         x_train, y_train = zip(*train_data)
         x_train = np.array([self._format_x(x) for x in x_train])
-        y_train = np.array([y for y in y_train])
-        num_components = min(
-            min(x_train.shape[0], x_train.shape[1]),
-            self.n_components,  # to avoid n_components > n_samples
-        )
-        if num_components < self.n_components:
+        b, d = x_train.shape
+        y_train = np.array(y_train)
+        num_comp = min(min(b, d), self.n_comp)
+        if num_comp < self.n_comp:
             warnings.warn(
-                f"Number of components was set to {self.n_components}, but there are only "
-                f"{x_train.shape[0]} samples and {x_train.shape[1]} features."
-                f"Setting number of components to {num_components}."
+                f"Number of components was set to {self.n_comp}, but there are only "
+                f"{b} samples and {d} features."
+                f"Setting number of components to {num_comp}."
             )
-        self.n_components = num_components
-        self.pca = PCA(n_components=self.n_components)
+        self.n_comp = num_comp
+        self.pca = PCA(n_components=self.n_comp)
         self.mean, self.std = x_train.mean(0), x_train.std(0)
-        new = (x_train - self.mean) / self.std
-        new[:, self.std == 0] = 0
-        self.pca.fit(np.nan_to_num(new, nan=0.0))
-        for elem in x_train[y_train == 0]:  # Fill memory with normal samples
-            new = self._normalize(elem)
-            encoded_elem = self._encode(new)
-            self._update_memory(0, encoded_elem, elem)
+        elem = self._normalize(x_train, b)
+        enc_elem = self.pca.fit_transform(np.nan_to_num(elem, nan=0.0))
+        self.memory = enc_elem[: self.memory_size]
+        self.mem_data = x_train[: self.memory_size]
 
     def _encode(self, x):
         """Encode the input data point."""
@@ -168,9 +162,12 @@ class MemStream(anomaly.base.AnomalyDetector):
             encoder_output = self.pca.transform(np.nan_to_num(x, nan=0.0))
             return np.array(encoder_output)
         else:
-            return np.zeros((1, self.n_components))
+            return np.zeros((1, self.n_comp))
 
     def _update_memory(self, loss_value, encode_x, x):
+        """Update the memory with the new encoded data point if its anomaly
+        score is below the threshold.
+        """
         if loss_value > self.max_threshold:
             return
 
@@ -207,44 +204,31 @@ class MemStream(anomaly.base.AnomalyDetector):
         arr[0] = temp
 
     def _format_x(self, x):
+        """Format the input data point into a numpy array."""
         if not isinstance(x, np.ndarray):
             x = utils.VectorDict(x)
             x = x.to_numpy(self._feature_order)
         return x
 
-    def _process_x(self, x):
-        """
-        This normalizes the input, encodes it, computes the anomaly score,
+    def _get_score(self, x):
+        """This normalizes the input, encodes it, computes the anomaly score,
         and updates the memory.
-        Args:
-            x: The input data point.
-        Returns:
-            loss_value: The computed anomaly score.
-            encode_x: The encoded representation of the input.
-            x: The input data point.
         """
-        x = self._format_x(x)
-        new = self._normalize(x)
-        encode_x = self._encode(new)
+        encode_x = self._encode(x)
         norms = np.linalg.norm(self.memory - encode_x, ord=1, axis=1)
-        if self.k <= 1:
-            loss_value = np.min(norms)
-        else:
-            loss_values = np.sort(
-                norms,
-            )[: self.k]
-            loss_value = np.sum(loss_values * self.exp) / (np.sum(self.exp))
+        loss_values = np.sort(norms)[: self.k]
+        loss_value = np.sum(loss_values * self.exp) / (np.sum(self.exp))
         if self.rpl_stg == ReplaceStrategy.LRU:
-            memory_indeces = np.argsort(norms)[: self.k]
-            for index in memory_indeces:
+            mem_idx = np.argsort(norms)[: self.k]
+            for index in mem_idx:
                 self._move_to_front(self.memory, index)
                 self._move_to_front(self.mem_data, index)
-        return loss_value, encode_x, x
+        return loss_value, encode_x
 
     def score_one(self, x, y=None):
         """Compute the anomaly score for a new data point."""
         if self.initialized and hasattr(self, "_feature_order"):
-            loss_value, _, _ = self._process_x(x)
+            loss_value, _ = self._get_score(self._normalize(self._format_x(x)))
             return loss_value if self.count >= self.grace_period else 0
         return 0
 
@@ -253,23 +237,34 @@ class MemStream(anomaly.base.AnomalyDetector):
         If the encoder is not defined, we collect samples until we reach the grace period,
         then we define the encoder using the collected samples.
         """
-        if not self.initialized:
-            if self.count < self.grace_period:
-                if (y is not None and y != 1) or y is None:
-                    self._update_memory(0, np.zeros((1, self.out_dim)), x)
-            elif self.count >= self.grace_period:
-                self._define_encoder(list(zip(self.mem_data, [0] * len(self.mem_data))))
-                self.initialized = True
+        if self.count < self.grace_period:
+            if (y is not None and y != 1) or y is None:
+                self._update_memory(0, np.zeros((1, self.n_comp)), x)
+        elif self.count >= self.grace_period:
+            self._define_encoder(
+                list(zip(self.mem_data, [0] * len(self.mem_data)))
+            )
+            self.initialized = True
+
+    def _def_feature_order(self, x):
+        """Define the order of features based on the first data point.
+        And initialize the memory structure.
+        """
+        self._feature_order = sorted(x.keys())
+        self.in_dim = len(self._feature_order)
+        self._define_memory()
 
     def learn_one(self, x, y=None):
+        """Learn from a new data point by updates the memory."""
         if not hasattr(self, "_feature_order"):
-            self._feature_order = sorted(x.keys())
-            self.in_dim = len(self._feature_order)
-            self.out_dim, self.memory, self.mem_data = self._define_memory()
+            self._def_feature_order(x)
         x = self._format_x(x)
-        self._manage_non_encoded(x, y)
+        if not self.initialized:
+            self._manage_non_encoded(x, y)
         if self.initialized:
-            loss_value, encode_x, x = self._process_x(x)
+            loss_value, encode_x = self._get_score(self._normalize(x))
             if y is not None and y == 1:
                 return  # Do not learn from anomalies
-            self._update_memory(0 if self.count < self.grace_period else loss_value, encode_x, x)
+            self._update_memory(
+                0 if self.count < self.grace_period else loss_value, encode_x, x
+            )
