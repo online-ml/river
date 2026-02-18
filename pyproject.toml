@@ -295,7 +295,6 @@ module = [
     "river.active.*",
     "river.neural_net.*",
     "river.test_estimators",
-    "river.dummy",
 ]
 # The strict option is global, the checks must be disabled one by one
 warn_unused_ignores = false
