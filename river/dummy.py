@@ -58,8 +58,8 @@ class NoChangeClassifier(base.Classifier):
     """
 
     def __init__(self) -> None:
-        self.last_class = None
-        self.classes = set()
+        self.last_class: base.typing.ClfTarget | None = None
+        self.classes: set[base.typing.ClfTarget] = set()
 
     @property
     def _multiclass(self) -> bool:
@@ -124,7 +124,7 @@ class PriorClassifier(base.Classifier):
     """
 
     def __init__(self) -> None:
-        self.counts = collections.Counter()
+        self.counts: collections.Counter[base.typing.ClfTarget] = collections.Counter()
         self.n = 0
 
     @property
