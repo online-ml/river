@@ -69,10 +69,10 @@ class NoChangeClassifier(base.Classifier):
         self.last_class = y
         self.classes.add(y)
 
-    def predict_one(self, x: object) -> base.typing.ClfTarget | None:
+    def predict_one(self, x: object, **kwargs: object) -> base.typing.ClfTarget | None:
         return self.last_class
 
-    def predict_proba_one(self, x: object) -> dict[base.typing.ClfTarget, float]:
+    def predict_proba_one(self, x: object, **kwargs: object) -> dict[base.typing.ClfTarget, float]:
         probas = {c: 0 for c in self.classes}
         probas[self.last_class] = 1
         return probas
@@ -135,7 +135,7 @@ class PriorClassifier(base.Classifier):
         self.counts.update([y])
         self.n += 1
 
-    def predict_proba_one(self, x: object) -> dict[base.typing.ClfTarget, float]:
+    def predict_proba_one(self, x: object, **kwargs: object) -> dict[base.typing.ClfTarget, float]:
         return {label: count / self.n for label, count in self.counts.items()}
 
 
