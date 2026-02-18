@@ -7,6 +7,7 @@ This module is here for testing purposes, as well as providing baseline performa
 from __future__ import annotations
 
 import collections
+from collections.abc import Iterator
 
 from river import base, stats
 
@@ -56,22 +57,22 @@ class NoChangeClassifier(base.Classifier):
 
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.last_class = None
         self.classes = set()
 
     @property
-    def _multiclass(self):
+    def _multiclass(self) -> bool:
         return True
 
-    def learn_one(self, x, y):
+    def learn_one(self, x: object, y: base.typing.ClfTarget) -> None:
         self.last_class = y
         self.classes.add(y)
 
-    def predict_one(self, x):
+    def predict_one(self, x: object) -> base.typing.ClfTarget | None:
         return self.last_class
 
-    def predict_proba_one(self, x):
+    def predict_proba_one(self, x: object) -> dict[base.typing.ClfTarget, float]:
         probas = {c: 0 for c in self.classes}
         probas[self.last_class] = 1
         return probas
@@ -122,19 +123,19 @@ class PriorClassifier(base.Classifier):
 
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.counts = collections.Counter()
         self.n = 0
 
     @property
-    def _multiclass(self):
+    def _multiclass(self) -> bool:
         return True
 
-    def learn_one(self, x, y):
+    def learn_one(self, x: object, y: base.typing.ClfTarget) -> None:
         self.counts.update([y])
         self.n += 1
 
-    def predict_proba_one(self, x):
+    def predict_proba_one(self, x: object) -> dict[base.typing.ClfTarget, float]:
         return {label: count / self.n for label, count in self.counts.items()}
 
 
@@ -174,11 +175,11 @@ class StatisticRegressor(base.Regressor):
         self.statistic = statistic
 
     @classmethod
-    def _unit_test_params(cls):
+    def _unit_test_params(cls) -> Iterator[dict[str, object]]:
         yield {"statistic": stats.Mean()}
 
-    def learn_one(self, x, y):
+    def learn_one(self, x: object, y: base.typing.RegTarget) -> None:
         self.statistic.update(y)
 
-    def predict_one(self, x):
+    def predict_one(self, x: object) -> base.typing.RegTarget:
         return self.statistic.get()
