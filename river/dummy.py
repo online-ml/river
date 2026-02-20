@@ -73,7 +73,7 @@ class NoChangeClassifier(base.Classifier):
         return self.last_class
 
     def predict_proba_one(self, x: object, **kwargs: object) -> dict[base.typing.ClfTarget, float]:
-        probas = {c: 0 for c in self.classes}
+        probas = {c: 0.0 for c in self.classes}
         if self.last_class is not None:
             probas[self.last_class] = 1
         return probas
