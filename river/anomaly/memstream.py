@@ -240,9 +240,7 @@ class MemStream(anomaly.base.AnomalyDetector):
             if (y is not None and y != 1) or y is None:
                 self._update_memory(0, np.zeros((1, self.n_comp)), x)
         elif self.count >= self.grace_period:
-            self._define_encoder(
-                list(zip(self.mem_data, [0] * len(self.mem_data)))
-            )
+            self._define_encoder(list(zip(self.mem_data, [0] * len(self.mem_data))))
             self.initialized = True
 
     def _def_feature_order(self, x):
@@ -264,6 +262,4 @@ class MemStream(anomaly.base.AnomalyDetector):
             loss_value, encode_x = self._get_score(self._normalize(x))
             if y is not None and y == 1:
                 return  # Do not learn from anomalies
-            self._update_memory(
-                0 if self.count < self.grace_period else loss_value, encode_x, x
-            )
+            self._update_memory(0 if self.count < self.grace_period else loss_value, encode_x, x)
