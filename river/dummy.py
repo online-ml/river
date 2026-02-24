@@ -182,5 +182,5 @@ class StatisticRegressor(base.Regressor):
     def learn_one(self, x: object, y: base.typing.RegTarget) -> None:
         self.statistic.update(y)
 
-    def predict_one(self, x: object) -> base.typing.RegTarget:
+    def predict_one(self, x: object) -> base.typing.RegTarget | None:  # type: ignore[override]
         return self.statistic.get()
