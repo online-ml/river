@@ -491,3 +491,17 @@ class SWINN(BaseNN):
                 forest.add(frozenset(u))
 
         return [len(tree) for tree in forest]
+
+    def refresh_classes(self) -> dict:
+        """Refresh the set of classes in the window. Used by classifiers where labels are added as [1] in the vertex tuple.
+
+        This is used to clean up classes that are no longer in the window, and
+        ensure we do not consider "None" a class. It is called every `cleanup_every`
+        step, or can be called manually.
+
+        """
+        return { 
+            vertex.item[1]
+            for vertex in self._data
+            if vertex is not None and vertex.item[1] is not None
+        }

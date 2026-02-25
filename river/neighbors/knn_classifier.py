@@ -122,11 +122,7 @@ class KNNClassifier(base.Classifier):
         `cleanup_every` step, or can be called manually.
 
         """
-        self.classes = {
-            vertex.item[1]
-            for vertex in self._nn
-            if vertex is not None and vertex.item[1] is not None
-        }
+        self.classes = self._nn.refresh_classes()
 
     def learn_one(self, x, y):
         # Update the data buffer

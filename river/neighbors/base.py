@@ -43,3 +43,7 @@ class BaseNN(base.Estimator, abc.ABC):
     @abc.abstractmethod
     def search(self, item: typing.Any, n_neighbors: int, **kwargs) -> tuple[list, list]:
         pass
+
+    @abc.abstractmethod
+    def refresh_classes(self) -> dict:
+        pass
