@@ -5,6 +5,10 @@
 - Refactored `benchmarks` and added plotly dependency for interactive plots
 - Added the BETH dataset for labeled system process events.
 
+## dummy
+
+The `dummy` module is now fully type-annotated.
+
 ## stats
 
 - Added `update_many` method to `stats.PearsonCorr`.
