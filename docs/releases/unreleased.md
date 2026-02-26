@@ -12,3 +12,7 @@
 ## tree
 
 - Added handling for division by zero in `tree.hoeffding_tree` for leaf size estimation.
+
+## build
+
+- Added Python 3.14 wheel builds and updated PyO3 for 3.14 support.
