@@ -3,10 +3,6 @@
 </p>
 
 <p align="center">
-  <!-- Tests -->
-  <a href="https://github.com/online-ml/river/actions/workflows/unit-tests.yml">
-    <img src="https://github.com/online-ml/river/actions/workflows/unit-tests.yml/badge.svg" alt="unit-tests">
-  </a>
   <!-- Code quality -->
   <a href="https://github.com/online-ml/river/actions/workflows/code-quality.yml">
     <img src="https://github.com/online-ml/river/actions/workflows/code-quality.yml/badge.svg" alt="code-quality">
@@ -14,10 +10,6 @@
   <!-- Documentation -->
   <a href="https://riverml.xyz">
     <img src="https://img.shields.io/website?label=docs&style=flat-square&url=https%3A%2F%2Friverml.xyz%2F" alt="documentation">
-  </a>
-  <!-- Discord -->
-  <a href="https://discord.gg/qNmrKEZMAn">
-    <img src="https://dcbadge.vercel.app/api/server/qNmrKEZMAn?style=flat-square" alt="discord">
   </a>
   <!-- PyPI -->
   <a href="https://pypi.org/project/river">

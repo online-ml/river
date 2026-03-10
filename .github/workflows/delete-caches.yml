@@ -1,4 +1,5 @@
-name: Clear all Github Actions caches
+name: delete-github-action-caches
+
 on:
   workflow_dispatch:
   schedule:
