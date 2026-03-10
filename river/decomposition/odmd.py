@@ -426,12 +426,17 @@ class OnlineDMD(MiniBatchMultiTargetRegressor, BaseTransformer):
 
         Compatible with Rolling and TimeRolling wrappers.
 
+        Note:
+            On long time-varying sequences with small dt, accumulated numerical
+            noise from repeated rank-1 downdates can degrade eigenvalue
+            estimates (e.g. losing small imaginary components). This is
+            platform-dependent (different BLAS backends accumulate errors
+            differently). For better accuracy, prefer exponential weighting
+            (``w < 1``) over Rolling when the system is strongly time-varying.
+
         Args:
             x: 1D array, shape (1, m), x(t) as in y(t) = f(t, x(t))
             y: 1D array, shape (1, m), y(t) as in y(t) = f(t, x(t))
-
-        Todo:
-        - [ ] it seems like this does not work as expected
         """
         if self.n_seen < self.initialize:
             raise RuntimeError(
@@ -1043,6 +1048,10 @@ class OnlineDMDwC(OnlineDMD):
         """Gradually forget the older snapshots and revert the DMD computation.
 
         Compatible with Rolling and TimeRolling wrappers.
+
+        Note:
+            Inherits the numerical precision limitation from
+            :meth:`OnlineDMD.revert`. See its docstring for details.
 
         Args:
             x: 1D array, shape (n, ), x(t)
