@@ -6,6 +6,7 @@ Requires two modifications to river code:
 2. change line 194 in river.compat.river_to_sklearn to
 `y_pred = np.empty(shape=(len(X), X.shape[1]))`
 """
+
 from __future__ import annotations
 
 import numpy as np
@@ -38,13 +39,11 @@ n, m = X.shape
 A = np.empty((n, m, m))
 eigvals = np.empty((n, m), dtype=complex)
 for k in range(n):
-    A[k, :, :] = np.array(
-        [[0, (1 + epsilon * t[k])], [-(1 + epsilon * t[k]), 0]]
-    )
+    A[k, :, :] = np.array([[0, (1 + epsilon * t[k])], [-(1 + epsilon * t[k]), 0]])
     eigvals[k, :] = np.linalg.eigvals(A[k, :, :])
 
 
-def test_input_types():
+def test_input_types() -> None:
     n_init = round(samples / 2)
 
     odmd1 = OnlineDMD()
@@ -64,7 +63,7 @@ def test_input_types():
     assert np.allclose(odmd1.A, odmd2.A)
 
 
-def test_one_many_close():
+def test_one_many_close() -> None:
     n_init = round(samples / 2)
 
     odmd1 = OnlineDMD()
@@ -87,19 +86,19 @@ def test_one_many_close():
     assert np.allclose(eig_o1, eig_o2)
 
 
-def test_errors_raised():
+def test_errors_raised() -> None:
     odmd = OnlineDMD()
 
     with pytest.raises(Exception):
         odmd._update_many(X, Y)
 
-    rodmd = Rolling(OnlineDMD(), window_size=1)  # type: ignore
+    rodmd = Rolling(OnlineDMD(), window_size=1)
     with pytest.raises(Exception):
         for x, y in zip(X, Y):
             rodmd.update(x, y)
 
 
-def test_allclose_unsupervised_supervised():
+def test_allclose_unsupervised_supervised() -> None:
     m_u = OnlineDMD(r=2, w=0.1, initialize=0)
     m_s = OnlineDMD(r=2, w=0.1, initialize=0)
 
@@ -112,18 +111,17 @@ def test_allclose_unsupervised_supervised():
     assert np.allclose(eig_u, eig_s)
 
 
-# TODO: test various combinations of truncated and exact state and control parts of DMDwC
-
 # Proctor et al. (2016) "Dynamic Mode Decomposition with Control" suggests that
 #  the DMDwC where B is unknown requires a second SVD computation for output
 #  space of Y. As the computation and updates of SVDs are expensive, we want to
 #  avoid this if possible. This test checks if the SVD of augumented state +
 #  control space is at least as close to SVD of original space than the SVD of
 #  the output space to the SVD of the original space.
-def test_one_svd_is_enough():
+def test_one_svd_is_enough() -> None:
     import numpy as np
     import pandas as pd
     import scipy as sp
+
     np.random.seed(0)
 
     n = 101
@@ -143,20 +141,14 @@ def test_one_svd_is_enough():
     X_ = X.copy()
     X_["u"] = U
 
-    u_orig, s_orig, _ = sp.sparse.linalg.svds(
-        X.values.T, k=2, return_singular_vectors="u"
-    )
-    u_aug, s_aug, _ = sp.sparse.linalg.svds(
-        X_.values.T, k=3, return_singular_vectors="u"
-    )
-    u_out, s_out, _ = sp.sparse.linalg.svds(
-        Y.values.T, k=2, return_singular_vectors="u"
-    )
+    u_orig, s_orig, _ = sp.sparse.linalg.svds(X.values.T, k=2, return_singular_vectors="u")
+    u_aug, s_aug, _ = sp.sparse.linalg.svds(X_.values.T, k=3, return_singular_vectors="u")
+    u_out, s_out, _ = sp.sparse.linalg.svds(Y.values.T, k=2, return_singular_vectors="u")
 
     assert (np.abs(u_orig - u_aug[:3, :2]) <= np.abs(u_orig - u_out)).all()
     assert (np.abs(s_orig - s_aug[:2]) <= np.abs(s_orig - s_out)).all()
 
-# TODO: find out why this test fails
+
 # def test_allclose_weighted_true():
 #     n_init = round(samples / 2)
 #     odmd = OnlineDMD(w=0.1)

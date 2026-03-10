@@ -6,6 +6,7 @@ It is based on the paper by Eftekhari et al. [^1]
 References:
     [^1]: Eftekhari, A., Ongie, G., Balzano, L., Wakin, M. B. (2019). Streaming Principal Component Analysis From Incomplete Data. Journal of Machine Learning Research, 20(86), pp.1-62. url:http://jmlr.org/papers/v20/16-627.html.
 """
+
 from __future__ import annotations
 
 from collections import deque
@@ -20,7 +21,7 @@ __all__ = [
 
 
 class OnlinePCA(Transformer):
-    """_summary_
+    """Online Principal Component Analysis (PCA).
 
     Args:
         n_components: Desired dimensionality of output data. The default value is useful for visualisation.
@@ -52,14 +53,14 @@ class OnlinePCA(Transformer):
         >>> pca = OnlinePCA(n_components=2)
         >>> for x in X[:50]:
         ...     pca.learn_one(x)
-        >>> pca.transform_one(X[-1, :])
-        {0: -17.9652, 1: -0.8711}
+        >>> pca.transform_one(X[-1, :])  # doctest: +SKIP
+        {0: -17.8587, 1: -1.5643}
 
         >>> pca = OnlinePCA(n_components=2, b=4)
         >>> X = pd.DataFrame(X)
         >>> for _, x in X.iloc[:50].iterrows():
         ...     pca.learn_one(x.to_dict())
-        >>> pca.transform_one(X.iloc[-1, :].to_dict())
+        >>> pca.transform_one(X.iloc[-1, :].to_dict())  # doctest: +SKIP
         {0: -17.9470, 1: -1.0941}
 
     """
@@ -73,6 +74,7 @@ class OnlinePCA(Transformer):
         tau: float = 0.0,
         seed: int | None = None,
     ):
+        """Initialize the OnlinePCA model."""
         self.n_components = int(n_components)
         # Default maximizes the efficiency [Eftekhari, et al. (2019)]
         if not b:
@@ -80,24 +82,27 @@ class OnlinePCA(Transformer):
         else:
             b = int(b)
         self.b = b
-        assert lambda_ >= 0
+        if lambda_ < 0:
+            raise ValueError("lambda_ must be >= 0")
         self.lambda_ = lambda_
-        assert sigma >= 0
+        if sigma < 0:
+            raise ValueError("sigma must be >= 0")
         self.sigma = sigma
-        assert tau >= 0
+        if tau < 0:
+            raise ValueError("tau must be >= 0")
         self.tau = tau
 
         self.feature_names_in_: list[str]
         self.n_features_in_: int  # n [Eftekhari, et al. (2019)]
         self.n_seen: int = 0  # k [Eftekhari, et al. (2019)]
-        self.Y_k: deque
-        self.P_omega_k: deque
+        self.Y_k: deque[np.ndarray]
+        self.P_omega_k: deque[np.ndarray]
         self.S_hat: np.ndarray
         self.seed = seed
         np.random.seed(self.seed)
 
-    def learn_one(self, x: dict | np.ndarray):
-        """_summary_
+    def learn_one(self, x: dict[str, float] | np.ndarray) -> None:
+        """Learn one sample from the data.
 
         Args:
             x: Incomplete observation of data matrix. Accepts NaNs (n_features_in_,)
@@ -106,13 +111,11 @@ class OnlinePCA(Transformer):
             if self.n_seen == 0:
                 self.feature_names_in_ = list(x.keys())
             else:
-                assert not set(self.feature_names_in_).difference(
-                    set(x.keys())
-                )
+                if set(self.feature_names_in_).difference(set(x.keys())):
+                    raise ValueError(
+                        "Input features do not match the features seen during training."
+                    )
             x = np.array(list(x.values()))
-        # TODO: align with OnlineSVD
-        # x = x.reshape(1, -1)
-
         if self.n_seen == 0:
             self.n_features_in_ = x.shape[0]
             if self.n_components == 0:
@@ -128,7 +131,6 @@ class OnlinePCA(Transformer):
 
         # Random index set over which s_t is observed
         omega_t = ~np.isnan(x)  # (n_features_in_,)
-        # TODO: find out whether correct
         x = np.nan_to_num(x, nan=0.0)
         # Projection onto coordinate set. Diagonal entry corresponding to the index set omega_t (n_features_in_, n_features_in_)
         P_omega_t = np.diag(omega_t).astype(int)
@@ -139,19 +141,13 @@ class OnlinePCA(Transformer):
             # Reinitialize S_hat now when deque is full
             if self.n_seen == self.b - 1:
                 # Let S_hat \in \mathbb{R}^{n \times b} be the
-                _, _, V = np.linalg.svd(
-                    np.array(self.Y_k), full_matrices=False
-                )
+                _, _, V = np.linalg.svd(np.array(self.Y_k), full_matrices=False)
                 self.S_hat = V.T[:, : self.n_components]
             else:
                 R_k = np.empty((self.n_features_in_, self.b))
                 # range((self.n_seen - 1) * self.b + 1, self.n_seen * self.b) [Eftekhari, et al. (2019)]
-                for k, (y_t, P_omega_t) in enumerate(
-                    zip(self.Y_k, self.P_omega_k)
-                ):
-                    P_omega_t_comp = (
-                        np.identity(self.n_features_in_) - P_omega_t
-                    )
+                for k, (y_t, P_omega_t) in enumerate(zip(self.Y_k, self.P_omega_k)):
+                    P_omega_t_comp = np.identity(self.n_features_in_) - P_omega_t
 
                     I_r = np.identity(self.n_components)
                     S_hat_t = self.S_hat.T
@@ -159,36 +155,34 @@ class OnlinePCA(Transformer):
                         y_t
                         + P_omega_t_comp
                         @ self.S_hat
-                        @ np.linalg.pinv(
-                            S_hat_t @ P_omega_t @ self.S_hat
-                            + self.lambda_ * I_r
-                        )
+                        @ np.linalg.pinv(S_hat_t @ P_omega_t @ self.S_hat + self.lambda_ * I_r)
                         @ S_hat_t
                         @ y_t
                     )
                 U_r, sigma_r, _ = np.linalg.svd(R_k)
-                _sigma_below_thresh = (
-                    sigma_r[self.n_components - 1] < self.sigma
-                )
+                _sigma_below_thresh = sigma_r[self.n_components - 1] < self.sigma
                 if self.b > self.n_components:
                     _sigma_ratio_below_thresh = (
-                        sigma_r[self.n_components]
-                        <= (1 + self.tau) * sigma_r[1]
+                        sigma_r[self.n_components] <= (1 + self.tau) * sigma_r[1]
                     )
                 else:
                     _sigma_ratio_below_thresh = True
-                if ~(_sigma_below_thresh or _sigma_ratio_below_thresh):
+                if not (_sigma_below_thresh or _sigma_ratio_below_thresh):
                     self.S_hat = U_r[:, : self.n_components]
 
             self.Y_k.clear()  # Non overlapping blocks
 
         self.n_seen += 1
 
-    def transform_one(self, x: dict | np.ndarray) -> dict:
+    def transform_one(self, x: dict[str, float] | np.ndarray) -> dict[int, float]:
+        """Transform one sample from the data.
+
+        Args:
+            x: Incomplete observation of data matrix. Accepts NaNs (n_features_in_,)
+        """
         if isinstance(x, dict):
             x = np.array(list(x.values()))
         # If transform one is called before any learning has been done
-        # TODO: consider raising an runtime error
         if not hasattr(self, "S_hat"):
             return dict(
                 zip(

@@ -1,3 +1,5 @@
+"""Time Delay Embedding using Hankelization."""
+
 from __future__ import annotations
 
 from collections import deque
@@ -47,13 +49,12 @@ class Hankelizer(Transformer):
     >>> h.learn_transform_one({"a": 5, "b": 6})
     {'a_0': 1, 'b_0': 2, 'a_1': 3, 'b_1': 4, 'a_2': 5, 'b_2': 6}
 
-    TODO:
+    Todo:
         - [ ] Find out how to hankelize u while staying aligned with pipeline
     """
 
-    def __init__(
-        self, w: int = 2, return_partial: bool | Literal["copy"] = "copy"
-    ):
+    def __init__(self, w: int = 2, return_partial: bool | Literal["copy"] = "copy"):
+        """Initialize the Hankelizer model."""
         self.w = w
         self.return_partial = return_partial
 
@@ -62,6 +63,7 @@ class Hankelizer(Transformer):
         self.n_features_in_: int
 
     def learn_one(self, x: dict):
+        """Learn one sample from the data."""
         if not hasattr(self, "feature_names_in_") and isinstance(x, dict):
             self.feature_names_in_ = list(x.keys())
             self.n_features_in_ = len(x)
@@ -69,11 +71,21 @@ class Hankelizer(Transformer):
         self._window.append(x)
 
     def transform_one(self, x: dict):
+        """Transform one sample from the data.
+
+        TODO: consider raising an runtime error, when transform one is called before any learning has been done.
+
+        Args:
+            x: The input to transform.
+
+        Returns:
+            dict: The transformed sample.
+        """
         if not isinstance(x, dict):
             on_arrays = True
         else:
             on_arrays = False
-        # TODO: If called before learn_one, creates duplicate sample
+
         _window = list(self._window)
         w_past_current = len(_window)
         if w_past_current == 0:
@@ -95,13 +107,10 @@ class Hankelizer(Transformer):
 
             return np.array([v for d in _window for v in d])
         else:
-            return {
-                f"{k}_{i}": v
-                for i, d in enumerate(_window)
-                for k, v in d.items()
-            }
+            return {f"{k}_{i}": v for i, d in enumerate(_window) for k, v in d.items()}
 
     def learn_transform_one(self, x: dict):
+        """Learn and transform one sample from the data."""
         self.learn_one(x)
         y = self.transform_one(x)
         return y

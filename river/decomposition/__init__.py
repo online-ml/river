@@ -1,6 +1,5 @@
-"""Decomposition.
+"""Decomposition."""
 
-"""
 from __future__ import annotations
 
 from .odmd import OnlineDMD, OnlineDMDwC
