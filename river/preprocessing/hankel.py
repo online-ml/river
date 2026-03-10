@@ -64,7 +64,7 @@ class Hankelizer(Transformer):
 
     def learn_one(self, x: dict):
         """Learn one sample from the data."""
-        if not hasattr(self, "feature_names_in_") and isinstance(x, dict):
+        if not hasattr(self, "feature_names_in_"):
             self.feature_names_in_ = list(x.keys())
             self.n_features_in_ = len(x)
 
@@ -81,11 +81,6 @@ class Hankelizer(Transformer):
         Returns:
             dict: The transformed sample.
         """
-        if not isinstance(x, dict):
-            on_arrays = True
-        else:
-            on_arrays = False
-
         _window = list(self._window)
         w_past_current = len(_window)
         if w_past_current == 0:
@@ -102,12 +97,7 @@ class Hankelizer(Transformer):
             if not self.return_partial == "copy":
                 for i in range(n_missing):
                     _window[i] = {k: float("nan") for k in _window[0]}
-        if on_arrays:
-            import numpy as np
-
-            return np.array([v for d in _window for v in d])
-        else:
-            return {f"{k}_{i}": v for i, d in enumerate(_window) for k, v in d.items()}
+        return {f"{k}_{i}": v for i, d in enumerate(_window) for k, v in d.items()}
 
     def learn_transform_one(self, x: dict):
         """Learn and transform one sample from the data."""

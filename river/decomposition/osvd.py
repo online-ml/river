@@ -11,6 +11,9 @@ References:
 
 from __future__ import annotations
 
+from collections.abc import Hashable
+from typing import Any
+
 import numpy as np
 import pandas as pd
 import scipy as sp
@@ -48,7 +51,7 @@ def test_orthonormality(vectors: np.ndarray, tol: float = 1e-12) -> bool:  # pra
     # Check if both conditions are satisfied
     is_orthonormal = is_unit_length and is_orthogonal
 
-    return is_orthonormal
+    return bool(is_orthonormal)
 
 
 def _orthogonalize(
@@ -180,7 +183,7 @@ class OnlineSVD(MiniBatchTransformer):
     {0: ...0.0494..., 1: ...0.0030..., 2: ...0.0111...}
 
     >>> for _, x in X.iloc[10:-1].iterrows():
-    ...     svd.learn_one(x.values.reshape(1, -1))
+    ...     svd.learn_one(x.to_dict())
     >>> svd.transform_one(X.iloc[0].to_dict())
     {0: ...0.0488..., 1: ...0.0613..., 2: ...0.1150...}
 
@@ -393,9 +396,10 @@ class OnlineSVD(MiniBatchTransformer):
         self._U, self._S, self._Vt = U_, S_, Vt_
         self.n_seen -= c
 
-    def learn_one(self, x: dict[str, float] | np.ndarray) -> None:
-        """Allias for update method."""
-        self.update(x)
+    def learn_one(self, x: dict[Hashable, Any]) -> None:
+        """Alias for update method."""
+        x_arr = np.array(list(x.values()))
+        self.update(x_arr)
 
     def learn_many(self, X: np.ndarray | pd.DataFrame) -> None:
         """Learn many samples from the data.
@@ -414,13 +418,13 @@ class OnlineSVD(MiniBatchTransformer):
 
         if hasattr(self, "_U") and hasattr(self, "_S") and hasattr(self, "_Vt"):
             if X.shape[0] <= self.n_features_in_:
-                self.learn_one(X)
+                self.update(X)
             else:
                 for X_part in [
                     X[i : i + self.n_features_in_]
                     for i in range(0, X.shape[0], self.n_features_in_)
                 ]:
-                    self.learn_one(X_part)
+                    self.update(X_part)
 
         else:
             if np.linalg.matrix_rank(X.T) < self.n_components:
@@ -434,7 +438,7 @@ class OnlineSVD(MiniBatchTransformer):
 
             self.n_seen = X.shape[0]
 
-    def transform_one(self, x: dict[str, float] | np.ndarray) -> dict[int, float]:
+    def transform_one(self, x: dict[Hashable, Any]) -> dict[Hashable, Any]:
         """Transform one sample from the data.
 
         Args:
@@ -443,8 +447,7 @@ class OnlineSVD(MiniBatchTransformer):
         Returns:
             dict: The transformed sample.
         """
-        if isinstance(x, dict):
-            x = np.array(list(x.values()))
+        x_arr = np.array(list(x.values()))
 
         # If transform one is called before any learning has been done
         if not hasattr(self, "_U"):
@@ -455,7 +458,7 @@ class OnlineSVD(MiniBatchTransformer):
                 )
             )
 
-        return dict(zip(range(self.n_components), x @ self._U))
+        return dict(zip(range(self.n_components), x_arr @ self._U))
 
     def transform_many(self, X: np.ndarray | pd.DataFrame) -> pd.DataFrame:
         """Transform many samples from the data.
@@ -512,7 +515,7 @@ class OnlineSVDZhang(OnlineSVD):
     {0: ...0.0494..., 1: ...0.0030..., 2: ...0.0111...}
 
     >>> for _, x in X.iloc[10:-1].iterrows():
-    ...     svd.learn_one(x.values.reshape(1, -1))
+    ...     svd.learn_one(x.to_dict())
     >>> svd.transform_one(X.iloc[0].to_dict())
     {0: ...0.0488..., 1: ...0.0613..., 2: ...0.1150...}
 

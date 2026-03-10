@@ -16,13 +16,15 @@ References:
 
 from __future__ import annotations
 
-from typing import Literal
+from collections.abc import Hashable
+from typing import Any, Literal
 
 import numpy as np
 import pandas as pd
 import scipy as sp
 
-from river.base import MiniBatchRegressor, MiniBatchTransformer
+from river.base import BaseTransformer
+from river.base.multi_output import MiniBatchMultiTargetRegressor
 
 from .osvd import OnlineSVDZhang as OnlineSVD
 
@@ -32,7 +34,7 @@ __all__ = [
 ]
 
 
-class OnlineDMD(MiniBatchRegressor, MiniBatchTransformer):
+class OnlineDMD(MiniBatchMultiTargetRegressor, BaseTransformer):
     r"""Online Dynamic Mode Decomposition (DMD).
 
     This regressor is a class that implements online dynamic mode decomposition
@@ -124,11 +126,11 @@ class OnlineDMD(MiniBatchRegressor, MiniBatchTransformer):
     >>> bool(np.isclose(model.truncation_error(X.values, Y.values), 0))
     True
 
-    >>> w_pred = model.predict_one(np.array([w1[-2], w2[-2]]))
-    >>> bool(np.allclose(w_pred, [w1[-1], w2[-1]]))
+    >>> w_pred = model.predict_one({'w1': w1[-2], 'w2': w2[-2]})
+    >>> bool(np.allclose(list(w_pred.values()), [w1[-1], w2[-1]]))
     True
 
-    >>> w_pred = model.predict_many(np.array([1, 0]), 10)
+    >>> w_pred = model.predict_horizon({'w1': 1, 'w2': 0}, 10)
     >>> bool(np.allclose(w_pred.T, [w1[1:11], w2[1:11]]))
     True
 
@@ -245,10 +247,11 @@ class OnlineDMD(MiniBatchRegressor, MiniBatchTransformer):
 
             from scipy.optimize import minimize
 
-            def objective_function(x):
-                return np.linalg.norm(
-                    self._Y[:, : self.r].T - Phi @ np.diag(x) @ C, "fro"
-                ) + 0.5 * np.linalg.norm(x, 1)
+            def objective_function(x: np.ndarray) -> float:
+                return float(
+                    np.linalg.norm(self._Y[:, : self.r].T - Phi @ np.diag(x) @ C, "fro")
+                    + 0.5 * np.linalg.norm(x, 1)
+                )
 
             # Minimize the objective function
             xi = minimize(objective_function, np.ones(self.r)).x
@@ -260,10 +263,12 @@ class OnlineDMD(MiniBatchRegressor, MiniBatchTransformer):
         """Check if A has changed since last update of eigenvalues."""
         if self.eig_rtol is None:
             return False
-        return np.allclose(
-            np.abs(self._A_last[: self.A.shape[0], : self.A.shape[1]]),
-            np.abs(self.A),
-            rtol=self.eig_rtol,
+        return bool(
+            np.allclose(
+                np.abs(self._A_last[: self.A.shape[0], : self.A.shape[1]]),
+                np.abs(self.A),
+                rtol=self.eig_rtol,
+            )
         )
 
     def _init_update(self) -> None:
@@ -284,7 +289,7 @@ class OnlineDMD(MiniBatchRegressor, MiniBatchTransformer):
         x: np.ndarray,
         y: np.ndarray,
         svd_modify: Literal["update", "revert"] | None = None,
-    ):
+    ) -> tuple[np.ndarray, np.ndarray]:
         U_prev = self._svd._U
         # We can update svd on x now without leaking new sample which is in y
         # try:
@@ -337,8 +342,8 @@ class OnlineDMD(MiniBatchRegressor, MiniBatchTransformer):
 
     def update(
         self,
-        x: dict[str, float] | np.ndarray,
-        y: dict[str, float] | np.ndarray | None = None,
+        x: dict[Hashable, float] | np.ndarray,
+        y: dict[Hashable, float] | np.ndarray | None = None,
     ) -> None:
         """Update the DMD computation with a new pair of snapshots (x, y).
 
@@ -361,11 +366,11 @@ class OnlineDMD(MiniBatchRegressor, MiniBatchTransformer):
                 self._x_last = y
 
         if isinstance(x, dict):
-            self.feature_names_in_ = list(x.keys())
+            self.feature_names_in_ = [str(k) for k in x.keys()]
             x = np.array(list(x.values()), ndmin=2)
         x_ = x.reshape(1, -1)
         if isinstance(y, dict):
-            if self.feature_names_in_ != list(y.keys()):
+            if self.feature_names_in_ != [str(k) for k in y.keys()]:
                 raise ValueError("y features do not match x features")
             y = np.array(list(y.values()), ndmin=2)
         y_ = y.reshape(1, -1)
@@ -405,16 +410,17 @@ class OnlineDMD(MiniBatchRegressor, MiniBatchTransformer):
 
     def learn_one(
         self,
-        x: dict[str, float] | np.ndarray,
-        y: dict[str, float] | np.ndarray | None = None,
+        x: dict[Hashable, Any],
+        y: dict[Hashable, float] | None = None,
+        **kwargs: Any,
     ) -> None:
-        """Allias for update method."""
+        """Alias for update method."""
         self.update(x, y)
 
     def revert(
         self,
-        x: dict[str, float] | np.ndarray,
-        y: dict[str, float] | np.ndarray | None = None,
+        x: dict[Hashable, float] | np.ndarray,
+        y: dict[Hashable, float] | np.ndarray | None = None,
     ) -> None:
         """Gradually forget the older snapshots and revert the DMD computation.
 
@@ -603,27 +609,26 @@ class OnlineDMD(MiniBatchRegressor, MiniBatchTransformer):
         """Allias for update_many method."""
         self.update_many(X, Y)
 
-    def predict_one(self, x: dict[str, float] | np.ndarray) -> np.ndarray:
+    def predict_one(self, x: dict[Hashable, Any]) -> dict[Hashable, float]:
         """Predicts the next state given the current state.
 
         Parameters:
-            x: The current state.
+            x: The current state as a dictionary.
 
         Returns:
-            np.ndarray: The predicted next state.
+            dict: The predicted next state.
         """
+        keys = list(x.keys())
+        x_arr = np.array(list(x.values()))
         # Map A back to original space
         if self.r < self.m:
             A = self._svd._U @ self.A @ self._svd._U.T
         else:
             A = self.A
-        mat = np.zeros((2, self.m))
-        mat[0, :] = x if isinstance(x, np.ndarray) else list(x.values())
-        for s in range(1, 2):
-            mat[s, :] = (A @ mat[s - 1, :]).real
-        return mat[-1, :]
+        result = (A @ x_arr).real
+        return dict(zip(keys, result))
 
-    def predict_many(self, x: dict[str, float] | np.ndarray, horizon: int) -> np.ndarray:
+    def predict_horizon(self, x: dict[Hashable, float] | np.ndarray, horizon: int) -> np.ndarray:
         """Predicts multiple future values based on the given initial value.
 
         Args:
@@ -632,9 +637,6 @@ class OnlineDMD(MiniBatchRegressor, MiniBatchTransformer):
 
         Returns:
             np.ndarray: An array containing the predicted future values.
-
-        Todo:
-            - [ ] Align predict_many with river API
         """
         # Map A back to original space
         if self.r < self.m:
@@ -665,14 +667,14 @@ class OnlineDMD(MiniBatchRegressor, MiniBatchTransformer):
             if hasattr(self._svd, "_U"):
                 A = self._svd._U @ self.A @ self._svd._U.T
             else:
-                return np.zeros((horizon, 1)).flatten().tolist()
+                return [0.0] * horizon
         else:
             A = self.A
         mat = np.zeros((horizon + 1, self.m))
         mat[0, :] = x if isinstance(x, np.ndarray) else list(x.values())
         for s in range(1, horizon + 1):
             mat[s, :] = (A @ mat[s - 1, :]).real
-        return mat[1:, -1].flatten().tolist()
+        return list(mat[1:, -1].flatten())
 
     def truncation_error(
         self,
@@ -693,17 +695,16 @@ class OnlineDMD(MiniBatchRegressor, MiniBatchTransformer):
         Y_hat = self.A @ X.T
         return float(np.linalg.norm(Y - Y_hat.T) / np.linalg.norm(Y))
 
-    def transform_one(self, x: dict[str, float] | np.ndarray) -> dict[int, float]:
+    def transform_one(self, x: dict[Hashable, Any]) -> dict[Hashable, Any]:
         """Transform the given input sample.
 
         Args:
             x: The input to transform.
 
         Returns:
-            np.ndarray: The transformed input.
+            dict: The transformed input.
         """
-        if isinstance(x, dict):
-            x = np.array(list(x.values()))
+        x_arr = np.array(list(x.values()))
         if not hasattr(self, "A") or (hasattr(self, "_svd") and not hasattr(self._svd, "_U")):
             return dict(
                 zip(
@@ -711,7 +712,7 @@ class OnlineDMD(MiniBatchRegressor, MiniBatchTransformer):
                     np.zeros(self.r),
                 )
             )
-        return dict(zip(range(self.r), x @ self.modes))
+        return dict(zip(range(self.r), x_arr @ self.modes))
 
     def transform_many(self, X: np.ndarray | pd.DataFrame) -> np.ndarray | pd.DataFrame:
         """Transform the given input sequence.
@@ -826,20 +827,13 @@ class OnlineDMDwC(OnlineDMD):
     # True
 
     >>> w_pred = model.predict_one(
-    ...     np.array([w1[-2], w2[-2]]),
-    ...     np.array([u_[-2]]),
+    ...     {'w1': w1[-2], 'w2': w2[-2]},
+    ...     u={'u': u_[-2]},
     ... )
-    >>> bool(np.allclose(w_pred, [w1[-1], w2[-1]]))
+    >>> bool(np.allclose(list(w_pred.values()), [w1[-1], w2[-1]]))
     True
 
-    >>> w_pred = model.predict_one(
-    ...     np.array([w1[-2], w2[-2]]),
-    ...     np.array([u_[-2]]),
-    ... )
-    >>> bool(np.allclose(w_pred, [w1[-1], w2[-1]]))
-    True
-
-    >>> w_pred = model.predict_many(np.array([1, 0]), np.ones((10, 1)), 10)
+    >>> w_pred = model.predict_horizon({'w1': 1, 'w2': 0}, 10, np.ones((10, 1)))
     >>> bool(np.allclose(w_pred.T, [w1[1:11], w2[1:11]]))
     True
 
@@ -906,8 +900,12 @@ class OnlineDMDwC(OnlineDMD):
 
     @property
     def xi(self) -> np.ndarray:
-        """Amlitudes of the singular values of the input matrix."""
-        return np.linalg.pinv(self.modes) @ np.array(list(self._x_first.values()))
+        """Amplitudes of the singular values of the input matrix."""
+        x_first = self._x_first
+        if isinstance(x_first, dict):
+            x_first = np.array(list(x_first.values()))
+        result: np.ndarray = np.linalg.pinv(self.modes) @ x_first
+        return result
 
     def _init_update(self) -> None:
         if not hasattr(self, "l"):
@@ -952,9 +950,9 @@ class OnlineDMDwC(OnlineDMD):
 
     def update(
         self,
-        x: dict[str, float] | np.ndarray,
-        y: dict[str, float] | np.ndarray | None = None,
-        u: dict[str, float] | np.ndarray | None = None,
+        x: dict[Hashable, float] | np.ndarray,
+        y: dict[Hashable, float] | np.ndarray | None = None,
+        u: dict[Hashable, float] | np.ndarray | None = None,
     ) -> None:
         """Update the DMD computation with a new pair of snapshots (x, y).
 
@@ -1028,18 +1026,19 @@ class OnlineDMDwC(OnlineDMD):
 
     def learn_one(
         self,
-        x: dict[str, float] | np.ndarray,
-        y: dict[str, float] | np.ndarray | None = None,
-        u: dict[str, float] | np.ndarray | None = None,
+        x: dict[Hashable, Any],
+        y: dict[Hashable, float] | None = None,
+        u: dict[Hashable, float] | np.ndarray | None = None,
+        **kwargs: Any,
     ) -> None:
-        """Allias for OnlineDMDwC.update method."""
-        return self.update(x, y, u)
+        """Alias for OnlineDMDwC.update method."""
+        self.update(x, y, u)
 
     def revert(
         self,
-        x: dict[str, float] | np.ndarray,
-        y: dict[str, float] | np.ndarray | None = None,
-        u: dict[str, float] | np.ndarray | None = None,
+        x: dict[Hashable, float] | np.ndarray,
+        y: dict[Hashable, float] | np.ndarray | None = None,
+        u: dict[Hashable, float] | np.ndarray | None = None,
     ) -> None:
         """Gradually forget the older snapshots and revert the DMD computation.
 
@@ -1176,49 +1175,48 @@ class OnlineDMDwC(OnlineDMD):
             self.A = self.A[: self.p, : -self.q]
 
     def predict_one(
-        self, x: dict[str, float] | np.ndarray, u: dict[str, float] | np.ndarray
-    ) -> np.ndarray:
+        self,
+        x: dict[Hashable, Any],
+        u: dict[Hashable, float] | np.ndarray | None = None,
+    ) -> dict[Hashable, float]:
         """Predicts the next state given the current state.
 
         Parameters:
-            x: The current state.
+            x: The current state as a dictionary.
             u: The control input.
 
         Returns:
-            np.ndarray: The predicted next state.
+            dict: The predicted next state.
         """
+        if u is None:
+            return super().predict_one(x)
         if isinstance(u, dict):
             u = np.array(list(u.values()))
-        _m = len(x)
+        keys = list(x.keys())
+        x_arr = np.array(list(x.values()))
         A, B = self._reconstruct_AB()
+        action = (B @ u).real
+        result = (A @ x_arr).real + action
+        return dict(zip(keys, result))
 
-        mat = np.zeros((2, _m))
-        mat[0, :] = x if isinstance(x, np.ndarray) else list(x.values())
-        for s in range(1, 2):
-            action = (B @ u).real
-            # Map A back to original space
-            mat[s, :] = (A @ mat[s - 1, :]).real + action
-        return mat[-1, :]
-
-    def predict_many(
+    def predict_horizon(
         self,
-        x: dict[str, float] | np.ndarray,
-        U: np.ndarray | pd.DataFrame,
+        x: dict[Hashable, float] | np.ndarray,
         horizon: int,
+        U: np.ndarray | pd.DataFrame | None = None,
     ) -> np.ndarray:
         """Predicts multiple future values based on the given initial value.
 
         Args:
             x: The initial value.
-            U: The control input matrix of shape (horizon, l), where l is the number of control inputs.
             horizon (int): The number of future values to predict.
+            U: The control input matrix of shape (horizon, l), where l is the number of control inputs.
 
         Returns:
             np.ndarray: An array containing the predicted future values.
-
-        Todo:
-            - [ ] Align predict_many with river API
         """
+        if U is None:
+            return super().predict_horizon(x, horizon)
         if isinstance(U, pd.DataFrame):
             U = U.values
         _m = len(x)
@@ -1234,7 +1232,7 @@ class OnlineDMDwC(OnlineDMD):
         self,
         X: np.ndarray | pd.DataFrame,
         Y: np.ndarray | pd.DataFrame,
-        U: np.ndarray | pd.DataFrame,
+        U: np.ndarray | pd.DataFrame | None = None,
     ) -> float:
         """Compute the truncation error of the DMD model on the given data.
 
@@ -1246,6 +1244,8 @@ class OnlineDMDwC(OnlineDMD):
         Returns:
             float: Truncation error of the DMD model
         """
+        if U is None:
+            return super().truncation_error(X, Y)
         A, B = self._reconstruct_AB()
         Y_hat = A @ X.T + B @ U.T
         return float(np.linalg.norm(Y - Y_hat.T) / np.linalg.norm(Y))

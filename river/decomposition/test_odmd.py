@@ -20,7 +20,7 @@ from river.utils import Rolling
 epsilon = 1e-1
 
 
-def dyn(x, t):
+def dyn(x: list[float], t: float) -> list[float]:
     x1, x2 = x
     dxdt = [(1 + epsilon * t) * x2, -(1 + epsilon * t) * x1]
     return dxdt
@@ -50,7 +50,7 @@ def test_input_types() -> None:
 
     odmd1.learn_many(X[:n_init, :], Y[:n_init, :])
     for x, y in zip(X[n_init:, :], Y[n_init:, :]):
-        odmd1.learn_one(x, y)
+        odmd1.update(x, y)
 
     X_, Y_ = pd.DataFrame(X), pd.DataFrame(Y)
 
@@ -58,7 +58,7 @@ def test_input_types() -> None:
 
     odmd2.learn_many(X_.iloc[:n_init], Y_.iloc[:n_init])
     for x, y in zip(X_.iloc[n_init:].values, Y_.iloc[n_init:].values):
-        odmd2.learn_one(x, y)
+        odmd2.update(x, y)
 
     assert np.allclose(odmd1.A, odmd2.A)
 
@@ -77,7 +77,7 @@ def test_one_many_close() -> None:
     assert np.allclose(eig_o1, eig_o2)
 
     for x, y in zip(X[n_init:, :], Y[n_init:, :]):
-        odmd1.learn_one(x, y)
+        odmd1.update(x, y)
 
     odmd2.learn_many(X[n_init:, :], Y[n_init:, :])
     eig_o1 = np.log(np.linalg.eigvals(odmd1.A)) / dt
@@ -103,8 +103,8 @@ def test_allclose_unsupervised_supervised() -> None:
     m_s = OnlineDMD(r=2, w=0.1, initialize=0)
 
     for x, y in zip(X, Y):
-        m_u.learn_one(x)
-        m_s.learn_one(x, y)
+        m_u.update(x)
+        m_s.update(x, y)
     eig_u, _ = np.log(m_u.eig[0]) / dt
     eig_s, _ = np.log(m_u.eig[0]) / dt
 

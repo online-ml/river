@@ -58,18 +58,18 @@ def test_input_types() -> None:
     odmd1 = OnlineDMDwC(initialize=n_init)
 
     for x, y, u in zip(X, Y, U):
-        odmd1.learn_one(x, y, u)
+        odmd1.update(x, y, u)
 
     X_, Y_, U_ = pd.DataFrame(X), pd.DataFrame(Y), pd.DataFrame(U)
 
     odmd2 = OnlineDMDwC(initialize=n_init)
 
-    for x, y, u in zip(
+    for xd, yd, ud in zip(
         X_.to_dict(orient="records"),
         Y_.to_dict(orient="records"),
         U_.to_dict(orient="records"),
     ):
-        odmd2.learn_one(x, y, u)
+        odmd2.learn_one(xd, yd, ud)
 
     assert np.allclose(odmd1.A, odmd2.A)
 
@@ -83,11 +83,11 @@ def test_dmdwc_variations() -> None:
     odmdc_b_window = Rolling(OnlineDMDwC(initialize=10, B=B.reshape(-1, 1)), window_size=100)
 
     for x_, y_, u_ in zip(X, Y, U):
-        odmd.learn_one(x_, y_)
-        odmdc_weight.learn_one(x_, y_, u_)
-        odmdc_b.learn_one(x_, y_, u_)
-        odmdc_window.learn_one(x_, y_, u_)
-        odmdc_b_window.learn_one(x_, y_, u_)
+        odmd.update(x_, y_)
+        odmdc_weight.update(x_, y_, u_)
+        odmdc_b.update(x_, y_, u_)
+        odmdc_window.update(x_, y_, u_)
+        odmdc_b_window.update(x_, y_, u_)
 
     atol = np.abs(get_ct_eigs(odmd.A) - true_eigs[-1]) * 1.5
     eig_weight = get_ct_eigs(odmdc_weight.A)

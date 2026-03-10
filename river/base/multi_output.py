@@ -6,6 +6,9 @@ import typing
 from .estimator import Estimator
 from .typing import FeatureName, RegTarget
 
+if typing.TYPE_CHECKING:
+    import pandas as pd
+
 
 class MultiLabelClassifier(Estimator, abc.ABC):
     """Multi-label classifier."""
@@ -102,5 +105,21 @@ class MultiTargetRegressor(Estimator, abc.ABC):
         Returns
         -------
         The predictions.
+
+        """
+
+
+class MiniBatchMultiTargetRegressor(MultiTargetRegressor):
+    """A multi-target regressor that can operate on mini-batches."""
+
+    def learn_many(self, X: pd.DataFrame, Y: pd.DataFrame) -> None:
+        """Update the model with a mini-batch of features `X` and targets `Y`.
+
+        Parameters
+        ----------
+        X
+            A dataframe of features.
+        Y
+            A dataframe of targets.
 
         """

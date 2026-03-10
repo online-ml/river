@@ -10,6 +10,8 @@ References:
 from __future__ import annotations
 
 from collections import deque
+from collections.abc import Hashable
+from typing import Any
 
 import numpy as np
 
@@ -50,14 +52,14 @@ class OnlinePCA(Transformer):
         >>> n_nans = 2
         >>> nan_indices = np.random.choice(range(X.shape[0]), size=n_nans, replace=False)
         >>> X[nan_indices] = np.nan
+        >>> X = pd.DataFrame(X)
         >>> pca = OnlinePCA(n_components=2)
-        >>> for x in X[:50]:
-        ...     pca.learn_one(x)
-        >>> pca.transform_one(X[-1, :])  # doctest: +SKIP
+        >>> for _, x in X.iloc[:50].iterrows():
+        ...     pca.learn_one(x.to_dict())
+        >>> pca.transform_one(X.iloc[-1, :].to_dict())  # doctest: +SKIP
         {0: -17.8587, 1: -1.5643}
 
         >>> pca = OnlinePCA(n_components=2, b=4)
-        >>> X = pd.DataFrame(X)
         >>> for _, x in X.iloc[:50].iterrows():
         ...     pca.learn_one(x.to_dict())
         >>> pca.transform_one(X.iloc[-1, :].to_dict())  # doctest: +SKIP
@@ -101,23 +103,20 @@ class OnlinePCA(Transformer):
         self.seed = seed
         np.random.seed(self.seed)
 
-    def learn_one(self, x: dict[str, float] | np.ndarray) -> None:
+    def learn_one(self, x: dict[Hashable, Any]) -> None:
         """Learn one sample from the data.
 
         Args:
             x: Incomplete observation of data matrix. Accepts NaNs (n_features_in_,)
         """
-        if isinstance(x, dict):
-            if self.n_seen == 0:
-                self.feature_names_in_ = list(x.keys())
-            else:
-                if set(self.feature_names_in_).difference(set(x.keys())):
-                    raise ValueError(
-                        "Input features do not match the features seen during training."
-                    )
-            x = np.array(list(x.values()))
         if self.n_seen == 0:
-            self.n_features_in_ = x.shape[0]
+            self.feature_names_in_ = [str(k) for k in x.keys()]
+        else:
+            if set(self.feature_names_in_).difference(str(k) for k in x.keys()):
+                raise ValueError("Input features do not match the features seen during training.")
+        x_arr = np.array(list(x.values()))
+        if self.n_seen == 0:
+            self.n_features_in_ = x_arr.shape[0]
             if self.n_components == 0:
                 self.n_components = self.n_features_in_
             # Make b feasible if not set and learn_one is called first
@@ -130,11 +129,11 @@ class OnlinePCA(Transformer):
             self.S_hat, _ = np.linalg.qr(r_mat)
 
         # Random index set over which s_t is observed
-        omega_t = ~np.isnan(x)  # (n_features_in_,)
-        x = np.nan_to_num(x, nan=0.0)
+        omega_t = ~np.isnan(x_arr)  # (n_features_in_,)
+        x_arr = np.nan_to_num(x_arr, nan=0.0)
         # Projection onto coordinate set. Diagonal entry corresponding to the index set omega_t (n_features_in_, n_features_in_)
         P_omega_t = np.diag(omega_t).astype(int)
-        self.Y_k.append(x)
+        self.Y_k.append(x_arr)
         self.P_omega_k.append(P_omega_t)
 
         if len(self.Y_k) == self.b:
@@ -174,14 +173,13 @@ class OnlinePCA(Transformer):
 
         self.n_seen += 1
 
-    def transform_one(self, x: dict[str, float] | np.ndarray) -> dict[int, float]:
+    def transform_one(self, x: dict[Hashable, Any]) -> dict[Hashable, Any]:
         """Transform one sample from the data.
 
         Args:
             x: Incomplete observation of data matrix. Accepts NaNs (n_features_in_,)
         """
-        if isinstance(x, dict):
-            x = np.array(list(x.values()))
+        x_arr = np.array(list(x.values()))
         # If transform one is called before any learning has been done
         if not hasattr(self, "S_hat"):
             return dict(
@@ -190,5 +188,5 @@ class OnlinePCA(Transformer):
                     np.zeros(self.n_components),
                 )
             )
-        x = x @ self.S_hat
-        return dict(zip(range(self.n_components), x))
+        x_arr = x_arr @ self.S_hat
+        return dict(zip(range(self.n_components), x_arr))
