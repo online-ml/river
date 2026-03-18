@@ -2,15 +2,27 @@ from __future__ import annotations
 
 import itertools
 import typing
-from collections.abc import Iterator
+from collections.abc import Iterator, Mapping, Sequence, Set
 
 import numpy as np
+import numpy.typing as npt
 
 from river import base
 
 __all__ = ["expand_param_grid"]
 
 T = typing.TypeVar("T", bound=base.Estimator)
+
+# This type may be too complex for its own good (and our own).
+Leaf = Sequence[object] | Set[object] | npt.NDArray[typing.Any]
+# Quoted because recursion in type aliases is not allowed before Python 1.12 and the 'type' statement
+Params = (
+    Leaf
+    | Mapping[str, "Params"]
+    | tuple[type, Mapping[str, "Params"]]
+    | Sequence[tuple[type, Mapping[str, "Params"]]]
+    | Set[tuple[type, Mapping[str, "Params"]]]
+)
 
 
 def expand_param_grid(model: T, grid: dict) -> list[T]:
