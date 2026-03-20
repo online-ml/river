@@ -53,7 +53,7 @@ class NoChangeClassifier(base.Classifier):
     '−'
 
     >>> pprint.pprint(model.predict_proba_one(new_sentence))
-    {'+': 0, '−': 1}
+    {'+': 0.0, '−': 1}
 
     """
 
