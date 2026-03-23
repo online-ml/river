@@ -20,6 +20,7 @@ def _progressive_validation(
     measure_time=False,
     measure_memory=False,
     yield_predictions=False,
+    w: float = 1.0,
 ):
     # Check that the model and the metric are in accordance
     if not metric.works_with(model):
@@ -87,7 +88,7 @@ def _progressive_validation(
         if use_label:
             n_samples_learned += 1
             if model._supervised:
-                model.learn_one(x, y, **kwargs)
+                model.learn_one(x, y, w=w, **kwargs)
             else:
                 model.learn_one(x, **kwargs)
 
@@ -113,6 +114,7 @@ def iter_progressive_val_score(
     measure_time=False,
     measure_memory=False,
     yield_predictions=False,
+    w: float = 1.0,
 ) -> typing.Generator:
     """Evaluates the performance of a model on a streaming dataset and yields results.
 
@@ -151,6 +153,9 @@ def iter_progressive_val_score(
     yield_predictions
         Whether or not to include predictions. If step is 1, then this is equivalent to yielding
         the predictions at every iterations. Otherwise, not all predictions will be yielded.
+    w
+        Sample weight to use when calling `learn_one`. Defaults to 1.0, which means all samples
+        are weighted equally.
 
     Examples
     --------
@@ -225,6 +230,7 @@ def iter_progressive_val_score(
         measure_time=measure_time,
         measure_memory=measure_memory,
         yield_predictions=yield_predictions,
+        w=w,
     )
 
 
@@ -237,6 +243,7 @@ def progressive_val_score(
     print_every=0,
     show_time=False,
     show_memory=False,
+    w: float = 1.0,
     **print_kwargs,
 ) -> metrics.base.Metric:
     """Evaluates the performance of a model on a streaming dataset.
@@ -287,6 +294,9 @@ def progressive_val_score(
         Whether or not to display the elapsed time.
     show_memory
         Whether or not to display the memory usage of the model.
+    w
+        Sample weight to use when calling `learn_one`. Defaults to 1.0, which means all samples
+        are weighted equally.
     print_kwargs
         Extra keyword arguments are passed to the `print` function. For instance, this allows
         providing a `file` argument, which indicates where to output progress.
@@ -390,6 +400,7 @@ def progressive_val_score(
         step=print_every,
         measure_time=show_time,
         measure_memory=show_memory,
+        w=w,
     )
 
     active_learning = utils.inspect.isactivelearner(model)
