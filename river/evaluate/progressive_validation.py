@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import datetime as dt
+import inspect
 import itertools
 import time
 import typing
@@ -25,6 +26,13 @@ def _progressive_validation(
     # Check that the model and the metric are in accordance
     if not metric.works_with(model):
         raise ValueError(f"{metric.__class__.__name__} metric is not compatible with {model}")
+
+    # Check once whether the model's learn_one accepts a w parameter
+    _learn_one_sig = inspect.signature(model.learn_one)
+    _model_accepts_w = "w" in _learn_one_sig.parameters or any(
+        p.kind == inspect.Parameter.VAR_KEYWORD
+        for p in _learn_one_sig.parameters.values()
+    )
 
     # Determine if predict_one or predict_proba_one should be used in case of a classifier
     if utils.inspect.isanomalydetector(model) or utils.inspect.isanomalyfilter(model):
@@ -88,7 +96,10 @@ def _progressive_validation(
         if use_label:
             n_samples_learned += 1
             if model._supervised:
-                model.learn_one(x, y, w=w, **kwargs)
+                if _model_accepts_w:
+                    model.learn_one(x, y, w=w, **kwargs)
+                else:
+                    model.learn_one(x, y, **kwargs)
             else:
                 model.learn_one(x, **kwargs)
 
