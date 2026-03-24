@@ -73,7 +73,7 @@ class ODAC(base.Clusterer):
             ├── CH1_LVL_3 d1=0.71 [5, 6]
             └── CH2_LVL_3 d1=0.71 [7, 8]
 
-    You can acess some properties of the clustering model directly:
+    You can access some properties of the clustering model directly:
 
     >>> model.n_clusters
     11

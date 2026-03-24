@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import abc
 import sys
+from typing import Any
 
 from scipy.stats import f as f_dist
 
@@ -291,7 +292,7 @@ class SGTClassifier(StochasticGradientTree, base.Classifier):
     def _target_transform(self, y):
         return float(y)
 
-    def predict_proba_one(self, x: dict) -> dict[base.typing.ClfTarget, float]:
+    def predict_proba_one(self, x: dict, **kwargs: Any) -> dict[base.typing.ClfTarget, float]:
         if isinstance(self._root, DTBranch):
             leaf = self._root.traverse(x, until_leaf=True)
         else:

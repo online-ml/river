@@ -51,7 +51,7 @@ class Silhouette(metrics.base.ClusteringMetric):
 
     References
     ----------
-    [^1]: Rousseeuw, P. (1987). Silhouettes: a graphical aid to the intepretation and validation
+    [^1]: Rousseeuw, P. (1987). Silhouettes: a graphical aid to the interpretation and validation
           of cluster analysis 20, 53 - 65. DOI: 10.1016/0377-0427(87)90125-7
     [^2]: Bifet, A. et al. (2018). "Machine Learning for Data Streams".
           DOI: 10.7551/mitpress/10654.001.0001.

@@ -47,6 +47,6 @@ def exponential(rate: float = 1.0, rng=random) -> float:
 
     u = rng.random()
 
-    # Retrive the λ value from the rate (β): β = 1 / λ
+    # Retrieve the λ value from the rate (β): β = 1 / λ
     lmbda = 1.0 / rate
     return -math.log(1 - u) / lmbda

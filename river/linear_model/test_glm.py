@@ -88,7 +88,7 @@ def test_finite_differences(lm, dataset):
 
         # d is a set of weight perturbations
         for d in iter_perturbations(weights.keys()):
-            # Pertubate the weights and obtain the loss with the new weights
+            # Perturb the weights and obtain the loss with the new weights
             lm._weights = utils.VectorDict({i: weights[i] + eps * di for i, di in d.items()})
             forward = lm.loss(y_true=y, y_pred=lm._raw_dot_one(x))
             lm._weights = utils.VectorDict({i: weights[i] - eps * di for i, di in d.items()})

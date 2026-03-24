@@ -56,7 +56,7 @@ def print_table(
     return table
 
 
-def humanize_bytes(n_bytes: int):
+def humanize_bytes(n_bytes: int) -> str:
     """Returns a human-friendly byte size.
 
     Parameters

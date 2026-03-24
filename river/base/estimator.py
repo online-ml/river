@@ -1,6 +1,11 @@
 from __future__ import annotations
 
 import abc
+from collections.abc import Iterator
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from river import compose
 
 from . import base
 
@@ -9,7 +14,7 @@ class Estimator(base.Base, abc.ABC):
     """An estimator."""
 
     @property
-    def _supervised(self):
+    def _supervised(self) -> bool:
         """Indicates whether or not the estimator is supervised or not.
 
         This is useful internally for determining if an estimator expects to be provided with a `y`
@@ -19,7 +24,7 @@ class Estimator(base.Base, abc.ABC):
         """
         return True
 
-    def __or__(self, other):
+    def __or__(self, other: Estimator | compose.Pipeline) -> compose.Pipeline:
         """Merge with another Transformer into a Pipeline."""
         from river import compose
 
@@ -27,7 +32,7 @@ class Estimator(base.Base, abc.ABC):
             return other.__ror__(self)
         return compose.Pipeline(self, other)
 
-    def __ror__(self, other):
+    def __ror__(self, other: Estimator | compose.Pipeline) -> compose.Pipeline:
         """Merge with another Transformer into a Pipeline."""
         from river import compose
 
@@ -35,7 +40,7 @@ class Estimator(base.Base, abc.ABC):
             return other.__or__(self)
         return compose.Pipeline(other, self)
 
-    def _repr_html_(self):
+    def _repr_html_(self) -> str:
         from xml.etree import ElementTree as ET
 
         from river.base import viz
@@ -44,11 +49,11 @@ class Estimator(base.Base, abc.ABC):
         div_str = ET.tostring(div, encoding="unicode")
         return f"<div>{div_str}<style scoped>{viz.CSS}</style></div>"
 
-    def _more_tags(self):
+    def _more_tags(self) -> set[str]:
         return set()
 
     @property
-    def _tags(self) -> dict[str, bool]:
+    def _tags(self) -> set[str]:
         """Return the estimator's tags.
 
         Tags can be used to specify what kind of inputs an estimator is able to process. For
@@ -64,14 +69,14 @@ class Estimator(base.Base, abc.ABC):
 
         for parent in self.__class__.__mro__:
             try:
-                tags |= parent._more_tags(self)  # type: ignore
+                tags |= parent._more_tags(self)  # type: ignore[attr-defined]
             except AttributeError:
                 pass
 
         return tags
 
     @classmethod
-    def _unit_test_params(self):
+    def _unit_test_params(self) -> Iterator[dict[str, Any]]:
         """Indicates which parameters to use during unit testing.
 
         Most estimators have a default value for each of their parameters. However, in some cases,
@@ -84,7 +89,7 @@ class Estimator(base.Base, abc.ABC):
         """
         yield {}
 
-    def _unit_test_skips(self):
+    def _unit_test_skips(self) -> set[str]:
         """Indicates which checks to skip during unit testing.
 
         Most estimators pass the full test suite. However, in some cases, some estimators might not

@@ -10,7 +10,7 @@ from . import base
 class Restaurants(base.RemoteDataset):
     """Data from the Kaggle Recruit Restaurants challenge.
 
-    The goal is to predict the number of visitors in each of 829 Japanese restaurants over a priod
+    The goal is to predict the number of visitors in each of 829 Japanese restaurants over a period
     of roughly 16 weeks. The data is ordered by date and then by restaurant ID.
 
     References

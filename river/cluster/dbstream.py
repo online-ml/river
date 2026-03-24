@@ -13,7 +13,7 @@ class DBSTREAM(base.Clusterer):
 
     DBSTREAM [^1] is a clustering algorithm for evolving data streams.
     It is the first micro-cluster-based online clustering component that
-    explicitely captures the density between micro-clusters via a shared
+    explicitly captures the density between micro-clusters via a shared
     density graph. The density information in the graph is then exploited
     for reclustering based on actual density between adjacent micro clusters.
 

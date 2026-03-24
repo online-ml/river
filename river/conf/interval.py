@@ -24,14 +24,14 @@ class Interval:
     upper: float
 
     @property
-    def center(self):
+    def center(self) -> float:
         """The center of the interval."""
         return (self.lower + self.upper) / 2
 
     @property
-    def width(self):
+    def width(self) -> float:
         """The width of the interval."""
         return self.upper - self.lower
 
-    def __contains__(self, x):
+    def __contains__(self, x: float) -> bool:
         return self.lower <= x <= self.upper

@@ -317,7 +317,9 @@ class BaseSRPEstimator:
 
 
 def random_subspace(all_features: list, k: int, rng: random.Random):
-    """Utility function to generate a random feature subspace of length k
+    """Utility function to generate a random feature subspace of length k.
+
+    If the number of features is smaller than k , the result is a shuffled version of the input list.
 
     Parameters
     ----------
@@ -328,7 +330,8 @@ def random_subspace(all_features: list, k: int, rng: random.Random):
     rng
         Random number generator (initialized).
     """
-    return rng.sample(all_features, k=k)
+    corrected_k = min(len(all_features), k)
+    return rng.sample(all_features, k=corrected_k)
 
 
 class SRPClassifier(BaseSRPEnsemble, base.Classifier):
@@ -543,7 +546,7 @@ class BaseSRPClassifier(BaseSRPEstimator):
 
         # TODO Find a way to verify if the model natively supports sample_weight (w)
         for _ in range(int(w)):
-            self.model.learn_one(x=x_subset, y=y, **kwargs)
+            self.model.learn_one(x=x_subset, y=y, **kwargs)  # type: ignore[attr-defined]
 
         if self._background_learner:
             # Train the background learner
@@ -557,7 +560,7 @@ class BaseSRPClassifier(BaseSRPEstimator):
             )
 
         if not self.disable_drift_detector and not self.is_background_learner:
-            correctly_classifies = self.model.predict_one(x_subset) == y
+            correctly_classifies = self.model.predict_one(x_subset) == y  # type: ignore[attr-defined]
             # Check for warnings only if the background learner is active
             if not self.disable_background_learner:
                 # Update the warning detection method
@@ -845,10 +848,10 @@ class BaseSRPRegressor(BaseSRPEstimator):
 
         # TODO Find a way to verify if the model natively supports sample_weight (w)
         for _ in range(int(w)):
-            self.model.learn_one(x=x_subset, y=y, **kwargs)
+            self.model.learn_one(x=x_subset, y=y, **kwargs)  # type: ignore[attr-defined]
 
         # Drift detection input
-        y_pred = self.model.predict_one(x_subset)
+        y_pred = self.model.predict_one(x_subset)  # type: ignore[attr-defined]
         if self.drift_detection_criteria == "error":
             # Track absolute error
             drift_detector_input = abs(y_pred - y)

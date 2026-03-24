@@ -11,7 +11,7 @@ class Renamer(base.Transformer):
     Parameters
     ----------
     mapping
-        Dictionnary describing substitution rules. Keys in `mapping` that are not a feature's name are silently ignored.
+        Dictionary describing substitution rules. Keys in `mapping` that are not a feature's name are silently ignored.
 
     Examples
     --------

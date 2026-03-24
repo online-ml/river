@@ -7,7 +7,7 @@ class DriftRetrainingClassifier(base.Wrapper, base.Classifier):
     """Drift retraining classifier.
 
     This classifier is a wrapper for any classifier. It monitors the incoming data for concept
-    drifts and warnings in the model's accurary. In case a warning is detected, a background model
+    drifts and warnings in the model's accuracy. In case a warning is detected, a background model
     starts to train. If a drift is detected, the model will be replaced by the background model,
     and the background model will be reset.
 

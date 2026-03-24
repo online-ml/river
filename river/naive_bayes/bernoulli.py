@@ -261,7 +261,7 @@ class BernoulliNB(base.BaseNB):
             X[missing] = 0
             if is_sparse:
                 # The new values need to be converted to preserve the sparseness of the dataframe.
-                # Input values can be intergers or floats, converting all to float preserves the behaviour without the need for complex conversion logic.
+                # Input values can be integers or floats, converting all to float preserves the behaviour without the need for complex conversion logic.
                 X = X.astype(pd.SparseDtype(float, 0.0))
 
         index, columns = X.index, X.columns

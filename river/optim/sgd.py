@@ -39,7 +39,7 @@ class SGD(optim.base.Optimizer):
 
     """
 
-    def __init__(self, lr=0.01):
+    def __init__(self, lr=0.01) -> None:
         super().__init__(lr)
 
     def _step_with_dict(self, w, g):

@@ -16,7 +16,7 @@ def iter_vaex(
     Parameters
     ----------
     X
-        A vaex DataFrame housing the training featuers.
+        A vaex DataFrame housing the training features.
     y
         The column or expression containing the target variable.
     features
