@@ -75,7 +75,7 @@ class Rolling(BaseRolling):
     def window_size(self):
         return self.window.maxlen
 
-    def update(self, *args, **kwargs):
+    def update(self, *args, **kwargs) -> None:
         if len(self.window) == self.window_size:
             self.obj.revert(*self.window[0][0], **self.window[0][1])
         self.obj.update(*args, **kwargs)
