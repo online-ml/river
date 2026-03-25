@@ -4,14 +4,17 @@ import collections
 import numbers
 import typing
 
-from river import base, metrics, time_series
+from river import base, metrics
+
+__all__ = ["evaluate", "iter_evaluate"]
+
 
 TimeSeries = typing.Iterator[
-    typing.Tuple[  # noqa: UP006
-        typing.Union[dict, None],  # noqa: UP007
+    tuple[
+        dict | None,
         numbers.Number,
-        typing.Union[typing.List[dict], None],  # noqa: UP006, UP007
-        typing.List[numbers.Number],  # noqa: UP006
+        list[dict] | None,
+        list[numbers.Number],
     ]
 ]
 
@@ -23,7 +26,7 @@ def _iter_with_horizon(dataset: base.typing.Dataset, horizon: int) -> TimeSeries
     --------
 
     >>> from river import datasets
-    >>> from river.time_series.evaluate import _iter_with_horizon
+    >>> from river.evaluate.forecasting import _iter_with_horizon
 
     >>> dataset = datasets.AirlinePassengers()
 
@@ -75,7 +78,7 @@ def _iter_with_horizon(dataset: base.typing.Dataset, horizon: int) -> TimeSeries
 
 def iter_evaluate(
     dataset: base.typing.Dataset,
-    model: time_series.base.Forecaster,
+    model,
     metric: metrics.base.RegressionMetric,
     horizon: int,
     agg_func: typing.Callable[[list[float]], float] | None = None,
@@ -105,6 +108,8 @@ def iter_evaluate(
 
     """
 
+    from river import time_series
+
     horizon_metric = (
         time_series.HorizonAggMetric(metric, agg_func)
         if agg_func
@@ -126,12 +131,12 @@ def iter_evaluate(
 
 def evaluate(
     dataset: base.typing.Dataset,
-    model: time_series.base.Forecaster,
+    model,
     metric: metrics.base.RegressionMetric,
     horizon: int,
     agg_func: typing.Callable[[list[float]], float] | None = None,
     grace_period: int | None = None,
-) -> time_series.HorizonMetric:
+):
     """Evaluates the performance of a forecaster on a time series dataset.
 
     To understand why this method is useful, it's important to understand the difference between

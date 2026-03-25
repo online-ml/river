@@ -14,13 +14,23 @@ the River repository uses these tracks.
 
 from __future__ import annotations
 
+from .forecasting import evaluate, iter_evaluate
 from .progressive_validation import iter_progressive_val_score, progressive_val_score
-from .tracks import BinaryClassificationTrack, MultiClassClassificationTrack, RegressionTrack, Track
+from .tracks import (
+    BinaryClassificationTrack,
+    ForecastingTrack,
+    MultiClassClassificationTrack,
+    RegressionTrack,
+    Track,
+)
 
 __all__ = [
+    "evaluate",
+    "iter_evaluate",
     "iter_progressive_val_score",
     "progressive_val_score",
     "BinaryClassificationTrack",
+    "ForecastingTrack",
     "MultiClassClassificationTrack",
     "RegressionTrack",
     "Track",
