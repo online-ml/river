@@ -137,3 +137,4 @@ class LazySearch(BaseNN):
             for pos in self.window
             if pos is not None and pos.item[1] is not None
         }
+

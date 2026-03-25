@@ -47,3 +47,4 @@ class BaseNN(base.Estimator, abc.ABC):
     @abc.abstractmethod
     def refresh_targets(self) -> set:
         pass
+
