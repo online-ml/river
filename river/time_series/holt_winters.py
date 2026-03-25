@@ -109,6 +109,7 @@ class HoltWinters(time_series.base.Forecaster):
     --------
 
     >>> from river import datasets
+    >>> from river import evaluate
     >>> from river import metrics
     >>> from river import time_series
 
@@ -124,7 +125,7 @@ class HoltWinters(time_series.base.Forecaster):
 
     >>> metric = metrics.MAE()
 
-    >>> time_series.evaluate(
+    >>> evaluate.evaluate(
     ...     dataset,
     ...     model,
     ...     metric,

@@ -14,6 +14,11 @@
 
 - Added handling for division by zero in `tree.hoeffding_tree` for leaf size estimation.
 
+## evaluate
+
+- Moved forecasting evaluation utilities from `time_series.evaluate` to `evaluate` (`evaluate.evaluate` and `evaluate.iter_evaluate`) and deprecated `time_series.evaluate`/`time_series.iter_evaluate`.
+- Added `evaluate.ForecastingTrack` to benchmark and compare time series forecasting models.
+
 ## build
 
 - Added Python 3.14 wheel builds and updated PyO3 for 3.14 support.
