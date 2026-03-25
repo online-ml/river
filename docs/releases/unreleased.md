@@ -22,3 +22,4 @@
 ## build
 
 - Added Python 3.14 wheel builds and updated PyO3 for 3.14 support.
+- Replaced poetry with uv for dependency management.
