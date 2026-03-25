@@ -132,8 +132,8 @@ class LazySearch(BaseNN):
         step, or can be called manually.
 
         """
-        return {  # self.window is a deque of vertices, where each vertex has an item that is a tuple (x, y)
-            vertex.item[1]
-            for vertex in self.window
-            if vertex is not None and vertex.item[1] is not None
+        return {  # self.window is a deque of items, where each item is a tuple (x, y)
+            pos.item[1]
+            for pos in self.window
+            if pos is not None and pos.item[1] is not None
         }
