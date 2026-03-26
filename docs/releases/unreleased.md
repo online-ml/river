@@ -12,3 +12,9 @@
 ## tree
 
 - Added handling for division by zero in `tree.hoeffding_tree` for leaf size estimation.
+
+## neighbors
+
+- Added function in nearest-neighbor engines to gather relevant classes/targets from the window.
+- Added a virtual function to the base engine class; New NN engines need to override `refresh_targets` function
+  - Classifier KNN now calls this engine-specific function under `clean_up_classes()`
