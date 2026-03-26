@@ -21,7 +21,6 @@ def _progressive_validation(
     measure_time=False,
     measure_memory=False,
     yield_predictions=False,
-    w: float = 1.0,
 ):
     # Check that the model and the metric are in accordance
     if not metric.works_with(model):
@@ -40,6 +39,20 @@ def _progressive_validation(
         pred_func = model.predict_proba_one
     else:
         pred_func = model.predict_one
+
+    # Extract per-sample weights when the dataset yields (x, y, w) triples.
+    # The weights dict maps sample index i (from simulate_qa's enumerate) to w.
+    sample_weights: dict[int, float] = {}
+
+    def _iter_dataset():
+        for idx, item in enumerate(dataset):
+            if len(item) == 3:
+                x, y, w = item
+                sample_weights[idx] = w
+            else:
+                x, y = item
+                sample_weights[idx] = 1.0
+            yield x, y
 
     preds = {}
 
@@ -72,7 +85,7 @@ def _progressive_validation(
 
         return state
 
-    for i, x, y, *kwargs in stream.simulate_qa(dataset, moment, delay, copy=True):
+    for i, x, y, *kwargs in stream.simulate_qa(_iter_dataset(), moment, delay, copy=True):
         kwargs = kwargs[0] if kwargs else {}
 
         # Case 1: no ground truth, just make a prediction
@@ -94,6 +107,7 @@ def _progressive_validation(
         # Update the model
         if use_label:
             n_samples_learned += 1
+            w = sample_weights.pop(i, 1.0)
             if model._supervised:
                 if _model_accepts_w:
                     model.learn_one(x, y, w=w, **kwargs)
@@ -124,7 +138,6 @@ def iter_progressive_val_score(
     measure_time=False,
     measure_memory=False,
     yield_predictions=False,
-    w: float = 1.0,
 ) -> typing.Generator:
     """Evaluates the performance of a model on a streaming dataset and yields results.
 
@@ -163,9 +176,13 @@ def iter_progressive_val_score(
     yield_predictions
         Whether or not to include predictions. If step is 1, then this is equivalent to yielding
         the predictions at every iterations. Otherwise, not all predictions will be yielded.
-    w
-        Sample weight to use when calling `learn_one`. Defaults to 1.0, which means all samples
-        are weighted equally.
+
+    Notes
+    -----
+    Per-sample weights can be supplied by yielding `(x, y, w)` triples from `dataset` instead
+    of the usual `(x, y)` pairs, where `w` is a `float`. When `w` is provided, it is forwarded
+    to `learn_one` for models that accept a `w` parameter (e.g.
+    `linear_model.LogisticRegression`). Samples without a weight default to `w=1.0`.
 
     Examples
     --------
@@ -240,7 +257,6 @@ def iter_progressive_val_score(
         measure_time=measure_time,
         measure_memory=measure_memory,
         yield_predictions=yield_predictions,
-        w=w,
     )
 
 
@@ -253,7 +269,6 @@ def progressive_val_score(
     print_every=0,
     show_time=False,
     show_memory=False,
-    w: float = 1.0,
     **print_kwargs,
 ) -> metrics.base.Metric:
     """Evaluates the performance of a model on a streaming dataset.
@@ -304,12 +319,16 @@ def progressive_val_score(
         Whether or not to display the elapsed time.
     show_memory
         Whether or not to display the memory usage of the model.
-    w
-        Sample weight to use when calling `learn_one`. Defaults to 1.0, which means all samples
-        are weighted equally.
     print_kwargs
         Extra keyword arguments are passed to the `print` function. For instance, this allows
         providing a `file` argument, which indicates where to output progress.
+
+    Notes
+    -----
+    Per-sample weights can be supplied by yielding `(x, y, w)` triples from `dataset` instead
+    of the usual `(x, y)` pairs, where `w` is a `float`. When `w` is provided, it is forwarded
+    to `learn_one` for models that accept a `w` parameter (e.g.
+    `linear_model.LogisticRegression`). Samples without a weight default to `w=1.0`.
 
     Examples
     --------
@@ -410,7 +429,6 @@ def progressive_val_score(
         step=print_every,
         measure_time=show_time,
         measure_memory=show_memory,
-        w=w,
     )
 
     active_learning = utils.inspect.isactivelearner(model)
