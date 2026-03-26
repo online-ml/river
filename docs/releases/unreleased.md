@@ -17,6 +17,10 @@
 - Changed the calculation of the Kuiper statistic in `base.KolmogorovSmirnov` to correspond to the reference implementation. The Kuiper statistic uses the difference between the maximum value and the minimum value.
 - Fixed `RollingQuantile` not storing `q` as an instance attribute, which caused `clone()` to fail.
 
+## metrics
+
+- Fixed `KeyError` in `Silhouette` metric when used with clusterers that haven't initialized their centers yet (e.g., `CluStream` during its warmup phase).
+
 ## tree
 
 - Added handling for division by zero in `tree.hoeffding_tree` for leaf size estimation.
