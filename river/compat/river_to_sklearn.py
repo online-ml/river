@@ -13,6 +13,7 @@ except ImportError:
     PANDAS_INSTALLED = False
 from sklearn import base as sklearn_base
 from sklearn import pipeline, preprocessing, utils
+from sklearn.utils.validation import validate_data
 
 from river import base, compose, stream
 
@@ -38,7 +39,7 @@ SKLEARN_INPUT_X_PARAMS = {
     "dtype": "numeric",
     "order": None,
     "copy": False,
-    "force_all_finite": True,
+    "ensure_all_finite": True,
     "ensure_2d": True,
     "allow_nd": False,
     "ensure_min_samples": 1,
@@ -89,7 +90,7 @@ class River2SKLBase(base.Wrapper, sklearn_base.BaseEstimator):
     _required_parameters = ["river_estimator"]
 
 
-class River2SKLRegressor(River2SKLBase, sklearn_base.RegressorMixin):
+class River2SKLRegressor(sklearn_base.RegressorMixin, River2SKLBase):
     """Compatibility layer from River to scikit-learn for regression.
 
     Parameters
@@ -99,20 +100,11 @@ class River2SKLRegressor(River2SKLBase, sklearn_base.RegressorMixin):
     """
 
     def __init__(self, river_estimator: base.Regressor):
-        # Check the estimator is a Regressor
-        if not isinstance(river_estimator, base.Regressor):
-            raise ValueError("river_estimator is not a Regressor")
-
         self.river_estimator = river_estimator
 
-    def _partial_fit(self, X, y):
+    def _partial_fit(self, X, y, reset=False):
         # Check the inputs
-        X, y = utils.check_X_y(X, y, **SKLEARN_INPUT_X_PARAMS, **SKLEARN_INPUT_Y_PARAMS)
-
-        # Store the number of features so that future inputs can be checked
-        if hasattr(self, "n_features_in_") and X.shape[1] != self.n_features_in_:
-            raise ValueError(f"Expected {self.n_features_in_} features, got {X.shape[1]}")
-        self.n_features_in_ = X.shape[1]
+        X, y = validate_data(self, X, y, reset=reset, **SKLEARN_INPUT_X_PARAMS, **SKLEARN_INPUT_Y_PARAMS)
 
         # scikit-learn's convention is that fit shouldn't mutate the input parameters; we have to
         # deep copy the provided estimator in order to respect this convention
@@ -142,11 +134,10 @@ class River2SKLRegressor(River2SKLBase, sklearn_base.RegressorMixin):
         """
 
         # Reset the state if already fitted
-        for attr in ("instance_", "n_features_in_"):
-            self.__dict__.pop(attr, None)
+        self.__dict__.pop("instance_", None)
 
         # Fit with one pass of the dataset
-        return self._partial_fit(X, y)
+        return self._partial_fit(X, y, reset=True)
 
     def partial_fit(self, X, y):
         """Fits incrementally on a portion of a dataset.
@@ -165,7 +156,7 @@ class River2SKLRegressor(River2SKLBase, sklearn_base.RegressorMixin):
         """
 
         # Fit with one pass of the dataset portion
-        return self._partial_fit(X, y)
+        return self._partial_fit(X, y, reset=not hasattr(self, "n_features_in_"))
 
     def predict(self, X) -> np.ndarray:
         """Predicts the target of an entire dataset contained in memory.
@@ -185,10 +176,7 @@ class River2SKLRegressor(River2SKLBase, sklearn_base.RegressorMixin):
         utils.validation.check_is_fitted(self, attributes="instance_")
 
         # Check the input
-        X = utils.check_array(X, **SKLEARN_INPUT_X_PARAMS)
-
-        if X.shape[1] != self.n_features_in_:
-            raise ValueError(f"Expected {self.n_features_in_} features, got {X.shape[1]}")
+        X = validate_data(self, X, reset=False, **SKLEARN_INPUT_X_PARAMS)
 
         # Make a prediction for each observation
         y_pred = np.empty(shape=len(X))
@@ -198,7 +186,7 @@ class River2SKLRegressor(River2SKLBase, sklearn_base.RegressorMixin):
         return y_pred
 
 
-class River2SKLClassifier(River2SKLBase, sklearn_base.ClassifierMixin):
+class River2SKLClassifier(sklearn_base.ClassifierMixin, River2SKLBase):
     """Compatibility layer from River to scikit-learn for classification.
 
     Parameters
@@ -208,39 +196,37 @@ class River2SKLClassifier(River2SKLBase, sklearn_base.ClassifierMixin):
     """
 
     def __init__(self, river_estimator: base.Classifier):
-        # Check the estimator is Classifier
-        if not isinstance(river_estimator, base.Classifier):
-            raise ValueError("estimator is not a Classifier")
-
         self.river_estimator = river_estimator
 
-    def _more_tags(self):
-        return {"binary_only": not self.river_estimator._multiclass}
+    def __sklearn_tags__(self):
+        from sklearn.utils._tags import ClassifierTags
 
-    def _partial_fit(self, X, y, classes):
+        tags = super().__sklearn_tags__()
+        if tags.classifier_tags is None:
+            tags.classifier_tags = ClassifierTags()
+        tags.classifier_tags.multi_class = self.river_estimator._multiclass
+        return tags
+
+    def _partial_fit(self, X, y, classes, reset=False):
         # If first _partial_fit call, set the classes, else check consistency
         if not hasattr(self, "classes_"):
+            if classes is None:
+                classes = utils.multiclass.unique_labels(y)
             self.classes_ = classes
 
         # Check the inputs
-        X, y = utils.check_X_y(X, y, **SKLEARN_INPUT_X_PARAMS, **SKLEARN_INPUT_Y_PARAMS)
+        X, y = validate_data(self, X, y, reset=reset, **SKLEARN_INPUT_X_PARAMS, **SKLEARN_INPUT_Y_PARAMS)
 
         # Check the number of classes agrees with the type of classifier
-        if len(self.classes_) > 2 and not self.river_estimator._multiclass:
-            # Only a warning for now so tests can pass, see scikit-learn issue
-            # https://github.com/scikit-learn/scikit-learn/issues/16798#issuecomment-651784267
-            # TODO: change to a ValueError when fixed
-            import warnings
+        if not self.river_estimator._multiclass:
+            from sklearn.utils.multiclass import type_of_target
 
-            warnings.warn(
-                f"more than 2 classes were given but {self.river_estimator} is a"
-                " binary classifier"
-            )
-
-        # Store the number of features so that future inputs can be checked
-        if hasattr(self, "n_features_in_") and X.shape[1] != self.n_features_in_:
-            raise ValueError(f"Expected {self.n_features_in_} features, got {X.shape[1]}")
-        self.n_features_in_ = X.shape[1]
+            y_type = type_of_target(y, input_name="y", raise_unknown=True)
+            if y_type != "binary":
+                raise ValueError(
+                    "Only binary classification is supported. The type of the target "
+                    f"is {y_type}."
+                )
 
         # Check the target
         utils.multiclass.check_classification_targets(y)
@@ -281,12 +267,12 @@ class River2SKLClassifier(River2SKLBase, sklearn_base.ClassifierMixin):
         """
 
         # Reset the state if already fitted
-        for attr in ("classes_", "instance_", "label_encoder_", "n_features_in_"):
+        for attr in ("classes_", "instance_", "label_encoder_"):
             self.__dict__.pop(attr, None)
 
         # Fit with one pass of the dataset
         classes = utils.multiclass.unique_labels(y)
-        return self._partial_fit(X, y, classes)
+        return self._partial_fit(X, y, classes, reset=True)
 
     def partial_fit(self, X, y, classes=None):
         """Fits incrementally on a portion of a dataset.
@@ -309,7 +295,7 @@ class River2SKLClassifier(River2SKLBase, sklearn_base.ClassifierMixin):
         """
 
         # Fit with one pass of the dataset portion
-        return self._partial_fit(X, y, classes)
+        return self._partial_fit(X, y, classes, reset=not hasattr(self, "n_features_in_"))
 
     def predict_proba(self, X):
         """Predicts the target probability of an entire dataset contained in memory.
@@ -329,10 +315,7 @@ class River2SKLClassifier(River2SKLBase, sklearn_base.ClassifierMixin):
         utils.validation.check_is_fitted(self, attributes="instance_")
 
         # Check the input
-        X = utils.check_array(X, **SKLEARN_INPUT_X_PARAMS)
-
-        if X.shape[1] != self.n_features_in_:
-            raise ValueError(f"Expected {self.n_features_in_} features, got {X.shape[1]}")
+        X = validate_data(self, X, reset=False, **SKLEARN_INPUT_X_PARAMS)
 
         # river's predictions have to converted to follow the scikit-learn conventions
         def reshape_probas(y_pred):
@@ -363,10 +346,7 @@ class River2SKLClassifier(River2SKLBase, sklearn_base.ClassifierMixin):
         utils.validation.check_is_fitted(self, attributes="instance_")
 
         # Check the input
-        X = utils.check_array(X, **SKLEARN_INPUT_X_PARAMS)
-
-        if X.shape[1] != self.n_features_in_:
-            raise ValueError(f"Expected {self.n_features_in_} features, got {X.shape[1]}")
+        X = validate_data(self, X, reset=False, **SKLEARN_INPUT_X_PARAMS)
 
         # Make a prediction for each observation
         y_pred = [None] * len(X)
@@ -381,7 +361,7 @@ class River2SKLClassifier(River2SKLBase, sklearn_base.ClassifierMixin):
         return y_pred
 
 
-class River2SKLTransformer(River2SKLBase, sklearn_base.TransformerMixin):
+class River2SKLTransformer(sklearn_base.TransformerMixin, River2SKLBase):
     """Compatibility layer from River to scikit-learn for transformation.
 
     Parameters
@@ -391,23 +371,14 @@ class River2SKLTransformer(River2SKLBase, sklearn_base.TransformerMixin):
     """
 
     def __init__(self, river_estimator: base.Transformer):
-        # Check the estimator is a Transformer
-        if not isinstance(river_estimator, base.Transformer):
-            raise ValueError("estimator is not a Transformer")
-
         self.river_estimator = river_estimator
 
-    def _partial_fit(self, X, y):
+    def _partial_fit(self, X, y, reset=False):
         # Check the inputs
         if y is None:
-            X = utils.check_array(X, **SKLEARN_INPUT_X_PARAMS)
+            X = validate_data(self, X, reset=reset, **SKLEARN_INPUT_X_PARAMS)
         else:
-            X, y = utils.check_X_y(X, y, **SKLEARN_INPUT_X_PARAMS, **SKLEARN_INPUT_Y_PARAMS)
-
-        # Store the number of features so that future inputs can be checked
-        if hasattr(self, "n_features_in_") and X.shape[1] != self.n_features_in_:
-            raise ValueError(f"Expected {self.n_features_in_} features, got {X.shape[1]}")
-        self.n_features_in_ = X.shape[1]
+            X, y = validate_data(self, X, y, reset=reset, **SKLEARN_INPUT_X_PARAMS, **SKLEARN_INPUT_Y_PARAMS)
 
         # scikit-learn's convention is that fit shouldn't mutate the input parameters; we have to
         # deep copy the provided estimator in order to respect this convention
@@ -441,11 +412,10 @@ class River2SKLTransformer(River2SKLBase, sklearn_base.TransformerMixin):
         """
 
         # Reset the state if already fitted
-        for attr in ("instance_", "n_features_in_"):
-            self.__dict__.pop(attr, None)
+        self.__dict__.pop("instance_", None)
 
         # Fit with one pass of the dataset
-        return self._partial_fit(X, y)
+        return self._partial_fit(X, y, reset=True)
 
     def partial_fit(self, X, y=None):
         """Fits incrementally on a portion of a dataset.
@@ -464,7 +434,7 @@ class River2SKLTransformer(River2SKLBase, sklearn_base.TransformerMixin):
         """
 
         # Fit with one pass of the dataset
-        return self._partial_fit(X, y)
+        return self._partial_fit(X, y, reset=not hasattr(self, "n_features_in_"))
 
     def transform(self, X):
         """Predicts the target of an entire dataset contained in memory.
@@ -484,10 +454,7 @@ class River2SKLTransformer(River2SKLBase, sklearn_base.TransformerMixin):
         utils.validation.check_is_fitted(self, attributes="instance_")
 
         # Check the input
-        X = utils.check_array(X, **SKLEARN_INPUT_X_PARAMS)
-
-        if X.shape[1] != self.n_features_in_:
-            raise ValueError(f"Expected {self.n_features_in_} features, got {X.shape[1]}")
+        X = validate_data(self, X, reset=False, **SKLEARN_INPUT_X_PARAMS)
 
         # Call predict_proba_one for each observation
         X_trans = [None] * len(X)
@@ -497,7 +464,7 @@ class River2SKLTransformer(River2SKLBase, sklearn_base.TransformerMixin):
         return np.asarray(X_trans)
 
 
-class River2SKLClusterer(River2SKLBase, sklearn_base.ClusterMixin):
+class River2SKLClusterer(sklearn_base.ClusterMixin, River2SKLBase):
     """Compatibility layer from River to scikit-learn for clustering.
 
     Parameters
@@ -507,20 +474,11 @@ class River2SKLClusterer(River2SKLBase, sklearn_base.ClusterMixin):
     """
 
     def __init__(self, river_estimator: base.Clusterer):
-        # Check the estimator is a Clusterer
-        if not isinstance(river_estimator, base.Clusterer):
-            raise ValueError("estimator is not a Clusterer")
-
         self.river_estimator = river_estimator
 
-    def _partial_fit(self, X, y):
+    def _partial_fit(self, X, y, reset=False):
         # Check the inputs
-        X = utils.check_array(X, **SKLEARN_INPUT_X_PARAMS)
-
-        # Store the number of features so that future inputs can be checked
-        if hasattr(self, "n_features_in_") and X.shape[1] != self.n_features_in_:
-            raise ValueError(f"Expected {self.n_features_in_} features, got {X.shape[1]}")
-        self.n_features_in_ = X.shape[1]
+        X = validate_data(self, X, reset=reset, **SKLEARN_INPUT_X_PARAMS)
 
         # scikit-learn's convention is that fit shouldn't mutate the input parameters; we have to
         # deep copy the provided estimator in order to respect this convention
@@ -553,11 +511,10 @@ class River2SKLClusterer(River2SKLBase, sklearn_base.ClusterMixin):
         """
 
         # Reset the state if already fitted
-        for attr in ("instance_", "n_features_in_"):
-            self.__dict__.pop(attr, None)
+        self.__dict__.pop("instance_", None)
 
         # Fit with one pass of the dataset
-        return self._partial_fit(X, y)
+        return self._partial_fit(X, y, reset=True)
 
     def partial_fit(self, X, y):
         """Fits incrementally on a portion of a dataset.
@@ -576,7 +533,7 @@ class River2SKLClusterer(River2SKLBase, sklearn_base.ClusterMixin):
         """
 
         # Fit with one pass of the dataset
-        return self._partial_fit(X, y)
+        return self._partial_fit(X, y, reset=not hasattr(self, "n_features_in_"))
 
     def predict(self, X):
         """Predicts the target of an entire dataset contained in memory.
@@ -596,7 +553,7 @@ class River2SKLClusterer(River2SKLBase, sklearn_base.ClusterMixin):
         utils.validation.check_is_fitted(self, attributes="instance_")
 
         # Check the input
-        X = utils.check_array(X, **SKLEARN_INPUT_X_PARAMS)
+        X = validate_data(self, X, reset=False, **SKLEARN_INPUT_X_PARAMS)
 
         # Call predict_proba_one for each observation
         y_pred = np.empty(len(X), dtype=np.int32)
