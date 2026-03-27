@@ -21,8 +21,13 @@ The `dummy` module is now fully type-annotated.
 - Changed the calculation of the Kuiper statistic in `base.KolmogorovSmirnov` to correspond to the reference implementation. The Kuiper statistic uses the difference between the maximum value and the minimum value.
 - Fixed `RollingQuantile` not storing `q` as an instance attribute, which caused `clone()` to fail.
 
+## compat
+
+- Adapted sklearn compatibility layer to sklearn 1.8: replaced `_more_tags` with `__sklearn_tags__`, switched from `check_X_y`/`check_array` to `validate_data`, fixed mixin inheritance order, and updated binary classifier validation.
+
 ## metrics
 
+- Fixed `AdjustedMutualInfo` to return 0.0 when only one class or one cluster exists, and to handle the 0/0 edge case for perfect matches with small samples, aligning with sklearn 1.8 behavior.
 - Fixed `KeyError` in `Silhouette` metric when used with clusterers that haven't initialized their centers yet (e.g., `CluStream` during its warmup phase).
 
 ## tree
