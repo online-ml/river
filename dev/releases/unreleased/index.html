@@ -1106,6 +1106,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#compat" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        compat
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#metrics" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2342,6 +2353,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#compat" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        compat
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#metrics" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2400,8 +2422,13 @@
 <li>Changed the calculation of the Kuiper statistic in <code>base.KolmogorovSmirnov</code> to correspond to the reference implementation. The Kuiper statistic uses the difference between the maximum value and the minimum value.</li>
 <li>Fixed <code>RollingQuantile</code> not storing <code>q</code> as an instance attribute, which caused <code>clone()</code> to fail.</li>
 </ul>
+<h2 id="compat">compat<a class="headerlink" href="#compat" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Adapted sklearn compatibility layer to sklearn 1.8: replaced <code>_more_tags</code> with <code>__sklearn_tags__</code>, switched from <code>check_X_y</code>/<code>check_array</code> to <code>validate_data</code>, fixed mixin inheritance order, and updated binary classifier validation.</li>
+</ul>
 <h2 id="metrics">metrics<a class="headerlink" href="#metrics" title="Permanent link">&para;</a></h2>
 <ul>
+<li>Fixed <code>AdjustedMutualInfo</code> to return 0.0 when only one class or one cluster exists, and to handle the 0/0 edge case for perfect matches with small samples, aligning with sklearn 1.8 behavior.</li>
 <li>Fixed <code>KeyError</code> in <code>Silhouette</code> metric when used with clusterers that haven't initialized their centers yet (e.g., <code>CluStream</code> during its warmup phase).</li>
 </ul>
 <h2 id="tree">tree<a class="headerlink" href="#tree" title="Permanent link">&para;</a></h2>
