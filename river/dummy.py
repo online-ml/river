@@ -7,6 +7,7 @@ This module is here for testing purposes, as well as providing baseline performa
 from __future__ import annotations
 
 import collections
+from collections.abc import Iterator
 
 from river import base, stats
 
@@ -52,28 +53,29 @@ class NoChangeClassifier(base.Classifier):
     '−'
 
     >>> pprint.pprint(model.predict_proba_one(new_sentence))
-    {'+': 0, '−': 1}
+    {'+': 0.0, '−': 1}
 
     """
 
-    def __init__(self):
-        self.last_class = None
-        self.classes = set()
+    def __init__(self) -> None:
+        self.last_class: base.typing.ClfTarget | None = None
+        self.classes: set[base.typing.ClfTarget] = set()
 
     @property
-    def _multiclass(self):
+    def _multiclass(self) -> bool:
         return True
 
-    def learn_one(self, x, y):
+    def learn_one(self, x: object, y: base.typing.ClfTarget) -> None:
         self.last_class = y
         self.classes.add(y)
 
-    def predict_one(self, x):
+    def predict_one(self, x: object, **kwargs: object) -> base.typing.ClfTarget | None:
         return self.last_class
 
-    def predict_proba_one(self, x):
-        probas = {c: 0 for c in self.classes}
-        probas[self.last_class] = 1
+    def predict_proba_one(self, x: object, **kwargs: object) -> dict[base.typing.ClfTarget, float]:
+        probas = {c: 0.0 for c in self.classes}
+        if self.last_class is not None:
+            probas[self.last_class] = 1
         return probas
 
 
@@ -122,19 +124,19 @@ class PriorClassifier(base.Classifier):
 
     """
 
-    def __init__(self):
-        self.counts = collections.Counter()
+    def __init__(self) -> None:
+        self.counts: collections.Counter[base.typing.ClfTarget] = collections.Counter()
         self.n = 0
 
     @property
-    def _multiclass(self):
+    def _multiclass(self) -> bool:
         return True
 
-    def learn_one(self, x, y):
+    def learn_one(self, x: object, y: base.typing.ClfTarget) -> None:
         self.counts.update([y])
         self.n += 1
 
-    def predict_proba_one(self, x):
+    def predict_proba_one(self, x: object, **kwargs: object) -> dict[base.typing.ClfTarget, float]:
         return {label: count / self.n for label, count in self.counts.items()}
 
 
@@ -174,11 +176,11 @@ class StatisticRegressor(base.Regressor):
         self.statistic = statistic
 
     @classmethod
-    def _unit_test_params(cls):
+    def _unit_test_params(cls) -> Iterator[dict[str, object]]:
         yield {"statistic": stats.Mean()}
 
-    def learn_one(self, x, y):
-        self.statistic.update(y)
+    def learn_one(self, x: object, y: base.typing.RegTarget) -> None:
+        self.statistic.update(y)  # type: ignore[arg-type]
 
-    def predict_one(self, x):
+    def predict_one(self, x: object) -> base.typing.RegTarget | None:  # type: ignore[override]
         return self.statistic.get()
