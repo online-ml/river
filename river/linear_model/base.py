@@ -153,11 +153,11 @@ class GLM:
 
         if self.l2:
             return (
-                loss_gradient * utils.VectorDict(x) + self.l2 * self._weights,
+                utils.VectorDict(x) * loss_gradient + self.l2 * self._weights,
                 loss_gradient,
             )
 
-        return (loss_gradient * utils.VectorDict(x), loss_gradient)
+        return (utils.VectorDict(x) * loss_gradient, loss_gradient)
 
     def learn_one(self, x, y, w=1.0) -> None:
         with self._learn_mode(x):
