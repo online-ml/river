@@ -123,3 +123,15 @@ class LazySearch(BaseNN):
 
         # Return the k closest points
         return tuple(map(list, zip(*sorted(points, key=operator.itemgetter(-1))[:n_neighbors])))
+
+    def refresh_targets(self) -> set:
+        """Refresh the set of classes in the window. Used by classifiers where labels are added as [1] in the vertex tuple.
+
+        This is used to clean up classes that are no longer in the window, and
+        ensure we do not consider "None" a class. It is called every `cleanup_every`
+        step, or can be called manually.
+
+        """
+        return {  # self.window is a deque of items, where each item is a tuple (x, y)
+            pos.item[1] for pos in self.window if pos is not None and pos.item[1] is not None
+        }
