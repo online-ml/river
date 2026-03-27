@@ -104,7 +104,9 @@ class River2SKLRegressor(sklearn_base.RegressorMixin, River2SKLBase):
 
     def _partial_fit(self, X, y, reset=False):
         # Check the inputs
-        X, y = validate_data(self, X, y, reset=reset, **SKLEARN_INPUT_X_PARAMS, **SKLEARN_INPUT_Y_PARAMS)
+        X, y = validate_data(
+            self, X, y, reset=reset, **SKLEARN_INPUT_X_PARAMS, **SKLEARN_INPUT_Y_PARAMS
+        )
 
         # scikit-learn's convention is that fit shouldn't mutate the input parameters; we have to
         # deep copy the provided estimator in order to respect this convention
@@ -215,7 +217,9 @@ class River2SKLClassifier(sklearn_base.ClassifierMixin, River2SKLBase):
             self.classes_ = classes
 
         # Check the inputs
-        X, y = validate_data(self, X, y, reset=reset, **SKLEARN_INPUT_X_PARAMS, **SKLEARN_INPUT_Y_PARAMS)
+        X, y = validate_data(
+            self, X, y, reset=reset, **SKLEARN_INPUT_X_PARAMS, **SKLEARN_INPUT_Y_PARAMS
+        )
 
         # Check the number of classes agrees with the type of classifier
         if not self.river_estimator._multiclass:
@@ -378,7 +382,9 @@ class River2SKLTransformer(sklearn_base.TransformerMixin, River2SKLBase):
         if y is None:
             X = validate_data(self, X, reset=reset, **SKLEARN_INPUT_X_PARAMS)
         else:
-            X, y = validate_data(self, X, y, reset=reset, **SKLEARN_INPUT_X_PARAMS, **SKLEARN_INPUT_Y_PARAMS)
+            X, y = validate_data(
+                self, X, y, reset=reset, **SKLEARN_INPUT_X_PARAMS, **SKLEARN_INPUT_Y_PARAMS
+            )
 
         # scikit-learn's convention is that fit shouldn't mutate the input parameters; we have to
         # deep copy the provided estimator in order to respect this convention
