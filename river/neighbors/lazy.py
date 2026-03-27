@@ -133,8 +133,5 @@ class LazySearch(BaseNN):
 
         """
         return {  # self.window is a deque of items, where each item is a tuple (x, y)
-            pos.item[1]
-            for pos in self.window
-            if pos is not None and pos.item[1] is not None
+            pos.item[1] for pos in self.window if pos is not None and pos.item[1] is not None
         }
-

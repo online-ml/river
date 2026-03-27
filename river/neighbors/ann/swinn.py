@@ -505,4 +505,3 @@ class SWINN(BaseNN):
             for vertex in self._data
             if vertex is not None and vertex.item[1] is not None
         }
- 
