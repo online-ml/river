@@ -27,3 +27,6 @@ repos:
           - "--config-file=pyproject.toml"
           - "--python-version=3.11"
           - "--implicit-optional"
+        additional_dependencies:
+          - "numpy"
+          - "pytest"
