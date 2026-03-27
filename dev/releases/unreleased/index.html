@@ -1138,6 +1138,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#neighbors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        neighbors
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2385,6 +2396,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#neighbors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        neighbors
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2434,6 +2456,12 @@
 <h2 id="tree">tree<a class="headerlink" href="#tree" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Added handling for division by zero in <code>tree.hoeffding_tree</code> for leaf size estimation.</li>
+</ul>
+<h2 id="neighbors">neighbors<a class="headerlink" href="#neighbors" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Added function in nearest-neighbor engines to gather relevant classes/targets from the window.</li>
+<li>Added a virtual function to the base engine class; New NN engines need to override <code>refresh_targets</code> function</li>
+<li>Classifier KNN now calls this engine-specific function under <code>clean_up_classes()</code></li>
 </ul>
 
 

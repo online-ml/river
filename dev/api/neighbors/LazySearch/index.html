@@ -4316,6 +4316,12 @@
 </details>
 <p><span /></p>
 <details class="- abstract">
+<summary>refresh_targets</summary>
+<p>Refresh the set of classes in the window. Used by classifiers where labels are added as [1] in the vertex tuple.</p>
+<p>This is used to clean up classes that are no longer in the window, and ensure we do not consider "None" a class. It is called every <code>cleanup_every</code> step, or can be called manually.</p>
+</details>
+<p><span /></p>
+<details class="- abstract">
 <summary>search</summary>
 <p>Find the <code>n_neighbors</code> closest points to <code>item</code>, along with their distances.</p>
 <p><strong>Parameters</strong></p>
