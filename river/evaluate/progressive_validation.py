@@ -73,7 +73,7 @@ def _progressive_validation(
         # Case 1: no ground truth, just make a prediction
         if y is None:
             y_pred = pred_func(x, **kwargs)
-            y_pred, ask_for_label = y_pred if active_learning else (y_pred, True)
+            y_pred, ask_for_label = y_pred if active_learning else (y_pred, True)  # type: ignore[misc]
             if isinstance(model, AnomalyFilter):
                 y_pred = model.classify(y_pred)
             preds[i] = y_pred, ask_for_label
