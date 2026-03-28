@@ -3,8 +3,6 @@ from __future__ import annotations
 import math
 
 import numpy as np
-
-_HALF_LOG_TAU = 0.5 * math.log(math.tau)
 import pandas as pd
 from scipy.stats import multivariate_normal
 
@@ -12,6 +10,8 @@ from river import covariance, stats
 from river.proba import base
 
 __all__ = ["Gaussian", "MultivariateGaussian"]
+
+_HALF_LOG_TAU = 0.5 * math.log(math.tau)
 
 
 class Gaussian(base.ContinuousDistribution):

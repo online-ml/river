@@ -30,8 +30,13 @@ The `dummy` module is now fully type-annotated.
 - Fixed `AdjustedMutualInfo` to return 0.0 when only one class or one cluster exists, and to handle the 0/0 edge case for perfect matches with small samples, aligning with sklearn 1.8 behavior.
 - Fixed `KeyError` in `Silhouette` metric when used with clusterers that haven't initialized their centers yet (e.g., `CluStream` during its warmup phase).
 
+## proba
+
+- Optimized `Gaussian.__call__` by inlining property accesses, and added `Gaussian.log_pdf` method that computes log-density directly without `exp`/`sqrt`. This speeds up Naive Bayes prediction in all Hoeffding Tree classifiers and their ensembles by 12–22%.
+
 ## tree
 
+- Added `cond_log_proba` to `GaussianSplitter` and optimized `do_naive_bayes_prediction` to use direct log-probabilities, avoiding the `exp`/`log` round-trip.
 - Added handling for division by zero in `tree.hoeffding_tree` for leaf size estimation.
 
 ## neighbors
