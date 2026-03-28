@@ -73,10 +73,30 @@ def _make_metric():
 
 
 def _fake_simulate_qa(ds, moment, delay, copy):
-    """No-delay simulation: question then answer for each sample."""
+    """No-delay simulation: question then answer for each sample, interleaved."""
     for i, (x, y) in enumerate(ds):
-        yield i, x, None  # question
+        yield i, x, None  # question — _iter_dataset has already appended weight[i]
         yield i, x, y     # answer
+
+
+def _fake_simulate_qa_with_delay(ds, moment, delay, copy):
+    """Full-delay simulation: all questions first, then all answers.
+
+    Exhausting ``ds`` up front populates the entire weight_queue before any
+    question event fires, exercising the bounded-memory path.
+    """
+    items = list(ds)  # exhaust _iter_dataset — all weights now in weight_queue
+    for i, (x, y) in enumerate(items):
+        yield i, x, None  # questions in order — popleft matches weight[i]
+    for i, (x, y) in enumerate(items):
+        yield i, x, y  # answers arrive after all predictions are queued
+
+
+def _fake_simulate_qa_with_w_in_kwargs(ds, moment, delay, copy):
+    """Simulate stream metadata that contains a 'w' key in extra kwargs."""
+    for i, (x, y) in enumerate(ds):
+        yield i, x, None, {"w": 99.0}  # extra kwarg with reserved name
+        yield i, x, y, {"w": 99.0}
 
 
 def _run(dataset, accepts_w=True):
@@ -174,3 +194,72 @@ class TestPerSampleWeights:
         for c in model.learn_one.call_args_list:
             assert "w" not in c.kwargs
             assert len(c.args) == 2  # only (x, y)
+
+    def test_weights_correct_under_full_delay(self):
+        """Weights must be matched correctly when all answers arrive after all questions."""
+        dataset = [
+            ({"f": 1}, 0, 2.0),
+            ({"f": 2}, 1, 0.5),
+            ({"f": 3}, 0, 3.0),
+        ]
+        model = _make_model(accepts_w=True)
+        metric = _make_metric()
+
+        mock_utils = MagicMock()
+        mock_utils.inspect.isanomalydetector.return_value = False
+        mock_utils.inspect.isanomalyfilter.return_value = False
+        mock_utils.inspect.isclassifier.return_value = False
+        mock_utils.inspect.isactivelearner.return_value = False
+
+        mock_stream = MagicMock()
+        mock_stream.simulate_qa.side_effect = _fake_simulate_qa_with_delay
+
+        _pv.utils = mock_utils
+        _pv.stream = mock_stream
+
+        list(
+            _progressive_validation(
+                dataset=dataset,
+                model=model,
+                metric=metric,
+                checkpoints=iter([]),
+            )
+        )
+
+        weights = [c.kwargs.get("w") for c in model.learn_one.call_args_list]
+        assert weights == [2.0, 0.5, 3.0]
+
+    def test_kwargs_w_key_does_not_cause_collision(self):
+        """If simulate_qa metadata includes 'w', learn_one must not raise TypeError."""
+        dataset = [
+            ({"f": 1}, 0, 2.0),
+            ({"f": 2}, 1, 0.5),
+        ]
+        model = _make_model(accepts_w=True)
+        metric = _make_metric()
+
+        mock_utils = MagicMock()
+        mock_utils.inspect.isanomalydetector.return_value = False
+        mock_utils.inspect.isanomalyfilter.return_value = False
+        mock_utils.inspect.isclassifier.return_value = False
+        mock_utils.inspect.isactivelearner.return_value = False
+
+        mock_stream = MagicMock()
+        mock_stream.simulate_qa.side_effect = _fake_simulate_qa_with_w_in_kwargs
+
+        _pv.utils = mock_utils
+        _pv.stream = mock_stream
+
+        # Must not raise TypeError: got multiple values for keyword argument 'w'
+        list(
+            _progressive_validation(
+                dataset=dataset,
+                model=model,
+                metric=metric,
+                checkpoints=iter([]),
+            )
+        )
+
+        # The sample weight (not the metadata w=99.0) must reach learn_one
+        weights = [c.kwargs.get("w") for c in model.learn_one.call_args_list]
+        assert weights == [2.0, 0.5]

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import collections
 import datetime as dt
 import inspect
 import itertools
@@ -41,17 +42,20 @@ def _progressive_validation(
         pred_func = model.predict_one
 
     # Extract per-sample weights when the dataset yields (x, y, w) triples.
-    # The weights dict maps sample index i (from simulate_qa's enumerate) to w.
-    sample_weights: dict[int, float] = {}
+    # Weights are enqueued as _iter_dataset is consumed and popped on each question
+    # event, then stored inside preds[i] alongside the prediction. This keeps memory
+    # bounded by the delay window (same as preds) rather than the whole dataset, and
+    # avoids any reliance on index alignment between _iter_dataset and simulate_qa.
+    weight_queue: collections.deque[float] = collections.deque()
 
     def _iter_dataset():
-        for idx, item in enumerate(dataset):
+        for item in dataset:
             if len(item) == 3:
                 x, y, w = item
-                sample_weights[idx] = w
             else:
                 x, y = item
-                sample_weights[idx] = 1.0
+                w = 1.0
+            weight_queue.append(w)
             yield x, y
 
     preds = {}
@@ -94,11 +98,14 @@ def _progressive_validation(
             y_pred, ask_for_label = y_pred if active_learning else (y_pred, True)
             if utils.inspect.isanomalyfilter(model):
                 y_pred = model.classify(y_pred)
-            preds[i] = y_pred, ask_for_label
+            # Store the weight alongside the prediction so it travels with preds[i]
+            # through the delay window and is retrieved atomically in Case 2.
+            w = weight_queue.popleft()
+            preds[i] = y_pred, ask_for_label, w
             continue
 
         # Case 2: there's a ground truth, model and metric can be updated
-        y_pred, use_label = preds.pop(i)
+        y_pred, use_label, w = preds.pop(i)
 
         # Update the metric
         if y_pred != {} and y_pred is not None:
@@ -107,14 +114,16 @@ def _progressive_validation(
         # Update the model
         if use_label:
             n_samples_learned += 1
-            w = sample_weights.pop(i, 1.0)
+            # Strip 'w' from kwargs to prevent TypeError if simulate_qa stream
+            # metadata happens to include a 'w' key ("w" is reserved for sample weight).
+            learn_kwargs = {k: v for k, v in kwargs.items() if k != "w"}
             if model._supervised:
                 if _model_accepts_w:
-                    model.learn_one(x, y, w=w, **kwargs)
+                    model.learn_one(x, y, w=w, **learn_kwargs)
                 else:
-                    model.learn_one(x, y, **kwargs)
+                    model.learn_one(x, y, **learn_kwargs)
             else:
-                model.learn_one(x, **kwargs)
+                model.learn_one(x, **learn_kwargs)
 
         # Yield current results
         n_total_answers += 1
