@@ -34,8 +34,13 @@ The `dummy` module is now fully type-annotated.
 
 - Added `EstimatorMeta` metaclass so that `isinstance` works transparently with pipelines. For example, `isinstance(scaler | log_reg, base.Classifier)` now returns `True`. This removes the need for `utils.inspect` helper functions (`isclassifier`, `isregressor`, etc.), which have been removed.
 
+## proba
+
+- Optimized `Gaussian.__call__` by inlining property accesses, and added `Gaussian.log_pdf` method that computes log-density directly without `exp`/`sqrt`. This speeds up Naive Bayes prediction in all Hoeffding Tree classifiers and their ensembles by 12–22%.
+
 ## tree
 
+- Added `cond_log_proba` to `GaussianSplitter` and optimized `do_naive_bayes_prediction` to use direct log-probabilities, avoiding the `exp`/`log` round-trip.
 - Added handling for division by zero in `tree.hoeffding_tree` for leaf size estimation.
 
 ## neighbors
