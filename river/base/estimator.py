@@ -19,7 +19,7 @@ class EstimatorMeta(abc.ABCMeta):
 
     """
 
-    def __instancecheck__(cls, instance):
+    def __instancecheck__(cls, instance: object) -> bool:
         if super().__instancecheck__(instance):
             return True
         if hasattr(instance, "_last_step"):
