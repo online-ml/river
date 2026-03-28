@@ -4431,6 +4431,16 @@
 </details>
 <p><span /></p>
 <details class="- abstract">
+<summary>log_pdf</summary>
+<p>Log of the probability density function.</p>
+<p>This is more efficient and numerically stable than <code>math.log(self(x))</code> because it avoids the <code>exp</code> / <code>sqrt</code> round-trip.</p>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><strong>x</strong>    </li>
+</ul>
+</details>
+<p><span /></p>
+<details class="- abstract">
 <summary>revert</summary>
 <p>Reverts the parameters of the distribution for a given observation.</p>
 <p><strong>Parameters</strong></p>

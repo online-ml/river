@@ -1128,6 +1128,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#proba" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        proba
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#tree" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2386,6 +2397,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#proba" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        proba
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#tree" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2453,8 +2475,13 @@
 <li>Fixed <code>AdjustedMutualInfo</code> to return 0.0 when only one class or one cluster exists, and to handle the 0/0 edge case for perfect matches with small samples, aligning with sklearn 1.8 behavior.</li>
 <li>Fixed <code>KeyError</code> in <code>Silhouette</code> metric when used with clusterers that haven't initialized their centers yet (e.g., <code>CluStream</code> during its warmup phase).</li>
 </ul>
+<h2 id="proba">proba<a class="headerlink" href="#proba" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Optimized <code>Gaussian.__call__</code> by inlining property accesses, and added <code>Gaussian.log_pdf</code> method that computes log-density directly without <code>exp</code>/<code>sqrt</code>. This speeds up Naive Bayes prediction in all Hoeffding Tree classifiers and their ensembles by 12–22%.</li>
+</ul>
 <h2 id="tree">tree<a class="headerlink" href="#tree" title="Permanent link">&para;</a></h2>
 <ul>
+<li>Added <code>cond_log_proba</code> to <code>GaussianSplitter</code> and optimized <code>do_naive_bayes_prediction</code> to use direct log-probabilities, avoiding the <code>exp</code>/<code>log</code> round-trip.</li>
 <li>Added handling for division by zero in <code>tree.hoeffding_tree</code> for leaf size estimation.</li>
 </ul>
 <h2 id="neighbors">neighbors<a class="headerlink" href="#neighbors" title="Permanent link">&para;</a></h2>
