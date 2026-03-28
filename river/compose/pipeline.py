@@ -26,6 +26,7 @@ def _anomaly_detector_cls():
 
     return AnomalyDetector
 
+
 __all__ = ["Pipeline"]
 
 
