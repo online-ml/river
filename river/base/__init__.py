@@ -25,7 +25,7 @@ from .drift_detector import (
     DriftDetector,
 )
 from .ensemble import Ensemble, WrapperEnsemble
-from .estimator import Estimator, EstimatorMeta
+from .estimator import Estimator
 from .multi_output import MultiLabelClassifier, MultiTargetRegressor
 from .regressor import MiniBatchRegressor, Regressor
 from .transformer import (
@@ -48,7 +48,6 @@ __all__ = [
     "DriftAndWarningDetector",
     "Ensemble",
     "Estimator",
-    "EstimatorMeta",
     "MiniBatchClassifier",
     "MiniBatchSupervisedTransformer",
     "MiniBatchTransformer",
