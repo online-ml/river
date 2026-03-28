@@ -33,7 +33,9 @@ def check_learn_one(model, dataset):
 def check_shuffle_features_no_impact(model, dataset):
     """Changing the order of the features between calls should have no effect on a model."""
 
-    from river import utils
+    from river import base
+    from river.active.base import ActiveLearningClassifier
+    from river.anomaly.base import AnomalyDetector
 
     params = seed_params(model._get_params(), seed=42)
     model = model.clone(params)
@@ -47,27 +49,27 @@ def check_shuffle_features_no_impact(model, dataset):
 
         assert x == x_shuffled  # order doesn't matter for dicts
 
-        if utils.inspect.isclassifier(model):
+        if isinstance(model, base.Classifier):
             try:
                 y_pred = model.predict_proba_one(x)
                 y_pred_shuffled = shuffled.predict_proba_one(x_shuffled)
             except NotImplementedError:
                 y_pred = model.predict_one(x)
                 y_pred_shuffled = shuffled.predict_one(x_shuffled)
-        elif utils.inspect.isanomalydetector(model):
+        elif isinstance(model, AnomalyDetector):
             y_pred = model.score_one(x)
             y_pred_shuffled = shuffled.score_one(x_shuffled)
         else:
             y_pred = model.predict_one(x)
             y_pred_shuffled = shuffled.predict_one(x_shuffled)
 
-        if utils.inspect.isactivelearner(model):
+        if isinstance(model, ActiveLearningClassifier):
             y_pred, _ = y_pred
             y_pred_shuffled, _ = y_pred_shuffled
 
         assert_predictions_are_close(y_pred, y_pred_shuffled)
 
-        if utils.inspect.isanomalydetector(model):
+        if isinstance(model, AnomalyDetector):
             model.learn_one(x)
             shuffled.learn_one(x_shuffled)
         else:
@@ -77,16 +79,16 @@ def check_shuffle_features_no_impact(model, dataset):
 
 def check_emerging_features(model, dataset):
     """The model should work fine when new features appear."""
-    from river import utils
+    from river.anomaly.base import AnomalyDetector
 
     for x, y in dataset:
         features = list(x.keys())
         random.shuffle(features)
-        if utils.inspect.isanomalydetector(model):
+        if isinstance(model, AnomalyDetector):
             model.score_one(x)
         else:
             model.predict_one(x)
-        if utils.inspect.isanomalydetector(model):
+        if isinstance(model, AnomalyDetector):
             model.learn_one({i: x[i] for i in features[:-3]})  # drop 3 features at random
         else:
             model.learn_one({i: x[i] for i in features[:-3]}, y)
@@ -94,13 +96,12 @@ def check_emerging_features(model, dataset):
 
 def check_disappearing_features(model, dataset):
     """The model should work fine when features disappear."""
-
-    from river import utils
+    from river.anomaly.base import AnomalyDetector
 
     for x, y in dataset:
         features = list(x.keys())
         random.shuffle(features)
-        if utils.inspect.isanomalydetector(model):
+        if isinstance(model, AnomalyDetector):
             model.score_one({i: x[i] for i in features[:-3]})  # drop 3 features at random
             model.learn_one(x)
         else:
@@ -110,12 +111,11 @@ def check_disappearing_features(model, dataset):
 
 def check_radically_disappearing_features(model, dataset):
     """The model should work fine when nearly all features disappear."""
-
-    from river import utils
+    from river.anomaly.base import AnomalyDetector
 
     # First give all the data to prime the model
     for x, y in itertools.islice(dataset, 20):
-        if utils.inspect.isanomalydetector(model):
+        if isinstance(model, AnomalyDetector):
             model.score_one(x)
             model.learn_one(x)
         else:
@@ -126,7 +126,7 @@ def check_radically_disappearing_features(model, dataset):
     for x, y in itertools.islice(dataset, 10, None):
         features = list(x.keys())
         feat = random.choice(list(features))  # keep only 1 feature, at random
-        if utils.inspect.isanomalydetector(model):
+        if isinstance(model, AnomalyDetector):
             model.score_one({feat: x[feat]})
             model.learn_one({feat: x[feat]})
         else:
@@ -146,11 +146,11 @@ def check_debug_one(model, dataset):
 
 
 def check_pickling(model, dataset):
-    from river import utils
+    from river.anomaly.base import AnomalyDetector
 
     assert isinstance(pickle.loads(pickle.dumps(model)), model.__class__)
     for x, y in dataset:
-        if utils.inspect.isanomalydetector(model):
+        if isinstance(model, AnomalyDetector):
             model.score_one(x)
             model.learn_one(x)
         else:
@@ -227,7 +227,7 @@ def check_clone_changes_memory_addresses(model):
 
 
 def check_seeding_is_idempotent(model, dataset):
-    from river import utils
+    from river.anomaly.base import AnomalyDetector
 
     params = model._get_params()
     seeded_params = seed_params(params, seed=42)
@@ -236,7 +236,7 @@ def check_seeding_is_idempotent(model, dataset):
     B = model.clone(seeded_params)
 
     for x, y in dataset:
-        if utils.inspect.isanomalydetector(model):
+        if isinstance(model, AnomalyDetector):
             assert A.score_one(x) == B.score_one(x)
         else:
             assert A.predict_one(x) == B.predict_one(x)

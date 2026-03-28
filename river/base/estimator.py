@@ -10,7 +10,24 @@ if TYPE_CHECKING:
 from . import base
 
 
-class Estimator(base.Base, abc.ABC):
+class EstimatorMeta(abc.ABCMeta):
+    """Metaclass that makes isinstance() work transparently with pipelines.
+
+    When checking isinstance(pipeline, Classifier), this metaclass automatically
+    unwraps Pipeline-like objects by checking their _last_step attribute. This
+    means isinstance(scaler | log_reg, base.Classifier) returns True.
+
+    """
+
+    def __instancecheck__(cls, instance):
+        if super().__instancecheck__(instance):
+            return True
+        if hasattr(instance, "_last_step"):
+            return isinstance(instance._last_step, cls)
+        return False
+
+
+class Estimator(base.Base, abc.ABC, metaclass=EstimatorMeta):
     """An estimator."""
 
     @property

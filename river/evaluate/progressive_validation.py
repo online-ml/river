@@ -6,6 +6,7 @@ import time
 import typing
 
 from river import base, metrics, stream, utils
+from river.anomaly.base import AnomalyDetector, AnomalyFilter
 
 __all__ = ["progressive_val_score"]
 
@@ -26,9 +27,9 @@ def _progressive_validation(
         raise ValueError(f"{metric.__class__.__name__} metric is not compatible with {model}")
 
     # Determine if predict_one or predict_proba_one should be used in case of a classifier
-    if utils.inspect.isanomalydetector(model) or utils.inspect.isanomalyfilter(model):
+    if isinstance(model, AnomalyDetector | AnomalyFilter):
         pred_func = model.score_one
-    elif utils.inspect.isclassifier(model) and not metric.requires_labels:  # type: ignore
+    elif isinstance(model, base.Classifier) and not metric.requires_labels:  # type: ignore
         pred_func = model.predict_proba_one
     else:
         pred_func = model.predict_one
@@ -37,7 +38,9 @@ def _progressive_validation(
 
     # If we are dealing with an active learner, we need to check whether or not a label should be
     # used for training or not. We'll also record how many times labels were used.
-    active_learning = utils.inspect.isactivelearner(model)
+    from river.active.base import ActiveLearningClassifier
+
+    active_learning = isinstance(model, ActiveLearningClassifier)
     n_samples_learned = 0
 
     prev_checkpoint = None
@@ -71,7 +74,7 @@ def _progressive_validation(
         if y is None:
             y_pred = pred_func(x, **kwargs)
             y_pred, ask_for_label = y_pred if active_learning else (y_pred, True)
-            if utils.inspect.isanomalyfilter(model):
+            if isinstance(model, AnomalyFilter):
                 y_pred = model.classify(y_pred)
             preds[i] = y_pred, ask_for_label
             continue
@@ -392,7 +395,9 @@ def progressive_val_score(
         measure_memory=show_memory,
     )
 
-    active_learning = utils.inspect.isactivelearner(model)
+    from river.active.base import ActiveLearningClassifier
+
+    active_learning = isinstance(model, ActiveLearningClassifier)
 
     for checkpoint in checkpoints:
         msg = f"[{checkpoint['Step']:,d}] {metric}"
