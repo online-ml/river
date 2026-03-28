@@ -22,6 +22,7 @@ def _progressive_validation(
     measure_time=False,
     measure_memory=False,
     yield_predictions=False,
+    w: typing.Callable[[dict, typing.Any], float] | None = None,
 ):
     # Check that the model and the metric are in accordance
     if not metric.works_with(model):
@@ -51,11 +52,13 @@ def _progressive_validation(
     def _iter_dataset():
         for item in dataset:
             if len(item) == 3:
-                x, y, w = item
+                x, y, sample_w = item
             else:
                 x, y = item
-                w = 1.0
-            weight_queue.append(w)
+                # w callable takes precedence over the default; tuple weight takes
+                # precedence over the w callable so mixed datasets behave predictably.
+                sample_w = w(x, y) if w is not None else 1.0
+            weight_queue.append(sample_w)
             yield x, y
 
     preds = {}
@@ -100,12 +103,12 @@ def _progressive_validation(
                 y_pred = model.classify(y_pred)
             # Store the weight alongside the prediction so it travels with preds[i]
             # through the delay window and is retrieved atomically in Case 2.
-            w = weight_queue.popleft()
-            preds[i] = y_pred, ask_for_label, w
+            sample_w = weight_queue.popleft()
+            preds[i] = y_pred, ask_for_label, sample_w
             continue
 
         # Case 2: there's a ground truth, model and metric can be updated
-        y_pred, use_label, w = preds.pop(i)
+        y_pred, use_label, sample_w = preds.pop(i)
 
         # Update the metric
         if y_pred != {} and y_pred is not None:
@@ -119,7 +122,7 @@ def _progressive_validation(
             learn_kwargs = {k: v for k, v in kwargs.items() if k != "w"}
             if model._supervised:
                 if _model_accepts_w:
-                    model.learn_one(x, y, w=w, **learn_kwargs)
+                    model.learn_one(x, y, w=sample_w, **learn_kwargs)
                 else:
                     model.learn_one(x, y, **learn_kwargs)
             else:
@@ -147,6 +150,7 @@ def iter_progressive_val_score(
     measure_time=False,
     measure_memory=False,
     yield_predictions=False,
+    w: typing.Callable[[dict, typing.Any], float] | None = None,
 ) -> typing.Generator:
     """Evaluates the performance of a model on a streaming dataset and yields results.
 
@@ -185,13 +189,20 @@ def iter_progressive_val_score(
     yield_predictions
         Whether or not to include predictions. If step is 1, then this is equivalent to yielding
         the predictions at every iterations. Otherwise, not all predictions will be yielded.
+    w
+        An optional callable that accepts `(x, y)` and returns a per-sample weight as a
+        `float`. When provided, the returned weight is forwarded to `learn_one` for models
+        that accept a `w` parameter (e.g. `linear_model.LogisticRegression`). If a sample
+        in `dataset` already carries a weight as the third element of an `(x, y, w)` tuple,
+        that tuple weight takes precedence over the callable. Defaults to `None`, which is
+        equivalent to every sample having weight `1.0`.
 
     Notes
     -----
-    Per-sample weights can be supplied by yielding `(x, y, w)` triples from `dataset` instead
-    of the usual `(x, y)` pairs, where `w` is a `float`. When `w` is provided, it is forwarded
-    to `learn_one` for models that accept a `w` parameter (e.g.
-    `linear_model.LogisticRegression`). Samples without a weight default to `w=1.0`.
+    Per-sample weights can be supplied either via this `w` parameter or by yielding
+    `(x, y, w)` triples from `dataset`. Tuple weights take precedence over the callable so
+    that mixed datasets behave predictably. The weight is forwarded to `learn_one` for
+    models that accept a `w` parameter (e.g. `linear_model.LogisticRegression`).
 
     Examples
     --------
@@ -266,6 +277,7 @@ def iter_progressive_val_score(
         measure_time=measure_time,
         measure_memory=measure_memory,
         yield_predictions=yield_predictions,
+        w=w,
     )
 
 
@@ -278,6 +290,7 @@ def progressive_val_score(
     print_every=0,
     show_time=False,
     show_memory=False,
+    w: typing.Callable[[dict, typing.Any], float] | None = None,
     **print_kwargs,
 ) -> metrics.base.Metric:
     """Evaluates the performance of a model on a streaming dataset.
@@ -328,16 +341,23 @@ def progressive_val_score(
         Whether or not to display the elapsed time.
     show_memory
         Whether or not to display the memory usage of the model.
+    w
+        An optional callable that accepts `(x, y)` and returns a per-sample weight as a
+        `float`. When provided, the returned weight is forwarded to `learn_one` for models
+        that accept a `w` parameter (e.g. `linear_model.LogisticRegression`). If a sample
+        in `dataset` already carries a weight as the third element of an `(x, y, w)` tuple,
+        that tuple weight takes precedence over the callable. Defaults to `None`, which is
+        equivalent to every sample having weight `1.0`.
     print_kwargs
         Extra keyword arguments are passed to the `print` function. For instance, this allows
         providing a `file` argument, which indicates where to output progress.
 
     Notes
     -----
-    Per-sample weights can be supplied by yielding `(x, y, w)` triples from `dataset` instead
-    of the usual `(x, y)` pairs, where `w` is a `float`. When `w` is provided, it is forwarded
-    to `learn_one` for models that accept a `w` parameter (e.g.
-    `linear_model.LogisticRegression`). Samples without a weight default to `w=1.0`.
+    Per-sample weights can be supplied either via this `w` parameter or by yielding
+    `(x, y, w)` triples from `dataset`. Tuple weights take precedence over the callable so
+    that mixed datasets behave predictably. The weight is forwarded to `learn_one` for
+    models that accept a `w` parameter (e.g. `linear_model.LogisticRegression`).
 
     Examples
     --------
@@ -438,6 +458,7 @@ def progressive_val_score(
         step=print_every,
         measure_time=show_time,
         measure_memory=show_memory,
+        w=w,
     )
 
     active_learning = utils.inspect.isactivelearner(model)

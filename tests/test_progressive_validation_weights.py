@@ -263,3 +263,78 @@ class TestPerSampleWeights:
         # The sample weight (not the metadata w=99.0) must reach learn_one
         weights = [c.kwargs.get("w") for c in model.learn_one.call_args_list]
         assert weights == [2.0, 0.5]
+
+    def test_w_callable_applied_to_xy_pairs(self):
+        """A w callable must be invoked with (x, y) and its result forwarded to learn_one."""
+        dataset = [
+            ({"f": 1}, 0),
+            ({"f": 2}, 1),
+            ({"f": 3}, 0),
+        ]
+        # Weight equals the feature value for easy verification
+        weight_fn = lambda x, y: float(x["f"])
+
+        model = _make_model(accepts_w=True)
+        metric = _make_metric()
+
+        mock_utils = MagicMock()
+        mock_utils.inspect.isanomalydetector.return_value = False
+        mock_utils.inspect.isanomalyfilter.return_value = False
+        mock_utils.inspect.isclassifier.return_value = False
+        mock_utils.inspect.isactivelearner.return_value = False
+
+        mock_stream = MagicMock()
+        mock_stream.simulate_qa.side_effect = _fake_simulate_qa
+
+        _pv.utils = mock_utils
+        _pv.stream = mock_stream
+
+        list(
+            _progressive_validation(
+                dataset=dataset,
+                model=model,
+                metric=metric,
+                checkpoints=iter([]),
+                w=weight_fn,
+            )
+        )
+
+        weights = [c.kwargs.get("w") for c in model.learn_one.call_args_list]
+        assert weights == [1.0, 2.0, 3.0]
+
+    def test_tuple_weight_takes_precedence_over_w_callable(self):
+        """When a dataset yields (x, y, w) triples and a w callable is also given,
+        the tuple weight must win."""
+        dataset = [
+            ({"f": 1}, 0, 9.0),  # tuple weight 9.0, callable would return 1.0
+            ({"f": 2}, 1, 8.0),  # tuple weight 8.0, callable would return 2.0
+        ]
+        weight_fn = lambda x, y: float(x["f"])
+
+        model = _make_model(accepts_w=True)
+        metric = _make_metric()
+
+        mock_utils = MagicMock()
+        mock_utils.inspect.isanomalydetector.return_value = False
+        mock_utils.inspect.isanomalyfilter.return_value = False
+        mock_utils.inspect.isclassifier.return_value = False
+        mock_utils.inspect.isactivelearner.return_value = False
+
+        mock_stream = MagicMock()
+        mock_stream.simulate_qa.side_effect = _fake_simulate_qa
+
+        _pv.utils = mock_utils
+        _pv.stream = mock_stream
+
+        list(
+            _progressive_validation(
+                dataset=dataset,
+                model=model,
+                metric=metric,
+                checkpoints=iter([]),
+                w=weight_fn,
+            )
+        )
+
+        weights = [c.kwargs.get("w") for c in model.learn_one.call_args_list]
+        assert weights == [9.0, 8.0]
