@@ -101,9 +101,7 @@ class Gaussian(base.ContinuousDistribution):
             variance = var._S / (n - var.ddof)
             if variance > 0.0:
                 mu = var.mean._mean
-                return (x - mu) ** 2 / (-2.0 * variance) - _HALF_LOG_TAU - 0.5 * math.log(
-                    variance
-                )
+                return (x - mu) ** 2 / (-2.0 * variance) - _HALF_LOG_TAU - 0.5 * math.log(variance)
         return -math.inf
 
     def cdf(self, x) -> float:
