@@ -251,7 +251,7 @@ class BOLEClassifier(AdaBoostClassifier):
     >>> metric = metrics.Accuracy()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    Accuracy: 93.63%
+    Accuracy: 94.13%
 
     References
     ----------

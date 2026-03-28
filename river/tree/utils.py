@@ -39,6 +39,16 @@ def do_naive_bayes_prediction(x, observed_class_distribution: dict, splitters: d
         # No observed class distributions, all classes equal
         return {}
 
+    # Pre-resolve log-probability methods to avoid repeated getattr in the inner loop
+    if splitters:
+        _splitter_log_probas = {
+            att_idx: getattr(obs, "cond_log_proba", None)
+            for att_idx, obs in splitters.items()
+            if att_idx in x
+        }
+    else:
+        _splitter_log_probas = {}
+
     votes = {}
     for class_index, class_weight in observed_class_distribution.items():
         # Prior
@@ -48,13 +58,14 @@ def do_naive_bayes_prediction(x, observed_class_distribution: dict, splitters: d
             votes[class_index] = 0.0
             continue
 
-        if splitters:
-            for att_idx in splitters:
-                if att_idx not in x:
-                    continue
-                obs = splitters[att_idx]
-                # Prior plus the log likelihood
-                tmp = obs.cond_proba(x[att_idx], class_index)
+        for att_idx, log_proba in _splitter_log_probas.items():
+            # Use log-probability directly when available (avoids exp+log round-trip)
+            if log_proba is not None:
+                log_p = log_proba(x[att_idx], class_index)
+                if log_p > -math.inf:
+                    votes[class_index] += log_p
+            else:
+                tmp = splitters[att_idx].cond_proba(x[att_idx], class_index)
                 votes[class_index] += math.log(tmp) if tmp > 0 else 0.0
 
     # Max log-likelihood
