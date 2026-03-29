@@ -3,8 +3,11 @@ from __future__ import annotations
 from river import base, utils
 from river.neighbors import SWINN
 
-from .base import BaseNN, FunctionWrapper
-from .base import _euclidean_tuple_distance  # type: ignore[attr-defined]
+from .base import (
+    BaseNN,
+    FunctionWrapper,
+    _euclidean_tuple_distance,  # type: ignore[attr-defined]
+)
 
 
 class KNNClassifier(base.Classifier):
