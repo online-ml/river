@@ -5,7 +5,8 @@ import statistics
 from river import base, utils
 from river.neighbors import SWINN
 
-from .base import BaseNN, FunctionWrapper, _euclidean_tuple_distance
+from .base import BaseNN, FunctionWrapper
+from .base import _euclidean_tuple_distance  # type: ignore[attr-defined]
 
 
 class KNNRegressor(base.Regressor):
@@ -60,11 +61,11 @@ class KNNRegressor(base.Regressor):
 
         _default_dist = utils.math._euclidean_distance  # type: ignore[attr-defined]
         if engine is None:
-            engine = SWINN(dist_func=_default_dist)
+            engine = SWINN(dist_func=_default_dist)  # type: ignore[arg-type]
 
         if not isinstance(engine.dist_func, FunctionWrapper):
             if engine.dist_func is _default_dist:
-                engine.dist_func = _euclidean_tuple_distance
+                engine.dist_func = _euclidean_tuple_distance  # type: ignore[assignment]
             elif engine.dist_func is not _euclidean_tuple_distance:
                 engine.dist_func = FunctionWrapper(engine.dist_func)
 

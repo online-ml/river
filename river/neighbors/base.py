@@ -4,7 +4,7 @@ import abc
 import typing
 
 from river import base
-from river.utils.vectordict import euclidean_distance_tuple as _euclidean_tuple_distance  # type: ignore[attr-defined]
+from river.utils.vectordict import euclidean_distance_tuple as _euclidean_tuple_distance  # noqa: F401
 
 
 class DistanceFunc(typing.Protocol):

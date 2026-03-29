@@ -99,8 +99,8 @@ class SWINN(BaseNN):
     ):
         self.graph_k = graph_k
         if dist_func is None:
-            dist_func = utils.math._euclidean_distance  # type: ignore[attr-defined]
-        self.dist_func = dist_func
+            dist_func = utils.math._euclidean_distance  # type: ignore[attr-defined,assignment]
+        self.dist_func = dist_func  # type: ignore[assignment]
 
         self.maxlen = maxlen
         self.warm_up = warm_up
@@ -233,8 +233,8 @@ class SWINN(BaseNN):
             # Expand undirected neighborhood
             for nid in nodes:
                 node = _data[nid]
-                neighbors = node.neighbors()[0]
-                flags = node.sample_flags
+                neighbors = node.neighbors()[0]  # type: ignore[union-attr]
+                flags = node.sample_flags  # type: ignore[union-attr]
 
                 for neigh, flag in zip(neighbors, flags):
                     # To avoid evaluating previous neighbors again
@@ -254,7 +254,7 @@ class SWINN(BaseNN):
                 if len(old[nid]) > max_candidates:
                     old[nid] = _rng.sample(tuple(old[nid]), max_candidates)  # type: ignore
 
-                _data[nid].sample_flags = new[nid]
+                _data[nid].sample_flags = new[nid]  # type: ignore[union-attr]
 
             # Perform local joins an attempt to improve the neighborhood
             for nid in nodes:
@@ -263,9 +263,9 @@ class SWINN(BaseNN):
                 # The origin of the join must have a boolean flag set to true
                 for n1 in new_nid:
                     v1 = _data[n1]
-                    v1_edges = v1.edges
-                    v1_r_edges = v1.r_edges
-                    v1_item = v1.item
+                    v1_edges = v1.edges  # type: ignore[union-attr]
+                    v1_r_edges = v1.r_edges  # type: ignore[union-attr]
+                    v1_item = v1.item  # type: ignore[union-attr]
                     # Consider connections between vertices whose boolean flags are both true
                     for n2 in new_nid:
                         if n1 == n2 or n2 in v1_edges or n2 in v1_r_edges:
@@ -275,9 +275,9 @@ class SWINN(BaseNN):
                             continue
 
                         v2 = _data[n2]
-                        dist = dist_func(v1_item, v2.item)
-                        total_changes += v1.push_edge(v2, dist, graph_k, _data)
-                        total_changes += v2.push_edge(v1, dist, graph_k, _data)
+                        dist = dist_func(v1_item, v2.item)  # type: ignore[union-attr]
+                        total_changes += v1.push_edge(v2, dist, graph_k, _data)  # type: ignore[union-attr,arg-type]
+                        total_changes += v2.push_edge(v1, dist, graph_k, _data)  # type: ignore[union-attr,arg-type]
 
                         tried.add((n1, n2))
 
@@ -290,9 +290,9 @@ class SWINN(BaseNN):
                             continue
 
                         v2 = _data[n2]
-                        dist = dist_func(v1_item, v2.item)
-                        total_changes += v1.push_edge(v2, dist, graph_k, _data)
-                        total_changes += v2.push_edge(v1, dist, graph_k, _data)
+                        dist = dist_func(v1_item, v2.item)  # type: ignore[union-attr]
+                        total_changes += v1.push_edge(v2, dist, graph_k, _data)  # type: ignore[union-attr,arg-type]
+                        total_changes += v2.push_edge(v1, dist, graph_k, _data)  # type: ignore[union-attr,arg-type]
 
                         tried.add((n1, n2))
 
@@ -302,7 +302,7 @@ class SWINN(BaseNN):
 
         # Reduce the number of edges, if needed
         for n in nodes:
-            _data[n].prune(self.prune_prob, max_candidates, _data, _rng)
+            _data[n].prune(self.prune_prob, max_candidates, _data, _rng)  # type: ignore[union-attr,arg-type]
 
         # Ensure that no node is isolated in the graph
         self._fix_graph()
@@ -406,17 +406,17 @@ class SWINN(BaseNN):
             tns = [_data[n] for n in c_n.edges.keys() | c_n.r_edges.keys() if n not in visited]
 
             for n in tns:
-                dist = dist_func(item, n.item)
+                dist = dist_func(item, n.item)  # type: ignore[union-attr]
 
                 if len(result) < k:
-                    heapq.heappush(result, (-dist, n))
-                    heapq.heappush(pool, (dist, n))
+                    heapq.heappush(result, (-dist, n))  # type: ignore[misc]
+                    heapq.heappush(pool, (dist, n))  # type: ignore[misc]
                     distance_bound = distance_scale * -result[0][0]
                 elif dist < -result[0][0]:
-                    heapq.heapreplace(result, (-dist, n))
-                    heapq.heappush(pool, (dist, n))
+                    heapq.heapreplace(result, (-dist, n))  # type: ignore[misc]
+                    heapq.heappush(pool, (dist, n))  # type: ignore[misc]
                     distance_bound = distance_scale * -result[0][0]
-                visited.add(n.uuid)
+                visited.add(n.uuid)  # type: ignore[union-attr]
             if len(pool) == 0:
                 break
             c_dist, c_n = heapq.heappop(pool)

@@ -52,8 +52,8 @@ class LazySearch(BaseNN):
         self.min_distance_keep = min_distance_keep
 
         if dist_func is None:
-            dist_func = utils.math._euclidean_distance  # type: ignore[attr-defined]
-        self.dist_func = dist_func
+            dist_func = utils.math._euclidean_distance  # type: ignore[attr-defined,assignment]
+        self.dist_func = dist_func  # type: ignore[assignment]
 
         self.window: collections.deque = collections.deque(maxlen=self.window_size)
 
