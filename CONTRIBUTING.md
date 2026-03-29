@@ -21,8 +21,10 @@ The typical workflow for contributing to River is:
 Start by cloning the repository:
 
 ```sh
-git clone https://github.com/online-ml/river
+git clone --single-branch https://github.com/online-ml/river
 ```
+
+> **Note:** The `--single-branch` flag is important. Without it, Git will also fetch the `gh-pages` branch which contains the generated documentation site, adding several hundred MiB to the clone.
 
 Next, you'll need a Python environment. A nice way to manage your Python versions is to use pyenv, which can installed [here](https://github.com/pyenv/pyenv-installer). Once you have pyenv, you can install the latest Python version River supports:
 
