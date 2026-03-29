@@ -72,23 +72,15 @@ markdown_extensions:
   - pymdownx.inlinehilite
   - pymdownx.tabbed:
       alternate_style: true
-  - pymdownx.superfences:
-      custom_fences:
-        - name: vegalite
-          class: vegalite
-          format: !!python/name:mkdocs_charts_plugin.fences.fence_vegalite
+  - pymdownx.superfences
 
 plugins:
   - search
   - awesome-pages
-  - charts
 
 extra_javascript:
   - javascripts/config.js
   - https://cdn.jsdelivr.net/npm/mathjax@3.2/es5/tex-mml-chtml.js
-  - https://cdn.jsdelivr.net/npm/vega@5
-  - https://cdn.jsdelivr.net/npm/vega-lite@5
-  - https://cdn.jsdelivr.net/npm/vega-embed@6
   - https://unpkg.com/tablesort@5.3.0/dist/tablesort.min.js
   - javascripts/tablesort.js
 
