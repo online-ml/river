@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import functools
-
 from river import base, utils
 from river.neighbors import SWINN
 
@@ -82,11 +80,12 @@ class KNNClassifier(base.Classifier):
     ):
         self.n_neighbors = n_neighbors
 
+        _default_dist = utils.math._euclidean_distance  # type: ignore[attr-defined]
         if engine is None:
-            engine = SWINN(dist_func=utils.math._euclidean_distance)
+            engine = SWINN(dist_func=_default_dist)
 
         if not isinstance(engine.dist_func, FunctionWrapper):
-            if engine.dist_func is utils.math._euclidean_distance:
+            if engine.dist_func is _default_dist:
                 engine.dist_func = _euclidean_tuple_distance
             elif engine.dist_func is not _euclidean_tuple_distance:
                 engine.dist_func = FunctionWrapper(engine.dist_func)
@@ -112,7 +111,8 @@ class KNNClassifier(base.Classifier):
         yield {
             "n_neighbors": 3,
             "engine": LazySearch(
-                window_size=30, dist_func=utils.math._euclidean_distance
+                window_size=30,
+                dist_func=utils.math._euclidean_distance,  # type: ignore[attr-defined]
             ),
         }
 

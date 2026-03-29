@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import collections
-import functools
 import heapq
 import math
 import operator
@@ -100,7 +99,7 @@ class SWINN(BaseNN):
     ):
         self.graph_k = graph_k
         if dist_func is None:
-            dist_func = utils.math._euclidean_distance
+            dist_func = utils.math._euclidean_distance  # type: ignore[attr-defined]
         self.dist_func = dist_func
 
         self.maxlen = maxlen
@@ -277,12 +276,8 @@ class SWINN(BaseNN):
 
                         v2 = _data[n2]
                         dist = dist_func(v1_item, v2.item)
-                        total_changes += v1.push_edge(
-                            v2, dist, graph_k, _data
-                        )
-                        total_changes += v2.push_edge(
-                            v1, dist, graph_k, _data
-                        )
+                        total_changes += v1.push_edge(v2, dist, graph_k, _data)
+                        total_changes += v2.push_edge(v1, dist, graph_k, _data)
 
                         tried.add((n1, n2))
 
@@ -296,12 +291,8 @@ class SWINN(BaseNN):
 
                         v2 = _data[n2]
                         dist = dist_func(v1_item, v2.item)
-                        total_changes += v1.push_edge(
-                            v2, dist, graph_k, _data
-                        )
-                        total_changes += v2.push_edge(
-                            v1, dist, graph_k, _data
-                        )
+                        total_changes += v1.push_edge(v2, dist, graph_k, _data)
+                        total_changes += v2.push_edge(v1, dist, graph_k, _data)
 
                         tried.add((n1, n2))
 

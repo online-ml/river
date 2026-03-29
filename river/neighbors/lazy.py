@@ -1,9 +1,7 @@
 from __future__ import annotations
 
 import collections
-import functools
 import heapq
-import operator
 import typing
 
 from river import utils
@@ -54,7 +52,7 @@ class LazySearch(BaseNN):
         self.min_distance_keep = min_distance_keep
 
         if dist_func is None:
-            dist_func = utils.math._euclidean_distance
+            dist_func = utils.math._euclidean_distance  # type: ignore[attr-defined]
         self.dist_func = dist_func
 
         self.window: collections.deque = collections.deque(maxlen=self.window_size)

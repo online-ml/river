@@ -18,6 +18,7 @@ import numpy.typing as npt
 import scipy as sp
 
 from river import base
+from river.utils.vectordict import euclidean_distance_dict as _euclidean_distance
 
 __all__ = [
     "argmax",
@@ -177,7 +178,6 @@ def minkowski_distance(a: Mapping[Any, float], b: Mapping[Any, float], p: int) -
     return sum((abs(a.get(k, 0.0) - b.get(k, 0.0))) ** p for k in {*a.keys(), *b.keys()}) ** (1 / p)  # type: ignore[no-any-return] # If the values are numbers, the return value should always be a number
 
 
-from river.utils.vectordict import euclidean_distance_dict as _euclidean_distance
 
 
 def _manhattan_distance(a: Mapping[Any, float], b: Mapping[Any, float]) -> float:
