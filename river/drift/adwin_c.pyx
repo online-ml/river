@@ -1,13 +1,69 @@
 # cython: boundscheck=False
+# cython: wraparound=False
+# cython: cdivision=True
 
-from libc.math cimport fabs, log, pow, sqrt
+from libc.math cimport fabs, log, sqrt
+from libc.stdlib cimport malloc, free
+from libc.string cimport memset, memmove
 
-import numpy as np
 
-cimport numpy as np
+cdef class Bucket:
+    """A bucket class to keep statistics using C arrays for speed.
 
-from collections import deque
-from typing import Deque
+    A bucket stores the summary structure for a contiguous set of data elements.
+    In this implementation fixed-size C arrays are used for efficiency. The index
+    of the "current" element is used to simulate the dynamic size of the bucket.
+
+    """
+    cdef:
+        int current_idx, max_size
+        double *total_array
+        double *variance_array
+
+    def __cinit__(self, int max_size):
+        self.max_size = max_size
+        self.current_idx = 0
+        cdef int alloc_size = max_size + 1
+        self.total_array = <double *>malloc(alloc_size * sizeof(double))
+        self.variance_array = <double *>malloc(alloc_size * sizeof(double))
+        if self.total_array == NULL or self.variance_array == NULL:
+            raise MemoryError("Failed to allocate Bucket arrays")
+        memset(self.total_array, 0, alloc_size * sizeof(double))
+        memset(self.variance_array, 0, alloc_size * sizeof(double))
+
+    def __dealloc__(self):
+        if self.total_array != NULL:
+            free(self.total_array)
+            self.total_array = NULL
+        if self.variance_array != NULL:
+            free(self.variance_array)
+            self.variance_array = NULL
+
+    cdef inline void insert_data(self, double value, double variance) noexcept nogil:
+        self.total_array[self.current_idx] = value
+        self.variance_array[self.current_idx] = variance
+        self.current_idx += 1
+
+    cdef inline void remove(self) noexcept nogil:
+        self.compress(1)
+
+    cdef void compress(self, int n_elements) noexcept nogil:
+        cdef int remaining = self.current_idx - n_elements
+        if remaining > 0:
+            memmove(self.total_array, self.total_array + n_elements, remaining * sizeof(double))
+            memmove(self.variance_array, self.variance_array + n_elements, remaining * sizeof(double))
+        # Zero out the vacated slots
+        cdef int i
+        for i in range(remaining, self.current_idx):
+            self.total_array[i] = 0.0
+            self.variance_array[i] = 0.0
+        self.current_idx -= n_elements
+
+    cdef inline double get_total_at(self, int index) noexcept nogil:
+        return self.total_array[index]
+
+    cdef inline double get_variance_at(self, int index) noexcept nogil:
+        return self.variance_array[index]
 
 
 cdef class AdaptiveWindowing:
@@ -32,14 +88,14 @@ cdef class AdaptiveWindowing:
 
     """
     cdef:
-        dict __dict__
         double delta, total, variance, total_width, width
         int n_buckets, grace_period, min_window_length, tick, n_detections,\
             clock, max_n_buckets, detect, detect_twice, max_buckets
+        list _bucket_list
 
     def __init__(self, delta=.002, clock=32, max_buckets=5, min_window_length=5, grace_period=10):
         self.delta = delta
-        self.bucket_deque: Deque['Bucket'] = deque([Bucket(max_size=max_buckets)])
+        self._bucket_list = [Bucket(max_size=max_buckets)]
         self.total = 0.
         self.variance = 0.
         self.width = 0.
@@ -97,7 +153,7 @@ cdef class AdaptiveWindowing:
         return self._detect_change()
 
     cdef void _insert_element(self, double value, double variance):
-        cdef Bucket bucket = self.bucket_deque[0]
+        cdef Bucket bucket = <Bucket>self._bucket_list[0]
         bucket.insert_data(value, variance)
         self.n_buckets += 1
 
@@ -119,13 +175,10 @@ cdef class AdaptiveWindowing:
 
         self._compress_buckets()
 
-    @staticmethod
-    def _calculate_bucket_size(row: int):
-        return pow(2, row)
-
     cdef double _delete_element(self):
-        cdef Bucket bucket = self.bucket_deque[-1]
-        cdef double n = self._calculate_bucket_size(len(self.bucket_deque) - 1) # length of bucket
+        cdef int deque_len = len(self._bucket_list)
+        cdef Bucket bucket = <Bucket>self._bucket_list[deque_len - 1]
+        cdef double n = <double>(1 << (deque_len - 1))  # 2^(deque_len-1)
         cdef double u = bucket.get_total_at(0)     # total of bucket
         cdef double mu = u / n                   # mean of bucket
         cdef double v = bucket.get_variance_at(0)  # variance of bucket
@@ -133,7 +186,7 @@ cdef class AdaptiveWindowing:
         # Update width, total and variance
         self.width -= n
         self.total -= u
-        mu_window = self.total / self.width     # mean of the window
+        cdef double mu_window = self.total / self.width     # mean of the window
         cdef double incremental_variance = (
                 v + n * self.width * (mu - mu_window) * (mu - mu_window)
                 / (n + self.width)
@@ -144,7 +197,7 @@ cdef class AdaptiveWindowing:
         self.n_buckets -= 1
 
         if bucket.current_idx == 0:
-            self.bucket_deque.pop()
+            self._bucket_list.pop()
 
         return n
 
@@ -152,28 +205,30 @@ cdef class AdaptiveWindowing:
 
         cdef:
             unsigned int idx, k
-            double n1, n2, mu1, mu2, temp, total12
+            int deque_len
+            double n1, mu1, mu2, temp, total12, v12
             Bucket bucket, next_bucket
 
-        bucket = self.bucket_deque[0]
+        bucket = <Bucket>self._bucket_list[0]
         idx = 0
         while bucket is not None:
             k = bucket.current_idx
             # Merge buckets if there are more than max_buckets
             if k == self.max_buckets + 1:
-                try:
-                    next_bucket = self.bucket_deque[idx + 1]
-                except IndexError:
-                    self.bucket_deque.append(Bucket(max_size=self.max_buckets))
-                    next_bucket = self.bucket_deque[-1]
-                n1 = self._calculate_bucket_size(idx)   # length of bucket 1
-                n2 = self._calculate_bucket_size(idx)   # length of bucket 2
-                mu1 = bucket.get_total_at(0) / n1       # mean of bucket 1
-                mu2 = bucket.get_total_at(1) / n2       # mean of bucket 2
+                deque_len = len(self._bucket_list)
+                if idx + 1 < deque_len:
+                    next_bucket = <Bucket>self._bucket_list[idx + 1]
+                else:
+                    next_bucket = Bucket(max_size=self.max_buckets)
+                    self._bucket_list.append(next_bucket)
+                n1 = <double>(1 << idx)              # length of bucket: 2^idx
+                mu1 = bucket.get_total_at(0) / n1    # mean of bucket 1
+                mu2 = bucket.get_total_at(1) / n1    # mean of bucket 2
 
                 # Combine total and variance of adjacent buckets
                 total12 = bucket.get_total_at(0) + bucket.get_total_at(1)
-                temp = n1 * n2 * (mu1 - mu2) * (mu1 - mu2) / (n1 + n2)
+                # n1 * n2 / (n1 + n2) = n1 / 2 since n1 == n2
+                temp = n1 * 0.5 * (mu1 - mu2) * (mu1 - mu2)
                 v12 = bucket.get_variance_at(0) + bucket.get_variance_at(1) + temp
                 next_bucket.insert_data(total12, v12)
                 self.n_buckets += 1
@@ -184,9 +239,10 @@ cdef class AdaptiveWindowing:
             else:
                 break
 
-            try:
-                bucket = self.bucket_deque[idx + 1]
-            except IndexError:
+            deque_len = len(self._bucket_list)
+            if idx + 1 < deque_len:
+                bucket = <Bucket>self._bucket_list[idx + 1]
+            else:
                 bucket = None
             idx += 1
 
@@ -205,7 +261,7 @@ cdef class AdaptiveWindowing:
         -----
         Variance calculation is based on:
 
-        Babcock, B., Datar, M., Motwani, R., & O’Callaghan, L. (2003).
+        Babcock, B., Datar, M., Motwani, R., & O'Callaghan, L. (2003).
         Maintaining Variance and k-Medians over Data Stream Windows.
         Proceedings of the ACM SIGACT-SIGMOD-SIGART
         Symposium on Principles of Database Systems, 22, 234–243.
@@ -213,9 +269,11 @@ cdef class AdaptiveWindowing:
 
         """
         cdef:
-            unsigned int idx, k
-            bint change_detected, exit_flag
+            int idx, deque_len
+            unsigned int k
+            bint change_detected, exit_flag, reduce_width
             double n0, n1, n2, u0, u1, u2, v0, v1
+            double mu0, mu1, mu2, delta_mean, bucket_size
             Bucket bucket
 
         change_detected = False
@@ -232,17 +290,20 @@ cdef class AdaptiveWindowing:
                 n1 = self.width     # length of window 1
                 u0 = 0.0            # total of window 0
                 u1 = self.total     # total of window 1
-                v0 = 0              # variance of window 0
+                v0 = 0.0            # variance of window 0
                 v1 = self.variance  # variance of window 1
 
+                deque_len = len(self._bucket_list)
+
                 # Evaluate each window cut (W_0, W_1)
-                for idx in range(len(self.bucket_deque) - 1, -1 , -1):
+                for idx in range(deque_len - 1, -1, -1):
                     if exit_flag:
                         break
-                    bucket = self.bucket_deque[idx]
+                    bucket = <Bucket>self._bucket_list[idx]
+                    bucket_size = <double>(1 << idx)
 
                     for k in range(bucket.current_idx):
-                        n2 = self._calculate_bucket_size(idx)   # length of window 2
+                        n2 = bucket_size   # length of window 2
                         u2 = bucket.get_total_at(k)             # total of window 2
                         # Warning: means are calculated inside the loop to get updated values.
                         mu2 = u2 / n2   # mean of window 2
@@ -264,12 +325,12 @@ cdef class AdaptiveWindowing:
                             )
 
                         # Update window 0 and 1
-                        n0 += self._calculate_bucket_size(idx)
-                        n1 -= self._calculate_bucket_size(idx)
+                        n0 += bucket_size
+                        n1 -= bucket_size
                         u0 += bucket.get_total_at(k)
                         u1 -= bucket.get_total_at(k)
 
-                        if (idx == 0) and (k == bucket.current_idx - 1):
+                        if (idx == 0) and (k == <unsigned int>(bucket.current_idx - 1)):
                             exit_flag = True    # We are done
                             break
 
@@ -305,64 +366,8 @@ cdef class AdaptiveWindowing:
         # Use reciprocal of m to avoid extra divisions when calculating epsilon
         m_recip = ((1.0 / (n0 - self.min_window_length + 1))
                    + (1.0 / (n1 - self.min_window_length + 1)))
-        epsilon = (sqrt(2 * m_recip * self.variance_in_window * delta_prime)
-                   + 2 / 3 * delta_prime * m_recip)
+        # Inline variance_in_window to avoid Python property dispatch
+        epsilon = (sqrt(2 * m_recip * (self.variance / self.width) * delta_prime)
+                   + 2.0 / 3.0 * delta_prime * m_recip)
 
         return fabs(delta_mean) > epsilon
-
-
-cdef class Bucket:
-    """ A bucket class to keep statistics.
-
-    A bucket stores the summary structure for a contiguous set of data elements.
-    In this implementation fixed-size arrays are used for efficiency. The index
-    of the "current" element is used to simulate the dynamic size of the bucket.
-
-    """
-    cdef:
-        int current_idx, max_size
-        np.ndarray total_array, variance_array
-
-    def __init__(self, max_size):
-        self.max_size = max_size
-
-        self.current_idx = 0
-        self.total_array = np.zeros(self.max_size + 1, dtype=float)
-        self.variance_array = np.zeros(self.max_size + 1, dtype=float)
-
-    cdef void clear_at(self, int index):
-        self.set_total_at(0.0, index)
-        self.set_variance_at(0.0, index)
-
-    cdef void insert_data(self, double value, double variance):
-        self.set_total_at(value, self.current_idx)
-        self.set_variance_at(variance, self.current_idx)
-        self.current_idx += 1
-
-    cdef void remove(self):
-        self.compress(1)
-
-    cdef void compress(self, int n_elements):
-        cdef unsigned int i
-        cdef int window_len = len(self.total_array)
-        # Remove first n_elements by shifting elements to the left
-        for i in range(n_elements, window_len):
-            self.total_array[i - n_elements] = self.total_array[i]
-            self.variance_array[i - n_elements] = self.variance_array[i]
-        # Clear remaining elements
-        for i in range(window_len - n_elements, window_len):
-            self.clear_at(i)
-
-        self.current_idx -= n_elements
-
-    cdef double get_total_at(self, int index):
-        return self.total_array[index]
-
-    cdef double get_variance_at(self, int index):
-        return self.variance_array[index]
-
-    cdef void set_total_at(self, double value, int index):
-        self.total_array[index] = value
-
-    cdef void set_variance_at(self, double value, int index):
-        self.variance_array[index] = value
