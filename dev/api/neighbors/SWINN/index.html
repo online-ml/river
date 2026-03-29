@@ -4271,7 +4271,7 @@
 <p>Data is stored using the FIFO strategy. Both the data buffer and the search graph are updated. The addition of a new item will trigger the removal of the oldest item, if the maximum size was reached. All edges of the removed node are also dropped and safety procedures are applied to ensure its neighbors keep accessible. The addition of a new item also trigger local neighborhood refinement procedures, to ensure the search index is effective and the node degree constraints are met.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>item</strong>     — <em>'typing.Any'</em>    </li>
+<li><strong>item</strong>     — <em>'<a href="../../../utils/random/Any">utils.random.Any</a>'</em>    </li>
 <li><strong>kwargs</strong>    </li>
 </ul>
 </details>
@@ -4296,7 +4296,7 @@
 <p>In case not enough samples were observed, i.e., the number of stored samples is smaller than <code>warm_up</code>, then the search switches to a brute force strategy.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>item</strong>     — <em>'typing.Any'</em>    </li>
+<li><strong>item</strong>     — <em>'<a href="../../../utils/random/Any">utils.random.Any</a>'</em>    </li>
 <li><strong>n_neighbors</strong>     — <em>'int'</em>    </li>
 <li><strong>epsilon</strong>     — <em>'float'</em>     — defaults to <code>0.1</code>    </li>
 <li><strong>kwargs</strong>    </li>
