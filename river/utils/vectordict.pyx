@@ -583,7 +583,7 @@ cdef class VectorDict:
         return sqrt(total)
 
 
-def euclidean_distance_dict(dict a, dict b):
+def euclidean_distance_dict(a, b):
     """Compute Euclidean distance between two plain dicts. Cython-accelerated."""
     cdef double total = 0.0
     cdef double d
