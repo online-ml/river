@@ -48,5 +48,5 @@ class SGD(optim.base.Optimizer):
         return w
 
     def _step_with_vector(self, w, g):
-        w -= self.learning_rate * g
+        w.isub_scaled(g, self.learning_rate)
         return w
