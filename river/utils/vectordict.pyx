@@ -459,10 +459,10 @@ cdef class VectorDict:
         if isinstance(other, VectorDict):  # vec *= vec
             other_ = <VectorDict> other
             if _is_simple(self) and _is_simple(other_):
-                for key in self._data:
+                for key, self_value in self._data.items():
                     other_value = other_._data.get(key)
                     if other_value is not None:
-                        self._data[key] = self._data[key] * other_value
+                        self._data[key] = self_value * other_value
                     else:
                         self._data[key] = 0
                 for key in other_._data:
@@ -529,12 +529,12 @@ cdef class VectorDict:
         if isinstance(other, VectorDict):  # vec /= vec
             other_ = <VectorDict> other
             if _is_simple(self) and _is_simple(other_):
-                for key in list(self._data):
+                for key, self_value in self._data.items():
                     other_value = other_._data.get(key)
                     if other_value is not None:
-                        self._data[key] = self._data[key] / other_value
+                        self._data[key] = self_value / other_value
                     else:
-                        self._data[key] = self._data[key] / 0
+                        self._data[key] = self_value / 0
                 for key in other_._data:
                     if key not in self._data:
                         self._data[key] = 0 / other_._data[key]
