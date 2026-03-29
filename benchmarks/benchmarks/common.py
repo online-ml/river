@@ -4,8 +4,10 @@ from river import (
     datasets,
     dummy,
     ensemble,
+    evaluate,
     forest,
     linear_model,
+    metrics,
     naive_bayes,
     neighbors,
     neural_net,
@@ -18,13 +20,18 @@ from river import (
 
 LEARNING_RATE = 0.005
 
-# --- Binary classification ---
+# --- Benchmark class settings ---
 
-BINARY_CLF_MODELS = [
-    "Logistic regression",
-    "Aggregated Mondrian Forest",
-    "ALMA",
-]
+BENCH_SETTINGS = dict(
+    timeout=600,
+    number=1,
+    repeat=1,
+    rounds=1,
+    min_run_count=1,
+    warmup_time=0,
+)
+
+# --- Binary classification ---
 
 BINARY_CLF_DATASETS = [
     "Bananas",
@@ -46,22 +53,6 @@ _BINARY_CLF_DATASET_REGISTRY = {
 }
 
 # --- Multiclass classification ---
-
-MULTICLASS_CLF_MODELS = [
-    "Naive Bayes",
-    "Hoeffding Tree",
-    "Hoeffding Adaptive Tree",
-    "Adaptive Random Forest",
-    "Aggregated Mondrian Forest",
-    "Streaming Random Patches",
-    "k-Nearest Neighbors",
-    "ADWIN Bagging",
-    "AdaBoost",
-    "Bagging",
-    "Leveraging Bagging",
-    "Voting",
-    "[baseline] Last Class",
-]
 
 MULTICLASS_CLF_DATASETS = [
     "ImageSegments",
@@ -101,26 +92,6 @@ _MULTICLASS_CLF_DATASET_REGISTRY = {
 }
 
 # --- Regression ---
-
-REGRESSION_MODELS = [
-    "Linear Regression",
-    "Linear Regression with l1 regularization",
-    "Linear Regression with l2 regularization",
-    "Passive-Aggressive Regressor, mode 1",
-    "Passive-Aggressive Regressor, mode 2",
-    "k-Nearest Neighbors",
-    "Hoeffding Tree",
-    "Hoeffding Adaptive Tree",
-    "Stochastic Gradient Tree",
-    "Adaptive Random Forest",
-    "Aggregated Mondrian Forest",
-    "Adaptive Model Rules",
-    "Streaming Random Patches",
-    "Bagging",
-    "Exponentially Weighted Average",
-    "River MLP",
-    "[baseline] Mean predictor",
-]
 
 REGRESSION_DATASETS = [
     "ChickWeights",
@@ -218,3 +189,62 @@ def get_model(track, name):
 def get_dataset(track, name):
     """Return a dataset instance."""
     return _REGISTRIES[track][1][name]()
+
+
+def _slugify(name):
+    """Turn a human-readable name into a valid Python identifier."""
+    return (
+        name.lower()
+        .replace("[baseline] ", "baseline_")
+        .replace("-", "_")
+        .replace(",", "")
+        .replace(" ", "_")
+    )
+
+
+def _make_setup(track, model_name, dataset_list):
+    def setup(self, dataset_name):
+        self.model = get_model(track, model_name)
+        dataset = get_dataset(track, dataset_name)
+        next(iter(dataset))
+        self.dataset = get_dataset(track, dataset_name)
+    return setup
+
+
+def _make_time_method(metric_fn):
+    def time_progressive_val_score(self, dataset_name):
+        for _ in evaluate.iter_progressive_val_score(
+            dataset=self.dataset,
+            model=self.model,
+            metric=metric_fn(),
+            measure_time=False,
+            measure_memory=False,
+        ):
+            pass
+    return time_progressive_val_score
+
+
+def make_benchmark_classes(track, datasets, metric_fn):
+    """Generate one ASV benchmark class per model, with datasets as params.
+
+    Returns a dict of {class_name: class} to be injected into the caller's
+    module globals.
+    """
+    model_registry = _REGISTRIES[track][0]
+    classes = {}
+    for model_name in model_registry:
+        slug = _slugify(model_name)
+        cls_name = f"Track_{slug}"
+        cls = type(
+            cls_name,
+            (),
+            {
+                **BENCH_SETTINGS,
+                "params": [datasets],
+                "param_names": ["dataset"],
+                "setup": _make_setup(track, model_name, datasets),
+                "time_progressive_val_score": _make_time_method(metric_fn),
+            },
+        )
+        classes[cls_name] = cls
+    return classes

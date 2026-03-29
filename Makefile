@@ -20,10 +20,10 @@ render-notebooks:
 
 doc: render-notebooks
 	python docs/parse river --out docs --verbose
-	mkdocs build
+	zensical build
 
 livedoc: doc
-	mkdocs serve --dirtyreload
+	zensical serve
 
 rebase:
 	git fetch && git rebase origin/main
