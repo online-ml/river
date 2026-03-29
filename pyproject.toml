@@ -42,7 +42,7 @@ dev = [
     "ipython>=8.17.2,<9",
     "rich>=13.6.0,<14",
     "jupyter>=1.0.0,<2",
-    "mike>=2.0.0,<3",
+    "mike @ git+https://github.com/squidfunk/mike.git",
     "polars>=1.1.0,<2",
 ]
 compat = [
@@ -54,7 +54,7 @@ docs = [
     "flask",
     "ipykernel",
     "jupyter-client",
-    "mike",
+    "mike @ git+https://github.com/squidfunk/mike.git",
     "zensical",
     "nbconvert",
     "numpydoc",
@@ -97,7 +97,7 @@ ipykernel = "^6.26.0"
 ipython = "^8.17.2"
 rich = "^13.6.0"
 jupyter = "^1.0.0"
-mike = "^2.0.0"
+mike = { git = "https://github.com/squidfunk/mike.git" }
 polars = "^1.1.0"
 
 [tool.poetry.group.compat]
@@ -116,7 +116,7 @@ optional = true
 "ipykernel" = "*"
 "jupyter-client" = "*"
 "jupyter-contrib-nbextensions" = "^0.7.0"
-"mike" = "*"
+"mike" = { git = "https://github.com/squidfunk/mike.git" }
 "zensical" = "*"
 "nbconvert" = "*"
 "notebook" = "<7"
