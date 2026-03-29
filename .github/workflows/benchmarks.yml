@@ -1,0 +1,77 @@
+name: benchmarks
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  benchmarks:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: astral-sh/setup-uv@v7
+        with:
+          python-version: "3.12"
+
+      - name: Install asv
+        run: pip install asv virtualenv
+
+      - name: Configure asv machine
+        working-directory: benchmarks
+        run: asv machine --yes
+
+      - name: Restore results from asv branch
+        run: |
+          git fetch origin asv:asv || true
+          if git rev-parse --verify asv >/dev/null 2>&1; then
+            git worktree add /tmp/asv-results asv
+            if [ -d /tmp/asv-results/results ]; then
+              cp -r /tmp/asv-results/results benchmarks/results
+            fi
+            git worktree remove /tmp/asv-results
+          fi
+
+      - name: Run benchmarks
+        working-directory: benchmarks
+        run: asv run NEW --skip-existing-commits
+
+      - name: Save results to asv branch
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          if git rev-parse --verify asv >/dev/null 2>&1; then
+            git worktree add /tmp/asv-save asv
+          else
+            git worktree add --orphan /tmp/asv-save asv
+          fi
+          cp -r benchmarks/results /tmp/asv-save/
+          cd /tmp/asv-save
+          git add results
+          git commit -m "Update benchmark results" --allow-empty
+          git push origin asv
+          cd -
+          git worktree remove /tmp/asv-save
+
+      - name: Publish HTML
+        working-directory: benchmarks
+        run: asv publish
+
+      - name: Deploy to GitHub Pages
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git fetch origin gh-pages:gh-pages
+          git worktree add /tmp/gh-pages gh-pages
+          rm -rf /tmp/gh-pages/benchmarks
+          cp -r benchmarks/html /tmp/gh-pages/benchmarks
+          cd /tmp/gh-pages
+          git add benchmarks
+          git commit -m "Update benchmark results" --allow-empty
+          git push origin gh-pages
+          git worktree remove /tmp/gh-pages

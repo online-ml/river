@@ -70,10 +70,8 @@ docs = [
     "jupyter-contrib-nbextensions>=0.7.0,<0.8",
 ]
 benchmark = [
-    "dominate",
-    "scikit-learn",
-    "tabulate",
-    "watermark",
+    "asv",
+    "virtualenv",
 ]
 
 [tool.poetry.build]
