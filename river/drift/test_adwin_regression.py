@@ -207,7 +207,7 @@ class TestAdaptiveWindowing:
 
     def test_basic_update(self):
         aw = AdaptiveWindowing()
-        assert aw.update(1.0) == False
+        assert not aw.update(1.0)
         assert aw.get_width() == 1.0
         assert aw.get_total() == 1.0
 
@@ -304,7 +304,6 @@ class TestEdgeCases:
                 break
         assert drift_found
         # The next update should reset the detector
-        width_before = adwin.width
         adwin.update(50.0)
         # After reset, width should be 1 (fresh start)
         assert adwin.width == 1
