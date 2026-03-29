@@ -11,6 +11,10 @@
 - Refactored `benchmarks` and added plotly dependency for interactive plots
 - Added the BETH dataset for labeled system process events.
 
+## drift
+
+- Optimized `ADWIN` Cython internals (~18x speedup): replaced numpy arrays with C `malloc`/`memmove` arrays in `Bucket`, replaced Python `deque` with typed `list`, used bit shifts instead of `pow`, inlined `variance_in_window`, and added Cython compiler directives.
+
 ## dummy
 
 The `dummy` module is now fully type-annotated.
