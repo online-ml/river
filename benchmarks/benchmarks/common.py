@@ -191,15 +191,12 @@ def get_dataset(track, name):
     return _REGISTRIES[track][1][name]()
 
 
-def _slugify(name):
-    """Turn a human-readable name into a valid Python identifier."""
-    return (
-        name.lower()
-        .replace("[baseline] ", "baseline_")
-        .replace("-", "_")
-        .replace(",", "")
-        .replace(" ", "_")
-    )
+def _class_name(name):
+    """Turn a human-readable name into a clean CamelCase class name."""
+    name = name.replace("[baseline] ", "Baseline ")
+    # Capitalize each word, then strip non-alnum
+    parts = name.replace("-", " ").replace(",", "").split()
+    return "".join(w[0].upper() + w[1:] for w in parts)
 
 
 def _make_setup(track, model_name, dataset_list):
@@ -212,7 +209,7 @@ def _make_setup(track, model_name, dataset_list):
 
 
 def _make_time_method(metric_fn):
-    def time_progressive_val_score(self, dataset_name):
+    def time_progressive_val(self, dataset_name):
         for _ in evaluate.iter_progressive_val_score(
             dataset=self.dataset,
             model=self.model,
@@ -221,7 +218,7 @@ def _make_time_method(metric_fn):
             measure_memory=False,
         ):
             pass
-    return time_progressive_val_score
+    return time_progressive_val
 
 
 def make_benchmark_classes(track, datasets, metric_fn):
@@ -233,8 +230,7 @@ def make_benchmark_classes(track, datasets, metric_fn):
     model_registry = _REGISTRIES[track][0]
     classes = {}
     for model_name in model_registry:
-        slug = _slugify(model_name)
-        cls_name = f"Track_{slug}"
+        cls_name = _class_name(model_name)
         cls = type(
             cls_name,
             (),
@@ -243,7 +239,7 @@ def make_benchmark_classes(track, datasets, metric_fn):
                 "params": [datasets],
                 "param_names": ["dataset"],
                 "setup": _make_setup(track, model_name, datasets),
-                "time_progressive_val_score": _make_time_method(metric_fn),
+                "time_progressive_val": _make_time_method(metric_fn),
             },
         )
         classes[cls_name] = cls

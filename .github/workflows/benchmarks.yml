@@ -4,10 +4,6 @@ on:
   push:
     branches: [main]
 
-concurrency:
-  group: gh-pages-deploy
-  cancel-in-progress: false
-
 jobs:
   benchmarks:
     runs-on: ubuntu-latest
@@ -22,7 +18,6 @@ jobs:
       - uses: astral-sh/setup-uv@v7
         with:
           python-version: "3.12"
-          enable-cache: false
 
       - name: Install asv
         run: pip install asv virtualenv

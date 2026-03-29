@@ -14,6 +14,8 @@ import pathlib
 import re
 import shutil
 
+from packaging.version import Version
+
 from numpydoc.docscrape import ClassDoc, FunctionDoc
 
 
@@ -600,6 +602,33 @@ def linkify_docs(library: str, docs_dir: pathlib.Path, verbose=False):
         linkified_page.write_text(text)
 
 
+def update_releases_nav(docs_dir: pathlib.Path, config_path: pathlib.Path):
+    """Update the Releases nav section in mkdocs.yml with sorted release files."""
+    releases_dir = docs_dir / "linkified" / "releases"
+    if not releases_dir.exists():
+        return
+
+    versions = []
+    for f in releases_dir.glob("*.md"):
+        name = f.stem
+        if name == "unreleased":
+            continue
+        versions.append(name)
+
+    versions.sort(key=Version, reverse=True)
+
+    lines = ["  - Releases:\n", "    - unreleased: releases/unreleased.md\n"]
+    for v in versions:
+        lines.append(f'    - "{v}": releases/{v}.md\n')
+
+    config_text = config_path.read_text()
+
+    # Replace the Releases section between its start and the next top-level nav item
+    pattern = r"(  - Releases:\n(?:    - .*\n)*)"
+    config_text = re.sub(pattern, "".join(lines), config_text)
+    config_path.write_text(config_text)
+
+
 def main():
     """Command-line interface."""
     parser = argparse.ArgumentParser()
@@ -614,6 +643,7 @@ def main():
         verbose=args.verbose,
     )
     linkify_docs(library=args.library, docs_dir=pathlib.Path(args.out), verbose=args.verbose)
+    update_releases_nav(pathlib.Path(args.out), pathlib.Path("mkdocs.yml"))
 
 
 if __name__ == "__main__":
