@@ -1,8 +1,8 @@
 {
-    "bench_binary_clf.Track_aggregated_mondrian_forest.time_progressive_val_score": {
-        "code": "class <locals>:\n    def time_progressive_val_score(self, dataset_name):\n        for _ in evaluate.iter_progressive_val_score(\n            dataset=self.dataset,\n            model=self.model,\n            metric=metric_fn(),\n            measure_time=False,\n            measure_memory=False,\n        ):\n            pass\n\n    def setup(self, dataset_name):\n        self.model = get_model(track, model_name)\n        dataset = get_dataset(track, dataset_name)\n        next(iter(dataset))\n        self.dataset = get_dataset(track, dataset_name)",
+    "bench_binary_clf.ALMA.time_progressive_val": {
+        "code": "class <locals>:\n    def time_progressive_val(self, dataset_name):\n        for _ in evaluate.iter_progressive_val_score(\n            dataset=self.dataset,\n            model=self.model,\n            metric=metric_fn(),\n            measure_time=False,\n            measure_memory=False,\n        ):\n            pass\n\n    def setup(self, dataset_name):\n        self.model = get_model(track, model_name)\n        dataset = get_dataset(track, dataset_name)\n        next(iter(dataset))\n        self.dataset = get_dataset(track, dataset_name)",
         "min_run_count": 1,
-        "name": "bench_binary_clf.Track_aggregated_mondrian_forest.time_progressive_val_score",
+        "name": "bench_binary_clf.ALMA.time_progressive_val",
         "number": 1,
         "param_names": [
             "dataset"
@@ -19,13 +19,13 @@
         "timeout": 600,
         "type": "time",
         "unit": "seconds",
-        "version": "939865690186395ecb66e76f49023c03555480c7c308792846e9c2baa10d4697",
+        "version": "1106f9e9f212f84a6aff70f130eddfac13301f7b49483deb875d0b600e3db87d",
         "warmup_time": 0
     },
-    "bench_binary_clf.Track_alma.time_progressive_val_score": {
-        "code": "class <locals>:\n    def time_progressive_val_score(self, dataset_name):\n        for _ in evaluate.iter_progressive_val_score(\n            dataset=self.dataset,\n            model=self.model,\n            metric=metric_fn(),\n            measure_time=False,\n            measure_memory=False,\n        ):\n            pass\n\n    def setup(self, dataset_name):\n        self.model = get_model(track, model_name)\n        dataset = get_dataset(track, dataset_name)\n        next(iter(dataset))\n        self.dataset = get_dataset(track, dataset_name)",
+    "bench_binary_clf.AggregatedMondrianForest.time_progressive_val": {
+        "code": "class <locals>:\n    def time_progressive_val(self, dataset_name):\n        for _ in evaluate.iter_progressive_val_score(\n            dataset=self.dataset,\n            model=self.model,\n            metric=metric_fn(),\n            measure_time=False,\n            measure_memory=False,\n        ):\n            pass\n\n    def setup(self, dataset_name):\n        self.model = get_model(track, model_name)\n        dataset = get_dataset(track, dataset_name)\n        next(iter(dataset))\n        self.dataset = get_dataset(track, dataset_name)",
         "min_run_count": 1,
-        "name": "bench_binary_clf.Track_alma.time_progressive_val_score",
+        "name": "bench_binary_clf.AggregatedMondrianForest.time_progressive_val",
         "number": 1,
         "param_names": [
             "dataset"
@@ -42,13 +42,13 @@
         "timeout": 600,
         "type": "time",
         "unit": "seconds",
-        "version": "939865690186395ecb66e76f49023c03555480c7c308792846e9c2baa10d4697",
+        "version": "1106f9e9f212f84a6aff70f130eddfac13301f7b49483deb875d0b600e3db87d",
         "warmup_time": 0
     },
-    "bench_binary_clf.Track_logistic_regression.time_progressive_val_score": {
-        "code": "class <locals>:\n    def time_progressive_val_score(self, dataset_name):\n        for _ in evaluate.iter_progressive_val_score(\n            dataset=self.dataset,\n            model=self.model,\n            metric=metric_fn(),\n            measure_time=False,\n            measure_memory=False,\n        ):\n            pass\n\n    def setup(self, dataset_name):\n        self.model = get_model(track, model_name)\n        dataset = get_dataset(track, dataset_name)\n        next(iter(dataset))\n        self.dataset = get_dataset(track, dataset_name)",
+    "bench_binary_clf.LogisticRegression.time_progressive_val": {
+        "code": "class <locals>:\n    def time_progressive_val(self, dataset_name):\n        for _ in evaluate.iter_progressive_val_score(\n            dataset=self.dataset,\n            model=self.model,\n            metric=metric_fn(),\n            measure_time=False,\n            measure_memory=False,\n        ):\n            pass\n\n    def setup(self, dataset_name):\n        self.model = get_model(track, model_name)\n        dataset = get_dataset(track, dataset_name)\n        next(iter(dataset))\n        self.dataset = get_dataset(track, dataset_name)",
         "min_run_count": 1,
-        "name": "bench_binary_clf.Track_logistic_regression.time_progressive_val_score",
+        "name": "bench_binary_clf.LogisticRegression.time_progressive_val",
         "number": 1,
         "param_names": [
             "dataset"
@@ -65,13 +65,13 @@
         "timeout": 600,
         "type": "time",
         "unit": "seconds",
-        "version": "939865690186395ecb66e76f49023c03555480c7c308792846e9c2baa10d4697",
+        "version": "1106f9e9f212f84a6aff70f130eddfac13301f7b49483deb875d0b600e3db87d",
         "warmup_time": 0
     },
-    "bench_multiclass_clf.Track_adaboost.time_progressive_val_score": {
-        "code": "class <locals>:\n    def time_progressive_val_score(self, dataset_name):\n        for _ in evaluate.iter_progressive_val_score(\n            dataset=self.dataset,\n            model=self.model,\n            metric=metric_fn(),\n            measure_time=False,\n            measure_memory=False,\n        ):\n            pass\n\n    def setup(self, dataset_name):\n        self.model = get_model(track, model_name)\n        dataset = get_dataset(track, dataset_name)\n        next(iter(dataset))\n        self.dataset = get_dataset(track, dataset_name)",
+    "bench_multiclass_clf.ADWINBagging.time_progressive_val": {
+        "code": "class <locals>:\n    def time_progressive_val(self, dataset_name):\n        for _ in evaluate.iter_progressive_val_score(\n            dataset=self.dataset,\n            model=self.model,\n            metric=metric_fn(),\n            measure_time=False,\n            measure_memory=False,\n        ):\n            pass\n\n    def setup(self, dataset_name):\n        self.model = get_model(track, model_name)\n        dataset = get_dataset(track, dataset_name)\n        next(iter(dataset))\n        self.dataset = get_dataset(track, dataset_name)",
         "min_run_count": 1,
-        "name": "bench_multiclass_clf.Track_adaboost.time_progressive_val_score",
+        "name": "bench_multiclass_clf.ADWINBagging.time_progressive_val",
         "number": 1,
         "param_names": [
             "dataset"
@@ -87,13 +87,13 @@
         "timeout": 600,
         "type": "time",
         "unit": "seconds",
-        "version": "939865690186395ecb66e76f49023c03555480c7c308792846e9c2baa10d4697",
+        "version": "1106f9e9f212f84a6aff70f130eddfac13301f7b49483deb875d0b600e3db87d",
         "warmup_time": 0
     },
-    "bench_multiclass_clf.Track_adaptive_random_forest.time_progressive_val_score": {
-        "code": "class <locals>:\n    def time_progressive_val_score(self, dataset_name):\n        for _ in evaluate.iter_progressive_val_score(\n            dataset=self.dataset,\n            model=self.model,\n            metric=metric_fn(),\n            measure_time=False,\n            measure_memory=False,\n        ):\n            pass\n\n    def setup(self, dataset_name):\n        self.model = get_model(track, model_name)\n        dataset = get_dataset(track, dataset_name)\n        next(iter(dataset))\n        self.dataset = get_dataset(track, dataset_name)",
+    "bench_multiclass_clf.AdaBoost.time_progressive_val": {
+        "code": "class <locals>:\n    def time_progressive_val(self, dataset_name):\n        for _ in evaluate.iter_progressive_val_score(\n            dataset=self.dataset,\n            model=self.model,\n            metric=metric_fn(),\n            measure_time=False,\n            measure_memory=False,\n        ):\n            pass\n\n    def setup(self, dataset_name):\n        self.model = get_model(track, model_name)\n        dataset = get_dataset(track, dataset_name)\n        next(iter(dataset))\n        self.dataset = get_dataset(track, dataset_name)",
         "min_run_count": 1,
-        "name": "bench_multiclass_clf.Track_adaptive_random_forest.time_progressive_val_score",
+        "name": "bench_multiclass_clf.AdaBoost.time_progressive_val",
         "number": 1,
         "param_names": [
             "dataset"
@@ -109,13 +109,13 @@
         "timeout": 600,
         "type": "time",
         "unit": "seconds",
-        "version": "939865690186395ecb66e76f49023c03555480c7c308792846e9c2baa10d4697",
+        "version": "1106f9e9f212f84a6aff70f130eddfac13301f7b49483deb875d0b600e3db87d",
         "warmup_time": 0
     },
-    "bench_multiclass_clf.Track_adwin_bagging.time_progressive_val_score": {
-        "code": "class <locals>:\n    def time_progressive_val_score(self, dataset_name):\n        for _ in evaluate.iter_progressive_val_score(\n            dataset=self.dataset,\n            model=self.model,\n            metric=metric_fn(),\n            measure_time=False,\n            measure_memory=False,\n        ):\n            pass\n\n    def setup(self, dataset_name):\n        self.model = get_model(track, model_name)\n        dataset = get_dataset(track, dataset_name)\n        next(iter(dataset))\n        self.dataset = get_dataset(track, dataset_name)",
+    "bench_multiclass_clf.AdaptiveRandomForest.time_progressive_val": {
+        "code": "class <locals>:\n    def time_progressive_val(self, dataset_name):\n        for _ in evaluate.iter_progressive_val_score(\n            dataset=self.dataset,\n            model=self.model,\n            metric=metric_fn(),\n            measure_time=False,\n            measure_memory=False,\n        ):\n            pass\n\n    def setup(self, dataset_name):\n        self.model = get_model(track, model_name)\n        dataset = get_dataset(track, dataset_name)\n        next(iter(dataset))\n        self.dataset = get_dataset(track, dataset_name)",
         "min_run_count": 1,
-        "name": "bench_multiclass_clf.Track_adwin_bagging.time_progressive_val_score",
+        "name": "bench_multiclass_clf.AdaptiveRandomForest.time_progressive_val",
         "number": 1,
         "param_names": [
             "dataset"
@@ -131,13 +131,13 @@
         "timeout": 600,
         "type": "time",
         "unit": "seconds",
-        "version": "939865690186395ecb66e76f49023c03555480c7c308792846e9c2baa10d4697",
+        "version": "1106f9e9f212f84a6aff70f130eddfac13301f7b49483deb875d0b600e3db87d",
         "warmup_time": 0
     },
-    "bench_multiclass_clf.Track_aggregated_mondrian_forest.time_progressive_val_score": {
-        "code": "class <locals>:\n    def time_progressive_val_score(self, dataset_name):\n        for _ in evaluate.iter_progressive_val_score(\n            dataset=self.dataset,\n            model=self.model,\n            metric=metric_fn(),\n            measure_time=False,\n            measure_memory=False,\n        ):\n            pass\n\n    def setup(self, dataset_name):\n        self.model = get_model(track, model_name)\n        dataset = get_dataset(track, dataset_name)\n        next(iter(dataset))\n        self.dataset = get_dataset(track, dataset_name)",
+    "bench_multiclass_clf.AggregatedMondrianForest.time_progressive_val": {
+        "code": "class <locals>:\n    def time_progressive_val(self, dataset_name):\n        for _ in evaluate.iter_progressive_val_score(\n            dataset=self.dataset,\n            model=self.model,\n            metric=metric_fn(),\n            measure_time=False,\n            measure_memory=False,\n        ):\n            pass\n\n    def setup(self, dataset_name):\n        self.model = get_model(track, model_name)\n        dataset = get_dataset(track, dataset_name)\n        next(iter(dataset))\n        self.dataset = get_dataset(track, dataset_name)",
         "min_run_count": 1,
-        "name": "bench_multiclass_clf.Track_aggregated_mondrian_forest.time_progressive_val_score",
+        "name": "bench_multiclass_clf.AggregatedMondrianForest.time_progressive_val",
         "number": 1,
         "param_names": [
             "dataset"
@@ -153,13 +153,13 @@
         "timeout": 600,
         "type": "time",
         "unit": "seconds",
-        "version": "939865690186395ecb66e76f49023c03555480c7c308792846e9c2baa10d4697",
+        "version": "1106f9e9f212f84a6aff70f130eddfac13301f7b49483deb875d0b600e3db87d",
         "warmup_time": 0
     },
-    "bench_multiclass_clf.Track_bagging.time_progressive_val_score": {
-        "code": "class <locals>:\n    def time_progressive_val_score(self, dataset_name):\n        for _ in evaluate.iter_progressive_val_score(\n            dataset=self.dataset,\n            model=self.model,\n            metric=metric_fn(),\n            measure_time=False,\n            measure_memory=False,\n        ):\n            pass\n\n    def setup(self, dataset_name):\n        self.model = get_model(track, model_name)\n        dataset = get_dataset(track, dataset_name)\n        next(iter(dataset))\n        self.dataset = get_dataset(track, dataset_name)",
+    "bench_multiclass_clf.Bagging.time_progressive_val": {
+        "code": "class <locals>:\n    def time_progressive_val(self, dataset_name):\n        for _ in evaluate.iter_progressive_val_score(\n            dataset=self.dataset,\n            model=self.model,\n            metric=metric_fn(),\n            measure_time=False,\n            measure_memory=False,\n        ):\n            pass\n\n    def setup(self, dataset_name):\n        self.model = get_model(track, model_name)\n        dataset = get_dataset(track, dataset_name)\n        next(iter(dataset))\n        self.dataset = get_dataset(track, dataset_name)",
         "min_run_count": 1,
-        "name": "bench_multiclass_clf.Track_bagging.time_progressive_val_score",
+        "name": "bench_multiclass_clf.Bagging.time_progressive_val",
         "number": 1,
         "param_names": [
             "dataset"
@@ -175,13 +175,13 @@
         "timeout": 600,
         "type": "time",
         "unit": "seconds",
-        "version": "939865690186395ecb66e76f49023c03555480c7c308792846e9c2baa10d4697",
+        "version": "1106f9e9f212f84a6aff70f130eddfac13301f7b49483deb875d0b600e3db87d",
         "warmup_time": 0
     },
-    "bench_multiclass_clf.Track_baseline_last_class.time_progressive_val_score": {
-        "code": "class <locals>:\n    def time_progressive_val_score(self, dataset_name):\n        for _ in evaluate.iter_progressive_val_score(\n            dataset=self.dataset,\n            model=self.model,\n            metric=metric_fn(),\n            measure_time=False,\n            measure_memory=False,\n        ):\n            pass\n\n    def setup(self, dataset_name):\n        self.model = get_model(track, model_name)\n        dataset = get_dataset(track, dataset_name)\n        next(iter(dataset))\n        self.dataset = get_dataset(track, dataset_name)",
+    "bench_multiclass_clf.BaselineLastClass.time_progressive_val": {
+        "code": "class <locals>:\n    def time_progressive_val(self, dataset_name):\n        for _ in evaluate.iter_progressive_val_score(\n            dataset=self.dataset,\n            model=self.model,\n            metric=metric_fn(),\n            measure_time=False,\n            measure_memory=False,\n        ):\n            pass\n\n    def setup(self, dataset_name):\n        self.model = get_model(track, model_name)\n        dataset = get_dataset(track, dataset_name)\n        next(iter(dataset))\n        self.dataset = get_dataset(track, dataset_name)",
         "min_run_count": 1,
-        "name": "bench_multiclass_clf.Track_baseline_last_class.time_progressive_val_score",
+        "name": "bench_multiclass_clf.BaselineLastClass.time_progressive_val",
         "number": 1,
         "param_names": [
             "dataset"
@@ -197,13 +197,13 @@
         "timeout": 600,
         "type": "time",
         "unit": "seconds",
-        "version": "939865690186395ecb66e76f49023c03555480c7c308792846e9c2baa10d4697",
+        "version": "1106f9e9f212f84a6aff70f130eddfac13301f7b49483deb875d0b600e3db87d",
         "warmup_time": 0
     },
-    "bench_multiclass_clf.Track_hoeffding_adaptive_tree.time_progressive_val_score": {
-        "code": "class <locals>:\n    def time_progressive_val_score(self, dataset_name):\n        for _ in evaluate.iter_progressive_val_score(\n            dataset=self.dataset,\n            model=self.model,\n            metric=metric_fn(),\n            measure_time=False,\n            measure_memory=False,\n        ):\n            pass\n\n    def setup(self, dataset_name):\n        self.model = get_model(track, model_name)\n        dataset = get_dataset(track, dataset_name)\n        next(iter(dataset))\n        self.dataset = get_dataset(track, dataset_name)",
+    "bench_multiclass_clf.HoeffdingAdaptiveTree.time_progressive_val": {
+        "code": "class <locals>:\n    def time_progressive_val(self, dataset_name):\n        for _ in evaluate.iter_progressive_val_score(\n            dataset=self.dataset,\n            model=self.model,\n            metric=metric_fn(),\n            measure_time=False,\n            measure_memory=False,\n        ):\n            pass\n\n    def setup(self, dataset_name):\n        self.model = get_model(track, model_name)\n        dataset = get_dataset(track, dataset_name)\n        next(iter(dataset))\n        self.dataset = get_dataset(track, dataset_name)",
         "min_run_count": 1,
-        "name": "bench_multiclass_clf.Track_hoeffding_adaptive_tree.time_progressive_val_score",
+        "name": "bench_multiclass_clf.HoeffdingAdaptiveTree.time_progressive_val",
         "number": 1,
         "param_names": [
             "dataset"
@@ -219,13 +219,13 @@
         "timeout": 600,
         "type": "time",
         "unit": "seconds",
-        "version": "939865690186395ecb66e76f49023c03555480c7c308792846e9c2baa10d4697",
+        "version": "1106f9e9f212f84a6aff70f130eddfac13301f7b49483deb875d0b600e3db87d",
         "warmup_time": 0
     },
-    "bench_multiclass_clf.Track_hoeffding_tree.time_progressive_val_score": {
-        "code": "class <locals>:\n    def time_progressive_val_score(self, dataset_name):\n        for _ in evaluate.iter_progressive_val_score(\n            dataset=self.dataset,\n            model=self.model,\n            metric=metric_fn(),\n            measure_time=False,\n            measure_memory=False,\n        ):\n            pass\n\n    def setup(self, dataset_name):\n        self.model = get_model(track, model_name)\n        dataset = get_dataset(track, dataset_name)\n        next(iter(dataset))\n        self.dataset = get_dataset(track, dataset_name)",
+    "bench_multiclass_clf.HoeffdingTree.time_progressive_val": {
+        "code": "class <locals>:\n    def time_progressive_val(self, dataset_name):\n        for _ in evaluate.iter_progressive_val_score(\n            dataset=self.dataset,\n            model=self.model,\n            metric=metric_fn(),\n            measure_time=False,\n            measure_memory=False,\n        ):\n            pass\n\n    def setup(self, dataset_name):\n        self.model = get_model(track, model_name)\n        dataset = get_dataset(track, dataset_name)\n        next(iter(dataset))\n        self.dataset = get_dataset(track, dataset_name)",
         "min_run_count": 1,
-        "name": "bench_multiclass_clf.Track_hoeffding_tree.time_progressive_val_score",
+        "name": "bench_multiclass_clf.HoeffdingTree.time_progressive_val",
         "number": 1,
         "param_names": [
             "dataset"
@@ -241,13 +241,13 @@
         "timeout": 600,
         "type": "time",
         "unit": "seconds",
-        "version": "939865690186395ecb66e76f49023c03555480c7c308792846e9c2baa10d4697",
+        "version": "1106f9e9f212f84a6aff70f130eddfac13301f7b49483deb875d0b600e3db87d",
         "warmup_time": 0
     },
-    "bench_multiclass_clf.Track_k_nearest_neighbors.time_progressive_val_score": {
-        "code": "class <locals>:\n    def time_progressive_val_score(self, dataset_name):\n        for _ in evaluate.iter_progressive_val_score(\n            dataset=self.dataset,\n            model=self.model,\n            metric=metric_fn(),\n            measure_time=False,\n            measure_memory=False,\n        ):\n            pass\n\n    def setup(self, dataset_name):\n        self.model = get_model(track, model_name)\n        dataset = get_dataset(track, dataset_name)\n        next(iter(dataset))\n        self.dataset = get_dataset(track, dataset_name)",
+    "bench_multiclass_clf.KNearestNeighbors.time_progressive_val": {
+        "code": "class <locals>:\n    def time_progressive_val(self, dataset_name):\n        for _ in evaluate.iter_progressive_val_score(\n            dataset=self.dataset,\n            model=self.model,\n            metric=metric_fn(),\n            measure_time=False,\n            measure_memory=False,\n        ):\n            pass\n\n    def setup(self, dataset_name):\n        self.model = get_model(track, model_name)\n        dataset = get_dataset(track, dataset_name)\n        next(iter(dataset))\n        self.dataset = get_dataset(track, dataset_name)",
         "min_run_count": 1,
-        "name": "bench_multiclass_clf.Track_k_nearest_neighbors.time_progressive_val_score",
+        "name": "bench_multiclass_clf.KNearestNeighbors.time_progressive_val",
         "number": 1,
         "param_names": [
             "dataset"
@@ -263,13 +263,13 @@
         "timeout": 600,
         "type": "time",
         "unit": "seconds",
-        "version": "939865690186395ecb66e76f49023c03555480c7c308792846e9c2baa10d4697",
+        "version": "1106f9e9f212f84a6aff70f130eddfac13301f7b49483deb875d0b600e3db87d",
         "warmup_time": 0
     },
-    "bench_multiclass_clf.Track_leveraging_bagging.time_progressive_val_score": {
-        "code": "class <locals>:\n    def time_progressive_val_score(self, dataset_name):\n        for _ in evaluate.iter_progressive_val_score(\n            dataset=self.dataset,\n            model=self.model,\n            metric=metric_fn(),\n            measure_time=False,\n            measure_memory=False,\n        ):\n            pass\n\n    def setup(self, dataset_name):\n        self.model = get_model(track, model_name)\n        dataset = get_dataset(track, dataset_name)\n        next(iter(dataset))\n        self.dataset = get_dataset(track, dataset_name)",
+    "bench_multiclass_clf.LeveragingBagging.time_progressive_val": {
+        "code": "class <locals>:\n    def time_progressive_val(self, dataset_name):\n        for _ in evaluate.iter_progressive_val_score(\n            dataset=self.dataset,\n            model=self.model,\n            metric=metric_fn(),\n            measure_time=False,\n            measure_memory=False,\n        ):\n            pass\n\n    def setup(self, dataset_name):\n        self.model = get_model(track, model_name)\n        dataset = get_dataset(track, dataset_name)\n        next(iter(dataset))\n        self.dataset = get_dataset(track, dataset_name)",
         "min_run_count": 1,
-        "name": "bench_multiclass_clf.Track_leveraging_bagging.time_progressive_val_score",
+        "name": "bench_multiclass_clf.LeveragingBagging.time_progressive_val",
         "number": 1,
         "param_names": [
             "dataset"
@@ -285,13 +285,13 @@
         "timeout": 600,
         "type": "time",
         "unit": "seconds",
-        "version": "939865690186395ecb66e76f49023c03555480c7c308792846e9c2baa10d4697",
+        "version": "1106f9e9f212f84a6aff70f130eddfac13301f7b49483deb875d0b600e3db87d",
         "warmup_time": 0
     },
-    "bench_multiclass_clf.Track_naive_bayes.time_progressive_val_score": {
-        "code": "class <locals>:\n    def time_progressive_val_score(self, dataset_name):\n        for _ in evaluate.iter_progressive_val_score(\n            dataset=self.dataset,\n            model=self.model,\n            metric=metric_fn(),\n            measure_time=False,\n            measure_memory=False,\n        ):\n            pass\n\n    def setup(self, dataset_name):\n        self.model = get_model(track, model_name)\n        dataset = get_dataset(track, dataset_name)\n        next(iter(dataset))\n        self.dataset = get_dataset(track, dataset_name)",
+    "bench_multiclass_clf.NaiveBayes.time_progressive_val": {
+        "code": "class <locals>:\n    def time_progressive_val(self, dataset_name):\n        for _ in evaluate.iter_progressive_val_score(\n            dataset=self.dataset,\n            model=self.model,\n            metric=metric_fn(),\n            measure_time=False,\n            measure_memory=False,\n        ):\n            pass\n\n    def setup(self, dataset_name):\n        self.model = get_model(track, model_name)\n        dataset = get_dataset(track, dataset_name)\n        next(iter(dataset))\n        self.dataset = get_dataset(track, dataset_name)",
         "min_run_count": 1,
-        "name": "bench_multiclass_clf.Track_naive_bayes.time_progressive_val_score",
+        "name": "bench_multiclass_clf.NaiveBayes.time_progressive_val",
         "number": 1,
         "param_names": [
             "dataset"
@@ -307,13 +307,13 @@
         "timeout": 600,
         "type": "time",
         "unit": "seconds",
-        "version": "939865690186395ecb66e76f49023c03555480c7c308792846e9c2baa10d4697",
+        "version": "1106f9e9f212f84a6aff70f130eddfac13301f7b49483deb875d0b600e3db87d",
         "warmup_time": 0
     },
-    "bench_multiclass_clf.Track_streaming_random_patches.time_progressive_val_score": {
-        "code": "class <locals>:\n    def time_progressive_val_score(self, dataset_name):\n        for _ in evaluate.iter_progressive_val_score(\n            dataset=self.dataset,\n            model=self.model,\n            metric=metric_fn(),\n            measure_time=False,\n            measure_memory=False,\n        ):\n            pass\n\n    def setup(self, dataset_name):\n        self.model = get_model(track, model_name)\n        dataset = get_dataset(track, dataset_name)\n        next(iter(dataset))\n        self.dataset = get_dataset(track, dataset_name)",
+    "bench_multiclass_clf.StreamingRandomPatches.time_progressive_val": {
+        "code": "class <locals>:\n    def time_progressive_val(self, dataset_name):\n        for _ in evaluate.iter_progressive_val_score(\n            dataset=self.dataset,\n            model=self.model,\n            metric=metric_fn(),\n            measure_time=False,\n            measure_memory=False,\n        ):\n            pass\n\n    def setup(self, dataset_name):\n        self.model = get_model(track, model_name)\n        dataset = get_dataset(track, dataset_name)\n        next(iter(dataset))\n        self.dataset = get_dataset(track, dataset_name)",
         "min_run_count": 1,
-        "name": "bench_multiclass_clf.Track_streaming_random_patches.time_progressive_val_score",
+        "name": "bench_multiclass_clf.StreamingRandomPatches.time_progressive_val",
         "number": 1,
         "param_names": [
             "dataset"
@@ -329,13 +329,13 @@
         "timeout": 600,
         "type": "time",
         "unit": "seconds",
-        "version": "939865690186395ecb66e76f49023c03555480c7c308792846e9c2baa10d4697",
+        "version": "1106f9e9f212f84a6aff70f130eddfac13301f7b49483deb875d0b600e3db87d",
         "warmup_time": 0
     },
-    "bench_multiclass_clf.Track_voting.time_progressive_val_score": {
-        "code": "class <locals>:\n    def time_progressive_val_score(self, dataset_name):\n        for _ in evaluate.iter_progressive_val_score(\n            dataset=self.dataset,\n            model=self.model,\n            metric=metric_fn(),\n            measure_time=False,\n            measure_memory=False,\n        ):\n            pass\n\n    def setup(self, dataset_name):\n        self.model = get_model(track, model_name)\n        dataset = get_dataset(track, dataset_name)\n        next(iter(dataset))\n        self.dataset = get_dataset(track, dataset_name)",
+    "bench_multiclass_clf.Voting.time_progressive_val": {
+        "code": "class <locals>:\n    def time_progressive_val(self, dataset_name):\n        for _ in evaluate.iter_progressive_val_score(\n            dataset=self.dataset,\n            model=self.model,\n            metric=metric_fn(),\n            measure_time=False,\n            measure_memory=False,\n        ):\n            pass\n\n    def setup(self, dataset_name):\n        self.model = get_model(track, model_name)\n        dataset = get_dataset(track, dataset_name)\n        next(iter(dataset))\n        self.dataset = get_dataset(track, dataset_name)",
         "min_run_count": 1,
-        "name": "bench_multiclass_clf.Track_voting.time_progressive_val_score",
+        "name": "bench_multiclass_clf.Voting.time_progressive_val",
         "number": 1,
         "param_names": [
             "dataset"
@@ -351,13 +351,13 @@
         "timeout": 600,
         "type": "time",
         "unit": "seconds",
-        "version": "939865690186395ecb66e76f49023c03555480c7c308792846e9c2baa10d4697",
+        "version": "1106f9e9f212f84a6aff70f130eddfac13301f7b49483deb875d0b600e3db87d",
         "warmup_time": 0
     },
-    "bench_regression.Track_adaptive_model_rules.time_progressive_val_score": {
-        "code": "class <locals>:\n    def time_progressive_val_score(self, dataset_name):\n        for _ in evaluate.iter_progressive_val_score(\n            dataset=self.dataset,\n            model=self.model,\n            metric=metric_fn(),\n            measure_time=False,\n            measure_memory=False,\n        ):\n            pass\n\n    def setup(self, dataset_name):\n        self.model = get_model(track, model_name)\n        dataset = get_dataset(track, dataset_name)\n        next(iter(dataset))\n        self.dataset = get_dataset(track, dataset_name)",
+    "bench_regression.AdaptiveModelRules.time_progressive_val": {
+        "code": "class <locals>:\n    def time_progressive_val(self, dataset_name):\n        for _ in evaluate.iter_progressive_val_score(\n            dataset=self.dataset,\n            model=self.model,\n            metric=metric_fn(),\n            measure_time=False,\n            measure_memory=False,\n        ):\n            pass\n\n    def setup(self, dataset_name):\n        self.model = get_model(track, model_name)\n        dataset = get_dataset(track, dataset_name)\n        next(iter(dataset))\n        self.dataset = get_dataset(track, dataset_name)",
         "min_run_count": 1,
-        "name": "bench_regression.Track_adaptive_model_rules.time_progressive_val_score",
+        "name": "bench_regression.AdaptiveModelRules.time_progressive_val",
         "number": 1,
         "param_names": [
             "dataset"
@@ -374,13 +374,13 @@
         "timeout": 600,
         "type": "time",
         "unit": "seconds",
-        "version": "939865690186395ecb66e76f49023c03555480c7c308792846e9c2baa10d4697",
+        "version": "1106f9e9f212f84a6aff70f130eddfac13301f7b49483deb875d0b600e3db87d",
         "warmup_time": 0
     },
-    "bench_regression.Track_adaptive_random_forest.time_progressive_val_score": {
-        "code": "class <locals>:\n    def time_progressive_val_score(self, dataset_name):\n        for _ in evaluate.iter_progressive_val_score(\n            dataset=self.dataset,\n            model=self.model,\n            metric=metric_fn(),\n            measure_time=False,\n            measure_memory=False,\n        ):\n            pass\n\n    def setup(self, dataset_name):\n        self.model = get_model(track, model_name)\n        dataset = get_dataset(track, dataset_name)\n        next(iter(dataset))\n        self.dataset = get_dataset(track, dataset_name)",
+    "bench_regression.AdaptiveRandomForest.time_progressive_val": {
+        "code": "class <locals>:\n    def time_progressive_val(self, dataset_name):\n        for _ in evaluate.iter_progressive_val_score(\n            dataset=self.dataset,\n            model=self.model,\n            metric=metric_fn(),\n            measure_time=False,\n            measure_memory=False,\n        ):\n            pass\n\n    def setup(self, dataset_name):\n        self.model = get_model(track, model_name)\n        dataset = get_dataset(track, dataset_name)\n        next(iter(dataset))\n        self.dataset = get_dataset(track, dataset_name)",
         "min_run_count": 1,
-        "name": "bench_regression.Track_adaptive_random_forest.time_progressive_val_score",
+        "name": "bench_regression.AdaptiveRandomForest.time_progressive_val",
         "number": 1,
         "param_names": [
             "dataset"
@@ -397,13 +397,13 @@
         "timeout": 600,
         "type": "time",
         "unit": "seconds",
-        "version": "939865690186395ecb66e76f49023c03555480c7c308792846e9c2baa10d4697",
+        "version": "1106f9e9f212f84a6aff70f130eddfac13301f7b49483deb875d0b600e3db87d",
         "warmup_time": 0
     },
-    "bench_regression.Track_aggregated_mondrian_forest.time_progressive_val_score": {
-        "code": "class <locals>:\n    def time_progressive_val_score(self, dataset_name):\n        for _ in evaluate.iter_progressive_val_score(\n            dataset=self.dataset,\n            model=self.model,\n            metric=metric_fn(),\n            measure_time=False,\n            measure_memory=False,\n        ):\n            pass\n\n    def setup(self, dataset_name):\n        self.model = get_model(track, model_name)\n        dataset = get_dataset(track, dataset_name)\n        next(iter(dataset))\n        self.dataset = get_dataset(track, dataset_name)",
+    "bench_regression.AggregatedMondrianForest.time_progressive_val": {
+        "code": "class <locals>:\n    def time_progressive_val(self, dataset_name):\n        for _ in evaluate.iter_progressive_val_score(\n            dataset=self.dataset,\n            model=self.model,\n            metric=metric_fn(),\n            measure_time=False,\n            measure_memory=False,\n        ):\n            pass\n\n    def setup(self, dataset_name):\n        self.model = get_model(track, model_name)\n        dataset = get_dataset(track, dataset_name)\n        next(iter(dataset))\n        self.dataset = get_dataset(track, dataset_name)",
         "min_run_count": 1,
-        "name": "bench_regression.Track_aggregated_mondrian_forest.time_progressive_val_score",
+        "name": "bench_regression.AggregatedMondrianForest.time_progressive_val",
         "number": 1,
         "param_names": [
             "dataset"
@@ -420,13 +420,13 @@
         "timeout": 600,
         "type": "time",
         "unit": "seconds",
-        "version": "939865690186395ecb66e76f49023c03555480c7c308792846e9c2baa10d4697",
+        "version": "1106f9e9f212f84a6aff70f130eddfac13301f7b49483deb875d0b600e3db87d",
         "warmup_time": 0
     },
-    "bench_regression.Track_bagging.time_progressive_val_score": {
-        "code": "class <locals>:\n    def time_progressive_val_score(self, dataset_name):\n        for _ in evaluate.iter_progressive_val_score(\n            dataset=self.dataset,\n            model=self.model,\n            metric=metric_fn(),\n            measure_time=False,\n            measure_memory=False,\n        ):\n            pass\n\n    def setup(self, dataset_name):\n        self.model = get_model(track, model_name)\n        dataset = get_dataset(track, dataset_name)\n        next(iter(dataset))\n        self.dataset = get_dataset(track, dataset_name)",
+    "bench_regression.Bagging.time_progressive_val": {
+        "code": "class <locals>:\n    def time_progressive_val(self, dataset_name):\n        for _ in evaluate.iter_progressive_val_score(\n            dataset=self.dataset,\n            model=self.model,\n            metric=metric_fn(),\n            measure_time=False,\n            measure_memory=False,\n        ):\n            pass\n\n    def setup(self, dataset_name):\n        self.model = get_model(track, model_name)\n        dataset = get_dataset(track, dataset_name)\n        next(iter(dataset))\n        self.dataset = get_dataset(track, dataset_name)",
         "min_run_count": 1,
-        "name": "bench_regression.Track_bagging.time_progressive_val_score",
+        "name": "bench_regression.Bagging.time_progressive_val",
         "number": 1,
         "param_names": [
             "dataset"
@@ -443,13 +443,13 @@
         "timeout": 600,
         "type": "time",
         "unit": "seconds",
-        "version": "939865690186395ecb66e76f49023c03555480c7c308792846e9c2baa10d4697",
+        "version": "1106f9e9f212f84a6aff70f130eddfac13301f7b49483deb875d0b600e3db87d",
         "warmup_time": 0
     },
-    "bench_regression.Track_baseline_mean_predictor.time_progressive_val_score": {
-        "code": "class <locals>:\n    def time_progressive_val_score(self, dataset_name):\n        for _ in evaluate.iter_progressive_val_score(\n            dataset=self.dataset,\n            model=self.model,\n            metric=metric_fn(),\n            measure_time=False,\n            measure_memory=False,\n        ):\n            pass\n\n    def setup(self, dataset_name):\n        self.model = get_model(track, model_name)\n        dataset = get_dataset(track, dataset_name)\n        next(iter(dataset))\n        self.dataset = get_dataset(track, dataset_name)",
+    "bench_regression.BaselineMeanPredictor.time_progressive_val": {
+        "code": "class <locals>:\n    def time_progressive_val(self, dataset_name):\n        for _ in evaluate.iter_progressive_val_score(\n            dataset=self.dataset,\n            model=self.model,\n            metric=metric_fn(),\n            measure_time=False,\n            measure_memory=False,\n        ):\n            pass\n\n    def setup(self, dataset_name):\n        self.model = get_model(track, model_name)\n        dataset = get_dataset(track, dataset_name)\n        next(iter(dataset))\n        self.dataset = get_dataset(track, dataset_name)",
         "min_run_count": 1,
-        "name": "bench_regression.Track_baseline_mean_predictor.time_progressive_val_score",
+        "name": "bench_regression.BaselineMeanPredictor.time_progressive_val",
         "number": 1,
         "param_names": [
             "dataset"
@@ -466,13 +466,13 @@
         "timeout": 600,
         "type": "time",
         "unit": "seconds",
-        "version": "939865690186395ecb66e76f49023c03555480c7c308792846e9c2baa10d4697",
+        "version": "1106f9e9f212f84a6aff70f130eddfac13301f7b49483deb875d0b600e3db87d",
         "warmup_time": 0
     },
-    "bench_regression.Track_exponentially_weighted_average.time_progressive_val_score": {
-        "code": "class <locals>:\n    def time_progressive_val_score(self, dataset_name):\n        for _ in evaluate.iter_progressive_val_score(\n            dataset=self.dataset,\n            model=self.model,\n            metric=metric_fn(),\n            measure_time=False,\n            measure_memory=False,\n        ):\n            pass\n\n    def setup(self, dataset_name):\n        self.model = get_model(track, model_name)\n        dataset = get_dataset(track, dataset_name)\n        next(iter(dataset))\n        self.dataset = get_dataset(track, dataset_name)",
+    "bench_regression.ExponentiallyWeightedAverage.time_progressive_val": {
+        "code": "class <locals>:\n    def time_progressive_val(self, dataset_name):\n        for _ in evaluate.iter_progressive_val_score(\n            dataset=self.dataset,\n            model=self.model,\n            metric=metric_fn(),\n            measure_time=False,\n            measure_memory=False,\n        ):\n            pass\n\n    def setup(self, dataset_name):\n        self.model = get_model(track, model_name)\n        dataset = get_dataset(track, dataset_name)\n        next(iter(dataset))\n        self.dataset = get_dataset(track, dataset_name)",
         "min_run_count": 1,
-        "name": "bench_regression.Track_exponentially_weighted_average.time_progressive_val_score",
+        "name": "bench_regression.ExponentiallyWeightedAverage.time_progressive_val",
         "number": 1,
         "param_names": [
             "dataset"
@@ -489,13 +489,13 @@
         "timeout": 600,
         "type": "time",
         "unit": "seconds",
-        "version": "939865690186395ecb66e76f49023c03555480c7c308792846e9c2baa10d4697",
+        "version": "1106f9e9f212f84a6aff70f130eddfac13301f7b49483deb875d0b600e3db87d",
         "warmup_time": 0
     },
-    "bench_regression.Track_hoeffding_adaptive_tree.time_progressive_val_score": {
-        "code": "class <locals>:\n    def time_progressive_val_score(self, dataset_name):\n        for _ in evaluate.iter_progressive_val_score(\n            dataset=self.dataset,\n            model=self.model,\n            metric=metric_fn(),\n            measure_time=False,\n            measure_memory=False,\n        ):\n            pass\n\n    def setup(self, dataset_name):\n        self.model = get_model(track, model_name)\n        dataset = get_dataset(track, dataset_name)\n        next(iter(dataset))\n        self.dataset = get_dataset(track, dataset_name)",
+    "bench_regression.HoeffdingAdaptiveTree.time_progressive_val": {
+        "code": "class <locals>:\n    def time_progressive_val(self, dataset_name):\n        for _ in evaluate.iter_progressive_val_score(\n            dataset=self.dataset,\n            model=self.model,\n            metric=metric_fn(),\n            measure_time=False,\n            measure_memory=False,\n        ):\n            pass\n\n    def setup(self, dataset_name):\n        self.model = get_model(track, model_name)\n        dataset = get_dataset(track, dataset_name)\n        next(iter(dataset))\n        self.dataset = get_dataset(track, dataset_name)",
         "min_run_count": 1,
-        "name": "bench_regression.Track_hoeffding_adaptive_tree.time_progressive_val_score",
+        "name": "bench_regression.HoeffdingAdaptiveTree.time_progressive_val",
         "number": 1,
         "param_names": [
             "dataset"
@@ -512,13 +512,13 @@
         "timeout": 600,
         "type": "time",
         "unit": "seconds",
-        "version": "939865690186395ecb66e76f49023c03555480c7c308792846e9c2baa10d4697",
+        "version": "1106f9e9f212f84a6aff70f130eddfac13301f7b49483deb875d0b600e3db87d",
         "warmup_time": 0
     },
-    "bench_regression.Track_hoeffding_tree.time_progressive_val_score": {
-        "code": "class <locals>:\n    def time_progressive_val_score(self, dataset_name):\n        for _ in evaluate.iter_progressive_val_score(\n            dataset=self.dataset,\n            model=self.model,\n            metric=metric_fn(),\n            measure_time=False,\n            measure_memory=False,\n        ):\n            pass\n\n    def setup(self, dataset_name):\n        self.model = get_model(track, model_name)\n        dataset = get_dataset(track, dataset_name)\n        next(iter(dataset))\n        self.dataset = get_dataset(track, dataset_name)",
+    "bench_regression.HoeffdingTree.time_progressive_val": {
+        "code": "class <locals>:\n    def time_progressive_val(self, dataset_name):\n        for _ in evaluate.iter_progressive_val_score(\n            dataset=self.dataset,\n            model=self.model,\n            metric=metric_fn(),\n            measure_time=False,\n            measure_memory=False,\n        ):\n            pass\n\n    def setup(self, dataset_name):\n        self.model = get_model(track, model_name)\n        dataset = get_dataset(track, dataset_name)\n        next(iter(dataset))\n        self.dataset = get_dataset(track, dataset_name)",
         "min_run_count": 1,
-        "name": "bench_regression.Track_hoeffding_tree.time_progressive_val_score",
+        "name": "bench_regression.HoeffdingTree.time_progressive_val",
         "number": 1,
         "param_names": [
             "dataset"
@@ -535,13 +535,13 @@
         "timeout": 600,
         "type": "time",
         "unit": "seconds",
-        "version": "939865690186395ecb66e76f49023c03555480c7c308792846e9c2baa10d4697",
+        "version": "1106f9e9f212f84a6aff70f130eddfac13301f7b49483deb875d0b600e3db87d",
         "warmup_time": 0
     },
-    "bench_regression.Track_k_nearest_neighbors.time_progressive_val_score": {
-        "code": "class <locals>:\n    def time_progressive_val_score(self, dataset_name):\n        for _ in evaluate.iter_progressive_val_score(\n            dataset=self.dataset,\n            model=self.model,\n            metric=metric_fn(),\n            measure_time=False,\n            measure_memory=False,\n        ):\n            pass\n\n    def setup(self, dataset_name):\n        self.model = get_model(track, model_name)\n        dataset = get_dataset(track, dataset_name)\n        next(iter(dataset))\n        self.dataset = get_dataset(track, dataset_name)",
+    "bench_regression.KNearestNeighbors.time_progressive_val": {
+        "code": "class <locals>:\n    def time_progressive_val(self, dataset_name):\n        for _ in evaluate.iter_progressive_val_score(\n            dataset=self.dataset,\n            model=self.model,\n            metric=metric_fn(),\n            measure_time=False,\n            measure_memory=False,\n        ):\n            pass\n\n    def setup(self, dataset_name):\n        self.model = get_model(track, model_name)\n        dataset = get_dataset(track, dataset_name)\n        next(iter(dataset))\n        self.dataset = get_dataset(track, dataset_name)",
         "min_run_count": 1,
-        "name": "bench_regression.Track_k_nearest_neighbors.time_progressive_val_score",
+        "name": "bench_regression.KNearestNeighbors.time_progressive_val",
         "number": 1,
         "param_names": [
             "dataset"
@@ -558,13 +558,13 @@
         "timeout": 600,
         "type": "time",
         "unit": "seconds",
-        "version": "939865690186395ecb66e76f49023c03555480c7c308792846e9c2baa10d4697",
+        "version": "1106f9e9f212f84a6aff70f130eddfac13301f7b49483deb875d0b600e3db87d",
         "warmup_time": 0
     },
-    "bench_regression.Track_linear_regression.time_progressive_val_score": {
-        "code": "class <locals>:\n    def time_progressive_val_score(self, dataset_name):\n        for _ in evaluate.iter_progressive_val_score(\n            dataset=self.dataset,\n            model=self.model,\n            metric=metric_fn(),\n            measure_time=False,\n            measure_memory=False,\n        ):\n            pass\n\n    def setup(self, dataset_name):\n        self.model = get_model(track, model_name)\n        dataset = get_dataset(track, dataset_name)\n        next(iter(dataset))\n        self.dataset = get_dataset(track, dataset_name)",
+    "bench_regression.LinearRegression.time_progressive_val": {
+        "code": "class <locals>:\n    def time_progressive_val(self, dataset_name):\n        for _ in evaluate.iter_progressive_val_score(\n            dataset=self.dataset,\n            model=self.model,\n            metric=metric_fn(),\n            measure_time=False,\n            measure_memory=False,\n        ):\n            pass\n\n    def setup(self, dataset_name):\n        self.model = get_model(track, model_name)\n        dataset = get_dataset(track, dataset_name)\n        next(iter(dataset))\n        self.dataset = get_dataset(track, dataset_name)",
         "min_run_count": 1,
-        "name": "bench_regression.Track_linear_regression.time_progressive_val_score",
+        "name": "bench_regression.LinearRegression.time_progressive_val",
         "number": 1,
         "param_names": [
             "dataset"
@@ -581,13 +581,13 @@
         "timeout": 600,
         "type": "time",
         "unit": "seconds",
-        "version": "939865690186395ecb66e76f49023c03555480c7c308792846e9c2baa10d4697",
+        "version": "1106f9e9f212f84a6aff70f130eddfac13301f7b49483deb875d0b600e3db87d",
         "warmup_time": 0
     },
-    "bench_regression.Track_linear_regression_with_l1_regularization.time_progressive_val_score": {
-        "code": "class <locals>:\n    def time_progressive_val_score(self, dataset_name):\n        for _ in evaluate.iter_progressive_val_score(\n            dataset=self.dataset,\n            model=self.model,\n            metric=metric_fn(),\n            measure_time=False,\n            measure_memory=False,\n        ):\n            pass\n\n    def setup(self, dataset_name):\n        self.model = get_model(track, model_name)\n        dataset = get_dataset(track, dataset_name)\n        next(iter(dataset))\n        self.dataset = get_dataset(track, dataset_name)",
+    "bench_regression.LinearRegressionWithL1Regularization.time_progressive_val": {
+        "code": "class <locals>:\n    def time_progressive_val(self, dataset_name):\n        for _ in evaluate.iter_progressive_val_score(\n            dataset=self.dataset,\n            model=self.model,\n            metric=metric_fn(),\n            measure_time=False,\n            measure_memory=False,\n        ):\n            pass\n\n    def setup(self, dataset_name):\n        self.model = get_model(track, model_name)\n        dataset = get_dataset(track, dataset_name)\n        next(iter(dataset))\n        self.dataset = get_dataset(track, dataset_name)",
         "min_run_count": 1,
-        "name": "bench_regression.Track_linear_regression_with_l1_regularization.time_progressive_val_score",
+        "name": "bench_regression.LinearRegressionWithL1Regularization.time_progressive_val",
         "number": 1,
         "param_names": [
             "dataset"
@@ -604,13 +604,13 @@
         "timeout": 600,
         "type": "time",
         "unit": "seconds",
-        "version": "939865690186395ecb66e76f49023c03555480c7c308792846e9c2baa10d4697",
+        "version": "1106f9e9f212f84a6aff70f130eddfac13301f7b49483deb875d0b600e3db87d",
         "warmup_time": 0
     },
-    "bench_regression.Track_linear_regression_with_l2_regularization.time_progressive_val_score": {
-        "code": "class <locals>:\n    def time_progressive_val_score(self, dataset_name):\n        for _ in evaluate.iter_progressive_val_score(\n            dataset=self.dataset,\n            model=self.model,\n            metric=metric_fn(),\n            measure_time=False,\n            measure_memory=False,\n        ):\n            pass\n\n    def setup(self, dataset_name):\n        self.model = get_model(track, model_name)\n        dataset = get_dataset(track, dataset_name)\n        next(iter(dataset))\n        self.dataset = get_dataset(track, dataset_name)",
+    "bench_regression.LinearRegressionWithL2Regularization.time_progressive_val": {
+        "code": "class <locals>:\n    def time_progressive_val(self, dataset_name):\n        for _ in evaluate.iter_progressive_val_score(\n            dataset=self.dataset,\n            model=self.model,\n            metric=metric_fn(),\n            measure_time=False,\n            measure_memory=False,\n        ):\n            pass\n\n    def setup(self, dataset_name):\n        self.model = get_model(track, model_name)\n        dataset = get_dataset(track, dataset_name)\n        next(iter(dataset))\n        self.dataset = get_dataset(track, dataset_name)",
         "min_run_count": 1,
-        "name": "bench_regression.Track_linear_regression_with_l2_regularization.time_progressive_val_score",
+        "name": "bench_regression.LinearRegressionWithL2Regularization.time_progressive_val",
         "number": 1,
         "param_names": [
             "dataset"
@@ -627,13 +627,13 @@
         "timeout": 600,
         "type": "time",
         "unit": "seconds",
-        "version": "939865690186395ecb66e76f49023c03555480c7c308792846e9c2baa10d4697",
+        "version": "1106f9e9f212f84a6aff70f130eddfac13301f7b49483deb875d0b600e3db87d",
         "warmup_time": 0
     },
-    "bench_regression.Track_passive_aggressive_regressor_mode_1.time_progressive_val_score": {
-        "code": "class <locals>:\n    def time_progressive_val_score(self, dataset_name):\n        for _ in evaluate.iter_progressive_val_score(\n            dataset=self.dataset,\n            model=self.model,\n            metric=metric_fn(),\n            measure_time=False,\n            measure_memory=False,\n        ):\n            pass\n\n    def setup(self, dataset_name):\n        self.model = get_model(track, model_name)\n        dataset = get_dataset(track, dataset_name)\n        next(iter(dataset))\n        self.dataset = get_dataset(track, dataset_name)",
+    "bench_regression.PassiveAggressiveRegressorMode1.time_progressive_val": {
+        "code": "class <locals>:\n    def time_progressive_val(self, dataset_name):\n        for _ in evaluate.iter_progressive_val_score(\n            dataset=self.dataset,\n            model=self.model,\n            metric=metric_fn(),\n            measure_time=False,\n            measure_memory=False,\n        ):\n            pass\n\n    def setup(self, dataset_name):\n        self.model = get_model(track, model_name)\n        dataset = get_dataset(track, dataset_name)\n        next(iter(dataset))\n        self.dataset = get_dataset(track, dataset_name)",
         "min_run_count": 1,
-        "name": "bench_regression.Track_passive_aggressive_regressor_mode_1.time_progressive_val_score",
+        "name": "bench_regression.PassiveAggressiveRegressorMode1.time_progressive_val",
         "number": 1,
         "param_names": [
             "dataset"
@@ -650,13 +650,13 @@
         "timeout": 600,
         "type": "time",
         "unit": "seconds",
-        "version": "939865690186395ecb66e76f49023c03555480c7c308792846e9c2baa10d4697",
+        "version": "1106f9e9f212f84a6aff70f130eddfac13301f7b49483deb875d0b600e3db87d",
         "warmup_time": 0
     },
-    "bench_regression.Track_passive_aggressive_regressor_mode_2.time_progressive_val_score": {
-        "code": "class <locals>:\n    def time_progressive_val_score(self, dataset_name):\n        for _ in evaluate.iter_progressive_val_score(\n            dataset=self.dataset,\n            model=self.model,\n            metric=metric_fn(),\n            measure_time=False,\n            measure_memory=False,\n        ):\n            pass\n\n    def setup(self, dataset_name):\n        self.model = get_model(track, model_name)\n        dataset = get_dataset(track, dataset_name)\n        next(iter(dataset))\n        self.dataset = get_dataset(track, dataset_name)",
+    "bench_regression.PassiveAggressiveRegressorMode2.time_progressive_val": {
+        "code": "class <locals>:\n    def time_progressive_val(self, dataset_name):\n        for _ in evaluate.iter_progressive_val_score(\n            dataset=self.dataset,\n            model=self.model,\n            metric=metric_fn(),\n            measure_time=False,\n            measure_memory=False,\n        ):\n            pass\n\n    def setup(self, dataset_name):\n        self.model = get_model(track, model_name)\n        dataset = get_dataset(track, dataset_name)\n        next(iter(dataset))\n        self.dataset = get_dataset(track, dataset_name)",
         "min_run_count": 1,
-        "name": "bench_regression.Track_passive_aggressive_regressor_mode_2.time_progressive_val_score",
+        "name": "bench_regression.PassiveAggressiveRegressorMode2.time_progressive_val",
         "number": 1,
         "param_names": [
             "dataset"
@@ -673,13 +673,13 @@
         "timeout": 600,
         "type": "time",
         "unit": "seconds",
-        "version": "939865690186395ecb66e76f49023c03555480c7c308792846e9c2baa10d4697",
+        "version": "1106f9e9f212f84a6aff70f130eddfac13301f7b49483deb875d0b600e3db87d",
         "warmup_time": 0
     },
-    "bench_regression.Track_river_mlp.time_progressive_val_score": {
-        "code": "class <locals>:\n    def time_progressive_val_score(self, dataset_name):\n        for _ in evaluate.iter_progressive_val_score(\n            dataset=self.dataset,\n            model=self.model,\n            metric=metric_fn(),\n            measure_time=False,\n            measure_memory=False,\n        ):\n            pass\n\n    def setup(self, dataset_name):\n        self.model = get_model(track, model_name)\n        dataset = get_dataset(track, dataset_name)\n        next(iter(dataset))\n        self.dataset = get_dataset(track, dataset_name)",
+    "bench_regression.RiverMLP.time_progressive_val": {
+        "code": "class <locals>:\n    def time_progressive_val(self, dataset_name):\n        for _ in evaluate.iter_progressive_val_score(\n            dataset=self.dataset,\n            model=self.model,\n            metric=metric_fn(),\n            measure_time=False,\n            measure_memory=False,\n        ):\n            pass\n\n    def setup(self, dataset_name):\n        self.model = get_model(track, model_name)\n        dataset = get_dataset(track, dataset_name)\n        next(iter(dataset))\n        self.dataset = get_dataset(track, dataset_name)",
         "min_run_count": 1,
-        "name": "bench_regression.Track_river_mlp.time_progressive_val_score",
+        "name": "bench_regression.RiverMLP.time_progressive_val",
         "number": 1,
         "param_names": [
             "dataset"
@@ -696,13 +696,13 @@
         "timeout": 600,
         "type": "time",
         "unit": "seconds",
-        "version": "939865690186395ecb66e76f49023c03555480c7c308792846e9c2baa10d4697",
+        "version": "1106f9e9f212f84a6aff70f130eddfac13301f7b49483deb875d0b600e3db87d",
         "warmup_time": 0
     },
-    "bench_regression.Track_stochastic_gradient_tree.time_progressive_val_score": {
-        "code": "class <locals>:\n    def time_progressive_val_score(self, dataset_name):\n        for _ in evaluate.iter_progressive_val_score(\n            dataset=self.dataset,\n            model=self.model,\n            metric=metric_fn(),\n            measure_time=False,\n            measure_memory=False,\n        ):\n            pass\n\n    def setup(self, dataset_name):\n        self.model = get_model(track, model_name)\n        dataset = get_dataset(track, dataset_name)\n        next(iter(dataset))\n        self.dataset = get_dataset(track, dataset_name)",
+    "bench_regression.StochasticGradientTree.time_progressive_val": {
+        "code": "class <locals>:\n    def time_progressive_val(self, dataset_name):\n        for _ in evaluate.iter_progressive_val_score(\n            dataset=self.dataset,\n            model=self.model,\n            metric=metric_fn(),\n            measure_time=False,\n            measure_memory=False,\n        ):\n            pass\n\n    def setup(self, dataset_name):\n        self.model = get_model(track, model_name)\n        dataset = get_dataset(track, dataset_name)\n        next(iter(dataset))\n        self.dataset = get_dataset(track, dataset_name)",
         "min_run_count": 1,
-        "name": "bench_regression.Track_stochastic_gradient_tree.time_progressive_val_score",
+        "name": "bench_regression.StochasticGradientTree.time_progressive_val",
         "number": 1,
         "param_names": [
             "dataset"
@@ -719,13 +719,13 @@
         "timeout": 600,
         "type": "time",
         "unit": "seconds",
-        "version": "939865690186395ecb66e76f49023c03555480c7c308792846e9c2baa10d4697",
+        "version": "1106f9e9f212f84a6aff70f130eddfac13301f7b49483deb875d0b600e3db87d",
         "warmup_time": 0
     },
-    "bench_regression.Track_streaming_random_patches.time_progressive_val_score": {
-        "code": "class <locals>:\n    def time_progressive_val_score(self, dataset_name):\n        for _ in evaluate.iter_progressive_val_score(\n            dataset=self.dataset,\n            model=self.model,\n            metric=metric_fn(),\n            measure_time=False,\n            measure_memory=False,\n        ):\n            pass\n\n    def setup(self, dataset_name):\n        self.model = get_model(track, model_name)\n        dataset = get_dataset(track, dataset_name)\n        next(iter(dataset))\n        self.dataset = get_dataset(track, dataset_name)",
+    "bench_regression.StreamingRandomPatches.time_progressive_val": {
+        "code": "class <locals>:\n    def time_progressive_val(self, dataset_name):\n        for _ in evaluate.iter_progressive_val_score(\n            dataset=self.dataset,\n            model=self.model,\n            metric=metric_fn(),\n            measure_time=False,\n            measure_memory=False,\n        ):\n            pass\n\n    def setup(self, dataset_name):\n        self.model = get_model(track, model_name)\n        dataset = get_dataset(track, dataset_name)\n        next(iter(dataset))\n        self.dataset = get_dataset(track, dataset_name)",
         "min_run_count": 1,
-        "name": "bench_regression.Track_streaming_random_patches.time_progressive_val_score",
+        "name": "bench_regression.StreamingRandomPatches.time_progressive_val",
         "number": 1,
         "param_names": [
             "dataset"
@@ -742,7 +742,7 @@
         "timeout": 600,
         "type": "time",
         "unit": "seconds",
-        "version": "939865690186395ecb66e76f49023c03555480c7c308792846e9c2baa10d4697",
+        "version": "1106f9e9f212f84a6aff70f130eddfac13301f7b49483deb875d0b600e3db87d",
         "warmup_time": 0
     },
     "version": 2
