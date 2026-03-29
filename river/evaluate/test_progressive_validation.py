@@ -82,6 +82,20 @@ def test_progressive_val_score_regressor():
     assert 0.0 < metric.get() < 10.0
 
 
+def test_progressive_val_score_anomaly_filter():
+    """AnomalyFilter models are scored correctly via the fast path."""
+    from river import anomaly
+
+    model = anomaly.QuantileFilter(anomaly.OneClassSVM(nu=0.2), q=0.995)
+    metric = evaluate.progressive_val_score(
+        dataset=datasets.CreditCard().take(2500),
+        model=model,
+        metric=metrics.ROCAUC(),
+    )
+    # Should produce a meaningful ROCAUC, not near-zero
+    assert metric.get() > 0.50
+
+
 def test_iter_progressive_val_score():
     """iter_progressive_val_score yields correct checkpoints."""
     model = preprocessing.StandardScaler() | linear_model.LogisticRegression()

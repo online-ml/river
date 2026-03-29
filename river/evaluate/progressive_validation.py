@@ -68,11 +68,14 @@ def _progressive_validation(
 
     # Fast path: no delay and no moment — the common case.
     # Iterates the dataset directly, skipping simulate_qa and the preds dict.
+    is_anomaly_filter = isinstance(model, AnomalyFilter)
     if moment is None and delay is None and not active_learning:
         metric_update = metric.update
 
         for x, y in dataset:
             y_pred = pred_func(x)
+            if is_anomaly_filter:
+                y_pred = model.classify(y_pred)
 
             if y_pred is not None and y_pred != {}:
                 metric_update(y_true=y, y_pred=y_pred)
