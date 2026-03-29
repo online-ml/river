@@ -7,6 +7,17 @@ from libc.stdlib cimport malloc, free
 from libc.string cimport memset, memmove
 
 
+def _rebuild_bucket(int max_size, int current_idx, list totals, list variances):
+    """Reconstruct a Bucket from pickled state."""
+    cdef Bucket b = Bucket(max_size)
+    b.current_idx = current_idx
+    cdef int i
+    for i in range(current_idx):
+        b.total_array[i] = totals[i]
+        b.variance_array[i] = variances[i]
+    return b
+
+
 cdef class Bucket:
     """A bucket class to keep statistics using C arrays for speed.
 
@@ -30,6 +41,16 @@ cdef class Bucket:
             raise MemoryError("Failed to allocate Bucket arrays")
         memset(self.total_array, 0, alloc_size * sizeof(double))
         memset(self.variance_array, 0, alloc_size * sizeof(double))
+
+    def __reduce__(self):
+        # Extract array data as Python lists for pickling
+        cdef list totals = []
+        cdef list variances = []
+        cdef int i
+        for i in range(self.current_idx):
+            totals.append(self.total_array[i])
+            variances.append(self.variance_array[i])
+        return (_rebuild_bucket, (self.max_size, self.current_idx, totals, variances))
 
     def __dealloc__(self):
         if self.total_array != NULL:
