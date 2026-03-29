@@ -1,0 +1,113 @@
+{
+    "bench_binary_clf.BinaryClassification.time_progressive_val_score": {
+        "code": "class BinaryClassification:\n    def time_progressive_val_score(self, model_name, dataset_name):\n        for _ in evaluate.iter_progressive_val_score(\n            dataset=self.dataset,\n            model=self.model,\n            metric=metrics.Accuracy() + metrics.F1(),\n            measure_time=False,\n            measure_memory=False,\n        ):\n            pass\n\n    def setup(self, model_name, dataset_name):\n        self.model = get_model(\"binary_clf\", model_name)\n        # Pre-download remote datasets so download time isn't measured\n        dataset = get_dataset(\"binary_clf\", dataset_name)\n        next(iter(dataset))\n        self.dataset = get_dataset(\"binary_clf\", dataset_name)",
+        "min_run_count": 1,
+        "name": "bench_binary_clf.BinaryClassification.time_progressive_val_score",
+        "number": 1,
+        "param_names": [
+            "model",
+            "dataset"
+        ],
+        "params": [
+            [
+                "'Logistic regression'",
+                "'Aggregated Mondrian Forest'",
+                "'ALMA'"
+            ],
+            [
+                "'Bananas'",
+                "'Phishing'"
+            ]
+        ],
+        "repeat": 1,
+        "rounds": 1,
+        "sample_time": 0.01,
+        "timeout": 600,
+        "type": "time",
+        "unit": "seconds",
+        "version": "4503a509f2a4829d1d2edf40a37213cc01fe42c7f754764f74fc826da0b4fa5b",
+        "warmup_time": 0
+    },
+    "bench_multiclass_clf.MulticlassClassification.time_progressive_val_score": {
+        "code": "class MulticlassClassification:\n    def time_progressive_val_score(self, model_name, dataset_name):\n        for _ in evaluate.iter_progressive_val_score(\n            dataset=self.dataset,\n            model=self.model,\n            metric=metrics.Accuracy() + metrics.MicroF1() + metrics.MacroF1(),\n            measure_time=False,\n            measure_memory=False,\n        ):\n            pass\n\n    def setup(self, model_name, dataset_name):\n        self.model = get_model(\"multiclass_clf\", model_name)\n        # Pre-download remote datasets so download time isn't measured\n        dataset = get_dataset(\"multiclass_clf\", dataset_name)\n        next(iter(dataset))\n        self.dataset = get_dataset(\"multiclass_clf\", dataset_name)",
+        "min_run_count": 1,
+        "name": "bench_multiclass_clf.MulticlassClassification.time_progressive_val_score",
+        "number": 1,
+        "param_names": [
+            "model",
+            "dataset"
+        ],
+        "params": [
+            [
+                "'Naive Bayes'",
+                "'Hoeffding Tree'",
+                "'Hoeffding Adaptive Tree'",
+                "'Adaptive Random Forest'",
+                "'Aggregated Mondrian Forest'",
+                "'Streaming Random Patches'",
+                "'k-Nearest Neighbors'",
+                "'ADWIN Bagging'",
+                "'AdaBoost'",
+                "'Bagging'",
+                "'Leveraging Bagging'",
+                "'Voting'",
+                "'[baseline] Last Class'"
+            ],
+            [
+                "'ImageSegments'"
+            ]
+        ],
+        "repeat": 1,
+        "rounds": 1,
+        "sample_time": 0.01,
+        "timeout": 600,
+        "type": "time",
+        "unit": "seconds",
+        "version": "101657a2d7f37fe54c51d070f285a4549d04ffe08b23a517c635726de38557db",
+        "warmup_time": 0
+    },
+    "bench_regression.Regression.time_progressive_val_score": {
+        "code": "class Regression:\n    def time_progressive_val_score(self, model_name, dataset_name):\n        for _ in evaluate.iter_progressive_val_score(\n            dataset=self.dataset,\n            model=self.model,\n            metric=metrics.MAE() + metrics.RMSE() + metrics.R2(),\n            measure_time=False,\n            measure_memory=False,\n        ):\n            pass\n\n    def setup(self, model_name, dataset_name):\n        self.model = get_model(\"regression\", model_name)\n        # Pre-download remote datasets so download time isn't measured\n        dataset = get_dataset(\"regression\", dataset_name)\n        next(iter(dataset))\n        self.dataset = get_dataset(\"regression\", dataset_name)",
+        "min_run_count": 1,
+        "name": "bench_regression.Regression.time_progressive_val_score",
+        "number": 1,
+        "param_names": [
+            "model",
+            "dataset"
+        ],
+        "params": [
+            [
+                "'Linear Regression'",
+                "'Linear Regression with l1 regularization'",
+                "'Linear Regression with l2 regularization'",
+                "'Passive-Aggressive Regressor, mode 1'",
+                "'Passive-Aggressive Regressor, mode 2'",
+                "'k-Nearest Neighbors'",
+                "'Hoeffding Tree'",
+                "'Hoeffding Adaptive Tree'",
+                "'Stochastic Gradient Tree'",
+                "'Adaptive Random Forest'",
+                "'Aggregated Mondrian Forest'",
+                "'Adaptive Model Rules'",
+                "'Streaming Random Patches'",
+                "'Bagging'",
+                "'Exponentially Weighted Average'",
+                "'River MLP'",
+                "'[baseline] Mean predictor'"
+            ],
+            [
+                "'ChickWeights'",
+                "'TrumpApproval'"
+            ]
+        ],
+        "repeat": 1,
+        "rounds": 1,
+        "sample_time": 0.01,
+        "timeout": 600,
+        "type": "time",
+        "unit": "seconds",
+        "version": "2a82ab432ee97e9299760eecddeebea987fd25317ab2cd2de6af6042cd224519",
+        "warmup_time": 0
+    },
+    "version": 2
+}
