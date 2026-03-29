@@ -48,7 +48,7 @@ jobs:
           if git rev-parse --verify asv >/dev/null 2>&1; then
             git worktree add /tmp/asv-save asv
           else
-            git worktree add --orphan /tmp/asv-save asv
+            git worktree add --orphan -b asv /tmp/asv-save
           fi
           cp -r benchmarks/results /tmp/asv-save/
           cd /tmp/asv-save
