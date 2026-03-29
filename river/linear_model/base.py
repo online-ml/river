@@ -142,7 +142,7 @@ class GLM:
     def _raw_dot_one(self, x: dict) -> float:
         return self._weights @ utils.VectorDict(x) + self.intercept
 
-    def _eval_gradient_one(self, x: dict, y: float, w: float) -> tuple[VectorDict, float]:
+    def _eval_gradient_one(self, x: dict, y: float, w: float) -> tuple[utils.VectorDict, float]:
         loss_gradient = self.loss.gradient(y_true=y, y_pred=self._raw_dot_one(x))
         loss_gradient *= w
         loss_gradient = float(
@@ -150,9 +150,7 @@ class GLM:
         )
 
         # Build gradient VectorDict in one pass instead of VectorDict(x) * scalar
-        gradient = utils.VectorDict(
-            {key: value * loss_gradient for key, value in x.items()}
-        )
+        gradient = utils.VectorDict({key: value * loss_gradient for key, value in x.items()})
 
         if self.l2:
             gradient.iadd_scaled(self._weights, self.l2)
