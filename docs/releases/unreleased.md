@@ -20,6 +20,7 @@ The `dummy` module is now fully type-annotated.
 - Added `update_many` method to `stats.PearsonCorr`.
 - Changed the calculation of the Kuiper statistic in `base.KolmogorovSmirnov` to correspond to the reference implementation. The Kuiper statistic uses the difference between the maximum value and the minimum value.
 - Fixed `RollingQuantile` not storing `q` as an instance attribute, which caused `clone()` to fail.
+- Optimized `Var.update`/`revert` and `Cov.update`/`revert` by replacing `Mean.get()` method calls with direct `_mean` attribute access and inlining property lookups (~19% speedup each).
 
 ## compat
 
@@ -29,6 +30,8 @@ The `dummy` module is now fully type-annotated.
 
 - Fixed `AdjustedMutualInfo` to return 0.0 when only one class or one cluster exists, and to handle the 0/0 edge case for perfect matches with small samples, aligning with sklearn 1.8 behavior.
 - Fixed `KeyError` in `Silhouette` metric when used with clusterers that haven't initialized their centers yet (e.g., `CluStream` during its warmup phase).
+- Optimized `ConfusionMatrix` by inlining `_update` into `update`/`revert` (~10% speedup) and caching `total_true_positives` as an incrementally maintained counter (99% speedup on access).
+- Cached `requires_labels` in `BinaryMetric.__init__` to avoid property lookup on every `update`/`revert` call.
 
 ## evaluate
 
