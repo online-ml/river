@@ -26,20 +26,40 @@ def _progressive_validation(
     if not metric.works_with(model):
         raise ValueError(f"{metric.__class__.__name__} metric is not compatible with {model}")
 
-    # Determine if predict_one or predict_proba_one should be used in case of a classifier
-    if isinstance(model, AnomalyDetector | AnomalyFilter):
-        pred_func = model.score_one
+    # Build predict/learn/update closures once — shared by both fast and general paths.
+    # Using closures avoids per-sample isinstance checks and branching.
+
+    # Predict closure: score_one + classify for anomaly filters, predict_proba_one or predict_one
+    if isinstance(model, AnomalyFilter):
+        _score = model.score_one
+        _classify = model.classify
+
+        def predict(x, **kwargs):
+            return _classify(_score(x, **kwargs))
+
+    elif isinstance(model, AnomalyDetector):
+        predict = model.score_one  # type: ignore[assignment]
     elif isinstance(model, base.Classifier) and not metric.requires_labels:  # type: ignore
-        pred_func = model.predict_proba_one
+        predict = model.predict_proba_one  # type: ignore[assignment]
     else:
-        pred_func = model.predict_one
+        predict = model.predict_one  # type: ignore[assignment]
+
+    # Learn closure: supervised vs unsupervised dispatch
+    is_supervised = model._supervised
+    if is_supervised:
+        learn = model.learn_one
+    else:
+
+        def learn(x, _y=None, **kwargs):
+            model.learn_one(x, **kwargs)
+
+    metric_update = metric.update
 
     # If we are dealing with an active learner, we need to check whether or not a label should be
     # used for training or not. We'll also record how many times labels were used.
     from river.active.base import ActiveLearningClassifier
 
     active_learning = isinstance(model, ActiveLearningClassifier)
-    is_supervised = model._supervised
     n_samples_learned = 0
 
     prev_checkpoint = None
@@ -68,22 +88,15 @@ def _progressive_validation(
 
     # Fast path: no delay and no moment — the common case.
     # Iterates the dataset directly, skipping simulate_qa and the preds dict.
-    is_anomaly_filter = isinstance(model, AnomalyFilter)
     if moment is None and delay is None and not active_learning:
-        metric_update = metric.update
+        extra: list
+        for x, y, *extra in dataset:
+            kwargs: dict = extra[0] if extra else {}
 
-        for x, y in dataset:
-            y_pred = pred_func(x)
-            if is_anomaly_filter:
-                y_pred = model.classify(y_pred)
-
+            y_pred = predict(x, **kwargs)
             if y_pred is not None and y_pred != {}:
                 metric_update(y_true=y, y_pred=y_pred)
-
-            if is_supervised:
-                model.learn_one(x, y)
-            else:
-                model.learn_one(x)
+            learn(x, y, **kwargs)
 
             n_total_answers += 1
             if n_total_answers == next_checkpoint:
@@ -98,32 +111,25 @@ def _progressive_validation(
     # General path: delayed labels or active learning — uses simulate_qa with preds dict.
     preds = {}
 
-    for i, x, y, *kwargs in stream.simulate_qa(dataset, moment, delay, copy=True):
-        kwargs = kwargs[0] if kwargs else {}
+    for i, x, y, *extra in stream.simulate_qa(dataset, moment, delay, copy=True):
+        kwargs = extra[0] if extra else {}
 
         # Case 1: no ground truth, just make a prediction
         if y is None:
-            y_pred = pred_func(x, **kwargs)
+            y_pred = predict(x, **kwargs)
             y_pred, ask_for_label = y_pred if active_learning else (y_pred, True)  # type: ignore[misc]
-            if isinstance(model, AnomalyFilter):
-                y_pred = model.classify(y_pred)
             preds[i] = y_pred, ask_for_label
             continue
 
         # Case 2: there's a ground truth, model and metric can be updated
         y_pred, use_label = preds.pop(i)
 
-        # Update the metric
         if y_pred is not None and y_pred != {}:
-            metric.update(y_true=y, y_pred=y_pred)
+            metric_update(y_true=y, y_pred=y_pred)
 
-        # Update the model
         if use_label:
             n_samples_learned += 1
-            if is_supervised:
-                model.learn_one(x, y, **kwargs)
-            else:
-                model.learn_one(x, **kwargs)
+            learn(x, y, **kwargs)
 
         # Yield current results
         n_total_answers += 1
