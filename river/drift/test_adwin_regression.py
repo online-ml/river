@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import math
-import pickle
 import random
 
 import numpy as np
@@ -12,8 +10,8 @@ import pytest
 from river import drift
 from river.drift.adwin_c import AdaptiveWindowing
 
-
 # ---- Drift detection correctness ----
+
 
 class TestDriftDetection:
     """Tests that drift detection results are numerically identical."""
@@ -82,6 +80,7 @@ class TestDriftDetection:
 
 # ---- Statistics correctness ----
 
+
 class TestStatistics:
     """Tests that ADWIN statistics (width, total, variance, estimation) are correct."""
 
@@ -131,6 +130,7 @@ class TestStatistics:
 
 
 # ---- Parameter variations ----
+
 
 class TestParameters:
     """Tests that different parameter settings work correctly."""
@@ -201,6 +201,7 @@ class TestParameters:
 
 # ---- AdaptiveWindowing direct tests ----
 
+
 class TestAdaptiveWindowing:
     """Direct tests on the Cython AdaptiveWindowing class."""
 
@@ -239,6 +240,7 @@ class TestAdaptiveWindowing:
 
 
 # ---- Edge cases ----
+
 
 class TestEdgeCases:
     """Edge cases and boundary conditions."""
