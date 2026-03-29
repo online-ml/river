@@ -114,6 +114,7 @@ def simulate_qa(
     # Fast path: no moment and no delay (the common case).
     # Skip all memento/queue machinery and yield question then answer directly.
     if moment is None and delay is None:
+        kwargs_list: list
         for i, (x, y, *kwargs_list) in enumerate(dataset):
             kwargs = kwargs_list[0] if kwargs_list else None
             if copy:
