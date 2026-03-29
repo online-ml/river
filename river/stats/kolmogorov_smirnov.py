@@ -3,18 +3,22 @@ from __future__ import annotations
 import math
 import random
 
-from river import base, stats
+from river import stats
 
 __all__ = ["KolmogorovSmirnov"]
 
+_random = random.random
 
-class Treap(base.Base):
-    """Class representing Treap (Cartesian Tree) used to calculate the Incremental KS statistics."""
+
+class _Node:
+    """Treap node with __slots__ for fast attribute access."""
+
+    __slots__ = ("key", "value", "priority", "size", "height", "lazy", "max_value", "min_value", "left", "right")
 
     def __init__(self, key, value=0):
         self.key = key
         self.value = value
-        self.priority = random.random()
+        self.priority = _random()
         self.size = 1
         self.height = 1
         self.lazy = 0
@@ -23,137 +27,134 @@ class Treap(base.Base):
         self.left = None
         self.right = None
 
-    @staticmethod
-    def sum_all(node, value):
-        if node is None:
-            return
+
+def _push_down(node):
+    """Push lazy value to children (inline unlazy + sum_all)."""
+    lz = node.lazy
+    if lz != 0:
+        left = node.left
+        if left is not None:
+            left.value += lz
+            left.max_value += lz
+            left.min_value += lz
+            left.lazy += lz
+        right = node.right
+        if right is not None:
+            right.value += lz
+            right.max_value += lz
+            right.min_value += lz
+            right.lazy += lz
+        node.lazy = 0
+
+
+def _pull_up(node):
+    """Recompute aggregate fields from children."""
+    if node is None:
+        return
+    _push_down(node)
+    val = node.value
+    mx = val
+    mn = val
+    sz = 1
+    ht = 0
+    left = node.left
+    if left is not None:
+        l_mx = left.max_value
+        l_mn = left.min_value
+        sz += left.size
+        ht = left.height
+        if l_mx > mx:
+            mx = l_mx
+        if l_mn < mn:
+            mn = l_mn
+    right = node.right
+    if right is not None:
+        r_mx = right.max_value
+        r_mn = right.min_value
+        sz += right.size
+        r_ht = right.height
+        if r_ht > ht:
+            ht = r_ht
+        if r_mx > mx:
+            mx = r_mx
+        if r_mn < mn:
+            mn = r_mn
+    node.size = sz
+    node.height = ht + 1
+    node.max_value = mx
+    node.min_value = mn
+
+
+def _split_keep_right(node, key):
+    if node is None:
+        return None, None
+    _push_down(node)
+    if key <= node.key:
+        left, node.left = _split_keep_right(node.left, key)
+        right = node
+    else:
+        node.right, right = _split_keep_right(node.right, key)
+        left = node
+    _pull_up(left)
+    _pull_up(right)
+    return left, right
+
+
+def _merge(left, right):
+    if left is None:
+        return right
+    if right is None:
+        return left
+    if left.priority > right.priority:
+        _push_down(left)
+        left.right = _merge(left.right, right)
+        _pull_up(left)
+        return left
+    else:
+        _push_down(right)
+        right.left = _merge(left, right.left)
+        _pull_up(right)
+        return right
+
+
+def _split_smallest(node):
+    if node is None:
+        return None, None
+    _push_down(node)
+    if node.left is not None:
+        left, node.left = _split_smallest(node.left)
+        right = node
+    else:
+        right = node.right
+        node.right = None
+        left = node
+    _pull_up(left)
+    _pull_up(right)
+    return left, right
+
+
+def _split_greatest(node):
+    if node is None:
+        return None, None
+    _push_down(node)
+    if node.right is not None:
+        node.right, right = _split_greatest(node.right)
+        left = node
+    else:
+        left = node.left
+        node.left = None
+        right = node
+    _pull_up(left)
+    _pull_up(right)
+    return left, right
+
+
+def _sum_all(node, value):
+    if node is not None:
         node.value += value
         node.max_value += value
         node.min_value += value
         node.lazy += value
-
-    @classmethod
-    def unlazy(cls, node):
-        cls.sum_all(node.left, node.lazy)
-        cls.sum_all(node.right, node.lazy)
-        node.lazy = 0
-
-    @classmethod
-    def update(cls, node):
-        if node is None:
-            return
-        cls.unlazy(node)
-        node.size = 1
-        node.height = 0
-        node.max_value = node.value
-        node.min_value = node.value
-
-        if node.left is not None:
-            node.size += node.left.size
-            node.height += node.left.height
-            node.max_value = max(node.max_value, node.left.max_value)
-            node.min_value = min(node.min_value, node.left.min_value)
-
-        if node.right is not None:
-            node.size += node.right.size
-            node.height = max(node.height, node.right.height)
-            node.max_value = max(node.max_value, node.right.max_value)
-            node.min_value = min(node.min_value, node.right.min_value)
-
-        node.height += 1
-
-    @classmethod
-    def split_keep_right(cls, node, key):
-        if node is None:
-            return None, None
-
-        left, right = None, None
-
-        cls.unlazy(node)
-
-        if key <= node.key:
-            left, node.left = cls.split_keep_right(node.left, key)
-            right = node
-        else:
-            node.right, right = cls.split_keep_right(node.right, key)
-            left = node
-
-        cls.update(left)
-        cls.update(right)
-
-        return left, right
-
-    @classmethod
-    def merge(cls, left, right):
-        if left is None:
-            return right
-        if right is None:
-            return left
-
-        node = None
-
-        if left.priority > right.priority:
-            cls.unlazy(left)
-            left.right = cls.merge(left.right, right)
-            node = left
-        else:
-            cls.unlazy(right)
-            right.left = cls.merge(left, right.left)
-            node = right
-
-        cls.update(node)
-
-        return node
-
-    @classmethod
-    def split_smallest(cls, node):
-        if node is None:
-            return None, None
-
-        left, right = None, None
-
-        cls.unlazy(node)
-
-        if node.left is not None:
-            left, node.left = cls.split_smallest(node.left)
-            right = node
-        else:
-            right = node.right
-            node.right = None
-            left = node
-
-        cls.update(left)
-        cls.update(right)
-
-        return left, right
-
-    @classmethod
-    def split_greatest(cls, node):
-        if node is None:
-            return None, None
-
-        cls.unlazy(node)
-
-        if node.right is not None:
-            node.right, right = cls.split_greatest(node.right)
-            left = node
-        else:
-            left = node.left
-            node.left = None
-            right = node
-
-        cls.update(left)
-        cls.update(right)
-
-        return left, right
-
-    @staticmethod
-    def get_size(node):
-        return 0 if node is None else node.size
-
-    @staticmethod
-    def get_height(node):
-        return 0 if node is None else node.height
 
 
 class KolmogorovSmirnov(stats.base.Bivariate):
@@ -212,8 +213,8 @@ class KolmogorovSmirnov(stats.base.Bivariate):
 
     References
     ----------
-    [^1]: dos Reis, D.M. et al. (2016) ‘Fast unsupervised online drift detection using incremental Kolmogorov-Smirnov
-    test’, Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining.
+    [^1]: dos Reis, D.M. et al. (2016) 'Fast unsupervised online drift detection using incremental Kolmogorov-Smirnov
+    test', Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining.
     doi:10.1145/2939672.2939836.
     [^2]: C. R. Aragon and R. G. Seidel. Randomized search trees. In FOCS, pages 540–545. IEEE, 1989.
     [^3]: Kuiper, N. H. (1960). "Tests concerning random points on a circle".
@@ -227,40 +228,39 @@ class KolmogorovSmirnov(stats.base.Bivariate):
         self.statistic = statistic
 
     def update(self, x, y):
-        keys = ((x, 0), (y, 1))
-
+        root = self.treap
         self.n_samples += 1
 
-        for key in keys:
-            left, left_g, right, val = None, None, None, None
-
-            left, right = Treap.split_keep_right(self.treap, key)
-            left, left_g = Treap.split_greatest(left)
+        for key, delta in (((x, 0), 1), ((y, 1), -1)):
+            left, right = _split_keep_right(root, key)
+            left, left_g = _split_greatest(left)
             val = 0 if left_g is None else left_g.value
 
-            left = Treap.merge(left, left_g)
-            right = Treap.merge(Treap(key, val), right)
-            Treap.sum_all(right, 1 if key[1] == 0 else -1)
+            left = _merge(left, left_g)
+            new_node = _Node(key, val)
+            right = _merge(new_node, right)
+            _sum_all(right, delta)
 
-            self.treap = Treap.merge(left, right)
+            root = _merge(left, right)
+
+        self.treap = root
 
     def revert(self, x, y):
-        keys = ((x, 0), (y, 1))
-
+        root = self.treap
         self.n_samples -= 1
 
-        for key in keys:
-            left, right, right_l = None, None, None
-
-            left, right = Treap.split_keep_right(self.treap, key)
-            right_l, right = Treap.split_smallest(right)
+        for key, delta in (((x, 0), -1), ((y, 1), 1)):
+            left, right = _split_keep_right(root, key)
+            right_l, right = _split_smallest(right)
 
             if right_l is not None and right_l.key == key:
-                Treap.sum_all(right, -1 if key[1] == 0 else 1)
+                _sum_all(right, delta)
             else:
-                right = Treap.merge(right_l, right)
+                right = _merge(right_l, right)
 
-            self.treap = Treap.merge(left, right)
+            root = _merge(left, right)
+
+        self.treap = root
 
     def get(self):
         assert self.statistic in ["ks", "kuiper"]
