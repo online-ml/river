@@ -39,7 +39,7 @@ jobs:
 
       - name: Run benchmarks
         working-directory: benchmarks
-        run: asv run NEW --skip-existing-commits
+        run: asv run ${{ github.sha }}^! --skip-existing-commits
 
       - name: Save results to asv branch
         run: |
