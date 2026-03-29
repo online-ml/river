@@ -64,3 +64,9 @@ The `dummy` module is now fully type-annotated.
 - Added function in nearest-neighbor engines to gather relevant classes/targets from the window.
 - Added a virtual function to the base engine class; New NN engines need to override `refresh_targets` function
   - Classifier KNN now calls this engine-specific function under `clean_up_classes()`
+
+## utils
+
+- The `utils` module is now fully type-checked.
+- `utils.VectorDict` and `utils.SortedWindow` are now parametrised generic containers.
+- `utils.VectorDict` now implements the reflected operations of addition, subtraction and multiplication.

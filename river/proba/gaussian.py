@@ -232,7 +232,7 @@ class MultivariateGaussian(base.MultivariateContinuousDistribution):
 
     """
 
-    def __init__(self, seed=None):
+    def __init__(self, seed: int | None = None):
         super().__init__(seed)
         self._var = covariance.EmpiricalCovariance(ddof=1)
 

@@ -307,6 +307,15 @@ cdef class VectorDict:
                 return NotImplemented
         return VectorDict(res)
 
+    def __radd__(VectorDict self, other):
+        res = self._to_dict(force_copy=True)
+        try:
+            for key, value in res.items():
+                res[key] = value + other
+        except TypeError:
+            return NotImplemented
+        return VectorDict(res)
+
     def __iadd__(VectorDict self, other):
         if isinstance(other, VectorDict):  # vec += vec
             other_ = <VectorDict> other
@@ -345,6 +354,16 @@ cdef class VectorDict:
                 return NotImplemented
         return VectorDict(res)
 
+
+    def __rsub__(VectorDict self, other):
+        res = self._to_dict(force_copy=True)
+        try:
+            for key, value in res.items():
+                res[key] = value - other
+        except TypeError:
+            return NotImplemented
+        return VectorDict(res)
+
     def __isub__(VectorDict self, other):
         if isinstance(other, VectorDict):  # vec -= vec
             other_ = <VectorDict> other
@@ -374,6 +393,16 @@ cdef class VectorDict:
                     res[key] = value * right
             except TypeError:
                 return NotImplemented
+        return VectorDict(res)
+
+
+    def __rmul__(VectorDict self, other):
+        res = self._to_dict(force_copy=True)
+        try:
+            for key, value in res.items():
+                res[key] = value * other
+        except TypeError:
+            return NotImplemented
         return VectorDict(res)
 
     def __imul__(VectorDict self, other):
@@ -412,6 +441,15 @@ cdef class VectorDict:
                     res[key] = left / value
             except TypeError:
                 return NotImplemented
+        return VectorDict(res)
+
+    def __rtruediv__(VectorDict self, other):
+        res = self._to_dict(force_copy=True)
+        try:
+            for key, value in res.items():
+                res[key] = other / value
+        except TypeError:
+            return NotImplemented
         return VectorDict(res)
 
     def __itruediv__(VectorDict self, other):

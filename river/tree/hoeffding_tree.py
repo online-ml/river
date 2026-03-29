@@ -459,7 +459,7 @@ class HoeffdingTree(ABC):
             # Pick a color, the hue depends on the class and the transparency on the distribution
             if isinstance(self, base.Classifier):
                 class_proba = normalize_values_in_dict(child.stats, inplace=False)
-                mode = max(class_proba, key=class_proba.get)
+                mode = max(class_proba, key=class_proba.get)  # type: ignore[arg-type]
                 p_mode = class_proba[mode]
                 try:
                     alpha = (p_mode - 1 / n_colors) / (1 - 1 / n_colors)

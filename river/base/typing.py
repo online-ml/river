@@ -18,3 +18,16 @@ class Learner(typing.Protocol):
 
 class Predictor(Learner, typing.Protocol):
     def predict_one(self, x: dict[FeatureName, typing.Any]) -> Target: ...
+
+
+# The following protocols enable us to request that objects can be ordered.
+# They are equivalent to typeshed's SupportsRichComparison.
+class SupportsComparisonGreater(typing.Protocol):
+    def __gt__(self, other: typing.Any, /) -> bool: ...
+
+
+class SupportsComparisonLesser(typing.Protocol):
+    def __lt__(self, other: typing.Any, /) -> bool: ...
+
+
+SupportsComparison = SupportsComparisonGreater | SupportsComparisonLesser
