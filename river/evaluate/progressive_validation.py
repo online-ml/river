@@ -34,13 +34,12 @@ def _progressive_validation(
     else:
         pred_func = model.predict_one
 
-    preds = {}
-
     # If we are dealing with an active learner, we need to check whether or not a label should be
     # used for training or not. We'll also record how many times labels were used.
     from river.active.base import ActiveLearningClassifier
 
     active_learning = isinstance(model, ActiveLearningClassifier)
+    is_supervised = model._supervised
     n_samples_learned = 0
 
     prev_checkpoint = None
@@ -67,6 +66,35 @@ def _progressive_validation(
 
         return state
 
+    # Fast path: no delay and no moment — the common case.
+    # Iterates the dataset directly, skipping simulate_qa and the preds dict.
+    if moment is None and delay is None and not active_learning:
+        metric_update = metric.update
+
+        for x, y in dataset:
+            y_pred = pred_func(x)
+
+            if y_pred is not None and y_pred != {}:
+                metric_update(y_true=y, y_pred=y_pred)
+
+            if is_supervised:
+                model.learn_one(x, y)
+            else:
+                model.learn_one(x)
+
+            n_total_answers += 1
+            if n_total_answers == next_checkpoint:
+                yield report(y_pred=y_pred)
+                prev_checkpoint = next_checkpoint
+                next_checkpoint = next(checkpoints, None)
+        else:
+            if prev_checkpoint and n_total_answers != prev_checkpoint:
+                yield report(y_pred=None)
+        return
+
+    # General path: delayed labels or active learning — uses simulate_qa with preds dict.
+    preds = {}
+
     for i, x, y, *kwargs in stream.simulate_qa(dataset, moment, delay, copy=True):
         kwargs = kwargs[0] if kwargs else {}
 
@@ -83,13 +111,13 @@ def _progressive_validation(
         y_pred, use_label = preds.pop(i)
 
         # Update the metric
-        if y_pred != {} and y_pred is not None:
+        if y_pred is not None and y_pred != {}:
             metric.update(y_true=y, y_pred=y_pred)
 
         # Update the model
         if use_label:
             n_samples_learned += 1
-            if model._supervised:
+            if is_supervised:
                 model.learn_one(x, y, **kwargs)
             else:
                 model.learn_one(x, **kwargs)

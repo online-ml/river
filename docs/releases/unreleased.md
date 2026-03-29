@@ -30,6 +30,14 @@ The `dummy` module is now fully type-annotated.
 - Fixed `AdjustedMutualInfo` to return 0.0 when only one class or one cluster exists, and to handle the 0/0 edge case for perfect matches with small samples, aligning with sklearn 1.8 behavior.
 - Fixed `KeyError` in `Silhouette` metric when used with clusterers that haven't initialized their centers yet (e.g., `CluStream` during its warmup phase).
 
+## evaluate
+
+- Optimized `progressive_val_score` and `iter_progressive_val_score` with a fast path for the common no-delay case. The evaluation loop now iterates the dataset directly, skipping the `simulate_qa` generator and internal prediction buffer. Combined with caching `model._supervised` and `metric.update`, this yields a **1.5x speedup** on typical workloads.
+
+## stream
+
+- Added a fast path in `simulate_qa` for the no-delay, no-moment case, skipping the memento queue machinery.
+
 ## base
 
 - Added `EstimatorMeta` metaclass so that `isinstance` works transparently with pipelines. For example, `isinstance(scaler | log_reg, base.Classifier)` now returns `True`. This removes the need for `utils.inspect` helper functions (`isclassifier`, `isregressor`, etc.), which have been removed.

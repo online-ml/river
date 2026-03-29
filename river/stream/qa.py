@@ -111,6 +111,19 @@ def simulate_qa(
 
     """
 
+    # Fast path: no moment and no delay (the common case).
+    # Skip all memento/queue machinery and yield question then answer directly.
+    if moment is None and delay is None:
+        for i, (x, y, *kwargs_list) in enumerate(dataset):
+            kwargs = kwargs_list[0] if kwargs_list else None
+            if copy:
+                x_copy = deepcopy(x)
+            else:
+                x_copy = x
+            yield (i, x_copy, None, kwargs) if kwargs else (i, x_copy, None)
+            yield (i, x, y, kwargs) if kwargs else (i, x, y)
+        return
+
     # Determine how to insert mementos into the queue
     queue = (
         (lambda q, el: bisect.insort(q, el))
@@ -129,9 +142,7 @@ def simulate_qa(
 
     # Coerce delay to a function
     get_delay = (
-        (lambda i, _: 0)
-        if delay is None
-        else (lambda x, _: x[delay])
+        (lambda x, _: x[delay])
         if isinstance(delay, str)
         else (lambda _, __: delay)  # type: ignore
         if not callable(delay)
@@ -139,8 +150,6 @@ def simulate_qa(
     )
 
     mementos: list[Memento] = []
-
-    kwargs_list: list
 
     for i, (x, y, *kwargs_list) in enumerate(dataset):
         kwargs = kwargs_list[0] if kwargs_list else None
