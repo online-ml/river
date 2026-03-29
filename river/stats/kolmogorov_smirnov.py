@@ -13,7 +13,18 @@ _random = random.random
 class _Node:
     """Treap node with __slots__ for fast attribute access."""
 
-    __slots__ = ("key", "value", "priority", "size", "height", "lazy", "max_value", "min_value", "left", "right")
+    __slots__ = (
+        "key",
+        "value",
+        "priority",
+        "size",
+        "height",
+        "lazy",
+        "max_value",
+        "min_value",
+        "left",
+        "right",
+    )
 
     def __init__(self, key, value=0):
         self.key = key
