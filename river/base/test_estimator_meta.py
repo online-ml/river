@@ -49,14 +49,14 @@ class TestIsinstanceWithPipelines:
         assert isinstance(model, base.Estimator)
 
     def test_pipeline_with_transformer_only(self) -> None:
-        model = preprocessing.StandardScaler() | preprocessing.MinMaxScaler()  # type: ignore[no-untyped-call]
+        model = preprocessing.StandardScaler() | preprocessing.MinMaxScaler()
         assert isinstance(model, base.Transformer)
         assert not isinstance(model, base.Classifier)
 
     def test_nested_pipeline(self) -> None:
         """Nested pipelines should be unwrapped recursively."""
         inner = preprocessing.StandardScaler() | linear_model.LogisticRegression()
-        outer = preprocessing.MinMaxScaler() | inner  # type: ignore[no-untyped-call]
+        outer = preprocessing.MinMaxScaler() | inner
         assert isinstance(outer, base.Classifier)
         assert not isinstance(outer, base.Regressor)
 
