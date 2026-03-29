@@ -144,7 +144,7 @@ class OrdinalEncoder(base.MiniBatchTransformer):
         reserved values (``unknown_value`` and ``none_value``).
 
         """
-        code = len(self.values[feature])
+        code = len(self.values[feature])  # type: ignore[index]
         for reserved in self._reserved_category_codes:
             if reserved <= code:
                 code += 1
@@ -153,7 +153,7 @@ class OrdinalEncoder(base.MiniBatchTransformer):
     def _encode_value(self, feature: typing.Hashable, value):
         if value is None:
             return self.none_value
-        return self.values[feature].get(value, self.unknown_value)
+        return self.values[feature].get(value, self.unknown_value)  # type: ignore[index]
 
     def transform_one(self, x):
         return {i: self._encode_value(i, xi) for i, xi in x.items()}

@@ -145,6 +145,10 @@ def check_debug_one(model, dataset):
         break
 
 
+def check_pickling_supports_roundtrip(model):
+    assert isinstance(pickle.loads(pickle.dumps(model)), model.__class__)
+
+
 def check_pickling(model, dataset):
     from river.anomaly.base import AnomalyDetector
 
