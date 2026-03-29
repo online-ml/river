@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import collections
 import functools
+import heapq
 import operator
 import typing
 
@@ -53,7 +54,7 @@ class LazySearch(BaseNN):
         self.min_distance_keep = min_distance_keep
 
         if dist_func is None:
-            dist_func = functools.partial(utils.math.minkowski_distance, p=2)
+            dist_func = utils.math._euclidean_distance
         self.dist_func = dist_func
 
         self.window: collections.deque = collections.deque(maxlen=self.window_size)
@@ -107,22 +108,29 @@ class LazySearch(BaseNN):
             return True
 
         # Don't add VERY similar points to window
-        nearest = self.search(item, n_neighbors)
+        _, distances = self.search(item, n_neighbors)
 
-        # Distance always in the last index, (item <extra> distance)
-        if not nearest or nearest[0][-1] < self.min_distance_keep:
+        if not distances or distances[-1] < self.min_distance_keep:
             self.append(item, extra=extra)
             return True
         return False
 
     def search(self, item: typing.Any, n_neighbors: int, **kwargs):
         """Find the `n_neighbors` closest points to `item`, along with their distances."""
-        # Compute the distances to each point in the window
-        # The window is (item, <extra>, distance)
-        points = ((*p, self.dist_func(item, p[0])) for p in self.window)
+        # Compute distances and find k nearest using a heap (O(n log k) vs O(n log n) for sorted)
+        dist_func = self.dist_func
+        nearest = heapq.nsmallest(
+            n_neighbors,
+            ((dist_func(item, p[0]), i, p) for i, p in enumerate(self.window)),
+        )
 
-        # Return the k closest points
-        return tuple(map(list, zip(*sorted(points, key=operator.itemgetter(-1))[:n_neighbors])))
+        # Unpack into parallel lists: ([items...], [distances...])
+        items = []
+        distances = []
+        for dist, _, p in nearest:
+            items.append(p[0])
+            distances.append(dist)
+        return items, distances
 
     def refresh_targets(self) -> set:
         """Refresh the set of classes in the window. Used by classifiers where labels are added as [1] in the vertex tuple.

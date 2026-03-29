@@ -1,6 +1,7 @@
 # cython: c_api_binop_methods=True
 
 cimport cython
+from libc.math cimport sqrt
 
 import itertools
 
@@ -561,3 +562,57 @@ cdef class VectorDict:
             except TypeError:
                 return NotImplemented
         return VectorDict(res)
+
+    def euclidean_distance(VectorDict self, other):
+        """Compute Euclidean distance to another VectorDict or dict."""
+        cdef double total = 0.0
+        cdef double d
+        if isinstance(other, VectorDict):
+            other_data = (<VectorDict> other)._data
+        elif isinstance(other, dict):
+            other_data = <dict> other
+        else:
+            raise TypeError(f"Unsupported type: {type(other)}")
+        for key, value in self._data.items():
+            d = <double> value - <double> other_data.get(key, 0.0)
+            total += d * d
+        for key, value in other_data.items():
+            if key not in self._data:
+                d = <double> value
+                total += d * d
+        return sqrt(total)
+
+
+def euclidean_distance_dict(dict a, dict b):
+    """Compute Euclidean distance between two plain dicts. Cython-accelerated."""
+    cdef double total = 0.0
+    cdef double d
+    for key, value in a.items():
+        d = <double> value - <double> b.get(key, 0.0)
+        total += d * d
+    for key, value in b.items():
+        if key not in a:
+            d = <double> value
+            total += d * d
+    return sqrt(total)
+
+
+def euclidean_distance_tuple(tuple a, tuple b):
+    """Compute Euclidean distance between a[0] and b[0], where a and b are (dict, ...) tuples.
+
+    This is the KNN hot-path function: items are stored as (x, y) tuples and only x (a dict)
+    is used for distance. Doing the unpack + distance in a single Cython call avoids the
+    overhead of a Python wrapper function.
+    """
+    cdef dict da = <dict> a[0]
+    cdef dict db = <dict> b[0]
+    cdef double total = 0.0
+    cdef double d
+    for key, value in da.items():
+        d = <double> value - <double> db.get(key, 0.0)
+        total += d * d
+    for key, value in db.items():
+        if key not in da:
+            d = <double> value
+            total += d * d
+    return sqrt(total)
