@@ -1,13 +1,18 @@
 name: dev-docs
 
 on:
-  push:
-    branches:
-      - main
+  workflow_run:
+    workflows: [benchmarks]
+    types: [completed]
+
+concurrency:
+  group: gh-pages-deploy
+  cancel-in-progress: false
 
 jobs:
   docs:
     runs-on: ubuntu-latest
+    if: github.event.workflow_run.conclusion == 'success'
 
     steps:
       - uses: actions/checkout@v4
