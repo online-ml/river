@@ -15,6 +15,10 @@
 
 - Fixed DBSTREAM including noisy micro-clusters (weight below `minimum_weight`) in output clusters. They are now excluded during reclustering, matching the original paper.
 
+## forest
+
+- Added `max_nodes` parameter to `AMFClassifier`, `AMFRegressor`, and the underlying Mondrian tree classes. This caps the number of nodes per tree, limiting memory usage for long-running streams. Addresses [#1454](https://github.com/online-ml/river/issues/1454).
+
 ## drift
 
 - Optimized `ADWIN` Cython internals (~18x speedup): replaced numpy arrays with C `malloc`/`memmove` arrays in `Bucket`, replaced Python `deque` with typed `list`, used bit shifts instead of `pow`, inlined `variance_in_window`, and added Cython compiler directives.

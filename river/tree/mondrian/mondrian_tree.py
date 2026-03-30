@@ -22,6 +22,10 @@ class MondrianTree(abc.ABC):
         Whether or not the tree should it use aggregation.
     iteration
         Number of iterations to run when training.
+    max_nodes
+        Maximum number of nodes allowed in the tree. No new splits will occur once this
+        limit is reached. If `None`, the tree grows without bound. Setting this limits
+        memory usage at the cost of potentially less accurate predictions.
     seed
         Random seed for reproducibility.
 
@@ -33,6 +37,7 @@ class MondrianTree(abc.ABC):
         loss: str = "log",
         use_aggregation: bool = True,
         iteration: int = 0,
+        max_nodes: int | None = None,
         seed: int | None = None,
     ):
         # Properties common to all the Mondrian Trees
@@ -40,6 +45,10 @@ class MondrianTree(abc.ABC):
         self.loss = loss
         self.use_aggregation = use_aggregation
         self.iteration = iteration
+        self.max_nodes = max_nodes
+
+        # Number of nodes currently in the tree (starts at 1 for the root)
+        self._n_nodes = 1
 
         # Controls the randomness in the tree
         self.seed = seed
