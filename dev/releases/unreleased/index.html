@@ -954,6 +954,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#forest" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        forest
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#drift" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2225,6 +2236,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#forest" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        forest
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#drift" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2389,6 +2411,10 @@
 <h2 id="cluster">cluster<a class="headerlink" href="#cluster" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Fixed DBSTREAM including noisy micro-clusters (weight below <code>minimum_weight</code>) in output clusters. They are now excluded during reclustering, matching the original paper.</li>
+</ul>
+<h2 id="forest">forest<a class="headerlink" href="#forest" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Added <code>max_nodes</code> parameter to <code>AMFClassifier</code>, <code>AMFRegressor</code>, and the underlying Mondrian tree classes. This caps the number of nodes per tree, limiting memory usage for long-running streams. Addresses <a href="https://github.com/online-ml/river/issues/1454">#1454</a>.</li>
 </ul>
 <h2 id="drift">drift<a class="headerlink" href="#drift" title="Permanent link">&para;</a></h2>
 <ul>

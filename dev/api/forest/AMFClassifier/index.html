@@ -1035,6 +1035,12 @@
 <p>Controls if nodes that contains only sample of the same class should be split ("pure" nodes). Default is <code>False</code>, namely pure nodes are not split, but <code>True</code> can be sometimes better.</p>
 </li>
 <li>
+<p><strong>max_nodes</strong></p>
+<p><em>Type</em> → <em>int | None</em></p>
+<p><em>Default</em> → <code>None</code></p>
+<p>Maximum number of nodes allowed per tree. No new splits will occur in a tree once this limit is reached. If <code>None</code>, trees grow without bound. Setting this limits memory usage at the cost of potentially less accurate predictions.</p>
+</li>
+<li>
 <p><strong>seed</strong></p>
 <p><em>Type</em> → <em>int | None</em></p>
 <p><em>Default</em> → <code>None</code></p>
