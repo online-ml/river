@@ -25,6 +25,10 @@ class AMFLearner(base.Ensemble, abc.ABC):
         Controls if nodes that contains only sample of the same class should be
         split ("pure" nodes). Default is `False`, namely pure nodes are not split,
         but `True` can be sometimes better.
+    max_nodes
+        Maximum number of nodes allowed per tree. No new splits will occur in a tree
+        once this limit is reached. If `None`, trees grow without bound. Setting this
+        limits memory usage at the cost of potentially less accurate predictions.
     seed
         Random seed for reproducibility.
 
@@ -41,6 +45,7 @@ class AMFLearner(base.Ensemble, abc.ABC):
         loss: str = "log",
         use_aggregation: bool = True,
         split_pure: bool = False,
+        max_nodes: int | None = None,
         seed: int | None = None,
     ):
         super().__init__([])  # type: ignore
@@ -50,6 +55,7 @@ class AMFLearner(base.Ensemble, abc.ABC):
         self.loss = loss
         self.use_aggregation = use_aggregation
         self.split_pure = split_pure
+        self.max_nodes = max_nodes
         self.seed = seed
 
         self._rng = random.Random(self.seed)
@@ -111,6 +117,10 @@ class AMFClassifier(AMFLearner, base.Classifier):
         Controls if nodes that contains only sample of the same class should be
         split ("pure" nodes). Default is `False`, namely pure nodes are not split,
         but `True` can be sometimes better.
+    max_nodes
+        Maximum number of nodes allowed per tree. No new splits will occur in a tree
+        once this limit is reached. If `None`, trees grow without bound. Setting this
+        limits memory usage at the cost of potentially less accurate predictions.
     seed
         Random seed for reproducibility.
 
@@ -155,6 +165,7 @@ class AMFClassifier(AMFLearner, base.Classifier):
         use_aggregation: bool = True,
         dirichlet: float = 0.5,
         split_pure: bool = False,
+        max_nodes: int | None = None,
         seed: int | None = None,
     ):
         super().__init__(
@@ -163,6 +174,7 @@ class AMFClassifier(AMFLearner, base.Classifier):
             loss="log",
             use_aggregation=use_aggregation,
             split_pure=split_pure,
+            max_nodes=max_nodes,
             seed=seed,
         )
         self.dirichlet = dirichlet
@@ -178,6 +190,7 @@ class AMFClassifier(AMFLearner, base.Classifier):
                 self.dirichlet,
                 self.split_pure,
                 iteration=0,
+                max_nodes=self.max_nodes,
                 # We don't want to have the same stochastic scheme for each tree, or it'll break the randomness
                 # Hence we introduce a new seed for each, that is derived of the given seed by a deterministic process
                 seed=self._rng.randint(0, 9999999),
@@ -245,6 +258,10 @@ class AMFRegressor(AMFLearner, base.Regressor):
     use_aggregation
         Controls if aggregation is used in the trees. It is highly recommended to
         leave it as `True`.
+    max_nodes
+        Maximum number of nodes allowed per tree. No new splits will occur in a tree
+        once this limit is reached. If `None`, trees grow without bound. Setting this
+        limits memory usage at the cost of potentially less accurate predictions.
     seed
         Random seed for reproducibility.
 
@@ -275,6 +292,7 @@ class AMFRegressor(AMFLearner, base.Regressor):
         n_estimators: int = 10,
         step: float = 1.0,
         use_aggregation: bool = True,
+        max_nodes: int | None = None,
         seed: int | None = None,
     ):
         super().__init__(
@@ -282,6 +300,7 @@ class AMFRegressor(AMFLearner, base.Regressor):
             step=step,
             loss="least-squares",
             use_aggregation=use_aggregation,
+            max_nodes=max_nodes,
             seed=seed,
         )
 
@@ -300,7 +319,8 @@ class AMFRegressor(AMFLearner, base.Regressor):
                 self.step,
                 self.use_aggregation,
                 self.iteration,
-                seed,
+                max_nodes=self.max_nodes,
+                seed=seed,
             )
             self.data.append(tree)
 
