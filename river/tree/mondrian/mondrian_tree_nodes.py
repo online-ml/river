@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import math
 
-from river import base, stats
+from river import base
 from river.tree.base import Branch, Leaf
 from river.tree.mondrian._mondrian_ops import (
     log_sum_2_exp_c,
@@ -401,13 +401,15 @@ class MondrianNodeRegressor(MondrianNode):
         super().__init__(*args, **kwargs)
 
         self.n_samples = 0
-        self.mean = stats.Mean()
+        self._mean_n = 0
+        self._mean_val = 0.0
 
     def replant(self, leaf: MondrianNodeRegressor, copy_all: bool = False):
         """Transfer information from a leaf to a new branch."""
         self.weight = leaf.weight  # type: ignore
         self.log_weight_tree = leaf.log_weight_tree  # type: ignore
-        self.mean = leaf.mean
+        self._mean_n = leaf._mean_n
+        self._mean_val = leaf._mean_val
 
         if copy_all:
             self.memory_range_min = leaf.memory_range_min
@@ -416,7 +418,7 @@ class MondrianNodeRegressor(MondrianNode):
 
     def predict(self) -> base.typing.RegTarget:
         """Return the prediction of the node."""
-        return self.mean.get()
+        return self._mean_val
 
     def loss(self, sample_value: base.typing.RegTarget) -> float:
         """Compute the loss of the node.
@@ -428,7 +430,7 @@ class MondrianNodeRegressor(MondrianNode):
 
         """
 
-        r = self.predict() - sample_value  # type: ignore
+        r = self._mean_val - sample_value  # type: ignore
         return r * r / 2
 
     def update_weight(
@@ -507,7 +509,8 @@ class MondrianNodeRegressor(MondrianNode):
             self.update_weight(sample_value, use_aggregation, step)
 
         # Update the mean of the labels in the node online
-        self.mean.update(sample_value)
+        self._mean_n += 1
+        self._mean_val += (1.0 / self._mean_n) * (sample_value - self._mean_val)
 
 
 class MondrianLeafRegressor(MondrianNodeRegressor, MondrianLeaf):
