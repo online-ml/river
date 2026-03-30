@@ -10,6 +10,7 @@
 - Fixed download in Insects dataset. The datasets incremental_abrupt_imbalanced, incremental_imbalanced, incremental_reoccurring_imbalanced and out-of-control are not supported anymore.
 - Refactored `benchmarks` and added plotly dependency for interactive plots
 - Added the BETH dataset for labeled system process events.
+- Fixed `SMTP` dataset docstring: corrected the number of positive labels from 2,211 to 30 and updated the reference link.
 
 ## cluster
 
