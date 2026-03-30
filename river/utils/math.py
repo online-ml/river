@@ -178,8 +178,6 @@ def minkowski_distance(a: Mapping[Any, float], b: Mapping[Any, float], p: int) -
     return sum((abs(a.get(k, 0.0) - b.get(k, 0.0))) ** p for k in {*a.keys(), *b.keys()}) ** (1 / p)  # type: ignore[no-any-return] # If the values are numbers, the return value should always be a number
 
 
-
-
 def _manhattan_distance(a: Mapping[Any, float], b: Mapping[Any, float]) -> float:
     """Fast Manhattan distance between two sparse dicts."""
     total = 0.0
