@@ -121,6 +121,7 @@ nav:
 # Configuration
 theme:
   name: material
+  variant: classic
   custom_dir: docs/overrides
   language: en
 
