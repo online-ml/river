@@ -1,9 +1,9 @@
 {
     "arch": "x86_64",
-    "cpu": "Intel(R) Xeon(R) Platinum 8370C CPU @ 2.80GHz",
+    "cpu": "AMD EPYC 7763 64-Core Processor",
     "machine": "runnervmrg6be",
     "num_cpu": "4",
     "os": "Linux 6.17.0-1008-azure",
-    "ram": "16372468",
+    "ram": "16377712",
     "version": 1
 }
