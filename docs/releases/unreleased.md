@@ -53,6 +53,11 @@ The `dummy` module is now fully type-annotated.
 
 ## stream
 
+- `stream.iter_arff` now supports blank values (treated as missing values).
+
+## preprocessing
+
+- Add support for expected categories in `preprocessing.OneHotEncoder`, `preprocessing.OrdinalEncoder`, akin to scikit-learn API for respective encoders.
 - Added a fast path in `simulate_qa` for the no-delay, no-moment case, skipping the memento queue machinery.
 
 ## base
