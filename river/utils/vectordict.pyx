@@ -616,3 +616,74 @@ def euclidean_distance_tuple(tuple a, tuple b):
             d = <double> value
             total += d * d
     return sqrt(total)
+
+
+cdef inline double _euclidean_dist_dicts(dict da, dict db):
+    """Inline Euclidean distance between two dicts (no sqrt — returns squared distance)."""
+    cdef double total = 0.0
+    cdef double d
+    for key, value in da.items():
+        d = <double> value - <double> db.get(key, 0.0)
+        total += d * d
+    for key, value in db.items():
+        if key not in da:
+            d = <double> value
+            total += d * d
+    return total
+
+
+def lazy_search_euclidean(tuple query, object window, int n_neighbors):
+    """Cython-accelerated k-nearest search for LazySearch with Euclidean distance.
+
+    Iterates the window deque, computes Euclidean distances, and returns the
+    k-nearest items using a max-heap.  Avoids per-item Python generator and
+    function-call overhead.
+
+    Parameters
+    ----------
+    query
+        The query item as a (x, y) tuple, where x is a feature dict.
+    window
+        A deque of ((x, y), ...) entries.
+    n_neighbors
+        Number of nearest neighbors to return.
+
+    Returns
+    -------
+    (items, distances)
+        Two parallel lists: the k nearest (x, y) items and their distances.
+    """
+    cdef dict qx = <dict> (<tuple> query)[0]
+    cdef int k = n_neighbors
+    cdef double dist_sq, neg_dist_sq
+    cdef list heap = []  # max-heap of (-dist_sq, index, entry)
+    cdef int i = 0
+    cdef tuple entry, item_tuple
+    cdef dict px
+
+    for entry in window:
+        item_tuple = <tuple> entry[0]
+        px = <dict> item_tuple[0]
+        dist_sq = _euclidean_dist_dicts(qx, px)
+
+        if i < k:
+            heap.append((-dist_sq, i, entry))
+            if i == k - 1:
+                _heapify_max(heap)
+        elif dist_sq < -(<double> (<tuple> heap[0])[0]):
+            _heapreplace_max(heap, (-dist_sq, i, entry))
+        i += 1
+
+    # Sort by distance ascending
+    heap.sort(reverse=True)
+
+    cdef list items = []
+    cdef list distances = []
+    for neg_dist_sq, _, entry in heap:
+        items.append((<tuple> entry)[0])
+        distances.append(sqrt(-neg_dist_sq))
+    return items, distances
+
+
+# Import heapq C helpers for the max-heap
+from heapq import _heapify_max, _heapreplace_max

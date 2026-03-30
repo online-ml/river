@@ -5,6 +5,12 @@ import heapq
 import typing
 
 from river import utils
+from river.utils.vectordict import (
+    euclidean_distance_tuple as _euclidean_tuple_distance,
+)
+from river.utils.vectordict import (
+    lazy_search_euclidean as _lazy_search_euclidean,
+)
 
 from .base import BaseNN, DistanceFunc, FunctionWrapper
 
@@ -115,6 +121,10 @@ class LazySearch(BaseNN):
 
     def search(self, item: typing.Any, n_neighbors: int, **kwargs):
         """Find the `n_neighbors` closest points to `item`, along with their distances."""
+        # Fast path: Cython-accelerated search when using the default Euclidean distance
+        if self.dist_func is _euclidean_tuple_distance:
+            return _lazy_search_euclidean(item, self.window, n_neighbors)
+
         # Compute distances and find k nearest using a heap (O(n log k) vs O(n log n) for sorted)
         dist_func = self.dist_func
         nearest = heapq.nsmallest(
