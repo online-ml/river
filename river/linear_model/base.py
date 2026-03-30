@@ -6,7 +6,6 @@ import numpy as np
 import pandas as pd
 
 from river import optim, utils
-from river.utils.vectordict import VectorDict
 
 __all__ = ["GLM"]
 
