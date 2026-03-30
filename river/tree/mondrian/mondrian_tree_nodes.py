@@ -4,11 +4,11 @@ import math
 
 from river import base
 from river.tree.base import Branch, Leaf
-from river.tree.mondrian._mondrian_ops import (
+from river.tree.mondrian._mondrian_ops import (  # type: ignore[import-not-found]
     log_sum_2_exp_c,
+    predict_scores_c,
     range_extension_c,
     update_ranges_c,
-    predict_scores_c,
 )
 
 
@@ -151,9 +151,7 @@ class MondrianNode(base.Base):
             range_min.extend([0.0] * pad)
             self.memory_range_max.extend([0.0] * pad)
 
-        return range_extension_c(
-            range_min, self.memory_range_max, x_arr, n_features
-        )
+        return range_extension_c(range_min, self.memory_range_max, x_arr, n_features)
 
 
 class MondrianNodeClassifier(MondrianNode):
@@ -203,9 +201,7 @@ class MondrianNodeClassifier(MondrianNode):
 
         """
 
-        return predict_scores_c(
-            self.counts, len(self.counts), n_classes, dirichlet, self.n_samples
-        )
+        return predict_scores_c(self.counts, len(self.counts), n_classes, dirichlet, self.n_samples)
 
     def loss(self, y_idx: int, dirichlet: float, n_classes: int) -> float:
         """Compute the loss of the node.
@@ -331,9 +327,7 @@ class MondrianNodeClassifier(MondrianNode):
                 pad = n_features - n
                 range_min.extend([0.0] * pad)
                 self.memory_range_max.extend([0.0] * pad)
-            update_ranges_c(
-                range_min, self.memory_range_max, x_arr, n_features
-            )
+            update_ranges_c(range_min, self.memory_range_max, x_arr, n_features)
 
         # One more sample in the node
         self.n_samples += 1
@@ -498,9 +492,7 @@ class MondrianNodeRegressor(MondrianNode):
                 pad = n_features - n
                 range_min.extend([0.0] * pad)
                 self.memory_range_max.extend([0.0] * pad)
-            update_ranges_c(
-                range_min, self.memory_range_max, x_arr, n_features
-            )
+            update_ranges_c(range_min, self.memory_range_max, x_arr, n_features)
 
         # One more sample in the node
         self.n_samples += 1
