@@ -933,6 +933,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#attributes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Attributes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#examples" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -978,6 +989,12 @@
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
+<p><strong>categories</strong></p>
+<p><em>Type</em> → <em>dict | None</em></p>
+<p><em>Default</em> → <code>None</code></p>
+<p>Categories (unique values) per feature:     <code>None</code> : Determine categories automatically from the training data.      dict of dicts : Expected categories for each feature. The outer dict maps each feature to its inner dict.     The inner dict maps each category to its code.  The used categories can be found in the <code>values</code> attribute.</p>
+</li>
+<li>
 <p><strong>drop_zeros</strong></p>
 <p><em>Default</em> → <code>False</code></p>
 <p>Whether or not 0s should be made explicit or not.</p>
@@ -986,6 +1003,13 @@
 <p><strong>drop_first</strong></p>
 <p><em>Default</em> → <code>False</code></p>
 <p>Whether to get <code>k - 1</code> dummies out of <code>k</code> categorical levels by removing the first key. This is useful in some statistical models where perfectly collinear features cause problems.</p>
+</li>
+</ul>
+<h2 id="attributes">Attributes<a class="headerlink" href="#attributes" title="Permanent link">&para;</a></h2>
+<ul>
+<li>
+<p><strong>values</strong></p>
+<p>A dict of dicts. The outer dict maps each feature to its inner dict. The inner dict maps each category to its code.</p>
 </li>
 </ul>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
@@ -1006,11 +1030,11 @@
 <span class="n">pprint</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 </code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>[{&#39;c1&#39;: &#39;u&#39;, &#39;c2&#39;: &#39;d&#39;},
-    {&#39;c1&#39;: &#39;a&#39;, &#39;c2&#39;: &#39;x&#39;},
-    {&#39;c1&#39;: &#39;i&#39;, &#39;c2&#39;: &#39;h&#39;},
-    {&#39;c1&#39;: &#39;h&#39;, &#39;c2&#39;: &#39;e&#39;}]
+ {&#39;c1&#39;: &#39;a&#39;, &#39;c2&#39;: &#39;x&#39;},
+ {&#39;c1&#39;: &#39;i&#39;, &#39;c2&#39;: &#39;h&#39;},
+ {&#39;c1&#39;: &#39;h&#39;, &#39;c2&#39;: &#39;e&#39;}]
 </code></pre></div></p>
-<p>e can now apply one-hot encoding. All the provided are one-hot encoded, there is therefore
+<p>We can now apply one-hot encoding. All the provided are one-hot encoded, there is therefore
 no need to specify which features to encode.</p>
 <p><div class="language-python highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">river</span><span class="w"> </span><span class="kn">import</span> <span class="n">preprocessing</span>
 
@@ -1044,6 +1068,29 @@ in the output. Otherwise, all the past features will be included in the output.<
 {&#39;c2_x&#39;: 1}
 {&#39;c2_h&#39;: 1}
 {&#39;c2_e&#39;: 1}
+</code></pre></div></p>
+<p>Like in <code>scikit-learn</code>, you can also specify the expected categories manually.
+This is handy when you want to constrain category encoding space
+to e.g. top 20% most popular category values you've picked in advance.</p>
+<p><div class="language-python highlight"><pre><span></span><code><span class="n">categories</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;c1&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;h&#39;</span><span class="p">},</span> <span class="s1">&#39;c2&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;e&#39;</span><span class="p">}}</span>
+<span class="n">oh</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">OneHotEncoder</span><span class="p">(</span><span class="n">categories</span><span class="o">=</span><span class="n">categories</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">X</span><span class="p">:</span>
+    <span class="n">oh</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">pprint</span><span class="p">(</span><span class="n">oh</span><span class="o">.</span><span class="n">transform_one</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>{&#39;c1_a&#39;: 0, &#39;c1_h&#39;: 0, &#39;c2_e&#39;: 0, &#39;c2_x&#39;: 0}
+{&#39;c1_a&#39;: 1, &#39;c1_h&#39;: 0, &#39;c2_e&#39;: 0, &#39;c2_x&#39;: 1}
+{&#39;c1_a&#39;: 0, &#39;c1_h&#39;: 0, &#39;c2_e&#39;: 0, &#39;c2_x&#39;: 0}
+{&#39;c1_a&#39;: 0, &#39;c1_h&#39;: 1, &#39;c2_e&#39;: 1, &#39;c2_x&#39;: 0}
+</code></pre></div></p>
+<p><div class="language-python highlight"><pre><span></span><code><span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">oh</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">oh</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">key</span><span class="p">]))</span>
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>c1
+[&#39;a&#39;, &#39;h&#39;]
+c2
+[&#39;e&#39;, &#39;x&#39;]
 </code></pre></div></p>
 <p>A subset of the features can be one-hot encoded by piping a <a href="../../../compose/Select"><code>compose.Select</code></a> into the
 <code>OneHotEncoder</code>.</p>
@@ -1094,6 +1141,7 @@ encode all of the entries individually.</p>
 <p><div class="language-python highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">pprint</span><span class="w"> </span><span class="kn">import</span> <span class="n">pprint</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">string</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
 <span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
 <span class="n">alphabet</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">ascii_lowercase</span><span class="p">)</span>
@@ -1154,6 +1202,18 @@ c2_d          Sparse[uint8, 0]
 c2_h          Sparse[uint8, 0]
 c2_x          Sparse[uint8, 0]
 dtype: object
+</code></pre></div></p>
+<p>Explicit categories:</p>
+<p><div class="language-python highlight"><pre><span></span><code><span class="n">oh</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">OneHotEncoder</span><span class="p">(</span><span class="n">categories</span><span class="o">=</span><span class="n">categories</span><span class="p">)</span>
+
+<span class="n">oh</span><span class="o">.</span><span class="n">learn_many</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">oh</span><span class="o">.</span><span class="n">transform_many</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+<span class="n">df</span><span class="o">.</span><span class="n">sort_index</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">&quot;columns&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>   c1_a  c1_h  c2_e  c2_x
+0     0     0     0     0
+1     1     0     0     1
+2     0     0     0     0
 </code></pre></div></p>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <details class="- abstract">

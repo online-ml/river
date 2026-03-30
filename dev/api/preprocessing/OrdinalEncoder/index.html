@@ -989,6 +989,12 @@
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
+<p><strong>categories</strong></p>
+<p><em>Type</em> → <em>dict | None</em></p>
+<p><em>Default</em> → <code>None</code></p>
+<p>Categories (unique values) per feature:     <code>None</code> : Determine categories automatically from the training data.      dict of dicts : Expected categories for each feature. The outer dict maps each feature to its inner dict.     The inner dict maps each category to its code.  The used categories can be found in the <code>values</code> attribute.</p>
+</li>
+<li>
 <p><strong>unknown_value</strong></p>
 <p><em>Type</em> → <em>int | None</em></p>
 <p><em>Default</em> → <code>0</code></p>
@@ -1004,7 +1010,7 @@
 <h2 id="attributes">Attributes<a class="headerlink" href="#attributes" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
-<p><strong>categories</strong></p>
+<p><strong>values</strong></p>
 <p>A dict of dicts. The outer dict maps each feature to its inner dict. The inner dict maps each category to its code.</p>
 </li>
 </ul>
@@ -1036,7 +1042,27 @@
 {&#39;country&#39;: 2, &#39;place&#39;: 1}
 {&#39;country&#39;: -1, &#39;place&#39;: -1}
 </code></pre></div></p>
-<p><div class="language-python highlight"><pre><span></span><code><span class="n">xb1</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">],</span> <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<p>Like in <code>scikit-learn</code>, you can also specify the expected categories manually.
+This is handy when you want to constrain category encoding space
+to e.g. top 20% most popular category values you've picked in advance.</p>
+<p><div class="language-python highlight"><pre><span></span><code><span class="n">categories</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;country&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;France&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+              <span class="s1">&#39;place&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;Burger King&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;Starbucks&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">}}</span>
+<span class="n">encoder</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">OrdinalEncoder</span><span class="p">(</span><span class="n">categories</span><span class="o">=</span><span class="n">categories</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">X</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">encoder</span><span class="o">.</span><span class="n">transform_one</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+    <span class="n">encoder</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>{&#39;country&#39;: 1, &#39;place&#39;: 0}
+{&#39;country&#39;: -1, &#39;place&#39;: -1}
+{&#39;country&#39;: 0, &#39;place&#39;: 2}
+{&#39;country&#39;: 1, &#39;place&#39;: 2}
+{&#39;country&#39;: 0, &#39;place&#39;: 3}
+{&#39;country&#39;: 0, &#39;place&#39;: 3}
+{&#39;country&#39;: 0, &#39;place&#39;: 0}
+{&#39;country&#39;: -1, &#39;place&#39;: -1}
+</code></pre></div></p>
+<p><div class="language-python highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="n">xb1</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">],</span> <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
 <span class="n">xb2</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="mi">4</span><span class="p">:</span><span class="mi">8</span><span class="p">],</span> <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">])</span>
 
 <span class="n">encoder</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">OrdinalEncoder</span><span class="p">()</span>
