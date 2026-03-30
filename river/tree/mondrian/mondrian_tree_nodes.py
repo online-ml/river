@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import collections
 import math
 
 from river import base, stats
@@ -21,6 +20,8 @@ class MondrianLeaf(Leaf):
         Depth of the leaf.
 
     """
+
+    is_leaf = True
 
     def __init__(self, parent, time, depth):
         super().__init__()
@@ -67,10 +68,13 @@ class MondrianBranch(Branch):
 class MondrianNode(base.Base):
     """Representation of a node within a Mondrian tree"""
 
+    # Flag to distinguish leaves from branches without isinstance checks
+    is_leaf: bool = False
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.memory_range_min = collections.defaultdict(int)
-        self.memory_range_max = collections.defaultdict(int)
+        self.memory_range_min: dict = {}
+        self.memory_range_max: dict = {}
 
         self.weight = 0.0
         self.log_weight_tree = 0.0
@@ -87,7 +91,7 @@ class MondrianNode(base.Base):
 
         self.depth = depth
 
-        if isinstance(self, MondrianLeaf):
+        if self.is_leaf:
             return
 
         depth += 1
@@ -99,7 +103,7 @@ class MondrianNode(base.Base):
     def update_weight_tree(self):
         """Update the weight of the node in the tree."""
 
-        if isinstance(self, MondrianLeaf):
+        if self.is_leaf:
             self.log_weight_tree = self.weight
         else:
             left, right = self.children
@@ -118,8 +122,8 @@ class MondrianNode(base.Base):
         """
 
         return (
-            self.memory_range_min[feature],
-            self.memory_range_max[feature],
+            self.memory_range_min.get(feature, 0),
+            self.memory_range_max.get(feature, 0),
         )
 
     def range_extension(self, x) -> tuple[float, dict[base.typing.ClfTarget, float]]:
@@ -134,9 +138,11 @@ class MondrianNode(base.Base):
 
         extensions: dict[base.typing.ClfTarget, float] = {}
         extensions_sum = 0.0
-        for feature in x:
-            x_f = x[feature]
-            feature_min_j, feature_max_j = self.range(feature)
+        range_min = self.memory_range_min
+        range_max = self.memory_range_max
+        for feature, x_f in x.items():
+            feature_min_j = range_min.get(feature, 0)
+            feature_max_j = range_max.get(feature, 0)
             if x_f < feature_min_j:
                 diff = feature_min_j - x_f
             elif x_f > feature_max_j:
@@ -153,7 +159,7 @@ class MondrianNodeClassifier(MondrianNode):
         super().__init__(*args, **kwargs)
 
         self.n_samples = 0
-        self.counts = collections.defaultdict(int)
+        self.counts: dict = {}
 
     def replant(self, leaf: MondrianNodeClassifier, copy_all: bool = False):
         """Transfer information from a leaf to a new branch."""
@@ -183,7 +189,7 @@ class MondrianNodeClassifier(MondrianNode):
 
         """
 
-        count = self.counts[y]
+        count = self.counts.get(y, 0)
 
         # We use the Jeffreys prior with dirichlet parameter
         return (count + dirichlet) / (self.n_samples + dirichlet * n_classes)
@@ -205,9 +211,13 @@ class MondrianNodeClassifier(MondrianNode):
 
         """
 
+        # Inline score computation to avoid per-class method call overhead
+        counts = self.counts
+        n_samples = self.n_samples
+        denom = n_samples + dirichlet * n_classes
         scores = {}
         for c in classes:
-            scores[c] = self.score(c, dirichlet, n_classes)
+            scores[c] = (counts.get(c, 0) + dirichlet) / denom
         return scores
 
     def loss(self, y: base.typing.ClfTarget, dirichlet: float, n_classes: int) -> float:
@@ -268,7 +278,7 @@ class MondrianNodeClassifier(MondrianNode):
 
         """
 
-        self.counts[y] += 1
+        self.counts[y] = self.counts.get(y, 0) + 1
 
     def is_dirac(self, y: base.typing.ClfTarget) -> bool:
         """Check whether the node follows a dirac distribution regarding the given
@@ -281,7 +291,7 @@ class MondrianNodeClassifier(MondrianNode):
 
         """
 
-        return self.n_samples == self.counts[y]
+        return self.n_samples == self.counts.get(y, 0)
 
     def update_downwards(
         self,
@@ -315,28 +325,29 @@ class MondrianNodeClassifier(MondrianNode):
         """
 
         # Updating the range of the feature values known by the node
-        # If it is the first sample, we copy the features vector into the min and max range
+        range_min = self.memory_range_min
+        range_max = self.memory_range_max
         if self.n_samples == 0:
-            for feature in x:
-                x_f = x[feature]
-                self.memory_range_min[feature] = x_f
-                self.memory_range_max[feature] = x_f
-        # Otherwise, we update the range
+            # First sample: initialize ranges directly
+            for feature, x_f in x.items():
+                range_min[feature] = x_f
+                range_max[feature] = x_f
         else:
-            for feature in x:
-                x_f = x[feature]
-                if x_f < self.memory_range_min[feature]:
-                    self.memory_range_min[feature] = x_f
-                if x_f > self.memory_range_max[feature]:
-                    self.memory_range_max[feature] = x_f
+            for feature, x_f in x.items():
+                if x_f < range_min[feature]:
+                    range_min[feature] = x_f
+                if x_f > range_max[feature]:
+                    range_max[feature] = x_f
 
         # One more sample in the node
         self.n_samples += 1
 
-        if do_update_weight:
-            self.update_weight(y, dirichlet, use_aggregation, step, n_classes)
+        # Inline weight update to avoid method call overhead
+        if do_update_weight and use_aggregation:
+            sc = (self.counts.get(y, 0) + dirichlet) / (self.n_samples + dirichlet * n_classes)
+            self.weight += step * math.log(sc)
 
-        self.update_count(y)
+        self.counts[y] = self.counts.get(y, 0) + 1
 
 
 class MondrianLeafClassifier(MondrianNodeClassifier, MondrianLeaf):
@@ -352,6 +363,8 @@ class MondrianLeafClassifier(MondrianNodeClassifier, MondrianLeaf):
         The depth of the leaf.
 
     """
+
+    is_leaf = True
 
     def __init__(self, parent, time, depth):
         super().__init__(parent, time, depth)
@@ -466,20 +479,18 @@ class MondrianNodeRegressor(MondrianNode):
         """
 
         # Updating the range of the feature values known by the node
-        # If it is the first sample, we copy the features vector into the min and max range
+        range_min = self.memory_range_min
+        range_max = self.memory_range_max
         if self.n_samples == 0:
-            for feature in x:
-                x_f = x[feature]
-                self.memory_range_min[feature] = x_f
-                self.memory_range_max[feature] = x_f
-        # Otherwise, we update the range
+            for feature, x_f in x.items():
+                range_min[feature] = x_f
+                range_max[feature] = x_f
         else:
-            for feature in x:
-                x_f = x[feature]
-                if x_f < self.memory_range_min[feature]:
-                    self.memory_range_min[feature] = x_f
-                if x_f > self.memory_range_max[feature]:
-                    self.memory_range_max[feature] = x_f
+            for feature, x_f in x.items():
+                if x_f < range_min[feature]:
+                    range_min[feature] = x_f
+                if x_f > range_max[feature]:
+                    range_max[feature] = x_f
 
         # One more sample in the node
         self.n_samples += 1
@@ -504,6 +515,8 @@ class MondrianLeafRegressor(MondrianNodeRegressor, MondrianLeaf):
         The depth of the leaf.
 
     """
+
+    is_leaf = True
 
     def __init__(self, parent, time, depth):
         super().__init__(parent, time, depth)

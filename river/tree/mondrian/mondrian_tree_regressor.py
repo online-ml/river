@@ -280,7 +280,8 @@ class MondrianTreeRegressor(MondrianTree, base.Regressor):
                     # leaf, or because we add a new node along the path
 
                     # We normalize the range extensions to get probabilities
-                    intensities = utils.norm.normalize_values_in_dict(extensions, inplace=False)
+                    # extensions is a fresh dict from range_extension, safe to normalize in-place
+                    intensities = utils.norm.normalize_values_in_dict(extensions, inplace=True)
 
                     # Sample the feature at random with a probability
                     # proportional to the range extensions
@@ -300,7 +301,7 @@ class MondrianTreeRegressor(MondrianTree, base.Regressor):
                     else:
                         threshold = self._rng.uniform(x_f, range_min)
 
-                    was_leaf = isinstance(current_node, MondrianLeafRegressor)
+                    was_leaf = current_node.is_leaf
 
                     # We split the current node
                     current_node = self._split(
@@ -344,7 +345,7 @@ class MondrianTreeRegressor(MondrianTree, base.Regressor):
                 else:
                     # There is no split, so we just update the node and go to the next one
                     self._update_downwards(current_node, True)
-                    if isinstance(current_node, MondrianLeafRegressor):
+                    if current_node.is_leaf:
                         return current_node
                     else:
                         # Save the path direction to keep the tree consistent
@@ -404,35 +405,31 @@ class MondrianTreeRegressor(MondrianTree, base.Regressor):
         if not self._is_initialized:
             return
 
-        leaf = (
-            self._root.traverse(x, until_leaf=True)
-            if isinstance(self._root, MondrianBranchRegressor)
-            else self._root
-        )
+        # Find leaf using direct traversal (avoids recursive generator overhead)
+        current = self._root
+        while not current.is_leaf:
+            try:
+                current = current.next(x)
+            except KeyError:
+                _, current = current.most_common_path()
 
         if not self.use_aggregation:
-            return self._predict(leaf)
+            return self._predict(current)
 
-        current = leaf
-        prediction = 0.0
+        # Start with leaf prediction
+        prediction = self._predict(current)
 
-        while True:
-            # This test is useless ?
-            if isinstance(current, MondrianLeafRegressor):
-                prediction = self._predict(current)
-            else:
-                weight = current.weight
-                log_weight_tree = current.log_weight_tree
-                w = math.exp(weight - log_weight_tree)
-                # Get the predictions of the current node
-                pred_new = self._predict(current)
-                prediction = 0.5 * w * pred_new + (1 - 0.5 * w) * prediction
+        # Go upwards to root
+        current = current.parent
+        while current is not None:
+            weight = current.weight
+            log_weight_tree = current.log_weight_tree
+            w = math.exp(weight - log_weight_tree)
+            half_w = 0.5 * w
+            # Get the predictions of the current node
+            pred_new = self._predict(current)
+            prediction = half_w * pred_new + (1.0 - half_w) * prediction
 
-            # Root must be updated as well
-            if current.parent is None:
-                break
-
-            # And now we go up
             current = current.parent
 
         return prediction

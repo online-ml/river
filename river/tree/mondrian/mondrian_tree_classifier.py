@@ -354,7 +354,8 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
                     # leaf, or because we add a new node along the path
 
                     # We normalize the range extensions to get probabilities
-                    intensities = utils.norm.normalize_values_in_dict(extensions, inplace=False)
+                    # extensions is a fresh dict from range_extension, safe to normalize in-place
+                    intensities = utils.norm.normalize_values_in_dict(extensions, inplace=True)
 
                     # Sample the feature at random with a probability
                     # proportional to the range extensions
@@ -374,7 +375,7 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
                     else:
                         threshold = self._rng.uniform(x_f, range_min)
 
-                    was_leaf = isinstance(current_node, MondrianLeafClassifier)
+                    was_leaf = current_node.is_leaf
 
                     # We split the current node
                     current_node = self._split(
@@ -418,7 +419,7 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
                 else:
                     # There is no split, so we just update the node and go to the next one
                     self._update_downwards(x, y, current_node, True)
-                    if isinstance(current_node, MondrianLeafClassifier):
+                    if current_node.is_leaf:
                         return current_node
                     else:
                         # Save the path direction to keep the tree consistent
@@ -484,39 +485,52 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
         if not self._is_initialized:
             return {}
 
-        # Initialization of the scores to output to 0
-        scores = {c: 0.0 for c in self._classes}
-
-        leaf = (
-            self._root.traverse(x, until_leaf=True)
-            if isinstance(self._root, MondrianBranchClassifier)
-            else self._root
-        )
+        # Find leaf using direct traversal (avoids recursive generator overhead)
+        current = self._root
+        while not current.is_leaf:
+            try:
+                current = current.next(x)
+            except KeyError:
+                _, current = current.most_common_path()
 
         if not self.use_aggregation:
-            return self._predict(leaf)
+            return self._predict(current)
 
-        current = leaf
+        # Walk up from leaf to root, aggregating predictions
+        dirichlet = self.dirichlet
+        classes = self._classes
+        n_classes = len(classes)
 
-        while True:
-            # This test is useless ?
-            if isinstance(current, MondrianLeafClassifier):
-                scores = self._predict(current)
-            else:
-                weight = current.weight
-                log_weight_tree = current.log_weight_tree
-                w = math.exp(weight - log_weight_tree)
-                # Get the predictions of the current node
-                pred_new = self._predict(current)
-                for c in self._classes:
-                    scores[c] = 0.5 * w * pred_new[c] + (1 - 0.5 * w) * scores[c]
+        # Start with leaf prediction (inlined for performance)
+        counts = current.counts
+        n_samples = current.n_samples
+        denom = n_samples + dirichlet * n_classes
+        scores = {c: (counts.get(c, 0) + dirichlet) / denom for c in classes}
 
-            # Root must be updated as well
-            if current.parent is None:
-                break
+        # Go upwards to root
+        current = current.parent
+        while current is not None:
+            weight = current.weight
+            log_weight_tree = current.log_weight_tree
+            w = math.exp(weight - log_weight_tree)
+            half_w = 0.5 * w
+            complement = 1.0 - half_w
 
-            # And now we go up
+            # Inline node prediction
+            counts = current.counts
+            n_samples = current.n_samples
+            denom = n_samples + dirichlet * n_classes
+            for c in classes:
+                pred_new = (counts.get(c, 0) + dirichlet) / denom
+                scores[c] = half_w * pred_new + complement * scores[c]
+
             current = current.parent
 
-        # Normalize scores to mimic a probability distribution
-        return utils.norm.normalize_values_in_dict(scores, inplace=False)
+        # Normalize scores in-place (avoid deepcopy)
+        total = sum(scores.values())
+        if total > 0 and not math.isnan(total):
+            inv_total = 1.0 / total
+            for c in scores:
+                scores[c] *= inv_total
+
+        return scores
