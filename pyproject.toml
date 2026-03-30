@@ -208,6 +208,9 @@ addopts = [
     "-m not datasets and not slow",
     "--color=yes",
 ]
+filterwarnings = [
+    "ignore:A single label was found in 'y_true' and 'y_pred':UserWarning:sklearn",
+]
 doctest_optionflags = "NORMALIZE_WHITESPACE NUMBER ELLIPSIS"
 norecursedirs = [
     "build",
