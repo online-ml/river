@@ -77,6 +77,8 @@ The `dummy` module is now fully type-annotated.
 
 - Added `cond_log_proba` to `GaussianSplitter` and optimized `do_naive_bayes_prediction` to use direct log-probabilities, avoiding the `exp`/`log` round-trip.
 - Added handling for division by zero in `tree.hoeffding_tree` for leaf size estimation.
+- Optimized Mondrian trees and AMF (Aggregated Mondrian Forest): replaced dict-based node storage with list-indexed storage, added feature/class-to-index mappings, inlined all hot-path methods, and moved the core traversal loops (`_go_downwards`, `update_downwards`, `predict_proba` upward walk) to Cython. AMFClassifier is **3.2x faster**, AMFRegressor is **2.9x faster**.
+- Fixed a shared-state bug in `MondrianTreeRegressor` where `replant()` copied the `Mean` object by reference, causing branch and child nodes to share the same running mean. Each node now maintains independent mean statistics, matching the onelearn reference implementation.
 
 ## neighbors
 
