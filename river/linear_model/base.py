@@ -1,13 +1,11 @@
 from __future__ import annotations
 
-import contextlib
 import numbers
 
 import numpy as np
 import pandas as pd
 
 from river import optim, utils
-from river.utils.vectordict import VectorDict
 
 __all__ = ["GLM"]
 
@@ -90,15 +88,13 @@ class GLM:
     def weights(self):
         return self._weights.to_dict()
 
-    @contextlib.contextmanager
-    def _learn_mode(self, mask=None):
+    def _enter_learn_mode(self, mask=None):
         weights = self._weights
-        try:
-            # enable the initializer and set a mask
-            self._weights = utils.VectorDict(weights, self.initializer, mask)
-            yield
-        finally:
-            self._weights = weights
+        self._weights = utils.VectorDict(weights, self.initializer, mask)
+        return weights
+
+    def _exit_learn_mode(self, weights):
+        self._weights = weights
 
     def _get_intercept_update(self, loss_gradient):
         return self.intercept_lr.get(self.optimizer.n_iterations) * loss_gradient
@@ -145,24 +141,27 @@ class GLM:
     def _raw_dot_one(self, x: dict) -> float:
         return self._weights @ utils.VectorDict(x) + self.intercept
 
-    def _eval_gradient_one(self, x: dict, y: float, w: float) -> tuple[VectorDict, float]:
+    def _eval_gradient_one(self, x: dict, y: float, w: float) -> tuple[utils.VectorDict, float]:
         loss_gradient = self.loss.gradient(y_true=y, y_pred=self._raw_dot_one(x))
         loss_gradient *= w
         loss_gradient = float(
             utils.math.clamp(loss_gradient, -self.clip_gradient, self.clip_gradient)
         )
 
-        if self.l2:
-            return (
-                loss_gradient * utils.VectorDict(x) + self.l2 * self._weights,
-                loss_gradient,
-            )
+        # Build gradient VectorDict in one pass instead of VectorDict(x) * scalar
+        gradient = utils.VectorDict({key: value * loss_gradient for key, value in x.items()})
 
-        return (loss_gradient * utils.VectorDict(x), loss_gradient)
+        if self.l2:
+            gradient.iadd_scaled(self._weights, self.l2)
+
+        return (gradient, loss_gradient)
 
     def learn_one(self, x, y, w=1.0) -> None:
-        with self._learn_mode(x):
+        saved = self._enter_learn_mode(x)
+        try:
             self._fit(x, y, w, get_grad=self._eval_gradient_one)
+        finally:
+            self._exit_learn_mode(saved)
 
     # Mini-batch methods
 
@@ -189,5 +188,8 @@ class GLM:
 
     def learn_many(self, X: pd.DataFrame, y: pd.Series, w: float | pd.Series = 1) -> None:
         self._y_name = y.name
-        with self._learn_mode(set(X)):
+        saved = self._enter_learn_mode(set(X))
+        try:
             self._fit(X, y, w, get_grad=self._eval_gradient_many)
+        finally:
+            self._exit_learn_mode(saved)

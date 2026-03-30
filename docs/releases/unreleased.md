@@ -59,6 +59,14 @@ The `dummy` module is now fully type-annotated.
 - Added `cond_log_proba` to `GaussianSplitter` and optimized `do_naive_bayes_prediction` to use direct log-probabilities, avoiding the `exp`/`log` round-trip.
 - Added handling for division by zero in `tree.hoeffding_tree` for leaf size estimation.
 
+## utils
+
+- Optimized `VectorDict` binary operations (add, sub, mul, div, minimum, maximum) with fast paths that bypass generator-based key iteration when no mask or factory is set. Added fused `isub_scaled`/`iadd_scaled` methods to avoid intermediate allocations. This speeds up online linear models by 8–34% depending on the optimizer and feature count.
+
+## linear_model
+
+- Optimized `GLM` base class: replaced `contextlib.contextmanager` with direct try/finally in `learn_one`/`learn_many`, and build gradient dicts in a single pass. Combined with the VectorDict improvements, LinearRegression with Adam is up to 1.34x faster.
+
 ## neighbors
 
 - Added function in nearest-neighbor engines to gather relevant classes/targets from the window.
