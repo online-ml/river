@@ -45,10 +45,10 @@ def sherman_morrison(A_inv: dict, u: dict, v: dict) -> dict:
 
     den = 1 + utils.math.dot(utils.math.dotvecmat(u, A_inv), v)
 
-    for k, v in utils.math.matmul2d(
+    for k, val in utils.math.matmul2d(
         utils.math.matmul2d(A_inv, utils.math.outer(u, v)), A_inv
     ).items():
-        A_inv[k] = A_inv.get(k, 0) - v / den
+        A_inv[k] = A_inv.get(k, 0) - val / den
 
     return A_inv
 

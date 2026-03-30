@@ -3,10 +3,6 @@
 </p>
 
 <p align="center">
-  <!-- Tests -->
-  <a href="https://github.com/online-ml/river/actions/workflows/unit-tests.yml">
-    <img src="https://github.com/online-ml/river/actions/workflows/unit-tests.yml/badge.svg" alt="unit-tests">
-  </a>
   <!-- Code quality -->
   <a href="https://github.com/online-ml/river/actions/workflows/code-quality.yml">
     <img src="https://github.com/online-ml/river/actions/workflows/code-quality.yml/badge.svg" alt="code-quality">
@@ -15,10 +11,6 @@
   <a href="https://riverml.xyz">
     <img src="https://img.shields.io/website?label=docs&style=flat-square&url=https%3A%2F%2Friverml.xyz%2F" alt="documentation">
   </a>
-  <!-- Discord -->
-  <a href="https://discord.gg/qNmrKEZMAn">
-    <img src="https://dcbadge.vercel.app/api/server/qNmrKEZMAn?style=flat-square" alt="discord">
-  </a>
   <!-- PyPI -->
   <a href="https://pypi.org/project/river">
     <img src="https://img.shields.io/pypi/v/river.svg?label=release&color=blue&style=flat-square" alt="pypi">
@@ -26,10 +18,6 @@
   <!-- PePy -->
   <a href="https://pepy.tech/project/river">
     <img src="https://static.pepy.tech/badge/river?style=flat-square" alt="pepy">
-  </a>
-  <!-- Black -->
-  <a href="https://github.com/psf/black">
-    <img src="https://img.shields.io/badge/code%20style-black-000000.svg" alt="black">
   </a>
   <!-- Mypy -->
   <a href="http://mypy-lang.org/">
@@ -91,7 +79,7 @@ Now let's run the model on the dataset in a streaming fashion. We sequentially i
 
 >>> for x, y in dataset:
 ...     y_pred = model.predict_one(x)      # make a prediction
-...     metric.update(y, y_pred)  # update the metric
+...     metric.update(y, y_pred)           # update the metric
 ...     model.learn_one(x, y)              # make the model learn
 
 >>> metric
@@ -103,7 +91,7 @@ Of course, this is just a contrived example. We welcome you to check the [introd
 
 ## 🛠 Installation
 
-River is intended to work with **Python 3.8 and above**. Installation can be done with `pip`:
+River is intended to work with **Python 3.10 and above**. Installation can be done with `pip`:
 
 ```sh
 pip install river

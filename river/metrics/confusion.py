@@ -57,6 +57,7 @@ class ConfusionMatrix(metrics.base.MultiClassMetric):
         self.data = defaultdict(functools.partial(defaultdict, float))
         self.n_samples = 0
         self.total_weight = 0
+        self._total_true_positives = 0.0
 
     def __getitem__(self, key):
         """Syntactic sugar for accessing the counts directly."""
@@ -64,12 +65,22 @@ class ConfusionMatrix(metrics.base.MultiClassMetric):
 
     def update(self, y_true, y_pred, w=1.0):
         self.n_samples += 1
-        self._update(y_true, y_pred, w)
+        self.data[y_true][y_pred] += w
+        self.total_weight += w
+        self.sum_row[y_true] += w
+        self.sum_col[y_pred] += w
+        if y_true == y_pred:
+            self._total_true_positives += w
 
     def revert(self, y_true, y_pred, w=1.0):
         self.n_samples -= 1
         # Revert is equal to subtracting so we pass the negative sample_weight (w)
-        self._update(y_true, y_pred, -w)
+        self.data[y_true][y_pred] -= w
+        self.total_weight -= w
+        self.sum_row[y_true] -= w
+        self.sum_col[y_pred] -= w
+        if y_true == y_pred:
+            self._total_true_positives -= w
 
     def _update(self, y_true, y_pred, w):
         self.data[y_true][y_pred] += w
@@ -112,7 +123,7 @@ class ConfusionMatrix(metrics.base.MultiClassMetric):
 
     @property
     def total_true_positives(self):
-        return sum(self.true_positives(label) for label in self.classes)
+        return self._total_true_positives
 
     @property
     def total_true_negatives(self):

@@ -22,6 +22,9 @@ class MondrianTreeRegressor(MondrianTree, base.Regressor):
         Whether to use aggregation weighting techniques or not.
     iteration
         Number iterations to do during training.
+    max_nodes
+        Maximum number of nodes allowed in the tree. No new splits will occur once this
+        limit is reached. If `None`, the tree grows without bound.
     seed
         Random seed for reproducibility.
 
@@ -42,6 +45,7 @@ class MondrianTreeRegressor(MondrianTree, base.Regressor):
         step: float = 0.1,
         use_aggregation: bool = True,
         iteration: int = 0,
+        max_nodes: int | None = None,
         seed: int | None = None,
     ):
         super().__init__(
@@ -49,6 +53,7 @@ class MondrianTreeRegressor(MondrianTree, base.Regressor):
             loss="least-squares",
             use_aggregation=use_aggregation,
             iteration=iteration,
+            max_nodes=max_nodes,
             seed=seed,
         )
         # Controls the randomness in the tree
@@ -144,7 +149,7 @@ class MondrianTreeRegressor(MondrianTree, base.Regressor):
             if isinstance(node, MondrianLeafRegressor):
                 return split_time
             # Otherwise we apply Mondrian process dark magic :)
-            # 1. We get the creation time of the childs (left and right is the same)
+            # 1. We get the creation time of the children (left and right is the same)
             left, _ = node.children
             child_time = left.time
             # 2. We check if splitting time occurs before child creation time
@@ -265,7 +270,10 @@ class MondrianTreeRegressor(MondrianTree, base.Regressor):
 
                 # If it's not the first iteration (otherwise the current node
                 # is root with no range), we consider the possibility of a split
-                split_time = self._compute_split_time(current_node, extensions_sum)
+                if self.max_nodes is not None and self._n_nodes >= self.max_nodes:
+                    split_time = 0.0
+                else:
+                    split_time = self._compute_split_time(current_node, extensions_sum)
 
                 if split_time > 0:
                     # We split the current node: because the current node is a
@@ -303,6 +311,9 @@ class MondrianTreeRegressor(MondrianTree, base.Regressor):
                         is_right_extension,
                     )
 
+                    # Each split adds 2 new nodes to the tree
+                    self._n_nodes += 2
+
                     # The root node has become a branch
                     if current_node.parent is None:
                         self._root = current_node
@@ -326,7 +337,7 @@ class MondrianTreeRegressor(MondrianTree, base.Regressor):
                         current_node = left
 
                     # This is the leaf containing the sample point (we've just
-                    # splitted the current node with the data point)
+                    # split the current node with the data point)
                     leaf = current_node
                     self._update_downwards(leaf, False)
                     return leaf

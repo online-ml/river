@@ -34,7 +34,7 @@ class BaseChain(base.Wrapper, collections.UserDict):
             return self[key]
 
 
-class ClassifierChain(BaseChain, base.MultiLabelClassifier):
+class ClassifierChain(BaseChain, base.MultiLabelClassifier):  # type:ignore[misc]
     """A multi-output model that arranges classifiers into a chain.
 
     This will create one model per output. The prediction of the first output will be used as a
@@ -165,7 +165,7 @@ class ClassifierChain(BaseChain, base.MultiLabelClassifier):
         return y_pred
 
 
-class RegressorChain(BaseChain, base.MultiTargetRegressor):
+class RegressorChain(BaseChain, base.MultiTargetRegressor):  # type:ignore[misc]
     """A multi-output model that arranges regressors into a chain.
 
     This will create one model per output. The prediction of the first output will be used as a

@@ -583,7 +583,7 @@ class TextClust(base.Clusterer):
             microcluster.fade(t, omega, fading_factor, term_fading, realtime)
 
             self.time = t
-            # here we merge an existing mc wth the current mc. The tf values as well as the ids have to be transferred
+            # here we merge an existing mc with the current mc. The tf values as well as the ids have to be transferred
             for k in list(microcluster.tf.keys()):
                 if k in self.tf:
                     self.tf[k]["tf"] += microcluster.tf[k]["tf"]

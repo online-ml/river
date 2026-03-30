@@ -70,7 +70,7 @@ class Var(stats.base.Univariate):
 
     """
 
-    def __init__(self, ddof=1):
+    def __init__(self, ddof=1) -> None:
         self.ddof = ddof
         self.mean = stats.Mean()
         self._S = 0
@@ -79,23 +79,23 @@ class Var(stats.base.Univariate):
     def n(self):
         return self.mean.n
 
-    def update(self, x, w=1.0):
-        mean_old = self.mean.get()
+    def update(self, x, w=1.0) -> None:
+        mean_old = self.mean._mean
         self.mean.update(x, w)
-        mean_new = self.mean.get()
+        mean_new = self.mean._mean
         self._S += w * (x - mean_old) * (x - mean_new)
 
     def revert(self, x, w=1.0):
-        mean_old = self.mean.get()
+        mean_old = self.mean._mean
         self.mean.revert(x, w)
-        mean_new = self.mean.get()
+        mean_new = self.mean._mean
         self._S -= w * (x - mean_old) * (x - mean_new)
 
     def update_many(self, X: np.ndarray):
         mean_old = self.mean.get()
         self.mean.update_many(X)
         mean_new = self.mean.get()
-        self._S += np.sum(np.multiply(np.subtract(X, mean_old), np.subtract(X, mean_new)))
+        self._S += np.sum(np.multiply(np.subtract(X, mean_old), np.subtract(X, mean_new))).item()
 
     def get(self):
         if self.n > self.ddof:

@@ -1,19 +1,20 @@
 from __future__ import annotations
 
 import abc
+from typing import Any
 
-from . import estimator
+from . import estimator, typing
 
 
 class Clusterer(estimator.Estimator):
     """A clustering model."""
 
     @property
-    def _supervised(self):
+    def _supervised(self) -> bool:
         return False
 
     @abc.abstractmethod
-    def learn_one(self, x: dict) -> None:
+    def learn_one(self, x: dict[typing.FeatureName, Any]) -> None:
         """Update the model with a set of features `x`.
 
         Parameters
@@ -24,7 +25,7 @@ class Clusterer(estimator.Estimator):
         """
 
     @abc.abstractmethod
-    def predict_one(self, x: dict) -> int:
+    def predict_one(self, x: dict[typing.FeatureName, Any]) -> int:
         """Predicts the cluster number for a set of features `x`.
 
         Parameters

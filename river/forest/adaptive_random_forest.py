@@ -159,11 +159,13 @@ class BaseForest(base.Ensemble):
 
             # Update performance evaluator
             self._metrics[i].update(
-                y_true=y,
-                y_pred=model.predict_proba_one(x)
-                if isinstance(self.metric, metrics.base.ClassificationMetric)
-                and not self.metric.requires_labels
-                else y_pred,
+                y_true=y,  # type:ignore[arg-type]
+                y_pred=(
+                    model.predict_proba_one(x)
+                    if isinstance(self.metric, metrics.base.ClassificationMetric)
+                    and not self.metric.requires_labels
+                    else y_pred
+                ),
             )
 
             k = poisson(rate=self.lambda_value, rng=self._rng)
@@ -661,7 +663,9 @@ class ARFClassifier(BaseForest, base.Classifier):
     def _multiclass(self):
         return True
 
-    def predict_proba_one(self, x: dict) -> dict[base.typing.ClfTarget, float]:
+    def predict_proba_one(
+        self, x: dict, **kwargs: typing.Any
+    ) -> dict[base.typing.ClfTarget, float]:
         y_pred: typing.Counter = collections.Counter()
 
         if len(self) == 0:

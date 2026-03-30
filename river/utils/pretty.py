@@ -3,15 +3,16 @@
 from __future__ import annotations
 
 import math
+from collections.abc import Iterable, Sequence
 
 __all__ = ["humanize_bytes", "print_table"]
 
 
 def print_table(
-    headers: list[str],
-    columns: list[list[str]],
-    order: list[int] | None = None,
-):
+    headers: Sequence[str],
+    columns: Sequence[Sequence[str]],
+    order: Iterable[int] | None = None,
+) -> str:
     """Pretty-prints a table.
 
     Parameters
@@ -56,7 +57,7 @@ def print_table(
     return table
 
 
-def humanize_bytes(n_bytes: int):
+def humanize_bytes(n_bytes: int) -> str:
     """Returns a human-friendly byte size.
 
     Parameters

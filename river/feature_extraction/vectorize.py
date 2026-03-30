@@ -451,6 +451,8 @@ class TFIDF(BagOfWords):
         strip_accents=True,
         lowercase=True,
         preprocessor: typing.Callable | None = None,
+        stop_words: set[str] | None = None,
+        tokenizer_pattern=r"(?u)\b\w[\w\-]+\b",
         tokenizer: typing.Callable | None = None,
         ngram_range=(1, 1),
     ):
@@ -459,6 +461,8 @@ class TFIDF(BagOfWords):
             strip_accents=strip_accents,
             lowercase=lowercase,
             preprocessor=preprocessor,
+            stop_words=stop_words,
+            tokenizer_pattern=tokenizer_pattern,
             tokenizer=tokenizer,
             ngram_range=ngram_range,
         )
@@ -489,3 +493,12 @@ class TFIDF(BagOfWords):
             norm = math.sqrt(sum(tfidf**2 for tfidf in tfidfs.values()))
             return {term: tfidf / norm for term, tfidf in tfidfs.items()}
         return tfidfs
+
+    # Mini-batch methods should be done well™ and not just be a loop over the *_one equivalent.
+    def learn_many(self, X):
+        "Not available, will raise an exception."
+        raise NotImplementedError
+
+    def transform_many(self, X):
+        "Not available, will raise an exception."
+        raise NotImplementedError

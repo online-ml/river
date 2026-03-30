@@ -15,11 +15,6 @@ class EWVar(stats.base.Univariate):
     fading_factor
         The closer `fading_factor` is to 1 the more the statistic will adapt to recent values.
 
-    Attributes
-    ----------
-    variance : float
-        The running exponentially weighted variance.
-
     Examples
     --------
 

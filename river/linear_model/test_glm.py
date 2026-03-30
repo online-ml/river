@@ -16,6 +16,12 @@ from river import datasets, optim, preprocessing, stream, utils
 from river import linear_model as lm
 
 
+def _pd_split(df, n):
+    """Split a pandas DataFrame or Series into n chunks without triggering swapaxes deprecation."""
+    indices = np.array_split(range(len(df)), n)
+    return [df.iloc[idx] for idx in indices]
+
+
 def iter_perturbations(keys, n=10):
     """Enumerate perturbations that will be applied to the weights."""
 
@@ -88,7 +94,7 @@ def test_finite_differences(lm, dataset):
 
         # d is a set of weight perturbations
         for d in iter_perturbations(weights.keys()):
-            # Pertubate the weights and obtain the loss with the new weights
+            # Perturb the weights and obtain the loss with the new weights
             lm._weights = utils.VectorDict({i: weights[i] + eps * di for i, di in d.items()})
             forward = lm.loss(y_true=y, y_pred=lm._raw_dot_one(x))
             lm._weights = utils.VectorDict({i: weights[i] - eps * di for i, di in d.items()})
@@ -123,7 +129,7 @@ def test_one_many_consistent():
         one.learn_one(x, y)
 
     many = lm.LinearRegression()
-    for xb, yb in zip(np.array_split(X[:100], len(X[:100])), np.array_split(Y[:100], len(Y[:100]))):
+    for xb, yb in zip(_pd_split(X[:100], len(X[:100])), _pd_split(Y[:100], len(Y[:100]))):
         many.learn_many(xb, yb)
 
     for i in X:
@@ -137,11 +143,11 @@ def test_shuffle_columns():
     Y = X.pop("five_thirty_eight")
 
     normal = lm.LinearRegression()
-    for xb, yb in zip(np.array_split(X, 10), np.array_split(Y, 10)):
+    for xb, yb in zip(_pd_split(X, 10), _pd_split(Y, 10)):
         normal.learn_many(xb, yb)
 
     shuffled = lm.LinearRegression()
-    for xb, yb in zip(np.array_split(X, 10), np.array_split(Y, 10)):
+    for xb, yb in zip(_pd_split(X, 10), _pd_split(Y, 10)):
         cols = np.random.permutation(X.columns)
         shuffled.learn_many(xb[cols], yb)
 
@@ -156,7 +162,7 @@ def test_add_remove_columns():
     Y = X.pop("five_thirty_eight")
 
     lin_reg = lm.LinearRegression()
-    for xb, yb in zip(np.array_split(X, 10), np.array_split(Y, 10)):
+    for xb, yb in zip(_pd_split(X, 10), _pd_split(Y, 10)):
         # Pick half of the columns at random
         cols = np.random.choice(X.columns, len(X.columns) // 2, replace=False)
         lin_reg.learn_many(xb[cols], yb)

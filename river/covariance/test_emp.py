@@ -10,6 +10,12 @@ import pytest
 from river import covariance, stream
 
 
+def _pd_split(df, n):
+    """Split a pandas DataFrame or Series into n chunks without triggering swapaxes deprecation."""
+    indices = np.array_split(range(len(df)), n)
+    return [df.iloc[idx] for idx in indices]
+
+
 @pytest.mark.parametrize(
     "ddof",
     [
@@ -95,7 +101,7 @@ def test_covariance_update_sampled():
 def test_covariance_update_many(ddof):
     cov = covariance.EmpiricalCovariance(ddof=ddof)
     p = 5
-    X_all = pd.DataFrame(columns=range(p))
+    X_all = None
 
     for _ in range(p):
         n = np.random.randint(1, 31)
@@ -123,7 +129,7 @@ def test_covariance_update_many(ddof):
 def test_covariance_update_many_shuffled(ddof):
     cov = covariance.EmpiricalCovariance(ddof=ddof)
     p = 5
-    X_all = pd.DataFrame(columns=range(p))
+    X_all = None
 
     for _ in range(p):
         n = np.random.randint(5, 31)
@@ -143,7 +149,7 @@ def test_covariance_update_many_sampled():
     ddof = 1
     cov = covariance.EmpiricalCovariance(ddof=ddof)
     p = 5
-    X_all = pd.DataFrame(columns=range(p))
+    X_all = None
 
     for _ in range(p):
         n = np.random.randint(5, 31)
@@ -179,7 +185,7 @@ def test_precision_update_many_mini_batches():
     X = pd.DataFrame(np.random.random((100, 5)))
 
     C1.update_many(X)
-    for Xb in np.split(X, 5):
+    for Xb in _pd_split(X, 5):
         C2.update_many(Xb)
 
     for i, j in C1._inv_cov:

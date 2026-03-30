@@ -29,8 +29,8 @@ class MultinomialNB(base.BaseNB):
 
     Attributes
     ----------
-    class_dist : proba.Multinomial
-        Class prior probability distribution.
+    class_counts : collections.Counter
+        Number of times each class has been seen.
     feature_counts : collections.defaultdict
         Total frequencies per feature and class.
     class_totals : collections.Counter

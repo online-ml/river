@@ -147,7 +147,7 @@ class LDA(base.Transformer):
         self.word_to_index: dict[str, int] = {}
         self.index_to_word: dict[int, str] = {}
 
-        self.nu_1: defaultdict = defaultdict(functools.partial(np.ones, 1))
+        self.nu_1: defaultdict = defaultdict(functools.partial(np.ones, 1))  # type: ignore[misc]
         self.nu_2: defaultdict = defaultdict(functools.partial(np.array, [self.alpha_beta]))
 
         for topic in range(self.n_components):
@@ -209,7 +209,7 @@ class LDA(base.Transformer):
         # Sample empirical topic assignment:
         _, components = self._compute_statistics_components(words_indexes_list)
 
-        return dict(enumerate(components))
+        return dict(enumerate(components.tolist()))
 
     def _update_indexes(self, word_list: typing.Iterable[str]):
         """

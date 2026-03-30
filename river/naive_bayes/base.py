@@ -83,7 +83,7 @@ def one_hot_encode(y: pd.Series) -> pd.DataFrame:
     """
     classes = np.unique(y)
     indices = np.searchsorted(classes, y)
-    indptr = np.hstack((0, np.cumsum(np.in1d(y, classes))))
+    indptr = np.hstack((0, np.cumsum(np.isin(y, classes))))
     data = np.empty_like(indices)
     data.fill(1)
     return pd.DataFrame.sparse.from_spmatrix(

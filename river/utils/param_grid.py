@@ -2,15 +2,30 @@ from __future__ import annotations
 
 import itertools
 import typing
+from collections.abc import Iterable, Iterator, Mapping, Sequence, Set
 
 import numpy as np
+import numpy.typing as npt
 
 from river import base
 
 __all__ = ["expand_param_grid"]
 
+T = typing.TypeVar("T", bound=base.Estimator)
 
-def expand_param_grid(model: base.Estimator, grid: dict) -> list[base.Estimator]:
+# This type may be too complex for its own good (and our own).
+Leaf = Sequence[object] | Set[object] | npt.NDArray[typing.Any]
+# Quoted because recursion in type aliases is not allowed before Python 1.12 and the 'type' statement
+Params = (
+    Leaf
+    | Mapping[str, "Params"]
+    | tuple[type, Mapping[str, "Params"]]
+    | Sequence[tuple[type, Mapping[str, "Params"]]]
+    | Set[tuple[type, Mapping[str, "Params"]]]
+)
+
+
+def expand_param_grid(model: T, grid: Mapping[str, Params]) -> list[T]:
     """Expands a grid of parameters.
 
     This method can be used to generate a list of model parametrizations from a dictionary where
@@ -107,8 +122,8 @@ def expand_param_grid(model: base.Estimator, grid: dict) -> list[base.Estimator]
     return [model.clone(params) for params in _expand_param_grid(grid)]
 
 
-def _expand_param_grid(grid: dict) -> typing.Iterator[dict]:
-    def expand_tuple(t):
+def _expand_param_grid(grid: Mapping[str, Params]) -> Iterator[dict[str, object]]:
+    def expand_tuple(t: tuple[type, Mapping[str, Params]]) -> Iterator[object]:
         klass, params = t
 
         if not isinstance(klass, type):
@@ -119,7 +134,7 @@ def _expand_param_grid(grid: dict) -> typing.Iterator[dict]:
 
         return (klass(**combo) for combo in _expand_param_grid(params))
 
-    def expand(k, v):
+    def expand(k: str, v: Params) -> Iterable[tuple[str, object]]:
         if isinstance(v, tuple):
             return ((k, el) for el in expand_tuple(v))
 

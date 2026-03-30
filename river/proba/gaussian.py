@@ -11,6 +11,8 @@ from river.proba import base
 
 __all__ = ["Gaussian", "MultivariateGaussian"]
 
+_HALF_LOG_TAU = 0.5 * math.log(math.tau)
+
 
 class Gaussian(base.ContinuousDistribution):
     """Normal distribution with parameters mu and sigma.
@@ -72,28 +74,47 @@ class Gaussian(base.ContinuousDistribution):
     def revert(self, x, w=1.0):
         self._var.revert(x, w)
 
-    def __call__(self, x):
-        var = self._var.get()
-        if var:
-            try:
-                return math.exp((x - self.mu) ** 2 / (-2 * var)) / math.sqrt(math.tau * var)
-            except ValueError:
-                return 0.0
-            except OverflowError:
-                return 0.0
+    def __call__(self, x) -> float:
+        var = self._var
+        n = var.mean.n
+        if n > var.ddof:
+            variance = var._S / (n - var.ddof)
+            if variance > 0.0:
+                mu = var.mean._mean
+                try:
+                    return math.exp((x - mu) ** 2 / (-2.0 * variance)) / math.sqrt(
+                        math.tau * variance
+                    )
+                except (ValueError, OverflowError):
+                    return 0.0
         return 0.0
 
-    def cdf(self, x):
+    def log_pdf(self, x) -> float:
+        """Log of the probability density function.
+
+        This is more efficient and numerically stable than ``math.log(self(x))``
+        because it avoids the ``exp`` / ``sqrt`` round-trip.
+        """
+        var = self._var
+        n = var.mean.n
+        if n > var.ddof:
+            variance = var._S / (n - var.ddof)
+            if variance > 0.0:
+                mu = var.mean._mean
+                return (x - mu) ** 2 / (-2.0 * variance) - _HALF_LOG_TAU - 0.5 * math.log(variance)
+        return -math.inf
+
+    def cdf(self, x) -> float:
         try:
             return 0.5 * (1.0 + math.erf((x - self.mu) / (self.sigma * math.sqrt(2.0))))
         except ZeroDivisionError:
             return 0.0
 
-    def sample(self):
+    def sample(self) -> float:
         return self._rng.gauss(self.mu, self.sigma)
 
     @property
-    def mode(self):
+    def mode(self) -> float:
         return self.mu
 
 
@@ -207,11 +228,11 @@ class MultivariateGaussian(base.MultivariateContinuousDistribution):
     >>> multi.mu['blue'] == single.mu
     True
     >>> multi.sigma['blue']['blue'] == single.sigma
-    True
+    np.True_
 
     """
 
-    def __init__(self, seed=None):
+    def __init__(self, seed: int | None = None):
         super().__init__(seed)
         self._var = covariance.EmpiricalCovariance(ddof=1)
 
@@ -270,11 +291,11 @@ class MultivariateGaussian(base.MultivariateContinuousDistribution):
         return f"𝒩(\n    μ=({mu_str}),\n    σ^2=(\n{var_str}\n    )\n)"
 
     def update(self, x):
-        # TODO: add support for weigthed samples
+        # TODO: add support for weighted samples
         self._var.update(x)
 
     def revert(self, x):
-        # TODO: add support for weigthed samples
+        # TODO: add support for weighted samples
         self._var.revert(x)
 
     def __call__(self, x: dict[str, float]):
@@ -285,11 +306,11 @@ class MultivariateGaussian(base.MultivariateContinuousDistribution):
             try:
                 pdf_ = multivariate_normal([*self.mu.values()], var).pdf(x_)
                 return float(pdf_)
-            # TODO: validate occurence of ValueError
+            # TODO: validate occurrence of ValueError
             # The input matrix must be symmetric positive semidefinite.
             except ValueError:  # pragma: no cover
                 return 0.0
-            # TODO: validate occurence of OverflowError
+            # TODO: validate occurrence of OverflowError
             except OverflowError:  # pragma: no cover
                 return 0.0
         return 0.0  # pragma: no cover

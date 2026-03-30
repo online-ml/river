@@ -51,12 +51,13 @@ def _yield_datasets(model: Estimator):
 
     from sklearn import datasets as sk_datasets
 
-    from river import base, compose, datasets, preprocessing, stream, utils
+    from river import base, compose, datasets, preprocessing, stream
+    from river.anomaly.base import AnomalyDetector
 
     # Recommendation models can be regressors or classifiers, but they have requirements as to the
     # structure of the data
-    if isinstance(utils.inspect.extract_relevant(model), Ranker):
-        if utils.inspect.isregressor(model):
+    if isinstance(model, Ranker):
+        if isinstance(model, base.Regressor):
             yield _DummyDataset(
                 ("Alice", "Superman", 8),
                 ("Alice", "Terminator", 9),
@@ -71,7 +72,7 @@ def _yield_datasets(model: Estimator):
         return
 
     # Multi-output regression
-    elif utils.inspect.ismoregressor(model):
+    elif isinstance(model, base.MultiTargetRegressor):
         # 1
         yield stream.iter_sklearn_dataset(sk_datasets.load_linnerud())
 
@@ -89,15 +90,15 @@ def _yield_datasets(model: Estimator):
         yield SolarFlare()
 
     # Regression
-    elif utils.inspect.isregressor(model):
+    elif isinstance(model, base.Regressor):
         yield datasets.TrumpApproval().take(200)
 
     # Multi-output classification
-    if utils.inspect.ismoclassifier(model):
+    if isinstance(model, base.MultiLabelClassifier):
         yield datasets.Music().take(50)
 
     # Classification
-    elif utils.inspect.isclassifier(model):
+    elif isinstance(model, base.Classifier):
         yield datasets.Phishing().take(200)
         yield ((x, np.bool_(y)) for x, y in datasets.Phishing().take(200))
 
@@ -106,7 +107,7 @@ def _yield_datasets(model: Estimator):
             yield datasets.ImageSegments().take(200)
 
     # Anomaly detection
-    elif utils.inspect.isanomalydetector(model):
+    elif isinstance(model, AnomalyDetector):
         yield datasets.CreditCard().take(1000)
 
 
@@ -119,7 +120,8 @@ def yield_checks(model: Estimator) -> typing.Iterator[typing.Callable]:
 
     """
 
-    from river import base, utils
+    from river import base
+    from river.anomaly.base import AnomalyDetector
 
     # General checks
     yield common.check_repr
@@ -145,6 +147,7 @@ def yield_checks(model: Estimator) -> typing.Iterator[typing.Callable]:
         common.check_shuffle_features_no_impact,
         common.check_emerging_features,
         common.check_disappearing_features,
+        common.check_radically_disappearing_features,
     ]
 
     if hasattr(model, "debug_one"):
@@ -154,7 +157,7 @@ def yield_checks(model: Estimator) -> typing.Iterator[typing.Callable]:
         dataset_checks.append(common.check_seeding_is_idempotent)
 
     # Classifier checks
-    if utils.inspect.isclassifier(model) and not utils.inspect.ismoclassifier(model):
+    if isinstance(model, base.Classifier) and not isinstance(model, base.MultiLabelClassifier):
         dataset_checks.append(_allow_exception(clf.check_predict_proba_one, NotImplementedError))
         # Specific checks for binary classifiers
         if not model._multiclass:  # type: ignore
@@ -162,13 +165,13 @@ def yield_checks(model: Estimator) -> typing.Iterator[typing.Callable]:
                 _allow_exception(clf.check_predict_proba_one_binary, NotImplementedError)
             )
 
-    if isinstance(utils.inspect.extract_relevant(model), ModelSelector):
+    if isinstance(model, ModelSelector):
         dataset_checks.append(model_selection.check_model_selection_order_does_not_matter)
 
-    if isinstance(utils.inspect.extract_relevant(model), Ranker):
+    if isinstance(model, Ranker):
         yield reco.check_reco_routine
 
-    if utils.inspect.isanomalydetector(model):
+    if isinstance(model, AnomalyDetector):
         dataset_checks.append(anomaly.check_roc_auc)
 
     for dataset_check in dataset_checks:

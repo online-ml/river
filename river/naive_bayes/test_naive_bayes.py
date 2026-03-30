@@ -113,7 +113,7 @@ def test_learn_one_methods(model):
 def test_learn_many_vs_learn_one(model, batch_model):
     """Assert that the Naive Bayes river models provide the same results when learning in
     incremental and mini-batch modes. The models tested are MultinomialNB, BernoulliNB and
-    ComplementNB with differents alpha parameters..
+    ComplementNB with different alpha parameters..
     """
     for x, y in yield_dataset():
         model.learn_one(x, y)
@@ -134,11 +134,11 @@ def test_learn_many_vs_learn_one(model, batch_model):
             batch_model.predict_proba_many(x_batch)["no"][0]
         )
 
-    # Assert class probabilities are the same when trainig Naive Bayes in pure online and in batch.
+    # Assert class probabilities are the same when training Naive Bayes in pure online and in batch.
     assert model["model"].p_class("yes") == batch_model["model"].p_class("yes")
     assert model["model"].p_class("no") == batch_model["model"].p_class("no")
 
-    # Assert conditionnal probabilities are the same when training Naive Bayes in pure online and
+    # Assert conditional probabilities are the same when training Naive Bayes in pure online and
     # in batch.
     if isinstance(model["model"], naive_bayes.BernoulliNB) or isinstance(
         model["model"], naive_bayes.MultinomialNB
@@ -213,7 +213,7 @@ def test_river_vs_sklearn(model, sk_model, bag):
     """Assert that river Naive Bayes models and sklearn Naive Bayes models provide the same results
     when the input data are the same. Also check that the behaviour of Naives Bayes models are the
     same with dense and sparse dataframe. Models tested are MultinomialNB, BernoulliNB and
-    ComplementNB with differents alpha parameters.
+    ComplementNB with different alpha parameters.
     """
     for x, y in yield_batch_dataset():
         model.learn_many(x, y)

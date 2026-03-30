@@ -47,7 +47,7 @@ class VotingClassifier(base.Classifier, base.Ensemble):
     >>> metric = metrics.F1()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    F1: 86.94%
+    F1: 87.04%
 
     """
 

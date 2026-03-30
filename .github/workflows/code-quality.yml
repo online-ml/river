@@ -12,13 +12,26 @@ jobs:
   ubuntu:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Clone repository
+        uses: actions/checkout@v5
 
-      - name: Build River
-        uses: ./.github/actions/install-env
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+
+      - name: Install the project
+        run: uv sync --locked --all-extras --dev
+
+      - name: Download datasets
+        run: uv run make download-datasets
+
+      - name: Run tests
+        run: uv run pytest
+
+      - name: Install pre-commit
+        uses: actions/cache@v3
         with:
-          python-version: "3.12"
-          build-root: false
+          path: ~/.cache/pre-commit/
+          key: pre-commit|${{ hashFiles('.pre-commit-config.yaml') }}
 
-      - name: Run pre-commit on all files
-        run: poetry run pre-commit run --all-files
+      - name: Run pre-commit
+        run: uv run pre-commit run --all-files

@@ -12,11 +12,6 @@ class EWMean(stats.base.Univariate):
     fading_factor
         The closer `fading_factor` is to 1 the more the statistic will adapt to recent values.
 
-    Attributes
-    ----------
-    mean : float
-        The running exponentially weighted mean.
-
     Examples
     --------
 
@@ -51,7 +46,6 @@ class EWMean(stats.base.Univariate):
             raise ValueError("q is not comprised between 0 and 1")
         self.fading_factor = fading_factor
         self._ewmean = _rust_stats.RsEWMean(fading_factor)
-        self.mean = 0
 
     @property
     def name(self):

@@ -96,10 +96,10 @@ def iter_sql(
 
     if target_name is None:
         for row in result_proxy:
-            yield dict(row._mapping.items()), None
+            yield dict(row._mapping.items()), None  # type: ignore[arg-type] # An item view is an iterable
         return
 
     for row in result_proxy:
         x = dict(row._mapping.items())
         y = x.pop(target_name)
-        yield x, y
+        yield x, y  # type: ignore[misc]

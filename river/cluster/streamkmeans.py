@@ -11,7 +11,7 @@ class STREAMKMeans(base.Clusterer):
 
     However, instead of using the traditional k-means, which requires a total reclustering
     each time the temporary chunk of data points is full, the implementation of this algorithm
-    uses an increamental k-means.
+    uses an incremental k-means.
 
     At first, the cluster centers are initialized with a `KMeans` instance. For a new point `p`:
 

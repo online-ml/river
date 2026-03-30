@@ -139,4 +139,4 @@ class AnomalySine(datasets.base.SyntheticDataset):
         self._generate_data()
 
         for xi, yi in itertools.zip_longest(self.X, self.y if hasattr(self.y, "__iter__") else []):
-            yield dict(zip(["sine", "cosine"], xi)), bool(yi)
+            yield dict(zip(["sine", "cosine"], xi.tolist())), bool(yi)
