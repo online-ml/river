@@ -1,1 +1,1 @@
-{"regressions": [["bench_binary_clf.LogisticRegression.time_progressive_val('Bananas')", "graphs/arch-x86_64/branch-main/cpu-AMD EPYC 7763 64-Core Processor/machine-runnervmrg6be/num_cpu-4/os-Linux 6.17.0-1008-azure/python-3.12/ram-16373480/bench_binary_clf.LogisticRegression.time_progressive_val.json", {"cpu": "AMD EPYC 7763 64-Core Processor", "ram": "16373480"}, 0, 0.17444336699998075, 0.16523558700001217, [[4972, 4998, 0.16523558700001217, 0.16920445700000641]]]]}
+{"regressions": []}
