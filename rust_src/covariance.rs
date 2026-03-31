@@ -7,8 +7,8 @@ use serde::{Deserialize, Serialize};
 /// Running Covariance.
 /// # Examples
 /// ```
-/// use watermill::covariance::Covariance;
-/// use watermill::stats::Bivariate;
+/// use river::covariance::Covariance;
+/// use river::stats::Bivariate;
 /// let mut running_cov: Covariance<f64> = Covariance::default();
 /// let x: Vec<f64> = vec![-2.1,  -1.,  4.3];
 /// let y: Vec<f64> = vec![3., 1.1, 0.12];

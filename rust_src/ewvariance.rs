@@ -9,8 +9,8 @@ use std::ops::{AddAssign, SubAssign};
 /// * `alpha` - The closer `alpha` is to 1 the more the statistic will adapt to recent values. Default value is `0.5`.
 /// # Examples
 /// ```
-/// use watermill::ewvariance::EWVariance;
-/// use watermill::stats::Univariate;
+/// use river::ewvariance::EWVariance;
+/// use river::stats::Univariate;
 /// let mut running_ewvariance: EWVariance<f64> = EWVariance::default();
 /// let data = vec![1., 3., 5., 4., 6., 8., 7., 9., 11.];
 /// for i in data.iter(){
@@ -53,11 +53,14 @@ where
 }
 
 impl<F: Float + FromPrimitive + AddAssign + SubAssign> Univariate<F> for EWVariance<F> {
+    #[inline(always)]
     fn update(&mut self, x: F) {
         self.mean.update(x);
-        self.sq_mean.update(x.powf(F::from_i8(2).unwrap()))
+        self.sq_mean.update(x * x)
     }
+    #[inline(always)]
     fn get(&self) -> F {
-        self.sq_mean.get() - self.mean.get().powf(F::from_i8(2).unwrap())
+        let m = self.mean.get();
+        self.sq_mean.get() - m * m
     }
 }

@@ -8,8 +8,8 @@ use serde::{Deserialize, Serialize};
 /// Running mean.
 /// # Examples
 /// ```
-/// use watermill::mean::Mean;
-/// use watermill::stats::{Univariate, Revertable};
+/// use river::mean::Mean;
+/// use river::stats::{Univariate, Revertable};
 /// let mut running_mean: Mean<f64> = Mean::new();
 /// for i in 0..10{
 ///     running_mean.update(i as f64);
@@ -48,16 +48,19 @@ impl<F: Float + FromPrimitive + AddAssign + SubAssign> Mean<F> {
 }
 
 impl<F: Float + FromPrimitive + AddAssign + SubAssign> Univariate<F> for Mean<F> {
+    #[inline(always)]
     fn update(&mut self, x: F) {
         self.n.update(x);
         self.mean += (F::from_f64(1.).unwrap() / self.n.get()) * (x - self.mean);
     }
+    #[inline(always)]
     fn get(&self) -> F {
         self.mean
     }
 }
 
 impl<F: Float + FromPrimitive + AddAssign + SubAssign> Revertable<F> for Mean<F> {
+    #[inline(always)]
     fn revert(&mut self, x: F) -> Result<(), &'static str> {
         self.n.revert(x)?;
 
@@ -65,7 +68,7 @@ impl<F: Float + FromPrimitive + AddAssign + SubAssign> Revertable<F> for Mean<F>
         if count == F::from_f64(0.).unwrap() {
             self.mean = F::from_f64(0.0).unwrap();
         } else {
-            self.mean -= (F::from_f64(1.0).unwrap() / count) * (x - self.mean);
+            self.mean -= (x - self.mean) / count;
         }
         Ok(())
     }

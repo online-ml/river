@@ -9,8 +9,8 @@ use serde::{Deserialize, Serialize};
 /// * `ddof` - Delta Degrees of Freedom. The divisor used in calculations is `n - ddof`, where `n` represents the number of seen elements.
 /// # Examples
 /// ```
-/// use watermill::variance::Variance;
-/// use watermill::stats::{Univariate, Revertable};
+/// use river::variance::Variance;
+/// use river::stats::{Univariate, Revertable};
 /// let data: Vec<f64> = vec![3., 5., 4., 7., 10., 12.];
 /// let data_revert = data.clone();
 /// let mut running_variance: Variance<f64> = Variance::default();
@@ -59,22 +59,26 @@ where
 }
 
 impl<F: Float + FromPrimitive + AddAssign + SubAssign> Univariate<F> for Variance<F> {
+    #[inline(always)]
     fn update(&mut self, x: F) {
         let mean_old = self.mean.get();
         self.mean.update(x);
         let mean_new = self.mean.get();
         self.state += (x - mean_old) * (x - mean_new);
     }
+    #[inline(always)]
     fn get(&self) -> F {
         let mean_n = self.mean.n.get();
-        if mean_n > F::from_u32(self.ddof).unwrap() {
-            return self.state / (mean_n - F::from_u32(self.ddof).unwrap());
+        let ddof_f = F::from_u32(self.ddof).unwrap();
+        if mean_n > ddof_f {
+            return self.state / (mean_n - ddof_f);
         }
         F::from_f64(0.).unwrap()
     }
 }
 
 impl<F: Float + FromPrimitive + AddAssign + SubAssign> Revertable<F> for Variance<F> {
+    #[inline(always)]
     fn revert(&mut self, x: F) -> Result<(), &'static str> {
         let mean_old = self.mean.get();
         self.mean.revert(x)?;

@@ -8,8 +8,8 @@ use serde::{Deserialize, Serialize};
 /// * `alpha` - The closer `alpha` is to 1 the more the statistic will adapt to recent values. Default value is `0.5`.
 /// # Examples
 /// ```
-/// use watermill::ewmean::EWMean;
-/// use watermill::stats::Univariate;
+/// use river::ewmean::EWMean;
+/// use river::stats::Univariate;
 /// let mut running_ewmean: EWMean<f64> = EWMean::default();
 /// let data = vec![1., 3., 5., 4., 6., 8., 7., 9., 11.];
 /// for i in data.iter(){
@@ -25,12 +25,16 @@ use serde::{Deserialize, Serialize};
 pub struct EWMean<F: Float + FromPrimitive + AddAssign + SubAssign> {
     pub mean: F,
     pub alpha: F,
+    one_minus_alpha: F,
+    initialized: bool,
 }
 impl<F: Float + FromPrimitive + AddAssign + SubAssign> EWMean<F> {
     pub fn new(alpha: F) -> Self {
         Self {
             mean: F::from_f64(0.0).unwrap(),
             alpha,
+            one_minus_alpha: F::from_f64(1.0).unwrap() - alpha,
+            initialized: false,
         }
     }
 }
@@ -40,21 +44,21 @@ where
     F: Float + FromPrimitive + AddAssign + SubAssign,
 {
     fn default() -> Self {
-        Self {
-            mean: F::from_f64(0.).unwrap(),
-            alpha: F::from_f64(0.5).unwrap(),
-        }
+        Self::new(F::from_f64(0.5).unwrap())
     }
 }
 
 impl<F: Float + FromPrimitive + AddAssign + SubAssign> Univariate<F> for EWMean<F> {
+    #[inline(always)]
     fn update(&mut self, x: F) {
-        if self.mean == F::from_f64(0.).unwrap() {
+        if !self.initialized {
             self.mean = x;
+            self.initialized = true;
         } else {
-            self.mean = self.alpha * x + (F::from_f64(1.).unwrap() - self.alpha) * self.mean;
+            self.mean = self.alpha * x + self.one_minus_alpha * self.mean;
         }
     }
+    #[inline(always)]
     fn get(&self) -> F {
         self.mean
     }

@@ -49,7 +49,7 @@ pub trait IterStatisticsExtend: Iterator {
     /// # Examples
     ///
     /// ```
-    /// use watermill::iter::IterStatisticsExtend;
+    /// use river::iter::IterStatisticsExtend;
     /// let data: Vec<f64> = vec![1., 2., 3.];
     /// let vec_true: Vec<f64> = vec![1., 3., 6.];
     /// for (d, t) in data.into_iter().online_sum().zip(vec_true.into_iter()){
@@ -71,7 +71,7 @@ pub trait IterStatisticsExtend: Iterator {
     /// # Examples
     ///
     /// ```
-    /// use watermill::iter::IterStatisticsExtend;
+    /// use river::iter::IterStatisticsExtend;
     /// let data: Vec<f64> = vec![1., 2., 3.];
     /// let vec_true: Vec<f64> = vec![1., 1.5, 2.];
     /// for (d, t) in data.into_iter().online_mean().zip(vec_true.into_iter()){
@@ -93,7 +93,7 @@ pub trait IterStatisticsExtend: Iterator {
     /// # Examples
     ///
     /// ```
-    /// use watermill::iter::IterStatisticsExtend;
+    /// use river::iter::IterStatisticsExtend;
     /// let data: Vec<f64> = vec![1., 2., 3.];
     /// let vec_true: Vec<f64> = vec![1., 2., 3.];
     /// for (d, t) in data.into_iter().online_count().zip(vec_true.into_iter()){
@@ -118,7 +118,7 @@ pub trait IterStatisticsExtend: Iterator {
     /// # Examples
     ///
     /// ```
-    /// use watermill::iter::IterStatisticsExtend;
+    /// use river::iter::IterStatisticsExtend;
     /// let data: Vec<f64> = vec![1., 2., 3.];
     /// let vec_true: Vec<f64> = vec![1., 1.9, 2.89];
     /// for (d, t) in data.into_iter().online_ewmean(0.9_f64).zip(vec_true.into_iter()){
@@ -142,7 +142,7 @@ pub trait IterStatisticsExtend: Iterator {
     /// # Examples
     ///
     /// ```
-    /// use watermill::iter::IterStatisticsExtend;
+    /// use river::iter::IterStatisticsExtend;
     /// let data: Vec<f64> = vec![1., 2., 3.];
     /// let vec_true: Vec<f64> = vec![0., 0.0900000000000003, 0.11789999999999878];
     /// for (d, t) in data.into_iter().online_ewvar(0.9_f64).zip(vec_true.into_iter()){
@@ -167,7 +167,7 @@ pub trait IterStatisticsExtend: Iterator {
     /// # Examples
     ///
     /// ```
-    /// use watermill::iter::IterStatisticsExtend;
+    /// use river::iter::IterStatisticsExtend;
     /// let data: Vec<f64> = vec![1., 2., 3., 4.];
     /// let vec_true: Vec<f64> = vec![0., 1., 2., 2.];
     /// for (d, t) in data.into_iter().online_iqr(0.25_f64, 0.75_f64).zip(vec_true.into_iter()){
@@ -191,7 +191,7 @@ pub trait IterStatisticsExtend: Iterator {
     /// # Examples
     ///
     /// ```
-    /// use watermill::iter::IterStatisticsExtend;
+    /// use river::iter::IterStatisticsExtend;
     /// let data: Vec<f64> = vec![1., 2., 3., 4.];
     /// let vec_true: Vec<f64> = vec![-3., -2., -1.5, -1.200000000000001];
     /// for (d, t) in data.into_iter().online_kurtosis(false).zip(vec_true.into_iter()){
@@ -213,7 +213,7 @@ pub trait IterStatisticsExtend: Iterator {
     /// # Examples
     ///
     /// ```
-    /// use watermill::iter::IterStatisticsExtend;
+    /// use river::iter::IterStatisticsExtend;
     /// let data: Vec<f64> = vec![1., 2., 3., 2.];
     /// let vec_true: Vec<f64> = vec![1., 2., 3., 3.];
     /// for (d, t) in data.into_iter().online_max().zip(vec_true.into_iter()){
@@ -235,7 +235,7 @@ pub trait IterStatisticsExtend: Iterator {
     /// # Examples
     ///
     /// ```
-    /// use watermill::iter::IterStatisticsExtend;
+    /// use river::iter::IterStatisticsExtend;
     /// let data: Vec<f64> = vec![1., 2., 3., -4.];
     /// let vec_true: Vec<f64> = vec![1., 2., 3., 4.];
     /// for (d, t) in data.into_iter().online_abs_max().zip(vec_true.into_iter()){
@@ -257,7 +257,7 @@ pub trait IterStatisticsExtend: Iterator {
     /// # Examples
     ///
     /// ```
-    /// use watermill::iter::IterStatisticsExtend;
+    /// use river::iter::IterStatisticsExtend;
     /// let data: Vec<f64> = vec![1., 2., 3., -4.];
     /// let vec_true: Vec<f64> = vec![1., 1., 1., -4.];
     /// for (d, t) in data.into_iter().online_min().zip(vec_true.into_iter()){
@@ -279,7 +279,7 @@ pub trait IterStatisticsExtend: Iterator {
     /// # Examples
     ///
     /// ```
-    /// use watermill::iter::IterStatisticsExtend;
+    /// use river::iter::IterStatisticsExtend;
     /// let data: Vec<f64> = vec![1., 2., 3., -4.];
     /// let vec_true: Vec<f64> = vec![0., 1., 2., 7.];
     /// for (d, t) in data.into_iter().online_ptp().zip(vec_true.into_iter()){
@@ -303,7 +303,7 @@ pub trait IterStatisticsExtend: Iterator {
     /// # Examples
     ///
     /// ```
-    /// use watermill::iter::IterStatisticsExtend;
+    /// use river::iter::IterStatisticsExtend;
     /// let vec_true: Vec<f64> = vec![9., 9., 7., 7., 6., 6., 6., 6., 5.];
     /// let data: Vec<f64> = vec![9., 7., 3., 2., 6., 1., 8., 5., 4.];
     /// for (d, t) in data
@@ -330,9 +330,9 @@ pub trait IterStatisticsExtend: Iterator {
     /// # Examples
     ///
     /// ```
-    /// use watermill::iter::IterStatisticsExtend;
+    /// use river::iter::IterStatisticsExtend;
     /// let data: Vec<f64> = vec![1., 2., 3., -4.];
-    /// let vec_true: Vec<f64> = vec![0., 0., 0., -1.5970779829307837];
+    /// let vec_true: Vec<f64> = vec![0., 0., 0., -1.5970779829307842];
     /// for (d, t) in data.into_iter().online_skew(false).zip(vec_true.into_iter()){
     ///     assert_eq!(d, t);
     /// }
@@ -354,7 +354,7 @@ pub trait IterStatisticsExtend: Iterator {
     /// # Examples
     ///
     /// ```
-    /// use watermill::iter::IterStatisticsExtend;
+    /// use river::iter::IterStatisticsExtend;
     /// let data: Vec<f64> = vec![1., 2., 3., -4.];
     /// let vec_true: Vec<f64> = vec![0., 0.5, 1., 9.666666666666666];
     /// for (d, t) in data.into_iter().online_var(1).zip(vec_true.into_iter()){

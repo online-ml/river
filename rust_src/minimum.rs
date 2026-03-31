@@ -6,8 +6,8 @@ use std::ops::{AddAssign, SubAssign};
 /// Running min.
 /// # Examples
 /// ```
-/// use watermill::minimum::Min;
-/// use watermill::stats::Univariate;
+/// use river::minimum::Min;
+/// use river::stats::Univariate;
 /// let mut running_min: Min<f64> = Min::new();
 /// for i in 1..10{
 ///     running_min.update(i as f64);
@@ -49,8 +49,8 @@ impl<F: Float + FromPrimitive + AddAssign + SubAssign> Univariate<F> for Min<F> 
 /// * `window_size` - Size of the rolling window.
 /// # Examples
 /// ```
-/// use watermill::minimum::RollingMin;
-/// use watermill::stats::Univariate;
+/// use river::minimum::RollingMin;
+/// use river::stats::Univariate;
 /// let mut rolling_min: RollingMin<f64> = RollingMin::new(3);
 /// for i in 1..10{
 ///     rolling_min.update(i as f64);

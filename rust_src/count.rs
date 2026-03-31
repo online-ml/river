@@ -6,8 +6,8 @@ use serde::{Deserialize, Serialize};
 /// Running count.
 /// # Examples
 /// ```
-/// use watermill::stats::{Univariate, Revertable};
-/// use watermill::count::Count;
+/// use river::stats::{Univariate, Revertable};
+/// use river::count::Count;
 /// let mut running_count: Count<f64> = Count::new();
 /// for i in 1..10{
 ///     running_count.update(i as f64);
@@ -40,16 +40,18 @@ impl<F: Float + FromPrimitive + AddAssign + SubAssign> Count<F> {
 }
 
 impl<F: Float + FromPrimitive + AddAssign + SubAssign> Univariate<F> for Count<F> {
-    #[warn(unused_variables)]
+    #[inline(always)]
     fn update(&mut self, _x: F) {
         self.count += F::from_f64(1.).unwrap();
     }
+    #[inline(always)]
     fn get(&self) -> F {
         self.count
     }
 }
 
 impl<F: Float + FromPrimitive + AddAssign + SubAssign> Revertable<F> for Count<F> {
+    #[inline(always)]
     fn revert(&mut self, _x: F) -> std::result::Result<(), &'static str> {
         if self.count == F::from_f64(0.).unwrap() {
             return Err("Count cannot go below 0");

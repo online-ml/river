@@ -24,13 +24,14 @@ pub struct CentralMoments<F: Float + FromPrimitive + AddAssign + SubAssign> {
 }
 impl<F: Float + FromPrimitive + AddAssign + SubAssign> Default for CentralMoments<F> {
     fn default() -> Self {
+        let _0 = F::from_f64(0.).unwrap();
         Self {
-            delta: F::from_f64(0.).unwrap(),
-            sum_delta: F::from_f64(0.).unwrap(),
-            m1: F::from_f64(0.).unwrap(),
-            m2: F::from_f64(0.).unwrap(),
-            m3: F::from_f64(0.).unwrap(),
-            m4: F::from_f64(0.).unwrap(),
+            delta: _0,
+            sum_delta: _0,
+            m1: _0,
+            m2: _0,
+            m3: _0,
+            m4: _0,
             count: Count::new(),
         }
     }
@@ -39,28 +40,35 @@ impl<F: Float + FromPrimitive + AddAssign + SubAssign> CentralMoments<F> {
     pub fn new() -> Self {
         Self::default()
     }
+    #[inline(always)]
     pub fn update_delta(&mut self, x: F) {
         self.delta = (x - self.sum_delta) / self.count.get()
     }
+    #[inline(always)]
     pub fn update_sum_delta(&mut self) {
         self.sum_delta += self.delta
     }
+    #[inline(always)]
     pub fn update_m1(&mut self, x: F) {
         self.m1 = (x - self.sum_delta) * self.delta * (self.count.get() - F::from_f64(1.).unwrap())
     }
+    #[inline(always)]
     pub fn update_m2(&mut self) {
         self.m2 += self.m1
     }
+    #[inline(always)]
     pub fn update_m3(&mut self) {
         self.m3 += self.m1 * self.delta * (self.count.get() - F::from_f64(2.).unwrap())
             - F::from_f64(3.).unwrap() * self.delta * self.m2
     }
+    #[inline(always)]
     pub fn update_m4(&mut self) {
-        let delta_square = self.delta.powf(F::from_f64(2.).unwrap());
+        let delta_square = self.delta * self.delta;
+        let n = self.count.get();
         self.m4 += self.m1
             * delta_square
-            * (self.count.get().powf(F::from_f64(2.).unwrap())
-                - F::from_f64(3.).unwrap() * self.count.get()
+            * (n * n
+                - F::from_f64(3.).unwrap() * n
                 + F::from_f64(3.).unwrap())
             + F::from_f64(6.).unwrap() * delta_square * self.m2
             - F::from_f64(4.).unwrap() * self.delta * self.m3

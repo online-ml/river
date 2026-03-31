@@ -6,8 +6,8 @@ use std::ops::{AddAssign, SubAssign};
 /// Running max.
 /// # Examples
 /// ```
-/// use watermill::maximum::Max;
-/// use watermill::stats::Univariate;
+/// use river::maximum::Max;
+/// use river::stats::Univariate;
 /// let mut running_max: Max<f64> = Max::new();
 /// for i in 1..10{
 ///     running_max.update(i as f64);
@@ -46,8 +46,8 @@ impl<F: Float + FromPrimitive + AddAssign + SubAssign> Univariate<F> for Max<F> 
 /// Running absolute max.
 /// # Examples
 /// ```
-/// use watermill::maximum::AbsMax;
-/// use watermill::stats::Univariate;
+/// use river::maximum::AbsMax;
+/// use river::stats::Univariate;
 /// let mut running_abs_max: AbsMax<f64> = AbsMax::new();
 /// for i in -17..10{
 ///     running_abs_max.update(i as f64);
@@ -89,8 +89,8 @@ impl<F: Float + FromPrimitive + AddAssign + SubAssign> Univariate<F> for AbsMax<
 /// * `window_size` - Size of the rolling window.
 /// # Examples
 /// ```
-/// use watermill::maximum::RollingMax;
-/// use watermill::stats::Univariate;
+/// use river::maximum::RollingMax;
+/// use river::stats::Univariate;
 /// let mut rolling_max: RollingMax<f64> = RollingMax::new(3);
 /// for i in 1..10{
 ///     rolling_max.update(i as f64);

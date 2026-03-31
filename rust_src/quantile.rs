@@ -9,8 +9,8 @@ use serde::{Deserialize, Serialize};
 /// * `q` - quantile value. **WARNING** Should between `0` and `1`. Defaults to `0.5`.
 /// # Examples
 /// ```
-/// use watermill::quantile::Quantile;
-/// use watermill::stats::Univariate;
+/// use river::quantile::Quantile;
+/// use river::stats::Univariate;
 /// let data = vec![9.,7.,3.,2.,6.,1., 8., 5., 4.];
 /// let mut running_quantile: Quantile<f64> = Quantile::default();
 /// for x in data.iter(){
@@ -27,10 +27,11 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Quantile<F: Float + FromPrimitive + AddAssign + SubAssign> {
     q: F,
-    desired_marker_position: Vec<F>,
-    marker_position: Vec<F>,
-    position: Vec<F>,
-    heights: Vec<F>,
+    desired_marker_position: [F; 5],
+    marker_position: [F; 5],
+    position: [F; 5],
+    heights: [F; 5],
+    n_heights: u8,
     heights_sorted: bool,
 }
 impl<F: Float + FromPrimitive + AddAssign + SubAssign> Quantile<F> {
@@ -38,24 +39,37 @@ impl<F: Float + FromPrimitive + AddAssign + SubAssign> Quantile<F> {
         if F::from_f64(0.).unwrap() > q && F::from_f64(1.).unwrap() < q {
             return Err("q should be betweek 0 and 1");
         }
+        let _0 = F::from_f64(0.).unwrap();
+        let _1 = F::from_f64(1.).unwrap();
+        let _2 = F::from_f64(2.).unwrap();
+        let _3 = F::from_f64(3.).unwrap();
+        let _4 = F::from_f64(4.).unwrap();
+        let _5 = F::from_f64(5.).unwrap();
         Ok(Self {
             q,
-            desired_marker_position: vec![
-                F::from_f64(0.).unwrap(),
-                q / F::from_f64(2.).unwrap(),
+            desired_marker_position: [
+                _0,
+                q / _2,
                 q,
-                (F::from_f64(1.).unwrap() + q) / F::from_f64(2.).unwrap(),
-                F::from_f64(1.).unwrap(),
+                (_1 + q) / _2,
+                _1,
             ],
-            marker_position: vec![
-                F::from_f64(1.).unwrap(),
-                F::from_f64(1.).unwrap() + F::from_f64(2.).unwrap() * q,
-                F::from_f64(1.).unwrap() + F::from_f64(4.).unwrap() * q,
-                F::from_f64(3.).unwrap() + F::from_f64(2.).unwrap() * q,
-                F::from_f64(5.).unwrap(),
+            marker_position: [
+                _1,
+                _1 + _2 * q,
+                _1 + _4 * q,
+                _3 + _2 * q,
+                _5,
             ],
-            position: (1..=5).map(|x| F::from_i32(x).unwrap()).collect(),
-            heights: Vec::new(),
+            position: [
+                _1,
+                _2,
+                _3,
+                _4,
+                _5,
+            ],
+            heights: [_0; 5],
+            n_heights: 0,
             heights_sorted: false,
         })
     }
@@ -72,9 +86,9 @@ impl<F: Float + FromPrimitive + AddAssign + SubAssign> Quantile<F> {
                 }
             }
             // If k is None it means that the previous loop did not break
-            if let (Some(last_height), None) = (self.heights.last_mut(), k) {
-                if *last_height < x {
-                    *last_height = x;
+            if k.is_none() {
+                if self.heights[4] < x {
+                    self.heights[4] = x;
                 }
             }
         }
@@ -88,17 +102,17 @@ impl<F: Float + FromPrimitive + AddAssign + SubAssign> Quantile<F> {
     }
 
     fn adjust(&mut self) {
+        let _1 = F::from_f64(1.0).unwrap();
+        let neg_1 = F::from_f64(-1.).unwrap();
         for i in 1..4 {
             let n = self.position[i];
             let q = self.heights[i];
 
-            let mut d = self.marker_position[i] - n;
-            if (d >= F::from_f64(1.0).unwrap()
-                && self.position[i + 1] - n > F::from_f64(1.0).unwrap())
-                || (d <= F::from_f64(-1.).unwrap()
-                    && self.position[i - 1] - n < F::from_f64(-1.).unwrap())
+            let d = self.marker_position[i] - n;
+            if (d >= _1 && self.position[i + 1] - n > _1)
+                || (d <= neg_1 && self.position[i - 1] - n < neg_1)
             {
-                d = F::from_f64(1.).unwrap().copysign(d);
+                let d = _1.copysign(d);
                 let qp1 = self.heights[i + 1];
                 let qm1 = self.heights[i - 1];
                 let np1 = self.position[i + 1];
@@ -127,73 +141,72 @@ where
     F: Float + FromPrimitive + AddAssign + SubAssign,
 {
     fn default() -> Self {
-        let q = F::from_f64(0.5).unwrap();
-        Self {
-            q,
-            desired_marker_position: vec![
-                F::from_f64(0.).unwrap(),
-                q / F::from_f64(2.).unwrap(),
-                q,
-                (F::from_f64(1.).unwrap() + q) / F::from_f64(2.).unwrap(),
-                F::from_f64(1.).unwrap(),
-            ],
-            marker_position: vec![
-                F::from_f64(1.).unwrap(),
-                F::from_f64(1.).unwrap() + F::from_f64(2.).unwrap() * q,
-                F::from_f64(1.).unwrap() + F::from_f64(4.).unwrap() * q,
-                F::from_f64(3.).unwrap() + F::from_f64(2.).unwrap() * q,
-                F::from_f64(5.).unwrap(),
-            ],
-            position: (1..6).map(|x| F::from_i32(x).unwrap()).collect(),
-            heights: Vec::new(),
-            heights_sorted: false,
-        }
+        Quantile::new(F::from_f64(0.5).unwrap()).unwrap()
     }
 }
 
 impl<F: Float + FromPrimitive + AddAssign + SubAssign> Univariate<F> for Quantile<F> {
     fn update(&mut self, x: F) {
-        // Initialisation
-        if self.heights.len() != 5 {
-            self.heights.push(x);
+        if self.n_heights < 5 {
+            // Initialisation: collect first 5 observations
+            self.heights[self.n_heights as usize] = x;
+            self.n_heights += 1;
         } else {
             if !self.heights_sorted {
-                self.heights.sort_by(|x, y| x.partial_cmp(y).unwrap());
+                // Sort once when we have exactly 5 heights
+                // Simple 5-element sort (sorting network)
+                macro_rules! cswap {
+                    ($a:expr, $b:expr) => {
+                        if self.heights[$b] < self.heights[$a] {
+                            self.heights.swap($a, $b);
+                        }
+                    };
+                }
+                cswap!(0, 1);
+                cswap!(3, 4);
+                cswap!(0, 2);
+                cswap!(1, 2);
+                cswap!(0, 3);
+                cswap!(2, 3);
+                cswap!(1, 4);
+                cswap!(1, 2);
+                cswap!(3, 4);
                 self.heights_sorted = true;
             }
             // Find cell k such that qk < Xj <= qk+i and adjust extreme values (q1 and q) if necessary
             let k = self.find_k(x);
 
             // Increment all positions greater than k
-            for (index, value) in self.position.iter_mut().enumerate() {
-                if index >= k {
-                    *value += F::from_f64(1.0).unwrap();
-                }
+            let _1 = F::from_f64(1.0).unwrap();
+            for index in k..5 {
+                self.position[index] += _1;
             }
 
-            for (marker, desired_marker) in self
-                .marker_position
-                .iter_mut()
-                .zip(self.desired_marker_position.iter())
-            {
-                *marker += *desired_marker;
+            for j in 0..5 {
+                self.marker_position[j] += self.desired_marker_position[j];
             }
             self.adjust();
         }
-        self.heights.sort_by(|x, y| x.partial_cmp(y).unwrap());
     }
     fn get(&self) -> F {
         if self.heights_sorted {
             self.heights[2]
         } else {
-            let length = F::from_usize(self.heights.len()).unwrap();
+            let n = self.n_heights as usize;
+            if n == 0 {
+                return F::from_f64(0.).unwrap();
+            }
+            // For < 5 elements, find the quantile from unsorted data
+            let mut tmp = self.heights;
+            // Sort only the first n elements
+            tmp[..n].sort_by(|a, b| a.partial_cmp(b).unwrap());
+            let length = F::from_usize(n).unwrap();
             let index = (length - F::from_f64(1.).unwrap())
                 .max(F::from_f64(0.).unwrap())
                 .min(length * self.q)
                 .to_usize()
                 .unwrap();
-
-            self.heights[index]
+            tmp[index]
         }
     }
 }
@@ -204,8 +217,8 @@ impl<F: Float + FromPrimitive + AddAssign + SubAssign> Univariate<F> for Quantil
 /// * `window_size` - Size of the rolling window.
 /// # Examples
 /// ```
-/// use watermill::quantile::RollingQuantile;
-/// use watermill::stats::Univariate;
+/// use river::quantile::RollingQuantile;
+/// use river::stats::Univariate;
 /// let mut rolling_quantile: RollingQuantile<f64> = RollingQuantile::new(0.5_f64, 101).unwrap();
 /// for i in 0..=100{
 ///     rolling_quantile.update(i as f64);

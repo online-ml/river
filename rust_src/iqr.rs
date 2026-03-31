@@ -11,8 +11,8 @@ use std::ops::{AddAssign, SubAssign};
 /// * `q_sup` -  Desired superior quantile, must be between 0 and 1. Defaults to `0.75`.
 /// # Examples
 /// ```
-/// use watermill::iqr::IQR;
-/// use watermill::stats::Univariate;
+/// use river::iqr::IQR;
+/// use river::stats::Univariate;
 /// let mut running_iqr: IQR<f64> = IQR::default();
 /// for i in 1..=100{
 ///     running_iqr.update(i as f64);
@@ -68,8 +68,8 @@ impl<F: Float + FromPrimitive + AddAssign + SubAssign> Univariate<F> for IQR<F> 
 /// * `window_size` - Size of the rolling window.
 /// # Examples
 /// ```
-/// use watermill::iqr::RollingIQR;
-/// use watermill::stats::Univariate;
+/// use river::iqr::RollingIQR;
+/// use river::stats::Univariate;
 /// let mut rolling_iqr: RollingIQR<f64> = RollingIQR::new(0.25_f64, 0.75_f64, 101).unwrap();
 /// for i in 0..=100{
 ///     rolling_iqr.update(i as f64);

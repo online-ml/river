@@ -9,8 +9,8 @@ use serde::{Deserialize, Serialize};
 /// * `bias` - If `false`, then the calculations are corrected for statistical bias.
 /// # Examples
 /// ```
-/// use watermill::kurtosis::Kurtosis;
-/// use watermill::stats::Univariate;
+/// use river::kurtosis::Kurtosis;
+/// use river::stats::Univariate;
 /// let data: Vec<f64> = vec![ 0.49671415, -0.1382643 ,  0.64768854,  1.52302986, -0.23415337,-0.23413696];
 /// let mut running_kurtosis: Kurtosis<f64> = Kurtosis::default();
 /// for x in data.iter(){
@@ -21,8 +21,8 @@ use serde::{Deserialize, Serialize};
 /// ```
 /// With bias enabled.
 /// ```
-/// use watermill::kurtosis::Kurtosis;
-/// use watermill::stats::Univariate;
+/// use river::kurtosis::Kurtosis;
+/// use river::stats::Univariate;
 /// let data: Vec<f64> = vec![ 0.49671415, -0.1382643 ,  0.64768854,  1.52302986, -0.23415337,-0.23413696];
 /// let mut running_kurtosis: Kurtosis<f64> = Kurtosis::new(true);
 /// for x in data.iter(){
@@ -60,6 +60,7 @@ where
 }
 
 impl<F: Float + FromPrimitive + AddAssign + SubAssign> Univariate<F> for Kurtosis<F> {
+    #[inline(always)]
     fn update(&mut self, x: F) {
         self.central_moments.count.update(x);
         self.central_moments.update_delta(x);
@@ -69,21 +70,28 @@ impl<F: Float + FromPrimitive + AddAssign + SubAssign> Univariate<F> for Kurtosi
         self.central_moments.update_m3();
         self.central_moments.update_m2();
     }
+    #[inline(always)]
     fn get(&self) -> F {
         let n = self.central_moments.count.get();
-        let mut kurtosis: F = F::from_f64(0.).unwrap();
-        if self.central_moments.m2 != F::from_f64(0.).unwrap() {
-            kurtosis += n * self.central_moments.m4
-                / self.central_moments.m2.powf(F::from_f64(2.).unwrap());
+        let _0 = F::from_f64(0.).unwrap();
+        let _1 = F::from_f64(1.).unwrap();
+        let _2 = F::from_f64(2.).unwrap();
+        let _3 = F::from_f64(3.).unwrap();
+
+        let mut kurtosis: F = _0;
+        if self.central_moments.m2 != _0 {
+            let m2 = self.central_moments.m2;
+            kurtosis = kurtosis + n * self.central_moments.m4
+                / (m2 * m2);
         }
-        if (!self.bias) && n > F::from_f64(3.).unwrap() {
-            return F::from_f64(1.).unwrap()
-                / (n - F::from_f64(2.).unwrap())
-                / (n - F::from_f64(3.).unwrap())
-                * ((n.powf(F::from_f64(2.).unwrap()) - F::from_f64(1.).unwrap()) * kurtosis
-                    - F::from_f64(3.).unwrap()
-                        * (n - F::from_f64(1.).unwrap()).powf(F::from_f64(2.).unwrap()));
+        if (!self.bias) && n > _3 {
+            let nm1 = n - _1;
+            return _1
+                / (n - _2)
+                / (n - _3)
+                * ((n * n - _1) * kurtosis
+                    - _3 * nm1 * nm1);
         }
-        kurtosis - F::from_f64(3.).unwrap()
+        kurtosis - _3
     }
 }
