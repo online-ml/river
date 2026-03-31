@@ -637,17 +637,17 @@ class Pipeline(base.Estimator):
         steps = iter(self.steps.values())
         for i, t in enumerate(itertools.islice(steps, len(self) - 1)):
             if isinstance(t, union.TransformerUnion):
-                print_title(f"{i+1}. Transformer union")
+                print_title(f"{i + 1}. Transformer union")
                 for j, (name, sub_t) in enumerate(t.transformers.items()):
                     if isinstance(sub_t, Pipeline):
                         name = str(sub_t)
-                    print_title(f"{i+1}.{j} {name}", indent=True)
+                    print_title(f"{i + 1}.{j} {name}", indent=True)
                     print_dict(sub_t.transform_one(x), show_types=show_types, indent=True)
                 x = t.transform_one(x)
                 print_dict(x, show_types=show_types)
 
             else:
-                print_title(f"{i+1}. {t}")
+                print_title(f"{i + 1}. {t}")
                 x = t.transform_one(x)
                 print_dict(x, show_types=show_types)
 

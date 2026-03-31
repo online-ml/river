@@ -83,15 +83,13 @@ class AnomalySine(datasets.base.SyntheticDataset):
         )
         if n_anomalies > self.n_samples:
             raise ValueError(
-                f"n_anomalies ({n_anomalies}) can't be larger "
-                f"than n_samples ({self.n_samples})."
+                f"n_anomalies ({n_anomalies}) can't be larger than n_samples ({self.n_samples})."
             )
         self.n_anomalies = n_anomalies
         self.contextual = contextual
         if contextual and n_contextual > self.n_samples:
             raise ValueError(
-                f"n_contextual ({n_contextual}) can't be larger "
-                f"than n_samples ({self.n_samples})."
+                f"n_contextual ({n_contextual}) can't be larger than n_samples ({self.n_samples})."
             )
         self.n_contextual = n_contextual
         self.shift = abs(shift)

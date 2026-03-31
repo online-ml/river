@@ -134,7 +134,7 @@ class Agrawal(datasets.base.SyntheticDataset):
         self.balance_classes = balance_classes
         if not 0.0 <= perturbation <= 1.0:
             raise ValueError(
-                f"noise percentage should be in [0.0..1.0] " f"and {perturbation} was passed"
+                f"noise percentage should be in [0.0..1.0] and {perturbation} was passed"
             )
         self.perturbation = perturbation
         self.seed = seed
