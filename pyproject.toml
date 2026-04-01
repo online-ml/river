@@ -33,7 +33,7 @@ dev = [
     "mypy>=1.11.1,<2",
     "pre-commit>=3.5.0,<4",
     "pytest>=7.4.2,<8",
-    "ruff>=0.4.10,<0.5",
+    "ruff~=0.15.8",
     "scikit-learn>=1.5.1,<2",
     "sqlalchemy>=2.0.22,<3",
     "sympy>=1.12.1,<2",
@@ -42,7 +42,7 @@ dev = [
     "ipython>=8.17.2,<9",
     "rich>=13.6.0,<14",
     "jupyter>=1.0.0,<2",
-    "mike>=2.0.0,<3",
+    "mike @ git+https://github.com/squidfunk/mike.git",
     "polars>=1.1.0,<2",
 ]
 compat = [
@@ -54,7 +54,7 @@ docs = [
     "flask",
     "ipykernel",
     "jupyter-client",
-    "mike",
+    "mike @ git+https://github.com/squidfunk/mike.git",
     "zensical",
     "nbconvert",
     "numpydoc",
@@ -97,7 +97,7 @@ ipykernel = "^6.26.0"
 ipython = "^8.17.2"
 rich = "^13.6.0"
 jupyter = "^1.0.0"
-mike = "^2.0.0"
+mike = { git = "https://github.com/squidfunk/mike.git" }
 polars = "^1.1.0"
 
 [tool.poetry.group.compat]
@@ -116,7 +116,7 @@ optional = true
 "ipykernel" = "*"
 "jupyter-client" = "*"
 "jupyter-contrib-nbextensions" = "^0.7.0"
-"mike" = "*"
+"mike" = { git = "https://github.com/squidfunk/mike.git" }
 "zensical" = "*"
 "nbconvert" = "*"
 "notebook" = "<7"
@@ -208,6 +208,9 @@ addopts = [
     "-m not datasets and not slow",
     "--color=yes",
 ]
+filterwarnings = [
+    "ignore:A single label was found in 'y_true' and 'y_pred':UserWarning:sklearn",
+]
 doctest_optionflags = "NORMALIZE_WHITESPACE NUMBER ELLIPSIS"
 norecursedirs = [
     "build",
@@ -276,7 +279,6 @@ ignore_missing_imports = true
 # Disable strict mode for all non fully-typed modules
 module = [
     "river.metrics.*",
-    "river.utils.*",
     "river.stats.*",
     "river.optim.*",
     "river.datasets.*",

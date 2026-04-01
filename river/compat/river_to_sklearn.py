@@ -228,8 +228,7 @@ class River2SKLClassifier(sklearn_base.ClassifierMixin, River2SKLBase):
             y_type = type_of_target(y, input_name="y", raise_unknown=True)
             if y_type != "binary":
                 raise ValueError(
-                    "Only binary classification is supported. The type of the target "
-                    f"is {y_type}."
+                    f"Only binary classification is supported. The type of the target is {y_type}."
                 )
 
         # Check the target

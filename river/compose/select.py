@@ -180,7 +180,7 @@ class SelectType(base.Transformer):
         return {i: xi for i, xi in x.items() if isinstance(xi, self.types)}
 
     def __str__(self):
-        return f'Select({", ".join(t.__name__ for t in self.types)})'
+        return f"Select({', '.join(t.__name__ for t in self.types)})"
 
     def __repr__(self):
         if self.types:

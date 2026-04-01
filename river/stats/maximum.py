@@ -71,7 +71,7 @@ class RollingMax(stats.base.RollingUnivariate):
     """
 
     def __init__(self, window_size: int):
-        self.window = utils.SortedWindow(size=window_size)
+        self.window: utils.SortedWindow[float] = utils.SortedWindow(size=window_size)
 
     @property
     def window_size(self):
@@ -153,7 +153,7 @@ class RollingAbsMax(stats.base.RollingUnivariate):
     """
 
     def __init__(self, window_size: int):
-        self.window = utils.SortedWindow(size=window_size)
+        self.window: utils.SortedWindow[float] = utils.SortedWindow(size=window_size)
 
     @property
     def window_size(self):

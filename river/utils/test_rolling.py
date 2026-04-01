@@ -7,7 +7,7 @@ import pytest
 from river import proba, stats, utils
 
 
-def test_with_counter():
+def test_with_counter() -> None:
     """
     >>> from river import utils
     >>> import collections
@@ -30,17 +30,17 @@ def test_with_counter():
     """
 
 
-def test_rolling_with_not_rollable():
+def test_rolling_with_not_rollable() -> None:
     with pytest.raises(ValueError):
-        utils.Rolling(stats.Quantile(), window_size=10)
+        utils.Rolling(stats.Quantile(), window_size=10)  # type: ignore[arg-type]
 
 
-def test_time_rolling_with_not_rollable():
+def test_time_rolling_with_not_rollable() -> None:
     with pytest.raises(ValueError):
-        utils.TimeRolling(stats.Quantile(), period=dt.timedelta(seconds=10))
+        utils.TimeRolling(stats.Quantile(), period=dt.timedelta(seconds=10))  # type: ignore[arg-type]
 
 
-def test_issue_1343():
+def test_issue_1343() -> None:
     """
 
     https://github.com/online-ml/river/issues/1343

@@ -2,11 +2,20 @@ from __future__ import annotations
 
 import copy
 import math
+from collections.abc import MutableMapping
+from typing import Any, TypeVar
 
 __all__ = ["normalize_values_in_dict", "scale_values_in_dict"]
 
+T = TypeVar("T", bound="MutableMapping[Any, float]")
 
-def normalize_values_in_dict(dictionary, factor=None, inplace=True, raise_error=False):
+
+def normalize_values_in_dict(
+    dictionary: T,
+    factor: float | None = None,
+    inplace: bool = True,
+    raise_error: bool = False,
+) -> T:
     """Normalize the values in a dictionary using the given factor.
 
     For each element in the dictionary, applies `value/factor`.
@@ -48,7 +57,7 @@ def normalize_values_in_dict(dictionary, factor=None, inplace=True, raise_error=
     return dictionary
 
 
-def scale_values_in_dict(dictionary, multiplier, inplace=True):
+def scale_values_in_dict(dictionary: T, multiplier: float, inplace: bool = True) -> T:
     """Scale the values in a dictionary.
 
     For each element in the dictionary, applies `value * multiplier`.
