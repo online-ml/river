@@ -143,8 +143,7 @@ class ForecastingTrack(Track):
         if horizon is None:
             raise ValueError(f"No horizon configured for {dataset.__class__.__name__}")
 
-        grace_period = horizon
-        checkpoint = max(1, (dataset.n_samples - horizon - grace_period) // n_checkpoints)
+        checkpoint = max(1, (dataset.n_samples - horizon) // n_checkpoints)
 
         start = time.perf_counter()
         model = model.clone()

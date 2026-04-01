@@ -12,9 +12,9 @@ __all__ = ["evaluate", "iter_evaluate"]
 TimeSeries = typing.Iterator[
     tuple[
         dict | None,
-        numbers.Number,
+        float,
         list[dict] | None,
-        list[numbers.Number],
+        list[float],
     ]
 ]
 
