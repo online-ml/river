@@ -55,10 +55,7 @@ docs = [
     "ipykernel",
     "jupyter-client",
     "mike",
-    "mkdocs",
-    "mkdocs-awesome-pages-plugin",
-    "mkdocs-charts-plugin",
-    "mkdocs-material",
+    "zensical",
     "nbconvert",
     "numpydoc",
     "plotly>=6.3.0",
@@ -70,10 +67,8 @@ docs = [
     "jupyter-contrib-nbextensions>=0.7.0,<0.8",
 ]
 benchmark = [
-    "dominate",
-    "scikit-learn",
-    "tabulate",
-    "watermark",
+    "asv",
+    "virtualenv",
 ]
 
 [tool.poetry.build]
@@ -122,10 +117,7 @@ optional = true
 "jupyter-client" = "*"
 "jupyter-contrib-nbextensions" = "^0.7.0"
 "mike" = "*"
-"mkdocs" = "*"
-"mkdocs-awesome-pages-plugin" = "*"
-"mkdocs-charts-plugin" = "*"
-"mkdocs-material" = "*"
+"zensical" = "*"
 "nbconvert" = "*"
 "notebook" = "<7"
 "numpydoc" = "*"
@@ -320,7 +312,6 @@ module = [
     "river.active.*",
     "river.neural_net.*",
     "river.test_estimators",
-    "river.dummy",
 ]
 # The strict option is global, the checks must be disabled one by one
 warn_unused_ignores = false
@@ -330,5 +321,4 @@ allow_any_generics = true
 allow_untyped_calls = true
 allow_incomplete_defs = true
 allow_untyped_defs = true
-implicit_reexport = true
 warn_return_any = false

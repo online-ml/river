@@ -2,13 +2,15 @@ name: dev-docs
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
+
+concurrency:
+  group: gh-pages-deploy
+  cancel-in-progress: false
 
 jobs:
   docs:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
 

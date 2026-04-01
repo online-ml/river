@@ -157,4 +157,5 @@ def evaluate(
     for *_, horizon_metric in steps:
         pass
 
+    assert horizon_metric is not None
     return horizon_metric

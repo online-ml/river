@@ -5,7 +5,7 @@ import shutil
 import zipfile
 from urllib import request
 
-from river import stream
+from river import stream, utils
 
 from . import base
 
@@ -47,7 +47,7 @@ class BETH(base.RemoteDataset):
                 meta = r.info()
                 try:
                     n_bytes = int(meta["Content-Length"])
-                    msg = f"Downloading {self.url} ({base.utils.pretty.humanize_bytes(n_bytes)})"
+                    msg = f"Downloading {self.url} ({utils.pretty.humanize_bytes(n_bytes)})"
                 except (KeyError, TypeError):
                     msg = f"Downloading {self.url}"
                 print(msg)

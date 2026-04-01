@@ -321,6 +321,9 @@ class AdjustedMutualInfo(metrics.base.MultiClassMetric):
         if (n_classes == n_clusters == 1) or (n_classes == n_clusters == 0):
             return 1.0
 
+        if n_classes == 1 or n_clusters == 1:
+            return 0.0
+
         mutual_info_score = metrics.MutualInfo(self.cm).get()
 
         expected_mutual_info_score = expected_mutual_info(self.cm)
@@ -337,9 +340,14 @@ class AdjustedMutualInfo(metrics.base.MultiClassMetric):
         else:
             denominator = max(denominator, np.finfo("float64").eps)
 
-        adjusted_mutual_info_score = (mutual_info_score - expected_mutual_info_score) / denominator
+        numerator = mutual_info_score - expected_mutual_info_score
 
-        return adjusted_mutual_info_score
+        if numerator < 0:
+            numerator = min(numerator, -np.finfo("float64").eps)
+        else:
+            numerator = max(numerator, np.finfo("float64").eps)
+
+        return numerator / denominator
 
 
 def _entropy(cm, y_true):

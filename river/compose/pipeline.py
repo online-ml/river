@@ -10,9 +10,22 @@ import typing
 
 import pandas as pd
 
-from river import base, utils
+from river import base
 
 from . import func, union
+
+
+def _anomaly_filter_cls():
+    from river.anomaly.base import AnomalyFilter
+
+    return AnomalyFilter
+
+
+def _anomaly_detector_cls():
+    from river.anomaly.base import AnomalyDetector
+
+    return AnomalyDetector
+
 
 __all__ = ["Pipeline"]
 
@@ -431,7 +444,7 @@ class Pipeline(base.Estimator):
         for step in self.steps.values():
             # There might be an anomaly filter in the pipeline. Its purpose is to prevent anomalous
             # data from being learned by the subsequent parts of the pipeline.
-            if utils.inspect.ischildobject(obj=step, class_name="AnomalyFilter"):
+            if isinstance(step, _anomaly_filter_cls()):
                 if step._supervised:
                     step.learn_one(x, y)
                     score = step.score_one(x, y)
@@ -488,7 +501,7 @@ class Pipeline(base.Estimator):
 
         for t in itertools.islice(steps, len(self) - 1):
             # An anomaly filter is a no-op during inference
-            if utils.inspect.ischildobject(obj=t, class_name="AnomalyFilter"):
+            if isinstance(t, _anomaly_filter_cls()):
                 continue
 
             # In case of _LEARN_UNSUPERVISED_DURING_PREDICT, then the unsupervised transformers
@@ -640,7 +653,7 @@ class Pipeline(base.Estimator):
 
         # Print the predicted output from the final estimator
         final = next(steps)
-        if not utils.inspect.istransformer(final):
+        if not isinstance(final, base.Transformer):
             print_title(f"{len(self)}. {final}")
 
             # If the last estimator has a debug_one method then call it
@@ -649,9 +662,9 @@ class Pipeline(base.Estimator):
 
             # Display the prediction
             _print()
-            if utils.inspect.isclassifier(final):
+            if isinstance(final, base.Classifier):
                 print_dict(final.predict_proba_one(x), show_types=False, space_after=False)
-            elif utils.inspect.isanomalydetector(final):
+            elif isinstance(final, _anomaly_detector_cls()):
                 _print(f"Score: {format_value(final.score_one(x))}")
             else:
                 _print(f"Prediction: {format_value(final.predict_one(x))}")

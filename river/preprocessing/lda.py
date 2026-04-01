@@ -147,7 +147,7 @@ class LDA(base.Transformer):
         self.word_to_index: dict[str, int] = {}
         self.index_to_word: dict[int, str] = {}
 
-        self.nu_1: defaultdict = defaultdict(functools.partial(np.ones, 1))
+        self.nu_1: defaultdict = defaultdict(functools.partial(np.ones, 1))  # type: ignore[misc]
         self.nu_2: defaultdict = defaultdict(functools.partial(np.array, [self.alpha_beta]))
 
         for topic in range(self.n_components):
