@@ -158,7 +158,7 @@ class ForecastingTrack(Track):
         )
 
         for step, (*_, horizon_metric) in enumerate(steps, start=1):
-            if step % checkpoint:
+            if step % checkpoint != 0:
                 continue
 
             yield {
