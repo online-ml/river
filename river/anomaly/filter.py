@@ -30,6 +30,7 @@ class ThresholdFilter(anomaly.base.AnomalyFilter):
     of human interventions. We don't want our model to learn these values.
 
     >>> from river import datasets
+    >>> from river import evaluate
     >>> from river import metrics
     >>> from river import time_series
 
@@ -53,7 +54,7 @@ class ThresholdFilter(anomaly.base.AnomalyFilter):
     ...     )
     ... )
 
-    >>> time_series.evaluate(
+    >>> evaluate.evaluate(
     ...     dataset,
     ...     model,
     ...     metric,

@@ -79,6 +79,16 @@ The `dummy` module is now fully type-annotated.
 - Added a virtual function to the base engine class; New NN engines need to override `refresh_targets` function
   - Classifier KNN now calls this engine-specific function under `clean_up_classes()`
 
+## build
+
+- Added Python 3.14 wheel builds and updated PyO3 for 3.14 support.
+- Replaced poetry with uv for dependency management.
+
+## evaluate
+
+- Moved forecasting evaluation utilities from `time_series.evaluate` to `evaluate` (`evaluate.evaluate` and `evaluate.iter_evaluate`) and deprecated `time_series.evaluate`/`time_series.iter_evaluate`.
+- Added `evaluate.ForecastingTrack` to benchmark and compare time series forecasting models.
+
 ## utils
 
 - The `utils` module is now fully type-checked.

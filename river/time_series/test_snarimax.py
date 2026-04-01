@@ -7,7 +7,7 @@ import random
 import pytest
 import sympy
 
-from river import compose, datasets, metrics, time_series
+from river import compose, datasets, evaluate, metrics, time_series
 from river.time_series.snarimax import Differencer
 
 
@@ -270,6 +270,6 @@ def test_no_overflow(snarimax):
 
     model = extract_features | snarimax
 
-    time_series.evaluate(
+    evaluate.evaluate(
         dataset=datasets.AirlinePassengers(), model=model, metric=metrics.MAE(), horizon=12
     )
