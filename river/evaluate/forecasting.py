@@ -82,7 +82,6 @@ def iter_evaluate(
     metric: metrics.base.RegressionMetric,
     horizon: int,
     agg_func: typing.Callable[[list[float]], float] | None = None,
-    grace_period: int | None = None,
 ):
     """Evaluates the performance of a forecaster on a time series dataset and yields results.
 
@@ -101,11 +100,6 @@ def iter_evaluate(
         A regression metric.
     horizon
     agg_func
-    grace_period
-        Initial period during which the metric is not updated. This is to fairly evaluate models
-        which need a warming up period to start producing meaningful forecasts. The value of this
-        parameter is equal to the horizon by default.
-
     """
 
     from river import time_series
@@ -117,8 +111,7 @@ def iter_evaluate(
     )
     steps = _iter_with_horizon(dataset, horizon)
 
-    grace_period = horizon if grace_period is None else grace_period
-    for _ in range(grace_period):
+    for _ in range(horizon):
         x, y, x_horizon, y_horizon = next(steps)
         model.learn_one(y=y, x=x)  # type: ignore
 
@@ -135,7 +128,6 @@ def evaluate(
     metric: metrics.base.RegressionMetric,
     horizon: int,
     agg_func: typing.Callable[[list[float]], float] | None = None,
-    grace_period: int | None = None,
 ):
     """Evaluates the performance of a forecaster on a time series dataset.
 
@@ -159,15 +151,10 @@ def evaluate(
         A regression metric.
     horizon
     agg_func
-    grace_period
-        Initial period during which the metric is not updated. This is to fairly evaluate models
-        which need a warming up period to start producing meaningful forecasts. The value of this
-        parameter is equal to the horizon by default.
-
     """
 
     horizon_metric = None
-    steps = iter_evaluate(dataset, model, metric, horizon, agg_func, grace_period)
+    steps = iter_evaluate(dataset, model, metric, horizon, agg_func)
     for *_, horizon_metric in steps:
         pass
 
