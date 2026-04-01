@@ -18,6 +18,7 @@ import numpy.typing as npt
 import scipy as sp
 
 from river import base
+from river.utils.vectordict import euclidean_distance_dict as _euclidean_distance
 
 __all__ = [
     "argmax",
@@ -170,7 +171,22 @@ def minkowski_distance(a: Mapping[Any, float], b: Mapping[Any, float], p: int) -
         Manhattan distance. When `p=2`, this is equivalent to using the Euclidean distance.
 
     """
+    if p == 2:
+        return _euclidean_distance(a, b)  # type: ignore[arg-type]
+    if p == 1:
+        return _manhattan_distance(a, b)
     return sum((abs(a.get(k, 0.0) - b.get(k, 0.0))) ** p for k in {*a.keys(), *b.keys()}) ** (1 / p)  # type: ignore[no-any-return] # If the values are numbers, the return value should always be a number
+
+
+def _manhattan_distance(a: Mapping[Any, float], b: Mapping[Any, float]) -> float:
+    """Fast Manhattan distance between two sparse dicts."""
+    total = 0.0
+    for k, v in a.items():
+        total += abs(v - b.get(k, 0.0))
+    for k, v in b.items():
+        if k not in a:
+            total += abs(v)
+    return total
 
 
 def softmax(y_pred: MutableMapping[Any, float]) -> MutableMapping[Any, float]:

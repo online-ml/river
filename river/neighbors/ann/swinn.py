@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import collections
-import functools
 import heapq
 import math
 import operator
@@ -100,8 +99,8 @@ class SWINN(BaseNN):
     ):
         self.graph_k = graph_k
         if dist_func is None:
-            dist_func = functools.partial(utils.math.minkowski_distance, p=2)
-        self.dist_func = dist_func
+            dist_func = utils.math._euclidean_distance  # type: ignore[attr-defined,assignment]
+        self.dist_func = dist_func  # type: ignore[assignment]
 
         self.maxlen = maxlen
         self.warm_up = warm_up
@@ -212,10 +211,17 @@ class SWINN(BaseNN):
             If `None`, all nodes will have their neighborhood enhanced.
         """
 
+        # Cache frequently accessed attributes as locals
+        _data = self._data
+        dist_func = self.dist_func
+        graph_k = self.graph_k
+        max_candidates = self.max_candidates
+        _rng = self._rng
+
         if nodes is None:
             nodes = [n.uuid for n in self]
 
-        min_changes = self.delta * self.graph_k * len(nodes)
+        min_changes = self.delta * graph_k * len(nodes)
 
         tried = set()
         for _ in range(self.n_iters):
@@ -226,9 +232,9 @@ class SWINN(BaseNN):
 
             # Expand undirected neighborhood
             for nid in nodes:
-                node = self[nid]
-                neighbors = node.neighbors()[0]
-                flags = node.sample_flags
+                node = _data[nid]
+                neighbors = node.neighbors()[0]  # type: ignore[union-attr]
+                flags = node.sample_flags  # type: ignore[union-attr]
 
                 for neigh, flag in zip(neighbors, flags):
                     # To avoid evaluating previous neighbors again
@@ -242,51 +248,51 @@ class SWINN(BaseNN):
 
             # Limits the maximum number of edges to explore and update sample flags
             for nid in nodes:
-                if len(new[nid]) > self.max_candidates:
-                    new[nid] = self._rng.sample(tuple(new[nid]), self.max_candidates)  # type: ignore
+                if len(new[nid]) > max_candidates:
+                    new[nid] = _rng.sample(tuple(new[nid]), max_candidates)  # type: ignore
 
-                if len(old[nid]) > self.max_candidates:
-                    old[nid] = self._rng.sample(tuple(old[nid]), self.max_candidates)  # type: ignore
+                if len(old[nid]) > max_candidates:
+                    old[nid] = _rng.sample(tuple(old[nid]), max_candidates)  # type: ignore
 
-                self[nid].sample_flags = new[nid]
+                _data[nid].sample_flags = new[nid]  # type: ignore[union-attr]
 
             # Perform local joins an attempt to improve the neighborhood
             for nid in nodes:
+                new_nid = new[nid]
+                old_nid = old[nid]
                 # The origin of the join must have a boolean flag set to true
-                for n1 in new[nid]:
+                for n1 in new_nid:
+                    v1 = _data[n1]
+                    v1_edges = v1.edges  # type: ignore[union-attr]
+                    v1_r_edges = v1.r_edges  # type: ignore[union-attr]
+                    v1_item = v1.item  # type: ignore[union-attr]
                     # Consider connections between vertices whose boolean flags are both true
-                    for n2 in new[nid]:
-                        if n1 == n2 or self[n1].is_neighbor(self[n2]):
+                    for n2 in new_nid:
+                        if n1 == n2 or n2 in v1_edges or n2 in v1_r_edges:
                             continue
 
                         if (n1, n2) in tried or (n2, n1) in tried:
                             continue
 
-                        dist = self.dist_func(self[n1].item, self[n2].item)
-                        total_changes += self[n1].push_edge(
-                            self[n2], dist, self.graph_k, self._data
-                        )
-                        total_changes += self[n2].push_edge(
-                            self[n1], dist, self.graph_k, self._data
-                        )
+                        v2 = _data[n2]
+                        dist = dist_func(v1_item, v2.item)  # type: ignore[union-attr]
+                        total_changes += v1.push_edge(v2, dist, graph_k, _data)  # type: ignore[union-attr,arg-type]
+                        total_changes += v2.push_edge(v1, dist, graph_k, _data)  # type: ignore[union-attr,arg-type]
 
                         tried.add((n1, n2))
 
                     # Or one of the connections has a boolean flag set to false
-                    for n2 in old[nid]:
-                        if n1 == n2 or self[n1].is_neighbor(self[n2]):
+                    for n2 in old_nid:
+                        if n1 == n2 or n2 in v1_edges or n2 in v1_r_edges:
                             continue
 
                         if (n1, n2) in tried or (n2, n1) in tried:
                             continue
 
-                        dist = self.dist_func(self[n1].item, self[n2].item)
-                        total_changes += self[n1].push_edge(
-                            self[n2], dist, self.graph_k, self._data
-                        )
-                        total_changes += self[n2].push_edge(
-                            self[n1], dist, self.graph_k, self._data
-                        )
+                        v2 = _data[n2]
+                        dist = dist_func(v1_item, v2.item)  # type: ignore[union-attr]
+                        total_changes += v1.push_edge(v2, dist, graph_k, _data)  # type: ignore[union-attr,arg-type]
+                        total_changes += v2.push_edge(v1, dist, graph_k, _data)  # type: ignore[union-attr,arg-type]
 
                         tried.add((n1, n2))
 
@@ -296,7 +302,7 @@ class SWINN(BaseNN):
 
         # Reduce the number of edges, if needed
         for n in nodes:
-            self[n].prune(self.prune_prob, self.max_candidates, self._data, self._rng)
+            _data[n].prune(self.prune_prob, max_candidates, _data, _rng)  # type: ignore[union-attr,arg-type]
 
         # Ensure that no node is isolated in the graph
         self._fix_graph()
@@ -352,7 +358,7 @@ class SWINN(BaseNN):
         if points:
             return tuple(map(list, zip(*sorted(points, key=operator.itemgetter(-1))[:k])))
 
-        return None
+        return [], []
 
     def _search(
         self,
@@ -362,6 +368,10 @@ class SWINN(BaseNN):
         seed: Vertex | None = None,
         exclude: set[int] | None = None,
     ) -> tuple[list, list]:
+        # Cache frequently accessed attributes as locals
+        _data = self._data
+        dist_func = self.dist_func
+
         # Limiter for the distance bound
         distance_scale = 1 + epsilon
         # Distance threshold for early stops
@@ -374,11 +384,11 @@ class SWINN(BaseNN):
             # Make sure the starting point for the search is valid
             while True:
                 # Random seed point to start the search
-                seed = self[self._rng.randint(0, len(self) - 1)]
+                seed = _data[self._rng.randint(0, len(self) - 1)]
                 if seed is not None and not seed.is_isolated() and seed.uuid not in exclude:
                     break
 
-        dist = self.dist_func(item, seed.item)
+        dist = dist_func(item, seed.item)
 
         # To avoid computing distances more than once for a given node
         visited = {seed.uuid}
@@ -392,20 +402,21 @@ class SWINN(BaseNN):
 
         c_dist, c_n = heapq.heappop(pool)
         while c_dist < distance_bound:
-            tns = [self[n] for n in c_n.all_neighbors() if n not in visited]
+            # Inline all_neighbors: edges.keys() | r_edges.keys()
+            tns = [_data[n] for n in c_n.edges.keys() | c_n.r_edges.keys() if n not in visited]
 
             for n in tns:
-                dist = self.dist_func(item, n.item)
+                dist = dist_func(item, n.item)  # type: ignore[union-attr]
 
                 if len(result) < k:
-                    heapq.heappush(result, (-dist, n))
-                    heapq.heappush(pool, (dist, n))
+                    heapq.heappush(result, (-dist, n))  # type: ignore[misc]
+                    heapq.heappush(pool, (dist, n))  # type: ignore[misc]
                     distance_bound = distance_scale * -result[0][0]
                 elif dist < -result[0][0]:
-                    heapq.heapreplace(result, (-dist, n))
-                    heapq.heappush(pool, (dist, n))
+                    heapq.heapreplace(result, (-dist, n))  # type: ignore[misc]
+                    heapq.heappush(pool, (dist, n))  # type: ignore[misc]
                     distance_bound = distance_scale * -result[0][0]
-                visited.add(n.uuid)
+                visited.add(n.uuid)  # type: ignore[union-attr]
             if len(pool) == 0:
                 break
             c_dist, c_n = heapq.heappop(pool)
