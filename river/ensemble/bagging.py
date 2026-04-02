@@ -341,8 +341,7 @@ class LeveragingBaggingClassifier(BaggingClassifier):
             self._bagging_fct = self._leveraging_subag
         else:
             raise ValueError(
-                f"Invalid bagging_method: {bagging_method}\n"
-                f"Valid options: {self._BAGGING_METHODS}"
+                f"Invalid bagging_method: {bagging_method}\nValid options: {self._BAGGING_METHODS}"
             )
 
     def _leveraging_bag(self, **kwargs):

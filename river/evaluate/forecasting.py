@@ -1,17 +1,19 @@
 from __future__ import annotations
 
 import collections
-import numbers
 import typing
 
-from river import base, metrics, time_series
+from river import base, metrics
+
+__all__ = ["evaluate", "iter_evaluate"]
+
 
 TimeSeries = typing.Iterator[
-    typing.Tuple[  # noqa: UP006
-        typing.Union[dict, None],  # noqa: UP007
-        numbers.Number,
-        typing.Union[typing.List[dict], None],  # noqa: UP006, UP007
-        typing.List[numbers.Number],  # noqa: UP006
+    tuple[
+        dict | None,
+        float,
+        list[dict] | None,
+        list[float],
     ]
 ]
 
@@ -23,7 +25,7 @@ def _iter_with_horizon(dataset: base.typing.Dataset, horizon: int) -> TimeSeries
     --------
 
     >>> from river import datasets
-    >>> from river.time_series.evaluate import _iter_with_horizon
+    >>> from river.evaluate.forecasting import _iter_with_horizon
 
     >>> dataset = datasets.AirlinePassengers()
 
@@ -75,11 +77,10 @@ def _iter_with_horizon(dataset: base.typing.Dataset, horizon: int) -> TimeSeries
 
 def iter_evaluate(
     dataset: base.typing.Dataset,
-    model: time_series.base.Forecaster,
+    model,
     metric: metrics.base.RegressionMetric,
     horizon: int,
     agg_func: typing.Callable[[list[float]], float] | None = None,
-    grace_period: int | None = None,
 ):
     """Evaluates the performance of a forecaster on a time series dataset and yields results.
 
@@ -98,12 +99,9 @@ def iter_evaluate(
         A regression metric.
     horizon
     agg_func
-    grace_period
-        Initial period during which the metric is not updated. This is to fairly evaluate models
-        which need a warming up period to start producing meaningful forecasts. The value of this
-        parameter is equal to the horizon by default.
-
     """
+
+    from river import time_series
 
     horizon_metric = (
         time_series.HorizonAggMetric(metric, agg_func)
@@ -112,8 +110,7 @@ def iter_evaluate(
     )
     steps = _iter_with_horizon(dataset, horizon)
 
-    grace_period = horizon if grace_period is None else grace_period
-    for _ in range(grace_period):
+    for _ in range(horizon):
         x, y, x_horizon, y_horizon = next(steps)
         model.learn_one(y=y, x=x)  # type: ignore
 
@@ -126,12 +123,11 @@ def iter_evaluate(
 
 def evaluate(
     dataset: base.typing.Dataset,
-    model: time_series.base.Forecaster,
+    model,
     metric: metrics.base.RegressionMetric,
     horizon: int,
     agg_func: typing.Callable[[list[float]], float] | None = None,
-    grace_period: int | None = None,
-) -> time_series.HorizonMetric:
+):
     """Evaluates the performance of a forecaster on a time series dataset.
 
     To understand why this method is useful, it's important to understand the difference between
@@ -154,16 +150,12 @@ def evaluate(
         A regression metric.
     horizon
     agg_func
-    grace_period
-        Initial period during which the metric is not updated. This is to fairly evaluate models
-        which need a warming up period to start producing meaningful forecasts. The value of this
-        parameter is equal to the horizon by default.
-
     """
 
     horizon_metric = None
-    steps = iter_evaluate(dataset, model, metric, horizon, agg_func, grace_period)
+    steps = iter_evaluate(dataset, model, metric, horizon, agg_func)
     for *_, horizon_metric in steps:
         pass
 
+    assert horizon_metric is not None
     return horizon_metric

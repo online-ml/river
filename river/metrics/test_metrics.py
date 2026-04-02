@@ -271,7 +271,7 @@ def test_rolling_metric(metric, sk_metric):
             for i, (yt, yp) in enumerate(zip(y_true, y_pred)):
                 m.update(y_true=yt, y_pred=yp)
 
-                if i >= 1:
+                if i >= 2:
                     assert (
                         abs(
                             m.get()

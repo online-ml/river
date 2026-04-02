@@ -133,15 +133,16 @@ class RollingQuantile(stats.base.RollingUnivariate):
         if not 0 <= q <= 1:
             raise ValueError("q is not comprised between 0 and 1")
         self._rolling_quantile = _rust_stats.RsRollingQuantile(q, window_size)
+        self.q = q
         self.window_size_value = window_size
         self._is_updated = False
 
-    def update(self, x):
+    def update(self, x) -> None:
         self._rolling_quantile.update(x)
         if not self._is_updated:
             self._is_updated = True
 
-    def get(self):
+    def get(self) -> float | None:
         if not self._is_updated:
             return None
         return self._rolling_quantile.get()

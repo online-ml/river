@@ -13,7 +13,7 @@ jobs:
     strategy:
       matrix:
         linux_tag: ["manylinux", "musllinux"]
-        python-version: ["311", "312", "313"]
+        python-version: ["311", "312", "313", "314"]
     steps:
       - uses: actions/checkout@v4
       - name: Set up QEMU
@@ -21,21 +21,12 @@ jobs:
         with:
           platforms: all
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.23.3
+        uses: pypa/cibuildwheel@v3.4.0
         timeout-minutes: 720
         env:
           CIBW_BUILD: "cp${{ matrix.python-version }}-${{ matrix.linux_tag }}_*"
           CIBW_ARCHS_LINUX: "x86_64 i686 aarch64"
-          CIBW_SKIP: "*-musllinux_i686"
-          CIBW_ENVIRONMENT: 'PATH="$HOME/.cargo/bin:$PATH"'
-          CIBW_ENVIRONMENT_LINUX: 'PATH="$HOME/.cargo/bin:$PATH" CARGO_NET_GIT_FETCH_WITH_CLI="true"'
-          CIBW_BEFORE_BUILD: >
-            rustup default nightly &&
-            rustup show
-          CIBW_BEFORE_BUILD_LINUX: >
-            curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain=nightly --profile=minimal -y &&
-            rustup show
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: cibw-wheels-${{ matrix.linux_tag }}-${{ matrix.python-version }}-${{ strategy.job-index }}
           path: ./wheelhouse/*.whl
@@ -45,27 +36,17 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-14, macos-15]
-        python-version: ["311", "312", "313"]
+        os: [macos-15]
+        python-version: ["311", "312", "313", "314"]
     steps:
       - uses: actions/checkout@v4
-      - name: Set up rust
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          toolchain: nightly
-      - run: rustup target add aarch64-apple-darwin && rustup target add x86_64-apple-darwin
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.23.3
+        uses: pypa/cibuildwheel@v3.4.0
         timeout-minutes: 720
         env:
           CIBW_BUILD: "cp${{ matrix.python-version }}-*"
           CIBW_ARCHS_MACOS: "universal2"
-          CIBW_ENVIRONMENT: 'PATH="$HOME/.cargo/bin:$PATH"'
-          CIBW_BEFORE_BUILD: >
-            rustup default nightly &&
-            rustup show
-          MACOSX_DEPLOYMENT_TARGET: 10.13
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: cibw-wheels-${{ matrix.os }}-${{ matrix.python-version }}-${{ strategy.job-index }}
           path: ./wheelhouse/*.whl
@@ -75,28 +56,18 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [windows-2022, windows-2025]
-        python-version: ["311", "312", "313"]
+        os: [windows-2025]
+        python-version: ["311", "312", "313", "314"]
     steps:
       - uses: actions/checkout@v4
-      - name: Set up rust
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          toolchain: nightly
-      - run: rustup toolchain install stable-i686-pc-windows-msvc
-      - run: rustup target add i686-pc-windows-msvc
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.23.3
+        uses: pypa/cibuildwheel@v3.4.0
         timeout-minutes: 720
         env:
           CIBW_BUILD: "cp${{ matrix.python-version }}-*"
           CIBW_ARCHS_WINDOWS: "AMD64 x86"
-          CIBW_ENVIRONMENT: 'PATH="$HOME/.cargo/bin:$PATH"'
           CIBW_ENVIRONMENT_WINDOWS: 'PATH="$UserProfile\.cargo\bin;$PATH"'
-          CIBW_BEFORE_BUILD: >
-            rustup default nightly &&
-            rustup show
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: cibw-wheels-${{ matrix.os }}-${{ matrix.python-version }}-${{ strategy.job-index }}
           path: ./wheelhouse/*.whl
@@ -107,15 +78,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Build River
-        uses: ./.github/actions/install-env
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
         with:
           python-version: "3.13"
 
       - name: Build dist
-        run: poetry build
+        run: uv build --sdist
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: cibw-sdist
           path: dist/*.tar.gz

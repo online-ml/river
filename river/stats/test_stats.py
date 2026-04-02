@@ -269,8 +269,9 @@ def test_rolling_bivariate(stat, func):
 @pytest.mark.parametrize(
     "stat",
     filter(
-        lambda stat: hasattr(stat, "update_many")
-        and issubclass(stat.__class__, stats.base.Univariate),
+        lambda stat: (
+            hasattr(stat, "update_many") and issubclass(stat.__class__, stats.base.Univariate)
+        ),
         load_stats(),
     ),
     ids=lambda stat: stat.__class__.__name__,
@@ -290,8 +291,9 @@ def test_update_many_univariate(stat):
 @pytest.mark.parametrize(
     "stat",
     filter(
-        lambda stat: hasattr(stat, "update_many")
-        and issubclass(stat.__class__, stats.base.Bivariate),
+        lambda stat: (
+            hasattr(stat, "update_many") and issubclass(stat.__class__, stats.base.Bivariate)
+        ),
         load_stats(),
     ),
     ids=lambda stat: stat.__class__.__name__,

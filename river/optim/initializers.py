@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from river.optim.base import Initializer
+from river.optim.base import Initializer as Initializer
 
 __all__ = ["Constant", "Normal", "Zeros"]
 

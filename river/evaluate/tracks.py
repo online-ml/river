@@ -1,5 +1,9 @@
 from __future__ import annotations
 
+import datetime as dt
+import statistics
+import time
+
 from river import datasets, evaluate, metrics
 
 
@@ -110,3 +114,54 @@ class RegressionTrack(Track):
             ],
             metric=metrics.MAE() + metrics.RMSE() + metrics.R2(),
         )
+
+
+class ForecastingTrack(Track):
+    """This track evaluates a model's performance on forecasting tasks.
+
+    The objective is to compare time series forecasters with a common protocol over a fixed set of
+    datasets and horizons.
+
+    """
+
+    def __init__(self):
+        super().__init__(
+            name="Forecasting",
+            datasets=[
+                datasets.AirlinePassengers(),
+                datasets.WaterFlow(),
+            ],
+            metric=metrics.MAE(),
+        )
+        self.horizons = {
+            datasets.AirlinePassengers: 12,
+            datasets.WaterFlow: 24,
+        }
+
+    def run(self, model, dataset, n_checkpoints=10):
+        horizon = self.horizons.get(type(dataset))
+        if horizon is None:
+            raise ValueError(f"No horizon configured for {dataset.__class__.__name__}")
+
+        checkpoint = max(1, (dataset.n_samples - 2 * horizon) // n_checkpoints)
+
+        start = time.perf_counter()
+        model = model.clone()
+        steps = evaluate.iter_evaluate(
+            dataset=dataset,
+            model=model,
+            metric=self.metric.clone(),
+            horizon=horizon,
+            agg_func=statistics.mean,
+        )
+
+        for step, (*_, horizon_metric) in enumerate(steps, start=1):
+            if step % checkpoint != 0:
+                continue
+
+            yield {
+                horizon_metric.__class__.__name__: horizon_metric,
+                "Step": step,
+                "Time": dt.timedelta(seconds=time.perf_counter() - start),
+                "Memory": model._raw_memory_usage,
+            }

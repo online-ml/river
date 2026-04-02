@@ -29,6 +29,9 @@ class Wrapper(ABC, Generic[T]):
     def _more_tags(self) -> set[str]:
         return self._wrapped_model._tags
 
+    def __sklearn_tags__(self) -> object:
+        return super().__sklearn_tags__()  # type: ignore[misc]
+
     @property
     def _supervised(self) -> bool:
         return self._wrapped_model._supervised

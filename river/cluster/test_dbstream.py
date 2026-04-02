@@ -164,6 +164,91 @@ def test_density_graph_with_removed_microcluster():
     assert_micro_cluster_properties(dbstream.clusters[0], center={1: 2.560647, 2: 2.560647})
 
 
+def test_noisy_micro_clusters_excluded_from_clusters():
+    """Noisy micro-clusters (weight < minimum_weight) should not appear in clusters.
+
+    See https://github.com/online-ml/river/issues/1730
+    """
+    dbstream = DBSTREAM(
+        clustering_threshold=1.0,
+        fading_factor=0.001,
+        cleanup_interval=10,
+        intersection_factor=0.3,
+        minimum_weight=5,
+    )
+
+    # Three distant points, each forming its own micro-cluster with weight 1.
+    # Since weight 1 < minimum_weight 5, all are noisy and should be excluded.
+    for x, _ in stream.iter_array([[0, 0], [50, 50], [100, 100]]):
+        dbstream.learn_one(x)
+
+    assert len(dbstream._micro_clusters) == 3
+    assert len(dbstream.clusters) == 0
+
+
+def test_noisy_micro_clusters_mixed_with_valid():
+    """Only micro-clusters with sufficient weight should be included in clusters."""
+    dbstream = DBSTREAM(
+        clustering_threshold=1.0,
+        fading_factor=0.001,
+        cleanup_interval=100,
+        intersection_factor=0.3,
+        minimum_weight=3,
+    )
+
+    # Build a strong micro-cluster around (0, 0)
+    for _ in range(5):
+        dbstream.learn_one({0: 0, 1: 0})
+
+    # Add a single noisy point far away
+    dbstream.learn_one({0: 100, 1: 100})
+
+    assert len(dbstream._micro_clusters) == 2
+    # Only the strong cluster should appear
+    assert len(dbstream.clusters) == 1
+    cluster_center = list(dbstream.clusters.values())[0].center
+    assert cluster_center == pytest.approx({0: 0, 1: 0}, abs=0.1)
+
+
+def test_predict_one_returns_nearest_valid_cluster():
+    """predict_one should assign to valid (non-noisy) clusters only."""
+    dbstream = DBSTREAM(
+        clustering_threshold=1.0,
+        fading_factor=0.001,
+        cleanup_interval=100,
+        intersection_factor=0.3,
+        minimum_weight=3,
+    )
+
+    # Build a strong cluster at (0, 0)
+    for _ in range(5):
+        dbstream.learn_one({0: 0, 1: 0})
+
+    # Add a noisy point at (50, 50)
+    dbstream.learn_one({0: 50, 1: 50})
+
+    # Even a point near the noisy cluster should be assigned to the valid cluster
+    label = dbstream.predict_one({0: 50, 1: 50})
+    assert label == 0
+
+
+def test_all_noisy_predict_one():
+    """When all micro-clusters are noisy, predict_one should still work (return 0)."""
+    dbstream = DBSTREAM(
+        clustering_threshold=1.0,
+        fading_factor=0.001,
+        cleanup_interval=10,
+        intersection_factor=0.3,
+        minimum_weight=5,
+    )
+
+    dbstream.learn_one({0: 0, 1: 0})
+    assert len(dbstream.clusters) == 0
+    # predict_one with no valid clusters
+    label = dbstream.predict_one({0: 0, 1: 0})
+    assert label == 0
+
+
 def test_dbstream_synthetic_sklearn():
     centers = [(-10, -10), (-5, -5), (0, 0), (5, 5), (10, 10)]
     cluster_std = [0.6] * 5

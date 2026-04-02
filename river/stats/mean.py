@@ -58,7 +58,7 @@ class Mean(stats.base.Univariate):
 
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.n = 0
         self._mean = 0.0
 

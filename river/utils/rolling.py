@@ -3,33 +3,38 @@ from __future__ import annotations
 import bisect
 import collections
 import datetime as dt
-import typing
+from typing import Any, Protocol, runtime_checkable
 
 
-@typing.runtime_checkable
-class Rollable(typing.Protocol):
-    def update(self, *args, **kwargs) -> None: ...
+@runtime_checkable
+class Rollable(Protocol):
+    def update(self, *args: Any, **kwargs: Any) -> None: ...
 
-    def revert(self, *args, **kwargs) -> None: ...
+    def revert(self, *args: Any, **kwargs: Any) -> None: ...
 
 
 class BaseRolling:
-    def __init__(self, obj: Rollable):
+    def __init__(self, obj: Rollable) -> None:
         if not isinstance(obj, Rollable):
             raise ValueError(f"{obj} does not satisfy the necessary protocol")
 
         self.obj = obj
 
-    def __getattribute__(self, name):
+    def __getattr__(self, name: str) -> object:
+        # Only called when normal attribute lookup fails, so the fast path
+        # (self.obj, self.window, etc.) never enters this method.
+        # Guard against recursion during deepcopy/pickle when obj is not yet set.
         try:
-            return super().__getattribute__(name)
+            obj = object.__getattribute__(self, "obj")
         except AttributeError:
-            return super().__getattribute__("obj").__getattribute__(name)
+            raise AttributeError(name)
+        return getattr(obj, name)
 
-    def __getitem__(self, idx):
-        return self.obj[idx]
+    def __getitem__(self, idx: Any) -> object:
+        # Enable for when it needs, throws a runtime error as usual if tried on a type that can't.
+        return self.obj[idx]  # type: ignore[index]
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return repr(self.obj)
 
 
@@ -67,19 +72,24 @@ class Rolling(BaseRolling):
 
     """
 
-    def __init__(self, obj: Rollable, window_size: int):
+    def __init__(self, obj: Rollable, window_size: int) -> None:
         super().__init__(obj)
-        self.window: collections.deque = collections.deque(maxlen=window_size)
+        self._window_size = window_size
+        self.window: collections.deque[tuple[tuple[Any, ...], dict[str, Any]]] = collections.deque(
+            maxlen=window_size
+        )
 
     @property
-    def window_size(self):
-        return self.window.maxlen
+    def window_size(self) -> int:
+        return self._window_size
 
-    def update(self, *args, **kwargs):
-        if len(self.window) == self.window_size:
-            self.obj.revert(*self.window[0][0], **self.window[0][1])
+    def update(self, *args: Any, **kwargs: Any) -> None:
+        window = self.window
+        if len(window) == self._window_size:
+            old = window[0]
+            self.obj.revert(*old[0], **old[1])
         self.obj.update(*args, **kwargs)
-        self.window.append((args, kwargs))
+        window.append((args, kwargs))
 
 
 class TimeRolling(BaseRolling):
@@ -121,14 +131,14 @@ class TimeRolling(BaseRolling):
 
     """
 
-    def __init__(self, obj: Rollable, period: dt.timedelta):
+    def __init__(self, obj: Rollable, period: dt.timedelta) -> None:
         super().__init__(obj)
         self.period = period
         self._timestamps: list[dt.datetime] = []
-        self._datum: list[typing.Any] = []
+        self._datum: list[Any] = []
         self._latest = dt.datetime(1, 1, 1)
 
-    def update(self, *args, t: dt.datetime, **kwargs):
+    def update(self, *args: Any, t: dt.datetime, **kwargs: Any) -> None:
         self.obj.update(*args, **kwargs)
         i = bisect.bisect_left(self._timestamps, t)
         self._timestamps.insert(i, t)

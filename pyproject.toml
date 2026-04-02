@@ -1,33 +1,74 @@
-[build-system]
-requires = [
-    "poetry-core>=1.0.0",
-    "cython>3",
-    "numpy>=2.0.0",
-    "setuptools>=70.1.0",
-    "setuptools-rust",
-]
-build-backend = "poetry.core.masonry.api"
-
-[tool.poetry]
+[project]
 name = "river"
 version = "0.23.0"
 description = "Online machine learning in Python"
+authors = [{ name = "Max Halford", email = "maxhalford25@gmail.com" }]
+requires-python = ">=3.11"
 readme = "README.md"
-homepage = "https://riverml.xyz/"
-repository = "https://github.com/online-ml/river/"
-authors = ["Max Halford <maxhalford25@gmail.com>"]
 license = "BSD-3-Clause"
+dependencies = [
+    "scipy>=1.16,<2",
+    "pandas>=2.2,<3",
+    "numpy>=2.3.4,<3",
+]
 
-include = [
-    "**/*.cpp",
-    "**/*.pyx",
-    "**/*.pxd",
-    "river/datasets/*.csv",
-    "river/datasets/*.gz",
-    "river/datasets/*.zip",
-    "river/stream/*.zip",
-    "Cargo.toml",
-    "rust_src/**/*",
+[project.urls]
+Homepage = "https://riverml.xyz/"
+Repository = "https://github.com/online-ml/river/"
+
+[build-system]
+requires = [
+    "Cython",
+    "numpy",
+    "setuptools",
+    "setuptools-rust",
+]
+build-backend = "setuptools.build_meta"
+
+[dependency-groups]
+dev = [
+    "graphviz>=0.20.1,<0.21",
+    "gymnasium>=0.29.0,<0.30",
+    "matplotlib>=3.8.4,<4",
+    "mypy>=1.11.1,<2",
+    "pre-commit>=3.5.0,<4",
+    "pytest>=7.4.2,<8",
+    "ruff~=0.15.8",
+    "scikit-learn>=1.5.1,<2",
+    "sqlalchemy>=2.0.22,<3",
+    "sympy>=1.12.1,<2",
+    "pytest-xdist[psutil]>=3.3.1,<4",
+    "ipykernel>=6.26.0,<7",
+    "ipython>=8.17.2,<9",
+    "rich>=13.6.0,<14",
+    "jupyter>=1.0.0,<2",
+    "mike @ git+https://github.com/squidfunk/mike.git",
+    "polars>=1.1.0,<2",
+]
+compat = [
+    "scikit-learn>=1.5.1,<2",
+    "sqlalchemy>=2.0.0,<3",
+]
+docs = [
+    "dominate",
+    "flask",
+    "ipykernel",
+    "jupyter-client",
+    "mike @ git+https://github.com/squidfunk/mike.git",
+    "zensical",
+    "nbconvert",
+    "numpydoc",
+    "plotly>=6.3.0",
+    "python-slugify",
+    "spacy",
+    "tabulate",
+    "watermark",
+    "notebook<7",
+    "jupyter-contrib-nbextensions>=0.7.0,<0.8",
+]
+benchmark = [
+    "asv",
+    "virtualenv",
 ]
 
 [tool.poetry.build]
@@ -56,7 +97,7 @@ ipykernel = "^6.26.0"
 ipython = "^8.17.2"
 rich = "^13.6.0"
 jupyter = "^1.0.0"
-mike = "^2.0.0"
+mike = { git = "https://github.com/squidfunk/mike.git" }
 polars = "^1.1.0"
 
 [tool.poetry.group.compat]
@@ -74,13 +115,13 @@ optional = true
 "flask" = "*"
 "ipykernel" = "*"
 "jupyter-client" = "*"
-"mike" = "*"
-"mkdocs" = "*"
-"mkdocs-awesome-pages-plugin" = "*"
-"mkdocs-charts-plugin" = "*"
-"mkdocs-material" = "*"
+"jupyter-contrib-nbextensions" = "^0.7.0"
+"mike" = { git = "https://github.com/squidfunk/mike.git" }
+"zensical" = "*"
 "nbconvert" = "*"
+"notebook" = "<7"
 "numpydoc" = "*"
+"plotly" = ">6.3.0"
 "python-slugify" = "*"
 "spacy" = "*"
 "tabulate" = "*"
@@ -89,12 +130,71 @@ optional = true
 [tool.poetry.group.benchmark]
 optional = true
 
-[tool.poetry.group.benchmark.dependencies]
-"dominate" = "2.8.0"
-"scikit-learn" = "1.5.1"
-"tabulate" = "0.9.0"
-"vowpalwabbit" = "9.9.0"
-"watermark" = "2.4.3"
+
+
+
+
+[tool.setuptools]
+packages = ["river"]
+
+[tool.uv]
+default-groups = [
+    "dev",
+    "compat",
+    "docs",
+    "benchmark",
+]
+
+[tool.cibuildwheel]
+build-frontend = "build[uv]"
+skip = "*-musllinux_i686"
+enable = ["cpython-freethreading"]
+test-command = "python -c \"import river\""
+
+[tool.cibuildwheel.environment]
+PATH = "$HOME/.cargo/bin:$PATH"
+
+[tool.cibuildwheel.linux.environment]
+PATH = "$HOME/.cargo/bin:$PATH"
+CARGO_NET_GIT_FETCH_WITH_CLI = "true"
+
+[[tool.cibuildwheel.overrides]]
+select = "*-linux_*"
+before-build = """curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain=nightly --profile=minimal -y && rustup show"""
+
+[[tool.cibuildwheel.overrides]]
+select = ["*-macosx_*"]
+before-build = "rustup default nightly && rustup target add aarch64-apple-darwin && rustup target add x86_64-apple-darwin && rustup show"
+
+[[tool.cibuildwheel.overrides]]
+select = ["*-win_*", "*-win32"]
+before-build = "rustup default nightly && rustup toolchain install nightly-i686-pc-windows-msvc && rustup target add i686-pc-windows-msvc && rustup show"
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "**/*.cpp",
+    "**/*.pyx",
+    "**/*.pxd",
+    "river/datasets/*.csv",
+    "river/datasets/*.gz",
+    "river/datasets/*.zip",
+    "river/stream/*.zip",
+    "Cargo.toml",
+    "rust_src/**/*",
+]
+
+[tool.hatch.build.targets.wheel]
+include = [
+    "**/*.cpp",
+    "**/*.pyx",
+    "**/*.pxd",
+    "river/datasets/*.csv",
+    "river/datasets/*.gz",
+    "river/datasets/*.zip",
+    "river/stream/*.zip",
+    "Cargo.toml",
+    "rust_src/**/*",
+]
 
 [tool.pytest.ini_options]
 addopts = [
@@ -107,6 +207,9 @@ addopts = [
     "-ra",
     "-m not datasets and not slow",
     "--color=yes",
+]
+filterwarnings = [
+    "ignore:A single label was found in 'y_true' and 'y_pred':UserWarning:sklearn",
 ]
 doctest_optionflags = "NORMALIZE_WHITESPACE NUMBER ELLIPSIS"
 norecursedirs = [
@@ -176,7 +279,6 @@ ignore_missing_imports = true
 # Disable strict mode for all non fully-typed modules
 module = [
     "river.metrics.*",
-    "river.utils.*",
     "river.stats.*",
     "river.optim.*",
     "river.datasets.*",
@@ -210,10 +312,8 @@ module = [
     "river.imblearn.*",
     "river.feature_selection.*",
     "river.active.*",
-    "river.conf.*",
     "river.neural_net.*",
     "river.test_estimators",
-    "river.dummy",
 ]
 # The strict option is global, the checks must be disabled one by one
 warn_unused_ignores = false
@@ -223,5 +323,4 @@ allow_any_generics = true
 allow_untyped_calls = true
 allow_incomplete_defs = true
 allow_untyped_defs = true
-implicit_reexport = true
 warn_return_any = false

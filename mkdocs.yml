@@ -11,11 +11,117 @@ repo_url: https://github.com/online-ml/river
 edit_uri: ""
 
 # Copyright
-copyright: Copyright &copy; 2019 - 2023
+copyright: Copyright &copy; 2019 - 2026
+
+# Navigation
+nav:
+  - Introduction:
+    - introduction/installation.md
+    - introduction/basic-concepts.md
+    - introduction/getting-started
+    - introduction/why-use-river.md
+    - introduction/next-steps.md
+    - introduction/related-projects.md
+  - Recipes:
+    - recipes/reading-data.md
+    - recipes/model-evaluation.md
+    - recipes/pipelines.md
+    - recipes/feature-extraction.md
+    - recipes/hyperparameter-tuning.md
+    - recipes/mini-batching.md
+    - recipes/on-hoeffding-trees.md
+    - recipes/active-learning.md
+    - recipes/bandits-101.md
+    - recipes/cloning-and-mutating.md
+    - recipes/rolling-computations.md
+  - API:
+    - api/overview.md
+    - api/active
+    - api/anomaly
+    - api/bandit
+    - api/base
+    - api/cluster
+    - api/compat
+    - api/compose
+    - api/conf
+    - api/covariance
+    - api/datasets
+    - api/drift
+    - api/dummy
+    - api/ensemble
+    - api/evaluate
+    - api/facto
+    - api/feature-extraction
+    - api/feature-selection
+    - api/forest
+    - api/imblearn
+    - api/linear-model
+    - api/metrics
+    - api/misc
+    - api/model-selection
+    - api/multiclass
+    - api/multioutput
+    - api/naive-bayes
+    - api/neighbors
+    - api/neural-net
+    - api/optim
+    - api/preprocessing
+    - api/proba
+    - api/reco
+    - api/rules
+    - api/sketch
+    - api/stats
+    - api/stream
+    - api/time-series
+    - api/tree
+    - api/utils
+  - Examples: examples
+  - FAQ: faq
+  - Releases:
+    - unreleased: releases/unreleased.md
+    - "0.23.0": releases/0.23.0.md
+    - "0.22.0": releases/0.22.0.md
+    - "0.21.2": releases/0.21.2.md
+    - "0.21.1": releases/0.21.1.md
+    - "0.21.0": releases/0.21.0.md
+    - "0.20.1": releases/0.20.1.md
+    - "0.20.0": releases/0.20.0.md
+    - "0.19.0": releases/0.19.0.md
+    - "0.18.0": releases/0.18.0.md
+    - "0.17.0": releases/0.17.0.md
+    - "0.16.0": releases/0.16.0.md
+    - "0.15.0": releases/0.15.0.md
+    - "0.14.0": releases/0.14.0.md
+    - "0.13.0": releases/0.13.0.md
+    - "0.12.1": releases/0.12.1.md
+    - "0.12.0": releases/0.12.0.md
+    - "0.11.1": releases/0.11.1.md
+    - "0.11.0": releases/0.11.0.md
+    - "0.10.1": releases/0.10.1.md
+    - "0.10.0": releases/0.10.0.md
+    - "0.9.0": releases/0.9.0.md
+    - "0.8.0": releases/0.8.0.md
+    - "0.7.1": releases/0.7.1.md
+    - "0.7.0": releases/0.7.0.md
+    - "0.6.1": releases/0.6.1.md
+    - "0.6.0": releases/0.6.0.md
+    - "0.5.1": releases/0.5.1.md
+    - "0.5.0": releases/0.5.0.md
+    - "0.4.4": releases/0.4.4.md
+    - "0.4.3": releases/0.4.3.md
+    - "0.4.1": releases/0.4.1.md
+    - "0.3.0": releases/0.3.0.md
+    - "0.2.0": releases/0.2.0.md
+    - "0.1.0": releases/0.1.0.md
+    - "0.0.3": releases/0.0.3.md
+    - "0.0.2": releases/0.0.2.md
+  - Benchmarks: benchmarks
+  - License: license
 
 # Configuration
 theme:
   name: material
+  variant: classic
   custom_dir: docs/overrides
   language: en
 
@@ -59,6 +165,7 @@ extra:
 # Extensions
 markdown_extensions:
   - admonition
+  - attr_list
   - footnotes
   - tables
   - toc:
@@ -72,23 +179,14 @@ markdown_extensions:
   - pymdownx.inlinehilite
   - pymdownx.tabbed:
       alternate_style: true
-  - pymdownx.superfences:
-      custom_fences:
-        - name: vegalite
-          class: vegalite
-          format: !!python/name:mkdocs_charts_plugin.fences.fence_vegalite
+  - pymdownx.superfences
 
 plugins:
   - search
-  - awesome-pages
-  - charts
 
 extra_javascript:
   - javascripts/config.js
   - https://cdn.jsdelivr.net/npm/mathjax@3.2/es5/tex-mml-chtml.js
-  - https://cdn.jsdelivr.net/npm/vega@5
-  - https://cdn.jsdelivr.net/npm/vega-lite@5
-  - https://cdn.jsdelivr.net/npm/vega-embed@6
   - https://unpkg.com/tablesort@5.3.0/dist/tablesort.min.js
   - javascripts/tablesort.js
 

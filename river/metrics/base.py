@@ -89,25 +89,17 @@ class ClassificationMetric(Metric):
         self.cm = cm
 
     def update(self, y_true, y_pred, w=1.0) -> None:
-        self.cm.update(
-            y_true,
-            y_pred,
-            w=w,
-        )
+        self.cm.update(y_true, y_pred, w=w)
 
     def revert(self, y_true, y_pred, w=1.0) -> None:
-        self.cm.revert(
-            y_true,
-            y_pred,
-            w=w,
-        )
+        self.cm.revert(y_true, y_pred, w=w)
 
     @property
     def bigger_is_better(self):
         return True
 
     def works_with(self, model) -> bool:
-        return utils.inspect.isclassifier(model)
+        return isinstance(model, base.Classifier)
 
     @property
     def requires_labels(self):
@@ -145,6 +137,7 @@ class BinaryMetric(ClassificationMetric):
     def __init__(self, cm=None, pos_val=True):
         super().__init__(cm)
         self.pos_val = pos_val
+        self._requires_labels = self.requires_labels
 
     def update(
         self,
@@ -152,7 +145,7 @@ class BinaryMetric(ClassificationMetric):
         y_pred: bool | float | dict[bool, float],
         w=1.0,
     ) -> None:
-        if self.requires_labels:
+        if self._requires_labels:
             y_pred = y_pred == self.pos_val
         return super().update(y_true == self.pos_val, y_pred, w)
 
@@ -162,7 +155,7 @@ class BinaryMetric(ClassificationMetric):
         y_pred: bool | float | dict[bool, float],
         w=1.0,
     ) -> None:
-        if self.requires_labels:
+        if self._requires_labels:
             y_pred = y_pred == self.pos_val
         return super().revert(y_true == self.pos_val, y_pred, w)
 
@@ -180,7 +173,7 @@ class MultiClassMetric(ClassificationMetric):
     """
 
     def works_with(self, model) -> bool:
-        return utils.inspect.isclassifier(model) or utils.inspect.isclusterer(model)
+        return isinstance(model, base.Classifier | base.Clusterer)
 
 
 class RegressionMetric(Metric):
@@ -201,7 +194,7 @@ class RegressionMetric(Metric):
         return False
 
     def works_with(self, model) -> bool:
-        return utils.inspect.isregressor(model)
+        return isinstance(model, base.Regressor)
 
     def __add__(self, other) -> Metrics:
         if not isinstance(other, RegressionMetric):
@@ -370,7 +363,7 @@ class ClusteringMetric(base.Base, abc.ABC):
 
     def works_with(self, model: base.Estimator) -> bool:
         """Indicates whether or not a metric can work with a given model."""
-        return utils.inspect.isclusterer(model)
+        return isinstance(model, base.Clusterer)
 
     def __repr__(self):
         """Returns the class name along with the current value of the metric."""

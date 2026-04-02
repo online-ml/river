@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd
 
 from river import optim, utils
+from river.utils.vectordict import VectorDict
 
 __all__ = ["GLM"]
 
@@ -144,7 +145,7 @@ class GLM:
     def _raw_dot_one(self, x: dict) -> float:
         return self._weights @ utils.VectorDict(x) + self.intercept
 
-    def _eval_gradient_one(self, x: dict, y: float, w: float) -> tuple[dict, float]:
+    def _eval_gradient_one(self, x: dict, y: float, w: float) -> tuple[VectorDict, float]:
         loss_gradient = self.loss.gradient(y_true=y, y_pred=self._raw_dot_one(x))
         loss_gradient *= w
         loss_gradient = float(
