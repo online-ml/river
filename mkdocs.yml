@@ -80,7 +80,21 @@ nav:
     - api/time-series
     - api/tree
     - api/utils
-  - Examples: examples
+  - Examples:
+    - examples/index.md
+    - examples/batch-to-online.md
+    - examples/bike-sharing-forecasting.md
+    - examples/building-a-simple-nowcasting-model.md
+    - examples/content-personalization.md
+    - examples/debugging-a-pipeline.md
+    - examples/imbalanced-learning.md
+    - Matrix factorization for recommender systems:
+      - examples/matrix-factorization-for-recommender-systems/part-1.md
+      - examples/matrix-factorization-for-recommender-systems/part-2.md
+      - examples/matrix-factorization-for-recommender-systems/part-3.md
+    - examples/quantile-regression-uncertainty.md
+    - examples/sentence-classification.md
+    - examples/the-art-of-using-pipelines.md
   - FAQ: faq
   - Releases:
     - unreleased: releases/unreleased.md
