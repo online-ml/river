@@ -612,20 +612,54 @@ def linkify_docs(library: str, docs_dir: pathlib.Path, verbose=False):
         linkified_page.write_text(text)
 
 
+def _module_nav_lines(mod, api_path: str, indent: str) -> list[str]:
+    """Generate nav lines for a module and its sub-modules recursively."""
+    ispublic = lambda x: x.__name__ in mod.__all__ and not x.__name__.startswith("_")
+    classes = inspect.getmembers(mod, lambda x: inspect.isclass(x) and ispublic(x))
+    funcs = inspect.getmembers(mod, lambda x: inspect.isfunction(x) and ispublic(x))
+
+    lines = []
+    for _, c in classes:
+        slug = snake_to_kebab(c.__name__)
+        lines.append(f"{indent}  - {api_path}/{slug}.md\n")
+    for _, f in funcs:
+        slug = snake_to_kebab(f.__name__)
+        lines.append(f"{indent}  - {api_path}/{slug}.md\n")
+
+    # Sub-modules
+    for name, submod in inspect.getmembers(mod, inspect.ismodule):
+        if (
+            name in ("tags", "typing", "inspect", "skmultiflow_utils")
+            or name not in mod.__all__
+            or name.startswith("_")
+        ):
+            continue
+        sub_slug = snake_to_kebab(name)
+        sub_path = f"{api_path}/{sub_slug}"
+        sub_lines = _module_nav_lines(submod, sub_path, indent + "  ")
+        if sub_lines:
+            lines.append(f"{indent}  - {name}:\n")
+            lines.extend(sub_lines)
+
+    return lines
+
+
 def update_api_nav(library: str, config_path: pathlib.Path):
     """Update the API nav section in mkdocs.yml to stay in sync with the library modules."""
     api_mod = importlib.import_module(f"{library}.api")
-    modules = []
-    for mod_name, _ in inspect.getmembers(api_mod, inspect.ismodule):
+
+    lines = ["  - API:\n", "    - api/overview.md\n"]
+    for mod_name, mod in inspect.getmembers(api_mod, inspect.ismodule):
         if mod_name.startswith("_") or mod_name == "api":
             continue
         slug = snake_to_kebab(mod_name)
-        modules.append(slug)
-
-    # Use bare directory strings — zensical resolves titles from .pages files
-    lines = ["  - API:\n", "    - api/overview.md\n"]
-    for slug in modules:
-        lines.append(f"    - api/{slug}\n")
+        api_path = f"api/{slug}"
+        child_lines = _module_nav_lines(mod, api_path, "    ")
+        if child_lines:
+            lines.append(f"    - {mod_name}:\n")
+            lines.extend(child_lines)
+        else:
+            lines.append(f"    - {mod_name}: {api_path}\n")
 
     config_text = config_path.read_text()
     pattern = r"(  - API:\n(?:    - .*\n)*)"
