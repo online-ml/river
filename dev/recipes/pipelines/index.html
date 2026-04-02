@@ -269,14 +269,17 @@
   
   
   
-    <li class="md-tabs__item">
-      <a href="../../examples" class="md-tabs__link">
-        
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../examples/" class="md-tabs__link">
+          
   
   Examples
 
-      </a>
-    </li>
+        </a>
+      </li>
+    
   
 
       
@@ -1013,6 +1016,310 @@
       
         
       
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
     
     
     
@@ -1063,9 +1370,53 @@
   
   
   
-    <li class="md-nav__item">
-      <a href="../../examples" class="md-nav__link">
+    
+    
+      
         
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../examples/" class="md-nav__link">
+      
   
   
   <span class="md-ellipsis">
@@ -1079,7 +1430,13 @@
   
   
 
-      </a>
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
     </li>
   
 
@@ -1362,7 +1719,7 @@
 
 <h1 id="pipelines">Pipelines<a class="headerlink" href="#pipelines" title="Permanent link">&para;</a></h1>
 <p>Pipelines are an integral part of River. We encourage their usage and apply them in many of their examples.</p>
-<p>The <a href="../../../api/compose/Pipeline"><code>compose.Pipeline</code></a> contains all the logic for building and applying pipelines. A pipeline is essentially a list of estimators that are applied in sequence. The only requirement is that the first <code>n - 1</code> steps be transformers. The last step can be a regressor, a classifier, a clusterer, a transformer, etc.</p>
+<p>The <a href="../../api/compose/Pipeline"><code>compose.Pipeline</code></a> contains all the logic for building and applying pipelines. A pipeline is essentially a list of estimators that are applied in sequence. The only requirement is that the first <code>n - 1</code> steps be transformers. The last step can be a regressor, a classifier, a clusterer, a transformer, etc.</p>
 <p>Here is an example:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">river</span><span class="w"> </span><span class="kn">import</span> <span class="n">compose</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">river</span><span class="w"> </span><span class="kn">import</span> <span class="n">linear_model</span>
@@ -1515,7 +1872,7 @@
 }
 </style></div>
 
-<p><a href="../../../api/compose/Pipeline"><code>compose.Pipeline</code></a> implements a <code>learn_one</code> method which in sequence calls the <code>learn_one</code> of each component and a <code>predict_one</code> (resp <code>predict_proba_one</code>) method which calls <code>transform_one</code> on the first <code>n - 1</code> steps and <code>predict_one</code> (resp <code>predict_proba_one</code>) on the last step.</p>
+<p><a href="../../api/compose/Pipeline"><code>compose.Pipeline</code></a> implements a <code>learn_one</code> method which in sequence calls the <code>learn_one</code> of each component and a <code>predict_one</code> (resp <code>predict_proba_one</code>) method which calls <code>transform_one</code> on the first <code>n - 1</code> steps and <code>predict_one</code> (resp <code>predict_proba_one</code>) on the last step.</p>
 <p>Here is a small example to illustrate the previous point:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">river</span><span class="w"> </span><span class="kn">import</span> <span class="n">datasets</span>
 
@@ -1586,8 +1943,8 @@ model[&#39;StandardScaler&#39;].means = defaultdict(&lt;class &#39;float&#39;&gt
  &#39;rasmussen*you_gov&#39;: -1.0,
  &#39;you_gov*you_gov&#39;: 1.0}
 </code></pre></div>
-<p>In many cases, you might want to connect a step to multiple steps. For instance, you might to extract different kinds of features from a single input. An elegant way to do this is to use a <a href="../../../api/compose/TransformerUnion"><code>compose.TransformerUnion</code></a>. Essentially, the latter is a list of transformers who's results will be merged into a single <code>dict</code> when <code>transform_one</code> is called.</p>
-<p>As an example let's say that we want to apply a <a href="../../../api/feature-extraction/RBFSampler"><code>feature_extraction.RBFSampler</code></a> as well as the <a href="../../../api/feature-extraction/PolynomialExtender"><code>feature_extraction.PolynomialExtender</code></a>. This may be done as so:</p>
+<p>In many cases, you might want to connect a step to multiple steps. For instance, you might to extract different kinds of features from a single input. An elegant way to do this is to use a <a href="../../api/compose/TransformerUnion"><code>compose.TransformerUnion</code></a>. Essentially, the latter is a list of transformers who's results will be merged into a single <code>dict</code> when <code>transform_one</code> is called.</p>
+<p>As an example let's say that we want to apply a <a href="../../api/feature-extraction/RBFSampler"><code>feature_extraction.RBFSampler</code></a> as well as the <a href="../../api/feature-extraction/PolynomialExtender"><code>feature_extraction.PolynomialExtender</code></a>. This may be done as so:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="p">(</span>
     <span class="n">preprocessing</span><span class="o">.</span><span class="n">StandardScaler</span><span class="p">()</span> <span class="o">|</span>
     <span class="p">(</span><span class="n">feature_extraction</span><span class="o">.</span><span class="n">PolynomialExtender</span><span class="p">()</span> <span class="o">+</span> <span class="n">feature_extraction</span><span class="o">.</span><span class="n">RBFSampler</span><span class="p">())</span> <span class="o">|</span>
@@ -1726,7 +2083,7 @@ model[&#39;StandardScaler&#39;].means = defaultdict(&lt;class &#39;float&#39;&gt
 }
 </style></div>
 
-<p>Note that the <code>+</code> symbol acts as a shorthand notation for creating a <a href="../../../api/compose/TransformerUnion"><code>compose.TransformerUnion</code></a>, which means that we could have declared the above pipeline as so:</p>
+<p>Note that the <code>+</code> symbol acts as a shorthand notation for creating a <a href="../../api/compose/TransformerUnion"><code>compose.TransformerUnion</code></a>, which means that we could have declared the above pipeline as so:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="p">(</span>
     <span class="n">preprocessing</span><span class="o">.</span><span class="n">StandardScaler</span><span class="p">()</span> <span class="o">|</span>
     <span class="n">compose</span><span class="o">.</span><span class="n">TransformerUnion</span><span class="p">(</span>
@@ -1738,11 +2095,11 @@ model[&#39;StandardScaler&#39;].means = defaultdict(&lt;class &#39;float&#39;&gt
 </code></pre></div>
 <p>Pipelines provide the benefit of removing a lot of cruft by taking care of tedious details for you. They also enable to clearly define what steps your model is made of.</p>
 <p>Finally, having your model in a single object means that you can move it around more easily.</p>
-<p>Note that you can include user-defined functions in a pipeline by using a <a href="../../../api/compose/FuncTransformer"><code>compose.FuncTransformer</code></a>.</p>
+<p>Note that you can include user-defined functions in a pipeline by using a <a href="../../api/compose/FuncTransformer"><code>compose.FuncTransformer</code></a>.</p>
 <h2 id="learning-during-predict">Learning during predict<a class="headerlink" href="#learning-during-predict" title="Permanent link">&para;</a></h2>
 <p>In online machine learning, we can update the unsupervised parts of our model when a sample arrives. We don't <em>really</em> have to wait for the ground truth to arrive in order to update unsupervised estimators that don't depend on it.</p>
 <p>In other words, in a pipeline, <code>learn_one</code> updates the supervised parts, whilst <code>predict_one</code> (or <code>predict_proba_one</code> for that matter) <strong>can</strong> update the unsupervised parts, which often yields better results. </p>
-<p>In river, we can achieve this behavior using a dedicated context manager: <a href="../../../api/compose/learn-during-predict"><code>compose.learn_during_predict</code></a>.</p>
+<p>In river, we can achieve this behavior using a dedicated context manager: <a href="../../api/compose/learn-during-predict"><code>compose.learn_during_predict</code></a>.</p>
 <p>Here is the same example as before, with the only difference of activating the such learning during predict behavior:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="p">(</span>
     <span class="n">preprocessing</span><span class="o">.</span><span class="n">StandardScaler</span><span class="p">()</span> <span class="o">|</span>

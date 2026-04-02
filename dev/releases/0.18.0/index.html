@@ -267,14 +267,17 @@
   
   
   
-    <li class="md-tabs__item">
-      <a href="../../examples" class="md-tabs__link">
-        
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../examples/" class="md-tabs__link">
+          
   
   Examples
 
-      </a>
-    </li>
+        </a>
+      </li>
+    
   
 
       
@@ -620,6 +623,310 @@
       
         
       
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
     
     
     
@@ -670,9 +977,53 @@
   
   
   
-    <li class="md-nav__item">
-      <a href="../../examples" class="md-nav__link">
+    
+    
+      
         
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../examples/" class="md-nav__link">
+      
   
   
   <span class="md-ellipsis">
@@ -686,7 +1037,13 @@
   
   
 
-      </a>
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
     </li>
   
 
@@ -2245,8 +2602,8 @@
 <h1 id="0180-2023-06-26">0.18.0 - 2023-06-26<a class="headerlink" href="#0180-2023-06-26" title="Permanent link">&para;</a></h1>
 <h2 id="bandit">bandit<a class="headerlink" href="#bandit" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Added <a href="../../../api/bandit/BayesUCB"><code>bandit.BayesUCB</code></a>.</li>
-<li>Added <a href="../../../api/bandit/evaluate-offline"><code>bandit.evaluate_offline</code></a>, for evaluating bandits on historical (logged) data.</li>
+<li>Added <a href="../../api/bandit/BayesUCB"><code>bandit.BayesUCB</code></a>.</li>
+<li>Added <a href="../../api/bandit/evaluate-offline"><code>bandit.evaluate_offline</code></a>, for evaluating bandits on historical (logged) data.</li>
 </ul>
 <h2 id="cluster">cluster<a class="headerlink" href="#cluster" title="Permanent link">&para;</a></h2>
 <ul>
@@ -2254,30 +2611,30 @@
 </ul>
 <h2 id="compat">compat<a class="headerlink" href="#compat" title="Permanent link">&para;</a></h2>
 <ul>
-<li>The <code>predict_many</code> method scikit-learn models wrapped with <a href="../../../api/compat/convert-sklearn-to-river"><code>compat.convert_sklearn_to_river</code></a> raised an exception if the model had not been fitted on any data yet. Instead, default predictions will be produced, which is consistent with the rest of River.</li>
-<li><a href="../../../api/compat/SKL2RiverRegressor"><code>compat.SKL2RiverRegressor</code></a> and <a href="../../../api/compat/SKL2RiverClassifier"><code>compat.SKL2RiverClassifier</code></a> didn't check whether features were ordered in the same way at each method call. They now store the list of feature names at the first function call, and align subsequent inputs in the same order.</li>
+<li>The <code>predict_many</code> method scikit-learn models wrapped with <a href="../../api/compat/convert-sklearn-to-river"><code>compat.convert_sklearn_to_river</code></a> raised an exception if the model had not been fitted on any data yet. Instead, default predictions will be produced, which is consistent with the rest of River.</li>
+<li><a href="../../api/compat/SKL2RiverRegressor"><code>compat.SKL2RiverRegressor</code></a> and <a href="../../api/compat/SKL2RiverClassifier"><code>compat.SKL2RiverClassifier</code></a> didn't check whether features were ordered in the same way at each method call. They now store the list of feature names at the first function call, and align subsequent inputs in the same order.</li>
 </ul>
 <h2 id="compose">compose<a class="headerlink" href="#compose" title="Permanent link">&para;</a></h2>
 <ul>
-<li><a href="../../../api/compose/TransformerProduct"><code>compose.TransformerProduct</code></a> will now preserve the density of sparse columns.</li>
-<li>Added a <code>transform_many</code> method to <a href="../../../api/compose/FuncTransformer"><code>compose.FuncTransformer</code></a>, allowing it to be used in mini-batch pipelines.</li>
+<li><a href="../../api/compose/TransformerProduct"><code>compose.TransformerProduct</code></a> will now preserve the density of sparse columns.</li>
+<li>Added a <code>transform_many</code> method to <a href="../../api/compose/FuncTransformer"><code>compose.FuncTransformer</code></a>, allowing it to be used in mini-batch pipelines.</li>
 <li>The <code>compose.pure_inference_mode</code> now works with mini-batching.</li>
 </ul>
 <h2 id="neighbors">neighbors<a class="headerlink" href="#neighbors" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Added <a href="../../../api/neighbors/SWINN"><code>neighbors.SWINN</code></a> to power-up approximate nearest neighbor search. SWINN uses graphs to speed up nearest neighbor search in large sliding windows of data.</li>
-<li>Renamed <code>neighbors.NearestNeighbors</code> to <a href="../../../api/neighbors/LazySearch"><code>neighbors.LazySearch</code></a>.</li>
+<li>Added <a href="../../api/neighbors/SWINN"><code>neighbors.SWINN</code></a> to power-up approximate nearest neighbor search. SWINN uses graphs to speed up nearest neighbor search in large sliding windows of data.</li>
+<li>Renamed <code>neighbors.NearestNeighbors</code> to <a href="../../api/neighbors/LazySearch"><code>neighbors.LazySearch</code></a>.</li>
 <li>Standardize and create base classes for generic nearest neighbor search utilities.</li>
-<li>The user can now select the nearest neighbor search engine to use in <a href="../../../api/neighbors/KNNClassifier"><code>neighbors.KNNClassifier</code></a> and <a href="../../../api/neighbors/KNNRegressor"><code>neighbors.KNNRegressor</code></a>.</li>
+<li>The user can now select the nearest neighbor search engine to use in <a href="../../api/neighbors/KNNClassifier"><code>neighbors.KNNClassifier</code></a> and <a href="../../api/neighbors/KNNRegressor"><code>neighbors.KNNRegressor</code></a>.</li>
 </ul>
 <h2 id="preprocessing">preprocessing<a class="headerlink" href="#preprocessing" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Rename <code>sparse</code> parameter to <code>drop_zeros</code> in <a href="../../../api/preprocessing/OneHotEncoder"><code>preprocessing.OneHotEncoder</code></a>.</li>
-<li>The <code>transform_many</code> method of <a href="../../../api/preprocessing/OneHotEncoder"><code>preprocessing.OneHotEncoder</code></a> will now return a sparse dataframe, rather than a dense one, which will consume much less memory.</li>
+<li>Rename <code>sparse</code> parameter to <code>drop_zeros</code> in <a href="../../api/preprocessing/OneHotEncoder"><code>preprocessing.OneHotEncoder</code></a>.</li>
+<li>The <code>transform_many</code> method of <a href="../../api/preprocessing/OneHotEncoder"><code>preprocessing.OneHotEncoder</code></a> will now return a sparse dataframe, rather than a dense one, which will consume much less memory.</li>
 </ul>
 <h2 id="proba">proba<a class="headerlink" href="#proba" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Added a <code>cdf</code> method to <a href="../../../api/proba/Beta"><code>proba.Beta</code></a>.</li>
+<li>Added a <code>cdf</code> method to <a href="../../api/proba/Beta"><code>proba.Beta</code></a>.</li>
 </ul>
 <h2 id="tree">tree<a class="headerlink" href="#tree" title="Permanent link">&para;</a></h2>
 <ul>
@@ -2288,7 +2645,7 @@
 </ul>
 <h2 id="utils">utils<a class="headerlink" href="#utils" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Fixed <a href="../../../api/utils/math/minkowski-distance"><code>utils.math.minkowski_distance</code></a>.</li>
+<li>Fixed <a href="../../api/utils/math/minkowski-distance"><code>utils.math.minkowski_distance</code></a>.</li>
 </ul>
 
 

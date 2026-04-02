@@ -267,14 +267,17 @@
   
   
   
-    <li class="md-tabs__item">
-      <a href="../../examples" class="md-tabs__link">
-        
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../examples/" class="md-tabs__link">
+          
   
   Examples
 
-      </a>
-    </li>
+        </a>
+      </li>
+    
   
 
       
@@ -620,6 +623,310 @@
       
         
       
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
     
     
     
@@ -670,9 +977,53 @@
   
   
   
-    <li class="md-nav__item">
-      <a href="../../examples" class="md-nav__link">
+    
+    
+      
         
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../examples/" class="md-nav__link">
+      
   
   
   <span class="md-ellipsis">
@@ -686,7 +1037,13 @@
   
   
 
-      </a>
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
     </li>
   
 
@@ -2158,26 +2515,26 @@
 <h2 id="bandit">bandit<a class="headerlink" href="#bandit" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Bandit policies now return a single arm when the <code>pull</code> method is called, instead of yielding or one more arms at a time. This is simpler to understand. We will move back to multi-armed pulls in the future.</li>
-<li>Added <a href="../../../api/bandit/Exp3"><code>bandit.Exp3</code></a>.</li>
-<li><a href="../../../api/bandit/UCB"><code>bandit.UCB</code></a> and <a href="../../../api/bandit/Exp3"><code>bandit.Exp3</code></a> have an extra <code>reward_scaler</code> parameter, which can be any object that inherits from <a href="../../../api/compose/TargetTransformRegressor"><code>compose.TargetTransformRegressor</code></a>. This allows scaling rewards before updating arms.</li>
+<li>Added <a href="../../api/bandit/Exp3"><code>bandit.Exp3</code></a>.</li>
+<li><a href="../../api/bandit/UCB"><code>bandit.UCB</code></a> and <a href="../../api/bandit/Exp3"><code>bandit.Exp3</code></a> have an extra <code>reward_scaler</code> parameter, which can be any object that inherits from <a href="../../api/compose/TargetTransformRegressor"><code>compose.TargetTransformRegressor</code></a>. This allows scaling rewards before updating arms.</li>
 </ul>
 <h2 id="compose">compose<a class="headerlink" href="#compose" title="Permanent link">&para;</a></h2>
 <ul>
-<li><a href="../../../api/compose/TransformerProduct"><code>compose.TransformerProduct</code></a> now correctly returns a <a href="../../../api/compose/TransformerUnion"><code>compose.TransformerUnion</code></a> when a transformer is added to it.</li>
-<li>Fixed <a href="../../../api/compose/TransformerProduct"><code>compose.TransformerProduct</code></a>'s <code>transform_many</code> behavior.</li>
-<li><a href="../../../api/compose/TransformerUnion"><code>compose.TransformerUnion</code></a> and <a href="../../../api/compose/TransformerProduct"><code>compose.TransformerProduct</code></a> will now clone the provided estimators, so that shallow copies aren't shared in different places.</li>
+<li><a href="../../api/compose/TransformerProduct"><code>compose.TransformerProduct</code></a> now correctly returns a <a href="../../api/compose/TransformerUnion"><code>compose.TransformerUnion</code></a> when a transformer is added to it.</li>
+<li>Fixed <a href="../../api/compose/TransformerProduct"><code>compose.TransformerProduct</code></a>'s <code>transform_many</code> behavior.</li>
+<li><a href="../../api/compose/TransformerUnion"><code>compose.TransformerUnion</code></a> and <a href="../../api/compose/TransformerProduct"><code>compose.TransformerProduct</code></a> will now clone the provided estimators, so that shallow copies aren't shared in different places.</li>
 </ul>
 <h2 id="model_selection">model_selection<a class="headerlink" href="#model_selection" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Added <a href="../../../api/model-selection/BanditClassifier"><code>model_selection.BanditClassifier</code></a>, which is the classification equivalent to <code>bandit.BanditRegressor</code>. Both are methods to perform online model selection via a bandit policy.</li>
+<li>Added <a href="../../api/model-selection/BanditClassifier"><code>model_selection.BanditClassifier</code></a>, which is the classification equivalent to <code>bandit.BanditRegressor</code>. Both are methods to perform online model selection via a bandit policy.</li>
 </ul>
 <h2 id="multioutput">multioutput<a class="headerlink" href="#multioutput" title="Permanent link">&para;</a></h2>
 <ul>
-<li><a href="../../../api/metrics/multioutput/MacroAverage"><code>metrics.multioutput.MacroAverage</code></a> and <a href="../../../api/metrics/multioutput/MicroAverage"><code>metrics.multioutput.MicroAverage</code></a> now loop over the keys of <code>y_true</code> instead of <code>y_pred</code>. This ensures a <code>KeyError</code> is correctly raised if <code>y_pred</code> is missing an output that is present in <code>y_true</code>.</li>
+<li><a href="../../api/metrics/multioutput/MacroAverage"><code>metrics.multioutput.MacroAverage</code></a> and <a href="../../api/metrics/multioutput/MicroAverage"><code>metrics.multioutput.MicroAverage</code></a> now loop over the keys of <code>y_true</code> instead of <code>y_pred</code>. This ensures a <code>KeyError</code> is correctly raised if <code>y_pred</code> is missing an output that is present in <code>y_true</code>.</li>
 </ul>
 <h2 id="preprocessing">preprocessing<a class="headerlink" href="#preprocessing" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Added <a href="../../../api/preprocessing/TargetMinMaxScaler"><code>preprocessing.TargetMinMaxScaler</code></a>, which operates the same as <a href="../../../api/preprocessing/TargetStandardScaler"><code>preprocessing.TargetStandardScaler</code></a>, but instead uses min-max scaling.</li>
+<li>Added <a href="../../api/preprocessing/TargetMinMaxScaler"><code>preprocessing.TargetMinMaxScaler</code></a>, which operates the same as <a href="../../api/preprocessing/TargetStandardScaler"><code>preprocessing.TargetStandardScaler</code></a>, but instead uses min-max scaling.</li>
 </ul>
 
 

@@ -267,14 +267,17 @@
   
   
   
-    <li class="md-tabs__item">
-      <a href="../../examples" class="md-tabs__link">
-        
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../examples/" class="md-tabs__link">
+          
   
   Examples
 
-      </a>
-    </li>
+        </a>
+      </li>
+    
   
 
       
@@ -620,6 +623,310 @@
       
         
       
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
     
     
     
@@ -670,9 +977,53 @@
   
   
   
-    <li class="md-nav__item">
-      <a href="../../examples" class="md-nav__link">
+    
+    
+      
         
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../examples/" class="md-nav__link">
+      
   
   
   <span class="md-ellipsis">
@@ -686,7 +1037,13 @@
   
   
 
-      </a>
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
     </li>
   
 
@@ -2376,13 +2733,13 @@
 
 <h1 id="0110-2022-05-28">0.11.0 - 2022-05-28<a class="headerlink" href="#0110-2022-05-28" title="Permanent link">&para;</a></h1>
 <ul>
-<li>Moved all metrics in <code>metrics.cluster</code> except <a href="../../../api/metrics/Silhouette"><code>metrics.Silhouette</code></a> to <a href="https://github.com/online-ml/river-extra">river-extra</a>.</li>
+<li>Moved all metrics in <code>metrics.cluster</code> except <a href="../../api/metrics/Silhouette"><code>metrics.Silhouette</code></a> to <a href="https://github.com/online-ml/river-extra">river-extra</a>.</li>
 </ul>
 <h2 id="anomaly">anomaly<a class="headerlink" href="#anomaly" title="Permanent link">&para;</a></h2>
 <ul>
-<li>There is now a <a href="../../../api/anomaly/base/SupervisedAnomalyDetector"><code>anomaly.base.SupervisedAnomalyDetector</code></a> base class for supervised anomaly detection.</li>
-<li>Added <a href="../../../api/api/anomaly/GaussianScorer"><code>api.anomaly.GaussianScorer</code></a>, which is the first supervised anomaly detector.</li>
-<li>There is now a <a href="../../../api/anomaly/base/AnomalyFilter"><code>anomaly.base.AnomalyFilter</code></a> base class for anomaly filtering methods. These allow to classify anomaly scores. They can also prevent models from learning on anomalous data, for instance by putting them as an initial step of a pipeline.</li>
+<li>There is now a <a href="../../api/anomaly/base/SupervisedAnomalyDetector"><code>anomaly.base.SupervisedAnomalyDetector</code></a> base class for supervised anomaly detection.</li>
+<li>Added <a href="../../api/api/anomaly/GaussianScorer"><code>api.anomaly.GaussianScorer</code></a>, which is the first supervised anomaly detector.</li>
+<li>There is now a <a href="../../api/anomaly/base/AnomalyFilter"><code>anomaly.base.AnomalyFilter</code></a> base class for anomaly filtering methods. These allow to classify anomaly scores. They can also prevent models from learning on anomalous data, for instance by putting them as an initial step of a pipeline.</li>
 <li>Added <code>anomaly.ConstantFilter</code> and <code>QuantileFilter</code>, which are the first anomaly filters.</li>
 <li>Removed <code>anomaly.ConstantThresholder</code> and <code>anomaly.QuantileThresholder</code>, as they overlap with the new anomaly filtering mechanism.</li>
 </ul>
@@ -2392,7 +2749,7 @@
 </ul>
 <h2 id="dataset">dataset<a class="headerlink" href="#dataset" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Added the <a href="../../../api/datasets/WaterFlow"><code>datasets.WaterFlow</code></a> dataset.</li>
+<li>Added the <a href="../../api/datasets/WaterFlow"><code>datasets.WaterFlow</code></a> dataset.</li>
 </ul>
 <h2 id="dist">dist<a class="headerlink" href="#dist" title="Permanent link">&para;</a></h2>
 <ul>
@@ -2403,9 +2760,9 @@
 <h2 id="drift">drift<a class="headerlink" href="#drift" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Add the <code>PeriodicTrigger</code> detector, a baseline capable of producing drift signals in regular or random intervals.</li>
-<li>The numpy usage was removed in <a href="../../../api/drift/KSWIN"><code>drift.KSWIN</code></a> in favor of <code>collections.deque</code>. Appending or deleting elements to numpy arrays imply creating another object.</li>
-<li>Added the seed parameter to <a href="../../../api/drift/KSWIN"><code>drift.KSWIN</code></a> to control reproducibility.</li>
-<li>The Kolmogorov-Smirnov test mode was changed to the default (<code>"auto"</code>) to suppress warnings (<a href="../../../api/drift/KSWIN"><code>drift.KSWIN</code></a>).</li>
+<li>The numpy usage was removed in <a href="../../api/drift/KSWIN"><code>drift.KSWIN</code></a> in favor of <code>collections.deque</code>. Appending or deleting elements to numpy arrays imply creating another object.</li>
+<li>Added the seed parameter to <a href="../../api/drift/KSWIN"><code>drift.KSWIN</code></a> to control reproducibility.</li>
+<li>The Kolmogorov-Smirnov test mode was changed to the default (<code>"auto"</code>) to suppress warnings (<a href="../../api/drift/KSWIN"><code>drift.KSWIN</code></a>).</li>
 <li>Unnecessary usage of numpy was also removed in other concept drift detectors.</li>
 </ul>
 <h2 id="ensemble">ensemble<a class="headerlink" href="#ensemble" title="Permanent link">&para;</a></h2>
@@ -2419,12 +2776,12 @@
 </ul>
 <h2 id="imblearn">imblearn<a class="headerlink" href="#imblearn" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Added <a href="../../../api/imblearn/ChebyshevUnderSampler"><code>imblearn.ChebyshevUnderSampler</code></a> and <a href="../../../api/imblearn/ChebyshevOverSampler"><code>imblearn.ChebyshevOverSampler</code></a> for imbalanced regression.</li>
+<li>Added <a href="../../api/imblearn/ChebyshevUnderSampler"><code>imblearn.ChebyshevUnderSampler</code></a> and <a href="../../api/imblearn/ChebyshevOverSampler"><code>imblearn.ChebyshevOverSampler</code></a> for imbalanced regression.</li>
 </ul>
 <h2 id="linear_model">linear_model<a class="headerlink" href="#linear_model" title="Permanent link">&para;</a></h2>
 <ul>
-<li><a href="../../../api/linear-model/LinearRegression"><code>linear_model.LinearRegression</code></a> and <a href="../../../api/linear-model/LogisticRegression"><code>linear_model.LogisticRegression</code></a> now correctly apply the <code>l2</code> regularization when their <code>learn_many</code> method is used.</li>
-<li>Added <code>l1</code> regularization (implementation with cumulative penalty, see <a href="https://aclanthology.org/P09-1054/">paper</a>) for <a href="../../../api/linear-model/LinearRegression"><code>linear_model.LinearRegression</code></a> and <a href="../../../api/linear-model/LogisticRegression"><code>linear_model.LogisticRegression</code></a></li>
+<li><a href="../../api/linear-model/LinearRegression"><code>linear_model.LinearRegression</code></a> and <a href="../../api/linear-model/LogisticRegression"><code>linear_model.LogisticRegression</code></a> now correctly apply the <code>l2</code> regularization when their <code>learn_many</code> method is used.</li>
+<li>Added <code>l1</code> regularization (implementation with cumulative penalty, see <a href="https://aclanthology.org/P09-1054/">paper</a>) for <a href="../../api/linear-model/LinearRegression"><code>linear_model.LinearRegression</code></a> and <a href="../../api/linear-model/LogisticRegression"><code>linear_model.LogisticRegression</code></a></li>
 </ul>
 <h2 id="neighbors">neighbors<a class="headerlink" href="#neighbors" title="Permanent link">&para;</a></h2>
 <ul>
@@ -2452,7 +2809,7 @@
 </ul>
 <h2 id="stats">stats<a class="headerlink" href="#stats" title="Permanent link">&para;</a></h2>
 <ul>
-<li>A <code>revert</code> method has been added to <a href="../../../api/stats/Var"><code>stats.Var</code></a>.</li>
+<li>A <code>revert</code> method has been added to <a href="../../api/stats/Var"><code>stats.Var</code></a>.</li>
 </ul>
 
 

@@ -12,32 +12,36 @@
         <meta name="author" content="The Fellowship of Online Machine Learning">
       
       
-        <link rel="canonical" href="https://riverml.xyz/dev/api/stats/NUnique/">
+        <link rel="canonical" href="https://riverml.xyz/dev/examples/">
       
       
+        <link rel="prev" href="../api/utils/random/poisson/">
+      
+      
+        <link rel="next" href="./batch-to-online/">
       
       
         
       
       
-      <link rel="icon" href="../../../img/favicon.ico">
+      <link rel="icon" href="../img/favicon.ico">
       <meta name="generator" content="zensical-0.0.30">
     
     
       
-        <title>NUnique - River</title>
+        <title>Examples - River</title>
       
     
     
       
         
       
-      <link rel="stylesheet" href="../../../assets/stylesheets/classic/main.320d0ab1.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/classic/main.320d0ab1.min.css">
       
         
           
         
-        <link rel="stylesheet" href="../../../assets/stylesheets/classic/palette.7dc9a0ad.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/classic/palette.7dc9a0ad.min.css">
       
       
 
@@ -56,9 +60,9 @@
       
     
     
-      <link rel="stylesheet" href="../../../stylesheets/extra.css">
+      <link rel="stylesheet" href="../stylesheets/extra.css">
     
-    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,a=__md_scope)=>JSON.parse(t.getItem(a.pathname+"."+e)),__md_set=(e,t,a=localStorage,_=__md_scope)=>{try{a.setItem(_.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script>
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,a=__md_scope)=>JSON.parse(t.getItem(a.pathname+"."+e)),__md_set=(e,t,a=localStorage,_=__md_scope)=>{try{a.setItem(_.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script>
     
       <script
   defer
@@ -86,7 +90,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#nunique" class="md-skip">
+        <a href="#examples" class="md-skip">
           Skip to content
         </a>
       
@@ -104,9 +108,9 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../../.." title="River" class="md-header__button md-logo" aria-label="River" data-md-component="logo">
+    <a href="./.." title="River" class="md-header__button md-logo" aria-label="River" data-md-component="logo">
       
-  <img src="../../../img/icon.png" alt="River">
+  <img src="../img/icon.png" alt="River">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer" aria-label="Navigation">
@@ -123,7 +127,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              NUnique
+              Examples
             
           </span>
         </div>
@@ -209,7 +213,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../introduction/installation/" class="md-tabs__link">
+        <a href="../introduction/installation/" class="md-tabs__link">
           
   
   Introduction
@@ -228,7 +232,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../recipes/reading-data/" class="md-tabs__link">
+        <a href="../recipes/reading-data/" class="md-tabs__link">
           
   
   Recipes
@@ -247,7 +251,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../overview/" class="md-tabs__link">
+        <a href="../api/overview/" class="md-tabs__link">
           
   
   API
@@ -262,15 +266,20 @@
   
   
   
+    
   
-    <li class="md-tabs__item">
-      <a href="../../../examples" class="md-tabs__link">
-        
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="././" class="md-tabs__link">
+          
   
   Examples
 
-      </a>
-    </li>
+        </a>
+      </li>
+    
   
 
       
@@ -280,7 +289,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../../faq" class="md-tabs__link">
+      <a href="../faq" class="md-tabs__link">
         
   
   FAQ
@@ -298,7 +307,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../releases/unreleased/" class="md-tabs__link">
+        <a href="../releases/unreleased/" class="md-tabs__link">
           
   
   Releases
@@ -315,7 +324,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../../benchmarks" class="md-tabs__link">
+      <a href="../benchmarks" class="md-tabs__link">
         
   
   Benchmarks
@@ -331,7 +340,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../../license" class="md-tabs__link">
+      <a href="../license" class="md-tabs__link">
         
   
   License
@@ -363,9 +372,9 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../../.." title="River" class="md-nav__button md-logo" aria-label="River" data-md-component="logo">
+    <a href="./.." title="River" class="md-nav__button md-logo" aria-label="River" data-md-component="logo">
       
-  <img src="../../../img/icon.png" alt="River">
+  <img src="../img/icon.png" alt="River">
 
     </a>
     River
@@ -424,7 +433,7 @@
   
   
   
-    <a href="../../../introduction/installation/" class="md-nav__link">
+    <a href="../introduction/installation/" class="md-nav__link">
       
   
   
@@ -499,7 +508,7 @@
   
   
   
-    <a href="../../../recipes/reading-data/" class="md-nav__link">
+    <a href="../recipes/reading-data/" class="md-nav__link">
       
   
   
@@ -614,6 +623,310 @@
       
         
       
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
     
     
     
@@ -632,7 +945,7 @@
   
   
   
-    <a href="../../overview/" class="md-nav__link">
+    <a href="../api/overview/" class="md-nav__link">
       
   
   
@@ -662,11 +975,59 @@
       
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../../examples" class="md-nav__link">
+  
+    
+    
+      
         
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="././" class="md-nav__link md-nav__link--active">
+              
   
   
   <span class="md-ellipsis">
@@ -680,7 +1041,343 @@
   
   
 
+            </a>
+            
+              
+              <label class="md-nav__link md-nav__link--active" for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Examples
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="./batch-to-online/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    From batch to online/stream
+  
+
+    
+  </span>
+  
+  
+
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="./bike-sharing-forecasting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bike-sharing forecasting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="./building-a-simple-nowcasting-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Building a simple nowcasting model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="./content-personalization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Content personalization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="./debugging-a-pipeline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Debugging a pipeline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="./imbalanced-learning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Working with imbalanced data
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="./matrix-factorization-for-recommender-systems/part-1/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Matrix factorization for recommender systems
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="./quantile-regression-uncertainty/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Handling uncertainty with quantile regression
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="./sentence-classification/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sentence classification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="./the-art-of-using-pipelines/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The art of using pipelines
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -692,7 +1389,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../faq" class="md-nav__link">
+      <a href="../faq" class="md-nav__link">
         
   
   
@@ -813,7 +1510,7 @@
   
   
   
-    <a href="../../../releases/unreleased/" class="md-nav__link">
+    <a href="../releases/unreleased/" class="md-nav__link">
       
   
   
@@ -846,7 +1543,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../benchmarks" class="md-nav__link">
+      <a href="../benchmarks" class="md-nav__link">
         
   
   
@@ -873,7 +1570,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../license" class="md-nav__link">
+      <a href="../license" class="md-nav__link">
         
   
   
@@ -915,58 +1612,6 @@
     
   
   
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      On this page
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Parameters
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#attributes" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Attributes
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#examples" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Examples
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#methods" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Methods
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
 </nav>
                   </div>
                 </div>
@@ -983,92 +1628,19 @@
   
 
 
-<h1 id="nunique">NUnique<a class="headerlink" href="#nunique" title="Permanent link">&para;</a></h1>
-<p>Approximate number of unique values counter.</p>
-<p>This is basically an implementation of the HyperLogLog algorithm. Adapted from <a href="https://github.com/clarkduvall/hypy"><code>hypy</code></a>. The code is a bit too terse but it will do for now.</p>
-<h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
+<h1 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h1>
 <ul>
-<li>
-<p><strong>error_rate</strong></p>
-<p><em>Default</em> → <code>0.01</code></p>
-<p>Desired error rate. Memory usage is inversely proportional to this value.</p>
-</li>
-<li>
-<p><strong>seed</strong></p>
-<p><em>Type</em> → <em>int | None</em></p>
-<p><em>Default</em> → <code>None</code></p>
-<p>Set the seed to produce identical results.</p>
-</li>
+<li><a href="batch-to-online/">Batch to online</a></li>
+<li><a href="bike-sharing-forecasting/">Bike sharing forecasting</a></li>
+<li><a href="building-a-simple-nowcasting-model/">Building a simple nowcasting model</a></li>
+<li><a href="content-personalization/">Content personalization</a></li>
+<li><a href="debugging-a-pipeline/">Debugging a pipeline</a></li>
+<li><a href="imbalanced-learning/">Imbalanced learning</a></li>
+<li><a href="matrix-factorization-for-recommender-systems/part-1/">Matrix factorization for recommender systems</a></li>
+<li><a href="quantile-regression-uncertainty/">Quantile regression uncertainty</a></li>
+<li><a href="sentence-classification/">Sentence classification</a></li>
+<li><a href="the-art-of-using-pipelines/">The art of using pipelines</a></li>
 </ul>
-<h2 id="attributes">Attributes<a class="headerlink" href="#attributes" title="Permanent link">&para;</a></h2>
-<ul>
-<li>
-<p><strong>n_bits</strong> (<em>int</em>)</p>
-</li>
-<li>
-<p><strong>n_buckets</strong> (<em>int</em>)</p>
-</li>
-<li>
-<p><strong>buckets</strong> (<em>list</em>)</p>
-</li>
-</ul>
-<h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
-<p><div class="language-python highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">string</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">river</span><span class="w"> </span><span class="kn">import</span> <span class="n">stats</span>
-
-<span class="n">alphabet</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">ascii_lowercase</span>
-<span class="n">n_unique</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">NUnique</span><span class="p">(</span><span class="n">error_rate</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
-
-<span class="n">n_unique</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">)</span>
-<span class="n">n_unique</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
-</code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>1
-</code></pre></div></p>
-<p><div class="language-python highlight"><pre><span></span><code><span class="n">n_unique</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;b&#39;</span><span class="p">)</span>
-<span class="n">n_unique</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
-</code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>2
-</code></pre></div></p>
-<p><div class="language-python highlight"><pre><span></span><code><span class="k">for</span> <span class="n">letter</span> <span class="ow">in</span> <span class="n">alphabet</span><span class="p">:</span>
-    <span class="n">n_unique</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">letter</span><span class="p">)</span>
-<span class="n">n_unique</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
-</code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>31
-</code></pre></div></p>
-<p>Lowering the <code>error_rate</code> parameter will increase the precision.</p>
-<p><div class="language-python highlight"><pre><span></span><code><span class="n">n_unique</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">NUnique</span><span class="p">(</span><span class="n">error_rate</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
-<span class="k">for</span> <span class="n">letter</span> <span class="ow">in</span> <span class="n">alphabet</span><span class="p">:</span>
-    <span class="n">n_unique</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">letter</span><span class="p">)</span>
-<span class="n">n_unique</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
-</code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>26
-</code></pre></div></p>
-<h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
-<details class="- abstract">
-<summary>get</summary>
-<p>Return the current value of the statistic.</p>
-</details>
-<p><span /></p>
-<details class="- abstract">
-<summary>update</summary>
-<p>Update the called instance.</p>
-<p><strong>Parameters</strong></p>
-<ul>
-<li><strong>x</strong>     — <em>'numbers.Number'</em>    </li>
-</ul>
-</details>
-<p><span /></p>
-<div class="footnote">
-<hr />
-<ol>
-<li id="fn:1">
-<p><a href="https://odino.org/my-favorite-data-structure-hyperloglog/">My favorite algorithm (and data structure): HyperLogLog</a>&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
-</li>
-<li id="fn:2">
-<p><a href="http://algo.inria.fr/flajolet/Publications/FlFuGaMe07.pdf">Flajolet, P., Fusy, É., Gandouet, O. and Meunier, F., 2007, June. Hyperloglog: the analysis of a near-optimal cardinality estimation algorithm.</a>&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
-</li>
-</ol>
-</div>
 
 
 
@@ -1149,18 +1721,18 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate":null,"base":"../../..","features":["content.code.copy","navigation.tabs","navigation.instant","navigation.indexes","navigation.prune"],"search":"../../../assets/javascripts/workers/search.e2d2d235.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":{"provider":"mike"}}</script>
+      <script id="__config" type="application/json">{"annotate":null,"base":"..","features":["content.code.copy","navigation.tabs","navigation.instant","navigation.indexes","navigation.prune"],"search":"../assets/javascripts/workers/search.e2d2d235.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":{"provider":"mike"}}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.66be65ca.min.js"></script>
+      <script src="../assets/javascripts/bundle.66be65ca.min.js"></script>
       
-        <script src="../../../javascripts/config.js"></script>
+        <script src="../javascripts/config.js"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2/es5/tex-mml-chtml.js"></script>
       
         <script src="https://unpkg.com/tablesort@5.3.0/dist/tablesort.min.js"></script>
       
-        <script src="../../../javascripts/tablesort.js"></script>
+        <script src="../javascripts/tablesort.js"></script>
       
     
   </body>
