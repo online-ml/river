@@ -228,35 +228,40 @@ class Linkifier:
         self.rename_index = rename_index
 
     def linkify(self, text, prefix):
-        lines = text.split("\n")
-        # Build a set of character positions that are inside indented code blocks.
-        # An indented code block is a run of lines indented by 4+ spaces preceded
-        # by a blank line (standard Markdown rule).
-        indented_code = set()
+        # Build (start, end) intervals for indented code blocks so we can
+        # skip linkifying inside them.  A block starts on a 4-space-indented
+        # line preceded by a blank line (standard Markdown rule).
+        indented_ranges: list[tuple[int, int]] = []
         pos = 0
-        for i, line in enumerate(lines):
-            prev_blank = i == 0 or lines[i - 1].strip() == ""
-            in_indented = prev_blank and line.startswith("    ") and line.strip()
-            if not in_indented and i > 0:
-                # Continue an indented block if previous line was indented code
-                prev_was_indented = any(p in indented_code for p in range(pos - len(lines[i - 1]) - 1, pos))
-                in_indented = (line.startswith("    ") or line.strip() == "") and prev_was_indented
-            if in_indented:
-                for j in range(pos, pos + len(line)):
-                    indented_code.add(j)
-            pos += len(line) + 1  # +1 for the newline
+        in_block = False
+        block_start = 0
+        for i, line in enumerate(text.split("\n")):
+            is_indented = line.startswith("    ") and line.strip()
+            prev_blank = i == 0 or text[pos - 2 : pos - 1] == "\n" or pos <= 1
+            if not in_block and is_indented and prev_blank:
+                in_block = True
+                block_start = pos
+            elif in_block and not (is_indented or not line.strip()):
+                indented_ranges.append((block_start, pos))
+                in_block = False
+            pos += len(line) + 1
+        if in_block:
+            indented_ranges.append((block_start, pos))
+
+        def _in_indented_code(offset: int) -> bool:
+            for start, end in indented_ranges:
+                if start <= offset < end:
+                    return True
+            return False
 
         def replace(x):
-            # HACK
             if "collections" in x.group():
                 return x.group()
 
-            # Skip matches inside fenced code blocks
             if text.count("```", 0, x.start()) % 2 == 1:
                 return x.group()
 
-            # Skip matches inside indented code blocks
-            if x.start() in indented_code:
+            if _in_indented_code(x.start()):
                 return x.group()
 
             y = x.group().strip("`")
@@ -317,7 +322,6 @@ def print_docstring(obj, file):
     if documentable_params:
         printf(h2("Parameters"))
     for param in documentable_params:
-        # Name (with mutable indicator)
         mutable_marker = " *(mutable)*" if param.name in mutable_attrs else ""
         printf(f"- **{param.name}**{mutable_marker}\n")
         # Type annotation
@@ -502,6 +506,22 @@ def print_docstring(obj, file):
         printf(md_line("\n".join(doc["References"])))
 
 
+_SUBMODULE_SKIP = frozenset(("tags", "typing", "inspect", "skmultiflow_utils"))
+
+
+def _get_public_members(mod):
+    """Return (classes, funcs, submodules) for a module's public API."""
+    ispublic = lambda x: x.__name__ in mod.__all__ and not x.__name__.startswith("_")
+    classes = inspect.getmembers(mod, lambda x: inspect.isclass(x) and ispublic(x))
+    funcs = inspect.getmembers(mod, lambda x: inspect.isfunction(x) and ispublic(x))
+    submodules = [
+        (name, submod)
+        for name, submod in inspect.getmembers(mod, inspect.ismodule)
+        if name not in _SUBMODULE_SKIP and name in mod.__all__ and not name.startswith("_")
+    ]
+    return classes, funcs, submodules
+
+
 def print_module(mod, path, overview, depth=0, verbose=False):
     mod_name = mod.__name__.split(".")[-1]
 
@@ -525,10 +545,7 @@ def print_module(mod, path, overview, depth=0, verbose=False):
     if mod.__doc__:
         print(md_line(mod.__doc__), file=overview)
 
-    # Extract all public classes and functions
-    ispublic = lambda x: x.__name__ in mod.__all__ and not x.__name__.startswith("_")
-    classes = inspect.getmembers(mod, lambda x: inspect.isclass(x) and ispublic(x))
-    funcs = inspect.getmembers(mod, lambda x: inspect.isfunction(x) and ispublic(x))
+    classes, funcs, submodules = _get_public_members(mod)
 
     # Overview
     if hasattr(mod, "_docs_overview"):
@@ -569,15 +586,7 @@ def print_module(mod, path, overview, depth=0, verbose=False):
             print_docstring(obj=f, file=file)
 
     # Sub-modules
-    for name, submod in inspect.getmembers(mod, inspect.ismodule):
-        # We only want to go through the public submodules, such as optim.schedulers
-        if (
-            name in ("tags", "typing", "inspect", "skmultiflow_utils")
-            or name not in mod.__all__
-            or name.startswith("_")
-        ):
-            continue
-
+    for name, submod in submodules:
         if verbose:
             print(f"{mod_name}.{name}")
 
@@ -618,56 +627,40 @@ def linkify_docs(library: str, docs_dir: pathlib.Path, verbose=False):
     linkifier = Linkifier(library=library)
 
     for page in docs_dir.glob("**/*.md"):
-        # Ignore files in the linkified directory
-        if str(page).startswith("docs/linkified"):
+        page_str = str(page)
+        if page_str.startswith("docs/linkified"):
             continue
 
         text = page.read_text()
 
-        if "/api/" in str(page):
+        if "/api/" in page_str:
             # For API pages, go up to the api/ directory
-            # e.g. docs/api/active/Foo.md → depth below api/ is 1 → prefix = "../"
-            api_idx = str(page).index("/api/")
-            depth_below_api = str(page)[api_idx + len("/api/"):].count("/")
+            api_idx = page_str.index("/api/")
+            depth_below_api = page_str[api_idx + len("/api/"):].count("/")
             prefix = "../" * depth_below_api
         else:
-            # For non-API pages, go up to docs root then into api/
-            prefix = "../" * (str(page).count("/") - 1) + "api/"
+            prefix = "../" * (page_str.count("/") - 1) + "api/"
 
-        if "benchmarks" not in str(page):
+        if "benchmarks" not in page_str:
             if verbose:
                 print(f"Adding links to {page}")
             text = linkifier.linkify(text, prefix=prefix)
 
-        # Write back text to file
-        linkified_page = pathlib.Path(str(page).replace("docs/", "docs/linkified/"))
+        linkified_page = pathlib.Path(page_str.replace("docs/", "docs/linkified/"))
         linkified_page.write_text(text)
 
 
 def _module_nav_lines(mod, api_path: str, indent: str) -> list[str]:
     """Generate nav lines for a module and its sub-modules recursively."""
-    ispublic = lambda x: x.__name__ in mod.__all__ and not x.__name__.startswith("_")
-    classes = inspect.getmembers(mod, lambda x: inspect.isclass(x) and ispublic(x))
-    funcs = inspect.getmembers(mod, lambda x: inspect.isfunction(x) and ispublic(x))
+    classes, funcs, submodules = _get_public_members(mod)
 
     lines = []
-    for _, c in classes:
-        slug = snake_to_kebab(c.__name__)
-        lines.append(f"{indent}  - {api_path}/{slug}.md\n")
-    for _, f in funcs:
-        slug = snake_to_kebab(f.__name__)
+    for _, obj in classes + funcs:
+        slug = snake_to_kebab(obj.__name__)
         lines.append(f"{indent}  - {api_path}/{slug}.md\n")
 
-    # Sub-modules
-    for name, submod in inspect.getmembers(mod, inspect.ismodule):
-        if (
-            name in ("tags", "typing", "inspect", "skmultiflow_utils")
-            or name not in mod.__all__
-            or name.startswith("_")
-        ):
-            continue
-        sub_slug = snake_to_kebab(name)
-        sub_path = f"{api_path}/{sub_slug}"
+    for name, submod in submodules:
+        sub_path = f"{api_path}/{snake_to_kebab(name)}"
         sub_lines = _module_nav_lines(submod, sub_path, indent + "  ")
         if sub_lines:
             lines.append(f"{indent}  - {name}:\n")

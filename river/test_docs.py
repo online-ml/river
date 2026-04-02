@@ -61,24 +61,20 @@ def _iter_module(prefix: str, mod: types.ModuleType, result: list[tuple[str, Any
         if (
             name in all_names
             and not name.startswith("_")
-            and name not in ("tags", "typing", "inspect")
+            and name not in ("tags", "typing", "inspect", "skmultiflow_utils")
         ):
             _iter_module(f"{prefix}.{name}", submod, result)
 
 
-def _resolve_link(source_file: Path, target: str) -> Path | None:
-    """Resolve a relative markdown link, returning None for external/anchor links."""
+def _is_broken_link(source_file: Path, target: str) -> bool:
+    """Check if a relative markdown link points to a missing file or directory."""
     if target.startswith(("http://", "https://", "#", "mailto:", "/")):
-        return None
+        return False
     target = target.split("#")[0]
     if not target:
-        return None
+        return False
     resolved = (source_file.parent / target).resolve()
-    if resolved.is_dir() or resolved.is_file():
-        return resolved
-    if resolved.with_suffix(".md").is_file():
-        return resolved.with_suffix(".md")
-    return resolved
+    return not (resolved.is_dir() or resolved.is_file() or resolved.with_suffix(".md").is_file())
 
 
 def test_print_docstring() -> None:
@@ -115,10 +111,7 @@ def test_linkified_internal_links_resolve() -> None:
     for md_file in sorted(linkified.rglob("*.md")):
         for match in _LINK_RE.finditer(md_file.read_text()):
             link_text, target = match.group(1), match.group(2)
-            resolved = _resolve_link(md_file, target)
-            if resolved is None:
-                continue
-            if not (resolved.is_dir() or resolved.is_file()):
+            if _is_broken_link(md_file, target):
                 if not any(pat in target for pat in _KNOWN_BROKEN_PATTERNS):
                     rel = md_file.relative_to(REPO_ROOT)
                     broken.append(f"  {rel}: [{link_text}]({target})")
