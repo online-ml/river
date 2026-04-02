@@ -82,7 +82,7 @@ def _docs_overview(print):
         dataset = eval(dataset_name)()
 
         details = {
-            "Name": f"[{dataset_name}](../datasets/{dataset_name})",
+            "Name": f"[{dataset_name}](datasets/{dataset_name})",
             "Samples": dataset.n_samples,
             "Features": dataset.n_features,
             "Sparse": "✔️" if dataset.sparse else "",

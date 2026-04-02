@@ -9,7 +9,7 @@ __all__ = ["ROCAUC"]
 
 
 class ROCAUC(metrics.base.BinaryMetric):
-    """Receiving Operating Characteristic Area Under the Curve.
+    """Receiver Operating Characteristic Area Under the Curve.
 
     This metric is an approximation of the true ROC AUC. Computing the true ROC AUC would
     require storing all the predictions and ground truths, which isn't desirable. The approximation
