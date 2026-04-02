@@ -1,5 +1,9 @@
 # Unreleased
 
+## sketch
+
+- Add the `sketch.NUnique` class. It was previoulsy in the `stats` module. This sketch estimates the number of unique elements in a stream.
+
 ## build
 
 - Added Python 3.14 wheel builds and updated PyO3 for 3.14 support.
@@ -31,6 +35,7 @@ The `dummy` module is now fully type-annotated.
 ## stats
 
 - Added `update_many` method to `stats.PearsonCorr`.
+- Moved `stats.NUnique` to the `sketch` module, as it is more of a sketch than a statistical indicator.
 - Changed the calculation of the Kuiper statistic in `base.KolmogorovSmirnov` to correspond to the reference implementation. The Kuiper statistic uses the difference between the maximum value and the minimum value.
 - Fixed `RollingQuantile` not storing `q` as an instance attribute, which caused `clone()` to fail.
 - Optimized `Var.update`/`revert` and `Cov.update`/`revert` by replacing `Mean.get()` method calls with direct `_mean` attribute access and inlining property lookups (~19% speedup each).
