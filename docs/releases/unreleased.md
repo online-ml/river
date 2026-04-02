@@ -94,3 +94,4 @@ The `dummy` module is now fully type-annotated.
 - The `utils` module is now fully type-checked.
 - `utils.VectorDict` and `utils.SortedWindow` are now parametrised generic containers.
 - `utils.VectorDict` now implements the reflected operations of addition, subtraction and multiplication.
+- Optimized `Rolling` and `TimeRolling` by replacing `__getattribute__` proxy with `__getattr__`, caching `window_size`, and reducing attribute lookups in the hot path (~3x speedup on per-update latency).
