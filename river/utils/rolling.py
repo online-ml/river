@@ -23,7 +23,12 @@ class BaseRolling:
     def __getattr__(self, name: str) -> object:
         # Only called when normal attribute lookup fails, so the fast path
         # (self.obj, self.window, etc.) never enters this method.
-        return getattr(self.obj, name)
+        # Guard against recursion during deepcopy/pickle when obj is not yet set.
+        try:
+            obj = object.__getattribute__(self, "obj")
+        except AttributeError:
+            raise AttributeError(name)
+        return getattr(obj, name)
 
     def __getitem__(self, idx: Any) -> object:
         # Enable for when it needs, throws a runtime error as usual if tried on a type that can't.
