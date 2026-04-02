@@ -9,8 +9,7 @@ __all__ = ["RollingPRAUC"]
 
 
 class RollingPRAUC(metrics.base.BinaryMetric):
-    """Rolling version of the Area Under the Precision-Recall Area Under Curve
-    metric.
+    """Rolling version of the Area Under the Precision-Recall Area Under Curve metric.
 
     The RollingPRAUC calculates the AUC-PR using the instances in its window
     of size S. It keeps a queue of the instances, when an instance is added
@@ -26,7 +25,6 @@ class RollingPRAUC(metrics.base.BinaryMetric):
     This implementation is based on the paper "Efficient Prequential AUC-PR
     Computation" (Gomes, Grégio, Alves, and Almeida, 2023):
     https://doi.org/10.1109/ICMLA58977.2023.00335.
-
 
     Parameters
     ----------

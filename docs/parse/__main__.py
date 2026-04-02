@@ -279,9 +279,13 @@ def print_docstring(obj, file):
     params_desc = {param.name: " ".join(param.desc) for param in doc["Parameters"]}
 
     # Parameters
-    if signature.parameters:
+    documentable_params = [
+        p for p in signature.parameters.values()
+        if p.kind not in (p.VAR_POSITIONAL, p.VAR_KEYWORD)
+    ]
+    if documentable_params:
         printf(h2("Parameters"))
-    for param in signature.parameters.values():
+    for param in documentable_params:
         # Name
         printf(f"- **{param.name}**\n")
         # Type annotation
@@ -503,7 +507,7 @@ def print_module(mod, path, overview, depth=0, verbose=False):
         for _, c in classes:
             slug = snake_to_kebab(c.__name__)
             print(
-                li(link(c.__name__, f"../{mod_short_path}/{slug}")),
+                li(link(c.__name__, f"{mod_short_path}/{slug}")),
                 end="",
                 file=overview,
             )
@@ -512,7 +516,7 @@ def print_module(mod, path, overview, depth=0, verbose=False):
         for _, f in funcs:
             slug = snake_to_kebab(f.__name__)
             print(
-                li(link(f.__name__, f"../{mod_short_path}/{slug}")),
+                li(link(f.__name__, f"{mod_short_path}/{slug}")),
                 end="",
                 file=overview,
             )
@@ -587,10 +591,16 @@ def linkify_docs(library: str, docs_dir: pathlib.Path, verbose=False):
             continue
 
         text = page.read_text()
-        prefix = "../" * (str(page).count("/") - 1)
 
-        if "/api/" not in str(page):
-            prefix = f"../{prefix}api/"
+        if "/api/" in str(page):
+            # For API pages, go up to the api/ directory
+            # e.g. docs/api/active/Foo.md → depth below api/ is 1 → prefix = "../"
+            api_idx = str(page).index("/api/")
+            depth_below_api = str(page)[api_idx + len("/api/"):].count("/")
+            prefix = "../" * depth_below_api
+        else:
+            # For non-API pages, go up to docs root then into api/
+            prefix = "../" * (str(page).count("/") - 1) + "api/"
 
         if "benchmarks" not in str(page):
             if verbose:
@@ -600,6 +610,27 @@ def linkify_docs(library: str, docs_dir: pathlib.Path, verbose=False):
         # Write back text to file
         linkified_page = pathlib.Path(str(page).replace("docs/", "docs/linkified/"))
         linkified_page.write_text(text)
+
+
+def update_api_nav(library: str, config_path: pathlib.Path):
+    """Update the API nav section in mkdocs.yml to stay in sync with the library modules."""
+    api_mod = importlib.import_module(f"{library}.api")
+    modules = []
+    for mod_name, _ in inspect.getmembers(api_mod, inspect.ismodule):
+        if mod_name.startswith("_") or mod_name == "api":
+            continue
+        slug = snake_to_kebab(mod_name)
+        modules.append(slug)
+
+    # Use bare directory strings — zensical resolves titles from .pages files
+    lines = ["  - API:\n", "    - api/overview.md\n"]
+    for slug in modules:
+        lines.append(f"    - api/{slug}\n")
+
+    config_text = config_path.read_text()
+    pattern = r"(  - API:\n(?:    - .*\n)*)"
+    config_text = re.sub(pattern, "".join(lines), config_text)
+    config_path.write_text(config_text)
 
 
 def update_releases_nav(docs_dir: pathlib.Path, config_path: pathlib.Path):
@@ -643,6 +674,7 @@ def main():
         verbose=args.verbose,
     )
     linkify_docs(library=args.library, docs_dir=pathlib.Path(args.out), verbose=args.verbose)
+    update_api_nav(args.library, pathlib.Path("mkdocs.yml"))
     update_releases_nav(pathlib.Path(args.out), pathlib.Path("mkdocs.yml"))
 
 

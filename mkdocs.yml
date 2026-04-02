@@ -18,7 +18,12 @@ nav:
   - Introduction:
     - introduction/installation.md
     - introduction/basic-concepts.md
-    - introduction/getting-started
+    - Getting started:
+      - introduction/getting-started/index.md
+      - introduction/getting-started/binary-classification.md
+      - introduction/getting-started/concept-drift-detection.md
+      - introduction/getting-started/multiclass-classification.md
+      - introduction/getting-started/regression.md
     - introduction/why-use-river.md
     - introduction/next-steps.md
     - introduction/related-projects.md

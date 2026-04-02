@@ -9,7 +9,7 @@ __all__ = ["RollingROCAUC"]
 
 
 class RollingROCAUC(metrics.base.BinaryMetric):
-    """Rolling version of the Receiving Operating Characteristic Area Under the Curve.
+    """Rolling version of the Receiver Operating Characteristic Area Under the Curve.
 
     The RollingROCAUC calculates the metric using the instances in its window
     of size S. It keeps a queue of the instances, when an instance is added and
