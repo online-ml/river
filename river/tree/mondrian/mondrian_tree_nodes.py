@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import math
 
-from river import base
+from river import base, stats
 from river.tree.base import Branch, Leaf
 from river.tree.mondrian._mondrian_ops import (  # type: ignore[import-not-found]
     log_sum_2_exp_c,
@@ -51,13 +51,13 @@ class MondrianBranch(Branch):
         self.feature = feature
         self.threshold = threshold
 
-    def branch_no(self, x_arr) -> int:
-        if x_arr[self.feature] <= self.threshold:
+    def branch_no(self, x) -> int:
+        if x[self.feature] <= self.threshold:
             return 0
         return 1
 
-    def next(self, x_arr):
-        return self.children[self.branch_no(x_arr)]
+    def next(self, x):
+        return self.children[self.branch_no(x)]
 
     def most_common_path(self):
         left, right = self.children
@@ -78,8 +78,8 @@ class MondrianNode(base.Base):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.memory_range_min: list = []
-        self.memory_range_max: list = []
+        self.memory_range_min: dict = {}
+        self.memory_range_max: dict = {}
 
         self.weight = 0.0
         self.log_weight_tree = 0.0
@@ -116,42 +116,32 @@ class MondrianNode(base.Base):
                 self.weight, left.log_weight_tree + right.log_weight_tree
             )
 
-    def range(self, feature_idx) -> tuple[float, float]:
-        """Output the known range of the node regarding the given feature index.
+    def range(self, feature) -> tuple[float, float]:
+        """Output the known range of the node regarding the given feature.
 
         Parameters
         ----------
-        feature_idx
-            Feature index for which you want to know the range.
+        feature
+            Feature for which you want to know the range.
 
         """
 
         return (
-            self.memory_range_min[feature_idx],
-            self.memory_range_max[feature_idx],
+            self.memory_range_min[feature],
+            self.memory_range_max[feature],
         )
 
-    def range_extension(self, x_arr, n_features) -> tuple[float, list]:
-        """Compute the range extension of the node for the given sample array.
+    def range_extension(self, x) -> tuple[float, dict]:
+        """Compute the range extension of the node for the given sample.
 
         Parameters
         ----------
-        x_arr
-            Sample as a list indexed by feature position.
-        n_features
-            Number of features.
+        x
+            Sample dict.
 
         """
 
-        # Pad range lists if shorter than n_features (new node or new features)
-        range_min = self.memory_range_min
-        n = len(range_min)
-        if n < n_features:
-            pad = n_features - n
-            range_min.extend([0.0] * pad)
-            self.memory_range_max.extend([0.0] * pad)
-
-        return range_extension_c(range_min, self.memory_range_max, x_arr, n_features)
+        return range_extension_c(self.memory_range_min, self.memory_range_max, x)
 
 
 class MondrianNodeClassifier(MondrianNode):
@@ -282,21 +272,20 @@ class MondrianNodeClassifier(MondrianNode):
 
     def update_downwards(
         self,
-        x_arr,
+        x,
         y_idx: int,
         dirichlet: float,
         use_aggregation: bool,
         step: float,
         do_update_weight: bool,
-        n_features: int,
         n_classes: int,
     ):
         """Update the node when running a downward procedure updating the tree.
 
         Parameters
         ----------
-        x_arr
-            Sample as a list indexed by feature position.
+        x
+            Sample dict.
         y_idx
             Class index of the sample.
         dirichlet
@@ -307,27 +296,17 @@ class MondrianNodeClassifier(MondrianNode):
             Step of the tree.
         do_update_weight
             Should we update the weights of the node as well.
-        n_features
-            Number of features.
         n_classes
             The total number of classes of the problem.
 
         """
 
-        # Updating the range of the feature values known by the node
-        # Use n_samples == 0 to detect first visit (not empty range check,
-        # because range_extension may have padded the list with zeros)
+        # Update ranges
         if self.n_samples == 0:
-            self.memory_range_min = list(x_arr)
-            self.memory_range_max = list(x_arr)
+            self.memory_range_min = dict(x)
+            self.memory_range_max = dict(x)
         else:
-            range_min = self.memory_range_min
-            n = len(range_min)
-            if n < n_features:
-                pad = n_features - n
-                range_min.extend([0.0] * pad)
-                self.memory_range_max.extend([0.0] * pad)
-            update_ranges_c(range_min, self.memory_range_max, x_arr, n_features)
+            update_ranges_c(self.memory_range_min, self.memory_range_max, x)
 
         # One more sample in the node
         self.n_samples += 1
@@ -378,7 +357,7 @@ class MondrianBranchClassifier(MondrianNodeClassifier, MondrianBranch):
     depth
         Depth of the branch in the tree.
     feature
-        Feature index of the branch.
+        Feature of the branch.
     threshold
         Acceptation threshold of the branch.
     *children
@@ -395,15 +374,13 @@ class MondrianNodeRegressor(MondrianNode):
         super().__init__(*args, **kwargs)
 
         self.n_samples = 0
-        self._mean_n = 0
-        self._mean_val = 0.0
+        self._mean = stats.Mean()
 
     def replant(self, leaf: MondrianNodeRegressor, copy_all: bool = False):
         """Transfer information from a leaf to a new branch."""
         self.weight = leaf.weight  # type: ignore
         self.log_weight_tree = leaf.log_weight_tree  # type: ignore
-        self._mean_n = leaf._mean_n
-        self._mean_val = leaf._mean_val
+        self._mean = stats.Mean._from_state(leaf._mean.n, leaf._mean.get())
 
         if copy_all:
             self.memory_range_min = leaf.memory_range_min
@@ -412,7 +389,7 @@ class MondrianNodeRegressor(MondrianNode):
 
     def predict(self) -> base.typing.RegTarget:
         """Return the prediction of the node."""
-        return self._mean_val
+        return self._mean.get()
 
     def loss(self, sample_value: base.typing.RegTarget) -> float:
         """Compute the loss of the node.
@@ -424,7 +401,7 @@ class MondrianNodeRegressor(MondrianNode):
 
         """
 
-        r = self._mean_val - sample_value  # type: ignore
+        r = self._mean.get() - sample_value  # type: ignore
         return r * r / 2
 
     def update_weight(
@@ -453,19 +430,18 @@ class MondrianNodeRegressor(MondrianNode):
 
     def update_downwards(
         self,
-        x_arr,
+        x,
         sample_value: base.typing.RegTarget,
         use_aggregation: bool,
         step: float,
         do_update_weight: bool,
-        n_features: int,
     ):
         """Update the node when running a downward procedure updating the tree.
 
         Parameters
         ----------
-        x_arr
-            Sample as a list indexed by feature position.
+        x
+            Sample dict.
         sample_value
             Label of the sample.
         use_aggregation
@@ -474,25 +450,15 @@ class MondrianNodeRegressor(MondrianNode):
             Step of the tree.
         do_update_weight
             Should we update the weights of the node as well.
-        n_features
-            Number of features.
 
         """
 
-        # Updating the range of the feature values known by the node
-        # Use n_samples == 0 to detect first visit (not empty range check,
-        # because range_extension may have padded the list with zeros)
+        # Update ranges
         if self.n_samples == 0:
-            self.memory_range_min = list(x_arr)
-            self.memory_range_max = list(x_arr)
+            self.memory_range_min = dict(x)
+            self.memory_range_max = dict(x)
         else:
-            range_min = self.memory_range_min
-            n = len(range_min)
-            if n < n_features:
-                pad = n_features - n
-                range_min.extend([0.0] * pad)
-                self.memory_range_max.extend([0.0] * pad)
-            update_ranges_c(range_min, self.memory_range_max, x_arr, n_features)
+            update_ranges_c(self.memory_range_min, self.memory_range_max, x)
 
         # One more sample in the node
         self.n_samples += 1
@@ -501,8 +467,7 @@ class MondrianNodeRegressor(MondrianNode):
             self.update_weight(sample_value, use_aggregation, step)
 
         # Update the mean of the labels in the node online
-        self._mean_n += 1
-        self._mean_val += (1.0 / self._mean_n) * (sample_value - self._mean_val)
+        self._mean.update(sample_value)
 
 
 class MondrianLeafRegressor(MondrianNodeRegressor, MondrianLeaf):
@@ -537,7 +502,7 @@ class MondrianBranchRegressor(MondrianNodeRegressor, MondrianBranch):
     depth
         Depth of the branch in the tree.
     feature
-        Feature index of the branch.
+        Feature of the branch.
     threshold
         Acceptation threshold of the branch.
     *children
