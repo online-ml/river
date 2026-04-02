@@ -51,6 +51,7 @@ The `dummy` module is now fully type-annotated.
 - Fixed `KeyError` in `Silhouette` metric when used with clusterers that haven't initialized their centers yet (e.g., `CluStream` during its warmup phase).
 - Optimized `ConfusionMatrix` by inlining `_update` into `update`/`revert` (~10% speedup) and caching `total_true_positives` as an incrementally maintained counter (99% speedup on access).
 - Cached `requires_labels` in `BinaryMetric.__init__` to avoid property lookup on every `update`/`revert` call.
+- Added `metrics.RollingPRAUC`, which computes the area under the precision-recall curve over a rolling window of predictions and true labels.
 
 ## evaluate
 
