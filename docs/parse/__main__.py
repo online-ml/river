@@ -228,12 +228,35 @@ class Linkifier:
         self.rename_index = rename_index
 
     def linkify(self, text, prefix):
+        lines = text.split("\n")
+        # Build a set of character positions that are inside indented code blocks.
+        # An indented code block is a run of lines indented by 4+ spaces preceded
+        # by a blank line (standard Markdown rule).
+        indented_code = set()
+        pos = 0
+        for i, line in enumerate(lines):
+            prev_blank = i == 0 or lines[i - 1].strip() == ""
+            in_indented = prev_blank and line.startswith("    ") and line.strip()
+            if not in_indented and i > 0:
+                # Continue an indented block if previous line was indented code
+                prev_was_indented = any(p in indented_code for p in range(pos - len(lines[i - 1]) - 1, pos))
+                in_indented = (line.startswith("    ") or line.strip() == "") and prev_was_indented
+            if in_indented:
+                for j in range(pos, pos + len(line)):
+                    indented_code.add(j)
+            pos += len(line) + 1  # +1 for the newline
+
         def replace(x):
             # HACK
             if "collections" in x.group():
                 return x.group()
 
+            # Skip matches inside fenced code blocks
             if text.count("```", 0, x.start()) % 2 == 1:
+                return x.group()
+
+            # Skip matches inside indented code blocks
+            if x.start() in indented_code:
                 return x.group()
 
             y = x.group().strip("`")
