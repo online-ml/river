@@ -301,6 +301,14 @@ def print_docstring(obj, file):
         )  # TODO: this is necessary for Cython classes, but it's not correct
     params_desc = {param.name: " ".join(param.desc) for param in doc["Parameters"]}
 
+    # Determine mutable attributes for classes that define them
+    mutable_attrs: set[str] = set()
+    if inspect.isclass(obj):
+        try:
+            mutable_attrs = obj._mutable_attributes.fget(obj)  # noqa: B010
+        except (AttributeError, TypeError):
+            pass
+
     # Parameters
     documentable_params = [
         p for p in signature.parameters.values()
@@ -309,8 +317,9 @@ def print_docstring(obj, file):
     if documentable_params:
         printf(h2("Parameters"))
     for param in documentable_params:
-        # Name
-        printf(f"- **{param.name}**\n")
+        # Name (with mutable indicator)
+        mutable_marker = " *(mutable)*" if param.name in mutable_attrs else ""
+        printf(f"- **{param.name}**{mutable_marker}\n")
         # Type annotation
         if param.annotation is not param.empty:
             anno = inspect.formatannotation(param.annotation)
