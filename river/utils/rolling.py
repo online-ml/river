@@ -20,11 +20,15 @@ class BaseRolling:
 
         self.obj = obj
 
-    def __getattribute__(self, name: str) -> object:
+    def __getattr__(self, name: str) -> object:
+        # Only called when normal attribute lookup fails, so the fast path
+        # (self.obj, self.window, etc.) never enters this method.
+        # Guard against recursion during deepcopy/pickle when obj is not yet set.
         try:
-            return super().__getattribute__(name)
+            obj = object.__getattribute__(self, "obj")
         except AttributeError:
-            return super().__getattribute__("obj").__getattribute__(name)
+            raise AttributeError(name)
+        return getattr(obj, name)
 
     def __getitem__(self, idx: Any) -> object:
         # Enable for when it needs, throws a runtime error as usual if tried on a type that can't.
@@ -70,19 +74,22 @@ class Rolling(BaseRolling):
 
     def __init__(self, obj: Rollable, window_size: int) -> None:
         super().__init__(obj)
-        self.window: collections.deque[tuple[tuple[float], dict[str, float]]] = collections.deque(
+        self._window_size = window_size
+        self.window: collections.deque[tuple[tuple[Any, ...], dict[str, Any]]] = collections.deque(
             maxlen=window_size
         )
 
     @property
     def window_size(self) -> int:
-        return self.window.maxlen  # type: ignore[return-value] # The window always has a maxlen
+        return self._window_size
 
     def update(self, *args: Any, **kwargs: Any) -> None:
-        if len(self.window) == self.window_size:
-            self.obj.revert(*self.window[0][0], **self.window[0][1])
+        window = self.window
+        if len(window) == self._window_size:
+            old = window[0]
+            self.obj.revert(*old[0], **old[1])
         self.obj.update(*args, **kwargs)
-        self.window.append((args, kwargs))
+        window.append((args, kwargs))
 
 
 class TimeRolling(BaseRolling):
