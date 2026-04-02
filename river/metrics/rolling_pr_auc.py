@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from river import metrics, utils
+from river import metrics
+from river.anomaly.base import AnomalyDetector, AnomalyFilter
 
 from .efficient_rollingprauc import EfficientRollingPRAUC
 
@@ -60,8 +61,8 @@ class RollingPRAUC(metrics.base.BinaryMetric):
     def works_with(self, model) -> bool:
         return (
             super().works_with(model)
-            or utils.inspect.isanomalydetector(model)
-            or utils.inspect.isanomalyfilter(model)
+            or isinstance(model, AnomalyDetector)
+            or isinstance(model, AnomalyFilter)
         )
 
     def update(self, y_true, y_pred):
