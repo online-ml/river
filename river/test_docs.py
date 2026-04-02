@@ -1,5 +1,7 @@
 """Test that all public classes and functions have valid docstrings for the doc parser."""
 
+from __future__ import annotations
+
 import importlib
 import importlib.util
 import inspect
@@ -61,11 +63,11 @@ _LINK_RE = re.compile(r"\[([^\]]*)\]\(([^)]+)\)")
 # produce links to non-existent pages (base classes, type annotations,
 # deprecated functions) or with wrong relative prefixes.
 _KNOWN_BROKEN_PATTERNS = [
-    "utils/random/Any",          # type annotation falsely linkified
-    "api/api/",                  # double prefix from non-__all__ members
+    "utils/random/Any",  # type annotation falsely linkified
+    "api/api/",  # double prefix from non-__all__ members
     "initializers/Initializer",  # base class, no public API page
-    "losses/Loss",               # base class, no public API page
-    "../imbalanced-learning",    # relative link in example notebook, valid on the site
+    "losses/Loss",  # base class, no public API page
+    "../imbalanced-learning",  # relative link in example notebook, valid on the site
 ]
 
 
