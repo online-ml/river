@@ -70,7 +70,7 @@ class Rolling(BaseRolling):
     def __init__(self, obj: Rollable, window_size: int) -> None:
         super().__init__(obj)
         self._window_size = window_size
-        self.window: collections.deque = collections.deque(maxlen=window_size)
+        self.window: collections.deque[tuple[tuple[Any, ...], dict[str, Any]]] = collections.deque(maxlen=window_size)
 
     @property
     def window_size(self) -> int:
