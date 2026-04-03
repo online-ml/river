@@ -8,6 +8,8 @@
 
 - Added Python 3.14 wheel builds and updated PyO3 for 3.14 support.
 - Replaced poetry with uv for dependency management.
+- Vendored the `watermill` Rust crate into `rust_src/` so all Rust statistics code lives directly in the `river` crate. Removed the external `watermill` dependency. The crate will be published as `river` in the future.
+- Made PyO3 an optional dependency (`pyo3-bindings` feature) so the Rust library can be benchmarked and tested independently of Python.
 
 ## datasets
 
@@ -34,6 +36,11 @@ The `dummy` module is now fully type-annotated.
 
 ## stats
 
+- Optimized Rust `EWMean`/`EWVariance`: precompute `1-alpha`, replace `powf(2)` with multiplication (~25% faster).
+- Optimized Rust `Quantile` (P² algorithm): removed unnecessary sort on every update, switched to stack-allocated arrays (~40% faster).
+- Optimized Rust `CentralMoments`: replaced `powf(2)` with multiplication in `update_m4`.
+- Added `#[inline(always)]` to all hot Rust stat methods for cross-crate inlining.
+- Added Criterion benchmarks for all Rust statistics (`benches/stats_bench.rs`).
 - Added `update_many` method to `stats.PearsonCorr`.
 - Moved `stats.NUnique` to the `sketch` module, as it is more of a sketch than a statistical indicator.
 - Changed the calculation of the Kuiper statistic in `base.KolmogorovSmirnov` to correspond to the reference implementation. The Kuiper statistic uses the difference between the maximum value and the minimum value.
