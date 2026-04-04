@@ -376,9 +376,11 @@ def log_sum_2_exp(a: float, b: float) -> float:
     b
         Second number
     """
-    # TODO: if |a - b| > 50 skip
-    # TODO: try several log and exp implementations
+    # Use math.log1p for better numerical stability and performance
     if a > b:
-        return a + math.log((1 + math.exp(b - a)) / 2)
+        return a + _LOG_HALF + math.log1p(math.exp(b - a))
     else:
-        return b + math.log((1 + math.exp(a - b)) / 2)
+        return b + _LOG_HALF + math.log1p(math.exp(a - b))
+
+
+_LOG_HALF = math.log(0.5)
