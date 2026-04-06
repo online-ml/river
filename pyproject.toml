@@ -33,7 +33,7 @@ dev = [
     "mypy>=1.11.1,<2",
     "pre-commit>=3.5.0,<4",
     "pytest>=7.4.2,<8",
-    "ruff>=0.4.10,<0.5",
+    "ruff~=0.15.8",
     "scikit-learn>=1.5.1,<2",
     "sqlalchemy>=2.0.22,<3",
     "sympy>=1.12.1,<2",
@@ -55,6 +55,7 @@ docs = [
     "ipykernel",
     "jupyter-client",
     "mike @ git+https://github.com/squidfunk/mike.git",
+    "pygments<2.20",
     "zensical",
     "nbconvert",
     "numpydoc",
@@ -207,6 +208,9 @@ addopts = [
     "-ra",
     "-m not datasets and not slow",
     "--color=yes",
+]
+filterwarnings = [
+    "ignore:A single label was found in 'y_true' and 'y_pred':UserWarning:sklearn",
 ]
 doctest_optionflags = "NORMALIZE_WHITESPACE NUMBER ELLIPSIS"
 norecursedirs = [

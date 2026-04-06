@@ -178,8 +178,7 @@ class FriedmanDrift(Friedman):
 
         if drift_type not in self._VALID_DRIFT_TYPES:
             raise ValueError(
-                f'Invalid "drift_type: {drift_type}"\n'
-                f"Valid options are: {self._VALID_DRIFT_TYPES}"
+                f'Invalid "drift_type: {drift_type}"\nValid options are: {self._VALID_DRIFT_TYPES}'
             )
 
         self.drift_type: Any = drift_type

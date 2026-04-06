@@ -116,6 +116,24 @@ def roc_auc_score(y_true, y_score):
     return sk_metrics.roc_auc_score(y_true, scores)
 
 
+def pr_auc_score(y_true, y_score):
+    """
+    This function is a wrapper to the scikit-learn precision_recall_curve and
+    auc functions. Returns 0 if y_true has only one class.
+    """
+    nonzero = np.count_nonzero(y_true)
+    if nonzero == 0 or nonzero == len(y_true):
+        return 0
+
+    scores = [s[True] for s in y_score]
+    precision, recall, _ = sk_metrics.precision_recall_curve(y_true, scores)
+
+    # Monotonic. decreasing
+    precision = np.maximum.accumulate(precision)
+
+    return sk_metrics.auc(recall, precision)
+
+
 TEST_CASES = [
     (metrics.Accuracy(), sk_metrics.accuracy_score),
     (metrics.Precision(), partial(sk_metrics.precision_score, zero_division=0)),
@@ -210,6 +228,7 @@ TEST_CASES = [
     (metrics.MicroJaccard(), partial(sk_metrics.jaccard_score, average="micro")),
     (metrics.WeightedJaccard(), partial(sk_metrics.jaccard_score, average="weighted")),
     (metrics.RollingROCAUC(), roc_auc_score),
+    (metrics.RollingPRAUC(), pr_auc_score),
 ]
 
 # HACK: not sure why this is needed, see this CI run https://github.com/online-ml/river/runs/7992357532?check_suite_focus=true

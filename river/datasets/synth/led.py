@@ -94,7 +94,7 @@ class LED(datasets.base.SyntheticDataset):
         self._rng = None
         if not (0.0 <= noise_percentage <= 1.0):
             raise ValueError(
-                f"Invalid noise_percentage ({noise_percentage}). " "Valid range is [0.0, 1.0]"
+                f"Invalid noise_percentage ({noise_percentage}). Valid range is [0.0, 1.0]"
             )
         self.noise_percentage = noise_percentage
         self.irrelevant_features = irrelevant_features
