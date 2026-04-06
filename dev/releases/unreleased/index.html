@@ -2940,6 +2940,7 @@
 <li>The <code>utils</code> module is now fully type-checked.</li>
 <li><a href="../../api/utils/VectorDict"><code>utils.VectorDict</code></a> and <a href="../../api/utils/SortedWindow"><code>utils.SortedWindow</code></a> are now parametrised generic containers.</li>
 <li><a href="../../api/utils/VectorDict"><code>utils.VectorDict</code></a> now implements the reflected operations of addition, subtraction and multiplication.</li>
+<li>Optimized KNN distance computation with Cython-accelerated Euclidean distance (<code>euclidean_distance_dict</code> and <code>euclidean_distance_tuple</code> in <code>VectorDict</code>), specialized fast paths for p=1 and p=2 in <code>minkowski_distance</code>, a fully Cython-accelerated search loop in <code>LazySearch</code> (<code>lazy_search_euclidean</code>), <code>heapq.nsmallest</code> fallback for custom distances, and reduced Python overhead in SWINN's <code>_refine</code>/<code>_search</code> via local variable caching and inlined neighbor checks. Overall ~5x speedup for LazySearch and ~1.3x for SWINN.</li>
 <li>Optimized <code>Rolling</code> and <code>TimeRolling</code> by replacing <code>__getattribute__</code> proxy with <code>__getattr__</code>, caching <code>window_size</code>, and reducing attribute lookups in the hot path (~3x speedup on per-update latency).</li>
 </ul>
 
