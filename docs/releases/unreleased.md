@@ -83,7 +83,7 @@ The `dummy` module is now fully type-annotated.
 
 - Added function in nearest-neighbor engines to gather relevant classes/targets from the window.
 - Added a virtual function to the base engine class; New NN engines need to override `refresh_targets` function
-  - Classifier KNN now calls this engine-specific function under `clean_up_classes()`
+- Classifier KNN now calls this engine-specific function under `clean_up_classes()`
 
 ## build
 
@@ -100,4 +100,5 @@ The `dummy` module is now fully type-annotated.
 - The `utils` module is now fully type-checked.
 - `utils.VectorDict` and `utils.SortedWindow` are now parametrised generic containers.
 - `utils.VectorDict` now implements the reflected operations of addition, subtraction and multiplication.
+- Optimized KNN distance computation with Cython-accelerated Euclidean distance (`euclidean_distance_dict` and `euclidean_distance_tuple` in `VectorDict`), specialized fast paths for p=1 and p=2 in `minkowski_distance`, a fully Cython-accelerated search loop in `LazySearch` (`lazy_search_euclidean`), `heapq.nsmallest` fallback for custom distances, and reduced Python overhead in SWINN's `_refine`/`_search` via local variable caching and inlined neighbor checks. Overall ~5x speedup for LazySearch and ~1.3x for SWINN.
 - Optimized `Rolling` and `TimeRolling` by replacing `__getattribute__` proxy with `__getattr__`, caching `window_size`, and reducing attribute lookups in the hot path (~3x speedup on per-update latency).

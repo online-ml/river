@@ -1,11 +1,13 @@
 from __future__ import annotations
 
-import functools
-
 from river import base, utils
 from river.neighbors import SWINN
 
-from .base import BaseNN, FunctionWrapper
+from .base import (
+    BaseNN,
+    FunctionWrapper,
+    _euclidean_tuple_distance,  # type: ignore[attr-defined]
+)
 
 
 class KNNClassifier(base.Classifier):
@@ -68,7 +70,7 @@ class KNNClassifier(base.Classifier):
     ... )
 
     >>> evaluate.progressive_val_score(dataset, model, metrics.Accuracy())
-    Accuracy: 89.59%
+    Accuracy: 89.51%
 
     """
 
@@ -82,11 +84,15 @@ class KNNClassifier(base.Classifier):
     ):
         self.n_neighbors = n_neighbors
 
+        _default_dist = utils.math._euclidean_distance  # type: ignore[attr-defined]
         if engine is None:
-            engine = SWINN(dist_func=functools.partial(utils.math.minkowski_distance, p=2))
+            engine = SWINN(dist_func=_default_dist)  # type: ignore[arg-type]
 
         if not isinstance(engine.dist_func, FunctionWrapper):
-            engine.dist_func = FunctionWrapper(engine.dist_func)
+            if engine.dist_func is _default_dist:
+                engine.dist_func = _euclidean_tuple_distance  # type: ignore[assignment]
+            elif engine.dist_func is not _euclidean_tuple_distance:
+                engine.dist_func = FunctionWrapper(engine.dist_func)
 
         self.engine = engine
         self.weighted = weighted
@@ -109,7 +115,8 @@ class KNNClassifier(base.Classifier):
         yield {
             "n_neighbors": 3,
             "engine": LazySearch(
-                window_size=30, dist_func=functools.partial(utils.math.minkowski_distance, p=2)
+                window_size=30,
+                dist_func=utils.math._euclidean_distance,  # type: ignore[attr-defined]
             ),
         }
 
@@ -144,19 +151,16 @@ class KNNClassifier(base.Classifier):
                 self._cleanup_counter = self.cleanup_every
 
     def predict_proba_one(self, x, **kwargs):
-        nearest = self._nn.search((x, None), n_neighbors=self.n_neighbors, **kwargs)
+        neighbors, distances = self._nn.search((x, None), n_neighbors=self.n_neighbors, **kwargs)
 
         # Default prediction for every class we know is 0.
         # If class_cleanup is false this can include classes not in window
         y_pred = {c: 0.0 for c in self.classes}
 
         # No nearest points? Return the default (normalized)
-        # Note that normalization otherwise happens at the end
-        if not nearest:
+        if not neighbors:
             default_pred = 1 / len(self.classes) if self.classes else 0.0
             return {c: default_pred for c in self.classes}
-
-        neighbors, distances = nearest
 
         # If the closest is an exact match AND has a class, return it
         if distances[0] == 0 and neighbors[0][1] is not None:
