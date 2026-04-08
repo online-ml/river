@@ -67,9 +67,7 @@ def _progressive_validation(
 
     # Check once whether the model's learn_one accepts a w parameter.
     _learn_one_sig = inspect.signature(model.learn_one)
-    _model_accepts_w = "w" in _learn_one_sig.parameters or any(
-        p.kind == inspect.Parameter.VAR_KEYWORD for p in _learn_one_sig.parameters.values()
-    )
+    _model_accepts_w = "w" in _learn_one_sig.parameters
 
     # Only set up weight infrastructure when it will actually be used: either the model
     # accepts a w parameter, or a weights callable was supplied. If neither is true,

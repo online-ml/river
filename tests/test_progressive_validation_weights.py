@@ -9,7 +9,7 @@ from __future__ import annotations
 import importlib.util
 import sys
 from pathlib import Path
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, create_autospec
 
 # ---------------------------------------------------------------------------
 # Pre-mock river's Rust-dependent submodules BEFORE any river import fires.
@@ -44,8 +44,6 @@ _progressive_validation = _pv._progressive_validation
 
 
 def _make_model(accepts_w: bool = True):
-    import inspect
-
     model = MagicMock()
     model._supervised = True
     model.predict_one = MagicMock(return_value=0)
@@ -54,13 +52,11 @@ def _make_model(accepts_w: bool = True):
     if accepts_w:
         def _learn(x, y, w=1.0):
             pass
-        model.learn_one = MagicMock()
-        model.learn_one.__signature__ = inspect.signature(_learn)
+        model.learn_one = create_autospec(_learn)
     else:
         def _learn_no_w(x, y):
             pass
-        model.learn_one = MagicMock()
-        model.learn_one.__signature__ = inspect.signature(_learn_no_w)
+        model.learn_one = create_autospec(_learn_no_w)
 
     return model
 
@@ -164,8 +160,8 @@ class TestPerSampleWeights:
     def test_model_without_w_never_receives_w_kwarg(self):
         """Models whose learn_one has no w param must not receive w."""
         dataset = [
-            ({"f": 1}, 0, 2.0),
-            ({"f": 2}, 1, 0.5),
+            ({"f": 1}, 0),
+            ({"f": 2}, 1),
         ]
         model = _make_model(accepts_w=False)
         metric = _make_metric()
