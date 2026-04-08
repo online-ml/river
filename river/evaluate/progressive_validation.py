@@ -163,7 +163,7 @@ def _progressive_validation(
         return
 
     # General path: delayed labels or active learning — uses simulate_qa with preds dict.
-    preds = {}
+    preds: dict[int, typing.Any] = {}
 
     for i, x, y, *extra in stream.simulate_qa(effective_dataset, moment, delay, copy=True):
         kwargs = extra[0] if extra else {}
