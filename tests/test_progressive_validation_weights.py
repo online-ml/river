@@ -48,6 +48,7 @@ def _make_model(accepts_w: bool = True):
 
     model = MagicMock()
     model._supervised = True
+    model._last_step = None  # prevent infinite recursion in EstimatorMeta.__instancecheck__
     model.predict_one = MagicMock(return_value=0)
     model._raw_memory_usage = 0
 
