@@ -2850,6 +2850,8 @@
 <ul>
 <li>Added Python 3.14 wheel builds and updated PyO3 for 3.14 support.</li>
 <li>Replaced poetry with uv for dependency management.</li>
+<li>Vendored the <code>watermill</code> Rust crate into <code>rust_src/</code> so all Rust statistics code lives directly in the <code>river</code> crate. Removed the external <code>watermill</code> dependency. The crate will be published as <code>river</code> in the future.</li>
+<li>Made PyO3 an optional dependency (<code>pyo3-bindings</code> feature) so the Rust library can be benchmarked and tested independently of Python.</li>
 </ul>
 <h2 id="datasets">datasets<a class="headerlink" href="#datasets" title="Permanent link">&para;</a></h2>
 <ul>
@@ -2874,6 +2876,11 @@
 <p>The <code>dummy</code> module is now fully type-annotated.</p>
 <h2 id="stats">stats<a class="headerlink" href="#stats" title="Permanent link">&para;</a></h2>
 <ul>
+<li>Optimized Rust <code>EWMean</code>/<code>EWVariance</code>: precompute <code>1-alpha</code>, replace <code>powf(2)</code> with multiplication (~25% faster).</li>
+<li>Optimized Rust <code>Quantile</code> (P² algorithm): removed unnecessary sort on every update, switched to stack-allocated arrays (~40% faster).</li>
+<li>Optimized Rust <code>CentralMoments</code>: replaced <code>powf(2)</code> with multiplication in <code>update_m4</code>.</li>
+<li>Added <code>#[inline(always)]</code> to all hot Rust stat methods for cross-crate inlining.</li>
+<li>Added Criterion benchmarks for all Rust statistics (<code>benches/stats_bench.rs</code>).</li>
 <li>Added <code>update_many</code> method to <a href="../../api/stats/PearsonCorr"><code>stats.PearsonCorr</code></a>.</li>
 <li>Moved <code>stats.NUnique</code> to the <code>sketch</code> module, as it is more of a sketch than a statistical indicator.</li>
 <li>Changed the calculation of the Kuiper statistic in <code>base.KolmogorovSmirnov</code> to correspond to the reference implementation. The Kuiper statistic uses the difference between the maximum value and the minimum value.</li>
