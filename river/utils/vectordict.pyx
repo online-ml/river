@@ -54,6 +54,10 @@ cdef inline get_intersection_keys(VectorDict left, VectorDict right):
                 key for key in left._data if key in right._data)
 
 
+cdef inline bint _is_simple(VectorDict v):
+    return not v._use_mask and not v._use_factory
+
+
 cdef class VectorDict:
     cdef dict _data
     cdef object _mask
@@ -296,6 +300,15 @@ cdef class VectorDict:
         left_ = <VectorDict> left
         if isinstance(right, VectorDict):  # vec + vec
             left_, right_ = <VectorDict> right, left_
+            if _is_simple(left_) and _is_simple(right_):
+                res = dict(left_._data)
+                for key, right_value in right_._data.items():
+                    left_value = res.get(key)
+                    if left_value is not None:
+                        res[key] = left_value + right_value
+                    else:
+                        res[key] = right_value
+                return VectorDict(res)
             res = dict()
             for key in get_union_keys(left_, right_):
                 res[key] = left_._get(key) + right_._get(key)
@@ -320,6 +333,14 @@ cdef class VectorDict:
     def __iadd__(VectorDict self, other):
         if isinstance(other, VectorDict):  # vec += vec
             other_ = <VectorDict> other
+            if _is_simple(self) and _is_simple(other_):
+                for key, other_value in other_._data.items():
+                    self_value = self._data.get(key)
+                    if self_value is not None:
+                        self._data[key] = self_value + other_value
+                    else:
+                        self._data[key] = other_value
+                return self
             for key in get_union_keys(self, other_):
                 self._data[key] = self._get(key) + other_._get(key)
         else:  # vec += scalar
@@ -334,6 +355,15 @@ cdef class VectorDict:
         if isinstance(left, VectorDict) and isinstance(right, VectorDict):
             # vec - vec
             left_, right_ = <VectorDict> left, <VectorDict> right
+            if _is_simple(left_) and _is_simple(right_):
+                res = dict(left_._data)
+                for key, right_value in right_._data.items():
+                    left_value = res.get(key)
+                    if left_value is not None:
+                        res[key] = left_value - right_value
+                    else:
+                        res[key] = -right_value
+                return VectorDict(res)
             res = dict()
             for key in get_union_keys(left_, right_):
                 res[key] = left_._get(key) - right_._get(key)
@@ -368,6 +398,14 @@ cdef class VectorDict:
     def __isub__(VectorDict self, other):
         if isinstance(other, VectorDict):  # vec -= vec
             other_ = <VectorDict> other
+            if _is_simple(self) and _is_simple(other_):
+                for key, other_value in other_._data.items():
+                    self_value = self._data.get(key)
+                    if self_value is not None:
+                        self._data[key] = self_value - other_value
+                    else:
+                        self._data[key] = -other_value
+                return self
             for key in get_union_keys(self, other_):
                 self._data[key] = self._get(key) - other_._get(key)
         else:  # vec -= scalar
@@ -384,6 +422,18 @@ cdef class VectorDict:
         left_ = <VectorDict> left
         if isinstance(right, VectorDict):  # vec * vec
             left_, right_ = <VectorDict> right, left_
+            if _is_simple(left_) and _is_simple(right_):
+                res = dict()
+                for key, left_value in left_._data.items():
+                    right_value = right_._data.get(key)
+                    if right_value is not None:
+                        res[key] = left_value * right_value
+                    else:
+                        res[key] = 0
+                for key in right_._data:
+                    if key not in res:
+                        res[key] = 0
+                return VectorDict(res)
             res = dict()
             for key in get_union_keys(left_, right_):
                 res[key] = left_._get(key) * right_._get(key)
@@ -409,6 +459,17 @@ cdef class VectorDict:
     def __imul__(VectorDict self, other):
         if isinstance(other, VectorDict):  # vec *= vec
             other_ = <VectorDict> other
+            if _is_simple(self) and _is_simple(other_):
+                for key, self_value in self._data.items():
+                    other_value = other_._data.get(key)
+                    if other_value is not None:
+                        self._data[key] = self_value * other_value
+                    else:
+                        self._data[key] = 0
+                for key in other_._data:
+                    if key not in self._data:
+                        self._data[key] = 0
+                return self
             for key in get_union_keys(self, other_):
                 self._data[key] = self._get(key) * other_._get(key)
         else:  # vec *= scalar
@@ -423,6 +484,18 @@ cdef class VectorDict:
         if isinstance(left, VectorDict) and isinstance(right, VectorDict):
             # vec / vec
             left_, right_ = <VectorDict> left, <VectorDict> right
+            if _is_simple(left_) and _is_simple(right_):
+                res = dict()
+                for key, left_value in left_._data.items():
+                    right_value = right_._data.get(key)
+                    if right_value is not None:
+                        res[key] = left_value / right_value
+                    else:
+                        res[key] = left_value / 0
+                for key, right_value in right_._data.items():
+                    if key not in left_._data:
+                        res[key] = 0 / right_value
+                return VectorDict(res)
             res = dict()
             for key in get_union_keys(left_, right_):
                 res[key] = left_._get(key) / right_._get(key)
@@ -456,6 +529,17 @@ cdef class VectorDict:
     def __itruediv__(VectorDict self, other):
         if isinstance(other, VectorDict):  # vec /= vec
             other_ = <VectorDict> other
+            if _is_simple(self) and _is_simple(other_):
+                for key, self_value in self._data.items():
+                    other_value = other_._data.get(key)
+                    if other_value is not None:
+                        self._data[key] = self_value / other_value
+                    else:
+                        self._data[key] = self_value / 0
+                for key in other_._data:
+                    if key not in self._data:
+                        self._data[key] = 0 / other_._data[key]
+                return self
             for key in get_union_keys(self, other_):
                 self._data[key] = self._get(key) / other_._get(key)
         else:  # vec /= scalar
@@ -518,6 +602,36 @@ cdef class VectorDict:
 
     # additional utilities
 
+    def isub_scaled(VectorDict self, other, scalar):
+        """self -= scalar * other, fused into a single pass."""
+        if isinstance(other, VectorDict):
+            other_ = <VectorDict> other
+            if _is_simple(self) and _is_simple(other_):
+                for key, other_value in other_._data.items():
+                    self_value = self._data.get(key)
+                    if self_value is not None:
+                        self._data[key] = self_value - scalar * other_value
+                    else:
+                        self._data[key] = -(scalar * other_value)
+                return self
+        self -= scalar * other
+        return self
+
+    def iadd_scaled(VectorDict self, other, scalar):
+        """self += scalar * other, fused into a single pass."""
+        if isinstance(other, VectorDict):
+            other_ = <VectorDict> other
+            if _is_simple(self) and _is_simple(other_):
+                for key, other_value in other_._data.items():
+                    self_value = self._data.get(key)
+                    if self_value is not None:
+                        self._data[key] = self_value + scalar * other_value
+                    else:
+                        self._data[key] = scalar * other_value
+                return self
+        self += scalar * other
+        return self
+
     def abs(self):
         return self.__abs__()
 
@@ -536,6 +650,18 @@ cdef class VectorDict:
     def minimum(self, other):
         if isinstance(other, VectorDict):  # minimum(vec, vec)
             other_ = <VectorDict> other
+            if _is_simple(self) and _is_simple(other_):
+                res = dict()
+                for key, self_value in self._data.items():
+                    other_value = other_._data.get(key)
+                    if other_value is not None:
+                        res[key] = other_value if other_value < self_value else self_value
+                    else:
+                        res[key] = 0 if 0 < self_value else self_value
+                for key, other_value in other_._data.items():
+                    if key not in self._data:
+                        res[key] = 0 if 0 < other_value else other_value
+                return VectorDict(res)
             res = dict()
             for key in get_union_keys(self, other_):
                 res[key] = min(self._get(key), other_._get(key))
@@ -551,6 +677,18 @@ cdef class VectorDict:
     def maximum(self, other):
         if isinstance(other, VectorDict):  # maximum(vec, vec)
             other_ = <VectorDict> other
+            if _is_simple(self) and _is_simple(other_):
+                res = dict()
+                for key, self_value in self._data.items():
+                    other_value = other_._data.get(key)
+                    if other_value is not None:
+                        res[key] = other_value if other_value > self_value else self_value
+                    else:
+                        res[key] = 0 if 0 > self_value else self_value
+                for key, other_value in other_._data.items():
+                    if key not in self._data:
+                        res[key] = 0 if 0 > other_value else other_value
+                return VectorDict(res)
             res = dict()
             for key in get_union_keys(self, other_):
                 res[key] = max(self._get(key), other_._get(key))
