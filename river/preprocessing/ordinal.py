@@ -1,17 +1,12 @@
 from __future__ import annotations
 
 import collections
-import functools
-import itertools
+import typing
 
 import numpy as np
 import pandas as pd
 
 from river import base
-
-
-def make_counter(skip):
-    return (i for i in itertools.count() if i not in skip)
 
 
 class OrdinalEncoder(base.MiniBatchTransformer):
@@ -125,35 +120,56 @@ class OrdinalEncoder(base.MiniBatchTransformer):
         self.values: collections.defaultdict | dict | None = None
 
         if self.categories is None:
-            # We're going to have one auto-incrementing counter per feature. This counter will generate
-            # the category codes for each feature.
-            self._counters: collections.defaultdict = collections.defaultdict(
-                functools.partial(make_counter, {unknown_value, none_value})
-            )
-
             # We're going to store the categories in a dict of dicts. The outer dict will map each
             # feature to its inner dict. The inner dict will map each category to its code.
             self.values = collections.defaultdict(dict)
         else:
             self.values = self.categories
 
+        # Codes reserved for unknown and missing values should never be used for categories.
+        self._reserved_category_codes = tuple(
+            sorted(
+                {
+                    value
+                    for value in (self.unknown_value, self.none_value)
+                    if isinstance(value, int) and value >= 0
+                }
+            )
+        )
+
+    def _next_category_code(self, feature: typing.Hashable) -> int:
+        """Return the next available integer code for a feature.
+
+        The code is derived from the number of categories already assigned, skipping over any
+        reserved values (``unknown_value`` and ``none_value``).
+
+        """
+        code = len(self.values[feature])  # type: ignore[index]
+        for reserved in self._reserved_category_codes:
+            if reserved <= code:
+                code += 1
+        return code
+
+    def _encode_value(self, feature: typing.Hashable, value):
+        if value is None:
+            return self.none_value
+        return self.values[feature].get(value, self.unknown_value)  # type: ignore[index]
+
     def transform_one(self, x):
-        return {
-            i: self.none_value if xi is None else self.values[i].get(xi, self.unknown_value)
-            for i, xi in x.items()
-        }
+        return {i: self._encode_value(i, xi) for i, xi in x.items()}
 
     def learn_one(self, x):
         if self.categories is None:
             for i, xi in x.items():
                 if xi is not None and xi not in self.values[i]:
-                    self.values[i][xi] = next(self._counters[i])
+                    self.values[i][xi] = self._next_category_code(i)
 
     def transform_many(self, X):
         return pd.DataFrame(
             {
                 i: pd.Series(
-                    X[i].map({**self.values[i], None: self.none_value}).fillna(self.unknown_value),
+                    (self._encode_value(i, value) for value in X[i]),
+                    index=X.index,
                     dtype=np.int64,
                 )
                 for i in X.columns
@@ -165,4 +181,4 @@ class OrdinalEncoder(base.MiniBatchTransformer):
             for i in X.columns:
                 for xi in X[i].dropna().unique():
                     if xi not in self.values[i]:
-                        self.values[i][xi] = next(self._counters[i])
+                        self.values[i][xi] = self._next_category_code(i)
