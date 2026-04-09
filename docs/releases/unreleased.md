@@ -63,6 +63,7 @@ The `dummy` module is now fully type-annotated.
 ## evaluate
 
 - Optimized `progressive_val_score` and `iter_progressive_val_score` with a fast path for the common no-delay case. The evaluation loop now iterates the dataset directly, skipping the `simulate_qa` generator and internal prediction buffer. Combined with caching `model._supervised` and `metric.update`, this yields a **1.5x speedup** on typical workloads.
+- Added per-sample weight support in `progressive_val_score` and `iter_progressive_val_score`. Weights can be passed via dataset tuples as `(x, y, {"w": 2.0})` and are forwarded to `learn_one` for models that accept a `w` parameter.
 
 ## stream
 
@@ -90,6 +91,10 @@ The `dummy` module is now fully type-annotated.
 ## utils
 
 - Optimized `VectorDict` binary operations (add, sub, mul, div, minimum, maximum) with fast paths that bypass generator-based key iteration when no mask or factory is set. Added fused `isub_scaled`/`iadd_scaled` methods to avoid intermediate allocations. This speeds up online linear models by 8–34% depending on the optimizer and feature count.
+
+## compose
+
+- Fixed `Pipeline.learn_one` to forward extra `**params` (e.g. sample weight `w`) to the final supervised step.
 
 ## linear_model
 

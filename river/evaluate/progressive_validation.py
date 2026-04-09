@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import datetime as dt
+import inspect
 import itertools
 import time
 import typing
@@ -62,6 +63,12 @@ def _progressive_validation(
     active_learning = isinstance(model, ActiveLearningClassifier)
     n_samples_learned = 0
 
+    # Check once whether the model's learn_one accepts a sample weight parameter.
+    _learn_params = inspect.signature(model.learn_one).parameters
+    _model_accepts_w = "w" in _learn_params or any(
+        p.kind == inspect.Parameter.VAR_KEYWORD for p in _learn_params.values()
+    )
+
     prev_checkpoint = None
     next_checkpoint = next(checkpoints, None)
     n_total_answers = 0
@@ -92,11 +99,15 @@ def _progressive_validation(
         extra: list
         for x, y, *extra in dataset:
             kwargs: dict = extra[0] if extra else {}
+            w = kwargs.pop("w", None)
 
             y_pred = predict(x, **kwargs)
             if y_pred is not None and y_pred != {}:
                 metric_update(y_true=y, y_pred=y_pred)
-            learn(x, y, **kwargs)
+            if w is not None and _model_accepts_w:
+                learn(x, y, w=w, **kwargs)
+            else:
+                learn(x, y, **kwargs)
 
             n_total_answers += 1
             if n_total_answers == next_checkpoint:
@@ -113,23 +124,27 @@ def _progressive_validation(
 
     for i, x, y, *extra in stream.simulate_qa(dataset, moment, delay, copy=True):
         kwargs = extra[0] if extra else {}
+        w = kwargs.pop("w", None)
 
         # Case 1: no ground truth, just make a prediction
         if y is None:
             y_pred = predict(x, **kwargs)
             y_pred, ask_for_label = y_pred if active_learning else (y_pred, True)  # type: ignore[misc]
-            preds[i] = y_pred, ask_for_label
+            preds[i] = y_pred, ask_for_label, w
             continue
 
         # Case 2: there's a ground truth, model and metric can be updated
-        y_pred, use_label = preds.pop(i)
+        y_pred, use_label, sample_w = preds.pop(i)
 
         if y_pred is not None and y_pred != {}:
             metric_update(y_true=y, y_pred=y_pred)
 
         if use_label:
             n_samples_learned += 1
-            learn(x, y, **kwargs)
+            if sample_w is not None and _model_accepts_w:
+                learn(x, y, w=sample_w, **kwargs)
+            else:
+                learn(x, y, **kwargs)
 
         # Yield current results
         n_total_answers += 1
@@ -164,7 +179,11 @@ def iter_progressive_val_score(
     Parameters
     ----------
     dataset
-        The stream of observations against which the model will be evaluated.
+        The stream of observations against which the model will be evaluated. Each element is
+        an `(x, y)` pair or an `(x, y, kwargs)` triple where `kwargs` is a `dict` of extra
+        parameters passed to `learn_one`. To supply per-sample weights, include a `"w"` key
+        in `kwargs`, e.g. `(x, y, {"w": 2.0})`. The weight is forwarded to `learn_one` for
+        models that accept a `w` parameter (e.g. `linear_model.LogisticRegression`).
     model
         The model to evaluate.
     metric
@@ -303,7 +322,11 @@ def progressive_val_score(
     Parameters
     ----------
     dataset
-        The stream of observations against which the model will be evaluated.
+        The stream of observations against which the model will be evaluated. Each element is
+        an `(x, y)` pair or an `(x, y, kwargs)` triple where `kwargs` is a `dict` of extra
+        parameters passed to `learn_one`. To supply per-sample weights, include a `"w"` key
+        in `kwargs`, e.g. `(x, y, {"w": 2.0})`. The weight is forwarded to `learn_one` for
+        models that accept a `w` parameter (e.g. `linear_model.LogisticRegression`).
     model
         The model to evaluate.
     metric
