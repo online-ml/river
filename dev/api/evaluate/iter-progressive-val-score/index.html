@@ -15791,7 +15791,7 @@
 <li>
 <p><strong>dataset</strong></p>
 <p><em>Type</em> → <em>base.typing.Dataset</em></p>
-<p>The stream of observations against which the model will be evaluated.</p>
+<p>The stream of observations against which the model will be evaluated. Each element is an <code>(x, y)</code> pair or an <code>(x, y, kwargs)</code> triple where <code>kwargs</code> is a <code>dict</code> of extra parameters passed to <code>learn_one</code>. To supply per-sample weights, include a <code>"w"</code> key in <code>kwargs</code>, e.g. <code>(x, y, {"w": 2.0})</code>. The weight is forwarded to <code>learn_one</code> for models that accept a <code>w</code> parameter (e.g. <code>linear_model.LogisticRegression</code>).</p>
 </li>
 <li>
 <p><strong>model</strong></p>
