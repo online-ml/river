@@ -111,3 +111,44 @@ def test_iter_progressive_val_score():
     assert len(steps) >= 2
     assert steps[0]["Step"] == 500
     assert steps[1]["Step"] == 1000
+
+
+def test_progressive_val_score_with_sample_weights():
+    """Sample weights in dataset are forwarded to learn_one."""
+    # Weighted dataset: upweight class 1, downweight class 0
+    base_dataset = list(datasets.Phishing())
+    weighted_dataset = [(x, y, {"w": 5.0 if y else 0.1}) for x, y in base_dataset]
+
+    model_weighted = preprocessing.StandardScaler() | linear_model.LogisticRegression()
+    metric_weighted = evaluate.progressive_val_score(
+        dataset=weighted_dataset,
+        model=model_weighted,
+        metric=metrics.Accuracy(),
+    )
+
+    model_uniform = preprocessing.StandardScaler() | linear_model.LogisticRegression()
+    metric_uniform = evaluate.progressive_val_score(
+        dataset=base_dataset,
+        model=model_uniform,
+        metric=metrics.Accuracy(),
+    )
+
+    # Heavily skewed weights should produce a different accuracy than uniform
+    assert metric_weighted.get() != metric_uniform.get()
+
+
+def test_progressive_val_score_weights_no_w_param():
+    """Models without a w parameter ignore dataset weights gracefully."""
+    from river import tree
+
+    dataset = [(x, y, {"w": 2.0}) for x, y in list(datasets.Phishing())[:100]]
+
+    # HoeffdingTreeClassifier.learn_one does not accept w
+    model = tree.HoeffdingTreeClassifier()
+    metric = evaluate.progressive_val_score(
+        dataset=dataset,
+        model=model,
+        metric=metrics.Accuracy(),
+    )
+    # Should run without error and produce a valid metric
+    assert 0.0 <= metric.get() <= 1.0
