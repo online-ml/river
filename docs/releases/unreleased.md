@@ -64,6 +64,7 @@ The `dummy` module is now fully type-annotated.
 
 - Optimized `progressive_val_score` and `iter_progressive_val_score` with a fast path for the common no-delay case. The evaluation loop now iterates the dataset directly, skipping the `simulate_qa` generator and internal prediction buffer. Combined with caching `model._supervised` and `metric.update`, this yields a **1.5x speedup** on typical workloads.
 - Added per-sample weight support in `progressive_val_score` and `iter_progressive_val_score`. Weights can be passed via dataset tuples as `(x, y, {"w": 2.0})` and are forwarded to `learn_one` for models that accept a `w` parameter.
+- Fixed `progressive_val_score` and `iter_progressive_val_score` to work with clustering metrics (e.g. `metrics.Silhouette`). Previously, clustering metrics received incorrect arguments, producing `inf` values. The evaluation loop now automatically passes features, predictions, and cluster centers to clustering metrics. Pipelines with preprocessing steps are handled correctly.
 
 ## stream
 

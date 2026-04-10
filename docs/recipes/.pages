@@ -9,5 +9,6 @@ nav:
     - on-hoeffding-trees.md
     - active-learning.md
     - bandits-101.md
+    - clustering.ipynb
     - cloning-and-mutating.md
     - rolling-computations.md

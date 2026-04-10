@@ -8,6 +8,7 @@ import typing
 
 from river import base, metrics, stream, utils
 from river.anomaly.base import AnomalyDetector, AnomalyFilter
+from river.compose.pipeline import Pipeline
 
 __all__ = ["progressive_val_score"]
 
@@ -54,7 +55,15 @@ def _progressive_validation(
         def learn(x, _y=None, **kwargs):
             model.learn_one(x, **kwargs)
 
-    metric_update = metric.update
+    # Metric update closure: uniform (x, y, y_pred) signature for all metric types.
+    metric_update: typing.Callable
+    if isinstance(metric, metrics.base.ClusteringMetric):
+        predict, metric_update = _build_clustering_closures(metric, model)
+    else:
+        _metric_update = metric.update
+
+        def metric_update(x, y, y_pred):  # type: ignore[no-redef]
+            _metric_update(y_true=y, y_pred=y_pred)
 
     # If we are dealing with an active learner, we need to check whether or not a label should be
     # used for training or not. We'll also record how many times labels were used.
@@ -103,7 +112,7 @@ def _progressive_validation(
 
             y_pred = predict(x, **kwargs)
             if y_pred is not None and y_pred != {}:
-                metric_update(y_true=y, y_pred=y_pred)
+                metric_update(x, y, y_pred)
             if w is not None and _model_accepts_w:
                 learn(x, y, w=w, **kwargs)
             else:
@@ -137,7 +146,7 @@ def _progressive_validation(
         y_pred, use_label, sample_w = preds.pop(i)
 
         if y_pred is not None and y_pred != {}:
-            metric_update(y_true=y, y_pred=y_pred)
+            metric_update(x, y, y_pred)
 
         if use_label:
             n_samples_learned += 1
@@ -472,3 +481,43 @@ def progressive_val_score(
         print(msg, **print_kwargs)
 
     return metric
+
+
+def _build_clustering_closures(metric, model):
+    """Build predict and metric-update closures for clustering evaluation.
+
+    Clustering metrics expect ``(x, y_pred, centers)`` rather than
+    ``(y_true, y_pred)``.  When the model is a pipeline the raw features
+    must be transformed through every step except the final clusterer so
+    that ``x`` and ``centers`` live in the same feature space.
+
+    Returns ``(predict, metric_update)`` where both closures share a single
+    transform pass for pipelines, avoiding redundant work.
+    """
+
+    if isinstance(model, Pipeline):
+        clusterer = model._last_step
+        _predict = clusterer.predict_one
+
+        # Stash the last transformed x so metric_update can reuse it.
+        _state = {}
+
+        def predict(x, **kwargs):
+            x_transformed, _ = model._transform_one(x)
+            _state["x"] = x_transformed
+            return _predict(x_transformed, **kwargs)
+
+        def metric_update(x, y, y_pred):
+            centers = getattr(clusterer, "centers", None)
+            if centers is not None:
+                metric.update(_state["x"], y_pred, centers)
+
+    else:
+        predict = model.predict_one  # type: ignore[assignment]
+
+        def metric_update(x, y, y_pred):
+            centers = getattr(model, "centers", None)
+            if centers is not None:
+                metric.update(x, y_pred, centers)
+
+    return predict, metric_update
