@@ -7,9 +7,12 @@ import os
 import pathlib
 import re
 import shutil
+import socket
 import tarfile
 import typing
 import zipfile
+import time
+import urllib.error
 from urllib import request
 
 from river import utils
@@ -272,20 +275,32 @@ class RemoteDataset(FileDataset):
         else:
             archive_path = directory.joinpath(os.path.basename(self.filename))
 
-        with request.urlopen(self.url) as r:
-            # Notify the user
-            if verbose:
-                meta = r.info()
-                try:
-                    n_bytes = int(meta["Content-Length"])
-                    msg = f"Downloading {self.url} ({utils.pretty.humanize_bytes(n_bytes)})"
-                except (KeyError, TypeError):
-                    msg = f"Downloading {self.url}"
-                print(msg)
+        for attempt in range(1, 6):
+            try:
+                with request.urlopen(self.url) as r:
+                    # Notify the user
+                    if verbose:
+                        meta = r.info()
+                        try:
+                            n_bytes = int(meta["Content-Length"])
+                            msg = f"Downloading {self.url} ({utils.pretty.humanize_bytes(n_bytes)})"
+                        except (KeyError, TypeError):
+                            msg = f"Downloading {self.url}"
+                        print(msg)
 
-            # Now dump the contents of the requests
-            with open(archive_path, "wb") as f:
-                shutil.copyfileobj(r, f)
+                    # Now dump the contents of the requests
+                    with open(archive_path, "wb") as f:
+                        shutil.copyfileobj(r, f)
+                break
+            except (urllib.error.URLError, urllib.error.HTTPError, socket.gaierror) as exc:
+                if archive_path.exists():
+                    archive_path.unlink()
+                if attempt == 5:
+                    raise
+                if verbose:
+                    wait_for = 10 * attempt
+                    print(f"Download failed ({exc}). Retrying in {wait_for}s...")
+                time.sleep(10 * attempt)
 
         if not self.unpack:
             return
