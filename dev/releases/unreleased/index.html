@@ -3235,6 +3235,8 @@
 <ul>
 <li>Added <code>cond_log_proba</code> to <code>GaussianSplitter</code> and optimized <code>do_naive_bayes_prediction</code> to use direct log-probabilities, avoiding the <code>exp</code>/<code>log</code> round-trip.</li>
 <li>Added handling for division by zero in <code>tree.hoeffding_tree</code> for leaf size estimation.</li>
+<li>Optimized Mondrian trees and AMF (Aggregated Mondrian Forest): replaced dict-based node storage with list-indexed storage, added feature/class-to-index mappings, inlined all hot-path methods, and moved the core traversal loops (<code>_go_downwards</code>, <code>update_downwards</code>, <code>predict_proba</code> upward walk) to Cython. AMFClassifier is <strong>3.2x faster</strong>, AMFRegressor is <strong>2.9x faster</strong>.</li>
+<li>Fixed a shared-state bug in <code>MondrianTreeRegressor</code> where <code>replant()</code> copied the <code>Mean</code> object by reference, causing branch and child nodes to share the same running mean. Each node now maintains independent mean statistics, matching the onelearn reference implementation.</li>
 </ul>
 <h2 id="utils">utils<a class="headerlink" href="#utils" title="Permanent link">&para;</a></h2>
 <ul>
