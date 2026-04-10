@@ -1,3 +1,7 @@
+---
+description: Get started with River — tutorials for binary classification, regression, multi-class classification, and concept drift detection.
+---
+
 # Getting started
 
 The following tutorials will help you get started with River:

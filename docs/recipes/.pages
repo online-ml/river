@@ -1,12 +1,12 @@
 title: Recipes
+description: Short, focused guides that explain core River concepts one at a time.
 nav:
     - reading-data.md
     - model-evaluation.md
     - pipelines.md
     - feature-extraction.md
-    - hyperparameter-tuning.md
+    - saving-loading.md
     - mini-batching.md
-    - on-hoeffding-trees.md
     - active-learning.md
     - bandits-101.md
     - cloning-and-mutating.md

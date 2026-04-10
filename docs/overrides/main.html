@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block extrahead %}
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="River" />
+  <meta property="og:title" content="{{ page.meta.title or page.title }} - River" />
+  <meta property="og:description" content="{{ page.meta.description or config.site_description }}" />
+  <meta property="og:url" content="{{ page.canonical_url }}" />
+  <meta property="og:image" content="https://riverml.xyz/img/icon.png" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="{{ page.meta.title or page.title }} - River" />
+  <meta name="twitter:description" content="{{ page.meta.description or config.site_description }}" />
+  <meta name="twitter:image" content="https://riverml.xyz/img/icon.png" />
+{% endblock %}

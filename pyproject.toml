@@ -50,12 +50,14 @@ compat = [
     "sqlalchemy>=2.0.0,<3",
 ]
 docs = [
+    "ccxt",
     "dominate",
     "flask",
     "ipykernel",
     "jupyter-client",
     "mike @ git+https://github.com/squidfunk/mike.git",
     "pygments<2.20",
+    "TA-Lib",
     "zensical",
     "nbconvert",
     "numpydoc",
