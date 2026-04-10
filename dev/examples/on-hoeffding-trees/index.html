@@ -12,13 +12,13 @@
         <meta name="author" content="The Fellowship of Online Machine Learning">
       
       
-        <link rel="canonical" href="https://riverml.xyz/dev/recipes/on-hoeffding-trees/">
+        <link rel="canonical" href="https://riverml.xyz/dev/examples/on-hoeffding-trees/">
       
       
-        <link rel="prev" href="../mini-batching/">
+        <link rel="prev" href="../the-art-of-using-pipelines/">
       
       
-        <link rel="next" href="../active-learning/">
+        <link rel="next" href="../../faq">
       
       
         
@@ -29,7 +29,7 @@
     
     
       
-        <title>Incremental decision trees in river: the Hoeffding Tree case - River</title>
+        <title>Incremental decision trees in River: the Hoeffding Tree case - River</title>
       
     
     
@@ -71,6 +71,20 @@
 ></script>
     
     
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="River" />
+  <meta property="og:title" content="Incremental decision trees in River: the Hoeffding Tree case - River" />
+  <meta property="og:description" content="Online machine learning in Python" />
+  <meta property="og:url" content="https://riverml.xyz/dev/examples/on-hoeffding-trees/" />
+  <meta property="og:image" content="https://riverml.xyz/img/icon.png" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Incremental decision trees in River: the Hoeffding Tree case - River" />
+  <meta name="twitter:description" content="Online machine learning in Python" />
+  <meta name="twitter:image" content="https://riverml.xyz/img/icon.png" />
+
   </head>
   
   
@@ -127,7 +141,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Incremental decision trees in river: the Hoeffding Tree case
+              Incremental decision trees in River: the Hoeffding Tree case
             
           </span>
         </div>
@@ -228,13 +242,11 @@
   
   
   
-    
-  
   
     
     
-      <li class="md-tabs__item md-tabs__item--active">
-        <a href="../reading-data/" class="md-tabs__link">
+      <li class="md-tabs__item">
+        <a href="../../recipes/reading-data/" class="md-tabs__link">
           
   
   Recipes
@@ -268,11 +280,13 @@
   
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
-        <a href="../../examples/" class="md-tabs__link">
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../index.md" class="md-tabs__link">
           
   
   Examples
@@ -463,56 +477,51 @@
       
   
   
+  
+  
     
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
   
   
   
-    
-    
+    <a href="../../recipes/reading-data/" class="md-nav__link">
       
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-    
-    
-    
-      
-        
-        
-      
-      
-    
-    
-      
-    
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
-      
-        
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
-        
-          
-          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
-            
   
   
   <span class="md-ellipsis">
@@ -526,463 +535,12 @@
   
   
 
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_2">
-            <span class="md-nav__icon md-icon"></span>
-            
-  
-    Recipes
-  
-
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../reading-data/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Reading data
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../model-evaluation/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Model evaluation
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../pipelines/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Pipelines
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../feature-extraction/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Feature extraction
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../hyperparameter-tuning/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Hyperparameter tuning
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../mini-batching/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Mini-batching
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-    
-  
-  
-  
-    <li class="md-nav__item md-nav__item--active">
       
-        
-        <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-        
-        
-          
-        
-        
-          <label class="md-nav__link md-nav__link--active" for="__toc">
-            
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Incremental decision trees in river: the Hoeffding Tree case
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
   
 
-    
-  </span>
-  
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-      
-      <a href="././" class="md-nav__link md-nav__link--active">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Incremental decision trees in river: the Hoeffding Tree case
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-      
-        
-
-
-<nav class="md-nav md-nav--secondary" aria-label="On this page">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      On this page
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#1-trees-trees-everywhere-gardening-101-with-river" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1. Trees, trees everywhere: gardening 101 with river
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#2-how-to-inspect-tree-models" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. How to inspect tree models?
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#3-advanced-gardening-with-river-grab-your-pruning-shears-and-lets-limit-memory-usage" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. Advanced gardening with river: grab your pruning shears and let's limit memory usage
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#4-branching-and-growth-splitters-the-heart-of-the-trees" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. Branching and growth: splitters, the heart of the trees
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="4. Branching and growth: splitters, the heart of the trees">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#41-classification-tree-splitters" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4.1. Classification tree splitters
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#42-regression-tree-splitters" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4.2 Regression tree splitters
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#wrapping-up" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Wrapping up
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../active-learning/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Active learning
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../bandits-101/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Multi-armed bandits
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../cloning-and-mutating/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Cloning and mutating
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../rolling-computations/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Rolling computations
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
       
     </li>
   
@@ -996,6 +554,234 @@
   
     
     
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
       
         
       
@@ -1429,6 +1215,8 @@
       
   
   
+    
+  
   
   
     
@@ -1458,6 +1246,248 @@
       
         
       
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../index.md" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Examples
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../batch-to-online/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    From batch to online/stream
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bike-sharing-forecasting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bike-sharing forecasting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../building-a-simple-nowcasting-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Building a simple nowcasting model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../content-personalization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Content personalization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../debugging-a-pipeline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Debugging a pipeline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../imbalanced-learning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Working with imbalanced data
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
     
     
     
@@ -1476,14 +1506,14 @@
   
   
   
-    <a href="../../examples/" class="md-nav__link">
+    <a href="../matrix-factorization-for-recommender-systems/part-1/" class="md-nav__link">
       
   
   
   <span class="md-ellipsis">
     
   
-    Examples
+    Matrix factorization for recommender systems
   
 
     
@@ -1497,6 +1527,259 @@
     </a>
   
 
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quantile-regression-uncertainty/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Handling uncertainty with quantile regression
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sentence-classification/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sentence classification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../the-art-of-using-pipelines/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The art of using pipelines
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+        
+        <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+        
+        
+          
+        
+        
+          <label class="md-nav__link md-nav__link--active" for="__toc">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Incremental decision trees in River: the Hoeffding Tree case
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+      
+      <a href="././" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Incremental decision trees in River: the Hoeffding Tree case
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-trees-trees-everywhere-gardening-101-with-river" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Trees, trees everywhere: gardening 101 with River
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-how-to-inspect-tree-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. How to inspect tree models?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-advanced-gardening-with-river-grab-your-pruning-shears-and-lets-limit-memory-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Advanced gardening with River: grab your pruning shears and let's limit memory usage
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-branching-and-growth-splitters-the-heart-of-the-trees" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Branching and growth: splitters, the heart of the trees
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Branching and growth: splitters, the heart of the trees">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-classification-tree-splitters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1. Classification tree splitters
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-regression-tree-splitters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Regression tree splitters
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wrapping-up" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Wrapping up
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
       
     </li>
   
@@ -1742,7 +2025,7 @@
   <a href="#1-trees-trees-everywhere-gardening-101-with-river" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. Trees, trees everywhere: gardening 101 with river
+        1. Trees, trees everywhere: gardening 101 with River
       
     </span>
   </a>
@@ -1764,7 +2047,7 @@
   <a href="#3-advanced-gardening-with-river-grab-your-pruning-shears-and-lets-limit-memory-usage" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. Advanced gardening with river: grab your pruning shears and let's limit memory usage
+        3. Advanced gardening with River: grab your pruning shears and let's limit memory usage
       
     </span>
   </a>
@@ -1839,7 +2122,7 @@
   
 
 
-<h1 id="incremental-decision-trees-in-river-the-hoeffding-tree-case">Incremental decision trees in river: the Hoeffding Tree case<a class="headerlink" href="#incremental-decision-trees-in-river-the-hoeffding-tree-case" title="Permanent link">&para;</a></h1>
+<h1 id="incremental-decision-trees-in-river-the-hoeffding-tree-case">Incremental decision trees in River: the Hoeffding Tree case<a class="headerlink" href="#incremental-decision-trees-in-river-the-hoeffding-tree-case" title="Permanent link">&para;</a></h1>
 <p>Decision trees (DT) are popular learning models due to their inherently simplicity, flexibility and self-explainable structure. Moreover, when aggregated in ensembles, high predictive power might be achieved. Bagging and gradient boosting-based tree ensembles are very popular solutions in competition platforms such as Kaggle, and also among researchers.</p>
 <p>Although fairly lightweight, traditional batch DTs cannot cope with data stream mining/online learning requirements, as they do multiple passes over the data and have to be retrained from scratch every time a new observation appears.</p>
 <p>The data stream literature has plenty of incremental DT (iDT) families that are better suited to online learning. Nonetheless, Hoeffding Trees (HT) are historically the most popular family of iDTs to date. In fact, HTs have some nice properties:</p>
@@ -1871,7 +2154,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">river.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">synth</span>  <span class="c1"># we are going to use some synthetic datasets too</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">river</span><span class="w"> </span><span class="kn">import</span> <span class="n">tree</span>
 </code></pre></div>
-<h2 id="1-trees-trees-everywhere-gardening-101-with-river">1. Trees, trees everywhere: gardening 101 with river<a class="headerlink" href="#1-trees-trees-everywhere-gardening-101-with-river" title="Permanent link">&para;</a></h2>
+<h2 id="1-trees-trees-everywhere-gardening-101-with-river">1. Trees, trees everywhere: gardening 101 with River<a class="headerlink" href="#1-trees-trees-everywhere-gardening-101-with-river" title="Permanent link">&para;</a></h2>
 <p>At first glance, the amount of iDT algorithms in River might seem too much to handle, but in reality the distinction among them is easy to grasp. To facilitate our lives, here's a neat table listing the available HT models and summarizing their differences:</p>
 <table>
 <thead>
@@ -2214,7 +2497,7 @@ Class True:
 <li>we can also limit the depth when using the <code>draw</code> method.</li>
 <li>in the case of tree ensembles, individual trees can be accessed using the <code>[index]</code> operator. Then, the same set of inspection tools are available to play with!</li>
 </ul>
-<h2 id="3-advanced-gardening-with-river-grab-your-pruning-shears-and-lets-limit-memory-usage">3. Advanced gardening with river: grab your pruning shears and let's limit memory usage<a class="headerlink" href="#3-advanced-gardening-with-river-grab-your-pruning-shears-and-lets-limit-memory-usage" title="Permanent link">&para;</a></h2>
+<h2 id="3-advanced-gardening-with-river-grab-your-pruning-shears-and-lets-limit-memory-usage">3. Advanced gardening with River: grab your pruning shears and let's limit memory usage<a class="headerlink" href="#3-advanced-gardening-with-river-grab-your-pruning-shears-and-lets-limit-memory-usage" title="Permanent link">&para;</a></h2>
 <p>Online learning is well-suited to highly scalable processing centers with petabytes of data arriving intermittently, but it can also work with Internet of Things (IoT) devices operating at low power and with limited processing capability. Hence, making sure our trees are not going to use too much memory is a nice feature that can impact on both energy usage and the running time. HTs have memory-management routines that put the user in the control of computational resources that are available.</p>
 <p>In this brief guide, we are going to use a regression tree, since this kind of iDT typically spends more memory than the classification counterparts. However, the user can control the memory usage in the exact same way in River, regardless of the HT variant!</p>
 <p>We will rely on the <code>Friedman</code> synthetic dataset (data generator) from the <code>synth</code> module in our evaluation. Since data generators can produce instances indefinitely, we will select a sample of size 10K for our tests.</p>
@@ -2325,7 +2608,7 @@ Class True:
 <p>As previously stated, one of the core operations of iDT is, well, to grow. Plants and gardening-related jokes apart, growth in HTs is guided by their AOs or splitters, as mentioned in the end of Section 3. </p>
 <p>Nominal features can be easily monitored, since the feature partitions are well-defined beforehand. Numerical features, on the other hand, do not have an explicit best cut point. Still, numerical features are typically split by using a binary test: <span class="arithmatex">\(\le\)</span> or <span class="arithmatex">\(&gt;\)</span>. Therefore, numerical splitters must somehow summarize the incoming feature values and be able to evaluate the merit of split point candidates.</p>
 <p>There are diverse strategies to monitor numerical features and choices related to them, including which data structure will be used to keep a summary of the incoming feature and also how many split points are going to be evaluated during split attempts. Again, this guide does not intend to be an exhaustive delve into the iDT subject. In fact, each of the following aspects of the iDTs could be considered a separate research area: AOs, intervals between split attempts, split heuristics (e.g., info gain, variance reduction, and so on), tree depth and max size, and much more!</p>
-<p>Let's focus a bit into the AO matter. River provides a handful of splitters for classification and regression trees, which can be chosen using the parameter <code>splitter</code>. We will list the available tree splitters in the following sections and compare some of their chacteristics.</p>
+<p>Let's focus a bit into the AO matter. River provides a handful of splitters for classification and regression trees, which can be chosen using the parameter <code>splitter</code>. We will list the available tree splitters in the following sections and compare some of their characteristics.</p>
 <p>Some notation:</p>
 <ul>
 <li><span class="arithmatex">\(n\)</span>: Number of observations seen so far.</li>
@@ -2471,8 +2754,6 @@ Class True:
 
 
 
-
-  
 
 
 

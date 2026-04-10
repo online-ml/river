@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://riverml.xyz/dev/examples/batch-to-online/">
       
       
-        <link rel="prev" href="../">
+        <link rel="prev" href="../index.md">
       
       
         <link rel="next" href="../bike-sharing-forecasting/">
@@ -71,6 +71,20 @@
 ></script>
     
     
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="River" />
+  <meta property="og:title" content="From batch to online/stream - River" />
+  <meta property="og:description" content="Online machine learning in Python" />
+  <meta property="og:url" content="https://riverml.xyz/dev/examples/batch-to-online/" />
+  <meta property="og:image" content="https://riverml.xyz/img/icon.png" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="From batch to online/stream - River" />
+  <meta name="twitter:description" content="Online machine learning in Python" />
+  <meta name="twitter:image" content="https://riverml.xyz/img/icon.png" />
+
   </head>
   
   
@@ -272,7 +286,7 @@
     
     
       <li class="md-tabs__item md-tabs__item--active">
-        <a href="../" class="md-tabs__link">
+        <a href="../index.md" class="md-tabs__link">
           
   
   Examples
@@ -488,8 +502,6 @@
       
         
       
-        
-      
     
     
     
@@ -542,6 +554,234 @@
   
     
     
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
       
         
       
@@ -1006,6 +1246,8 @@
       
         
       
+        
+      
     
     
     
@@ -1026,7 +1268,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../" class="md-nav__link ">
+            <a href="../index.md" class="md-nav__link ">
               
   
   
@@ -1458,6 +1700,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../on-hoeffding-trees/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Incremental decision trees in River: the Hoeffding Tree case
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1793,7 +2063,7 @@
 <li>Fitting a model to the data</li>
 <li>Computing the performance of the model on unseen data</li>
 </ol>
-<p>This is pretty standard and is maybe how most people imagine a machine learning pipeline. However, this way of proceeding has certain downsides. First of all your laptop would crash if the <code>load_boston</code> function returned a dataset who's size exceeds your available amount of RAM. Sometimes you can use some tricks to get around this. For example by optimizing the data types and by using sparse representations when applicable you can potentially save precious gigabytes of RAM. However, like many tricks this only goes so far. If your dataset weighs hundreds of gigabytes then you won't go far without some special hardware. One solution is to do out-of-core learning; that is, algorithms that can learn by being presented the data in chunks or mini-batches. If you want to go down this road then take a look at <a href="https://examples.dask.org/machine-learning.html">Dask</a> and <a href="https://spark.apache.org/mllib/">Spark's MLlib</a>.</p>
+<p>This is pretty standard and is maybe how most people imagine a machine learning pipeline. However, this way of proceeding has certain downsides. First of all your laptop would crash if the <code>load_boston</code> function returned a dataset whose size exceeds your available amount of RAM. Sometimes you can use some tricks to get around this. For example by optimizing the data types and by using sparse representations when applicable you can potentially save precious gigabytes of RAM. However, like many tricks this only goes so far. If your dataset weighs hundreds of gigabytes then you won't go far without some special hardware. One solution is to do out-of-core learning; that is, algorithms that can learn by being presented the data in chunks or mini-batches. If you want to go down this road then take a look at <a href="https://examples.dask.org/machine-learning.html">Dask</a> and <a href="https://spark.apache.org/mllib/">Spark's MLlib</a>.</p>
 <p>Another issue with the batch learning regime is that it can't elegantly learn from new data. Indeed if new data is made available, then the model has to learn from scratch with a new dataset composed of the old data and the new data. This is particularly annoying in a real situation where you might have new incoming data every week, day, hour, minute, or even second. For example if you're building a recommendation engine for an e-commerce app, then you're probably training your model from 0 every week or so. As your app grows in popularity, so does the dataset you're training on. This will lead to longer and longer training times and might require a hardware upgrade.</p>
 <p>A final downside that isn't very easy to grasp concerns the manner in which features are extracted. Every time you want to train your model you first have to extract features. The trick is that some features might not be accessible at the particular point in time you are at. For example maybe that some attributes in your data warehouse get overwritten with time. In other words maybe that all the features pertaining to a particular observations are not available, whereas they were a week ago. This happens more often than not in real scenarios, and apart if you have a sophisticated data engineering pipeline then you will encounter these issues at some point. </p>
 <h2 id="a-hands-on-introduction-to-incremental-learning">A hands-on introduction to incremental learning<a class="headerlink" href="#a-hands-on-introduction-to-incremental-learning" title="Permanent link">&para;</a></h2>
@@ -1981,8 +2251,6 @@ True variance: 123625.903
 
 
 
-
-  
 
 
 

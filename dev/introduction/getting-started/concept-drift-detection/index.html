@@ -71,6 +71,20 @@
 ></script>
     
     
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="River" />
+  <meta property="og:title" content="Concept drift - River" />
+  <meta property="og:description" content="Online machine learning in Python" />
+  <meta property="og:url" content="https://riverml.xyz/dev/introduction/getting-started/concept-drift-detection/" />
+  <meta property="og:image" content="https://riverml.xyz/img/icon.png" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Concept drift - River" />
+  <meta name="twitter:description" content="Online machine learning in Python" />
+  <meta name="twitter:image" content="https://riverml.xyz/img/icon.png" />
+
   </head>
   
   
@@ -272,7 +286,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../examples/" class="md-tabs__link">
+        <a href="../../../examples/index.md" class="md-tabs__link">
           
   
   Examples
@@ -938,8 +952,6 @@
       
         
       
-        
-      
     
     
     
@@ -992,6 +1004,234 @@
   
     
     
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
       
         
       
@@ -1454,6 +1694,8 @@
       
         
       
+        
+      
     
     
     
@@ -1472,14 +1714,14 @@
   
   
   
-    <a href="../../../examples/" class="md-nav__link">
+    <a href="../../../examples/index.md" class="md-nav__link">
       
   
   
   <span class="md-ellipsis">
     
   
-    Examples
+    none
   
 
     
@@ -1804,7 +2046,7 @@
 
 <h1 id="concept-drift">Concept drift<a class="headerlink" href="#concept-drift" title="Permanent link">&para;</a></h1>
 <p>In online machine learning, it is assumed that data can change over time. When building machine learning models, we assume data has a probability distribution, which is usually fixed, i.e., stationary. Changes in the data distribution give rise to the phenomenon called <strong>Concept drift</strong>. Such drifts can be either <em>virtual</em> or <em>real</em>. In virtual drifts, only the distribution of the features, <span class="arithmatex">\(P(X)\)</span>, changes, whereas the relationship between <span class="arithmatex">\(X\)</span> (features) and the target, <span class="arithmatex">\(y\)</span>, remains unchanged. The joint probability of <span class="arithmatex">\(P(X, y)\)</span> changes in real concept drifts. Consequently, non-supervised online machine learning problems might face only virtual concept drifts.</p>
-<p>Real concept drits can be further divided in <em>abrupt</em> (happen instantly at a given point) or <em>gradual</em> (one "concept" changes to another gradually). There are other possible divisions, but they can be fit into abrupt or gradual drifts.</p>
+<p>Real concept drifts can be further divided in <em>abrupt</em> (happen instantly at a given point) or <em>gradual</em> (one "concept" changes to another gradually). There are other possible divisions, but they can be fit into abrupt or gradual drifts.</p>
 <h2 id="examples-of-concept-drift">Examples of concept drift<a class="headerlink" href="#examples-of-concept-drift" title="Permanent link">&para;</a></h2>
 <p>Concept drifts might happen in the electricity demand across the year, in the stock market, in buying preferences, and in the likelihood of a new movie's success, among others.</p>
 <p>Let us consider the movie example: two movies made at different epochs can have similar features such as famous actors/directors, storyline, production budget, marketing campaigns, etc., yet it is not certain that both will be similarly successful. What the target audience <em>considers</em> is worth watching (and their money worth spending) is constantly changing, and production companies must adapt accordingly to avoid "box office flops".</p>
@@ -1889,8 +2131,6 @@ Change detected at index 2079
 
 
 
-
-  
 
 
 

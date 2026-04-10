@@ -15,10 +15,10 @@
         <link rel="canonical" href="https://riverml.xyz/dev/recipes/mini-batching/">
       
       
-        <link rel="prev" href="../hyperparameter-tuning/">
+        <link rel="prev" href="../saving-loading/">
       
       
-        <link rel="next" href="../on-hoeffding-trees/">
+        <link rel="next" href="../active-learning/">
       
       
         
@@ -71,6 +71,20 @@
 ></script>
     
     
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="River" />
+  <meta property="og:title" content="Mini-batching - River" />
+  <meta property="og:description" content="Online machine learning in Python" />
+  <meta property="og:url" content="https://riverml.xyz/dev/recipes/mini-batching/" />
+  <meta property="og:image" content="https://riverml.xyz/img/icon.png" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Mini-batching - River" />
+  <meta name="twitter:description" content="Online machine learning in Python" />
+  <meta name="twitter:image" content="https://riverml.xyz/img/icon.png" />
+
   </head>
   
   
@@ -272,7 +286,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../examples/" class="md-tabs__link">
+        <a href="../../examples/index.md" class="md-tabs__link">
           
   
   Examples
@@ -490,8 +504,6 @@
       
         
       
-        
-      
     
     
     
@@ -659,14 +671,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../hyperparameter-tuning/" class="md-nav__link">
+      <a href="../saving-loading/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Hyperparameter tuning
+    Saving and loading models
   
 
     
@@ -715,34 +727,6 @@
 
       </a>
       
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../on-hoeffding-trees/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Incremental decision trees in river: the Hoeffding Tree case
-  
-
-    
-  </span>
-  
-  
-
-      </a>
     </li>
   
 
@@ -1260,6 +1244,234 @@
       
         
       
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
     
     
     
@@ -1337,6 +1549,8 @@
       
         
       
+        
+      
     
     
     
@@ -1355,14 +1569,14 @@
   
   
   
-    <a href="../../examples/" class="md-nav__link">
+    <a href="../../examples/index.md" class="md-nav__link">
       
   
   
   <span class="md-ellipsis">
     
   
-    Examples
+    none
   
 
     
@@ -1686,7 +1900,7 @@ Downloaded  True
 </code></pre></div>
 <p>If you are familiar with scikit-learn, you might be aware that <a href="https://scikit-learn.org/dev/computing/scaling_strategies.html#incremental-learning">some</a> of their estimators have a <code>partial_fit</code> method, which is similar to river's <code>learn_many</code> method. Here are some advantages that river has over scikit-learn:</p>
 <ul>
-<li>We guarantee that river's is just as fast, if not faster than scikit-learn. The differences are negligeable, but are slightly in favor of river.</li>
+<li>We guarantee that River is just as fast, if not faster than scikit-learn. The differences are negligible, but are slightly in favor of River.</li>
 <li>We take as input dataframes, which allows us to name each feature. The benefit is that you can add/remove/permute features between batches and everything will keep working.</li>
 <li>Estimators that support mini-batches also support single instance learning. This means that you can enjoy the best of both worlds. For instance, you can train with mini-batches and use <code>predict_one</code> to make predictions.</li>
 </ul>
@@ -1742,8 +1956,6 @@ StandardScaler
 
 
 
-
-  
 
 
 

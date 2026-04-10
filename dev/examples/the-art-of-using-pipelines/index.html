@@ -18,7 +18,7 @@
         <link rel="prev" href="../sentence-classification/">
       
       
-        <link rel="next" href="../../faq">
+        <link rel="next" href="../on-hoeffding-trees/">
       
       
         
@@ -71,6 +71,20 @@
 ></script>
     
     
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="River" />
+  <meta property="og:title" content="The art of using pipelines - River" />
+  <meta property="og:description" content="Online machine learning in Python" />
+  <meta property="og:url" content="https://riverml.xyz/dev/examples/the-art-of-using-pipelines/" />
+  <meta property="og:image" content="https://riverml.xyz/img/icon.png" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="The art of using pipelines - River" />
+  <meta name="twitter:description" content="Online machine learning in Python" />
+  <meta name="twitter:image" content="https://riverml.xyz/img/icon.png" />
+
   </head>
   
   
@@ -272,7 +286,7 @@
     
     
       <li class="md-tabs__item md-tabs__item--active">
-        <a href="../" class="md-tabs__link">
+        <a href="../index.md" class="md-tabs__link">
           
   
   Examples
@@ -488,8 +502,6 @@
       
         
       
-        
-      
     
     
     
@@ -542,6 +554,234 @@
   
     
     
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
       
         
       
@@ -1006,6 +1246,8 @@
       
         
       
+        
+      
     
     
     
@@ -1026,7 +1268,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../" class="md-nav__link ">
+            <a href="../index.md" class="md-nav__link ">
               
   
   
@@ -1387,6 +1629,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../on-hoeffding-trees/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Incremental decision trees in River: the Hoeffding Tree case
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1641,6 +1911,10 @@
 
 
 <h1 id="the-art-of-using-pipelines">The art of using pipelines<a class="headerlink" href="#the-art-of-using-pipelines" title="Permanent link">&para;</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For a quick reference on pipeline syntax and features, see the <a href="../../recipes/pipelines/">Pipelines recipe</a>.</p>
+</div>
 <p>Pipelines are a natural way to think about a machine learning system. Indeed with some practice a data scientist can visualise data "flowing" through a series of steps. The input is typically some raw data which has to be processed in some manner. The goal is to represent the data in such a way that is can be ingested by a machine learning algorithm. Along the way some steps will extract features, while others will normalize the data and remove undesirable elements. Pipelines are simple, and yet they are a powerful way of designing sophisticated machine learning systems.</p>
 <p>Both <a href="https://stackoverflow.com/questions/33091376/python-what-is-exactly-sklearn-pipeline-pipeline">scikit-learn</a> and <a href="https://tomaugspurger.github.io/method-chaining">pandas</a> make it possible to use pipelines. However it's quite rare to see pipelines being used in practice (at least on Kaggle). Sometimes you get to see people using scikit-learn's <code>pipeline</code> module, however the <code>pipe</code> method from <code>pandas</code> is sadly underappreciated. A big reason why pipelines are not given much love is that it's easier to think of batch learning in terms of a script or a notebook. Indeed many people doing data science seem to prefer a procedural style to a declarative style. Moreover in practice pipelines can be a bit rigid if one wishes to do non-orthodox operations.</p>
 <p>Although pipelines may be a bit of an odd fit for batch learning, they make complete sense when they are used for online learning. Indeed the UNIX philosophy has advocated the use of pipelines for data processing for many decades. If you can visualise data as a stream of observations then using pipelines should make a lot of sense to you. We'll attempt to convince you by writing a machine learning algorithm in a procedural way and then converting it to a declarative pipeline in small steps. Hopefully by the end you'll be convinced, or not!</p>
@@ -1820,7 +2094,7 @@ LinearRegression
 </code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>MAE: 8.413859
 </code></pre></div>
-<p>Likewhise we can use the <code>|</code> operator to assemble steps into a <code>Pipeline</code>. </p>
+<p>Likewise we can use the <code>|</code> operator to assemble steps into a <code>Pipeline</code>. </p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="p">(</span>
     <span class="n">compose</span><span class="o">.</span><span class="n">FuncTransformer</span><span class="p">(</span><span class="n">get_date_features</span><span class="p">)</span> <span class="o">+</span>
     <span class="n">feature_extraction</span><span class="o">.</span><span class="n">TargetAgg</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s1">&#39;store_id&#39;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="n">utils</span><span class="o">.</span><span class="n">Rolling</span><span class="p">(</span><span class="n">stats</span><span class="o">.</span><span class="n">Mean</span><span class="p">(),</span> <span class="mi">7</span><span class="p">))</span> <span class="o">+</span>
@@ -2021,8 +2295,6 @@ def get_date_features(x):
 
 
 
-
-  
 
 
 

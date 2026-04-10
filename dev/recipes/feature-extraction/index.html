@@ -18,7 +18,7 @@
         <link rel="prev" href="../pipelines/">
       
       
-        <link rel="next" href="../hyperparameter-tuning/">
+        <link rel="next" href="../saving-loading/">
       
       
         
@@ -71,6 +71,20 @@
 ></script>
     
     
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="River" />
+  <meta property="og:title" content="Feature extraction - River" />
+  <meta property="og:description" content="Online machine learning in Python" />
+  <meta property="og:url" content="https://riverml.xyz/dev/recipes/feature-extraction/" />
+  <meta property="og:image" content="https://riverml.xyz/img/icon.png" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Feature extraction - River" />
+  <meta name="twitter:description" content="Online machine learning in Python" />
+  <meta name="twitter:image" content="https://riverml.xyz/img/icon.png" />
+
   </head>
   
   
@@ -272,7 +286,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../examples/" class="md-tabs__link">
+        <a href="../../examples/index.md" class="md-tabs__link">
           
   
   Examples
@@ -490,8 +504,6 @@
       
         
       
-        
-      
     
     
     
@@ -641,6 +653,24 @@
           
         
         
+          <label class="md-nav__link md-nav__link--active" for="__toc">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Feature extraction
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
       
       <a href="././" class="md-nav__link md-nav__link--active">
         
@@ -659,6 +689,109 @@
 
       </a>
       
+        
+
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#fetching-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fetching data
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rivers-feature-extraction-building-blocks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        River's feature extraction building blocks
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="River&#x27;s feature extraction building blocks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#streaming-statistics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Streaming statistics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#functransformer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FuncTransformer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#agg" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Agg
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#online-feature-extraction-with-ta-lib-streaming" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Online feature extraction with TA-Lib streaming
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#putting-it-together-an-online-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Putting it together: an online pipeline
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -671,14 +804,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../hyperparameter-tuning/" class="md-nav__link">
+      <a href="../saving-loading/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Hyperparameter tuning
+    Saving and loading models
   
 
     
@@ -707,34 +840,6 @@
     
   
     Mini-batching
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../on-hoeffding-trees/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Incremental decision trees in river: the Hoeffding Tree case
   
 
     
@@ -1260,6 +1365,234 @@
       
         
       
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
     
     
     
@@ -1337,6 +1670,8 @@
       
         
       
+        
+      
     
     
     
@@ -1355,14 +1690,14 @@
   
   
   
-    <a href="../../examples/" class="md-nav__link">
+    <a href="../../examples/index.md" class="md-nav__link">
       
   
   
   <span class="md-ellipsis">
     
   
-    Examples
+    none
   
 
     
@@ -1611,6 +1946,97 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#fetching-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fetching data
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rivers-feature-extraction-building-blocks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        River's feature extraction building blocks
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="River&#x27;s feature extraction building blocks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#streaming-statistics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Streaming statistics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#functransformer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FuncTransformer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#agg" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Agg
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#online-feature-extraction-with-ta-lib-streaming" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Online feature extraction with TA-Lib streaming
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#putting-it-together-an-online-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Putting it together: an online pipeline
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -1628,7 +2054,312 @@
 
 
 <h1 id="feature-extraction">Feature extraction<a class="headerlink" href="#feature-extraction" title="Permanent link">&para;</a></h1>
-<p>To do.</p>
+<p>This recipe shows how to engineer features for online machine learning. We'll use a crypto price prediction task as a running example: given OHLCV candle data, can we predict whether the next candle closes higher or lower?</p>
+<p>Along the way we'll cover River's core feature extraction tools: <a href="../../api/compose/FuncTransformer"><code>compose.FuncTransformer</code></a>, <a href="../../api/feature-extraction/Agg"><code>feature_extraction.Agg</code></a>, streaming statistics, and how to use <a href="https://ta-lib.github.io/ta-lib-python/">TA-Lib's streaming API</a> inside a River pipeline.</p>
+<h2 id="fetching-data">Fetching data<a class="headerlink" href="#fetching-data" title="Permanent link">&para;</a></h2>
+<p>We'll pull 1-minute BTC/USDT candles from Binance via <a href="https://github.com/ccxt/ccxt">ccxt</a>.</p>
+<div class="language-python highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">ccxt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+<span class="n">exchange</span> <span class="o">=</span> <span class="n">ccxt</span><span class="o">.</span><span class="n">binance</span><span class="p">()</span>
+<span class="n">raw</span> <span class="o">=</span> <span class="n">exchange</span><span class="o">.</span><span class="n">fetch_ohlcv</span><span class="p">(</span><span class="s2">&quot;BTC/USDT&quot;</span><span class="p">,</span> <span class="n">timeframe</span><span class="o">=</span><span class="s2">&quot;1m&quot;</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;timestamp&quot;</span><span class="p">,</span> <span class="s2">&quot;open&quot;</span><span class="p">,</span> <span class="s2">&quot;high&quot;</span><span class="p">,</span> <span class="s2">&quot;low&quot;</span><span class="p">,</span> <span class="s2">&quot;close&quot;</span><span class="p">,</span> <span class="s2">&quot;volume&quot;</span><span class="p">])</span>
+<span class="n">df</span><span class="p">[</span><span class="s2">&quot;timestamp&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;timestamp&quot;</span><span class="p">],</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;ms&quot;</span><span class="p">)</span>
+
+<span class="c1"># Target: did the next candle close higher?</span>
+<span class="n">df</span><span class="p">[</span><span class="s2">&quot;target&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;close&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;close&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># drop last row (no future candle)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Fetched </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">)</span><span class="si">}</span><span class="s2"> candles&quot;</span><span class="p">)</span>
+<span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>Fetched 999 candles
+</code></pre></div>
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>timestamp</th>
+      <th>open</th>
+      <th>high</th>
+      <th>low</th>
+      <th>close</th>
+      <th>volume</th>
+      <th>target</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2026-04-09 17:48:00</td>
+      <td>72435.90</td>
+      <td>72447.52</td>
+      <td>72337.85</td>
+      <td>72363.48</td>
+      <td>22.33398</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2026-04-09 17:49:00</td>
+      <td>72363.99</td>
+      <td>72416.31</td>
+      <td>72361.36</td>
+      <td>72370.88</td>
+      <td>15.32128</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2026-04-09 17:50:00</td>
+      <td>72370.88</td>
+      <td>72370.89</td>
+      <td>72310.00</td>
+      <td>72323.97</td>
+      <td>7.12806</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2026-04-09 17:51:00</td>
+      <td>72323.97</td>
+      <td>72340.26</td>
+      <td>72278.80</td>
+      <td>72278.81</td>
+      <td>11.39078</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2026-04-09 17:52:00</td>
+      <td>72278.80</td>
+      <td>72362.54</td>
+      <td>72278.80</td>
+      <td>72346.00</td>
+      <td>10.79756</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<h2 id="rivers-feature-extraction-building-blocks">River's feature extraction building blocks<a class="headerlink" href="#rivers-feature-extraction-building-blocks" title="Permanent link">&para;</a></h2>
+<p>In River, each sample is a Python <code>dict</code>. Feature extraction means writing functions or classes that transform one dict into another. Let's look at the key tools.</p>
+<h3 id="streaming-statistics">Streaming statistics<a class="headerlink" href="#streaming-statistics" title="Permanent link">&para;</a></h3>
+<p>The <code>stats</code> module provides statistics that update one observation at a time. Each exposes <code>update(x)</code> and <code>get()</code>:</p>
+<div class="language-python highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">river</span><span class="w"> </span><span class="kn">import</span> <span class="n">stats</span>
+
+<span class="n">mean</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">Mean</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">]:</span>
+    <span class="n">mean</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+<span class="n">mean</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>3.0
+</code></pre></div>
+<p>For windowed computations, wrap any compatible statistic with <a href="../../api/utils/Rolling"><code>utils.Rolling</code></a>:</p>
+<div class="language-python highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">river</span><span class="w"> </span><span class="kn">import</span> <span class="n">utils</span>
+
+<span class="n">rolling_mean</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">Rolling</span><span class="p">(</span><span class="n">stats</span><span class="o">.</span><span class="n">Mean</span><span class="p">(),</span> <span class="n">window_size</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">]:</span>
+    <span class="n">rolling_mean</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+<span class="n">rolling_mean</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>  <span class="c1"># mean of last 3 values: (3 + 4 + 5) / 3</span>
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>4.0
+</code></pre></div>
+<p>For time-based windows, use <a href="../../api/utils/TimeRolling"><code>utils.TimeRolling</code></a> with a <code>timedelta</code> period.</p>
+<h3 id="functransformer">FuncTransformer<a class="headerlink" href="#functransformer" title="Permanent link">&para;</a></h3>
+<p><a href="../../api/compose/FuncTransformer"><code>compose.FuncTransformer</code></a> wraps any function that maps a dict to a dict, making it usable in a pipeline:</p>
+<div class="language-python highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">river</span><span class="w"> </span><span class="kn">import</span> <span class="n">compose</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">add_return</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">{</span><span class="o">**</span><span class="n">x</span><span class="p">,</span> <span class="s2">&quot;return&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="s2">&quot;close&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;open&quot;</span><span class="p">])</span> <span class="o">/</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;open&quot;</span><span class="p">]}</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">add_range</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">{</span><span class="o">**</span><span class="n">x</span><span class="p">,</span> <span class="s2">&quot;range_pct&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="s2">&quot;high&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;low&quot;</span><span class="p">])</span> <span class="o">/</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;close&quot;</span><span class="p">]}</span>
+
+<span class="n">transformer</span> <span class="o">=</span> <span class="n">compose</span><span class="o">.</span><span class="n">FuncTransformer</span><span class="p">(</span><span class="n">add_return</span><span class="p">)</span> <span class="o">|</span> <span class="n">compose</span><span class="o">.</span><span class="n">FuncTransformer</span><span class="p">(</span><span class="n">add_range</span><span class="p">)</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;open&quot;</span><span class="p">:</span> <span class="mf">100.0</span><span class="p">,</span> <span class="s2">&quot;high&quot;</span><span class="p">:</span> <span class="mf">105.0</span><span class="p">,</span> <span class="s2">&quot;low&quot;</span><span class="p">:</span> <span class="mf">98.0</span><span class="p">,</span> <span class="s2">&quot;close&quot;</span><span class="p">:</span> <span class="mf">103.0</span><span class="p">}</span>
+<span class="n">transformer</span><span class="o">.</span><span class="n">transform_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>{&#39;open&#39;: 100.0,
+ &#39;high&#39;: 105.0,
+ &#39;low&#39;: 98.0,
+ &#39;close&#39;: 103.0,
+ &#39;return&#39;: 0.03,
+ &#39;range_pct&#39;: 0.06796116504854369}
+</code></pre></div>
+<h3 id="agg">Agg<a class="headerlink" href="#agg" title="Permanent link">&para;</a></h3>
+<p><a href="../../api/feature-extraction/Agg"><code>feature_extraction.Agg</code></a> computes a running statistic over a feature, optionally grouped by another feature:</p>
+<div class="language-python highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">river</span><span class="w"> </span><span class="kn">import</span> <span class="n">feature_extraction</span>
+
+<span class="n">agg</span> <span class="o">=</span> <span class="n">feature_extraction</span><span class="o">.</span><span class="n">Agg</span><span class="p">(</span>
+    <span class="n">on</span><span class="o">=</span><span class="s2">&quot;volume&quot;</span><span class="p">,</span>
+    <span class="n">by</span><span class="o">=</span><span class="s2">&quot;hour&quot;</span><span class="p">,</span>
+    <span class="n">how</span><span class="o">=</span><span class="n">stats</span><span class="o">.</span><span class="n">Mean</span><span class="p">(),</span>
+<span class="p">)</span>
+
+<span class="k">for</span> <span class="n">hour</span><span class="p">,</span> <span class="n">vol</span> <span class="ow">in</span> <span class="p">[(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">1000</span><span class="p">),</span> <span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">1200</span><span class="p">),</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">800</span><span class="p">),</span> <span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">1100</span><span class="p">)]:</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;hour&quot;</span><span class="p">:</span> <span class="n">hour</span><span class="p">,</span> <span class="s2">&quot;volume&quot;</span><span class="p">:</span> <span class="n">vol</span><span class="p">}</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;hour=</span><span class="si">{</span><span class="n">hour</span><span class="si">}</span><span class="s2">, volume=</span><span class="si">{</span><span class="n">vol</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="n">agg</span><span class="o">.</span><span class="n">transform_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">agg</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>hour=9, volume=1000 -&gt; {&#39;volume_mean_by_hour&#39;: 0.0}
+hour=9, volume=1200 -&gt; {&#39;volume_mean_by_hour&#39;: 1000.0}
+hour=10, volume=800 -&gt; {&#39;volume_mean_by_hour&#39;: 0.0}
+hour=9, volume=1100 -&gt; {&#39;volume_mean_by_hour&#39;: 1100.0}
+</code></pre></div>
+<h2 id="online-feature-extraction-with-ta-lib-streaming">Online feature extraction with TA-Lib streaming<a class="headerlink" href="#online-feature-extraction-with-ta-lib-streaming" title="Permanent link">&para;</a></h2>
+<p>TA-Lib has a <code>talib.stream</code> module where each function takes an array but returns only the <strong>latest</strong> value as a scalar. This is perfect for online learning: we maintain a rolling buffer of recent prices and call <code>talib.stream</code> each tick to get the current indicator value.</p>
+<p>We can wrap this pattern in a River <code>Transformer</code>:</p>
+<div class="language-python highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">collections</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">talib.stream</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tas</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">river</span><span class="w"> </span><span class="kn">import</span> <span class="n">base</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">TALibFeatures</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">Transformer</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Extract technical indicators using talib.stream.</span>
+
+<span class="sd">    Maintains rolling buffers of OHLCV data and computes indicators</span>
+<span class="sd">    incrementally using TA-Lib&#39;s streaming API.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">buffer_size</span><span class="o">=</span><span class="mi">50</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">buffer_size</span> <span class="o">=</span> <span class="n">buffer_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">close_buf</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">deque</span><span class="p">(</span><span class="n">maxlen</span><span class="o">=</span><span class="n">buffer_size</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">high_buf</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">deque</span><span class="p">(</span><span class="n">maxlen</span><span class="o">=</span><span class="n">buffer_size</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">low_buf</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">deque</span><span class="p">(</span><span class="n">maxlen</span><span class="o">=</span><span class="n">buffer_size</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">learn_one</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">close_buf</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="s2">&quot;close&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">high_buf</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="s2">&quot;high&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">low_buf</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="s2">&quot;low&quot;</span><span class="p">])</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">transform_one</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;return&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="s2">&quot;close&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;open&quot;</span><span class="p">])</span> <span class="o">/</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;open&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;range_pct&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="s2">&quot;high&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;low&quot;</span><span class="p">])</span> <span class="o">/</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;close&quot;</span><span class="p">],</span>
+        <span class="p">}</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">close_buf</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">15</span><span class="p">:</span>
+            <span class="n">close</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">close_buf</span><span class="p">)</span>
+            <span class="n">high</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">high_buf</span><span class="p">)</span>
+            <span class="n">low</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">low_buf</span><span class="p">)</span>
+
+            <span class="n">out</span><span class="p">[</span><span class="s2">&quot;rsi&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tas</span><span class="o">.</span><span class="n">RSI</span><span class="p">(</span><span class="n">close</span><span class="p">,</span> <span class="n">timeperiod</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+            <span class="n">out</span><span class="p">[</span><span class="s2">&quot;atr_pct&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tas</span><span class="o">.</span><span class="n">ATR</span><span class="p">(</span><span class="n">high</span><span class="p">,</span> <span class="n">low</span><span class="p">,</span> <span class="n">close</span><span class="p">,</span> <span class="n">timeperiod</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span> <span class="o">/</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;close&quot;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">close_buf</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">34</span><span class="p">:</span>
+            <span class="n">close</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">close_buf</span><span class="p">)</span>
+            <span class="n">macd</span><span class="p">,</span> <span class="n">signal</span><span class="p">,</span> <span class="n">hist</span> <span class="o">=</span> <span class="n">tas</span><span class="o">.</span><span class="n">MACD</span><span class="p">(</span><span class="n">close</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">26</span><span class="p">,</span> <span class="mi">9</span><span class="p">)</span>
+            <span class="n">out</span><span class="p">[</span><span class="s2">&quot;macd_hist&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">hist</span>
+
+        <span class="k">return</span> <span class="n">out</span>
+</code></pre></div>
+<p>A few things to note:</p>
+<ul>
+<li><code>learn_one</code> appends to the buffers — this is called during training to keep the buffer current.</li>
+<li><code>transform_one</code> computes features from the current buffer state. Features that need more history (like MACD needing 34 bars) are only included once enough data has accumulated.</li>
+<li>The <code>deque(maxlen=...)</code> automatically evicts old data, keeping memory bounded.</li>
+</ul>
+<p>Let's verify it works on a single sample:</p>
+<div class="language-python highlight"><pre><span></span><code><span class="n">ta</span> <span class="o">=</span> <span class="n">TALibFeatures</span><span class="p">(</span><span class="n">buffer_size</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+
+<span class="c1"># Feed some history</span>
+<span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+    <span class="n">ta</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+<span class="c1"># Now transform the next sample</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">20</span><span class="p">]</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+<span class="n">ta</span><span class="o">.</span><span class="n">transform_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>{&#39;return&#39;: -0.0004761716190877718,
+ &#39;range_pct&#39;: 0.0010138237573118554,
+ &#39;rsi&#39;: 28.041286849656554,
+ &#39;atr_pct&#39;: 0.0010326997730866858}
+</code></pre></div>
+<h2 id="putting-it-together-an-online-pipeline">Putting it together: an online pipeline<a class="headerlink" href="#putting-it-together-an-online-pipeline" title="Permanent link">&para;</a></h2>
+<p>We can now wire <code>TALibFeatures</code> into a full River pipeline with scaling and a classifier. We'll use the prequential (test-then-train) protocol: predict first, then learn.</p>
+<div class="language-python highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">river</span><span class="w"> </span><span class="kn">import</span> <span class="n">linear_model</span><span class="p">,</span> <span class="n">metrics</span><span class="p">,</span> <span class="n">optim</span><span class="p">,</span> <span class="n">preprocessing</span><span class="p">,</span> <span class="n">stream</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">TALibFeatures</span><span class="p">(</span><span class="n">buffer_size</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+    <span class="o">|</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">StandardScaler</span><span class="p">()</span>
+    <span class="o">|</span> <span class="n">linear_model</span><span class="o">.</span><span class="n">LogisticRegression</span><span class="p">(</span><span class="n">optimizer</span><span class="o">=</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="mf">0.01</span><span class="p">))</span>
+<span class="p">)</span>
+
+<span class="n">rolling_acc</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">Rolling</span><span class="p">(</span><span class="n">metrics</span><span class="o">.</span><span class="n">Accuracy</span><span class="p">(),</span> <span class="n">window_size</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">cumulative_acc</span> <span class="o">=</span> <span class="n">metrics</span><span class="o">.</span><span class="n">Accuracy</span><span class="p">()</span>
+
+<span class="n">rolling_history</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">stream</span><span class="o">.</span><span class="n">iter_pandas</span><span class="p">(</span>
+    <span class="n">df</span><span class="p">[[</span><span class="s2">&quot;open&quot;</span><span class="p">,</span> <span class="s2">&quot;high&quot;</span><span class="p">,</span> <span class="s2">&quot;low&quot;</span><span class="p">,</span> <span class="s2">&quot;close&quot;</span><span class="p">,</span> <span class="s2">&quot;volume&quot;</span><span class="p">]],</span>
+    <span class="n">df</span><span class="p">[</span><span class="s2">&quot;target&quot;</span><span class="p">],</span>
+<span class="p">):</span>
+    <span class="n">y_pred</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">y_pred</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">rolling_acc</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
+        <span class="n">cumulative_acc</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
+    <span class="n">rolling_history</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rolling_acc</span><span class="o">.</span><span class="n">get</span><span class="p">()</span> <span class="k">if</span> <span class="n">rolling_acc</span><span class="o">.</span><span class="n">get</span><span class="p">()</span> <span class="k">else</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cumulative accuracy: </span><span class="si">{</span><span class="n">cumulative_acc</span><span class="o">.</span><span class="n">get</span><span class="p">()</span><span class="si">:</span><span class="s2">.2%</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>Cumulative accuracy: 48.75%
+</code></pre></div>
+<p>Let's visualize the rolling accuracy alongside the price chart:</p>
+<div class="language-python highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.dates</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mdates</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="p">(</span><span class="n">ax1</span><span class="p">,</span> <span class="n">ax2</span><span class="p">)</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">7</span><span class="p">),</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">timestamps</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;timestamp&quot;</span><span class="p">]</span>
+
+<span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">timestamps</span><span class="p">,</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;close&quot;</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;steelblue&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;BTC/USDT Price&quot;</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span>
+    <span class="s2">&quot;Online Crypto Direction Prediction&quot;</span><span class="p">,</span>
+    <span class="n">fontsize</span><span class="o">=</span><span class="mi">13</span><span class="p">,</span>
+    <span class="n">fontweight</span><span class="o">=</span><span class="s2">&quot;bold&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+
+<span class="n">valid</span> <span class="o">=</span> <span class="p">[(</span><span class="n">t</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span><span class="p">,</span> <span class="n">a</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">timestamps</span><span class="p">,</span> <span class="n">rolling_history</span><span class="p">)</span> <span class="k">if</span> <span class="n">a</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">]</span>
+<span class="n">ts</span><span class="p">,</span> <span class="n">accs</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">valid</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">accs</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;#4CAF50&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Rolling accuracy (w=100)&quot;</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">1.2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Coin flip (50%)&quot;</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Rolling Accuracy&quot;</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Time&quot;</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mf">0.35</span><span class="p">,</span> <span class="mf">0.65</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;upper left&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">9</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+
+<span class="n">ax2</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">mdates</span><span class="o">.</span><span class="n">DateFormatter</span><span class="p">(</span><span class="s2">&quot;%H:%M&quot;</span><span class="p">))</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">autofmt_xdate</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<p><img alt="png" src="../feature-extraction_files/feature-extraction_28_0.png" /></p>
 
 
 
@@ -1639,8 +2370,6 @@
 
 
 
-
-  
 
 
 

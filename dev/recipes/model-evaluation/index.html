@@ -71,6 +71,20 @@
 ></script>
     
     
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="River" />
+  <meta property="og:title" content="Model evaluation - River" />
+  <meta property="og:description" content="Online machine learning in Python" />
+  <meta property="og:url" content="https://riverml.xyz/dev/recipes/model-evaluation/" />
+  <meta property="og:image" content="https://riverml.xyz/img/icon.png" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Model evaluation - River" />
+  <meta name="twitter:description" content="Online machine learning in Python" />
+  <meta name="twitter:image" content="https://riverml.xyz/img/icon.png" />
+
   </head>
   
   
@@ -272,7 +286,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../examples/" class="md-tabs__link">
+        <a href="../../examples/index.md" class="md-tabs__link">
           
   
   Examples
@@ -490,8 +504,6 @@
       
         
       
-        
-      
     
     
     
@@ -585,6 +597,24 @@
           
         
         
+          <label class="md-nav__link md-nav__link--active" for="__toc">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Model evaluation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
       
       <a href="././" class="md-nav__link md-nav__link--active">
         
@@ -602,6 +632,114 @@
   
 
       </a>
+      
+        
+
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#why-not-traintest-split" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why not train/test split?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-manual-loop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The manual loop
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#using-evaluateprogressive_val_score" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Using evaluate.progressive_val_score
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#choosing-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Choosing metrics
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tracking-performance-over-time-with-iter_progressive_val_score" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tracking performance over time with iter_progressive_val_score
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#regression-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Regression example
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#delayed-labels" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Delayed labels
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#measuring-time-and-memory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Measuring time and memory
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -671,14 +809,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../hyperparameter-tuning/" class="md-nav__link">
+      <a href="../saving-loading/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Hyperparameter tuning
+    Saving and loading models
   
 
     
@@ -707,34 +845,6 @@
     
   
     Mini-batching
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../on-hoeffding-trees/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Incremental decision trees in river: the Hoeffding Tree case
   
 
     
@@ -1260,6 +1370,234 @@
       
         
       
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
     
     
     
@@ -1337,6 +1675,8 @@
       
         
       
+        
+      
     
     
     
@@ -1355,14 +1695,14 @@
   
   
   
-    <a href="../../examples/" class="md-nav__link">
+    <a href="../../examples/index.md" class="md-nav__link">
       
   
   
   <span class="md-ellipsis">
     
   
-    Examples
+    none
   
 
     
@@ -1611,6 +1951,102 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#why-not-traintest-split" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why not train/test split?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-manual-loop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The manual loop
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#using-evaluateprogressive_val_score" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Using evaluate.progressive_val_score
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#choosing-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Choosing metrics
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tracking-performance-over-time-with-iter_progressive_val_score" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tracking performance over time with iter_progressive_val_score
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#regression-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Regression example
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#delayed-labels" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Delayed labels
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#measuring-time-and-memory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Measuring time and memory
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -1628,7 +2064,149 @@
 
 
 <h1 id="model-evaluation">Model evaluation<a class="headerlink" href="#model-evaluation" title="Permanent link">&para;</a></h1>
-<p>To do.</p>
+<p>Evaluating an online model is fundamentally different from the batch setting. There's no fixed train/test split — data arrives one sample at a time. This recipe explains <strong>progressive validation</strong>, the standard evaluation protocol for online learning, and shows how to use River's <code>evaluate</code> module.</p>
+<h2 id="why-not-traintest-split">Why not train/test split?<a class="headerlink" href="#why-not-traintest-split" title="Permanent link">&para;</a></h2>
+<p>In batch machine learning, you split your data into a training set and a test set. The model trains on one chunk and is evaluated on the other. This works because you have all the data upfront.</p>
+<p>In online learning, data arrives as a stream. You don't have the luxury of holding data back. Instead, we use <strong>progressive validation</strong> (also called <strong>prequential evaluation</strong> or <strong>test-then-train</strong>):</p>
+<ol>
+<li>A new sample <code>x</code> arrives</li>
+<li>The model makes a prediction <strong>before</strong> seeing the answer</li>
+<li>The true label <code>y</code> is revealed</li>
+<li>The metric is updated with the prediction and the true label</li>
+<li>The model learns from <code>(x, y)</code></li>
+</ol>
+<p>Because the model is always tested on data it hasn't trained on yet, progressive validation gives an honest estimate of real-world performance — no separate test set needed.</p>
+<h2 id="the-manual-loop">The manual loop<a class="headerlink" href="#the-manual-loop" title="Permanent link">&para;</a></h2>
+<p>Let's start with the explicit loop so you can see exactly what's happening. We'll use the Phishing dataset (a binary classification task) and a logistic regression:</p>
+<div class="language-python highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">river</span><span class="w"> </span><span class="kn">import</span> <span class="n">datasets</span><span class="p">,</span> <span class="n">linear_model</span><span class="p">,</span> <span class="n">metrics</span><span class="p">,</span> <span class="n">preprocessing</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">StandardScaler</span><span class="p">()</span> <span class="o">|</span> <span class="n">linear_model</span><span class="o">.</span><span class="n">LogisticRegression</span><span class="p">()</span>
+<span class="n">metric</span> <span class="o">=</span> <span class="n">metrics</span><span class="o">.</span><span class="n">Accuracy</span><span class="p">()</span>
+
+<span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">datasets</span><span class="o">.</span><span class="n">Phishing</span><span class="p">():</span>
+    <span class="n">y_pred</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">metric</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+<span class="n">metric</span>
+</code></pre></div>
+<p>This is the essence of progressive validation. Every sample is first used for testing, then for training.</p>
+<h2 id="using-evaluateprogressive_val_score">Using <a href="../../api/evaluate/progressive-val-score"><code>evaluate.progressive_val_score</code></a><a class="headerlink" href="#using-evaluateprogressive_val_score" title="Permanent link">&para;</a></h2>
+<p>The loop above is so common that River provides <a href="../../api/evaluate/progressive-val-score"><code>evaluate.progressive_val_score</code></a> to do it in one call. It handles the predict/update/learn cycle for you, and picks the right prediction method (<code>predict_one</code> vs <code>predict_proba_one</code>) based on the metric:</p>
+<div class="language-python highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">river</span><span class="w"> </span><span class="kn">import</span> <span class="n">evaluate</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">StandardScaler</span><span class="p">()</span> <span class="o">|</span> <span class="n">linear_model</span><span class="o">.</span><span class="n">LogisticRegression</span><span class="p">()</span>
+
+<span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span>
+    <span class="n">dataset</span><span class="o">=</span><span class="n">datasets</span><span class="o">.</span><span class="n">Phishing</span><span class="p">(),</span>
+    <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+    <span class="n">metric</span><span class="o">=</span><span class="n">metrics</span><span class="o">.</span><span class="n">Accuracy</span><span class="p">(),</span>
+<span class="p">)</span>
+</code></pre></div>
+<p>Use <code>print_every</code> to see progress during evaluation:</p>
+<div class="language-python highlight"><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">StandardScaler</span><span class="p">()</span> <span class="o">|</span> <span class="n">linear_model</span><span class="o">.</span><span class="n">LogisticRegression</span><span class="p">()</span>
+
+<span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span>
+    <span class="n">dataset</span><span class="o">=</span><span class="n">datasets</span><span class="o">.</span><span class="n">Phishing</span><span class="p">(),</span>
+    <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+    <span class="n">metric</span><span class="o">=</span><span class="n">metrics</span><span class="o">.</span><span class="n">Accuracy</span><span class="p">(),</span>
+    <span class="n">print_every</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span>
+<span class="p">)</span>
+</code></pre></div>
+<h2 id="choosing-metrics">Choosing metrics<a class="headerlink" href="#choosing-metrics" title="Permanent link">&para;</a></h2>
+<p>River's <code>metrics</code> module has all the usual suspects. For classification: <code>Accuracy</code>, <code>F1</code>, <code>Precision</code>, <code>Recall</code>, <code>ROCAUC</code>, <code>LogLoss</code>, etc. For regression: <code>MAE</code>, <code>MSE</code>, <code>RMSE</code>, <code>R2</code>, <code>SMAPE</code>, etc.</p>
+<p>When you pass a metric that compares probabilities (like <code>ROCAUC</code>), <code>progressive_val_score</code> automatically uses <code>predict_proba_one</code> instead of <code>predict_one</code>:</p>
+<div class="language-python highlight"><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">StandardScaler</span><span class="p">()</span> <span class="o">|</span> <span class="n">linear_model</span><span class="o">.</span><span class="n">LogisticRegression</span><span class="p">()</span>
+
+<span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span>
+    <span class="n">dataset</span><span class="o">=</span><span class="n">datasets</span><span class="o">.</span><span class="n">Phishing</span><span class="p">(),</span>
+    <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+    <span class="n">metric</span><span class="o">=</span><span class="n">metrics</span><span class="o">.</span><span class="n">ROCAUC</span><span class="p">(),</span>
+<span class="p">)</span>
+</code></pre></div>
+<p>You can also combine multiple metrics with <code>+</code>:</p>
+<div class="language-python highlight"><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">StandardScaler</span><span class="p">()</span> <span class="o">|</span> <span class="n">linear_model</span><span class="o">.</span><span class="n">LogisticRegression</span><span class="p">()</span>
+
+<span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span>
+    <span class="n">dataset</span><span class="o">=</span><span class="n">datasets</span><span class="o">.</span><span class="n">Phishing</span><span class="p">(),</span>
+    <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+    <span class="n">metric</span><span class="o">=</span><span class="n">metrics</span><span class="o">.</span><span class="n">Accuracy</span><span class="p">()</span> <span class="o">+</span> <span class="n">metrics</span><span class="o">.</span><span class="n">F1</span><span class="p">()</span> <span class="o">+</span> <span class="n">metrics</span><span class="o">.</span><span class="n">LogLoss</span><span class="p">(),</span>
+<span class="p">)</span>
+</code></pre></div>
+<h2 id="tracking-performance-over-time-with-iter_progressive_val_score">Tracking performance over time with <code>iter_progressive_val_score</code><a class="headerlink" href="#tracking-performance-over-time-with-iter_progressive_val_score" title="Permanent link">&para;</a></h2>
+<p>Often you want to see how a model's performance evolves as it processes more data. <code>iter_progressive_val_score</code> yields results at regular checkpoints, which you can collect and plot:</p>
+<div class="language-python highlight"><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">StandardScaler</span><span class="p">()</span> <span class="o">|</span> <span class="n">linear_model</span><span class="o">.</span><span class="n">LogisticRegression</span><span class="p">()</span>
+
+<span class="n">checkpoints</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">evaluate</span><span class="o">.</span><span class="n">iter_progressive_val_score</span><span class="p">(</span>
+    <span class="n">dataset</span><span class="o">=</span><span class="n">datasets</span><span class="o">.</span><span class="n">Phishing</span><span class="p">(),</span>
+    <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+    <span class="n">metric</span><span class="o">=</span><span class="n">metrics</span><span class="o">.</span><span class="n">Accuracy</span><span class="p">(),</span>
+    <span class="n">step</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+<span class="p">))</span>
+
+<span class="c1"># Each checkpoint is a dict</span>
+<span class="n">checkpoints</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+</code></pre></div>
+<div class="language-python highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
+<span class="n">steps</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span><span class="p">[</span><span class="s2">&quot;Step&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">checkpoints</span><span class="p">]</span>
+<span class="n">accs</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span><span class="p">[</span><span class="s2">&quot;Accuracy&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">()</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">checkpoints</span><span class="p">]</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">steps</span><span class="p">,</span> <span class="n">accs</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Samples processed&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Accuracy&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Learning curve — progressive validation&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<h2 id="regression-example">Regression example<a class="headerlink" href="#regression-example" title="Permanent link">&para;</a></h2>
+<p>Progressive validation works the same way for regression. Here we predict Trump's approval rating:</p>
+<div class="language-python highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">river</span><span class="w"> </span><span class="kn">import</span> <span class="n">optim</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">preprocessing</span><span class="o">.</span><span class="n">StandardScaler</span><span class="p">()</span>
+    <span class="o">|</span> <span class="n">linear_model</span><span class="o">.</span><span class="n">LinearRegression</span><span class="p">(</span><span class="n">optimizer</span><span class="o">=</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="mf">0.001</span><span class="p">))</span>
+<span class="p">)</span>
+
+<span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span>
+    <span class="n">dataset</span><span class="o">=</span><span class="n">datasets</span><span class="o">.</span><span class="n">TrumpApproval</span><span class="p">(),</span>
+    <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+    <span class="n">metric</span><span class="o">=</span><span class="n">metrics</span><span class="o">.</span><span class="n">MAE</span><span class="p">(),</span>
+    <span class="n">print_every</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
+<span class="p">)</span>
+</code></pre></div>
+<h2 id="delayed-labels">Delayed labels<a class="headerlink" href="#delayed-labels" title="Permanent link">&para;</a></h2>
+<p>In real-world scenarios, the ground truth often arrives with a delay. For example, a fraud detection system makes a prediction at transaction time, but the label (fraud or not) may only be confirmed days later. During that delay, the model keeps making predictions without learning from the pending labels.</p>
+<p><code>progressive_val_score</code> supports this via the <code>moment</code> and <code>delay</code> parameters. <code>moment</code> identifies a field in each sample that defines temporal ordering, and <code>delay</code> specifies how long the label takes to arrive. The delay must be compatible with the moment type — if the moment is a <code>datetime</code>, use a <code>timedelta</code>; if it's an integer (like an ordinal date), use an integer:</p>
+<div class="language-python highlight"><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">preprocessing</span><span class="o">.</span><span class="n">StandardScaler</span><span class="p">()</span>
+    <span class="o">|</span> <span class="n">linear_model</span><span class="o">.</span><span class="n">LinearRegression</span><span class="p">(</span><span class="n">optimizer</span><span class="o">=</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="mf">0.001</span><span class="p">))</span>
+<span class="p">)</span>
+
+<span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span>
+    <span class="n">dataset</span><span class="o">=</span><span class="n">datasets</span><span class="o">.</span><span class="n">TrumpApproval</span><span class="p">(),</span>
+    <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+    <span class="n">metric</span><span class="o">=</span><span class="n">metrics</span><span class="o">.</span><span class="n">MAE</span><span class="p">(),</span>
+    <span class="n">moment</span><span class="o">=</span><span class="s2">&quot;ordinal_date&quot;</span><span class="p">,</span>
+    <span class="n">delay</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+<span class="p">)</span>
+</code></pre></div>
+<p>With a delay, the model must predict using an older version of itself — just like in production. This typically gives a more realistic (and lower) performance estimate.</p>
+<h2 id="measuring-time-and-memory">Measuring time and memory<a class="headerlink" href="#measuring-time-and-memory" title="Permanent link">&para;</a></h2>
+<p>You can track resource usage with <code>show_time</code> and <code>show_memory</code>:</p>
+<div class="language-python highlight"><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">StandardScaler</span><span class="p">()</span> <span class="o">|</span> <span class="n">linear_model</span><span class="o">.</span><span class="n">LogisticRegression</span><span class="p">()</span>
+
+<span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span>
+    <span class="n">dataset</span><span class="o">=</span><span class="n">datasets</span><span class="o">.</span><span class="n">Phishing</span><span class="p">(),</span>
+    <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+    <span class="n">metric</span><span class="o">=</span><span class="n">metrics</span><span class="o">.</span><span class="n">Accuracy</span><span class="p">(),</span>
+    <span class="n">print_every</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>
+    <span class="n">show_time</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">show_memory</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+</code></pre></div>
 
 
 
@@ -1639,8 +2217,6 @@
 
 
 
-
-  
 
 
 

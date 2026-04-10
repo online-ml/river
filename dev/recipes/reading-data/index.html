@@ -71,6 +71,20 @@
 ></script>
     
     
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="River" />
+  <meta property="og:title" content="Reading data - River" />
+  <meta property="og:description" content="Online machine learning in Python" />
+  <meta property="og:url" content="https://riverml.xyz/dev/recipes/reading-data/" />
+  <meta property="og:image" content="https://riverml.xyz/img/icon.png" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Reading data - River" />
+  <meta name="twitter:description" content="Online machine learning in Python" />
+  <meta name="twitter:image" content="https://riverml.xyz/img/icon.png" />
+
   </head>
   
   
@@ -272,7 +286,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../examples/" class="md-tabs__link">
+        <a href="../../examples/index.md" class="md-tabs__link">
           
   
   Examples
@@ -490,8 +504,6 @@
       
         
       
-        
-      
     
     
     
@@ -671,14 +683,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../hyperparameter-tuning/" class="md-nav__link">
+      <a href="../saving-loading/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Hyperparameter tuning
+    Saving and loading models
   
 
     
@@ -707,34 +719,6 @@
     
   
     Mini-batching
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../on-hoeffding-trees/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Incremental decision trees in river: the Hoeffding Tree case
   
 
     
@@ -1260,6 +1244,234 @@
       
         
       
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
     
     
     
@@ -1337,6 +1549,8 @@
       
         
       
+        
+      
     
     
     
@@ -1355,14 +1569,14 @@
   
   
   
-    <a href="../../examples/" class="md-nav__link">
+    <a href="../../examples/index.md" class="md-nav__link">
       
   
   
   <span class="md-ellipsis">
     
   
-    Examples
+    none
   
 
     
@@ -1699,7 +1913,7 @@ Downloaded  True
   &#39;wind&#39;: &#39;9.3&#39;},
  None)
 </code></pre></div>
-<p>There are a couple things that are wrong. First of all, the numeric features have not been casted into numbers. Indeed, by default, <a href="../../api/stream/iter-csv"><code>stream.iter_csv</code></a> assumes that everything is a string. A related issue is that the <code>moment</code> field hasn't been parsed into a <code>datetime</code>. Finally, the target field, which is <code>bikes</code>, hasn't been separated from the rest of the features. We can remedy to these issues by setting a few parameters:</p>
+<p>There are a couple things that are wrong. First of all, the numeric features have not been casted into numbers. Indeed, by default, <a href="../../api/stream/iter-csv"><code>stream.iter_csv</code></a> assumes that everything is a string. A related issue is that the <code>moment</code> field hasn't been parsed into a <code>datetime</code>. Finally, the target field, which is <code>bikes</code>, hasn't been separated from the rest of the features. We can remedy these issues by setting a few parameters:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">X_y</span> <span class="o">=</span> <span class="n">stream</span><span class="o">.</span><span class="n">iter_csv</span><span class="p">(</span>
     <span class="n">dataset</span><span class="o">.</span><span class="n">path</span><span class="p">,</span>
     <span class="n">converters</span><span class="o">=</span><span class="p">{</span>
@@ -1750,7 +1964,7 @@ Downloaded  True
  151.0)
 </code></pre></div>
 <p>To conclude, let us shortly mention the difference between <em>proactive learning</em> and <em>reactive learning</em> in the specific context of online machine learning. When we loop over a data with a <code>for</code> loop, we have the control over the data and the order in which it arrives. We are proactive in the sense that we, the user, are asking for the data to arrive.</p>
-<p>In contract, in a reactive situation, we don't have control on the data arrival. A typical example of such a situation is a web server, where web requests arrive in an arbitrary order. This is a situation where River shines. For instance, in a <a href="https://flask.palletsprojects.com/en/1.1.x/">Flask</a> application, you could define a route to make predictions with a River model as so:</p>
+<p>In contrast, in a reactive situation, we don't have control on the data arrival. A typical example of such a situation is a web server, where web requests arrive in an arbitrary order. This is a situation where River shines. For instance, in a <a href="https://flask.palletsprojects.com/en/1.1.x/">Flask</a> application, you could define a route to make predictions with a River model as so:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">flask</span>
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -1780,8 +1994,6 @@ Downloaded  True
 
 
 
-
-  
 
 
 
