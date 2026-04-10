@@ -9,10 +9,10 @@ import re
 import shutil
 import socket
 import tarfile
-import typing
-import zipfile
 import time
+import typing
 import urllib.error
+import zipfile
 from urllib import request
 
 from river import utils
