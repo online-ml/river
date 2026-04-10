@@ -1,9 +1,19 @@
+---
+description: How to install River, a Python library for online machine learning on streaming data.
+---
+
 # Installation
 
 River is meant to work with Python 3.11 and above. Installation can be done via `pip`:
 
 ```sh
 pip install river
+```
+
+And of course with uv:
+
+```sh
+uv add river
 ```
 
 You can install the latest development version from GitHub, as so:
