@@ -152,8 +152,8 @@ default-groups = [
 build-frontend = "build[uv]"
 skip = "*-musllinux_i686"
 test-command = "python -c \"import river\""
-# TODO: re-enable win32 testing once pandas is removed as a dependency
-test-skip = "*-win32"
+# TODO: re-enable 32-bit testing once pandas is removed as a dependency
+test-skip = ["*-win32", "*_i686"]
 
 [tool.cibuildwheel.environment]
 PATH = "$HOME/.cargo/bin:$PATH"
