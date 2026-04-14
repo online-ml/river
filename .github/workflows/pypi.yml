@@ -16,6 +16,8 @@ jobs:
         python-version: ["311", "312", "313", "314"]
     steps:
       - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
         with:
@@ -40,6 +42,8 @@ jobs:
         python-version: ["311", "312", "313", "314"]
     steps:
       - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
       - name: Build wheels
         uses: pypa/cibuildwheel@v3.4.0
         timeout-minutes: 720
@@ -60,6 +64,8 @@ jobs:
         python-version: ["311", "312", "313", "314"]
     steps:
       - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
       - name: Build wheels
         uses: pypa/cibuildwheel@v3.4.0
         timeout-minutes: 720
