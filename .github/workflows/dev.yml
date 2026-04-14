@@ -11,6 +11,8 @@ concurrency:
 jobs:
   docs:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
 
@@ -29,11 +31,16 @@ jobs:
       - name: Build docs
         run: uv run make doc
 
-      - name: Upload docs source
-        uses: actions/upload-artifact@v4
-        with:
-          name: docs-source
-          path: docs/linkified
+      - name: Deploy docs
+        env:
+          GH_TOKEN: ${{ secrets.GitHubToken }}
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          REMOTE=https://github.com/${{ github.repository }}.git
+          uv run mike deploy dev --remote "$REMOTE" --ignore-remote-status
+          git pull --rebase "$REMOTE" gh-pages || true
+          git push "$REMOTE" gh-pages
 
   benchmarks:
     runs-on: ubuntu-latest
@@ -85,7 +92,7 @@ jobs:
           cd /tmp/asv-save
           git add results
           git commit -m "Update benchmark results" --allow-empty
-          git pull --rebase origin asv
+          git fetch origin asv && git rebase origin/asv || true
           git push origin asv
           cd -
           git worktree remove /tmp/asv-save
@@ -100,7 +107,7 @@ jobs:
           name: benchmark-html
           path: benchmarks/html
 
-  deploy:
+  deploy-benchmarks:
     needs: [docs, benchmarks]
     runs-on: ubuntu-latest
     permissions:
@@ -108,28 +115,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v7
-
-      - name: Install the project
-        run: uv sync --locked --all-extras --dev
-
-      - name: Download docs source
-        uses: actions/download-artifact@v4
-        with:
-          name: docs-source
-          path: docs/linkified
-
-      - name: Deploy docs
-        env:
-          GH_TOKEN: ${{ secrets.GitHubToken }}
-        run: |
-          git config user.name github-actions
-          git config user.email github-actions@github.com
-          uv run mike deploy dev --push --remote https://github.com/${{ github.repository }}.git
 
       - name: Download benchmark HTML
         uses: actions/download-artifact@v4
@@ -139,6 +124,8 @@ jobs:
 
       - name: Deploy benchmarks to GitHub Pages
         run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
           git fetch origin gh-pages:gh-pages
           git worktree add /tmp/gh-pages gh-pages
           rm -rf /tmp/gh-pages/benchmarks
@@ -146,5 +133,6 @@ jobs:
           cd /tmp/gh-pages
           git add benchmarks
           git commit -m "Update benchmark results" --allow-empty
-          git pull --rebase origin gh-pages
           git push origin gh-pages
+          cd -
+          git worktree remove /tmp/gh-pages
