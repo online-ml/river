@@ -1,0 +1,3181 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Online machine learning in Python">
+      
+      
+        <meta name="author" content="The Fellowship of Online Machine Learning">
+      
+      
+        <link rel="canonical" href="https://riverml.xyz/0.24.0/recipes/bandits-101/">
+      
+      
+        <link rel="prev" href="../active-learning/">
+      
+      
+        <link rel="next" href="../cloning-and-mutating/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../img/favicon.ico">
+      <meta name="generator" content="zensical-0.0.30">
+    
+    
+      
+        <title>Multi-armed bandits - River</title>
+      
+    
+    
+      
+        
+      
+      <link rel="stylesheet" href="../../assets/stylesheets/classic/main.320d0ab1.min.css">
+      
+        
+          
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/classic/palette.7dc9a0ad.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Sans:300,300i,400,400i,500,500i,700,700i%7CFira+Code:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Fira Sans";--md-code-font:"Fira Code"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,a=__md_scope)=>JSON.parse(t.getItem(a.pathname+"."+e)),__md_set=(e,t,a=localStorage,_=__md_scope)=>{try{a.setItem(_.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script>
+    
+      <script
+  defer
+  src="https://eu.umami.is/script.js"
+  data-website-id="b9f84709-bbc5-48b5-b43b-ef0bcc45a1f8"
+></script>
+    
+    
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="River" />
+  <meta property="og:title" content="Multi-armed bandits - River" />
+  <meta property="og:description" content="Online machine learning in Python" />
+  <meta property="og:url" content="https://riverml.xyz/0.24.0/recipes/bandits-101/" />
+  <meta property="og:image" content="https://riverml.xyz/img/icon.png" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Multi-armed bandits - River" />
+  <meta name="twitter:description" content="Online machine learning in Python" />
+  <meta name="twitter:image" content="https://riverml.xyz/img/icon.png" />
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer" aria-label="Navigation"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#multi-armed-bandits" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="River" class="md-header__button md-logo" aria-label="River" data-md-component="logo">
+      
+  <img src="../../img/icon.png" alt="River">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer" aria-label="Navigation">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            River
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Multi-armed bandits
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="none" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="none" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search" aria-label="Search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog" aria-label="Search">
+  <button type="button" class="md-search__button">
+    Search
+  </button>
+</div>
+      
+    
+    <div class="md-header__source">
+      
+        <a href="https://github.com/online-ml/river" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    online-ml/river
+  </div>
+</a>
+      
+    </div>
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../introduction/installation/" class="md-tabs__link">
+          
+  
+  Introduction
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../reading-data/" class="md-tabs__link">
+          
+  
+  Recipes
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../api/overview/" class="md-tabs__link">
+          
+  
+  API
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../examples/index.md" class="md-tabs__link">
+          
+  
+  Examples
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../faq" class="md-tabs__link">
+        
+  
+  FAQ
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../releases/unreleased.md" class="md-tabs__link">
+          
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../benchmarks" class="md-tabs__link">
+        
+  
+  Benchmarks
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../license" class="md-tabs__link">
+        
+  
+  License
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="River" class="md-nav__button md-logo" aria-label="River" data-md-component="logo">
+      
+  <img src="../../img/icon.png" alt="River">
+
+    </a>
+    River
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/online-ml/river" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    online-ml/river
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../introduction/installation/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Introduction
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Recipes
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Recipes
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reading-data/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reading data
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../model-evaluation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Model evaluation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pipelines/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pipelines
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../feature-extraction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Feature extraction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../saving-loading/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Saving and loading models
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mini-batching/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mini-batching
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../active-learning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Active learning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+        
+        <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+        
+        
+          
+        
+        
+          <label class="md-nav__link md-nav__link--active" for="__toc">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multi-armed bandits
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+      
+      <a href="././" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multi-armed bandits
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#controlling-the-evaluation-loop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Controlling the evaluation loop
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#handling-drift" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Handling drift
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cloning-and-mutating/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cloning and mutating
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../rolling-computations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rolling computations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../api/overview/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../examples/index.md" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    none
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../faq" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    FAQ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../releases/unreleased.md" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../benchmarks" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmarks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../license" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    License
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#controlling-the-evaluation-loop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Controlling the evaluation loop
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#handling-drift" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Handling drift
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+  
+  
+
+
+<h1 id="multi-armed-bandits">Multi-armed bandits<a class="headerlink" href="#multi-armed-bandits" title="Permanent link">&para;</a></h1>
+<p>River has a <code>bandit</code> module. It contains several multi-armed bandit policies, bandit environments, and utilities to benchmark policies on bandit problems.</p>
+<p>Bandit environments in River implement the <a href="https://www.gymlibrary.dev/">Gym</a> interface. You can thus load them with <code>gym.make</code>. Note that Gym is intended for reinforcement learning algorithms, while bandit policies are the simplest form of reinforcement learning. Bandit policies learn by receiving a reward after each step, while reinforcement learning algorithms have to learn from feedback that may arrive at the end of a (long) sequence of steps.</p>
+<div class="language-python highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">gymnasium</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">gym</span>
+
+<span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">gym</span><span class="o">.</span><span class="n">envs</span><span class="o">.</span><span class="n">registry</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;river_bandits&#39;</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+</code></pre></div>
+<p>River's bandit module offers the <a href="../../api/bandit/evaluate"><code>bandit.evaluate</code></a> function to benchmark several policies on a given environment. It takes as input a list of bandit policies, a bandit environment (the problem to solve), and a reward object.</p>
+<div class="language-python highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">gymnasium</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">gym</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">river</span><span class="w"> </span><span class="kn">import</span> <span class="n">bandit</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tqdm</span><span class="w"> </span><span class="kn">import</span> <span class="n">tqdm</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">river</span><span class="w"> </span><span class="kn">import</span> <span class="n">stats</span>
+
+<span class="n">policies</span><span class="o">=</span><span class="p">[</span>
+    <span class="n">bandit</span><span class="o">.</span><span class="n">EpsilonGreedy</span><span class="p">(</span><span class="n">epsilon</span><span class="o">=</span><span class="mf">0.1</span><span class="p">),</span>
+    <span class="n">bandit</span><span class="o">.</span><span class="n">EpsilonGreedy</span><span class="p">(</span><span class="n">epsilon</span><span class="o">=</span><span class="mf">0.01</span><span class="p">),</span>
+    <span class="n">bandit</span><span class="o">.</span><span class="n">EpsilonGreedy</span><span class="p">(</span><span class="n">epsilon</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+<span class="p">]</span>
+
+<span class="n">env</span> <span class="o">=</span> <span class="n">gym</span><span class="o">.</span><span class="n">make</span><span class="p">(</span>
+    <span class="s1">&#39;river_bandits/KArmedTestbed-v0&#39;</span><span class="p">,</span>
+    <span class="n">max_episode_steps</span><span class="o">=</span><span class="mi">1000</span>
+<span class="p">)</span>
+
+<span class="n">trace</span> <span class="o">=</span> <span class="n">bandit</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span>
+    <span class="n">policies</span><span class="o">=</span><span class="n">policies</span><span class="p">,</span>
+    <span class="n">env</span><span class="o">=</span><span class="n">env</span><span class="p">,</span>
+    <span class="n">reward_stat</span><span class="o">=</span><span class="n">stats</span><span class="o">.</span><span class="n">Mean</span><span class="p">(),</span>
+    <span class="n">n_episodes</span><span class="o">=</span><span class="p">(</span><span class="n">n_episodes</span> <span class="o">:=</span> <span class="mi">2000</span><span class="p">),</span>
+<span class="p">)</span>
+</code></pre></div>
+<p>The <a href="../../api/bandit/evaluate"><code>bandit.evaluate</code></a> function returns a generator containing the results at each step of the benchmark. This can be wrapped with a <code>pandas.DataFrame</code> to gather all the results.</p>
+<div class="language-python highlight"><pre><span></span><code><span class="n">trace_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">tqdm</span><span class="p">(</span>
+    <span class="n">trace</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="p">(</span>
+        <span class="n">n_episodes</span> <span class="o">*</span>
+        <span class="nb">len</span><span class="p">(</span><span class="n">policies</span><span class="p">)</span> <span class="o">*</span>
+        <span class="n">env</span><span class="o">.</span><span class="n">_max_episode_steps</span>
+    <span class="p">)</span>
+<span class="p">))</span>
+<span class="n">trace_df</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+</code></pre></div>
+<p>0%|          | 0/6000000 [00:00&lt;?, ?it/s]</p>
+<p>0%|          | 16179/6000000 [00:00&lt;00:36, 161782.83it/s]</p>
+<p>1%|          | 32888/6000000 [00:00&lt;00:36, 164898.02it/s]</p>
+<p>1%|          | 49378/6000000 [00:00&lt;00:36, 164714.48it/s]</p>
+<p>1%|          | 65907/6000000 [00:00&lt;00:35, 164939.42it/s]</p>
+<p>1%|▏         | 82401/6000000 [00:00&lt;00:36, 164018.43it/s]</p>
+<p>2%|▏         | 98978/6000000 [00:00&lt;00:35, 164610.18it/s]</p>
+<p>2%|▏         | 115440/6000000 [00:00&lt;00:35, 164228.78it/s]</p>
+<p>2%|▏         | 132001/6000000 [00:00&lt;00:35, 164363.31it/s]</p>
+<p>2%|▏         | 148438/6000000 [00:00&lt;00:43, 135057.33it/s]</p>
+<p>3%|▎         | 164837/6000000 [00:01&lt;00:40, 142802.07it/s]</p>
+<p>3%|▎         | 181035/6000000 [00:01&lt;00:39, 148106.13it/s]</p>
+<p>3%|▎         | 197492/6000000 [00:01&lt;00:37, 152766.69it/s]</p>
+<p>4%|▎         | 213680/6000000 [00:01&lt;00:37, 155391.39it/s]</p>
+<p>4%|▍         | 230066/6000000 [00:01&lt;00:36, 157858.23it/s]</p>
+<p>4%|▍         | 246408/6000000 [00:01&lt;00:36, 159490.51it/s]</p>
+<p>4%|▍         | 262893/6000000 [00:01&lt;00:35, 161073.49it/s]</p>
+<p>5%|▍         | 279112/6000000 [00:01&lt;00:35, 159267.40it/s]</p>
+<p>5%|▍         | 295120/6000000 [00:01&lt;00:36, 155773.50it/s]</p>
+<p>5%|▌         | 311470/6000000 [00:01&lt;00:35, 158025.56it/s]</p>
+<p>5%|▌         | 327838/6000000 [00:02&lt;00:35, 159687.43it/s]</p>
+<p>6%|▌         | 344346/6000000 [00:02&lt;00:35, 161281.75it/s]</p>
+<p>6%|▌         | 360506/6000000 [00:02&lt;00:35, 161103.85it/s]</p>
+<p>6%|▋         | 376894/6000000 [00:02&lt;00:34, 161926.86it/s]</p>
+<p>7%|▋         | 393103/6000000 [00:02&lt;00:34, 161840.21it/s]</p>
+<p>7%|▋         | 409455/6000000 [00:02&lt;00:34, 162339.71it/s]</p>
+<p>7%|▋         | 425802/6000000 [00:02&lt;00:34, 162673.47it/s]</p>
+<p>7%|▋         | 442300/6000000 [00:02&lt;00:34, 163362.06it/s]</p>
+<p>8%|▊         | 458981/6000000 [00:02&lt;00:33, 164392.50it/s]</p>
+<p>8%|▊         | 475424/6000000 [00:02&lt;00:33, 163326.85it/s]</p>
+<p>8%|▊         | 491903/6000000 [00:03&lt;00:33, 163761.27it/s]</p>
+<p>8%|▊         | 508282/6000000 [00:03&lt;00:33, 163217.36it/s]</p>
+<p>9%|▊         | 524798/6000000 [00:03&lt;00:33, 163795.76it/s]</p>
+<p>9%|▉         | 541180/6000000 [00:03&lt;00:33, 163534.97it/s]</p>
+<p>9%|▉         | 557887/6000000 [00:03&lt;00:33, 164590.76it/s]</p>
+<p>10%|▉         | 574348/6000000 [00:03&lt;00:33, 163890.33it/s]</p>
+<p>10%|▉         | 590829/6000000 [00:03&lt;00:32, 164162.97it/s]</p>
+<p>10%|█         | 607247/6000000 [00:03&lt;00:32, 164123.89it/s]</p>
+<p>10%|█         | 623661/6000000 [00:03&lt;00:32, 164037.59it/s]</p>
+<p>11%|█         | 640066/6000000 [00:03&lt;00:32, 163238.75it/s]</p>
+<p>11%|█         | 656450/6000000 [00:04&lt;00:32, 163416.54it/s]</p>
+<p>11%|█         | 672793/6000000 [00:04&lt;00:32, 162965.74it/s]</p>
+<p>11%|█▏        | 689337/6000000 [00:04&lt;00:32, 163703.18it/s]</p>
+<p>12%|█▏        | 705709/6000000 [00:04&lt;00:32, 162901.42it/s]</p>
+<p>12%|█▏        | 722415/6000000 [00:04&lt;00:32, 164139.36it/s]</p>
+<p>12%|█▏        | 738831/6000000 [00:04&lt;00:32, 163626.59it/s]</p>
+<p>13%|█▎        | 755425/6000000 [00:04&lt;00:31, 164316.51it/s]</p>
+<p>13%|█▎        | 771858/6000000 [00:04&lt;00:31, 163578.71it/s]</p>
+<p>13%|█▎        | 788367/6000000 [00:04&lt;00:31, 164027.15it/s]</p>
+<p>13%|█▎        | 804793/6000000 [00:04&lt;00:31, 164095.02it/s]</p>
+<p>14%|█▎        | 821204/6000000 [00:05&lt;00:31, 164070.06it/s]</p>
+<p>14%|█▍        | 837612/6000000 [00:05&lt;00:31, 163391.52it/s]</p>
+<p>14%|█▍        | 854215/6000000 [00:05&lt;00:31, 164177.68it/s]</p>
+<p>15%|█▍        | 870634/6000000 [00:05&lt;00:31, 163982.86it/s]</p>
+<p>15%|█▍        | 887158/6000000 [00:05&lt;00:31, 164357.63it/s]</p>
+<p>15%|█▌        | 903595/6000000 [00:05&lt;00:31, 163801.95it/s]</p>
+<p>15%|█▌        | 920067/6000000 [00:05&lt;00:30, 164074.24it/s]</p>
+<p>16%|█▌        | 936476/6000000 [00:05&lt;00:30, 163741.92it/s]</p>
+<p>16%|█▌        | 953153/6000000 [00:05&lt;00:30, 164646.30it/s]</p>
+<p>16%|█▌        | 969619/6000000 [00:06&lt;00:30, 164178.67it/s]</p>
+<p>16%|█▋        | 986394/6000000 [00:06&lt;00:30, 165243.15it/s]</p>
+<p>17%|█▋        | 1002953/6000000 [00:06&lt;00:30, 165345.80it/s]</p>
+<p>17%|█▋        | 1019582/6000000 [00:06&lt;00:30, 165625.05it/s]</p>
+<p>17%|█▋        | 1036145/6000000 [00:06&lt;00:30, 164725.58it/s]</p>
+<p>18%|█▊        | 1052916/6000000 [00:06&lt;00:29, 165613.91it/s]</p>
+<p>18%|█▊        | 1069479/6000000 [00:06&lt;00:30, 164056.50it/s]</p>
+<p>18%|█▊        | 1086001/6000000 [00:06&lt;00:29, 163845.91it/s]</p>
+<p>18%|█▊        | 1102389/6000000 [00:06&lt;00:30, 161009.19it/s]</p>
+<p>19%|█▊        | 1118501/6000000 [00:06&lt;00:31, 154584.00it/s]</p>
+<p>19%|█▉        | 1135050/6000000 [00:07&lt;00:30, 157720.50it/s]</p>
+<p>19%|█▉        | 1151486/6000000 [00:07&lt;00:30, 159652.02it/s]</p>
+<p>19%|█▉        | 1167896/6000000 [00:07&lt;00:30, 160956.21it/s]</p>
+<p>20%|█▉        | 1184490/6000000 [00:07&lt;00:29, 162427.33it/s]</p>
+<p>20%|██        | 1200978/6000000 [00:07&lt;00:29, 163152.67it/s]</p>
+<p>20%|██        | 1217451/6000000 [00:07&lt;00:29, 163619.62it/s]</p>
+<p>21%|██        | 1233826/6000000 [00:07&lt;00:29, 163527.78it/s]</p>
+<p>21%|██        | 1250327/6000000 [00:07&lt;00:28, 163968.34it/s]</p>
+<p>21%|██        | 1266731/6000000 [00:07&lt;00:28, 163462.41it/s]</p>
+<p>21%|██▏       | 1283266/6000000 [00:07&lt;00:28, 164025.38it/s]</p>
+<p>22%|██▏       | 1299673/6000000 [00:08&lt;00:28, 163543.82it/s]</p>
+<p>22%|██▏       | 1316447/6000000 [00:08&lt;00:28, 164796.48it/s]</p>
+<p>22%|██▏       | 1332930/6000000 [00:08&lt;00:28, 164301.20it/s]</p>
+<p>22%|██▏       | 1349424/6000000 [00:08&lt;00:28, 164491.26it/s]</p>
+<p>23%|██▎       | 1365875/6000000 [00:08&lt;00:28, 164040.67it/s]</p>
+<p>23%|██▎       | 1382705/6000000 [00:08&lt;00:27, 165312.45it/s]</p>
+<p>23%|██▎       | 1399238/6000000 [00:08&lt;00:27, 164685.46it/s]</p>
+<p>24%|██▎       | 1415867/6000000 [00:08&lt;00:27, 165161.81it/s]</p>
+<p>24%|██▍       | 1432385/6000000 [00:08&lt;00:27, 164811.04it/s]</p>
+<p>24%|██▍       | 1448943/6000000 [00:08&lt;00:27, 165039.61it/s]</p>
+<p>24%|██▍       | 1465448/6000000 [00:09&lt;00:27, 164541.10it/s]</p>
+<p>25%|██▍       | 1482001/6000000 [00:09&lt;00:27, 164331.48it/s]</p>
+<p>25%|██▍       | 1498799/6000000 [00:09&lt;00:27, 165418.32it/s]</p>
+<p>25%|██▌       | 1515342/6000000 [00:09&lt;00:27, 164323.93it/s]</p>
+<p>26%|██▌       | 1532013/6000000 [00:09&lt;00:27, 165031.68it/s]</p>
+<p>26%|██▌       | 1548519/6000000 [00:09&lt;00:27, 164511.44it/s]</p>
+<p>26%|██▌       | 1565157/6000000 [00:09&lt;00:26, 165067.55it/s]</p>
+<p>26%|██▋       | 1581666/6000000 [00:09&lt;00:26, 164763.62it/s]</p>
+<p>27%|██▋       | 1598253/6000000 [00:09&lt;00:26, 165093.50it/s]</p>
+<p>27%|██▋       | 1614764/6000000 [00:09&lt;00:26, 164446.64it/s]</p>
+<p>27%|██▋       | 1631312/6000000 [00:10&lt;00:26, 164752.74it/s]</p>
+<p>27%|██▋       | 1647789/6000000 [00:10&lt;00:26, 164533.70it/s]</p>
+<p>28%|██▊       | 1664313/6000000 [00:10&lt;00:26, 164742.00it/s]</p>
+<p>28%|██▊       | 1680788/6000000 [00:10&lt;00:26, 163921.66it/s]</p>
+<p>28%|██▊       | 1697531/6000000 [00:10&lt;00:26, 164967.16it/s]</p>
+<p>29%|██▊       | 1714030/6000000 [00:10&lt;00:26, 164152.20it/s]</p>
+<p>29%|██▉       | 1730731/6000000 [00:10&lt;00:25, 165003.73it/s]</p>
+<p>29%|██▉       | 1747233/6000000 [00:10&lt;00:25, 164901.05it/s]</p>
+<p>29%|██▉       | 1763804/6000000 [00:10&lt;00:25, 165141.90it/s]</p>
+<p>30%|██▉       | 1780320/6000000 [00:10&lt;00:25, 164650.98it/s]</p>
+<p>30%|██▉       | 1796786/6000000 [00:11&lt;00:25, 164394.73it/s]</p>
+<p>30%|███       | 1813227/6000000 [00:11&lt;00:25, 163692.60it/s]</p>
+<p>30%|███       | 1829737/6000000 [00:11&lt;00:25, 164110.62it/s]</p>
+<p>31%|███       | 1846149/6000000 [00:11&lt;00:25, 163525.15it/s]</p>
+<p>31%|███       | 1862772/6000000 [00:11&lt;00:25, 164329.67it/s]</p>
+<p>31%|███▏      | 1879206/6000000 [00:11&lt;00:25, 163739.72it/s]</p>
+<p>32%|███▏      | 1895682/6000000 [00:11&lt;00:25, 164042.76it/s]</p>
+<p>32%|███▏      | 1912088/6000000 [00:11&lt;00:25, 162385.06it/s]</p>
+<p>32%|███▏      | 1928440/6000000 [00:11&lt;00:25, 162720.69it/s]</p>
+<p>32%|███▏      | 1944716/6000000 [00:11&lt;00:25, 162082.00it/s]</p>
+<p>33%|███▎      | 1960927/6000000 [00:12&lt;00:25, 161117.88it/s]</p>
+<p>33%|███▎      | 1977116/6000000 [00:12&lt;00:24, 161345.76it/s]</p>
+<p>33%|███▎      | 1993407/6000000 [00:12&lt;00:24, 161809.42it/s]</p>
+<p>33%|███▎      | 2009884/6000000 [00:12&lt;00:24, 162690.12it/s]</p>
+<p>34%|███▍      | 2026155/6000000 [00:12&lt;00:24, 162272.36it/s]</p>
+<p>34%|███▍      | 2042531/6000000 [00:12&lt;00:24, 162715.35it/s]</p>
+<p>34%|███▍      | 2058804/6000000 [00:12&lt;00:24, 162179.17it/s]</p>
+<p>35%|███▍      | 2075046/6000000 [00:12&lt;00:24, 162248.49it/s]</p>
+<p>35%|███▍      | 2091281/6000000 [00:12&lt;00:24, 162276.24it/s]</p>
+<p>35%|███▌      | 2107682/6000000 [00:12&lt;00:23, 162792.96it/s]</p>
+<p>35%|███▌      | 2124001/6000000 [00:13&lt;00:23, 162853.44it/s]</p>
+<p>36%|███▌      | 2140448/6000000 [00:13&lt;00:23, 163334.67it/s]</p>
+<p>36%|███▌      | 2157118/6000000 [00:13&lt;00:23, 164342.43it/s]</p>
+<p>36%|███▌      | 2173681/6000000 [00:13&lt;00:23, 164725.31it/s]</p>
+<p>37%|███▋      | 2190154/6000000 [00:13&lt;00:23, 164280.00it/s]</p>
+<p>37%|███▋      | 2206609/6000000 [00:13&lt;00:23, 164358.29it/s]</p>
+<p>37%|███▋      | 2223046/6000000 [00:13&lt;00:22, 164283.59it/s]</p>
+<p>37%|███▋      | 2239696/6000000 [00:13&lt;00:22, 164944.42it/s]</p>
+<p>38%|███▊      | 2256191/6000000 [00:13&lt;00:22, 164380.25it/s]</p>
+<p>38%|███▊      | 2272630/6000000 [00:13&lt;00:22, 164145.74it/s]</p>
+<p>38%|███▊      | 2289045/6000000 [00:14&lt;00:22, 163988.28it/s]</p>
+<p>38%|███▊      | 2305950/6000000 [00:14&lt;00:22, 165499.35it/s]</p>
+<p>39%|███▊      | 2322501/6000000 [00:14&lt;00:22, 164644.68it/s]</p>
+<p>39%|███▉      | 2338967/6000000 [00:14&lt;00:22, 164463.68it/s]</p>
+<p>39%|███▉      | 2355415/6000000 [00:14&lt;00:22, 164185.06it/s]</p>
+<p>40%|███▉      | 2371973/6000000 [00:14&lt;00:22, 164600.76it/s]</p>
+<p>40%|███▉      | 2388434/6000000 [00:14&lt;00:22, 163998.23it/s]</p>
+<p>40%|████      | 2405030/6000000 [00:14&lt;00:21, 164580.20it/s]</p>
+<p>40%|████      | 2421489/6000000 [00:14&lt;00:21, 164195.95it/s]</p>
+<p>41%|████      | 2438309/6000000 [00:14&lt;00:21, 165389.88it/s]</p>
+<p>41%|████      | 2454849/6000000 [00:15&lt;00:21, 164986.96it/s]</p>
+<p>41%|████      | 2471634/6000000 [00:15&lt;00:21, 165840.05it/s]</p>
+<p>41%|████▏     | 2488219/6000000 [00:15&lt;00:21, 165410.82it/s]</p>
+<p>42%|████▏     | 2504868/6000000 [00:15&lt;00:21, 165730.26it/s]</p>
+<p>42%|████▏     | 2521442/6000000 [00:15&lt;00:21, 165226.70it/s]</p>
+<p>42%|████▏     | 2538003/6000000 [00:15&lt;00:20, 165325.62it/s]</p>
+<p>43%|████▎     | 2554826/6000000 [00:15&lt;00:20, 166193.58it/s]</p>
+<p>43%|████▎     | 2571485/6000000 [00:15&lt;00:20, 166309.11it/s]</p>
+<p>43%|████▎     | 2588326/6000000 [00:15&lt;00:20, 166937.47it/s]</p>
+<p>43%|████▎     | 2605021/6000000 [00:15&lt;00:20, 165812.73it/s]</p>
+<p>44%|████▎     | 2621885/6000000 [00:16&lt;00:20, 166655.05it/s]</p>
+<p>44%|████▍     | 2638553/6000000 [00:16&lt;00:20, 166238.86it/s]</p>
+<p>44%|████▍     | 2655179/6000000 [00:16&lt;00:20, 165406.38it/s]</p>
+<p>45%|████▍     | 2671722/6000000 [00:16&lt;00:20, 165319.03it/s]</p>
+<p>45%|████▍     | 2688255/6000000 [00:16&lt;00:20, 164694.50it/s]</p>
+<p>45%|████▌     | 2704761/6000000 [00:16&lt;00:19, 164801.29it/s]</p>
+<p>45%|████▌     | 2721242/6000000 [00:16&lt;00:19, 164481.12it/s]</p>
+<p>46%|████▌     | 2737691/6000000 [00:16&lt;00:19, 164388.88it/s]</p>
+<p>46%|████▌     | 2754185/6000000 [00:16&lt;00:19, 164551.34it/s]</p>
+<p>46%|████▌     | 2770864/6000000 [00:16&lt;00:19, 165219.21it/s]</p>
+<p>46%|████▋     | 2787387/6000000 [00:17&lt;00:19, 164489.85it/s]</p>
+<p>47%|████▋     | 2803837/6000000 [00:17&lt;00:19, 164081.72it/s]</p>
+<p>47%|████▋     | 2820321/6000000 [00:17&lt;00:19, 164305.12it/s]</p>
+<p>47%|████▋     | 2837034/6000000 [00:17&lt;00:19, 165147.31it/s]</p>
+<p>48%|████▊     | 2853683/6000000 [00:17&lt;00:19, 165546.97it/s]</p>
+<p>48%|████▊     | 2870239/6000000 [00:17&lt;00:18, 165207.86it/s]</p>
+<p>48%|████▊     | 2886761/6000000 [00:17&lt;00:18, 164394.25it/s]</p>
+<p>48%|████▊     | 2903483/6000000 [00:17&lt;00:18, 165234.59it/s]</p>
+<p>49%|████▊     | 2920008/6000000 [00:17&lt;00:18, 165102.77it/s]</p>
+<p>49%|████▉     | 2936576/6000000 [00:17&lt;00:18, 165272.60it/s]</p>
+<p>49%|████▉     | 2953104/6000000 [00:18&lt;00:18, 164510.69it/s]</p>
+<p>49%|████▉     | 2969926/6000000 [00:18&lt;00:18, 165615.94it/s]</p>
+<p>50%|████▉     | 2986489/6000000 [00:18&lt;00:18, 164788.29it/s]</p>
+<p>50%|█████     | 3003002/6000000 [00:18&lt;00:18, 164878.52it/s]</p>
+<p>50%|█████     | 3019796/6000000 [00:18&lt;00:17, 165790.22it/s]</p>
+<p>51%|█████     | 3036377/6000000 [00:18&lt;00:17, 165427.75it/s]</p>
+<p>51%|█████     | 3053211/6000000 [00:18&lt;00:17, 166297.60it/s]</p>
+<p>51%|█████     | 3069842/6000000 [00:18&lt;00:17, 165671.61it/s]</p>
+<p>51%|█████▏    | 3086411/6000000 [00:18&lt;00:17, 165618.53it/s]</p>
+<p>52%|█████▏    | 3102974/6000000 [00:18&lt;00:17, 164588.11it/s]</p>
+<p>52%|█████▏    | 3119556/6000000 [00:19&lt;00:17, 164952.31it/s]</p>
+<p>52%|█████▏    | 3136053/6000000 [00:19&lt;00:17, 164642.83it/s]</p>
+<p>53%|█████▎    | 3152773/6000000 [00:19&lt;00:17, 165405.28it/s]</p>
+<p>53%|█████▎    | 3169315/6000000 [00:19&lt;00:17, 165091.71it/s]</p>
+<p>53%|█████▎    | 3186001/6000000 [00:19&lt;00:17, 165379.18it/s]</p>
+<p>53%|█████▎    | 3202540/6000000 [00:19&lt;00:16, 165154.70it/s]</p>
+<p>54%|█████▎    | 3219056/6000000 [00:19&lt;00:16, 164736.78it/s]</p>
+<p>54%|█████▍    | 3235696/6000000 [00:19&lt;00:16, 165232.17it/s]</p>
+<p>54%|█████▍    | 3252220/6000000 [00:19&lt;00:16, 164895.65it/s]</p>
+<p>54%|█████▍    | 3269129/6000000 [00:19&lt;00:16, 166148.53it/s]</p>
+<p>55%|█████▍    | 3285745/6000000 [00:20&lt;00:16, 164950.50it/s]</p>
+<p>55%|█████▌    | 3302413/6000000 [00:20&lt;00:16, 165464.58it/s]</p>
+<p>55%|█████▌    | 3318962/6000000 [00:20&lt;00:16, 165075.86it/s]</p>
+<p>56%|█████▌    | 3335555/6000000 [00:20&lt;00:16, 165327.80it/s]</p>
+<p>56%|█████▌    | 3352089/6000000 [00:20&lt;00:16, 164325.32it/s]</p>
+<p>56%|█████▌    | 3368524/6000000 [00:20&lt;00:16, 164246.84it/s]</p>
+<p>56%|█████▋    | 3384950/6000000 [00:20&lt;00:15, 164240.53it/s]</p>
+<p>57%|█████▋    | 3401421/6000000 [00:20&lt;00:15, 164379.15it/s]</p>
+<p>57%|█████▋    | 3417860/6000000 [00:20&lt;00:15, 163906.28it/s]</p>
+<p>57%|█████▋    | 3434532/6000000 [00:21&lt;00:15, 164745.94it/s]</p>
+<p>58%|█████▊    | 3451013/6000000 [00:21&lt;00:15, 164764.21it/s]</p>
+<p>58%|█████▊    | 3467619/6000000 [00:21&lt;00:15, 165149.79it/s]</p>
+<p>58%|█████▊    | 3484135/6000000 [00:21&lt;00:15, 164897.18it/s]</p>
+<p>58%|█████▊    | 3500626/6000000 [00:21&lt;00:15, 164687.82it/s]</p>
+<p>59%|█████▊    | 3517096/6000000 [00:21&lt;00:15, 164195.29it/s]</p>
+<p>59%|█████▉    | 3533785/6000000 [00:21&lt;00:14, 164997.56it/s]</p>
+<p>59%|█████▉    | 3550286/6000000 [00:21&lt;00:14, 164397.24it/s]</p>
+<p>59%|█████▉    | 3566971/6000000 [00:21&lt;00:14, 165128.11it/s]</p>
+<p>60%|█████▉    | 3583485/6000000 [00:21&lt;00:14, 164496.92it/s]</p>
+<p>60%|██████    | 3600001/6000000 [00:22&lt;00:14, 164165.01it/s]</p>
+<p>60%|██████    | 3616597/6000000 [00:22&lt;00:14, 164698.87it/s]</p>
+<p>61%|██████    | 3633068/6000000 [00:22&lt;00:14, 164557.34it/s]</p>
+<p>61%|██████    | 3649525/6000000 [00:22&lt;00:14, 164482.27it/s]</p>
+<p>61%|██████    | 3666001/6000000 [00:22&lt;00:14, 164294.11it/s]</p>
+<p>61%|██████▏   | 3682707/6000000 [00:22&lt;00:14, 165118.32it/s]</p>
+<p>62%|██████▏   | 3699220/6000000 [00:22&lt;00:13, 165089.23it/s]</p>
+<p>62%|██████▏   | 3715807/6000000 [00:22&lt;00:13, 165320.17it/s]</p>
+<p>62%|██████▏   | 3732340/6000000 [00:22&lt;00:13, 165033.59it/s]</p>
+<p>62%|██████▏   | 3749153/6000000 [00:22&lt;00:13, 165957.47it/s]</p>
+<p>63%|██████▎   | 3765750/6000000 [00:23&lt;00:13, 165377.07it/s]</p>
+<p>63%|██████▎   | 3782377/6000000 [00:23&lt;00:13, 165642.76it/s]</p>
+<p>63%|██████▎   | 3798942/6000000 [00:23&lt;00:13, 164976.96it/s]</p>
+<p>64%|██████▎   | 3815617/6000000 [00:23&lt;00:13, 165504.15it/s]</p>
+<p>64%|██████▍   | 3832169/6000000 [00:23&lt;00:13, 164699.05it/s]</p>
+<p>64%|██████▍   | 3848718/6000000 [00:23&lt;00:13, 164932.57it/s]</p>
+<p>64%|██████▍   | 3865213/6000000 [00:23&lt;00:12, 164435.62it/s]</p>
+<p>65%|██████▍   | 3881845/6000000 [00:23&lt;00:12, 164996.44it/s]</p>
+<p>65%|██████▍   | 3898346/6000000 [00:23&lt;00:12, 163858.40it/s]</p>
+<p>65%|██████▌   | 3914740/6000000 [00:23&lt;00:12, 163857.38it/s]</p>
+<p>66%|██████▌   | 3931128/6000000 [00:24&lt;00:13, 158284.11it/s]</p>
+<p>66%|██████▌   | 3947354/6000000 [00:24&lt;00:12, 159442.13it/s]</p>
+<p>66%|██████▌   | 3963493/6000000 [00:24&lt;00:12, 160011.86it/s]</p>
+<p>66%|██████▋   | 3979646/6000000 [00:24&lt;00:12, 160459.14it/s]</p>
+<p>67%|██████▋   | 3996001/6000000 [00:24&lt;00:12, 161215.65it/s]</p>
+<p>67%|██████▋   | 4012712/6000000 [00:24&lt;00:12, 162969.92it/s]</p>
+<p>67%|██████▋   | 4029077/6000000 [00:24&lt;00:12, 163171.06it/s]</p>
+<p>67%|██████▋   | 4045863/6000000 [00:24&lt;00:11, 164570.35it/s]</p>
+<p>68%|██████▊   | 4062326/6000000 [00:24&lt;00:11, 164260.72it/s]</p>
+<p>68%|██████▊   | 4078937/6000000 [00:24&lt;00:11, 164812.12it/s]</p>
+<p>68%|██████▊   | 4095422/6000000 [00:25&lt;00:11, 164252.78it/s]</p>
+<p>69%|██████▊   | 4112070/6000000 [00:25&lt;00:11, 164916.43it/s]</p>
+<p>69%|██████▉   | 4128564/6000000 [00:25&lt;00:11, 164412.72it/s]</p>
+<p>69%|██████▉   | 4145251/6000000 [00:25&lt;00:11, 165145.37it/s]</p>
+<p>69%|██████▉   | 4161767/6000000 [00:25&lt;00:11, 164818.32it/s]</p>
+<p>70%|██████▉   | 4178847/6000000 [00:25&lt;00:10, 166604.20it/s]</p>
+<p>70%|██████▉   | 4195509/6000000 [00:25&lt;00:10, 165680.27it/s]</p>
+<p>70%|███████   | 4212079/6000000 [00:25&lt;00:10, 165150.22it/s]</p>
+<p>70%|███████   | 4228925/6000000 [00:25&lt;00:10, 166135.05it/s]</p>
+<p>71%|███████   | 4245541/6000000 [00:25&lt;00:10, 164953.39it/s]</p>
+<p>71%|███████   | 4262134/6000000 [00:26&lt;00:10, 165241.95it/s]</p>
+<p>71%|███████▏  | 4278661/6000000 [00:26&lt;00:10, 164350.68it/s]</p>
+<p>72%|███████▏  | 4295240/6000000 [00:26&lt;00:10, 164778.35it/s]</p>
+<p>72%|███████▏  | 4311720/6000000 [00:26&lt;00:10, 163944.83it/s]</p>
+<p>72%|███████▏  | 4328128/6000000 [00:26&lt;00:10, 163982.21it/s]</p>
+<p>72%|███████▏  | 4344528/6000000 [00:26&lt;00:10, 163932.28it/s]</p>
+<p>73%|███████▎  | 4361277/6000000 [00:26&lt;00:09, 164992.80it/s]</p>
+<p>73%|███████▎  | 4377778/6000000 [00:26&lt;00:09, 164297.87it/s]</p>
+<p>73%|███████▎  | 4394526/6000000 [00:26&lt;00:09, 165246.13it/s]</p>
+<p>74%|███████▎  | 4411052/6000000 [00:26&lt;00:09, 164203.36it/s]</p>
+<p>74%|███████▍  | 4427475/6000000 [00:27&lt;00:09, 164071.72it/s]</p>
+<p>74%|███████▍  | 4443984/6000000 [00:27&lt;00:09, 164372.56it/s]</p>
+<p>74%|███████▍  | 4460613/6000000 [00:27&lt;00:09, 164943.54it/s]</p>
+<p>75%|███████▍  | 4477133/6000000 [00:27&lt;00:09, 165017.61it/s]</p>
+<p>75%|███████▍  | 4493692/6000000 [00:27&lt;00:09, 165187.52it/s]</p>
+<p>75%|███████▌  | 4510212/6000000 [00:27&lt;00:09, 164227.49it/s]</p>
+<p>75%|███████▌  | 4526836/6000000 [00:27&lt;00:08, 164824.98it/s]</p>
+<p>76%|███████▌  | 4543320/6000000 [00:27&lt;00:08, 162188.48it/s]</p>
+<p>76%|███████▌  | 4559973/6000000 [00:27&lt;00:08, 163471.49it/s]</p>
+<p>76%|███████▋  | 4576329/6000000 [00:27&lt;00:08, 162355.38it/s]</p>
+<p>77%|███████▋  | 4592928/6000000 [00:28&lt;00:08, 163432.52it/s]</p>
+<p>77%|███████▋  | 4609278/6000000 [00:28&lt;00:08, 162988.88it/s]</p>
+<p>77%|███████▋  | 4625768/6000000 [00:28&lt;00:08, 163556.67it/s]</p>
+<p>77%|███████▋  | 4642287/6000000 [00:28&lt;00:08, 164041.02it/s]</p>
+<p>78%|███████▊  | 4658694/6000000 [00:28&lt;00:08, 164028.22it/s]</p>
+<p>78%|███████▊  | 4675099/6000000 [00:28&lt;00:08, 163299.23it/s]</p>
+<p>78%|███████▊  | 4691787/6000000 [00:28&lt;00:07, 164366.53it/s]</p>
+<p>78%|███████▊  | 4708226/6000000 [00:28&lt;00:07, 163796.55it/s]</p>
+<p>79%|███████▊  | 4724781/6000000 [00:28&lt;00:07, 164317.46it/s]</p>
+<p>79%|███████▉  | 4741215/6000000 [00:28&lt;00:07, 164148.86it/s]</p>
+<p>79%|███████▉  | 4757757/6000000 [00:29&lt;00:07, 164526.34it/s]</p>
+<p>80%|███████▉  | 4774211/6000000 [00:29&lt;00:07, 163807.44it/s]</p>
+<p>80%|███████▉  | 4790869/6000000 [00:29&lt;00:07, 164634.33it/s]</p>
+<p>80%|████████  | 4807334/6000000 [00:29&lt;00:07, 163737.19it/s]</p>
+<p>80%|████████  | 4824001/6000000 [00:29&lt;00:07, 164319.67it/s]</p>
+<p>81%|████████  | 4840725/6000000 [00:29&lt;00:07, 165190.14it/s]</p>
+<p>81%|████████  | 4857246/6000000 [00:29&lt;00:06, 164599.90it/s]</p>
+<p>81%|████████  | 4873752/6000000 [00:29&lt;00:06, 164735.97it/s]</p>
+<p>82%|████████▏ | 4890227/6000000 [00:29&lt;00:06, 164095.18it/s]</p>
+<p>82%|████████▏ | 4906638/6000000 [00:29&lt;00:06, 163785.03it/s]</p>
+<p>82%|████████▏ | 4923018/6000000 [00:30&lt;00:06, 163310.73it/s]</p>
+<p>82%|████████▏ | 4939522/6000000 [00:30&lt;00:06, 163825.61it/s]</p>
+<p>83%|████████▎ | 4955978/6000000 [00:30&lt;00:06, 164041.95it/s]</p>
+<p>83%|████████▎ | 4972383/6000000 [00:30&lt;00:06, 162782.30it/s]</p>
+<p>83%|████████▎ | 4988955/6000000 [00:30&lt;00:06, 163654.87it/s]</p>
+<p>83%|████████▎ | 5005323/6000000 [00:30&lt;00:06, 163046.71it/s]</p>
+<p>84%|████████▎ | 5021812/6000000 [00:30&lt;00:05, 163595.13it/s]</p>
+<p>84%|████████▍ | 5038174/6000000 [00:30&lt;00:05, 162887.84it/s]</p>
+<p>84%|████████▍ | 5054705/6000000 [00:30&lt;00:05, 163608.22it/s]</p>
+<p>85%|████████▍ | 5071068/6000000 [00:30&lt;00:05, 162682.92it/s]</p>
+<p>85%|████████▍ | 5087492/6000000 [00:31&lt;00:05, 163143.34it/s]</p>
+<p>85%|████████▌ | 5103808/6000000 [00:31&lt;00:05, 162666.51it/s]</p>
+<p>85%|████████▌ | 5120076/6000000 [00:31&lt;00:05, 162558.30it/s]</p>
+<p>86%|████████▌ | 5136333/6000000 [00:31&lt;00:05, 162223.00it/s]</p>
+<p>86%|████████▌ | 5152556/6000000 [00:31&lt;00:05, 162108.21it/s]</p>
+<p>86%|████████▌ | 5168876/6000000 [00:31&lt;00:05, 162431.01it/s]</p>
+<p>86%|████████▋ | 5185120/6000000 [00:31&lt;00:05, 161830.97it/s]</p>
+<p>87%|████████▋ | 5201564/6000000 [00:31&lt;00:04, 162606.69it/s]</p>
+<p>87%|████████▋ | 5217826/6000000 [00:31&lt;00:04, 162265.35it/s]</p>
+<p>87%|████████▋ | 5234370/6000000 [00:31&lt;00:04, 163213.26it/s]</p>
+<p>88%|████████▊ | 5250693/6000000 [00:32&lt;00:04, 162610.08it/s]</p>
+<p>88%|████████▊ | 5267430/6000000 [00:32&lt;00:04, 164028.65it/s]</p>
+<p>88%|████████▊ | 5283835/6000000 [00:32&lt;00:04, 163574.84it/s]</p>
+<p>88%|████████▊ | 5300244/6000000 [00:32&lt;00:04, 163726.35it/s]</p>
+<p>89%|████████▊ | 5316674/6000000 [00:32&lt;00:04, 163896.00it/s]</p>
+<p>89%|████████▉ | 5333334/6000000 [00:32&lt;00:04, 164702.65it/s]</p>
+<p>89%|████████▉ | 5349805/6000000 [00:32&lt;00:03, 164363.76it/s]</p>
+<p>89%|████████▉ | 5366305/6000000 [00:32&lt;00:03, 164551.04it/s]</p>
+<p>90%|████████▉ | 5382761/6000000 [00:32&lt;00:03, 162992.20it/s]</p>
+<p>90%|████████▉ | 5399216/6000000 [00:32&lt;00:03, 163454.75it/s]</p>
+<p>90%|█████████ | 5415565/6000000 [00:33&lt;00:03, 162818.61it/s]</p>
+<p>91%|█████████ | 5431896/6000000 [00:33&lt;00:03, 162963.01it/s]</p>
+<p>91%|█████████ | 5448194/6000000 [00:33&lt;00:03, 162634.79it/s]</p>
+<p>91%|█████████ | 5464610/6000000 [00:33&lt;00:03, 163088.97it/s]</p>
+<p>91%|█████████▏| 5480963/6000000 [00:33&lt;00:03, 163217.87it/s]</p>
+<p>92%|█████████▏| 5497370/6000000 [00:33&lt;00:03, 163470.04it/s]</p>
+<p>92%|█████████▏| 5513974/6000000 [00:33&lt;00:02, 164238.29it/s]</p>
+<p>92%|█████████▏| 5530399/6000000 [00:33&lt;00:02, 163668.30it/s]</p>
+<p>92%|█████████▏| 5546781/6000000 [00:33&lt;00:02, 163712.19it/s]</p>
+<p>93%|█████████▎| 5563153/6000000 [00:33&lt;00:02, 163443.86it/s]</p>
+<p>93%|█████████▎| 5579711/6000000 [00:34&lt;00:02, 164080.06it/s]</p>
+<p>93%|█████████▎| 5596120/6000000 [00:34&lt;00:02, 163185.51it/s]</p>
+<p>94%|█████████▎| 5612684/6000000 [00:34&lt;00:02, 163916.44it/s]</p>
+<p>94%|█████████▍| 5629077/6000000 [00:34&lt;00:02, 163692.37it/s]</p>
+<p>94%|█████████▍| 5645505/6000000 [00:34&lt;00:02, 163864.93it/s]</p>
+<p>94%|█████████▍| 5661893/6000000 [00:34&lt;00:02, 163178.86it/s]</p>
+<p>95%|█████████▍| 5678233/6000000 [00:34&lt;00:01, 163242.03it/s]</p>
+<p>95%|█████████▍| 5694558/6000000 [00:34&lt;00:01, 162586.34it/s]</p>
+<p>95%|█████████▌| 5711200/6000000 [00:34&lt;00:01, 163727.32it/s]</p>
+<p>95%|█████████▌| 5727574/6000000 [00:34&lt;00:01, 163096.52it/s]</p>
+<p>96%|█████████▌| 5743885/6000000 [00:35&lt;00:01, 162861.88it/s]</p>
+<p>96%|█████████▌| 5760386/6000000 [00:35&lt;00:01, 163501.01it/s]</p>
+<p>96%|█████████▋| 5776737/6000000 [00:35&lt;00:01, 162961.33it/s]</p>
+<p>97%|█████████▋| 5793034/6000000 [00:35&lt;00:01, 162396.63it/s]</p>
+<p>97%|█████████▋| 5809574/6000000 [00:35&lt;00:01, 163291.17it/s]</p>
+<p>97%|█████████▋| 5825905/6000000 [00:35&lt;00:01, 163289.05it/s]</p>
+<p>97%|█████████▋| 5842235/6000000 [00:35&lt;00:00, 163185.41it/s]</p>
+<p>98%|█████████▊| 5858764/6000000 [00:35&lt;00:00, 163814.12it/s]</p>
+<p>98%|█████████▊| 5875317/6000000 [00:35&lt;00:00, 164326.64it/s]</p>
+<p>98%|█████████▊| 5891892/6000000 [00:35&lt;00:00, 164751.30it/s]</p>
+<p>98%|█████████▊| 5908368/6000000 [00:36&lt;00:00, 163825.30it/s]</p>
+<p>99%|█████████▊| 5924980/6000000 [00:36&lt;00:00, 164509.10it/s]</p>
+<p>99%|█████████▉| 5941433/6000000 [00:36&lt;00:00, 163920.88it/s]</p>
+<p>99%|█████████▉| 5957896/6000000 [00:36&lt;00:00, 164130.08it/s]</p>
+<p>100%|█████████▉| 5974310/6000000 [00:36&lt;00:00, 163952.40it/s]</p>
+<p>100%|█████████▉| 5990864/6000000 [00:36&lt;00:00, 164424.43it/s]</p>
+<p>100%|██████████| 6000000/6000000 [00:36&lt;00:00, 163670.06it/s]</p>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>episode</th>
+      <th>step</th>
+      <th>policy_idx</th>
+      <th>arm</th>
+      <th>reward</th>
+      <th>reward_stat</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>1324896</th>
+      <td>441</td>
+      <td>632</td>
+      <td>0</td>
+      <td>1</td>
+      <td>2.849711</td>
+      <td>1.126770</td>
+    </tr>
+    <tr>
+      <th>3566176</th>
+      <td>1188</td>
+      <td>725</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1.953658</td>
+      <td>0.419003</td>
+    </tr>
+    <tr>
+      <th>1109043</th>
+      <td>369</td>
+      <td>681</td>
+      <td>0</td>
+      <td>0</td>
+      <td>3.786615</td>
+      <td>2.355404</td>
+    </tr>
+    <tr>
+      <th>4286042</th>
+      <td>1428</td>
+      <td>680</td>
+      <td>2</td>
+      <td>1</td>
+      <td>3.569374</td>
+      <td>1.674921</td>
+    </tr>
+    <tr>
+      <th>5395174</th>
+      <td>1798</td>
+      <td>391</td>
+      <td>1</td>
+      <td>7</td>
+      <td>1.069541</td>
+      <td>1.593863</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<p>It is then straightforward to plot the average reward each policy obtains at each step, by averaging over episodes.</p>
+<div class="language-python highlight"><pre><span></span><code><span class="n">policy_names</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">0</span><span class="p">:</span> <span class="s1">&#39;ε = 0.1&#39;</span><span class="p">,</span>
+    <span class="mi">1</span><span class="p">:</span> <span class="s1">&#39;ε = 0.01&#39;</span><span class="p">,</span>
+    <span class="mi">2</span><span class="p">:</span> <span class="s1">&#39;ε = 0 (greedy)&#39;</span>
+<span class="p">}</span>
+
+<span class="p">(</span>
+    <span class="n">trace_df</span>
+    <span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">policy</span><span class="o">=</span><span class="n">trace_df</span><span class="o">.</span><span class="n">policy_idx</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">policy_names</span><span class="p">))</span>
+    <span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s1">&#39;step&#39;</span><span class="p">,</span> <span class="s1">&#39;policy&#39;</span><span class="p">])</span>
+    <span class="p">[</span><span class="s1">&#39;reward&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+    <span class="o">.</span><span class="n">unstack</span><span class="p">()</span>
+    <span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+<span class="p">)</span>
+</code></pre></div>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
+
+<div class="language-text highlight"><pre><span></span><code>[1m&lt;[0m[1;95mAxes:[0m[39m [0m[33mxlabel[0m[39m=[0m[32m&#39;step&#39;[0m[1m&gt;[0m
+</code></pre></div>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
+
+<p><img alt="png" src="../bandits-101_files/bandits-101_8_3.png" /></p>
+<h2 id="controlling-the-evaluation-loop">Controlling the evaluation loop<a class="headerlink" href="#controlling-the-evaluation-loop" title="Permanent link">&para;</a></h2>
+<p>The <a href="../../api/bandit/evaluate"><code>bandit.evaluate</code></a> function is useful for benchmarking. But in practice, you'll want to have control over your bandit policy. Indeed you'll want the freedom to pull arms (with the <code>pull</code> method) and update the policy (with the <code>update</code> method) at your discretion.</p>
+<p>As an example, the following is a possible reimplementation of the <a href="../../api/bandit/evaluate"><code>bandit.evaluate</code></a> function. Here we'll be measuring the rate at which each policy selects the optimal arm.</p>
+<p>Note how the <code>pull</code> and <code>update</code> methods are used.</p>
+<div class="language-python highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
+
+<span class="n">policies</span><span class="o">=</span><span class="p">[</span>
+    <span class="n">bandit</span><span class="o">.</span><span class="n">EpsilonGreedy</span><span class="p">(</span><span class="n">epsilon</span><span class="o">=</span><span class="mf">0.1</span><span class="p">),</span>
+    <span class="n">bandit</span><span class="o">.</span><span class="n">EpsilonGreedy</span><span class="p">(</span><span class="n">epsilon</span><span class="o">=</span><span class="mf">0.01</span><span class="p">),</span>
+    <span class="n">bandit</span><span class="o">.</span><span class="n">EpsilonGreedy</span><span class="p">(</span><span class="n">epsilon</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+<span class="p">]</span>
+
+<span class="n">env</span> <span class="o">=</span> <span class="n">gym</span><span class="o">.</span><span class="n">make</span><span class="p">(</span>
+    <span class="s1">&#39;river_bandits/KArmedTestbed-v0&#39;</span><span class="p">,</span>
+    <span class="n">max_episode_steps</span><span class="o">=</span><span class="mi">1000</span>
+<span class="p">)</span>
+<span class="n">n_episodes</span> <span class="o">=</span> <span class="mi">2000</span>
+
+<span class="n">trace</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="k">with</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">total</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">policies</span><span class="p">)</span> <span class="o">*</span> <span class="n">n_episodes</span> <span class="o">*</span> <span class="n">env</span><span class="o">.</span><span class="n">_max_episode_steps</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="k">as</span> <span class="n">progress</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">policy</span> <span class="ow">in</span> <span class="n">policies</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">episode</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_episodes</span><span class="p">):</span>
+            <span class="n">episode_policy</span> <span class="o">=</span> <span class="n">policy</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+            <span class="n">episode_env</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
+            <span class="n">episode_env</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+            <span class="n">step</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="n">action</span> <span class="o">=</span> <span class="n">episode_policy</span><span class="o">.</span><span class="n">pull</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">episode_env</span><span class="o">.</span><span class="n">action_space</span><span class="o">.</span><span class="n">n</span><span class="p">))</span>
+                <span class="n">observation</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">terminated</span><span class="p">,</span> <span class="n">truncated</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">episode_env</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
+                <span class="n">best_action</span> <span class="o">=</span> <span class="n">observation</span>
+                <span class="n">episode_policy</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">action</span><span class="p">,</span> <span class="n">reward</span><span class="p">)</span>
+
+                <span class="n">trace</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                    <span class="s2">&quot;episode&quot;</span><span class="p">:</span> <span class="n">episode</span><span class="p">,</span>
+                    <span class="s2">&quot;step&quot;</span><span class="p">:</span> <span class="n">step</span><span class="p">,</span>
+                    <span class="s2">&quot;policy&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;ε = </span><span class="si">{</span><span class="n">policy</span><span class="o">.</span><span class="n">epsilon</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;is_action_optimal&quot;</span><span class="p">:</span> <span class="n">action</span> <span class="o">==</span> <span class="n">best_action</span>
+                <span class="p">})</span>
+                <span class="n">step</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">progress</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+
+                <span class="k">if</span> <span class="n">terminated</span> <span class="ow">or</span> <span class="n">truncated</span><span class="p">:</span>
+                    <span class="k">break</span>
+
+<span class="n">trace_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">trace</span><span class="p">)</span>
+</code></pre></div>
+<p>0%|          | 0/6000000 [00:00&lt;?, ?it/s]</p>
+<p>0%|          | 16259/6000000 [00:00&lt;00:36, 162581.63it/s]</p>
+<p>1%|          | 33245/6000000 [00:00&lt;00:35, 166861.39it/s]</p>
+<p>1%|          | 50127/6000000 [00:00&lt;00:35, 167754.51it/s]</p>
+<p>1%|          | 67266/6000000 [00:00&lt;00:35, 169188.85it/s]</p>
+<p>1%|▏         | 84432/6000000 [00:00&lt;00:34, 170077.96it/s]</p>
+<p>2%|▏         | 101440/6000000 [00:00&lt;00:34, 170009.25it/s]</p>
+<p>2%|▏         | 118476/6000000 [00:00&lt;00:34, 170123.81it/s]</p>
+<p>2%|▏         | 135713/6000000 [00:00&lt;00:34, 170838.02it/s]</p>
+<p>3%|▎         | 152797/6000000 [00:00&lt;00:34, 170628.63it/s]</p>
+<p>3%|▎         | 169860/6000000 [00:01&lt;00:34, 170349.13it/s]</p>
+<p>3%|▎         | 186896/6000000 [00:01&lt;00:34, 170204.48it/s]</p>
+<p>3%|▎         | 203917/6000000 [00:01&lt;00:34, 169073.75it/s]</p>
+<p>4%|▎         | 220878/6000000 [00:01&lt;00:34, 169234.80it/s]</p>
+<p>4%|▍         | 237803/6000000 [00:01&lt;00:35, 164379.85it/s]</p>
+<p>4%|▍         | 254806/6000000 [00:01&lt;00:34, 166041.23it/s]</p>
+<p>5%|▍         | 271845/6000000 [00:01&lt;00:34, 167327.89it/s]</p>
+<p>5%|▍         | 288981/6000000 [00:01&lt;00:33, 168525.33it/s]</p>
+<p>5%|▌         | 305903/6000000 [00:01&lt;00:33, 168729.92it/s]</p>
+<p>5%|▌         | 323001/6000000 [00:01&lt;00:33, 169306.59it/s]</p>
+<p>6%|▌         | 340061/6000000 [00:02&lt;00:33, 169690.62it/s]</p>
+<p>6%|▌         | 357283/6000000 [00:02&lt;00:33, 170447.10it/s]</p>
+<p>6%|▌         | 374336/6000000 [00:02&lt;00:33, 170470.76it/s]</p>
+<p>7%|▋         | 391503/6000000 [00:02&lt;00:32, 170829.89it/s]</p>
+<p>7%|▋         | 408651/6000000 [00:02&lt;00:32, 171023.46it/s]</p>
+<p>7%|▋         | 425776/6000000 [00:02&lt;00:32, 171089.72it/s]</p>
+<p>7%|▋         | 442886/6000000 [00:02&lt;00:32, 170960.60it/s]</p>
+<p>8%|▊         | 460001/6000000 [00:02&lt;00:32, 170879.43it/s]</p>
+<p>8%|▊         | 477157/6000000 [00:02&lt;00:32, 171082.43it/s]</p>
+<p>8%|▊         | 494421/6000000 [00:02&lt;00:32, 171547.53it/s]</p>
+<p>9%|▊         | 511577/6000000 [00:03&lt;00:32, 171109.76it/s]</p>
+<p>9%|▉         | 528714/6000000 [00:03&lt;00:31, 171185.87it/s]</p>
+<p>9%|▉         | 545833/6000000 [00:03&lt;00:31, 170987.75it/s]</p>
+<p>9%|▉         | 562933/6000000 [00:03&lt;00:31, 170650.23it/s]</p>
+<p>10%|▉         | 580012/6000000 [00:03&lt;00:31, 170689.18it/s]</p>
+<p>10%|▉         | 597082/6000000 [00:03&lt;00:31, 170653.60it/s]</p>
+<p>10%|█         | 614157/6000000 [00:03&lt;00:31, 170681.92it/s]</p>
+<p>11%|█         | 631321/6000000 [00:03&lt;00:31, 170968.35it/s]</p>
+<p>11%|█         | 648418/6000000 [00:03&lt;00:31, 170955.70it/s]</p>
+<p>11%|█         | 665514/6000000 [00:03&lt;00:31, 170740.39it/s]</p>
+<p>11%|█▏        | 682630/6000000 [00:04&lt;00:31, 170863.84it/s]</p>
+<p>12%|█▏        | 699717/6000000 [00:04&lt;00:31, 166660.34it/s]</p>
+<p>12%|█▏        | 716709/6000000 [00:04&lt;00:31, 167619.51it/s]</p>
+<p>12%|█▏        | 733734/6000000 [00:04&lt;00:31, 168398.12it/s]</p>
+<p>13%|█▎        | 750588/6000000 [00:04&lt;00:31, 167657.25it/s]</p>
+<p>13%|█▎        | 767364/6000000 [00:04&lt;00:31, 167264.07it/s]</p>
+<p>13%|█▎        | 784097/6000000 [00:04&lt;00:31, 166703.69it/s]</p>
+<p>13%|█▎        | 800843/6000000 [00:04&lt;00:31, 166927.55it/s]</p>
+<p>14%|█▎        | 817540/6000000 [00:04&lt;00:31, 166184.34it/s]</p>
+<p>14%|█▍        | 834201/6000000 [00:04&lt;00:31, 166310.45it/s]</p>
+<p>14%|█▍        | 850915/6000000 [00:05&lt;00:30, 166556.67it/s]</p>
+<p>14%|█▍        | 867573/6000000 [00:05&lt;00:30, 166288.98it/s]</p>
+<p>15%|█▍        | 884203/6000000 [00:05&lt;00:30, 166146.92it/s]</p>
+<p>15%|█▌        | 900819/6000000 [00:05&lt;00:30, 165173.31it/s]</p>
+<p>15%|█▌        | 917524/6000000 [00:05&lt;00:30, 165730.20it/s]</p>
+<p>16%|█▌        | 934151/6000000 [00:05&lt;00:30, 165891.34it/s]</p>
+<p>16%|█▌        | 950753/6000000 [00:05&lt;00:30, 165929.28it/s]</p>
+<p>16%|█▌        | 967347/6000000 [00:05&lt;00:30, 165828.50it/s]</p>
+<p>16%|█▋        | 983998/6000000 [00:05&lt;00:30, 166032.36it/s]</p>
+<p>17%|█▋        | 1000693/6000000 [00:05&lt;00:30, 166305.18it/s]</p>
+<p>17%|█▋        | 1017324/6000000 [00:06&lt;00:29, 166214.39it/s]</p>
+<p>17%|█▋        | 1033984/6000000 [00:06&lt;00:29, 166327.97it/s]</p>
+<p>18%|█▊        | 1050617/6000000 [00:06&lt;00:29, 166223.61it/s]</p>
+<p>18%|█▊        | 1067240/6000000 [00:06&lt;00:29, 165692.55it/s]</p>
+<p>18%|█▊        | 1083973/6000000 [00:06&lt;00:29, 166181.33it/s]</p>
+<p>18%|█▊        | 1100658/6000000 [00:06&lt;00:29, 166381.09it/s]</p>
+<p>19%|█▊        | 1117303/6000000 [00:06&lt;00:29, 166400.83it/s]</p>
+<p>19%|█▉        | 1133950/6000000 [00:06&lt;00:29, 166421.49it/s]</p>
+<p>19%|█▉        | 1150644/6000000 [00:06&lt;00:29, 166574.36it/s]</p>
+<p>19%|█▉        | 1167302/6000000 [00:06&lt;00:29, 166418.94it/s]</p>
+<p>20%|█▉        | 1184001/6000000 [00:07&lt;00:28, 166491.75it/s]</p>
+<p>20%|██        | 1200702/6000000 [00:07&lt;00:28, 166644.36it/s]</p>
+<p>20%|██        | 1217367/6000000 [00:07&lt;00:28, 166249.13it/s]</p>
+<p>21%|██        | 1233993/6000000 [00:07&lt;00:28, 166036.18it/s]</p>
+<p>21%|██        | 1250597/6000000 [00:07&lt;00:28, 165781.29it/s]</p>
+<p>21%|██        | 1267220/6000000 [00:07&lt;00:28, 165914.62it/s]</p>
+<p>21%|██▏       | 1283813/6000000 [00:07&lt;00:28, 165918.68it/s]</p>
+<p>22%|██▏       | 1300441/6000000 [00:07&lt;00:28, 166026.15it/s]</p>
+<p>22%|██▏       | 1317044/6000000 [00:07&lt;00:28, 165432.39it/s]</p>
+<p>22%|██▏       | 1333874/6000000 [00:07&lt;00:28, 166289.38it/s]</p>
+<p>23%|██▎       | 1350515/6000000 [00:08&lt;00:27, 166323.99it/s]</p>
+<p>23%|██▎       | 1367213/6000000 [00:08&lt;00:27, 166518.51it/s]</p>
+<p>23%|██▎       | 1383984/6000000 [00:08&lt;00:27, 166874.53it/s]</p>
+<p>23%|██▎       | 1400676/6000000 [00:08&lt;00:27, 166887.14it/s]</p>
+<p>24%|██▎       | 1417365/6000000 [00:08&lt;00:27, 166820.55it/s]</p>
+<p>24%|██▍       | 1434048/6000000 [00:08&lt;00:27, 166753.70it/s]</p>
+<p>24%|██▍       | 1450760/6000000 [00:08&lt;00:27, 166861.05it/s]</p>
+<p>24%|██▍       | 1467447/6000000 [00:08&lt;00:27, 166661.48it/s]</p>
+<p>25%|██▍       | 1484114/6000000 [00:08&lt;00:27, 166607.43it/s]</p>
+<p>25%|██▌       | 1500863/6000000 [00:08&lt;00:26, 166871.36it/s]</p>
+<p>25%|██▌       | 1517551/6000000 [00:09&lt;00:26, 166682.68it/s]</p>
+<p>26%|██▌       | 1534220/6000000 [00:09&lt;00:26, 166600.43it/s]</p>
+<p>26%|██▌       | 1550896/6000000 [00:09&lt;00:26, 166646.14it/s]</p>
+<p>26%|██▌       | 1567571/6000000 [00:09&lt;00:26, 166675.17it/s]</p>
+<p>26%|██▋       | 1584267/6000000 [00:09&lt;00:26, 166759.30it/s]</p>
+<p>27%|██▋       | 1600973/6000000 [00:09&lt;00:26, 166849.16it/s]</p>
+<p>27%|██▋       | 1617658/6000000 [00:09&lt;00:26, 166347.64it/s]</p>
+<p>27%|██▋       | 1634294/6000000 [00:09&lt;00:26, 166270.47it/s]</p>
+<p>28%|██▊       | 1651001/6000000 [00:09&lt;00:26, 166378.43it/s]</p>
+<p>28%|██▊       | 1667640/6000000 [00:09&lt;00:26, 166356.52it/s]</p>
+<p>28%|██▊       | 1684413/6000000 [00:10&lt;00:25, 166766.11it/s]</p>
+<p>28%|██▊       | 1701090/6000000 [00:10&lt;00:25, 166497.03it/s]</p>
+<p>29%|██▊       | 1717740/6000000 [00:10&lt;00:25, 166349.40it/s]</p>
+<p>29%|██▉       | 1734376/6000000 [00:10&lt;00:25, 166200.40it/s]</p>
+<p>29%|██▉       | 1751047/6000000 [00:10&lt;00:25, 166350.41it/s]</p>
+<p>29%|██▉       | 1767838/6000000 [00:10&lt;00:25, 166817.32it/s]</p>
+<p>30%|██▉       | 1784520/6000000 [00:10&lt;00:25, 166421.23it/s]</p>
+<p>30%|███       | 1801163/6000000 [00:10&lt;00:25, 166101.39it/s]</p>
+<p>30%|███       | 1817774/6000000 [00:10&lt;00:25, 166093.35it/s]</p>
+<p>31%|███       | 1834402/6000000 [00:10&lt;00:25, 166147.38it/s]</p>
+<p>31%|███       | 1851017/6000000 [00:11&lt;00:24, 166115.59it/s]</p>
+<p>31%|███       | 1867632/6000000 [00:11&lt;00:24, 166122.86it/s]</p>
+<p>31%|███▏      | 1884353/6000000 [00:11&lt;00:24, 166448.65it/s]</p>
+<p>32%|███▏      | 1901001/6000000 [00:11&lt;00:24, 166416.94it/s]</p>
+<p>32%|███▏      | 1917643/6000000 [00:11&lt;00:24, 165842.35it/s]</p>
+<p>32%|███▏      | 1934228/6000000 [00:11&lt;00:24, 165695.78it/s]</p>
+<p>33%|███▎      | 1950887/6000000 [00:11&lt;00:24, 165962.80it/s]</p>
+<p>33%|███▎      | 1967484/6000000 [00:11&lt;00:24, 165780.95it/s]</p>
+<p>33%|███▎      | 1984063/6000000 [00:11&lt;00:24, 165660.85it/s]</p>
+<p>33%|███▎      | 2000802/6000000 [00:11&lt;00:24, 166177.80it/s]</p>
+<p>34%|███▎      | 2017420/6000000 [00:12&lt;00:24, 163941.45it/s]</p>
+<p>34%|███▍      | 2033821/6000000 [00:12&lt;00:24, 162760.52it/s]</p>
+<p>34%|███▍      | 2050103/6000000 [00:12&lt;00:24, 161067.18it/s]</p>
+<p>34%|███▍      | 2066216/6000000 [00:12&lt;00:24, 160547.16it/s]</p>
+<p>35%|███▍      | 2082314/6000000 [00:12&lt;00:24, 160672.68it/s]</p>
+<p>35%|███▍      | 2098385/6000000 [00:12&lt;00:24, 160169.15it/s]</p>
+<p>35%|███▌      | 2114450/6000000 [00:12&lt;00:24, 160310.22it/s]</p>
+<p>36%|███▌      | 2130483/6000000 [00:12&lt;00:24, 159816.94it/s]</p>
+<p>36%|███▌      | 2146466/6000000 [00:12&lt;00:24, 158792.34it/s]</p>
+<p>36%|███▌      | 2162347/6000000 [00:12&lt;00:24, 158659.44it/s]</p>
+<p>36%|███▋      | 2178321/6000000 [00:13&lt;00:24, 158981.15it/s]</p>
+<p>37%|███▋      | 2194221/6000000 [00:13&lt;00:23, 158945.99it/s]</p>
+<p>37%|███▋      | 2210117/6000000 [00:13&lt;00:23, 158504.82it/s]</p>
+<p>37%|███▋      | 2226001/6000000 [00:13&lt;00:23, 158578.43it/s]</p>
+<p>37%|███▋      | 2242001/6000000 [00:13&lt;00:23, 158845.69it/s]</p>
+<p>38%|███▊      | 2257894/6000000 [00:13&lt;00:23, 158868.46it/s]</p>
+<p>38%|███▊      | 2273808/6000000 [00:13&lt;00:23, 158947.41it/s]</p>
+<p>38%|███▊      | 2289703/6000000 [00:13&lt;00:23, 158824.14it/s]</p>
+<p>38%|███▊      | 2305586/6000000 [00:13&lt;00:23, 158735.48it/s]</p>
+<p>39%|███▊      | 2321460/6000000 [00:13&lt;00:23, 158634.80it/s]</p>
+<p>39%|███▉      | 2337611/6000000 [00:14&lt;00:22, 159495.88it/s]</p>
+<p>39%|███▉      | 2353561/6000000 [00:14&lt;00:22, 159346.65it/s]</p>
+<p>39%|███▉      | 2369496/6000000 [00:14&lt;00:22, 159305.71it/s]</p>
+<p>40%|███▉      | 2385427/6000000 [00:14&lt;00:22, 158918.07it/s]</p>
+<p>40%|████      | 2401320/6000000 [00:14&lt;00:22, 158607.56it/s]</p>
+<p>40%|████      | 2417181/6000000 [00:14&lt;00:22, 158479.52it/s]</p>
+<p>41%|████      | 2433192/6000000 [00:14&lt;00:22, 158966.56it/s]</p>
+<p>41%|████      | 2449089/6000000 [00:14&lt;00:22, 158889.14it/s]</p>
+<p>41%|████      | 2465018/6000000 [00:14&lt;00:22, 159008.90it/s]</p>
+<p>41%|████▏     | 2481113/6000000 [00:14&lt;00:22, 159589.66it/s]</p>
+<p>42%|████▏     | 2497113/6000000 [00:15&lt;00:21, 159710.31it/s]</p>
+<p>42%|████▏     | 2513119/6000000 [00:15&lt;00:21, 159814.63it/s]</p>
+<p>42%|████▏     | 2529101/6000000 [00:15&lt;00:21, 159683.62it/s]</p>
+<p>42%|████▏     | 2545070/6000000 [00:15&lt;00:21, 159429.57it/s]</p>
+<p>43%|████▎     | 2561014/6000000 [00:15&lt;00:21, 159381.99it/s]</p>
+<p>43%|████▎     | 2577047/6000000 [00:15&lt;00:21, 159665.34it/s]</p>
+<p>43%|████▎     | 2593014/6000000 [00:15&lt;00:21, 159581.95it/s]</p>
+<p>43%|████▎     | 2608973/6000000 [00:15&lt;00:21, 159427.90it/s]</p>
+<p>44%|████▎     | 2624920/6000000 [00:15&lt;00:21, 159439.99it/s]</p>
+<p>44%|████▍     | 2640865/6000000 [00:15&lt;00:21, 159309.85it/s]</p>
+<p>44%|████▍     | 2656851/6000000 [00:16&lt;00:20, 159472.45it/s]</p>
+<p>45%|████▍     | 2672799/6000000 [00:16&lt;00:21, 158085.03it/s]</p>
+<p>45%|████▍     | 2688738/6000000 [00:16&lt;00:20, 158473.36it/s]</p>
+<p>45%|████▌     | 2704635/6000000 [00:16&lt;00:20, 158619.20it/s]</p>
+<p>45%|████▌     | 2720499/6000000 [00:16&lt;00:20, 158395.01it/s]</p>
+<p>46%|████▌     | 2736340/6000000 [00:16&lt;00:20, 158246.91it/s]</p>
+<p>46%|████▌     | 2752404/6000000 [00:16&lt;00:20, 158960.56it/s]</p>
+<p>46%|████▌     | 2768301/6000000 [00:16&lt;00:20, 158514.50it/s]</p>
+<p>46%|████▋     | 2784194/6000000 [00:16&lt;00:20, 158638.65it/s]</p>
+<p>47%|████▋     | 2800152/6000000 [00:16&lt;00:20, 158919.96it/s]</p>
+<p>47%|████▋     | 2816045/6000000 [00:17&lt;00:20, 158817.66it/s]</p>
+<p>47%|████▋     | 2831972/6000000 [00:17&lt;00:19, 158951.48it/s]</p>
+<p>47%|████▋     | 2847868/6000000 [00:17&lt;00:19, 158883.25it/s]</p>
+<p>48%|████▊     | 2863848/6000000 [00:17&lt;00:19, 159155.96it/s]</p>
+<p>48%|████▊     | 2879764/6000000 [00:17&lt;00:19, 158985.65it/s]</p>
+<p>48%|████▊     | 2895663/6000000 [00:17&lt;00:19, 158028.74it/s]</p>
+<p>49%|████▊     | 2911468/6000000 [00:17&lt;00:20, 152799.10it/s]</p>
+<p>49%|████▉     | 2927001/6000000 [00:17&lt;00:20, 153506.41it/s]</p>
+<p>49%|████▉     | 2942979/6000000 [00:17&lt;00:19, 155350.14it/s]</p>
+<p>49%|████▉     | 2958964/6000000 [00:17&lt;00:19, 156680.79it/s]</p>
+<p>50%|████▉     | 2974813/6000000 [00:18&lt;00:19, 157218.33it/s]</p>
+<p>50%|████▉     | 2990780/6000000 [00:18&lt;00:19, 157947.73it/s]</p>
+<p>50%|█████     | 3006691/6000000 [00:18&lt;00:18, 158292.34it/s]</p>
+<p>50%|█████     | 3022542/6000000 [00:18&lt;00:18, 158354.65it/s]</p>
+<p>51%|█████     | 3038383/6000000 [00:18&lt;00:18, 158021.47it/s]</p>
+<p>51%|█████     | 3054189/6000000 [00:18&lt;00:18, 156908.48it/s]</p>
+<p>51%|█████     | 3070001/6000000 [00:18&lt;00:18, 157107.15it/s]</p>
+<p>51%|█████▏    | 3085715/6000000 [00:18&lt;00:18, 156939.88it/s]</p>
+<p>52%|█████▏    | 3101663/6000000 [00:18&lt;00:18, 157697.04it/s]</p>
+<p>52%|█████▏    | 3117435/6000000 [00:18&lt;00:18, 157627.66it/s]</p>
+<p>52%|█████▏    | 3133410/6000000 [00:19&lt;00:18, 158261.43it/s]</p>
+<p>52%|█████▏    | 3149238/6000000 [00:19&lt;00:18, 157818.74it/s]</p>
+<p>53%|█████▎    | 3165163/6000000 [00:19&lt;00:17, 158244.37it/s]</p>
+<p>53%|█████▎    | 3181187/6000000 [00:19&lt;00:17, 158840.57it/s]</p>
+<p>53%|█████▎    | 3197180/6000000 [00:19&lt;00:17, 159166.45it/s]</p>
+<p>54%|█████▎    | 3213098/6000000 [00:19&lt;00:17, 159003.68it/s]</p>
+<p>54%|█████▍    | 3228999/6000000 [00:19&lt;00:17, 158871.17it/s]</p>
+<p>54%|█████▍    | 3244887/6000000 [00:19&lt;00:17, 158530.30it/s]</p>
+<p>54%|█████▍    | 3260924/6000000 [00:19&lt;00:17, 159080.66it/s]</p>
+<p>55%|█████▍    | 3276833/6000000 [00:19&lt;00:17, 158946.09it/s]</p>
+<p>55%|█████▍    | 3292728/6000000 [00:20&lt;00:17, 158652.15it/s]</p>
+<p>55%|█████▌    | 3308622/6000000 [00:20&lt;00:16, 158730.17it/s]</p>
+<p>55%|█████▌    | 3324623/6000000 [00:20&lt;00:16, 159104.24it/s]</p>
+<p>56%|█████▌    | 3340534/6000000 [00:20&lt;00:16, 158841.20it/s]</p>
+<p>56%|█████▌    | 3356419/6000000 [00:20&lt;00:16, 158582.65it/s]</p>
+<p>56%|█████▌    | 3372344/6000000 [00:20&lt;00:16, 158781.46it/s]</p>
+<p>56%|█████▋    | 3388223/6000000 [00:20&lt;00:16, 158547.95it/s]</p>
+<p>57%|█████▋    | 3404078/6000000 [00:20&lt;00:16, 158353.80it/s]</p>
+<p>57%|█████▋    | 3420087/6000000 [00:20&lt;00:16, 158872.04it/s]</p>
+<p>57%|█████▋    | 3435989/6000000 [00:20&lt;00:16, 158913.79it/s]</p>
+<p>58%|█████▊    | 3451881/6000000 [00:21&lt;00:16, 158597.89it/s]</p>
+<p>58%|█████▊    | 3467742/6000000 [00:21&lt;00:15, 158395.27it/s]</p>
+<p>58%|█████▊    | 3483629/6000000 [00:21&lt;00:15, 158536.70it/s]</p>
+<p>58%|█████▊    | 3499483/6000000 [00:21&lt;00:15, 158353.89it/s]</p>
+<p>59%|█████▊    | 3515460/6000000 [00:21&lt;00:15, 158775.86it/s]</p>
+<p>59%|█████▉    | 3531338/6000000 [00:21&lt;00:15, 158104.13it/s]</p>
+<p>59%|█████▉    | 3547238/6000000 [00:21&lt;00:15, 158370.29it/s]</p>
+<p>59%|█████▉    | 3563186/6000000 [00:21&lt;00:15, 158699.71it/s]</p>
+<p>60%|█████▉    | 3579234/6000000 [00:21&lt;00:15, 159231.54it/s]</p>
+<p>60%|█████▉    | 3595217/6000000 [00:21&lt;00:15, 159395.85it/s]</p>
+<p>60%|██████    | 3611157/6000000 [00:22&lt;00:15, 159169.57it/s]</p>
+<p>60%|██████    | 3627112/6000000 [00:22&lt;00:14, 159281.95it/s]</p>
+<p>61%|██████    | 3643139/6000000 [00:22&lt;00:14, 159577.71it/s]</p>
+<p>61%|██████    | 3659097/6000000 [00:22&lt;00:14, 158833.48it/s]</p>
+<p>61%|██████▏   | 3675001/6000000 [00:22&lt;00:14, 158782.00it/s]</p>
+<p>62%|██████▏   | 3691001/6000000 [00:22&lt;00:14, 159131.41it/s]</p>
+<p>62%|██████▏   | 3706999/6000000 [00:22&lt;00:14, 159384.76it/s]</p>
+<p>62%|██████▏   | 3722938/6000000 [00:22&lt;00:14, 158613.45it/s]</p>
+<p>62%|██████▏   | 3738877/6000000 [00:22&lt;00:14, 158844.28it/s]</p>
+<p>63%|██████▎   | 3754841/6000000 [00:23&lt;00:14, 159079.56it/s]</p>
+<p>63%|██████▎   | 3770750/6000000 [00:23&lt;00:14, 159049.13it/s]</p>
+<p>63%|██████▎   | 3786656/6000000 [00:23&lt;00:13, 158957.89it/s]</p>
+<p>63%|██████▎   | 3802686/6000000 [00:23&lt;00:13, 159358.78it/s]</p>
+<p>64%|██████▎   | 3818662/6000000 [00:23&lt;00:13, 159477.34it/s]</p>
+<p>64%|██████▍   | 3834610/6000000 [00:23&lt;00:13, 158837.71it/s]</p>
+<p>64%|██████▍   | 3850495/6000000 [00:23&lt;00:13, 158735.52it/s]</p>
+<p>64%|██████▍   | 3866370/6000000 [00:23&lt;00:13, 158611.05it/s]</p>
+<p>65%|██████▍   | 3882289/6000000 [00:23&lt;00:13, 158784.22it/s]</p>
+<p>65%|██████▍   | 3898168/6000000 [00:23&lt;00:13, 158387.60it/s]</p>
+<p>65%|██████▌   | 3914008/6000000 [00:24&lt;00:13, 157947.24it/s]</p>
+<p>66%|██████▌   | 3930001/6000000 [00:24&lt;00:13, 158396.51it/s]</p>
+<p>66%|██████▌   | 3946034/6000000 [00:24&lt;00:12, 158972.54it/s]</p>
+<p>66%|██████▌   | 3961932/6000000 [00:24&lt;00:12, 158844.60it/s]</p>
+<p>66%|██████▋   | 3977817/6000000 [00:24&lt;00:12, 158556.71it/s]</p>
+<p>67%|██████▋   | 3993706/6000000 [00:24&lt;00:12, 158656.12it/s]</p>
+<p>67%|██████▋   | 4009771/6000000 [00:24&lt;00:12, 159251.87it/s]</p>
+<p>67%|██████▋   | 4025954/6000000 [00:24&lt;00:12, 160024.14it/s]</p>
+<p>67%|██████▋   | 4042102/6000000 [00:24&lt;00:12, 160460.17it/s]</p>
+<p>68%|██████▊   | 4058234/6000000 [00:24&lt;00:12, 160716.60it/s]</p>
+<p>68%|██████▊   | 4074538/6000000 [00:25&lt;00:11, 161412.75it/s]</p>
+<p>68%|██████▊   | 4090777/6000000 [00:25&lt;00:11, 161703.67it/s]</p>
+<p>68%|██████▊   | 4107023/6000000 [00:25&lt;00:11, 161928.71it/s]</p>
+<p>69%|██████▊   | 4123445/6000000 [00:25&lt;00:11, 162615.43it/s]</p>
+<p>69%|██████▉   | 4139796/6000000 [00:25&lt;00:11, 162882.53it/s]</p>
+<p>69%|██████▉   | 4156085/6000000 [00:25&lt;00:11, 162548.85it/s]</p>
+<p>70%|██████▉   | 4172351/6000000 [00:25&lt;00:11, 162581.61it/s]</p>
+<p>70%|██████▉   | 4188610/6000000 [00:25&lt;00:11, 162055.25it/s]</p>
+<p>70%|███████   | 4204910/6000000 [00:25&lt;00:11, 162336.25it/s]</p>
+<p>70%|███████   | 4221145/6000000 [00:25&lt;00:10, 161891.97it/s]</p>
+<p>71%|███████   | 4237348/6000000 [00:26&lt;00:10, 161932.82it/s]</p>
+<p>71%|███████   | 4253542/6000000 [00:26&lt;00:10, 161725.11it/s]</p>
+<p>71%|███████   | 4269820/6000000 [00:26&lt;00:10, 162040.46it/s]</p>
+<p>71%|███████▏  | 4286025/6000000 [00:26&lt;00:10, 161608.26it/s]</p>
+<p>72%|███████▏  | 4302435/6000000 [00:26&lt;00:10, 162351.62it/s]</p>
+<p>72%|███████▏  | 4318707/6000000 [00:26&lt;00:10, 162461.59it/s]</p>
+<p>72%|███████▏  | 4334954/6000000 [00:26&lt;00:10, 162186.87it/s]</p>
+<p>73%|███████▎  | 4351174/6000000 [00:26&lt;00:10, 162189.69it/s]</p>
+<p>73%|███████▎  | 4367394/6000000 [00:26&lt;00:10, 161724.28it/s]</p>
+<p>73%|███████▎  | 4383926/6000000 [00:26&lt;00:09, 162797.56it/s]</p>
+<p>73%|███████▎  | 4400207/6000000 [00:27&lt;00:09, 162760.91it/s]</p>
+<p>74%|███████▎  | 4416591/6000000 [00:27&lt;00:09, 163081.33it/s]</p>
+<p>74%|███████▍  | 4432900/6000000 [00:27&lt;00:09, 162547.15it/s]</p>
+<p>74%|███████▍  | 4449156/6000000 [00:27&lt;00:09, 162087.84it/s]</p>
+<p>74%|███████▍  | 4465560/6000000 [00:27&lt;00:09, 162669.10it/s]</p>
+<p>75%|███████▍  | 4481828/6000000 [00:27&lt;00:09, 162547.10it/s]</p>
+<p>75%|███████▍  | 4498084/6000000 [00:27&lt;00:09, 162083.06it/s]</p>
+<p>75%|███████▌  | 4514395/6000000 [00:27&lt;00:09, 162388.96it/s]</p>
+<p>76%|███████▌  | 4530782/6000000 [00:27&lt;00:09, 162829.80it/s]</p>
+<p>76%|███████▌  | 4547066/6000000 [00:27&lt;00:08, 162639.12it/s]</p>
+<p>76%|███████▌  | 4563331/6000000 [00:28&lt;00:08, 162173.42it/s]</p>
+<p>76%|███████▋  | 4579672/6000000 [00:28&lt;00:08, 162540.58it/s]</p>
+<p>77%|███████▋  | 4595927/6000000 [00:28&lt;00:08, 162222.96it/s]</p>
+<p>77%|███████▋  | 4612150/6000000 [00:28&lt;00:08, 162176.54it/s]</p>
+<p>77%|███████▋  | 4628368/6000000 [00:28&lt;00:08, 161755.19it/s]</p>
+<p>77%|███████▋  | 4644681/6000000 [00:28&lt;00:08, 162163.92it/s]</p>
+<p>78%|███████▊  | 4660898/6000000 [00:28&lt;00:08, 162053.52it/s]</p>
+<p>78%|███████▊  | 4677217/6000000 [00:28&lt;00:08, 162392.94it/s]</p>
+<p>78%|███████▊  | 4693457/6000000 [00:28&lt;00:08, 161538.31it/s]</p>
+<p>78%|███████▊  | 4709669/6000000 [00:28&lt;00:07, 161711.80it/s]</p>
+<p>79%|███████▉  | 4726001/6000000 [00:29&lt;00:07, 162017.02it/s]</p>
+<p>79%|███████▉  | 4742204/6000000 [00:29&lt;00:07, 161846.81it/s]</p>
+<p>79%|███████▉  | 4758390/6000000 [00:29&lt;00:07, 161683.83it/s]</p>
+<p>80%|███████▉  | 4774693/6000000 [00:29&lt;00:07, 162084.30it/s]</p>
+<p>80%|███████▉  | 4790987/6000000 [00:29&lt;00:07, 162338.24it/s]</p>
+<p>80%|████████  | 4807222/6000000 [00:29&lt;00:07, 161984.64it/s]</p>
+<p>80%|████████  | 4823451/6000000 [00:29&lt;00:07, 162072.71it/s]</p>
+<p>81%|████████  | 4839659/6000000 [00:29&lt;00:07, 161928.80it/s]</p>
+<p>81%|████████  | 4855935/6000000 [00:29&lt;00:07, 162175.43it/s]</p>
+<p>81%|████████  | 4872153/6000000 [00:29&lt;00:06, 161835.24it/s]</p>
+<p>81%|████████▏ | 4888407/6000000 [00:30&lt;00:06, 162045.40it/s]</p>
+<p>82%|████████▏ | 4904801/6000000 [00:30&lt;00:06, 162610.90it/s]</p>
+<p>82%|████████▏ | 4921063/6000000 [00:30&lt;00:06, 162346.80it/s]</p>
+<p>82%|████████▏ | 4937315/6000000 [00:30&lt;00:06, 162396.15it/s]</p>
+<p>83%|████████▎ | 4953555/6000000 [00:30&lt;00:06, 162089.74it/s]</p>
+<p>83%|████████▎ | 4969765/6000000 [00:30&lt;00:06, 162019.67it/s]</p>
+<p>83%|████████▎ | 4986001/6000000 [00:30&lt;00:06, 161938.96it/s]</p>
+<p>83%|████████▎ | 5002297/6000000 [00:30&lt;00:06, 162242.93it/s]</p>
+<p>84%|████████▎ | 5018587/6000000 [00:30&lt;00:06, 162437.36it/s]</p>
+<p>84%|████████▍ | 5034952/6000000 [00:30&lt;00:05, 162799.30it/s]</p>
+<p>84%|████████▍ | 5051233/6000000 [00:31&lt;00:05, 162553.12it/s]</p>
+<p>84%|████████▍ | 5067489/6000000 [00:31&lt;00:05, 162201.36it/s]</p>
+<p>85%|████████▍ | 5083749/6000000 [00:31&lt;00:05, 162319.41it/s]</p>
+<p>85%|████████▌ | 5100100/6000000 [00:31&lt;00:05, 162674.00it/s]</p>
+<p>85%|████████▌ | 5116756/6000000 [00:31&lt;00:05, 163836.80it/s]</p>
+<p>86%|████████▌ | 5133183/6000000 [00:31&lt;00:05, 163966.45it/s]</p>
+<p>86%|████████▌ | 5149580/6000000 [00:31&lt;00:05, 162857.25it/s]</p>
+<p>86%|████████▌ | 5165868/6000000 [00:31&lt;00:05, 162809.29it/s]</p>
+<p>86%|████████▋ | 5182151/6000000 [00:31&lt;00:05, 161722.17it/s]</p>
+<p>87%|████████▋ | 5198326/6000000 [00:31&lt;00:04, 160942.90it/s]</p>
+<p>87%|████████▋ | 5214498/6000000 [00:32&lt;00:04, 161171.44it/s]</p>
+<p>87%|████████▋ | 5230982/6000000 [00:32&lt;00:04, 162264.93it/s]</p>
+<p>87%|████████▋ | 5247268/6000000 [00:32&lt;00:04, 162441.58it/s]</p>
+<p>88%|████████▊ | 5263583/6000000 [00:32&lt;00:04, 162651.08it/s]</p>
+<p>88%|████████▊ | 5279939/6000000 [00:32&lt;00:04, 162922.88it/s]</p>
+<p>88%|████████▊ | 5296246/6000000 [00:32&lt;00:04, 162965.60it/s]</p>
+<p>89%|████████▊ | 5312544/6000000 [00:32&lt;00:04, 162882.21it/s]</p>
+<p>89%|████████▉ | 5328863/6000000 [00:32&lt;00:04, 162972.86it/s]</p>
+<p>89%|████████▉ | 5345197/6000000 [00:32&lt;00:04, 163080.40it/s]</p>
+<p>89%|████████▉ | 5361543/6000000 [00:32&lt;00:03, 163193.21it/s]</p>
+<p>90%|████████▉ | 5377863/6000000 [00:33&lt;00:03, 162874.36it/s]</p>
+<p>90%|████████▉ | 5394249/6000000 [00:33&lt;00:03, 163166.93it/s]</p>
+<p>90%|█████████ | 5410566/6000000 [00:33&lt;00:03, 162653.46it/s]</p>
+<p>90%|█████████ | 5426863/6000000 [00:33&lt;00:03, 162746.10it/s]</p>
+<p>91%|█████████ | 5443138/6000000 [00:33&lt;00:03, 162496.22it/s]</p>
+<p>91%|█████████ | 5459546/6000000 [00:33&lt;00:03, 162969.01it/s]</p>
+<p>91%|█████████▏| 5475964/6000000 [00:33&lt;00:03, 163331.35it/s]</p>
+<p>92%|█████████▏| 5492298/6000000 [00:33&lt;00:03, 161006.77it/s]</p>
+<p>92%|█████████▏| 5508412/6000000 [00:33&lt;00:03, 161045.21it/s]</p>
+<p>92%|█████████▏| 5524522/6000000 [00:33&lt;00:02, 161059.62it/s]</p>
+<p>92%|█████████▏| 5540657/6000000 [00:34&lt;00:02, 161144.71it/s]</p>
+<p>93%|█████████▎| 5557025/6000000 [00:34&lt;00:02, 161900.28it/s]</p>
+<p>93%|█████████▎| 5573348/6000000 [00:34&lt;00:02, 162296.44it/s]</p>
+<p>93%|█████████▎| 5589580/6000000 [00:34&lt;00:02, 162061.85it/s]</p>
+<p>93%|█████████▎| 5605788/6000000 [00:34&lt;00:02, 162009.64it/s]</p>
+<p>94%|█████████▎| 5622037/6000000 [00:34&lt;00:02, 162151.67it/s]</p>
+<p>94%|█████████▍| 5638253/6000000 [00:34&lt;00:02, 161916.30it/s]</p>
+<p>94%|█████████▍| 5654510/6000000 [00:34&lt;00:02, 162109.88it/s]</p>
+<p>95%|█████████▍| 5670914/6000000 [00:34&lt;00:02, 162686.30it/s]</p>
+<p>95%|█████████▍| 5687251/6000000 [00:34&lt;00:01, 162890.44it/s]</p>
+<p>95%|█████████▌| 5703566/6000000 [00:35&lt;00:01, 162966.55it/s]</p>
+<p>95%|█████████▌| 5720001/6000000 [00:35&lt;00:01, 163362.98it/s]</p>
+<p>96%|█████████▌| 5736454/6000000 [00:35&lt;00:01, 163709.59it/s]</p>
+<p>96%|█████████▌| 5752826/6000000 [00:35&lt;00:01, 163275.77it/s]</p>
+<p>96%|█████████▌| 5769154/6000000 [00:35&lt;00:01, 163264.62it/s]</p>
+<p>96%|█████████▋| 5785640/6000000 [00:35&lt;00:01, 163739.75it/s]</p>
+<p>97%|█████████▋| 5802081/6000000 [00:35&lt;00:01, 163940.19it/s]</p>
+<p>97%|█████████▋| 5818662/6000000 [00:35&lt;00:01, 164500.28it/s]</p>
+<p>97%|█████████▋| 5835113/6000000 [00:35&lt;00:01, 163970.72it/s]</p>
+<p>98%|█████████▊| 5851511/6000000 [00:35&lt;00:00, 163696.08it/s]</p>
+<p>98%|█████████▊| 5867961/6000000 [00:36&lt;00:00, 163935.76it/s]</p>
+<p>98%|█████████▊| 5884355/6000000 [00:36&lt;00:00, 163793.63it/s]</p>
+<p>98%|█████████▊| 5900781/6000000 [00:36&lt;00:00, 163931.42it/s]</p>
+<p>99%|█████████▊| 5917175/6000000 [00:36&lt;00:00, 163451.22it/s]</p>
+<p>99%|█████████▉| 5933610/6000000 [00:36&lt;00:00, 163718.55it/s]</p>
+<p>99%|█████████▉| 5949983/6000000 [00:36&lt;00:00, 163507.07it/s]</p>
+<p>99%|█████████▉| 5966334/6000000 [00:36&lt;00:00, 163203.37it/s]</p>
+<p>100%|█████████▉| 5982655/6000000 [00:36&lt;00:00, 162830.35it/s]</p>
+<p>100%|█████████▉| 5998981/6000000 [00:36&lt;00:00, 162958.70it/s]</p>
+<p>100%|██████████| 6000000/6000000 [00:36&lt;00:00, 162798.02it/s]</p>
+<div class="language-python highlight"><pre><span></span><code><span class="n">colors</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;ε = 0.1&#39;</span><span class="p">:</span> <span class="s1">&#39;tab:blue&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ε = 0.01&#39;</span><span class="p">:</span> <span class="s1">&#39;tab:red&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ε = 0&#39;</span><span class="p">:</span> <span class="s1">&#39;tab:green&#39;</span>
+<span class="p">}</span>
+
+<span class="p">(</span>
+    <span class="n">trace_df</span>
+    <span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s1">&#39;step&#39;</span><span class="p">,</span> <span class="s1">&#39;policy&#39;</span><span class="p">])</span>
+    <span class="p">[</span><span class="s1">&#39;is_action_optimal&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+    <span class="o">.</span><span class="n">unstack</span><span class="p">()</span>
+    <span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+<span class="p">)</span>
+</code></pre></div>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
+
+<div class="language-text highlight"><pre><span></span><code>[1m&lt;[0m[1;95mAxes:[0m[39m [0m[33mxlabel[0m[39m=[0m[32m&#39;step&#39;[0m[1m&gt;[0m
+</code></pre></div>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
+
+<p><img alt="png" src="../bandits-101_files/bandits-101_12_3.png" /></p>
+<h2 id="handling-drift">Handling drift<a class="headerlink" href="#handling-drift" title="Permanent link">&para;</a></h2>
+<p>The environment used above is a toy situation used for introducing bandits. It is stationary, meaning that the expected reward of each arm does not change over time.</p>
+<p>In practice, arms are dynamic, and their performance can vary over time. A simple example of this is the <a href="https://www.kaggle.com/c/santa-2020">Candy Cane Contest</a> that was hosted on Kaggle in 2020. The expected reward of each arm diminishes each time it is pulled.</p>
+<p>The way bandit policies in River deal with drift depends on the method. For the <a href="../../api/bandit/EpsilonGreedy"><code>bandit.EpsilonGreedy</code></a> policy, it makes sense to use a rolling average as the reward object. What this means is that the empirical reward the policy calculates for each arm is a rolling average, rather than a global one.</p>
+<div class="language-python highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">river</span><span class="w"> </span><span class="kn">import</span> <span class="n">proba</span><span class="p">,</span> <span class="n">utils</span>
+
+<span class="n">policies</span><span class="o">=</span><span class="p">[</span>
+    <span class="n">bandit</span><span class="o">.</span><span class="n">EpsilonGreedy</span><span class="p">(</span>
+        <span class="n">epsilon</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+        <span class="n">seed</span><span class="o">=</span><span class="mi">42</span>
+    <span class="p">),</span>
+    <span class="n">bandit</span><span class="o">.</span><span class="n">EpsilonGreedy</span><span class="p">(</span>
+        <span class="n">epsilon</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span>
+        <span class="n">reward_obj</span><span class="o">=</span><span class="n">utils</span><span class="o">.</span><span class="n">Rolling</span><span class="p">(</span><span class="n">stats</span><span class="o">.</span><span class="n">Mean</span><span class="p">(),</span> <span class="n">window_size</span><span class="o">=</span><span class="mi">50</span><span class="p">),</span>
+        <span class="n">seed</span><span class="o">=</span><span class="mi">42</span>
+    <span class="p">),</span>
+    <span class="n">bandit</span><span class="o">.</span><span class="n">ThompsonSampling</span><span class="p">(</span>
+        <span class="n">reward_obj</span><span class="o">=</span><span class="n">proba</span><span class="o">.</span><span class="n">Beta</span><span class="p">(),</span>
+        <span class="n">seed</span><span class="o">=</span><span class="mi">42</span>
+    <span class="p">)</span>
+<span class="p">]</span>
+
+<span class="n">env</span> <span class="o">=</span> <span class="n">gym</span><span class="o">.</span><span class="n">make</span><span class="p">(</span><span class="s1">&#39;river_bandits/CandyCaneContest-v0&#39;</span><span class="p">)</span>
+
+<span class="n">trace</span> <span class="o">=</span> <span class="n">bandit</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span>
+    <span class="n">policies</span><span class="o">=</span><span class="n">policies</span><span class="p">,</span>
+    <span class="n">env</span><span class="o">=</span><span class="n">env</span><span class="p">,</span>
+    <span class="n">n_episodes</span><span class="o">=</span><span class="p">(</span><span class="n">n_episodes</span> <span class="o">:=</span> <span class="mi">30</span><span class="p">),</span>
+    <span class="n">seed</span><span class="o">=</span><span class="mi">42</span>
+<span class="p">)</span>
+
+<span class="n">trace_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">tqdm</span><span class="p">(</span>
+    <span class="n">trace</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="p">(</span>
+        <span class="n">n_episodes</span> <span class="o">*</span>
+        <span class="nb">len</span><span class="p">(</span><span class="n">policies</span><span class="p">)</span> <span class="o">*</span>
+        <span class="n">env</span><span class="o">.</span><span class="n">_max_episode_steps</span>
+    <span class="p">)</span>
+<span class="p">))</span>
+</code></pre></div>
+<p>0%|          | 0/180000 [00:00&lt;?, ?it/s]</p>
+<p>1%|          | 1266/180000 [00:00&lt;00:14, 12639.73it/s]</p>
+<p>1%|▏         | 2570/180000 [00:00&lt;00:13, 12874.73it/s]</p>
+<p>2%|▏         | 3861/180000 [00:00&lt;00:13, 12884.86it/s]</p>
+<p>3%|▎         | 5150/180000 [00:00&lt;00:13, 12873.28it/s]</p>
+<p>4%|▎         | 6438/180000 [00:00&lt;00:13, 12734.80it/s]</p>
+<p>4%|▍         | 7749/180000 [00:00&lt;00:13, 12857.61it/s]</p>
+<p>5%|▌         | 9036/180000 [00:00&lt;00:13, 12769.75it/s]</p>
+<p>6%|▌         | 10317/180000 [00:00&lt;00:13, 12776.04it/s]</p>
+<p>6%|▋         | 11613/180000 [00:00&lt;00:13, 12830.60it/s]</p>
+<p>7%|▋         | 12897/180000 [00:01&lt;00:13, 12744.36it/s]</p>
+<p>8%|▊         | 14172/180000 [00:01&lt;00:13, 12695.25it/s]</p>
+<p>9%|▊         | 15463/180000 [00:01&lt;00:12, 12759.06it/s]</p>
+<p>9%|▉         | 16740/180000 [00:01&lt;00:12, 12587.72it/s]</p>
+<p>10%|█         | 18001/180000 [00:01&lt;00:12, 12525.91it/s]</p>
+<p>11%|█         | 19254/180000 [00:01&lt;00:12, 12480.13it/s]</p>
+<p>11%|█▏        | 20562/180000 [00:01&lt;00:12, 12655.21it/s]</p>
+<p>12%|█▏        | 21864/180000 [00:01&lt;00:12, 12760.56it/s]</p>
+<p>13%|█▎        | 23147/180000 [00:01&lt;00:12, 12780.92it/s]</p>
+<p>14%|█▎        | 24426/180000 [00:01&lt;00:12, 12511.23it/s]</p>
+<p>14%|█▍        | 25679/180000 [00:02&lt;00:12, 12513.36it/s]</p>
+<p>15%|█▍        | 26932/180000 [00:02&lt;00:12, 12352.55it/s]</p>
+<p>16%|█▌        | 28176/180000 [00:02&lt;00:12, 12376.77it/s]</p>
+<p>16%|█▋        | 29462/180000 [00:02&lt;00:12, 12519.66it/s]</p>
+<p>17%|█▋        | 30715/180000 [00:02&lt;00:11, 12519.57it/s]</p>
+<p>18%|█▊        | 32015/180000 [00:02&lt;00:11, 12662.54it/s]</p>
+<p>18%|█▊        | 33282/180000 [00:02&lt;00:11, 12489.58it/s]</p>
+<p>19%|█▉        | 34560/180000 [00:02&lt;00:11, 12572.60it/s]</p>
+<p>20%|█▉        | 35835/180000 [00:02&lt;00:11, 12619.25it/s]</p>
+<p>21%|██        | 37098/180000 [00:02&lt;00:11, 12514.31it/s]</p>
+<p>21%|██▏       | 38359/180000 [00:03&lt;00:11, 12542.14it/s]</p>
+<p>22%|██▏       | 39663/180000 [00:03&lt;00:11, 12690.33it/s]</p>
+<p>23%|██▎       | 40971/180000 [00:03&lt;00:10, 12804.27it/s]</p>
+<p>23%|██▎       | 42252/180000 [00:03&lt;00:10, 12657.28it/s]</p>
+<p>24%|██▍       | 43572/180000 [00:03&lt;00:10, 12814.86it/s]</p>
+<p>25%|██▍       | 44869/180000 [00:03&lt;00:10, 12860.59it/s]</p>
+<p>26%|██▌       | 46164/180000 [00:03&lt;00:10, 12884.76it/s]</p>
+<p>26%|██▋       | 47457/180000 [00:03&lt;00:10, 12895.89it/s]</p>
+<p>27%|██▋       | 48747/180000 [00:03&lt;00:10, 12622.43it/s]</p>
+<p>28%|██▊       | 50011/180000 [00:03&lt;00:10, 12600.08it/s]</p>
+<p>28%|██▊       | 51292/180000 [00:04&lt;00:10, 12661.14it/s]</p>
+<p>29%|██▉       | 52581/180000 [00:04&lt;00:10, 12728.15it/s]</p>
+<p>30%|██▉       | 53867/180000 [00:04&lt;00:09, 12767.35it/s]</p>
+<p>31%|███       | 55145/180000 [00:04&lt;00:09, 12602.79it/s]</p>
+<p>31%|███▏      | 56418/180000 [00:04&lt;00:09, 12637.35it/s]</p>
+<p>32%|███▏      | 57699/180000 [00:04&lt;00:09, 12686.87it/s]</p>
+<p>33%|███▎      | 58985/180000 [00:04&lt;00:09, 12737.89it/s]</p>
+<p>33%|███▎      | 60260/180000 [00:04&lt;00:09, 12520.11it/s]</p>
+<p>34%|███▍      | 61557/180000 [00:04&lt;00:09, 12649.75it/s]</p>
+<p>35%|███▍      | 62852/180000 [00:04&lt;00:09, 12738.61it/s]</p>
+<p>36%|███▌      | 64127/180000 [00:05&lt;00:09, 12577.90it/s]</p>
+<p>36%|███▋      | 65386/180000 [00:05&lt;00:09, 12377.12it/s]</p>
+<p>37%|███▋      | 66625/180000 [00:05&lt;00:09, 12159.81it/s]</p>
+<p>38%|███▊      | 67911/180000 [00:05&lt;00:09, 12359.60it/s]</p>
+<p>38%|███▊      | 69198/180000 [00:05&lt;00:08, 12508.89it/s]</p>
+<p>39%|███▉      | 70494/180000 [00:05&lt;00:08, 12636.71it/s]</p>
+<p>40%|███▉      | 71759/180000 [00:05&lt;00:08, 12485.26it/s]</p>
+<p>41%|████      | 73009/180000 [00:05&lt;00:08, 12414.68it/s]</p>
+<p>41%|████▏     | 74280/180000 [00:05&lt;00:08, 12496.60it/s]</p>
+<p>42%|████▏     | 75561/180000 [00:05&lt;00:08, 12584.49it/s]</p>
+<p>43%|████▎     | 76823/180000 [00:06&lt;00:08, 12594.79it/s]</p>
+<p>43%|████▎     | 78083/180000 [00:06&lt;00:08, 12402.32it/s]</p>
+<p>44%|████▍     | 79420/180000 [00:06&lt;00:07, 12688.05it/s]</p>
+<p>45%|████▍     | 80695/180000 [00:06&lt;00:07, 12706.27it/s]</p>
+<p>46%|████▌     | 81981/180000 [00:06&lt;00:07, 12746.43it/s]</p>
+<p>46%|████▋     | 83259/180000 [00:06&lt;00:07, 12753.81it/s]</p>
+<p>47%|████▋     | 84535/180000 [00:06&lt;00:07, 12555.16it/s]</p>
+<p>48%|████▊     | 85792/180000 [00:06&lt;00:07, 12452.73it/s]</p>
+<p>48%|████▊     | 87038/180000 [00:06&lt;00:07, 12315.21it/s]</p>
+<p>49%|████▉     | 88271/180000 [00:07&lt;00:07, 12306.49it/s]</p>
+<p>50%|████▉     | 89503/180000 [00:07&lt;00:07, 12218.17it/s]</p>
+<p>50%|█████     | 90726/180000 [00:07&lt;00:07, 12114.96it/s]</p>
+<p>51%|█████     | 92011/180000 [00:07&lt;00:07, 12331.22it/s]</p>
+<p>52%|█████▏    | 93303/180000 [00:07&lt;00:06, 12504.58it/s]</p>
+<p>53%|█████▎    | 94608/180000 [00:07&lt;00:06, 12662.22it/s]</p>
+<p>53%|█████▎    | 95910/180000 [00:07&lt;00:06, 12768.40it/s]</p>
+<p>54%|█████▍    | 97188/180000 [00:07&lt;00:06, 12641.33it/s]</p>
+<p>55%|█████▍    | 98469/180000 [00:07&lt;00:06, 12687.31it/s]</p>
+<p>55%|█████▌    | 99753/180000 [00:07&lt;00:06, 12726.64it/s]</p>
+<p>56%|█████▌    | 101026/180000 [00:08&lt;00:06, 12709.21it/s]</p>
+<p>57%|█████▋    | 102298/180000 [00:08&lt;00:06, 12512.16it/s]</p>
+<p>58%|█████▊    | 103593/180000 [00:08&lt;00:06, 12640.18it/s]</p>
+<p>58%|█████▊    | 104871/180000 [00:08&lt;00:05, 12678.96it/s]</p>
+<p>59%|█████▉    | 106143/180000 [00:08&lt;00:05, 12685.51it/s]</p>
+<p>60%|█████▉    | 107427/180000 [00:08&lt;00:05, 12725.80it/s]</p>
+<p>60%|██████    | 108700/180000 [00:08&lt;00:05, 12581.52it/s]</p>
+<p>61%|██████    | 109977/180000 [00:08&lt;00:05, 12635.79it/s]</p>
+<p>62%|██████▏   | 111255/180000 [00:08&lt;00:05, 12674.12it/s]</p>
+<p>63%|██████▎   | 112554/180000 [00:08&lt;00:05, 12764.21it/s]</p>
+<p>63%|██████▎   | 113860/180000 [00:09&lt;00:05, 12851.53it/s]</p>
+<p>64%|██████▍   | 115146/180000 [00:09&lt;00:05, 12748.35it/s]</p>
+<p>65%|██████▍   | 116437/180000 [00:09&lt;00:04, 12796.05it/s]</p>
+<p>65%|██████▌   | 117732/180000 [00:09&lt;00:04, 12836.03it/s]</p>
+<p>66%|██████▌   | 119038/180000 [00:09&lt;00:04, 12902.83it/s]</p>
+<p>67%|██████▋   | 120329/180000 [00:09&lt;00:04, 12556.70it/s]</p>
+<p>68%|██████▊   | 121635/180000 [00:09&lt;00:04, 12703.22it/s]</p>
+<p>68%|██████▊   | 122937/180000 [00:09&lt;00:04, 12793.53it/s]</p>
+<p>69%|██████▉   | 124239/180000 [00:09&lt;00:04, 12854.69it/s]</p>
+<p>70%|██████▉   | 125540/180000 [00:09&lt;00:04, 12899.99it/s]</p>
+<p>70%|███████   | 126831/180000 [00:10&lt;00:04, 12557.58it/s]</p>
+<p>71%|███████   | 128090/180000 [00:10&lt;00:04, 12535.35it/s]</p>
+<p>72%|███████▏  | 129365/180000 [00:10&lt;00:04, 12597.55it/s]</p>
+<p>73%|███████▎  | 130639/180000 [00:10&lt;00:03, 12638.40it/s]</p>
+<p>73%|███████▎  | 131904/180000 [00:10&lt;00:03, 12629.31it/s]</p>
+<p>74%|███████▍  | 133168/180000 [00:10&lt;00:03, 12565.46it/s]</p>
+<p>75%|███████▍  | 134448/180000 [00:10&lt;00:03, 12631.92it/s]</p>
+<p>75%|███████▌  | 135735/180000 [00:10&lt;00:03, 12696.63it/s]</p>
+<p>76%|███████▌  | 137005/180000 [00:10&lt;00:03, 12589.19it/s]</p>
+<p>77%|███████▋  | 138265/180000 [00:10&lt;00:03, 12465.14it/s]</p>
+<p>78%|███████▊  | 139560/180000 [00:11&lt;00:03, 12604.13it/s]</p>
+<p>78%|███████▊  | 140856/180000 [00:11&lt;00:03, 12705.17it/s]</p>
+<p>79%|███████▉  | 142127/180000 [00:11&lt;00:02, 12650.98it/s]</p>
+<p>80%|███████▉  | 143394/180000 [00:11&lt;00:02, 12655.77it/s]</p>
+<p>80%|████████  | 144660/180000 [00:11&lt;00:02, 12417.81it/s]</p>
+<p>81%|████████  | 145953/180000 [00:11&lt;00:02, 12565.64it/s]</p>
+<p>82%|████████▏ | 147251/180000 [00:11&lt;00:02, 12687.31it/s]</p>
+<p>83%|████████▎ | 148566/180000 [00:11&lt;00:02, 12818.86it/s]</p>
+<p>83%|████████▎ | 149871/180000 [00:11&lt;00:02, 12884.15it/s]</p>
+<p>84%|████████▍ | 151160/180000 [00:11&lt;00:02, 12782.11it/s]</p>
+<p>85%|████████▍ | 152454/180000 [00:12&lt;00:02, 12826.53it/s]</p>
+<p>85%|████████▌ | 153738/180000 [00:12&lt;00:02, 12673.63it/s]</p>
+<p>86%|████████▌ | 155028/180000 [00:12&lt;00:01, 12739.61it/s]</p>
+<p>87%|████████▋ | 156303/180000 [00:12&lt;00:01, 12568.13it/s]</p>
+<p>88%|████████▊ | 157617/180000 [00:12&lt;00:01, 12735.18it/s]</p>
+<p>88%|████████▊ | 158892/180000 [00:12&lt;00:01, 12706.77it/s]</p>
+<p>89%|████████▉ | 160164/180000 [00:12&lt;00:01, 12704.94it/s]</p>
+<p>90%|████████▉ | 161435/180000 [00:12&lt;00:01, 12558.23it/s]</p>
+<p>90%|█████████ | 162692/180000 [00:12&lt;00:01, 12480.19it/s]</p>
+<p>91%|█████████ | 163956/180000 [00:12&lt;00:01, 12527.02it/s]</p>
+<p>92%|█████████▏| 165249/180000 [00:13&lt;00:01, 12641.55it/s]</p>
+<p>93%|█████████▎| 166527/180000 [00:13&lt;00:01, 12680.79it/s]</p>
+<p>93%|█████████▎| 167815/180000 [00:13&lt;00:00, 12740.14it/s]</p>
+<p>94%|█████████▍| 169090/180000 [00:13&lt;00:00, 12678.82it/s]</p>
+<p>95%|█████████▍| 170383/180000 [00:13&lt;00:00, 12753.32it/s]</p>
+<p>95%|█████████▌| 171663/180000 [00:13&lt;00:00, 12761.39it/s]</p>
+<p>96%|█████████▌| 172953/180000 [00:13&lt;00:00, 12802.21it/s]</p>
+<p>97%|█████████▋| 174234/180000 [00:13&lt;00:00, 12589.53it/s]</p>
+<p>98%|█████████▊| 175539/180000 [00:13&lt;00:00, 12716.74it/s]</p>
+<p>98%|█████████▊| 176837/180000 [00:13&lt;00:00, 12794.05it/s]</p>
+<p>99%|█████████▉| 178146/180000 [00:14&lt;00:00, 12876.69it/s]</p>
+<p>100%|█████████▉| 179457/180000 [00:14&lt;00:00, 12940.38it/s]</p>
+<p>100%|██████████| 180000/180000 [00:14&lt;00:00, 12647.84it/s]</p>
+<p>We can compare the performance of each policy by checking the average reward at the end of each episode.</p>
+<div class="language-python highlight"><pre><span></span><code><span class="p">(</span>
+    <span class="n">trace_df</span>
+    <span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s1">&#39;policy_idx&#39;</span><span class="p">,</span> <span class="s1">&#39;episode&#39;</span><span class="p">])</span>
+    <span class="o">.</span><span class="n">last</span><span class="p">()</span>
+    <span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;policy_idx&#39;</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">reward_stat</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+<span class="p">)</span>
+</code></pre></div>
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
+
+<div class="language-text highlight"><pre><span></span><code>policy_idx
+[1;36m0[0m    [1;36m736.1[0m
+[1;36m1[0m    [1;36m817.0[0m
+[1;36m2[0m    [1;36m854.0[0m
+Name: reward_stat, dtype: float64
+</code></pre></div>
+<p>We see that using a rolling average gives a boost to the epsilon greedy strategy. However, we see that the <a href="../../api/bandit/ThompsonSampling"><code>bandit.ThompsonSampling</code></a> policy performs even better, even though no particular care was given to drift. A natural next step would thus be to see how it could be improved to handle drift. For instance, its <code>dist</code> parameter could be wrapped with a <a href="../../api/utils/Rolling"><code>utils.Rolling</code></a>:</p>
+<div class="language-python highlight"><pre><span></span><code><span class="n">policy</span> <span class="o">=</span> <span class="n">bandit</span><span class="o">.</span><span class="n">ThompsonSampling</span><span class="p">(</span>
+    <span class="n">reward_obj</span><span class="o">=</span><span class="n">utils</span><span class="o">.</span><span class="n">Rolling</span><span class="p">(</span><span class="n">proba</span><span class="o">.</span><span class="n">Beta</span><span class="p">(),</span> <span class="n">window_size</span><span class="o">=</span><span class="mi">50</span><span class="p">),</span>
+    <span class="n">seed</span><span class="o">=</span><span class="mi">42</span>
+<span class="p">)</span>
+</code></pre></div>
+<p>Bandits can be used for several tasks. They can be used for content personalization, as well as online model selection (see <a href="../../api/model-selection/BanditRegressor"><code>model_selection.BanditRegressor</code></a>). The policies in River are therefore designed to be flexible, so that they can be used in conjunction with other River modules. For instance, the <code>reward_obj</code> in <a href="../../api/bandit/EpsilonGreedy"><code>bandit.EpsilonGreedy</code></a> can be a metric, a probability distribution, or a statistic. This works because objects in River adher to a coherent get/update interface.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        
+
+<!-- Application footer -->
+<footer class="md-footer">
+
+  <!-- Further information -->
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+
+      <!-- Copyright and theme information -->
+      <div class="md-footer-copyright">
+        
+          <div class="md-footer-copyright__highlight">
+            Copyright &copy; 2019 - 2026
+          </div>
+        
+        Made with
+        <a
+          href="https://squidfunk.github.io/mkdocs-material/"
+          target="_blank" rel="noopener"
+        >
+          Material for MkDocs
+        </a>
+      </div>
+
+      <!-- Social links -->
+      
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/online-ml/river" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M202.1 328.7c0 20.9-10.9 55.1-36.7 55.1s-36.7-34.2-36.7-55.1 10.9-55.1 36.7-55.1 36.7 34.2 36.7 55.1M496 278.2c0 31.9-3.2 65.7-17.5 95-37.9 76.6-142.1 74.8-216.7 74.8-75.8 0-186.2 2.7-225.6-74.8-14.6-29-20.2-63.1-20.2-95 0-41.9 13.9-81.5 41.5-113.6-5.2-15.8-7.7-32.4-7.7-48.8 0-21.5 4.9-32.3 14.6-51.8 45.3 0 74.3 9 108.8 36 29-6.9 58.8-10 88.7-10 27 0 54.2 2.9 80.4 9.2 34-26.7 63-35.2 107.8-35.2 9.8 19.5 14.6 30.3 14.6 51.8 0 16.4-2.6 32.7-7.7 48.2 27.5 32.4 39 72.3 39 114.2m-64.3 50.5c0-43.9-26.7-82.6-73.5-82.6-18.9 0-37 3.4-56 6-14.9 2.3-29.8 3.2-45.1 3.2-15.2 0-30.1-.9-45.1-3.2-18.7-2.6-37-6-56-6-46.8 0-73.5 38.7-73.5 82.6 0 87.8 80.4 101.3 150.4 101.3h48.2c70.3 0 150.6-13.4 150.6-101.3m-82.6-55.1c-25.8 0-36.7 34.2-36.7 55.1s10.9 55.1 36.7 55.1 36.7-34.2 36.7-55.1-10.9-55.1-36.7-55.1"/></svg>
+    </a>
+  
+</div>
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate":null,"base":"../..","features":["content.code.copy","navigation.tabs","navigation.instant","navigation.indexes","navigation.prune"],"search":"../../assets/javascripts/workers/search.e2d2d235.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":{"provider":"mike"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.66be65ca.min.js"></script>
+      
+        <script src="../../javascripts/config.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2/es5/tex-mml-chtml.js"></script>
+      
+        <script src="https://unpkg.com/tablesort@5.3.0/dist/tablesort.min.js"></script>
+      
+        <script src="../../javascripts/tablesort.js"></script>
+      
+    
+  </body>
+</html>
