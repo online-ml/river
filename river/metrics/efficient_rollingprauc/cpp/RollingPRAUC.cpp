@@ -48,15 +48,15 @@ void RollingPRAUC::revert(int label, double score) {
 }
 
 double RollingPRAUC::get() const {
-    unsigned long windowSize{this->window.size()};
+    size_t windowSize{this->window.size()};
 
     // If there is only one class in the window, it will lead to a
     // division by zero. So, zero is returned.
     if (!this->positives || !(windowSize - this->positives))
         return 0;
 
-    unsigned long fp{windowSize - this->positives};
-    unsigned long tp{this->positives}, tpPrev{tp};
+    size_t fp{windowSize - this->positives};
+    size_t tp{this->positives}, tpPrev{tp};
 
     double auc{0}, scorePrev{std::numeric_limits<double>::max()};
 

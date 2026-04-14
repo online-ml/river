@@ -172,7 +172,7 @@ before-build = "rustup default nightly && rustup target add aarch64-apple-darwin
 
 [[tool.cibuildwheel.overrides]]
 select = ["*-win_*", "*-win32"]
-before-build = "rustup default nightly && rustup show"
+before-build = "rustup default nightly && rustup toolchain install nightly-i686-pc-windows-msvc && rustup target add i686-pc-windows-msvc && rustup show"
 
 [tool.hatch.build.targets.sdist]
 include = [
