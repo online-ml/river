@@ -45,7 +45,7 @@ class MondrianTreeRegressor(MondrianTree, base.Regressor):
 
     def __init__(
         self,
-        step: float = 0.1,
+        step: float = 1.0,
         use_aggregation: bool = True,
         iteration: int = 0,
         max_nodes: int | None = None,
@@ -127,7 +127,7 @@ class MondrianTreeRegressor(MondrianTree, base.Regressor):
                     node, split_time, new_depth, node.feature, node.threshold
                 )
                 right = MondrianLeafRegressor(node, split_time, new_depth)
-                left.replant(node)
+                left.replant(node, True)
 
                 old_left.parent = left
                 old_right.parent = left
@@ -138,7 +138,7 @@ class MondrianTreeRegressor(MondrianTree, base.Regressor):
                     node, split_time, new_depth, node.feature, node.threshold
                 )
                 left = MondrianLeafRegressor(node, split_time, new_depth)
-                right.replant(node)
+                right.replant(node, True)
 
                 old_left.parent = right
                 old_right.parent = right

@@ -58,7 +58,7 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
     >>> metric = metrics.Accuracy()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    Accuracy: 58.52%
+    Accuracy: 60.92%
 
     References
     ----------
@@ -69,7 +69,7 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
 
     def __init__(
         self,
-        step: float = 0.1,
+        step: float = 1.0,
         use_aggregation: bool = True,
         dirichlet: float = 0.5,
         split_pure: bool = False,
@@ -160,7 +160,7 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
                     node, split_time, new_depth, node.feature, node.threshold
                 )
                 right = MondrianLeafClassifier(node, split_time, new_depth)
-                left.replant(node)
+                left.replant(node, True)
 
                 old_left.parent = left
                 old_right.parent = left
@@ -171,7 +171,7 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
                     node, split_time, new_depth, node.feature, node.threshold
                 )
                 left = MondrianLeafClassifier(node, split_time, new_depth)
-                right.replant(node)
+                right.replant(node, True)
 
                 old_left.parent = right
                 old_right.parent = right

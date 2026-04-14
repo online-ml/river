@@ -33,7 +33,7 @@ class MondrianTree(abc.ABC):
 
     def __init__(
         self,
-        step: float = 0.1,
+        step: float = 1.0,
         loss: str = "log",
         use_aggregation: bool = True,
         iteration: int = 0,

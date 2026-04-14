@@ -85,6 +85,8 @@ The `dummy` module is now fully type-annotated.
 
 ## tree
 
+- Fixed Mondrian Tree branch nodes losing bounding box ranges during splits. When a branch was split, the new child branch did not inherit `memory_range_min`/`memory_range_max`, causing incorrect range extension calculations. This affected both `MondrianTreeClassifier` and `MondrianTreeRegressor`, as well as their forest variants (`AMFClassifier`, `AMFRegressor`). Fixes [#1801](https://github.com/online-ml/river/issues/1801).
+- Changed the default `step` parameter for `MondrianTreeClassifier` and `MondrianTreeRegressor` from `0.1` to `1.0`, matching the onelearn reference implementation and the existing default in `AMFClassifier`/`AMFRegressor`.
 - Added `cond_log_proba` to `GaussianSplitter` and optimized `do_naive_bayes_prediction` to use direct log-probabilities, avoiding the `exp`/`log` round-trip.
 - Added handling for division by zero in `tree.hoeffding_tree` for leaf size estimation.
 - Optimized Mondrian trees and AMF (Aggregated Mondrian Forest): replaced dict-based node storage with list-indexed storage, added feature/class-to-index mappings, inlined all hot-path methods, and moved the core traversal loops (`_go_downwards`, `update_downwards`, `predict_proba` upward walk) to Cython. AMFClassifier is **3.2x faster**, AMFRegressor is **2.9x faster**.
