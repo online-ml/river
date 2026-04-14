@@ -152,10 +152,12 @@ uv run make execute-notebooks
 2. Run `uv run make execute-notebooks` just to be safe
 3. Bump the version in `river/__version__.py`
 4. Bump the version in `pyproject.toml` (then run `uv lock`)
-5. Tag and date the `docs/releases/unreleased.md` file
-6. Commit and push
-7. Wait for CI to [run the unit tests](https://github.com/online-ml/river/actions/workflows/ci.yml)
-8. Push the tag:
+5. Tag and date the `docs/releases/unreleased.md` file (rename it to `docs/releases/X.Y.Z.md`)
+6. Create a fresh `docs/releases/unreleased.md` for the next development cycle
+7. Update the Releases nav in `mkdocs.yml`: replace the `unreleased` entry with the new version and add a new `unreleased` entry at the top
+8. Commit and push
+9. Wait for CI to [run the unit tests](https://github.com/online-ml/river/actions/workflows/ci.yml)
+10. Push the tag:
 
 ```sh
 RIVER_VERSION=$(uv run python -c "import river; print(river.__version__)")
@@ -167,9 +169,9 @@ git tag $RIVER_VERSION -m "Release $RIVER_VERSION"
 git push origin $RIVER_VERSION
 ```
 
-9. Wait for CI to [ship to PyPI](https://github.com/online-ml/river/actions/workflows/pypi.yml)
-10. Check the [new docs have been published](https://github.com/online-ml/river/actions/workflows/release-docs.yml)
-11. Create a [release](https://github.com/online-ml/river/releases):
+11. Wait for CI to [ship to PyPI](https://github.com/online-ml/river/actions/workflows/pypi.yml)
+12. Check the [new docs have been published](https://github.com/online-ml/river/actions/workflows/release-docs.yml)
+13. Create a [release](https://github.com/online-ml/river/releases):
 
 ```sh
 RELEASE_NOTES=$(cat <<-END
@@ -181,4 +183,4 @@ brew update && brew install gh
 gh release create $RIVER_VERSION --notes $RELEASE_NOTES
 ```
 
-11. Pyodide needs to be told there is a new release. This can done by updating [`packages/river`](https://github.com/online-ml/pyodide/tree/main/packages/river) in [online-ml/pyodide](https://github.com/online-ml/pyodide)
+14. Pyodide needs to be told there is a new release. This can done by updating [`packages/river`](https://github.com/online-ml/pyodide/tree/main/packages/river) in [online-ml/pyodide](https://github.com/online-ml/pyodide)
