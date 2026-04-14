@@ -150,12 +150,12 @@ uv run make execute-notebooks
 
 1. Checkout `main`
 2. Run `uv run make execute-notebooks` just to be safe
-4. Bump the version in `river/__version__.py`
-5. Bump the version in `pyproject.toml` (then run `uv lock`)
-6. Tag and date the `docs/releases/unreleased.md` file
-7. Commit and push
-8. Wait for CI to [run the unit tests](https://github.com/online-ml/river/actions/workflows/ci.yml)
-9. Push the tag:
+3. Bump the version in `river/__version__.py`
+4. Bump the version in `pyproject.toml` (then run `uv lock`)
+5. Tag and date the `docs/releases/unreleased.md` file
+6. Commit and push
+7. Wait for CI to [run the unit tests](https://github.com/online-ml/river/actions/workflows/ci.yml)
+8. Push the tag:
 
 ```sh
 RIVER_VERSION=$(uv run python -c "import river; print(river.__version__)")
