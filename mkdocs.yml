@@ -3890,7 +3890,6 @@ nav:
       - examples/matrix-factorization-for-recommender-systems/part-2.md
       - examples/matrix-factorization-for-recommender-systems/part-3.md
     - examples/quantile-regression-uncertainty.md
-    - examples/sentence-classification.md
     - examples/the-art-of-using-pipelines.md
     - examples/on-hoeffding-trees.md
   - FAQ: faq
