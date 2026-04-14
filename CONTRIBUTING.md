@@ -167,8 +167,9 @@ git tag $RIVER_VERSION -m "Release $RIVER_VERSION"
 git push origin $RIVER_VERSION
 ```
 
-9. Wait for CI to [ship to PyPI](https://github.com/online-ml/river/actions/workflows/pypi.yml) and [publish the new docs](https://github.com/online-ml/river/actions/workflows/release-docs.yml)
-10. Create a [release](https://github.com/online-ml/river/releases):
+9. Wait for CI to [ship to PyPI](https://github.com/online-ml/river/actions/workflows/pypi.yml)
+10. Check the [new docs have been published](https://github.com/online-ml/river/actions/workflows/release-docs.yml)
+11. Create a [release](https://github.com/online-ml/river/releases):
 
 ```sh
 RELEASE_NOTES=$(cat <<-END
