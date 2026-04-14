@@ -4,6 +4,10 @@ on:
   push:
     branches: [main]
 
+concurrency:
+  group: benchmarks
+  cancel-in-progress: false
+
 jobs:
   benchmarks:
     runs-on: ubuntu-latest
