@@ -9,7 +9,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  benchmarks:
+  run:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -67,6 +67,32 @@ jobs:
         working-directory: benchmarks
         run: asv publish
 
+      - name: Upload benchmark HTML
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-html
+          path: benchmarks/html
+
+  deploy:
+    needs: run
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    concurrency:
+      group: gh-pages-deploy
+      cancel-in-progress: false
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download benchmark HTML
+        uses: actions/download-artifact@v4
+        with:
+          name: benchmark-html
+          path: benchmarks/html
+
       - name: Deploy to GitHub Pages
         run: |
           git config user.name github-actions
@@ -79,4 +105,3 @@ jobs:
           git add benchmarks
           git commit -m "Update benchmark results" --allow-empty
           git push origin gh-pages
-          git worktree remove /tmp/gh-pages

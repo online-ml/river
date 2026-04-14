@@ -9,7 +9,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  docs:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -28,17 +28,38 @@ jobs:
 
       - name: Build docs
         run: uv run make doc
+
+      - name: Upload docs source
+        uses: actions/upload-artifact@v4
+        with:
+          name: docs-source
+          path: docs/linkified
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    concurrency:
+      group: gh-pages-deploy
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+
+      - name: Install the project
+        run: uv sync --locked --all-extras --dev
+
+      - name: Download docs source
+        uses: actions/download-artifact@v4
+        with:
+          name: docs-source
+          path: docs/linkified
+
       - name: Deploy docs
         env:
           GH_TOKEN: ${{ secrets.GitHubToken }}
         run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
-          git config pull.rebase false
-          git add --all
-          git commit -m "Release dev docs" --allow-empty
-          git fetch
-          git checkout gh-pages
-          git pull
-          git checkout main
           uv run mike deploy dev --push --remote https://github.com/${{ github.repository }}.git
