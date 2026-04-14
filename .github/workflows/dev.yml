@@ -85,6 +85,7 @@ jobs:
           cd /tmp/asv-save
           git add results
           git commit -m "Update benchmark results" --allow-empty
+          git pull --rebase origin asv
           git push origin asv
           cd -
           git worktree remove /tmp/asv-save
@@ -145,4 +146,5 @@ jobs:
           cd /tmp/gh-pages
           git add benchmarks
           git commit -m "Update benchmark results" --allow-empty
+          git pull --rebase origin gh-pages
           git push origin gh-pages
