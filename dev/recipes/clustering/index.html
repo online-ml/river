@@ -1647,7 +1647,9 @@
 </code></pre></div>
 <h2 id="debugging-a-pipeline">Debugging a pipeline<a class="headerlink" href="#debugging-a-pipeline" title="Permanent link">&para;</a></h2>
 <p><code>debug_one</code> shows the state of a sample as it passes through each pipeline step. Keep in mind that <code>debug_one</code> only calls <code>transform_one</code> — it does <strong>not</strong> train the pipeline. If the scaler hasn't seen any data yet, all values will appear as zero. Train the model first, then use <code>debug_one</code> to inspect:</p>
-<div class="language-python highlight"><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">compose</span><span class="o">.</span><span class="n">Pipeline</span><span class="p">(</span>
+<div class="language-python highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">river</span><span class="w"> </span><span class="kn">import</span> <span class="n">compose</span><span class="p">,</span> <span class="n">preprocessing</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">compose</span><span class="o">.</span><span class="n">Pipeline</span><span class="p">(</span>
     <span class="n">preprocessing</span><span class="o">.</span><span class="n">StandardScaler</span><span class="p">(),</span>
     <span class="n">cluster</span><span class="o">.</span><span class="n">KMeans</span><span class="p">(</span><span class="n">n_clusters</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">halflife</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
 <span class="p">)</span>
@@ -1659,21 +1661,6 @@
 <span class="c1"># Now debug_one shows meaningful scaled values</span>
 <span class="n">sample</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="mf">2.0</span><span class="p">}</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">debug_one</span><span class="p">(</span><span class="n">sample</span><span class="p">))</span>
-</code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>0. Input
---------
-0: 1.00000 (float)
-1: 2.00000 (float)
-
-1. StandardScaler
------------------
-0: 0.00000 (float)
-1: 0.00000 (float)
-
-2. KMeans
----------
-
-Prediction: 1
 </code></pre></div>
 
 
