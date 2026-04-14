@@ -71,7 +71,7 @@ jobs:
         timeout-minutes: 720
         env:
           CIBW_BUILD: "cp${{ matrix.python-version }}-*"
-          CIBW_ARCHS_WINDOWS: "AMD64 x86"
+          CIBW_ARCHS_WINDOWS: "AMD64"
           CIBW_ENVIRONMENT_WINDOWS: 'PATH="$UserProfile\.cargo\bin;$PATH"'
       - uses: actions/upload-artifact@v5
         with:
