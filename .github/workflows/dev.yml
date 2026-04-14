@@ -38,9 +38,8 @@ jobs:
           git config user.name github-actions
           git config user.email github-actions@github.com
           REMOTE=https://github.com/${{ github.repository }}.git
-          uv run mike deploy dev --remote "$REMOTE" --ignore-remote-status
-          git pull --rebase "$REMOTE" gh-pages || true
-          git push "$REMOTE" gh-pages
+          git fetch "$REMOTE" gh-pages:gh-pages --force || true
+          uv run mike deploy dev --remote "$REMOTE" --push
 
   benchmarks:
     runs-on: ubuntu-latest
