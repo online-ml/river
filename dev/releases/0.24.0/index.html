@@ -12,10 +12,10 @@
         <meta name="author" content="The Fellowship of Online Machine Learning">
       
       
-        <link rel="canonical" href="https://riverml.xyz/dev/releases/unreleased/">
+        <link rel="canonical" href="https://riverml.xyz/dev/releases/0.24.0/">
       
       
-        <link rel="prev" href="../../faq">
+        <link rel="prev" href="../unreleased.md">
       
       
         <link rel="next" href="../0.23.0/">
@@ -29,7 +29,7 @@
     
     
       
-        <title>Unreleased - River</title>
+        <title>0.24.0 - 2026-04-14 - River</title>
       
     
     
@@ -74,14 +74,14 @@
   <!-- Open Graph -->
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="River" />
-  <meta property="og:title" content="Unreleased - River" />
+  <meta property="og:title" content="0.24.0 - 2026-04-14 - River" />
   <meta property="og:description" content="Online machine learning in Python" />
-  <meta property="og:url" content="https://riverml.xyz/dev/releases/unreleased/" />
+  <meta property="og:url" content="https://riverml.xyz/dev/releases/0.24.0/" />
   <meta property="og:image" content="https://riverml.xyz/img/icon.png" />
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Unreleased - River" />
+  <meta name="twitter:title" content="0.24.0 - 2026-04-14 - River" />
   <meta name="twitter:description" content="Online machine learning in Python" />
   <meta name="twitter:image" content="https://riverml.xyz/img/icon.png" />
 
@@ -104,7 +104,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#unreleased" class="md-skip">
+        <a href="#0240-2026-04-14" class="md-skip">
           Skip to content
         </a>
       
@@ -141,7 +141,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Unreleased
+              0.24.0 - 2026-04-14
             
           </span>
         </div>
@@ -321,7 +321,7 @@
     
     
       <li class="md-tabs__item md-tabs__item--active">
-        <a href="././" class="md-tabs__link">
+        <a href="../unreleased.md" class="md-tabs__link">
           
   
   Releases
@@ -1402,6 +1402,8 @@
       
         
       
+        
+      
     
     
     
@@ -1454,6 +1456,34 @@
                 
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="../unreleased.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    unreleased
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
     
   
   
@@ -1474,7 +1504,7 @@
   <span class="md-ellipsis">
     
   
-    unreleased
+    0.24.0
   
 
     
@@ -1493,7 +1523,7 @@
   <span class="md-ellipsis">
     
   
-    unreleased
+    0.24.0
   
 
     
@@ -3149,7 +3179,7 @@
   
 
 
-<h1 id="unreleased">Unreleased<a class="headerlink" href="#unreleased" title="Permanent link">&para;</a></h1>
+<h1 id="0240-2026-04-14">0.24.0 - 2026-04-14<a class="headerlink" href="#0240-2026-04-14" title="Permanent link">&para;</a></h1>
 <h2 id="sketch">sketch<a class="headerlink" href="#sketch" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Add the <a href="../../api/sketch/NUnique"><code>sketch.NUnique</code></a> class. It was previoulsy in the <code>stats</code> module. This sketch estimates the number of unique elements in a stream.</li>
@@ -3233,6 +3263,8 @@
 </ul>
 <h2 id="tree">tree<a class="headerlink" href="#tree" title="Permanent link">&para;</a></h2>
 <ul>
+<li>Fixed Mondrian Tree branch nodes losing bounding box ranges during splits. When a branch was split, the new child branch did not inherit <code>memory_range_min</code>/<code>memory_range_max</code>, causing incorrect range extension calculations. This affected both <code>MondrianTreeClassifier</code> and <code>MondrianTreeRegressor</code>, as well as their forest variants (<code>AMFClassifier</code>, <code>AMFRegressor</code>). Fixes <a href="https://github.com/online-ml/river/issues/1801">#1801</a>.</li>
+<li>Changed the default <code>step</code> parameter for <code>MondrianTreeClassifier</code> and <code>MondrianTreeRegressor</code> from <code>0.1</code> to <code>1.0</code>, matching the onelearn reference implementation and the existing default in <code>AMFClassifier</code>/<code>AMFRegressor</code>.</li>
 <li>Added <code>cond_log_proba</code> to <code>GaussianSplitter</code> and optimized <code>do_naive_bayes_prediction</code> to use direct log-probabilities, avoiding the <code>exp</code>/<code>log</code> round-trip.</li>
 <li>Added handling for division by zero in <code>tree.hoeffding_tree</code> for leaf size estimation.</li>
 <li>Optimized Mondrian trees and AMF (Aggregated Mondrian Forest): replaced dict-based node storage with list-indexed storage, added feature/class-to-index mappings, inlined all hot-path methods, and moved the core traversal loops (<code>_go_downwards</code>, <code>update_downwards</code>, <code>predict_proba</code> upward walk) to Cython. AMFClassifier is <strong>3.2x faster</strong>, AMFRegressor is <strong>2.9x faster</strong>.</li>
