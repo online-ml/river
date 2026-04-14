@@ -38,9 +38,6 @@ dev = [
     "sqlalchemy>=2.0.22,<3",
     "sympy>=1.12.1,<2",
     "pytest-xdist[psutil]>=3.3.1,<4",
-    "ipykernel>=6.26.0,<7",
-    "ipython>=8.17.2,<9",
-    "rich>=13.6.0,<14",
     "jupyter>=1.0.0,<2",
     "mike @ git+https://github.com/squidfunk/mike.git",
     "polars>=1.1.0,<2",
@@ -52,7 +49,6 @@ compat = [
 docs = [
     "dominate",
     "flask",
-    "ipykernel",
     "jupyter-client",
     "mike @ git+https://github.com/squidfunk/mike.git",
     "pygments<2.20",
@@ -95,9 +91,6 @@ scikit-learn = "^1.5.1"
 sqlalchemy = "^2.0.22"
 sympy = "^1.12.1"
 pytest-xdist = { extras = ["psutil"], version = "^3.3.1" }
-ipykernel = "^6.26.0"
-ipython = "^8.17.2"
-rich = "^13.6.0"
 jupyter = "^1.0.0"
 mike = { git = "https://github.com/squidfunk/mike.git" }
 polars = "^1.1.0"
@@ -115,7 +108,6 @@ optional = true
 [tool.poetry.group.docs.dependencies]
 "dominate" = "*"
 "flask" = "*"
-"ipykernel" = "*"
 "jupyter-client" = "*"
 "jupyter-contrib-nbextensions" = "^0.7.0"
 "mike" = { git = "https://github.com/squidfunk/mike.git" }
@@ -131,8 +123,6 @@ optional = true
 
 [tool.poetry.group.benchmark]
 optional = true
-
-
 
 
 
