@@ -163,7 +163,7 @@ echo $RIVER_VERSION
 ```
 
 ```sh
-git tag $RIVER_VERSION
+git tag $RIVER_VERSION -m "Release $RIVER_VERSION"
 git push origin $RIVER_VERSION
 ```
 
