@@ -50,7 +50,6 @@ compat = [
     "sqlalchemy>=2.0.0,<3",
 ]
 docs = [
-    "ccxt",
     "dominate",
     "flask",
     "ipykernel",
