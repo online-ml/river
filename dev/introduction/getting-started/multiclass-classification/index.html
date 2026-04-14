@@ -1913,13 +1913,17 @@
 This dataset contains features that describe image segments into 7 classes: brickface, sky,
 foliage, cement, window, path, and grass.
 
-    Name  ImageSegments                                                     
-    Task  Multi-class classification                                        
- Samples  2,310                                                             
-Features  18                                                                
- Classes  7                                                                 
-  Sparse  False                                                             
-    Path  /Users/max/projects/online-ml/river/river/datasets/segment.csv.zip
+References
+----------
+[^1]: [UCI page](https://archive.ics.uci.edu/ml/datasets/Statlog+(Image+Segmentation))
+
+    Name  ImageSegments                                           
+    Task  Multi-class classification                              
+ Samples  2,310                                                   
+Features  18                                                      
+ Classes  7                                                       
+  Sparse  False                                                   
+    Path  /Users/max/projects/river/river/datasets/segment.csv.zip
 </code></pre></div>
 <p>This dataset is a streaming dataset which can be looped over.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">dataset</span><span class="p">:</span>
@@ -1991,18 +1995,18 @@ Features  18
 <div class="language-text highlight"><pre><span></span><code>            Precision   Recall   F1       Support
 
 brickface      77.13%   84.85%   80.81%       330  
-   cement      78.92%   83.94%   81.35%       330  
-  foliage      65.69%   20.30%   31.02%       330  
-    grass     100.00%   96.97%   98.46%       330  
-     path      90.63%   91.19%   90.91%       329  
-      sky      99.08%   98.18%   98.63%       330  
-   window      43.50%   67.88%   53.02%       330
+   cement      79.60%   83.94%   81.71%       330  
+  foliage      66.36%   21.52%   32.49%       330  
+    grass     100.00%   97.27%   98.62%       330  
+     path      90.91%   91.19%   91.05%       329  
+      sky     100.00%   98.18%   99.08%       330  
+   window      43.41%   67.88%   52.96%       330
 
-    Macro      79.28%   77.62%   76.31%            
-    Micro      77.61%   77.61%   77.61%            
- Weighted      79.27%   77.61%   76.31%
+    Macro      79.63%   77.83%   76.67%            
+    Micro      77.83%   77.83%   77.83%            
+ Weighted      79.62%   77.83%   76.67%
 
-                  77.61% accuracy
+                  77.83% accuracy
 </code></pre></div>
 <p>This is a common way to evaluate an online model. In fact, there is a dedicated <a href="../../../api/evaluate/progressive-val-score"><code>evaluate.progressive_val_score</code></a> function that does this for you.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">river</span><span class="w"> </span><span class="kn">import</span> <span class="n">evaluate</span>
@@ -2015,18 +2019,18 @@ brickface      77.13%   84.85%   80.81%       330
 <div class="language-text highlight"><pre><span></span><code>            Precision   Recall   F1       Support
 
 brickface      77.13%   84.85%   80.81%       330  
-   cement      78.92%   83.94%   81.35%       330  
-  foliage      65.69%   20.30%   31.02%       330  
-    grass     100.00%   96.97%   98.46%       330  
-     path      90.63%   91.19%   90.91%       329  
-      sky      99.08%   98.18%   98.63%       330  
-   window      43.50%   67.88%   53.02%       330
+   cement      79.60%   83.94%   81.71%       330  
+  foliage      66.36%   21.52%   32.49%       330  
+    grass     100.00%   97.27%   98.62%       330  
+     path      90.91%   91.19%   91.05%       329  
+      sky     100.00%   98.18%   99.08%       330  
+   window      43.41%   67.88%   52.96%       330
 
-    Macro      79.28%   77.62%   76.31%            
-    Micro      77.61%   77.61%   77.61%            
- Weighted      79.27%   77.61%   76.31%
+    Macro      79.63%   77.83%   76.67%            
+    Micro      77.83%   77.83%   77.83%            
+ Weighted      79.62%   77.83%   76.67%
 
-                  77.61% accuracy
+                  77.83% accuracy
 </code></pre></div>
 
 

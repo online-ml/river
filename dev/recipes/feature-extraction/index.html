@@ -2056,26 +2056,40 @@
 
 
 <h1 id="feature-extraction">Feature extraction<a class="headerlink" href="#feature-extraction" title="Permanent link">&para;</a></h1>
-<p>This recipe shows how to engineer features for online machine learning. We'll use a crypto price prediction task as a running example: given OHLCV candle data, can we predict whether the next candle closes higher or lower?</p>
+<p>This recipe shows how to engineer features for online machine learning. We'll use a price prediction task as a running example: given OHLCV candle data, can we predict whether the next candle closes higher or lower?</p>
 <p>Along the way we'll cover River's core feature extraction tools: <a href="../../api/compose/FuncTransformer"><code>compose.FuncTransformer</code></a>, <a href="../../api/feature-extraction/Agg"><code>feature_extraction.Agg</code></a>, streaming statistics, and how to use <a href="https://ta-lib.github.io/ta-lib-python/">TA-Lib's streaming API</a> inside a River pipeline.</p>
 <h2 id="fetching-data">Fetching data<a class="headerlink" href="#fetching-data" title="Permanent link">&para;</a></h2>
-<p>We'll pull 1-minute BTC/USDT candles from Binance via <a href="https://github.com/ccxt/ccxt">ccxt</a>.</p>
-<div class="language-python highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">ccxt</span>
+<p>We'll generate synthetic 1-minute OHLCV candle data using geometric Brownian motion to simulate realistic price movements.</p>
+<div class="language-python highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
-<span class="n">exchange</span> <span class="o">=</span> <span class="n">ccxt</span><span class="o">.</span><span class="n">binance</span><span class="p">()</span>
-<span class="n">raw</span> <span class="o">=</span> <span class="n">exchange</span><span class="o">.</span><span class="n">fetch_ohlcv</span><span class="p">(</span><span class="s2">&quot;BTC/USDT&quot;</span><span class="p">,</span> <span class="n">timeframe</span><span class="o">=</span><span class="s2">&quot;1m&quot;</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
-<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;timestamp&quot;</span><span class="p">,</span> <span class="s2">&quot;open&quot;</span><span class="p">,</span> <span class="s2">&quot;high&quot;</span><span class="p">,</span> <span class="s2">&quot;low&quot;</span><span class="p">,</span> <span class="s2">&quot;close&quot;</span><span class="p">,</span> <span class="s2">&quot;volume&quot;</span><span class="p">])</span>
-<span class="n">df</span><span class="p">[</span><span class="s2">&quot;timestamp&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;timestamp&quot;</span><span class="p">],</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;ms&quot;</span><span class="p">)</span>
+<span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+<span class="n">n_candles</span> <span class="o">=</span> <span class="mi">1000</span>
+<span class="n">price</span> <span class="o">=</span> <span class="mf">50_000.0</span>
+<span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">ts</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">(</span><span class="s2">&quot;2026-01-01&quot;</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_candles</span><span class="p">):</span>
+    <span class="n">ret</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.001</span><span class="p">)</span>
+    <span class="n">o</span> <span class="o">=</span> <span class="n">price</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">o</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">ret</span><span class="p">)</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="nb">abs</span><span class="p">(</span><span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.0005</span><span class="p">)))</span>
+    <span class="n">l</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="nb">abs</span><span class="p">(</span><span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.0005</span><span class="p">)))</span>
+    <span class="n">vol</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">exponential</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+    <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">ts</span><span class="p">,</span> <span class="n">o</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">vol</span><span class="p">])</span>
+    <span class="n">price</span> <span class="o">=</span> <span class="n">c</span>
+    <span class="n">ts</span> <span class="o">+=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timedelta</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">rows</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;timestamp&quot;</span><span class="p">,</span> <span class="s2">&quot;open&quot;</span><span class="p">,</span> <span class="s2">&quot;high&quot;</span><span class="p">,</span> <span class="s2">&quot;low&quot;</span><span class="p">,</span> <span class="s2">&quot;close&quot;</span><span class="p">,</span> <span class="s2">&quot;volume&quot;</span><span class="p">])</span>
 
 <span class="c1"># Target: did the next candle close higher?</span>
 <span class="n">df</span><span class="p">[</span><span class="s2">&quot;target&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;close&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;close&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
 <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># drop last row (no future candle)</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Fetched </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">)</span><span class="si">}</span><span class="s2"> candles&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Generated </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">)</span><span class="si">}</span><span class="s2"> candles&quot;</span><span class="p">)</span>
 <span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>Fetched 999 candles
+<div class="language-text highlight"><pre><span></span><code>Generated 999 candles
 </code></pre></div>
 <div>
 <style scoped>
@@ -2107,52 +2121,52 @@
   <tbody>
     <tr>
       <th>0</th>
-      <td>2026-04-09 17:48:00</td>
-      <td>72435.90</td>
-      <td>72447.52</td>
-      <td>72337.85</td>
-      <td>72363.48</td>
-      <td>22.33398</td>
+      <td>2026-01-01 00:00:00</td>
+      <td>50000.000000</td>
+      <td>50028.294032</td>
+      <td>49983.807787</td>
+      <td>50024.835708</td>
+      <td>1.696249</td>
       <td>1</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>2026-04-09 17:49:00</td>
-      <td>72363.99</td>
-      <td>72416.31</td>
-      <td>72361.36</td>
-      <td>72370.88</td>
-      <td>15.32128</td>
+      <td>2026-01-01 00:01:00</td>
+      <td>50024.835708</td>
+      <td>50108.015153</td>
+      <td>49999.560277</td>
+      <td>50101.025026</td>
+      <td>12.312501</td>
       <td>0</td>
     </tr>
     <tr>
       <th>2</th>
-      <td>2026-04-09 17:50:00</td>
-      <td>72370.88</td>
-      <td>72370.89</td>
-      <td>72310.00</td>
-      <td>72323.97</td>
-      <td>7.12806</td>
+      <td>2026-01-01 00:02:00</td>
+      <td>50101.025026</td>
+      <td>50114.616433</td>
+      <td>50065.900477</td>
+      <td>50077.503878</td>
+      <td>3.627537</td>
       <td>0</td>
     </tr>
     <tr>
       <th>3</th>
-      <td>2026-04-09 17:51:00</td>
-      <td>72323.97</td>
-      <td>72340.26</td>
-      <td>72278.80</td>
-      <td>72278.81</td>
-      <td>11.39078</td>
-      <td>1</td>
+      <td>2026-01-01 00:03:00</td>
+      <td>50077.503878</td>
+      <td>50142.918845</td>
+      <td>50030.396306</td>
+      <td>50054.181294</td>
+      <td>3.442230</td>
+      <td>0</td>
     </tr>
     <tr>
       <th>4</th>
-      <td>2026-04-09 17:52:00</td>
-      <td>72278.80</td>
-      <td>72362.54</td>
-      <td>72278.80</td>
-      <td>72346.00</td>
-      <td>10.79756</td>
+      <td>2026-01-01 00:04:00</td>
+      <td>50054.181294</td>
+      <td>50062.045991</td>
+      <td>49980.782678</td>
+      <td>50003.484862</td>
+      <td>6.089347</td>
       <td>0</td>
     </tr>
   </tbody>
@@ -2294,10 +2308,10 @@ hour=9, volume=1100 -&gt; {&#39;volume_mean_by_hour&#39;: 1100.0}
 <span class="n">x</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">20</span><span class="p">]</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
 <span class="n">ta</span><span class="o">.</span><span class="n">transform_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>{&#39;return&#39;: -0.0004761716190877718,
- &#39;range_pct&#39;: 0.0010138237573118554,
- &#39;rsi&#39;: 28.041286849656554,
- &#39;atr_pct&#39;: 0.0010326997730866858}
+<div class="language-text highlight"><pre><span></span><code>{&#39;return&#39;: -3.5826039109905045e-05,
+ &#39;range_pct&#39;: 0.002128049731109441,
+ &#39;rsi&#39;: 53.74389054881333,
+ &#39;atr_pct&#39;: 0.0013341485350098373}
 </code></pre></div>
 <h2 id="putting-it-together-an-online-pipeline">Putting it together: an online pipeline<a class="headerlink" href="#putting-it-together-an-online-pipeline" title="Permanent link">&para;</a></h2>
 <p>We can now wire <code>TALibFeatures</code> into a full River pipeline with scaling and a classifier. We'll use the prequential (test-then-train) protocol: predict first, then learn.</p>
@@ -2327,7 +2341,7 @@ hour=9, volume=1100 -&gt; {&#39;volume_mean_by_hour&#39;: 1100.0}
 
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cumulative accuracy: </span><span class="si">{</span><span class="n">cumulative_acc</span><span class="o">.</span><span class="n">get</span><span class="p">()</span><span class="si">:</span><span class="s2">.2%</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>Cumulative accuracy: 48.75%
+<div class="language-text highlight"><pre><span></span><code>Cumulative accuracy: 49.75%
 </code></pre></div>
 <p>Let's visualize the rolling accuracy alongside the price chart:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.dates</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mdates</span>
@@ -2338,9 +2352,9 @@ hour=9, volume=1100 -&gt; {&#39;volume_mean_by_hour&#39;: 1100.0}
 <span class="n">timestamps</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;timestamp&quot;</span><span class="p">]</span>
 
 <span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">timestamps</span><span class="p">,</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;close&quot;</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;steelblue&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
-<span class="n">ax1</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;BTC/USDT Price&quot;</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Price&quot;</span><span class="p">)</span>
 <span class="n">ax1</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span>
-    <span class="s2">&quot;Online Crypto Direction Prediction&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Online Price Direction Prediction&quot;</span><span class="p">,</span>
     <span class="n">fontsize</span><span class="o">=</span><span class="mi">13</span><span class="p">,</span>
     <span class="n">fontweight</span><span class="o">=</span><span class="s2">&quot;bold&quot;</span><span class="p">,</span>
 <span class="p">)</span>

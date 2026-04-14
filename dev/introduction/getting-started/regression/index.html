@@ -1914,12 +1914,16 @@ Trump&#39;s approval ratings. It contains 5 features, which are approval ratings
 5 polling agencies. The target is the approval rating from FiveThirtyEight&#39;s model. The goal of
 this task is to see if we can reproduce FiveThirtyEight&#39;s model.
 
-    Name  TrumpApproval                                                           
-    Task  Regression                                                              
- Samples  1,001                                                                   
-Features  6                                                                       
-  Sparse  False                                                                   
-    Path  /Users/max/projects/online-ml/river/river/datasets/trump_approval.csv.gz
+References
+----------
+[^1]: [Trump Approval Ratings](https://projects.fivethirtyeight.com/trump-approval-ratings/)
+
+    Name  TrumpApproval                                                 
+    Task  Regression                                                    
+ Samples  1,001                                                         
+Features  6                                                             
+  Sparse  False                                                         
+    Path  /Users/max/projects/river/river/datasets/trump_approval.csv.gz
 </code></pre></div>
 <p>This dataset is a streaming dataset which can be looped over.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">dataset</span><span class="p">:</span>
