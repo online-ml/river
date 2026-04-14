@@ -151,7 +151,6 @@ default-groups = [
 [tool.cibuildwheel]
 build-frontend = "build[uv]"
 skip = "*-musllinux_i686"
-enable = ["cpython-freethreading"]
 test-command = "python -c \"import river\""
 # TODO: re-enable win32 testing once pandas is removed as a dependency
 test-skip = "*-win32"
