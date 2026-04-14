@@ -1,11 +1,11 @@
-name: dev-docs
+name: dev
 
 on:
   push:
     branches: [main]
 
 concurrency:
-  group: dev-docs
+  group: dev
   cancel-in-progress: true
 
 jobs:
