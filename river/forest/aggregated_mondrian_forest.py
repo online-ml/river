@@ -149,7 +149,7 @@ class AMFClassifier(AMFLearner, base.Classifier):
     >>> metric = metrics.Accuracy()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    Accuracy: 85.37%
+    Accuracy: 84.37%
 
     References
     ----------
@@ -278,7 +278,7 @@ class AMFRegressor(AMFLearner, base.Regressor):
     >>> metric = metrics.MAE()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    MAE: 0.2805
+    MAE: 0.279747
 
     References
     ----------
