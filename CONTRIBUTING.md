@@ -152,7 +152,7 @@ uv run make execute-notebooks
 2. Run `uv run make execute-notebooks` just to be safe
 3. Run the [benchmarks](benchmarks)
 4. Bump the version in `river/__version__.py`
-5. Bump the version in `pyproject.toml`
+5. Bump the version in `pyproject.toml` (then run `uv lock`)
 6. Tag and date the `docs/releases/unreleased.md` file
 7. Commit and push
 8. Wait for CI to [run the unit tests](https://github.com/online-ml/river/actions/workflows/ci.yml)
