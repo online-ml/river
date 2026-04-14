@@ -153,6 +153,8 @@ build-frontend = "build[uv]"
 skip = "*-musllinux_i686"
 enable = ["cpython-freethreading"]
 test-command = "python -c \"import river\""
+# TODO: re-enable win32 testing once pandas is removed as a dependency
+test-skip = "*-win32"
 
 [tool.cibuildwheel.environment]
 PATH = "$HOME/.cargo/bin:$PATH"
@@ -173,6 +175,7 @@ before-build = "rustup default nightly && rustup target add aarch64-apple-darwin
 [[tool.cibuildwheel.overrides]]
 select = ["*-win_*", "*-win32"]
 before-build = "rustup default nightly && rustup toolchain install nightly-i686-pc-windows-msvc && rustup target add i686-pc-windows-msvc && rustup show"
+
 
 [tool.hatch.build.targets.sdist]
 include = [
