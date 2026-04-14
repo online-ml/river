@@ -659,9 +659,8 @@ class Pipeline(base.Estimator):
             # If the last estimator has a debug_one method then call it
             if hasattr(final, "debug_one"):
                 _print(final.debug_one(x))
+                _print()
 
-            # Display the prediction
-            _print()
             if isinstance(final, base.Classifier):
                 print_dict(final.predict_proba_one(x), show_types=False, space_after=False)
             elif isinstance(final, _anomaly_detector_cls()):

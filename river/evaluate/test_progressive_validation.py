@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import datetime as dt
 
-from river import datasets, evaluate, linear_model, metrics, preprocessing
+from river import cluster, compose, datasets, evaluate, linear_model, metrics, preprocessing, stream
 
 
 def test_progressive_val_score_basic():
@@ -152,3 +152,64 @@ def test_progressive_val_score_weights_no_w_param():
     )
     # Should run without error and produce a valid metric
     assert 0.0 <= metric.get() <= 1.0
+
+
+# ---------------------------------------------------------------------------
+# Clustering
+# ---------------------------------------------------------------------------
+
+_CLUSTER_DATA = [
+    [1, 2],
+    [1, 4],
+    [1, 0],
+    [4, 2],
+    [4, 4],
+    [4, 0],
+    [-2, 2],
+    [-2, 4],
+    [-2, 0],
+]
+
+
+def test_progressive_val_score_clustering():
+    """Clustering metrics work with progressive_val_score."""
+    model = cluster.KMeans(n_clusters=3, halflife=0.4, sigma=3, seed=0)
+    metric = evaluate.progressive_val_score(
+        dataset=stream.iter_array(_CLUSTER_DATA),
+        model=model,
+        metric=metrics.Silhouette(),
+    )
+    assert 0.0 < metric.get() < 1.0
+
+
+def test_progressive_val_score_clustering_matches_manual():
+    """Clustering progressive_val_score matches a manual predict-then-learn loop."""
+    model1 = cluster.KMeans(n_clusters=3, halflife=0.4, sigma=3, seed=0)
+    metric1 = evaluate.progressive_val_score(
+        dataset=stream.iter_array(_CLUSTER_DATA),
+        model=model1,
+        metric=metrics.Silhouette(),
+    )
+
+    model2 = cluster.KMeans(n_clusters=3, halflife=0.4, sigma=3, seed=0)
+    metric2 = metrics.Silhouette()
+    for x, _ in stream.iter_array(_CLUSTER_DATA):
+        y_pred = model2.predict_one(x)
+        metric2.update(x, y_pred, model2.centers)
+        model2.learn_one(x)
+
+    assert abs(metric1.get() - metric2.get()) < 1e-10
+
+
+def test_progressive_val_score_clustering_pipeline():
+    """Clustering metrics work when the model is a pipeline."""
+    model = compose.Pipeline(
+        preprocessing.StandardScaler(),
+        cluster.KMeans(n_clusters=3, halflife=0.4, sigma=3, seed=0),
+    )
+    metric = evaluate.progressive_val_score(
+        dataset=stream.iter_array(_CLUSTER_DATA),
+        model=model,
+        metric=metrics.Silhouette(),
+    )
+    assert 0.0 < metric.get() < 1.0
