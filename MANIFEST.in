@@ -1,5 +1,5 @@
 # Cython sources
-recursive-include river/ *.pyx *.c
+recursive-include river/ *.pyx *.pxd *.c *.cpp *.hpp *.h
 
 # Rust sources
 recursive-include rust_src/ *.rs
