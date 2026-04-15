@@ -58,7 +58,7 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
     >>> metric = metrics.Accuracy()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    Accuracy: 60.92%
+    Accuracy: 76.15%
 
     References
     ----------

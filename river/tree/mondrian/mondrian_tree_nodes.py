@@ -155,6 +155,7 @@ class MondrianNodeClassifier(MondrianNode):
         """Transfer information from a leaf to a new branch."""
         self.weight = leaf.weight  # type: ignore
         self.log_weight_tree = leaf.log_weight_tree  # type: ignore
+        self.counts = leaf.counts.copy()
 
         if copy_all:
             self.memory_range_min = leaf.memory_range_min
