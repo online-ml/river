@@ -1,0 +1,6 @@
+# Cython sources
+recursive-include river/ *.pyx *.c
+
+# Rust sources
+recursive-include rust_src/ *.rs
+include Cargo.toml Cargo.lock
