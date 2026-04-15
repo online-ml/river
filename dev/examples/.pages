@@ -1,14 +1,2 @@
 title: Examples
 description: End-to-end walkthroughs that apply River to real-world tasks and datasets.
-nav:
-    - batch-to-online.md
-    - bike-sharing-forecasting.md
-    - building-a-simple-nowcasting-model.md
-    - content-personalization.md
-    - debugging-a-pipeline.md
-    - imbalanced-learning.md
-    - matrix-factorization-for-recommender-systems
-    - quantile-regression-uncertainty.md
-    - sentence-classification.md
-    - the-art-of-using-pipelines.md
-    - on-hoeffding-trees.md
