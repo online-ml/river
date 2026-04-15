@@ -24,7 +24,3 @@ ordered-float = { version = "3.9", features = ["serde"] }
 
 [dev-dependencies]
 criterion = "0.5"
-
-[[bench]]
-name = "stats_bench"
-harness = false
