@@ -2831,6 +2831,7 @@ compat = [
     { name = "sqlalchemy" },
 ]
 dev = [
+    { name = "altair" },
     { name = "graphviz" },
     { name = "gymnasium" },
     { name = "ipykernel" },
@@ -2886,6 +2887,7 @@ compat = [
     { name = "sqlalchemy", specifier = ">=2.0.0,<3" },
 ]
 dev = [
+    { name = "altair", specifier = ">=5.0.0" },
     { name = "graphviz", specifier = ">=0.20.1,<0.21" },
     { name = "gymnasium", specifier = ">=0.29.0,<0.30" },
     { name = "ipykernel", specifier = ">=6.26.0,<7" },
