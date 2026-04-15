@@ -27,11 +27,17 @@ jobs:
       - name: Run tests
         run: uv run pytest
 
-      - name: Install pre-commit
+      - name: Install prek
+        uses: taiki-e/install-action@cargo-binstall
+
+      - name: Install prek binary
+        run: cargo binstall prek --no-confirm
+
+      - name: Cache prek hooks
         uses: actions/cache@v3
         with:
-          path: ~/.cache/pre-commit/
-          key: pre-commit|${{ hashFiles('.pre-commit-config.yaml') }}
+          path: ~/.cache/prek/
+          key: prek|${{ hashFiles('.pre-commit-config.yaml') }}
 
-      - name: Run pre-commit
-        run: uv run pre-commit run --all-files
+      - name: Run prek
+        run: prek run --all-files
