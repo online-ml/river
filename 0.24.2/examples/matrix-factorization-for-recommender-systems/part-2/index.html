@@ -286,7 +286,7 @@
     
     
       <li class="md-tabs__item md-tabs__item--active">
-        <a href="../../index.md" class="md-tabs__link">
+        <a href="../../batch-to-online/" class="md-tabs__link">
           
   
   Examples
@@ -321,7 +321,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../releases/unreleased/" class="md-tabs__link">
+        <a href="../../../releases/unreleased.md" class="md-tabs__link">
           
   
   Releases
@@ -1091,6 +1091,82 @@
       
         
       
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
     
     
     
@@ -1147,10 +1223,6 @@
     
       
         
-          
-        
-      
-        
       
         
       
@@ -1191,9 +1263,8 @@
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
         
           
-          <div class="md-nav__link md-nav__container">
-            <a href="../../index.md" class="md-nav__link ">
-              
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
   
   
   <span class="md-ellipsis">
@@ -1207,14 +1278,8 @@
   
   
 
-            </a>
-            
-              
-              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
-                <span class="md-nav__icon md-icon"></span>
-              </label>
-            
-          </div>
+            <span class="md-nav__icon md-icon"></span>
+          </label>
         
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_4">
@@ -1226,8 +1291,6 @@
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
-            
-              
             
               
                 
@@ -1427,10 +1490,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_8" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_7" checked>
         
           
-          <label class="md-nav__link" for="__nav_4_8" id="__nav_4_8_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_4_7" id="__nav_4_7_label" tabindex="0">
             
   
   
@@ -1448,8 +1511,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_8_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_4_8">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_7_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4_7">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1909,7 +1972,7 @@
   
   
   
-    <a href="../../../releases/unreleased/" class="md-nav__link">
+    <a href="../../../releases/unreleased.md" class="md-nav__link">
       
   
   
@@ -2165,15 +2228,15 @@ RMSE: 0.960662 – 00:00:01 – 752.34 KiB
 
 
 [50,000] MAE: 0.751922
-RMSE: 0.949783 – 00:00:03 – 877.28 KiB
+RMSE: 0.949783 – 00:00:02 – 877.28 KiB
 
 
 [75,000] MAE: 0.749822
-RMSE: 0.948634 – 00:00:05 – 0.99 MiB
+RMSE: 0.948634 – 00:00:04 – 0.99 MiB
 
 
 [100,000] MAE: 0.748393
-RMSE: 0.94776 – 00:00:07 – 1.11 MiB
+RMSE: 0.94776 – 00:00:05 – 1.11 MiB
 </code></pre></div>
 <p>Both MAE are very close to each other (0.7486 vs 0.7485) showing that we almost reproduced <a href="/api/reco/BiasedMF/">[reco.BiasedMF](../../api/reco/BiasedMF)</a> algorithm. The cost is a naturally slower running time as FM implementation offers more flexibility.</p>
 <h2 id="feature-engineering-for-fm-models">Feature engineering for FM models<a class="headerlink" href="#feature-engineering-for-fm-models" title="Permanent link">&para;</a></h2>
@@ -2250,19 +2313,19 @@ y = 4.0
 <span class="n">evaluate</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 </code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>[25,000] MAE: 0.760059
-RMSE: 0.961415 – 00:00:05 – 869.38 KiB
+RMSE: 0.961415 – 00:00:04 – 869.38 KiB
 
 
 [50,000] MAE: 0.751429
-RMSE: 0.951504 – 00:00:10 – 0.99 MiB
+RMSE: 0.951504 – 00:00:09 – 0.99 MiB
 
 
 [75,000] MAE: 0.750568
-RMSE: 0.951592 – 00:00:16 – 1.15 MiB
+RMSE: 0.951592 – 00:00:14 – 1.15 MiB
 
 
 [100,000] MAE: 0.75018
-RMSE: 0.951622 – 00:00:22 – 1.29 MiB
+RMSE: 0.951622 – 00:00:19 – 1.29 MiB
 </code></pre></div>
 <p>Note that using more variables involves factorizing a larger latent space, then increasing the number of latent factors <span class="arithmatex">\(k\)</span> often helps capturing more information.</p>
 <p>Some other feature engineering tips from <a href="https://www.kaggle.com/c/criteo-display-ad-challenge/discussion/10555">3 idiots' winning solution</a> for Kaggle <a href="https://www.kaggle.com/c/criteo-display-ad-challenge">Criteo display ads</a> competition in 2014:</p>
@@ -2305,19 +2368,19 @@ RMSE: 0.951622 – 00:00:22 – 1.29 MiB
 <span class="n">evaluate</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 </code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>[25,000] MAE: 0.761379
-RMSE: 0.96214 – 00:00:23 – 1.65 MiB
+RMSE: 0.96214 – 00:00:22 – 1.65 MiB
 
 
 [50,000] MAE: 0.751998
-RMSE: 0.951589 – 00:00:46 – 1.94 MiB
+RMSE: 0.951589 – 00:00:43 – 1.94 MiB
 
 
 [75,000] MAE: 0.750994
-RMSE: 0.951616 – 00:01:09 – 2.26 MiB
+RMSE: 0.951616 – 00:01:05 – 2.26 MiB
 
 
 [100,000] MAE: 0.750849
-RMSE: 0.952142 – 00:01:33 – 2.56 MiB
+RMSE: 0.952142 – 00:01:26 – 2.56 MiB
 </code></pre></div>
 <p>As said previously, high-order interactions are often hard to estimate due to too much sparsity, that's why we won't spend too much time here.</p>
 <h2 id="field-aware-factorization-machines-ffm">Field-aware Factorization Machines (FFM)<a class="headerlink" href="#field-aware-factorization-machines-ffm" title="Permanent link">&para;</a></h2>
@@ -2357,19 +2420,19 @@ RMSE: 0.952142 – 00:01:33 – 2.56 MiB
 <span class="n">evaluate</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 </code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>[25,000] MAE: 0.758339
-RMSE: 0.959047 – 00:00:08 – 1.98 MiB
+RMSE: 0.959047 – 00:00:07 – 1.98 MiB
 
 
 [50,000] MAE: 0.749833
-RMSE: 0.948531 – 00:00:17 – 2.34 MiB
+RMSE: 0.948531 – 00:00:15 – 2.34 MiB
 
 
 [75,000] MAE: 0.749631
-RMSE: 0.949418 – 00:00:25 – 2.73 MiB
+RMSE: 0.949418 – 00:00:22 – 2.73 MiB
 
 
 [100,000] MAE: 0.749776
-RMSE: 0.950131 – 00:00:34 – 3.09 MiB
+RMSE: 0.950131 – 00:00:30 – 3.09 MiB
 </code></pre></div>
 <p>Note that FFM usually needs to learn smaller number of latent factors <span class="arithmatex">\(k\)</span> than FM as each latent vector only deals with one field.</p>
 <h2 id="field-weighted-factorization-machines-fwfm">Field-weighted Factorization Machines (FwFM)<a class="headerlink" href="#field-weighted-factorization-machines-fwfm" title="Permanent link">&para;</a></h2>
@@ -2407,19 +2470,19 @@ RMSE: 0.950131 – 00:00:34 – 3.09 MiB
 <span class="n">evaluate</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 </code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>[25,000] MAE: 0.761435
-RMSE: 0.962211 – 00:00:11 – 766.38 KiB
+RMSE: 0.962211 – 00:00:09 – 766.38 KiB
 
 
 [50,000] MAE: 0.754063
-RMSE: 0.953248 – 00:00:22 – 891.33 KiB
+RMSE: 0.953248 – 00:00:19 – 891.33 KiB
 
 
 [75,000] MAE: 0.754729
-RMSE: 0.95507 – 00:00:33 – 1 MiB
+RMSE: 0.95507 – 00:00:29 – 1 MiB
 
 
 [100,000] MAE: 0.755697
-RMSE: 0.956542 – 00:00:44 – 1.13 MiB
+RMSE: 0.956542 – 00:00:39 – 1.13 MiB
 </code></pre></div>
 
 
