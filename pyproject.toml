@@ -1,6 +1,6 @@
 [project]
 name = "river"
-version = "0.24.0"
+version = "0.24.1"
 description = "Online machine learning in Python"
 authors = [{ name = "Max Halford", email = "maxhalford25@gmail.com" }]
 requires-python = ">=3.11"
@@ -69,65 +69,10 @@ benchmark = [
     "virtualenv",
 ]
 
-[tool.poetry.build]
-generate-setup-file = true
-script = "build.py"
-
-[tool.poetry.dependencies]
-python = "^3.10"
-numpy = ">=1.23.0"
-scipy = "^1.14.1"
-pandas = "^2.2.3"
-
-[tool.poetry.group.dev.dependencies]
-graphviz = "^0.20.1"
-gymnasium = "^0.29.0"
-matplotlib = "^3.8.4"
-mypy = "^1.11.1"
-pre-commit = "^3.5.0"
-pytest = "^7.4.2"
-ruff = "^0.4.10"
-scikit-learn = "^1.5.1"
-sqlalchemy = "^2.0.22"
-sympy = "^1.12.1"
-pytest-xdist = { extras = ["psutil"], version = "^3.3.1" }
-jupyter = "^1.0.0"
-mike = { git = "https://github.com/squidfunk/mike.git" }
-polars = "^1.1.0"
-
-[tool.poetry.group.compat]
-optional = true
-
-[tool.poetry.group.compat.dependencies]
-scikit-learn = "^1.5.1"
-sqlalchemy = "^2.0.0"
-
-[tool.poetry.group.docs]
-optional = true
-
-[tool.poetry.group.docs.dependencies]
-"dominate" = "*"
-"flask" = "*"
-"jupyter-client" = "*"
-"jupyter-contrib-nbextensions" = "^0.7.0"
-"mike" = { git = "https://github.com/squidfunk/mike.git" }
-"zensical" = "*"
-"nbconvert" = "*"
-"notebook" = "<7"
-"numpydoc" = "*"
-"plotly" = ">6.3.0"
-"python-slugify" = "*"
-"spacy" = "*"
-"tabulate" = "*"
-"watermark" = "*"
-
-[tool.poetry.group.benchmark]
-optional = true
 
 
-
-[tool.setuptools]
-packages = ["river"]
+[tool.setuptools.packages.find]
+include = ["river*"]
 
 [tool.uv]
 default-groups = [
@@ -162,33 +107,6 @@ before-build = "rustup default nightly && rustup target add aarch64-apple-darwin
 [[tool.cibuildwheel.overrides]]
 select = ["*-win_*", "*-win32"]
 before-build = "rustup default nightly && rustup toolchain install nightly-i686-pc-windows-msvc && rustup target add i686-pc-windows-msvc && rustup show"
-
-
-[tool.hatch.build.targets.sdist]
-include = [
-    "**/*.cpp",
-    "**/*.pyx",
-    "**/*.pxd",
-    "river/datasets/*.csv",
-    "river/datasets/*.gz",
-    "river/datasets/*.zip",
-    "river/stream/*.zip",
-    "Cargo.toml",
-    "rust_src/**/*",
-]
-
-[tool.hatch.build.targets.wheel]
-include = [
-    "**/*.cpp",
-    "**/*.pyx",
-    "**/*.pxd",
-    "river/datasets/*.csv",
-    "river/datasets/*.gz",
-    "river/datasets/*.zip",
-    "river/stream/*.zip",
-    "Cargo.toml",
-    "rust_src/**/*",
-]
 
 [tool.pytest.ini_options]
 addopts = [

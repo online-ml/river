@@ -3895,7 +3895,8 @@ nav:
     - examples/on-hoeffding-trees.md
   - FAQ: faq
   - Releases:
-    - unreleased: releases/unreleased.md
+    - "0.24.1": releases/0.24.1.md
+    - "0.24.0": releases/0.24.0.md
     - "0.23.0": releases/0.23.0.md
     - "0.22.0": releases/0.22.0.md
     - "0.21.2": releases/0.21.2.md
