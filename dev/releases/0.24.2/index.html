@@ -2758,8 +2758,10 @@
 <h1 id="0242-2026-04-15">0.24.2 - 2026-04-15<a class="headerlink" href="#0242-2026-04-15" title="Permanent link">&para;</a></h1>
 <h2 id="build">build<a class="headerlink" href="#build" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Added <code>MANIFEST.in</code> to ensure Cython (<code>.pyx</code>, <code>.pxd</code>) and Rust sources are included in the source distribution.</li>
-<li>Added <code>Cargo.lock</code> to the repository for reproducible Rust builds.</li>
+<li>Added <code>MANIFEST.in</code> to ensure Cython, C++, and Rust sources (<code>.pyx</code>, <code>.pxd</code>, <code>.cpp</code>, <code>.hpp</code>, <code>.c</code>, <code>.h</code>, <code>.rs</code>) are included in the source distribution.</li>
+<li>Included runtime dataset files (<code>river/datasets/*</code>, <code>river/drift/datasets/*</code>, <code>river/stream/*.zip</code>) in the source distribution so packages installed from sdist (e.g. via conda-forge) can load bundled datasets.</li>
+<li>Added <code>Cargo.lock</code> to the repository and the source distribution for reproducible Rust builds.</li>
+<li>Dropped the unused <code>[[bench]]</code> section from <code>Cargo.toml</code>.</li>
 </ul>
 
 
