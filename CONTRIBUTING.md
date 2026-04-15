@@ -152,12 +152,13 @@ uv run make execute-notebooks
 2. Run `uv run make execute-notebooks` just to be safe
 3. Bump the version in `river/__version__.py`
 4. Bump the version in `pyproject.toml` (then run `uv lock`)
-5. Tag and date the `docs/releases/unreleased.md` file (rename it to `docs/releases/X.Y.Z.md`)
-6. Create a fresh `docs/releases/unreleased.md` for the next development cycle
-7. Update the Releases nav in `mkdocs.yml`: replace the `unreleased` entry with the new version and add a new `unreleased` entry at the top
-8. Commit and push
-9. Wait for CI to [run the unit tests](https://github.com/online-ml/river/actions/workflows/ci.yml)
-10. Push the tag:
+5. Rename `docs/releases/unreleased.md` to `docs/releases/X.Y.Z.md` and add the release date to its top heading. If no `unreleased.md` exists (no changes were accumulated), create `X.Y.Z.md` directly.
+6. Update the Releases nav in `mkdocs.yml`: add the new version entry at the top of the list.
+7. Commit and push
+
+> Note: `docs/releases/unreleased.md` is created on demand by contributors when the first change worth noting lands after a release. When created, it must also be added to the Releases nav in `mkdocs.yml`. Do not pre-create an empty `unreleased.md` — an empty page will 404 in the docs.
+8. Wait for CI to [run the unit tests](https://github.com/online-ml/river/actions/workflows/ci.yml)
+9. Push the tag:
 
 ```sh
 RIVER_VERSION=$(uv run python -c "import river; print(river.__version__)")
@@ -169,9 +170,9 @@ git tag $RIVER_VERSION -m "Release $RIVER_VERSION"
 git push origin $RIVER_VERSION
 ```
 
-11. Wait for CI to [ship to PyPI](https://github.com/online-ml/river/actions/workflows/pypi.yml)
-12. Check the [new docs have been published](https://github.com/online-ml/river/actions/workflows/release-docs.yml)
-13. Create a [release](https://github.com/online-ml/river/releases):
+10. Wait for CI to [ship to PyPI](https://github.com/online-ml/river/actions/workflows/pypi.yml)
+11. Check the [new docs have been published](https://github.com/online-ml/river/actions/workflows/release-docs.yml)
+12. Create a [release](https://github.com/online-ml/river/releases):
 
 ```sh
 RELEASE_NOTES=$(cat <<-END
@@ -183,4 +184,4 @@ brew update && brew install gh
 gh release create $RIVER_VERSION --notes $RELEASE_NOTES
 ```
 
-14. Pyodide needs to be told there is a new release. This can done by updating [`packages/river`](https://github.com/online-ml/pyodide/tree/main/packages/river) in [online-ml/pyodide](https://github.com/online-ml/pyodide)
+13. Pyodide needs to be told there is a new release. This can done by updating [`packages/river`](https://github.com/online-ml/pyodide/tree/main/packages/river) in [online-ml/pyodide](https://github.com/online-ml/pyodide)
