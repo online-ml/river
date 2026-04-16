@@ -2833,7 +2833,7 @@ wheels = [
 
 [[package]]
 name = "river"
-version = "0.24.0"
+version = "0.24.2"
 source = { editable = "." }
 dependencies = [
     { name = "numpy" },
@@ -2853,8 +2853,6 @@ compat = [
 dev = [
     { name = "graphviz" },
     { name = "gymnasium" },
-    { name = "ipykernel" },
-    { name = "ipython" },
     { name = "jupyter" },
     { name = "matplotlib" },
     { name = "mike" },
@@ -2863,7 +2861,6 @@ dev = [
     { name = "pre-commit" },
     { name = "pytest" },
     { name = "pytest-xdist", extra = ["psutil"] },
-    { name = "rich" },
     { name = "ruff" },
     { name = "scikit-learn" },
     { name = "sqlalchemy" },
@@ -2872,7 +2869,6 @@ dev = [
 docs = [
     { name = "dominate" },
     { name = "flask" },
-    { name = "ipykernel" },
     { name = "jupyter-client" },
     { name = "jupyter-contrib-nbextensions" },
     { name = "mike" },
@@ -2907,8 +2903,6 @@ compat = [
 dev = [
     { name = "graphviz", specifier = ">=0.20.1,<0.21" },
     { name = "gymnasium", specifier = ">=0.29.0,<0.30" },
-    { name = "ipykernel", specifier = ">=6.26.0,<7" },
-    { name = "ipython", specifier = ">=8.17.2,<9" },
     { name = "jupyter", specifier = ">=1.0.0,<2" },
     { name = "matplotlib", specifier = ">=3.8.4,<4" },
     { name = "mike", git = "https://github.com/squidfunk/mike.git" },
@@ -2917,7 +2911,6 @@ dev = [
     { name = "pre-commit", specifier = ">=3.5.0,<4" },
     { name = "pytest", specifier = ">=7.4.2,<8" },
     { name = "pytest-xdist", extras = ["psutil"], specifier = ">=3.3.1,<4" },
-    { name = "rich", specifier = ">=13.6.0,<14" },
     { name = "ruff", specifier = "~=0.15.8" },
     { name = "scikit-learn", specifier = ">=1.5.1,<2" },
     { name = "sqlalchemy", specifier = ">=2.0.22,<3" },
@@ -2926,7 +2919,6 @@ dev = [
 docs = [
     { name = "dominate" },
     { name = "flask" },
-    { name = "ipykernel" },
     { name = "jupyter-client" },
     { name = "jupyter-contrib-nbextensions", specifier = ">=0.7.0,<0.8" },
     { name = "mike", git = "https://github.com/squidfunk/mike.git" },

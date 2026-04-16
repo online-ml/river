@@ -3878,7 +3878,6 @@ nav:
         - api/utils/random/exponential.md
         - api/utils/random/poisson.md
   - Examples:
-    - examples/index.md
     - examples/batch-to-online.md
     - examples/bike-sharing-forecasting.md
     - examples/building-a-simple-nowcasting-model.md
@@ -3896,6 +3895,9 @@ nav:
   - FAQ: faq
   - Releases:
     - unreleased: releases/unreleased.md
+    - "0.24.2": releases/0.24.2.md
+    - "0.24.1": releases/0.24.1.md
+    - "0.24.0": releases/0.24.0.md
     - "0.23.0": releases/0.23.0.md
     - "0.22.0": releases/0.22.0.md
     - "0.21.2": releases/0.21.2.md

@@ -1,0 +1,13 @@
+# Cython and C/C++ sources
+recursive-include river/ *.pyx *.pxd *.c *.cpp *.hpp *.h
+
+# Dataset files shipped with the package
+include river/datasets/*.csv
+include river/datasets/*.gz
+include river/datasets/*.zip
+include river/drift/datasets/*.csv
+include river/stream/*.zip
+
+# Rust sources
+recursive-include rust_src/ *.rs
+include Cargo.toml Cargo.lock
