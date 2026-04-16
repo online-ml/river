@@ -62,7 +62,6 @@ docs = [
     "numpydoc",
     "plotly>=6.3.0",
     "python-slugify",
-    "spacy",
     "tabulate",
     "watermark",
     "notebook<7",
@@ -125,7 +124,6 @@ optional = true
 "numpydoc" = "*"
 "plotly" = ">6.3.0"
 "python-slugify" = "*"
-"spacy" = "*"
 "tabulate" = "*"
 "watermark" = "*"
 
