@@ -2092,6 +2092,8 @@
 
 <span class="n">metric</span>
 </code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>Accuracy: 89.28%
+</code></pre></div>
 <p>This is the essence of progressive validation. Every sample is first used for testing, then for training.</p>
 <h2 id="using-evaluateprogressive_val_score">Using <a href="../../api/evaluate/progressive-val-score"><code>evaluate.progressive_val_score</code></a><a class="headerlink" href="#using-evaluateprogressive_val_score" title="Permanent link">&para;</a></h2>
 <p>The loop above is so common that River provides <a href="../../api/evaluate/progressive-val-score"><code>evaluate.progressive_val_score</code></a> to do it in one call. It handles the predict/update/learn cycle for you, and picks the right prediction method (<code>predict_one</code> vs <code>predict_proba_one</code>) based on the metric:</p>
@@ -2105,6 +2107,8 @@
     <span class="n">metric</span><span class="o">=</span><span class="n">metrics</span><span class="o">.</span><span class="n">Accuracy</span><span class="p">(),</span>
 <span class="p">)</span>
 </code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>Accuracy: 89.28%
+</code></pre></div>
 <p>Use <code>print_every</code> to see progress during evaluation:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">StandardScaler</span><span class="p">()</span> <span class="o">|</span> <span class="n">linear_model</span><span class="o">.</span><span class="n">LogisticRegression</span><span class="p">()</span>
 
@@ -2114,6 +2118,18 @@
     <span class="n">metric</span><span class="o">=</span><span class="n">metrics</span><span class="o">.</span><span class="n">Accuracy</span><span class="p">(),</span>
     <span class="n">print_every</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span>
 <span class="p">)</span>
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>[250] Accuracy: 84.00%
+[500] Accuracy: 86.80%
+[750] Accuracy: 88.40%
+[1,000] Accuracy: 89.10%
+[1,250] Accuracy: 89.28%
+
+
+
+
+
+Accuracy: 89.28%
 </code></pre></div>
 <h2 id="choosing-metrics">Choosing metrics<a class="headerlink" href="#choosing-metrics" title="Permanent link">&para;</a></h2>
 <p>River's <code>metrics</code> module has all the usual suspects. For classification: <code>Accuracy</code>, <code>F1</code>, <code>Precision</code>, <code>Recall</code>, <code>ROCAUC</code>, <code>LogLoss</code>, etc. For regression: <code>MAE</code>, <code>MSE</code>, <code>RMSE</code>, <code>R2</code>, <code>SMAPE</code>, etc.</p>
@@ -2126,6 +2142,8 @@
     <span class="n">metric</span><span class="o">=</span><span class="n">metrics</span><span class="o">.</span><span class="n">ROCAUC</span><span class="p">(),</span>
 <span class="p">)</span>
 </code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>ROCAUC: 95.07%
+</code></pre></div>
 <p>You can also combine multiple metrics with <code>+</code>:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">StandardScaler</span><span class="p">()</span> <span class="o">|</span> <span class="n">linear_model</span><span class="o">.</span><span class="n">LogisticRegression</span><span class="p">()</span>
 
@@ -2134,6 +2152,10 @@
     <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
     <span class="n">metric</span><span class="o">=</span><span class="n">metrics</span><span class="o">.</span><span class="n">Accuracy</span><span class="p">()</span> <span class="o">+</span> <span class="n">metrics</span><span class="o">.</span><span class="n">F1</span><span class="p">()</span> <span class="o">+</span> <span class="n">metrics</span><span class="o">.</span><span class="n">LogLoss</span><span class="p">(),</span>
 <span class="p">)</span>
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>Accuracy: 89.28%
+F1: 87.97%
+LogLoss: 0.3301120464388312
 </code></pre></div>
 <h2 id="tracking-performance-over-time-with-iter_progressive_val_score">Tracking performance over time with <code>iter_progressive_val_score</code><a class="headerlink" href="#tracking-performance-over-time-with-iter_progressive_val_score" title="Permanent link">&para;</a></h2>
 <p>Often you want to see how a model's performance evolves as it processes more data. <code>iter_progressive_val_score</code> yields results at regular checkpoints, which you can collect and plot:</p>
@@ -2149,20 +2171,96 @@
 <span class="c1"># Each checkpoint is a dict</span>
 <span class="n">checkpoints</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 </code></pre></div>
-<div class="language-python highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<div class="language-text highlight"><pre><span></span><code>{&#39;Accuracy&#39;: Accuracy: 89.28%, &#39;Step&#39;: 1250}
+</code></pre></div>
+<div class="language-python highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">altair</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">alt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
 <span class="n">steps</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span><span class="p">[</span><span class="s2">&quot;Step&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">checkpoints</span><span class="p">]</span>
 <span class="n">accs</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span><span class="p">[</span><span class="s2">&quot;Accuracy&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">()</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">checkpoints</span><span class="p">]</span>
 
-<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">steps</span><span class="p">,</span> <span class="n">accs</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Samples processed&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Accuracy&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Learning curve — progressive validation&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+    <span class="s2">&quot;Samples processed&quot;</span><span class="p">:</span> <span class="n">steps</span><span class="p">,</span>
+    <span class="s2">&quot;Accuracy&quot;</span><span class="p">:</span> <span class="n">accs</span>
+<span class="p">})</span>
+
+<span class="n">alt</span><span class="o">.</span><span class="n">Chart</span><span class="p">(</span><span class="n">df</span><span class="p">)</span><span class="o">.</span><span class="n">mark_line</span><span class="p">()</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span>
+    <span class="n">x</span><span class="o">=</span><span class="n">alt</span><span class="o">.</span><span class="n">X</span><span class="p">(</span><span class="s2">&quot;Samples processed&quot;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Samples processed&quot;</span><span class="p">),</span>
+    <span class="n">y</span><span class="o">=</span><span class="n">alt</span><span class="o">.</span><span class="n">Y</span><span class="p">(</span><span class="s2">&quot;Accuracy&quot;</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="n">alt</span><span class="o">.</span><span class="n">Scale</span><span class="p">(</span><span class="n">domain</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Accuracy&quot;</span><span class="p">)</span>
+<span class="p">)</span><span class="o">.</span><span class="n">properties</span><span class="p">(</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Learning curve — progressive validation&quot;</span><span class="p">,</span>
+    <span class="n">width</span><span class="o">=</span><span class="mi">600</span><span class="p">,</span>
+    <span class="n">height</span><span class="o">=</span><span class="mi">300</span>
+<span class="p">)</span><span class="o">.</span><span class="n">interactive</span><span class="p">()</span>
 </code></pre></div>
+<style>
+  #altair-viz-6f110be857d74e9e93c7307b2c1b4789.vega-embed {
+    width: 100%;
+    display: flex;
+  }
+
+  #altair-viz-6f110be857d74e9e93c7307b2c1b4789.vega-embed details,
+  #altair-viz-6f110be857d74e9e93c7307b2c1b4789.vega-embed details summary {
+    position: relative;
+  }
+</style>
+<div id="altair-viz-6f110be857d74e9e93c7307b2c1b4789"></div>
+<script type="text/javascript">
+  var VEGA_DEBUG = (typeof VEGA_DEBUG == "undefined") ? {} : VEGA_DEBUG;
+  (function(spec, embedOpt){
+    let outputDiv = document.currentScript.previousElementSibling;
+    if (outputDiv.id !== "altair-viz-6f110be857d74e9e93c7307b2c1b4789") {
+      outputDiv = document.getElementById("altair-viz-6f110be857d74e9e93c7307b2c1b4789");
+    }
+
+    const paths = {
+      "vega": "https://cdn.jsdelivr.net/npm/vega@6?noext",
+      "vega-lib": "https://cdn.jsdelivr.net/npm/vega-lib?noext",
+      "vega-lite": "https://cdn.jsdelivr.net/npm/vega-lite@6.1.0?noext",
+      "vega-embed": "https://cdn.jsdelivr.net/npm/vega-embed@7?noext",
+    };
+
+    function maybeLoadScript(lib, version) {
+      var key = `${lib.replace("-", "")}_version`;
+      return (VEGA_DEBUG[key] == version) ?
+        Promise.resolve(paths[lib]) :
+        new Promise(function(resolve, reject) {
+          var s = document.createElement('script');
+          document.getElementsByTagName("head")[0].appendChild(s);
+          s.async = true;
+          s.onload = () => {
+            VEGA_DEBUG[key] = version;
+            return resolve(paths[lib]);
+          };
+          s.onerror = () => reject(`Error loading script: ${paths[lib]}`);
+          s.src = paths[lib];
+        });
+    }
+
+    function showError(err) {
+      outputDiv.innerHTML = `<div class="error" style="color:red;">${err}</div>`;
+      throw err;
+    }
+
+    function displayChart(vegaEmbed) {
+      vegaEmbed(outputDiv, spec, embedOpt)
+        .catch(err => showError(`Javascript Error: ${err.message}<br>This usually means there's a typo in your chart specification. See the javascript console for the full traceback.`));
+    }
+
+    if(typeof define === "function" && define.amd) {
+      requirejs.config({paths});
+      let deps = ["vega-embed"];
+      require(deps, displayChart, err => showError(`Error loading script: ${err.message}`));
+    } else {
+      maybeLoadScript("vega", "6")
+        .then(() => maybeLoadScript("vega-lite", "6.1.0"))
+        .then(() => maybeLoadScript("vega-embed", "7"))
+        .catch(showError)
+        .then(() => displayChart(vegaEmbed));
+    }
+  })({"config": {"view": {"continuousWidth": 300, "continuousHeight": 300}}, "data": {"name": "data-f1e043ba18bb0d2dcfef94001cd5a940"}, "mark": {"type": "line"}, "encoding": {"x": {"field": "Samples processed", "title": "Samples processed", "type": "quantitative"}, "y": {"field": "Accuracy", "scale": {"domain": [0, 1]}, "title": "Accuracy", "type": "quantitative"}}, "height": 300, "params": [{"name": "param_1e9efca18e7a2868", "select": {"type": "interval", "encodings": ["x", "y"]}, "bind": "scales"}], "title": "Learning curve \u2014 progressive validation", "width": 600, "$schema": "https://vega.github.io/schema/vega-lite/v6.1.0.json", "datasets": {"data-f1e043ba18bb0d2dcfef94001cd5a940": [{"Samples processed": 50, "Accuracy": 0.8928}, {"Samples processed": 100, "Accuracy": 0.8928}, {"Samples processed": 150, "Accuracy": 0.8928}, {"Samples processed": 200, "Accuracy": 0.8928}, {"Samples processed": 250, "Accuracy": 0.8928}, {"Samples processed": 300, "Accuracy": 0.8928}, {"Samples processed": 350, "Accuracy": 0.8928}, {"Samples processed": 400, "Accuracy": 0.8928}, {"Samples processed": 450, "Accuracy": 0.8928}, {"Samples processed": 500, "Accuracy": 0.8928}, {"Samples processed": 550, "Accuracy": 0.8928}, {"Samples processed": 600, "Accuracy": 0.8928}, {"Samples processed": 650, "Accuracy": 0.8928}, {"Samples processed": 700, "Accuracy": 0.8928}, {"Samples processed": 750, "Accuracy": 0.8928}, {"Samples processed": 800, "Accuracy": 0.8928}, {"Samples processed": 850, "Accuracy": 0.8928}, {"Samples processed": 900, "Accuracy": 0.8928}, {"Samples processed": 950, "Accuracy": 0.8928}, {"Samples processed": 1000, "Accuracy": 0.8928}, {"Samples processed": 1050, "Accuracy": 0.8928}, {"Samples processed": 1100, "Accuracy": 0.8928}, {"Samples processed": 1150, "Accuracy": 0.8928}, {"Samples processed": 1200, "Accuracy": 0.8928}, {"Samples processed": 1250, "Accuracy": 0.8928}]}}, {"mode": "vega-lite"});
+</script>
+
 <h2 id="regression-example">Regression example<a class="headerlink" href="#regression-example" title="Permanent link">&para;</a></h2>
 <p>Progressive validation works the same way for regression. Here we predict Trump's approval rating:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">river</span><span class="w"> </span><span class="kn">import</span> <span class="n">optim</span>
@@ -2178,6 +2276,19 @@
     <span class="n">metric</span><span class="o">=</span><span class="n">metrics</span><span class="o">.</span><span class="n">MAE</span><span class="p">(),</span>
     <span class="n">print_every</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
 <span class="p">)</span>
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>[200] MAE: 7.955145
+[400] MAE: 4.738404
+[600] MAE: 3.433783
+[800] MAE: 2.787887
+[1,000] MAE: 2.324138
+[1,001] MAE: 2.321971
+
+
+
+
+
+MAE: 2.321971
 </code></pre></div>
 <h2 id="delayed-labels">Delayed labels<a class="headerlink" href="#delayed-labels" title="Permanent link">&para;</a></h2>
 <p>In real-world scenarios, the ground truth often arrives with a delay. For example, a fraud detection system makes a prediction at transaction time, but the label (fraud or not) may only be confirmed days later. During that delay, the model keeps making predictions without learning from the pending labels.</p>
@@ -2195,6 +2306,8 @@
     <span class="n">delay</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
 <span class="p">)</span>
 </code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>MAE: 2.321971
+</code></pre></div>
 <p>With a delay, the model must predict using an older version of itself — just like in production. This typically gives a more realistic (and lower) performance estimate.</p>
 <h2 id="measuring-time-and-memory">Measuring time and memory<a class="headerlink" href="#measuring-time-and-memory" title="Permanent link">&para;</a></h2>
 <p>You can track resource usage with <code>show_time</code> and <code>show_memory</code>:</p>
@@ -2208,6 +2321,16 @@
     <span class="n">show_time</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">show_memory</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span>
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>[500] Accuracy: 86.80% – 00:00:00 – 5.33 KiB
+[1,000] Accuracy: 89.10% – 00:00:00 – 5.33 KiB
+[1,250] Accuracy: 89.28% – 00:00:00 – 5.33 KiB
+
+
+
+
+
+Accuracy: 89.28%
 </code></pre></div>
 
 
