@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import collections
-# import math
 
+# import math
 from river import stats
 
 
@@ -77,16 +77,11 @@ class ChiSquared(stats.base.Bivariate):
         # Iterate over contingency table
         for x in self.counts:
             for y in self.class_totals:
-
                 observed = self.counts[x].get(y, 0)
 
-                expected = (
-                    self.value_totals[x] * self.class_totals[y]
-                ) / self.n
+                expected = (self.value_totals[x] * self.class_totals[y]) / self.n
 
                 if expected > 0:
                     chi2 += (observed - expected) ** 2 / expected
 
         return chi2
-
-    

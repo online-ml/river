@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from river import stats
 
 
@@ -46,7 +48,6 @@ def test_chi_squared_incremental():
     assert second >= 0
 
 
-
 def test_chi_squared_exact_value():
     chi = stats.ChiSquared()
 
@@ -62,7 +63,6 @@ def test_chi_squared_exact_value():
 
     # Known correct value
     assert abs(chi.get() - 4.0) < 1e-6
-
 
 
 # MULTIPLE CATEGORY TEST
@@ -82,6 +82,7 @@ def test_chi_squared_multiple_categories():
         chi.update(x, y)
 
     assert chi.get() >= 0
+
 
 def test_chi_squared_empty():
     chi = stats.ChiSquared()
