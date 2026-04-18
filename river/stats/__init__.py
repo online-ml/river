@@ -6,6 +6,7 @@ from . import base
 from .auto_corr import AutoCorr
 from .count import Count
 from .cov import Cov
+from .chi_squared import ChiSquared
 from .entropy import Entropy
 from .ewmean import EWMean
 from .ewvar import EWVar
@@ -34,6 +35,7 @@ __all__ = [
     "BayesianMean",
     "Count",
     "Cov",
+    "ChiSquared",
     "Entropy",
     "EWMean",
     "EWVar",
