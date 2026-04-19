@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from . import base
 from .auto_corr import AutoCorr
-from .chi_squared import ChiSquared
+from .chi_squared import ChiSquared, RollingChiSquared
 from .count import Count
 from .cov import Cov
 from .entropy import Entropy
@@ -36,6 +36,7 @@ __all__ = [
     "Count",
     "Cov",
     "ChiSquared",
+    "RollingChiSquared",
     "Entropy",
     "EWMean",
     "EWVar",
