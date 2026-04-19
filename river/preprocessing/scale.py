@@ -4,11 +4,14 @@ import collections
 import functools
 import itertools
 import numbers
+import typing
 
 import numpy as np
-import pandas as pd
 
 from river import base, stats, utils
+
+if typing.TYPE_CHECKING:
+    import pandas as pd
 
 __all__ = [
     "AdaptiveStandardScaler",
@@ -229,7 +232,7 @@ class StandardScaler(base.MiniBatchTransformer):
             the features has not been seen during a previous call to `learn_many`.
 
         """
-
+        pd = utils.pandas.import_pandas()
         # Determine dtype of input
         dtypes = X.dtypes.unique()
         dtype = dtypes[0] if len(dtypes) == 1 else np.float64
