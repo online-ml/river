@@ -181,10 +181,10 @@ class RollingChiSquared(stats.base.RollingBivariate, utils.Rolling):
         utils.Rolling.__init__(self, obj=ChiSquared(), window_size=window_size)
 
     def update(self, x, y):
-        super().update(x, y)
+        utils.Rolling.update(self, x, y)
 
     def get(self):
-        return super().get()
+        return self.obj.get()
 
     @property
     def window_size(self):
