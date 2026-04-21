@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import collections
+import typing
 
 from river import stats, utils
 
@@ -41,24 +42,26 @@ class ChiSquared(stats.base.Bivariate):
 
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         # counts[value][class] = frequency
-        self.counts = collections.defaultdict(collections.Counter)
+        self.counts: collections.defaultdict[typing.Any, collections.Counter] = (
+            collections.defaultdict(collections.Counter)
+        )
 
         # total counts per class
-        self.class_totals = collections.Counter()
+        self.class_totals: collections.Counter = collections.Counter()
 
         # total counts per feature value
-        self.value_totals = collections.Counter()
+        self.value_totals: collections.Counter = collections.Counter()
 
         # total observations
         self.n = 0
 
     @property
-    def name(self):
+    def name(self) -> str:
         return "chi_squared"
 
-    def update(self, x, y):
+    def update(self, x: typing.Any, y: typing.Any) -> None:
         """Update the statistic with a new observation.
 
         Parameters
@@ -73,7 +76,7 @@ class ChiSquared(stats.base.Bivariate):
         self.value_totals[x] += 1
         self.n += 1
 
-    def revert(self, x, y):
+    def revert(self, x: typing.Any, y: typing.Any) -> None:
         """Revert the statistic with a new observation.
 
         Parameters
@@ -100,7 +103,7 @@ class ChiSquared(stats.base.Bivariate):
         self.n -= 1
 
     @property
-    def degrees_of_freedom(self):
+    def degrees_of_freedom(self) -> int:
         """Return the degrees of freedom of the contingency table."""
         r = len(self.value_totals)
         c = len(self.class_totals)
@@ -109,7 +112,7 @@ class ChiSquared(stats.base.Bivariate):
         return (r - 1) * (c - 1)
 
     @property
-    def p_value(self):
+    def p_value(self) -> float:
         """Return the p-value associated with the Chi-squared statistic."""
         import scipy.stats
 
@@ -118,11 +121,11 @@ class ChiSquared(stats.base.Bivariate):
             return 1.0
         return float(scipy.stats.chi2.sf(self.get(), df))
 
-    def is_significant(self, alpha=0.05):
+    def is_significant(self, alpha: float = 0.05) -> bool:
         """Return whether the test is significant at a given alpha level."""
         return bool(self.p_value < alpha)
 
-    def get(self):
+    def get(self) -> float:
         """Return the current Chi-squared statistic."""
         if self.n == 0:
             return 0.0
@@ -177,26 +180,26 @@ class RollingChiSquared(stats.base.RollingBivariate, utils.Rolling):
 
     """
 
-    def __init__(self, window_size: int):
+    def __init__(self, window_size: int) -> None:
         utils.Rolling.__init__(self, obj=ChiSquared(), window_size=window_size)
 
-    def update(self, x, y):
+    def update(self, x: typing.Any, y: typing.Any) -> None:
         utils.Rolling.update(self, x, y)
 
-    def get(self):
-        return self.obj.get()
+    def get(self) -> float:
+        return typing.cast(ChiSquared, self.obj).get()
 
     @property
-    def window_size(self):
+    def window_size(self) -> int:
         return self._window_size
 
     @property
-    def p_value(self):
-        return self.obj.p_value
+    def p_value(self) -> float:
+        return typing.cast(ChiSquared, self.obj).p_value
 
     @property
-    def degrees_of_freedom(self):
-        return self.obj.degrees_of_freedom
+    def degrees_of_freedom(self) -> int:
+        return typing.cast(ChiSquared, self.obj).degrees_of_freedom
 
-    def is_significant(self, alpha=0.05):
-        return self.obj.is_significant(alpha)
+    def is_significant(self, alpha: float = 0.05) -> bool:
+        return typing.cast(ChiSquared, self.obj).is_significant(alpha)
