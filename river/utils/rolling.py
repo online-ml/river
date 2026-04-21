@@ -3,7 +3,7 @@ from __future__ import annotations
 import bisect
 import collections
 import datetime as dt
-from typing import Any, Protocol, runtime_checkable
+from typing import Any, Generic, Protocol, TypeVar, runtime_checkable
 
 
 @runtime_checkable
@@ -13,8 +13,11 @@ class Rollable(Protocol):
     def revert(self, *args: Any, **kwargs: Any) -> None: ...
 
 
-class BaseRolling:
-    def __init__(self, obj: Rollable) -> None:
+_T = TypeVar("_T", bound=Rollable)
+
+
+class BaseRolling(Generic[_T]):
+    def __init__(self, obj: _T) -> None:
         if not isinstance(obj, Rollable):
             raise ValueError(f"{obj} does not satisfy the necessary protocol")
 
@@ -38,7 +41,7 @@ class BaseRolling:
         return repr(self.obj)
 
 
-class Rolling(BaseRolling):
+class Rolling(BaseRolling[_T]):
     """A generic wrapper for performing rolling computations.
 
     This can be wrapped around any object which implements both an `update` and a `revert` method.
@@ -72,7 +75,7 @@ class Rolling(BaseRolling):
 
     """
 
-    def __init__(self, obj: Rollable, window_size: int) -> None:
+    def __init__(self, obj: _T, window_size: int) -> None:
         super().__init__(obj)
         self._window_size = window_size
         self.window: collections.deque[tuple[tuple[Any, ...], dict[str, Any]]] = collections.deque(
@@ -92,7 +95,7 @@ class Rolling(BaseRolling):
         window.append((args, kwargs))
 
 
-class TimeRolling(BaseRolling):
+class TimeRolling(BaseRolling[_T]):
     """A generic wrapper for performing time rolling computations.
 
     This can be wrapped around any object which implements both an `update` and a `revert` method.
@@ -131,7 +134,7 @@ class TimeRolling(BaseRolling):
 
     """
 
-    def __init__(self, obj: Rollable, period: dt.timedelta) -> None:
+    def __init__(self, obj: _T, period: dt.timedelta) -> None:
         super().__init__(obj)
         self.period = period
         self._timestamps: list[dt.datetime] = []
