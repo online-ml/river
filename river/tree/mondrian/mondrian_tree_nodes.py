@@ -158,8 +158,8 @@ class MondrianNodeClassifier(MondrianNode):
         self.counts = leaf.counts.copy()
 
         if copy_all:
-            self.memory_range_min = leaf.memory_range_min
-            self.memory_range_max = leaf.memory_range_max
+            self.memory_range_min = leaf.memory_range_min.copy()
+            self.memory_range_max = leaf.memory_range_max.copy()
             self.n_samples = leaf.n_samples
 
     def score(self, y_idx: int, dirichlet: float, n_classes: int) -> float:
@@ -384,8 +384,8 @@ class MondrianNodeRegressor(MondrianNode):
         self._mean = stats.Mean._from_state(leaf._mean.n, leaf._mean.get())
 
         if copy_all:
-            self.memory_range_min = leaf.memory_range_min
-            self.memory_range_max = leaf.memory_range_max
+            self.memory_range_min = leaf.memory_range_min.copy()
+            self.memory_range_max = leaf.memory_range_max.copy()
             self.n_samples = leaf.n_samples
 
     def predict(self) -> base.typing.RegTarget:
