@@ -200,9 +200,9 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
         branch.replant(node, True)
 
         if is_right_extension:
-            left.replant(node)
+            left.replant(node, True)
         else:
-            right.replant(node)
+            right.replant(node, True)
 
         # To avoid leaving garbage behind
         del node
