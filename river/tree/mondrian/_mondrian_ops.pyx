@@ -195,23 +195,22 @@ cpdef object go_downwards_classifier_c(
 
     branch_no = -1
     while True:
-        # Compute range extension
-        extensions_sum, extensions = range_extension_c(
-            current_node.memory_range_min, current_node.memory_range_max, x
-        )
-
-        # Compute split time
         split_time = 0.0
-        if max_nodes >= 0 and (n_nodes + nodes_added) >= max_nodes:
-            pass  # max_nodes reached, no split
-        elif extensions_sum > 0:
-            do_split_check = split_pure
-            if not do_split_check:
-                counts = current_node.counts
-                count_val = <int>counts[y_idx] if y_idx < len(counts) else 0
-                if current_node.n_samples != count_val:
-                    do_split_check = True
-            if do_split_check:
+
+        # When split_pure is False (default), check purity before the
+        # expensive range_extension_c call to skip it for pure nodes.
+        do_split_check = split_pure
+        if not do_split_check:
+            counts = current_node.counts
+            count_val = <int>counts[y_idx] if y_idx < len(counts) else 0
+            if current_node.n_samples != count_val:
+                do_split_check = True
+
+        if do_split_check and not (max_nodes >= 0 and (n_nodes + nodes_added) >= max_nodes):
+            extensions_sum, extensions = range_extension_c(
+                current_node.memory_range_min, current_node.memory_range_max, x
+            )
+            if extensions_sum > 0:
                 T = -log(1.0 - <double>rng_random()) / extensions_sum
                 split_time_candidate = <double>current_node.time + T
                 is_leaf = current_node.is_leaf
