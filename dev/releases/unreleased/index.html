@@ -2806,12 +2806,10 @@
 </ul>
 <h2 id="tree">tree<a class="headerlink" href="#tree" title="Permanent link">&para;</a></h2>
 <ul>
-<li>
-<p>Fixed <code>MondrianNodeClassifier.replant</code> not copying the <code>counts</code> attribute when promoting a leaf to a branch, leaving the new branch with <code>n_samples != 0</code> but empty class counts. The fix mirrors the regressor's <code>_mean</code> copy and matches the reference <a href="https://github.com/onelearn/onelearn"><code>onelearn</code></a> implementation. Addresses <a href="https://github.com/online-ml/river/issues/1823">#1823</a>.</p>
-</li>
-<li>
-<p>Skipped the expensive <code>range_extension_c</code> call for pure nodes in the Mondrian classifier's downward pass when <code>split_pure=False</code> (default). Benchmarks show ~3–5% speedup on datasets with 50+ features.</p>
-</li>
+<li>Fixed <code>MondrianNodeClassifier.replant</code> not copying the <code>counts</code> attribute when promoting a leaf to a branch, leaving the new branch with <code>n_samples != 0</code> but empty class counts. The fix mirrors the regressor's <code>_mean</code> copy and matches the reference <a href="https://github.com/onelearn/onelearn"><code>onelearn</code></a> implementation. Addresses <a href="https://github.com/online-ml/river/issues/1823">#1823</a>.</li>
+<li>Fixed Mondrian tree leaf nodes losing their bounding box ranges during splits. Previously, when a leaf was split, the new child nodes did not inherit the <code>memory_range_min</code> and <code>memory_range_max</code> attributes, which caused incorrect range extension calculations. Fixes <a href="https://github.com/online-ml/river/issues/1801">#1801</a></li>
+<li>Fixed <code>MondrianNodeClassifier.replant</code> copying min and max bounds by reference instead of by value during a split. The fix ensures these arrays are explicitly copied by value so the bounds are correctly preserved. Fixed <a href="https://github.com/online-ml/river/issues/1834">#1834</a></li>
+<li>Skipped the expensive <code>range_extension_c</code> call for pure nodes in the Mondrian classifier's downward pass when <code>split_pure=False</code> (default). Benchmarks show ~3–5% speedup on datasets with 50+ features.</li>
 </ul>
 
 

@@ -24384,7 +24384,8 @@
 <p>This algorithm is truly online, in the sense that a single pass is performed, and that predictions can be produced anytime. </p>
 <p>Each node in a tree predicts according to the average of the labels it contains. The prediction for a sample is computed as the aggregated predictions of all the subtrees along the path leading to the leaf node containing the sample. The aggregation weights are exponential weights with learning rate <code>step</code> using a squared loss when <code>use_aggregation</code> is <code>True</code>. </p>
 <p>This computation is performed exactly thanks to a context tree weighting algorithm. More details can be found in the original paper<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>. </p>
-<p>The final predictions are the average of the predictions of each of the <code>n_estimators</code> trees in the forest.</p>
+<p>The final predictions are the average of the predictions of each of the <code>n_estimators</code> trees in the forest. </p>
+<p>By default, this implementation assumes that all feature values are scaled between 0 and 1. If you cannot assume the minimum and maximum values for each feature, you can use <a href="../../preprocessing/MinMaxScaler">preprocessing.MinMaxScaler</a> as an initial preprocessing step. This is important because Mondrian trees are highly sensitive to feature scaling, as the distance between a sample and the node's bounding box is calculated as the sum of the distances across all features.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
@@ -24427,14 +24428,19 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">river</span><span class="w"> </span><span class="kn">import</span> <span class="n">evaluate</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">river</span><span class="w"> </span><span class="kn">import</span> <span class="n">forest</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">river</span><span class="w"> </span><span class="kn">import</span> <span class="n">metrics</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">river</span><span class="w"> </span><span class="kn">import</span> <span class="n">preprocessing</span>
 
 <span class="n">dataset</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">TrumpApproval</span><span class="p">()</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">forest</span><span class="o">.</span><span class="n">AMFRegressor</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
-<span class="n">metric</span> <span class="o">=</span> <span class="n">metrics</span><span class="o">.</span><span class="n">MAE</span><span class="p">()</span>
 
+<span class="n">model</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">preprocessing</span><span class="o">.</span><span class="n">MinMaxScaler</span><span class="p">()</span> <span class="o">|</span>
+    <span class="n">forest</span><span class="o">.</span><span class="n">AMFRegressor</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+<span class="p">)</span>
+
+<span class="n">metric</span> <span class="o">=</span> <span class="n">metrics</span><span class="o">.</span><span class="n">MAE</span><span class="p">()</span>
 <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">metric</span><span class="p">)</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>MAE: 0.279747
+<div class="language-text highlight"><pre><span></span><code>MAE: 0.427341
 </code></pre></div></p>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <details class="- abstract">
