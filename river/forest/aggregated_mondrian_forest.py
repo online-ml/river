@@ -298,6 +298,7 @@ class AMFRegressor(AMFLearner, base.Regressor):
     ... )
     
     >>> metric = metrics.MAE()
+    >>> evaluate.progressive_val_score(dataset, model, metric)
     MAE: 0.427341
 
     References

@@ -16,6 +16,12 @@ from river.tree.mondrian.mondrian_tree_nodes import (
 class MondrianTreeClassifier(MondrianTree, base.Classifier):
     """Mondrian Tree classifier.
 
+    By default, this implementation assumes that all feature values are scaled between 0 and 1. 
+    If you cannot assume the minimum and maximum values for each feature, 
+    you can use preprocessing.MinMaxScaler as an initial preprocessing step. 
+    This is important because Mondrian trees are highly sensitive to feature scaling, as 
+    the distance between a sample and the node's bounding box is calculated as the sum of the distances across all features.
+    
     Parameters
     ----------
     step
@@ -41,24 +47,28 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
 
     Examples
     --------
-    >>> from river import datasets
+>>> from river import datasets
     >>> from river import evaluate
     >>> from river import metrics
+    >>> from river import preprocessing
     >>> from river import tree
 
     >>> dataset = datasets.Bananas().take(500)
 
-    >>> model = tree.mondrian.MondrianTreeClassifier(
-    ...     step=0.1,
-    ...     use_aggregation=True,
-    ...     dirichlet=0.2,
-    ...     seed=1
+    >>> model = (
+    ...     preprocessing.MinMaxScaler() |
+    ...     tree.mondrian.MondrianTreeClassifier(
+    ...         step=0.1,
+    ...         use_aggregation=True,
+    ...         dirichlet=0.2,
+    ...         seed=1
+    ...     )
     ... )
 
     >>> metric = metrics.Accuracy()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    Accuracy: 76.15%
+    Accuracy: 55.71%
 
     References
     ----------
