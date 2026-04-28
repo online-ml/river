@@ -1522,6 +1522,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#feature_extraction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        feature_extraction
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#neural_net" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2734,6 +2745,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#feature_extraction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        feature_extraction
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#neural_net" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2774,13 +2796,22 @@
 
 
 <h1 id="unreleased">Unreleased<a class="headerlink" href="#unreleased" title="Permanent link">&para;</a></h1>
+<h2 id="feature_extraction">feature_extraction<a class="headerlink" href="#feature_extraction" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Added <a href="../../api/feature-extraction/RandomTreesEmbedding"><code>feature_extraction.RandomTreesEmbedding</code></a>, an online random-tree leaf embedding transformer for feeding sparse tree features into downstream models. Addresses <a href="https://github.com/online-ml/river/issues/1386">#1386</a>.</li>
+</ul>
 <h2 id="neural_net">neural_net<a class="headerlink" href="#neural_net" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Deprecated <code>river.neural_net</code>; importing it now emits a <code>DeprecationWarning</code> and users are encouraged to use <code>deep-river</code> for neural networks. Addresses <a href="https://github.com/online-ml/river/issues/1828">#1828</a>.</li>
 </ul>
 <h2 id="tree">tree<a class="headerlink" href="#tree" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Fixed <code>MondrianNodeClassifier.replant</code> not copying the <code>counts</code> attribute when promoting a leaf to a branch, leaving the new branch with <code>n_samples != 0</code> but empty class counts. The fix mirrors the regressor's <code>_mean</code> copy and matches the reference <a href="https://github.com/onelearn/onelearn"><code>onelearn</code></a> implementation. Addresses <a href="https://github.com/online-ml/river/issues/1823">#1823</a>.</li>
+<li>
+<p>Fixed <code>MondrianNodeClassifier.replant</code> not copying the <code>counts</code> attribute when promoting a leaf to a branch, leaving the new branch with <code>n_samples != 0</code> but empty class counts. The fix mirrors the regressor's <code>_mean</code> copy and matches the reference <a href="https://github.com/onelearn/onelearn"><code>onelearn</code></a> implementation. Addresses <a href="https://github.com/online-ml/river/issues/1823">#1823</a>.</p>
+</li>
+<li>
+<p>Skipped the expensive <code>range_extension_c</code> call for pure nodes in the Mondrian classifier's downward pass when <code>split_pure=False</code> (default). Benchmarks show ~3–5% speedup on datasets with 50+ features.</p>
+</li>
 </ul>
 
 

@@ -613,6 +613,9 @@
         <loc>https://riverml.xyz/dev/api/feature-extraction/RBFSampler/</loc>
       </url>
       <url>
+        <loc>https://riverml.xyz/dev/api/feature-extraction/RandomTreesEmbedding/</loc>
+      </url>
+      <url>
         <loc>https://riverml.xyz/dev/api/feature-extraction/TFIDF/</loc>
       </url>
       <url>
