@@ -53,14 +53,14 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
     >>> from river import preprocessing
     >>> from river import tree
 
-    >>> dataset = datasets.Bananas().take(500)
+    >>> dataset = datasets.Bananas()
 
     >>> model = (
     ...     preprocessing.MinMaxScaler() |
     ...     tree.mondrian.MondrianTreeClassifier(
-    ...         step=0.1,
+    ...         step=1.0,
     ...         use_aggregation=True,
-    ...         dirichlet=0.2,
+    ...         dirichlet=0.5,
     ...         seed=1
     ...     )
     ... )
@@ -68,7 +68,7 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
     >>> metric = metrics.Accuracy()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    Accuracy: 55.71%
+    Accuracy: 70.64%
 
     References
     ----------
