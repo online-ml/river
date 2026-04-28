@@ -98,6 +98,12 @@ class AMFClassifier(AMFLearner, base.Classifier):
     The final predictions are the average class probabilities predicted by each of the
     `n_estimators` trees in the forest.
 
+    By default, this implementation assumes that all feature values are scaled between 0 and 1.
+    If you cannot assume the minimum and maximum values for each feature,
+    you can use preprocessing.MinMaxScaler as an initial preprocessing step.
+    This is important because Mondrian trees are highly sensitive to feature scaling, as
+    the distance between a sample and the node's bounding box is calculated as the sum of the distances across all features.
+
     Parameters
     ----------
     n_estimators
@@ -136,20 +142,24 @@ class AMFClassifier(AMFLearner, base.Classifier):
     >>> from river import evaluate
     >>> from river import forest
     >>> from river import metrics
+    >>> from river import preprocessing
 
-    >>> dataset = datasets.Bananas().take(500)
+    >>> dataset = datasets.Bananas()
 
-    >>> model = forest.AMFClassifier(
-    ...     n_estimators=10,
-    ...     use_aggregation=True,
-    ...     dirichlet=0.5,
-    ...     seed=1
+    >>> model = (
+    ...     preprocessing.MinMaxScaler() |
+    ...     forest.AMFClassifier(
+    ...         n_estimators=10,
+    ...         use_aggregation=True,
+    ...         dirichlet=0.5,
+    ...         seed=1
+    ...     )
     ... )
 
     >>> metric = metrics.Accuracy()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    Accuracy: 84.57%
+    Accuracy: 84.05%
 
     References
     ----------
@@ -249,6 +259,12 @@ class AMFRegressor(AMFLearner, base.Regressor):
     The final predictions are the average of the predictions of each of the
     ``n_estimators`` trees in the forest.
 
+    By default, this implementation assumes that all feature values are scaled between 0 and 1.
+    If you cannot assume the minimum and maximum values for each feature,
+    you can use preprocessing.MinMaxScaler as an initial preprocessing step.
+    This is important because Mondrian trees are highly sensitive to feature scaling, as
+    the distance between a sample and the node's bounding box is calculated as the sum of the distances across all features.
+
     Parameters
     ----------
     n_estimators
@@ -272,13 +288,18 @@ class AMFRegressor(AMFLearner, base.Regressor):
     >>> from river import evaluate
     >>> from river import forest
     >>> from river import metrics
+    >>> from river import preprocessing
 
     >>> dataset = datasets.TrumpApproval()
-    >>> model = forest.AMFRegressor(seed=42)
-    >>> metric = metrics.MAE()
 
+    >>> model = (
+    ...     preprocessing.MinMaxScaler() |
+    ...     forest.AMFRegressor(seed=42)
+    ... )
+
+    >>> metric = metrics.MAE()
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    MAE: 0.279747
+    MAE: 0.427341
 
     References
     ----------

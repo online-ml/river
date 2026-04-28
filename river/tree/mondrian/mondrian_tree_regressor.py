@@ -17,6 +17,12 @@ from river.tree.mondrian.mondrian_tree_nodes import (
 class MondrianTreeRegressor(MondrianTree, base.Regressor):
     """Mondrian Tree Regressor.
 
+    By default, this implementation assumes that all feature values are scaled between 0 and 1.
+    If you cannot assume the minimum and maximum values for each feature,
+    you can use preprocessing.MinMaxScaler as an initial preprocessing step.
+    This is important because Mondrian trees are highly sensitive to feature scaling, as
+    the distance between a sample and the node's bounding box is calculated as the sum of the distances across all features.
+
     Parameters
     ----------
     step
@@ -167,9 +173,9 @@ class MondrianTreeRegressor(MondrianTree, base.Regressor):
         branch.replant(node, True)
 
         if is_right_extension:
-            left.replant(node)
+            left.replant(node, True)
         else:
-            right.replant(node)
+            right.replant(node, True)
 
         # To avoid leaving garbage behind
         del node

@@ -16,54 +16,64 @@ from river.tree.mondrian.mondrian_tree_nodes import (
 class MondrianTreeClassifier(MondrianTree, base.Classifier):
     """Mondrian Tree classifier.
 
-    Parameters
-    ----------
-    step
-        Step of the tree.
-    use_aggregation
-        Whether to use aggregation weighting techniques or not.
-    dirichlet
-        Dirichlet parameter of the problem.
-    split_pure
-        Whether the tree should split pure leafs during training or not.
-    iteration
-        Number iterations to do during training.
-    max_nodes
-        Maximum number of nodes allowed in the tree. No new splits will occur once this
-        limit is reached. If `None`, the tree grows without bound.
-    seed
-        Random seed for reproducibility.
+        By default, this implementation assumes that all feature values are scaled between 0 and 1.
+        If you cannot assume the minimum and maximum values for each feature,
+        you can use preprocessing.MinMaxScaler as an initial preprocessing step.
+        This is important because Mondrian trees are highly sensitive to feature scaling, as
+        the distance between a sample and the node's bounding box is calculated as the sum of the distances across all features.
 
-    Notes
-    -----
-    The Mondrian Tree Classifier is a type of decision tree that bases splitting decisions over a
-    Mondrian process.
+        Parameters
+        ----------
+        step
+            Step of the tree.
+        use_aggregation
+            Whether to use aggregation weighting techniques or not.
+        dirichlet
+            Dirichlet parameter of the problem.
+        split_pure
+            Whether the tree should split pure leafs during training or not.
+        iteration
+            Number iterations to do during training.
+        max_nodes
+            Maximum number of nodes allowed in the tree. No new splits will occur once this
+            limit is reached. If `None`, the tree grows without bound.
+        seed
+            Random seed for reproducibility.
 
-    Examples
-    --------
+        Notes
+        -----
+        The Mondrian Tree Classifier is a type of decision tree that bases splitting decisions over a
+        Mondrian process.
+
+        Examples
+        --------
     >>> from river import datasets
-    >>> from river import evaluate
-    >>> from river import metrics
-    >>> from river import tree
+        >>> from river import evaluate
+        >>> from river import metrics
+        >>> from river import preprocessing
+        >>> from river import tree
 
-    >>> dataset = datasets.Bananas().take(500)
+        >>> dataset = datasets.Bananas()
 
-    >>> model = tree.mondrian.MondrianTreeClassifier(
-    ...     step=0.1,
-    ...     use_aggregation=True,
-    ...     dirichlet=0.2,
-    ...     seed=1
-    ... )
+        >>> model = (
+        ...     preprocessing.MinMaxScaler() |
+        ...     tree.mondrian.MondrianTreeClassifier(
+        ...         step=1.0,
+        ...         use_aggregation=True,
+        ...         dirichlet=0.5,
+        ...         seed=1
+        ...     )
+        ... )
 
-    >>> metric = metrics.Accuracy()
+        >>> metric = metrics.Accuracy()
 
-    >>> evaluate.progressive_val_score(dataset, model, metric)
-    Accuracy: 76.15%
+        >>> evaluate.progressive_val_score(dataset, model, metric)
+        Accuracy: 70.64%
 
-    References
-    ----------
-    [^1]: Balaji Lakshminarayanan, Daniel M. Roy, Yee Whye Teh. Mondrian Forests: Efficient Online Random Forests.
-        arXiv:1406.2673, pages 2-4
+        References
+        ----------
+        [^1]: Balaji Lakshminarayanan, Daniel M. Roy, Yee Whye Teh. Mondrian Forests: Efficient Online Random Forests.
+            arXiv:1406.2673, pages 2-4
 
     """
 
@@ -200,9 +210,9 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
         branch.replant(node, True)
 
         if is_right_extension:
-            left.replant(node)
+            left.replant(node, True)
         else:
-            right.replant(node)
+            right.replant(node, True)
 
         # To avoid leaving garbage behind
         del node
