@@ -3,12 +3,12 @@ from __future__ import annotations
 import abc
 import math
 
-from river import metrics
+from river import base, metrics
 from river.model_selection.base import ModelSelectionClassifier, ModelSelectionRegressor
 
 
 class HoeffdingRace(abc.ABC):
-    r"""Hoeffding Race model selection.
+    """Hoeffding Race model selection.
 
     Uses the Hoeffding bound to progressively eliminate underperforming models with
     statistical confidence. Each model is evaluated on every observation. After each
@@ -38,6 +38,10 @@ class HoeffdingRace(abc.ABC):
         you should set this to a reasonable upper bound on the per-observation loss range.
 
     """
+
+
+    models: list[base.Estimator]
+    metric: metrics.base.Metric
 
     def __init__(
         self,
@@ -135,7 +139,7 @@ class HoeffdingRace(abc.ABC):
 
 
 class HoeffdingRaceRegressor(HoeffdingRace, ModelSelectionRegressor):
-    r"""Hoeffding Race model selection for regression.
+    """Hoeffding Race model selection for regression.
 
     Uses the Hoeffding bound to progressively eliminate underperforming models with
     statistical confidence. All active models are trained on each observation. After
