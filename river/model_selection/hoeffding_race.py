@@ -76,9 +76,7 @@ class HoeffdingRace(abc.ABC):
         if n == 0:
             return float("inf")
         m = len(self.models)
-        return self.loss_range * math.sqrt(
-            (math.log(2 * n * m) - math.log(self.delta)) / n
-        )
+        return self.loss_range * math.sqrt((math.log(2 * n * m) - math.log(self.delta)) / n)
 
     def learn_one(self, x, y):
         self._n_iterations += 1
