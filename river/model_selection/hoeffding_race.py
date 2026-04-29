@@ -39,7 +39,6 @@ class HoeffdingRace(abc.ABC):
 
     """
 
-
     models: list[base.Estimator]
     metric: metrics.base.Metric
 
