@@ -19,6 +19,7 @@ from .filter import QuantileFilter, ThresholdFilter
 from .gaussian import GaussianScorer
 from .hst import HalfSpaceTrees
 from .lof import LocalOutlierFactor
+from .memstream import MemStream
 from .pad import PredictiveAnomalyDetection
 from .sad import StandardAbsoluteDeviation
 from .svm import OneClassSVM
@@ -34,4 +35,5 @@ __all__ = [
     "ThresholdFilter",
     "LocalOutlierFactor",
     "PredictiveAnomalyDetection",
+    "MemStream",
 ]
