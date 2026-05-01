@@ -52,7 +52,7 @@ docs = [
     "flask",
     "jupyter-client",
     "mike @ git+https://github.com/squidfunk/mike.git",
-    "pygments<2.20",
+    "pygments<2.21",
     "TA-Lib",
     "zensical",
     "nbconvert",
