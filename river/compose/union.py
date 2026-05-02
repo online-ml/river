@@ -2,10 +2,12 @@ from __future__ import annotations
 
 import collections
 import types
+import typing
 
-import pandas as pd
+from river import base, utils
 
-from river import base
+if typing.TYPE_CHECKING:
+    import pandas as pd
 
 from . import func
 
@@ -296,7 +298,7 @@ class TransformerUnion(base.MiniBatchTransformer):
 
     def transform_many(self, X):
         """Passes the data through each transformer and packs the results together."""
-
+        pd = utils.pandas.import_pandas()
         return pd.concat(
             (t.transform_many(X) for t in self.transformers.values()),
             copy=False,

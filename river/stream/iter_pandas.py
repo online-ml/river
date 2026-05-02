@@ -1,8 +1,11 @@
 from __future__ import annotations
 
-import pandas as pd
+import typing
 
-from river import base, stream
+from river import base, stream, utils
+
+if typing.TYPE_CHECKING:
+    import pandas as pd
 
 
 def iter_pandas(
@@ -40,7 +43,7 @@ def iter_pandas(
     {'x1': 4, 'x2': 'blue'} True
 
     """
-
+    pd = utils.pandas.import_pandas()
     kwargs["feature_names"] = X.columns
     if isinstance(y, pd.DataFrame):
         kwargs["target_names"] = y.columns

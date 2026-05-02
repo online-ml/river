@@ -3,7 +3,6 @@ from __future__ import annotations
 import math
 
 import numpy as np
-import pandas as pd
 
 from river import base
 
@@ -368,16 +367,19 @@ class TextClust(base.Clusterer):
         ids = list(clusters.keys())
 
         # initialize all distances to 0
-        distances = pd.DataFrame(np.zeros((numClusters, numClusters)), columns=ids, index=ids)
+        distances = np.zeros((numClusters, numClusters))
+        positions = {cluster_id: pos for pos, cluster_id in enumerate(ids)}
 
         for idx, row in enumerate(ids):
             for col in ids[idx + 1 :]:
                 # use the macro-distance metric to calculate the distances to different micro-clusters
                 dist = self.macro_distance.dist(clusters[row], clusters[col], idf)
-                distances.loc[row, col] = dist
-                distances.loc[col, row] = dist
+                row_pos = positions[row]
+                col_pos = positions[col]
+                distances[row_pos, col_pos] = dist
+                distances[col_pos, row_pos] = dist
 
-        return distances
+        return ids, distances
 
     # This is a greedy implementation of single linkage agglomerative clustering. In the future we
     # will make this function more flexible
@@ -385,9 +387,8 @@ class TextClust(base.Clusterer):
         clusters = []
 
         ## calculate distance matrix
-        distm = self._get_distance_matrix(micros)
-
-        indices = distm.index
+        indices, distm = self._get_distance_matrix(micros)
+        positions = {cluster_id: pos for pos, cluster_id in enumerate(indices)}
 
         ## init empty clusters
         for i in range(0, len(micros)):
@@ -404,8 +405,9 @@ class TextClust(base.Clusterer):
                     ## iterate over all clusters in sets
                     for c_i in clusters[i]:
                         for c_j in clusters[j]:
-                            if distm[c_i][c_j] < min_dist:
-                                min_dist = distm[c_i][c_j]
+                            dist = distm[positions[c_i], positions[c_j]]
+                            if dist < min_dist:
+                                min_dist = dist
                                 min_pair = (i, j)
 
             ## now merge

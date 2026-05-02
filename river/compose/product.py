@@ -2,11 +2,14 @@ from __future__ import annotations
 
 import functools
 import itertools
+import typing
 
 import numpy as np
-import pandas as pd
 
 from river import utils
+
+if typing.TYPE_CHECKING:
+    import pandas as pd
 
 from . import union
 
@@ -86,6 +89,7 @@ class TransformerProduct(union.TransformerUnion):
         }
 
     def transform_many(self, X):
+        pd = utils.pandas.import_pandas()
         outputs = [t.transform_many(X) for t in self.transformers.values()]
 
         def multiply(a, b):

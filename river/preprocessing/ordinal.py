@@ -4,9 +4,11 @@ import collections
 import typing
 
 import numpy as np
-import pandas as pd
 
-from river import base
+from river import base, utils
+
+if typing.TYPE_CHECKING:
+    import pandas as pd
 
 
 class OrdinalEncoder(base.MiniBatchTransformer):
@@ -165,6 +167,7 @@ class OrdinalEncoder(base.MiniBatchTransformer):
                     self.values[i][xi] = self._next_category_code(i)
 
     def transform_many(self, X):
+        pd = utils.pandas.import_pandas()
         return pd.DataFrame(
             {
                 i: pd.Series(

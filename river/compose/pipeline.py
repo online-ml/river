@@ -8,9 +8,10 @@ import itertools
 import types
 import typing
 
-import pandas as pd
-
 from river import base
+
+if typing.TYPE_CHECKING:
+    import pandas as pd
 
 from . import func, union
 

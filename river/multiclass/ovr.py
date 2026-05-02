@@ -1,8 +1,11 @@
 from __future__ import annotations
 
-import pandas as pd
+import typing
 
-from river import base, linear_model
+from river import base, linear_model, utils
+
+if typing.TYPE_CHECKING:
+    import pandas as pd
 
 __all__ = ["OneVsRestClassifier"]
 
@@ -113,6 +116,7 @@ class OneVsRestClassifier(base.Wrapper, base.Classifier):
             model.learn_many(X, y == label, **kwargs)
 
     def predict_proba_many(self, X, **kwargs):
+        pd = utils.pandas.import_pandas()
         y_pred = pd.DataFrame(columns=self.classifiers.keys(), index=X.index)
 
         for label, clf in self.classifiers.items():
@@ -121,6 +125,7 @@ class OneVsRestClassifier(base.Wrapper, base.Classifier):
         return y_pred.div(y_pred.sum(axis="columns"), axis="rows")
 
     def predict_many(self, X, **kwargs):
+        pd = utils.pandas.import_pandas()
         if not self.classifiers:
             return pd.Series([None] * len(X), index=X.index, dtype="object")
         return self.predict_proba_many(X, **kwargs).idxmax(axis="columns").rename(self._y_name)

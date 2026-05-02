@@ -2,14 +2,17 @@ from __future__ import annotations
 
 import collections
 import math
+import typing
 
 import numpy as np
-import pandas as pd
 from scipy import sparse
 
 from river.base import tags
 
 from . import base
+
+if typing.TYPE_CHECKING:
+    import pandas as pd
 
 __all__ = ["ComplementNB"]
 
@@ -262,6 +265,7 @@ class ComplementNB(base.BaseNB):
         Input samples joint log likelihood.
 
         """
+        pd = base.utils.pandas.import_pandas()
         index, columns = X.index, X.columns
         unknown = [x for x in columns if x not in self.feature_counts]
 

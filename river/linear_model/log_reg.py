@@ -1,8 +1,11 @@
 from __future__ import annotations
 
-import pandas as pd
+import typing
 
-from river import base, linear_model, optim
+from river import base, linear_model, optim, utils
+
+if typing.TYPE_CHECKING:
+    import pandas as pd
 
 
 class LogisticRegression(linear_model.base.GLM, base.MiniBatchClassifier):
@@ -94,5 +97,6 @@ class LogisticRegression(linear_model.base.GLM, base.MiniBatchClassifier):
         return {False: 1.0 - p, True: p}
 
     def predict_proba_many(self, X: pd.DataFrame) -> pd.DataFrame:
+        pd = utils.pandas.import_pandas()
         p = self.loss.mean_func(self._raw_dot_many(X))  # Convert logits to probabilities
         return pd.DataFrame({False: 1.0 - p, True: p}, index=X.index, copy=False)

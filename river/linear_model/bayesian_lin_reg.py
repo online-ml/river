@@ -1,9 +1,12 @@
 from __future__ import annotations
 
 import numpy as np
-import pandas as pd
+import typing
 
 from river import base, proba, utils
+
+if typing.TYPE_CHECKING:
+    import pandas as pd
 
 
 class BayesianLinearRegression(base.Regressor):
@@ -223,5 +226,6 @@ class BayesianLinearRegression(base.Regressor):
         return proba.Gaussian._from_state(n=1, m=y_pred_mean, sig=y_pred_var**0.5, ddof=0)
 
     def predict_many(self, X):
+        pd = utils.pandas.import_pandas()
         m, *_ = self._get_arrays(X.columns, m=True, ss=False, ss_inv=False)
         return pd.Series(X.values @ m, index=X.index)

@@ -3,10 +3,12 @@ from __future__ import annotations
 import collections
 import copy
 import functools
-
-import pandas as pd
+import typing
 
 from river import base, stats, utils
+
+if typing.TYPE_CHECKING:
+    import pandas as pd
 
 
 class Agg(base.Transformer):
@@ -200,6 +202,7 @@ class Agg(base.Transformer):
     @property
     def state(self) -> pd.Series:
         """Return the current values for each group as a series."""
+        pd = utils.pandas.import_pandas()
         return pd.Series(
             (stat.get() for stat in self._groups.values()),
             index=(

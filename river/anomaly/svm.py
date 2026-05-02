@@ -1,8 +1,6 @@
 from __future__ import annotations
 
-import pandas as pd
-
-from river import anomaly, linear_model, optim
+from river import anomaly, linear_model, optim, utils
 
 
 class OneClassSVM(linear_model.base.GLM, anomaly.base.AnomalyDetector):
@@ -105,6 +103,7 @@ class OneClassSVM(linear_model.base.GLM, anomaly.base.AnomalyDetector):
         super().learn_one(x, y=1)
 
     def learn_many(self, X):
+        pd = utils.pandas.import_pandas()
         super().learn_many(X, y=pd.Series(True, index=X.index))
 
     def score_one(self, x):
