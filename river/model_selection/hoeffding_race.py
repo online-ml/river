@@ -3,7 +3,7 @@ from __future__ import annotations
 import abc
 import math
 
-from river import base, metrics
+from river import metrics
 from river.model_selection.base import ModelSelectionClassifier, ModelSelectionRegressor
 
 
