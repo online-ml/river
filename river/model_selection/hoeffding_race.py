@@ -39,9 +39,6 @@ class HoeffdingRace(abc.ABC):
 
     """
 
-    models: list[base.Estimator]
-    metric: metrics.base.Metric
-
     def __init__(
         self,
         models,
@@ -52,6 +49,8 @@ class HoeffdingRace(abc.ABC):
         super().__init__(models=models, metric=metric)  # type: ignore
         self.delta = delta
         self.loss_range = loss_range
+        self.metric = metric
+        self.models = models
 
         n = len(models)
         self._metrics = [metric.clone() for _ in range(n)]
@@ -125,11 +124,6 @@ class HoeffdingRace(abc.ABC):
                 surviving.append(i)
 
             self._active = surviving
-
-    @property
-    def n_active_models(self) -> int:
-        """The number of models still in the race."""
-        return len(self._active)
 
     @property
     def active_models(self) -> list:
