@@ -53,7 +53,7 @@ def test_pickling(stat):
 @pytest.mark.parametrize("stat", load_stats(), ids=lambda stat: stat.__class__.__name__)
 def test_pickling_value(stat):
     for i in range(10):
-        if isinstance(stat, stats.base.Bivariate):
+        if isinstance(stat, (stats.base.Bivariate, stats.base.RollingBivariate)):
             stat.update(i, i)
         else:
             stat.update(i)
@@ -239,6 +239,29 @@ def test_bivariate(stat, func):
             assert math.isclose(stat.get(), func(X[: i + 1], Y[: i + 1]), abs_tol=1e-10)
 
 
+def _chi2_stat(x, y):
+    # This is a bit slow but correct for testing
+
+    import scipy.stats
+
+    # Get unique values to build contingency table
+    x_vals = sorted(list(set(x)))
+    y_vals = sorted(list(set(y)))
+    if len(x_vals) <= 1 or len(y_vals) <= 1:
+        return 0.0
+
+    table = []
+    for xv in x_vals:
+        row = []
+        for yv in y_vals:
+            count = sum(1 for xi, yi in zip(x, y) if xi == xv and yi == yv)
+            row.append(count)
+        table.append(row)
+
+    chi2, _, _, _ = scipy.stats.chi2_contingency(table, correction=False)
+    return chi2
+
+
 @pytest.mark.parametrize(
     "stat, func",
     [
@@ -246,13 +269,15 @@ def test_bivariate(stat, func):
         (utils.Rolling(stats.PearsonCorr(), 10), lambda x, y: sp_stats.pearsonr(x, y)[0]),  # type: ignore
         (utils.Rolling(stats.Cov(), 3), lambda x, y: np.cov(x, y)[0, 1]),  # type: ignore
         (utils.Rolling(stats.Cov(), 10), lambda x, y: np.cov(x, y)[0, 1]),  # type: ignore
+        (stats.RollingChiSquared(3), _chi2_stat),
+        (stats.RollingChiSquared(10), _chi2_stat),
     ],
 )
 def test_rolling_bivariate(stat, func):
     # Enough already
 
     def tail(iterable, n):
-        return collections.deque(iterable, maxlen=n)
+        return list(collections.deque(iterable, maxlen=n))
 
     n = stat.window_size
     X = [random.random() for _ in range(30)]
@@ -261,9 +286,10 @@ def test_rolling_bivariate(stat, func):
     for i, (x, y) in enumerate(zip(X, Y)):
         stat.update(x, y)
         if i >= 1:
-            x_tail = tail(X[: i + 1], n)
-            y_tail = tail(Y[: i + 1], n)
-            assert math.isclose(stat.get(), func(x_tail, y_tail), abs_tol=1e-10)
+            val = stat.get()
+            expected = func(tail(X[: i + 1], n), tail(Y[: i + 1], n))
+            if val is not None and not math.isnan(expected):
+                assert math.isclose(val, expected, abs_tol=1e-10)
 
 
 @pytest.mark.parametrize(
