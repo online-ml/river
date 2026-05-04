@@ -18,6 +18,7 @@ from __future__ import annotations
 from . import base
 from .bandit import BanditClassifier, BanditRegressor
 from .greedy import GreedyRegressor
+from .hoeffding_race import HoeffdingRaceClassifier, HoeffdingRaceRegressor
 from .sh import SuccessiveHalvingClassifier, SuccessiveHalvingRegressor
 
 __all__ = [
@@ -25,6 +26,8 @@ __all__ = [
     "BanditClassifier",
     "BanditRegressor",
     "GreedyRegressor",
+    "HoeffdingRaceClassifier",
+    "HoeffdingRaceRegressor",
     "SuccessiveHalvingClassifier",
     "SuccessiveHalvingRegressor",
 ]
