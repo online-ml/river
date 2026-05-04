@@ -3,11 +3,11 @@ from __future__ import annotations
 import abc
 import math
 
-from river import metrics
+from river import base, metrics
 from river.model_selection.base import ModelSelectionClassifier, ModelSelectionRegressor
 
 
-class HoeffdingRace(abc.ABC):
+class HoeffdingRace(base.Ensemble):
     """Hoeffding Race model selection.
 
     Uses the Hoeffding bound to progressively eliminate underperforming models with
@@ -50,7 +50,6 @@ class HoeffdingRace(abc.ABC):
         self.delta = delta
         self.loss_range = loss_range
         self.metric = metric
-        self.models = models
 
         n = len(models)
         self._metrics = [metric.clone() for _ in range(n)]
@@ -129,6 +128,11 @@ class HoeffdingRace(abc.ABC):
     def active_models(self) -> list:
         """The models still in the race."""
         return [self.models[i] for i in self._active]
+
+    @property
+    def n_active_models(self) -> int:
+        """The number of models still in the race."""
+        return len(self._active)
 
 
 class HoeffdingRaceRegressor(HoeffdingRace, ModelSelectionRegressor):
