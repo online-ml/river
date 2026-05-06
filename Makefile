@@ -13,10 +13,10 @@ execute-notebooks:
 	jupyter nbconvert --execute --to notebook --inplace docs/examples/*/*.ipynb --ExecutePreprocessor.timeout=-1
 
 render-notebooks:
-	jupyter nbconvert --to markdown docs/introduction/*/*.ipynb
-	jupyter nbconvert --to markdown docs/recipes/*.ipynb
-	jupyter nbconvert --to markdown docs/examples/*.ipynb
-	jupyter nbconvert --to markdown docs/examples/*/*.ipynb
+	jupyter nbconvert --to markdown --template docs/parse/nbconvert_template docs/introduction/*/*.ipynb
+	jupyter nbconvert --to markdown --template docs/parse/nbconvert_template docs/recipes/*.ipynb
+	jupyter nbconvert --to markdown --template docs/parse/nbconvert_template docs/examples/*.ipynb
+	jupyter nbconvert --to markdown --template docs/parse/nbconvert_template docs/examples/*/*.ipynb
 
 doc: render-notebooks
 	python docs/parse river --out docs --verbose

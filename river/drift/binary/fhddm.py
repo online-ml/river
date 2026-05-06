@@ -33,7 +33,7 @@ class FHDDM(base.BinaryDriftAndWarningDetector):
         Confidence level used to determine the epsilon coefficient in Hoeffding’s inequality. The default value gives a 99\\% of confidence
         level to the drift assessment.
     short_window_size
-        The size of the short window size that it is used in a Stacking version of FHDDM [^2].
+        The size of the short window size that it is used in a Stacking version of FHDDM.
 
     Examples
     --------

@@ -124,7 +124,7 @@ class EBSTSplitter(Splitter):
     ):
         """Remove bad splits.
 
-        Based on FIMT-DD's [^1] procedure to remove bad split candidates from the E-BST. This
+        Based on FIMT-DD's procedure to remove bad split candidates from the E-BST. This
         mechanism is triggered every time a split attempt fails. The rationale is to remove
         points whose split merit is much worse than the best candidate overall (for which the
         growth decision already failed).
@@ -138,7 +138,7 @@ class EBSTSplitter(Splitter):
         split relative to the best one is small. Hence, this candidate can be safely removed.
 
         To avoid excessive and costly manipulations of the E-BST to update the stored statistics,
-        only the nodes whose children are all bad split points are pruned, as defined in [^1].
+        only the nodes whose children are all bad split points are pruned, as defined in the original paper.
 
         Parameters
         ----------
