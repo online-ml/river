@@ -275,6 +275,41 @@ class Linkifier:
         return self.PATTERN.sub(replace, text)
 
 
+_BRACKET_OPEN = "\x00LBRK\x00"
+_BRACKET_CLOSE = "\x00RBRK\x00"
+
+
+def _escape_bare_brackets(text: str) -> str:
+    """Escape `[...]` sequences that are not valid markdown links or footnotes.
+
+    This prevents the markdown parser from treating things like `[0, 1]` or
+    `[*Tree parameter*]` as unresolved link references.
+    """
+
+    def _replace(m: re.Match) -> str:
+        inner = m.group(1)
+        end = m.end()
+        after = s[end] if end < len(s) else ""
+
+        # Keep markdown links [text](url) and [text][ref]
+        if after in ("(", "["):
+            return m.group(0)
+        # Keep footnote references [^1] and definitions [^1]:
+        if inner.startswith("^"):
+            return m.group(0)
+
+        return f"{_BRACKET_OPEN}{inner}{_BRACKET_CLOSE}"
+
+    # Apply until stable to handle nested brackets like [start, [stop]]
+    s = text
+    prev = None
+    while s != prev:
+        prev = s
+        s = re.sub(r"\[([^\[\]]*)\]", _replace, s)
+
+    return s.replace(_BRACKET_OPEN, "\\[").replace(_BRACKET_CLOSE, "\\]")
+
+
 def concat_lines(lines):
     return inspect.cleandoc(
         " ".join(
@@ -293,8 +328,8 @@ def print_docstring(obj, file):
     printf = functools.partial(print, file=file)
 
     printf(h1(obj.__name__))
-    printf(md_line(concat_lines(doc["Summary"])))
-    printf(md_line(concat_lines(doc["Extended Summary"])))
+    printf(md_line(_escape_bare_brackets(concat_lines(doc["Summary"]))))
+    printf(md_line(_escape_bare_brackets(concat_lines(doc["Extended Summary"]))))
 
     # We infer the type annotations from the signatures, and therefore rely on the signature
     # instead of the docstring for documenting parameters
@@ -328,7 +363,7 @@ def print_docstring(obj, file):
         if param.annotation is not param.empty:
             anno = inspect.formatannotation(param.annotation)
             anno = anno.strip("'")
-            printf(f"     *Type* → *{anno}*\n")
+            printf(f"     *Type* → `{anno}`\n")
         # Default value
         if param.default is not param.empty:
             printf(f"     *Default* → `{param.default}`\n")
@@ -336,7 +371,7 @@ def print_docstring(obj, file):
         # Description
         desc = params_desc[param.name]
         if desc:
-            printf(f"    {desc}\n")
+            printf(f"    {_escape_bare_brackets(desc)}\n")
     printf("")
 
     # Attributes
@@ -347,12 +382,12 @@ def print_docstring(obj, file):
         printf(f"- **{attr.name}**", end="")
         # Type annotation
         if attr.type:
-            printf(f" (*{attr.type}*)", end="")
+            printf(f" (`{attr.type}`)", end="")
         printf("\n", file=file)
         # Description
         desc = " ".join(attr.desc)
         if desc:
-            printf(f"    {desc}\n")
+            printf(f"    {_escape_bare_brackets(desc)}\n")
     printf("")
 
     # Examples
@@ -451,9 +486,9 @@ def print_docstring(obj, file):
                 continue
             meth_doc = FunctionDoc(func=None, doc=docstring)
 
-            printf_indent(md_line(" ".join(meth_doc["Summary"])))
+            printf_indent(md_line(_escape_bare_brackets(" ".join(meth_doc["Summary"]))))
             if meth_doc["Extended Summary"]:
-                printf_indent(md_line(" ".join(meth_doc["Extended Summary"])))
+                printf_indent(md_line(_escape_bare_brackets(" ".join(meth_doc["Extended Summary"]))))
 
             # We infer the type annotations from the signatures, and therefore rely on the signature
             # instead of the docstring for documenting parameters
@@ -470,7 +505,8 @@ def print_docstring(obj, file):
                 printf_indent(f"- **{param.name}**", end="")
                 # Type annotation
                 if param.annotation is not param.empty:
-                    printf_indent(f" — *{inspect.formatannotation(param.annotation)}*", end="")
+                    anno = inspect.formatannotation(param.annotation).strip("'")
+                    printf_indent(f" — `{anno}`", end="")
                 # Default value
                 if param.default is not param.empty:
                     printf_indent(f" — defaults to `{param.default}`", end="")
@@ -478,7 +514,7 @@ def print_docstring(obj, file):
                 # Description
                 desc = params_desc.get(param.name)
                 if desc:
-                    printf_indent(f"    {desc}")
+                    printf_indent(f"    {_escape_bare_brackets(desc)}")
             printf_indent("")
 
             # Returns
@@ -487,9 +523,11 @@ def print_docstring(obj, file):
                 return_val = meth_doc["Returns"][0]
                 if signature.return_annotation is not inspect._empty:
                     if inspect.isclass(signature.return_annotation):
-                        printf_indent(f"*{signature.return_annotation.__name__}*: ", end="")
+                        printf_indent(f"`{signature.return_annotation.__name__}`: ", end="")
                     else:
-                        printf_indent(f"*{signature.return_annotation}*: ", end="")
+                        ret_anno = str(signature.return_annotation).strip("'")
+                        ret_anno = ret_anno.replace("[", "&#91;").replace("]", "&#93;")
+                        printf_indent(f"`{ret_anno}`: ", end="")
                 printf_indent(return_val.type)
                 printf_indent("")
 
@@ -499,11 +537,56 @@ def print_docstring(obj, file):
     # Notes
     if doc["Notes"]:
         printf(h2("Notes"))
-        printf(md_line("\n".join(doc["Notes"])))
+        printf(md_line(_escape_bare_brackets("\n".join(doc["Notes"]))))
 
     # References
     if doc["References"]:
-        printf(md_line("\n".join(doc["References"])))
+        # Check which footnote IDs are actually referenced in the page text
+        body_text = (
+            " ".join(doc["Summary"])
+            + " " + " ".join(doc["Extended Summary"])
+            + " " + " ".join(doc["Notes"])
+        )
+        body_refs = set(re.findall(r"\[\^(\d+)\]", body_text))
+
+        ref_lines = doc["References"]
+
+        # Separate footnote definitions from other reference lines.
+        # Footnote definitions can span multiple lines (continuation lines
+        # are indented or don't start with [^N]).
+        footnote_defs: dict[str, str] = {}
+        other_refs: list[str] = []
+        current_fid = None
+        for line in ref_lines:
+            stripped = line.strip()
+            if not stripped:
+                current_fid = None
+                continue
+            m = re.match(r"\[\^(\d+)\]:?\s*(.*)", stripped)
+            if m:
+                current_fid = m.group(1)
+                footnote_defs[current_fid] = m.group(2)
+            elif current_fid is not None:
+                # Continuation of previous footnote
+                footnote_defs[current_fid] += " " + stripped
+            else:
+                other_refs.append(stripped)
+
+        # Output footnotes that are referenced in the body as proper markdown footnotes
+        used_footnotes = {fid: text for fid, text in footnote_defs.items() if fid in body_refs}
+        unused_footnotes = {fid: text for fid, text in footnote_defs.items() if fid not in body_refs}
+
+        if used_footnotes:
+            printf("")
+            for fid, text in sorted(used_footnotes.items()):
+                printf(f"[^{fid}]: {_escape_bare_brackets(text)}\n")
+
+        # Output unused footnotes and other refs as a plain list
+        plain_refs = list(unused_footnotes.values()) + other_refs
+        if plain_refs:
+            printf(h2("References"))
+            for ref in plain_refs:
+                printf(f"- {_escape_bare_brackets(ref)}\n")
 
 
 _SUBMODULE_SKIP = frozenset(("tags", "typing", "inspect", "skmultiflow_utils"))
