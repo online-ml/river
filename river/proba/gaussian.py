@@ -11,6 +11,8 @@ from river.proba import base
 
 __all__ = ["Gaussian", "MultivariateGaussian"]
 
+_HALF_LOG_TAU = 0.5 * math.log(math.tau)
+
 
 class Gaussian(base.ContinuousDistribution):
     """Normal distribution with parameters mu and sigma.
@@ -73,15 +75,34 @@ class Gaussian(base.ContinuousDistribution):
         self._var.revert(x, w)
 
     def __call__(self, x) -> float:
-        var = self._var.get()
-        if var:
-            try:
-                return math.exp((x - self.mu) ** 2 / (-2 * var)) / math.sqrt(math.tau * var)
-            except ValueError:
-                return 0.0
-            except OverflowError:
-                return 0.0
+        var = self._var
+        n = var.mean.n
+        if n > var.ddof:
+            variance = var._S / (n - var.ddof)
+            if variance > 0.0:
+                mu = var.mean._mean
+                try:
+                    return math.exp((x - mu) ** 2 / (-2.0 * variance)) / math.sqrt(
+                        math.tau * variance
+                    )
+                except (ValueError, OverflowError):
+                    return 0.0
         return 0.0
+
+    def log_pdf(self, x) -> float:
+        """Log of the probability density function.
+
+        This is more efficient and numerically stable than ``math.log(self(x))``
+        because it avoids the ``exp`` / ``sqrt`` round-trip.
+        """
+        var = self._var
+        n = var.mean.n
+        if n > var.ddof:
+            variance = var._S / (n - var.ddof)
+            if variance > 0.0:
+                mu = var.mean._mean
+                return (x - mu) ** 2 / (-2.0 * variance) - _HALF_LOG_TAU - 0.5 * math.log(variance)
+        return -math.inf
 
     def cdf(self, x) -> float:
         try:
@@ -211,7 +232,7 @@ class MultivariateGaussian(base.MultivariateContinuousDistribution):
 
     """
 
-    def __init__(self, seed=None):
+    def __init__(self, seed: int | None = None):
         super().__init__(seed)
         self._var = covariance.EmpiricalCovariance(ddof=1)
 

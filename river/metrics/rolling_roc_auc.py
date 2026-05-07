@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from river import metrics, utils
+from river import metrics
+from river.anomaly.base import AnomalyDetector, AnomalyFilter
 
 from .efficient_rollingrocauc import EfficientRollingROCAUC
 
@@ -8,7 +9,7 @@ __all__ = ["RollingROCAUC"]
 
 
 class RollingROCAUC(metrics.base.BinaryMetric):
-    """Rolling version of the Receiving Operating Characteristic Area Under the Curve.
+    """Rolling version of the Receiver Operating Characteristic Area Under the Curve.
 
     The RollingROCAUC calculates the metric using the instances in its window
     of size S. It keeps a queue of the instances, when an instance is added and
@@ -58,8 +59,8 @@ class RollingROCAUC(metrics.base.BinaryMetric):
     def works_with(self, model) -> bool:
         return (
             super().works_with(model)
-            or utils.inspect.isanomalydetector(model)
-            or utils.inspect.isanomalyfilter(model)
+            or isinstance(model, AnomalyDetector)
+            or isinstance(model, AnomalyFilter)
         )
 
     def update(self, y_true, y_pred):

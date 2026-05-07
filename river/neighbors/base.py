@@ -4,6 +4,11 @@ import abc
 import typing
 
 from river import base
+from river.utils.vectordict import (
+    euclidean_distance_tuple as _euclidean_tuple_distance,  # noqa: F401
+)
+
+__all__ = ["BaseNN", "DistanceFunc", "FunctionWrapper", "_euclidean_tuple_distance"]
 
 
 class DistanceFunc(typing.Protocol):
@@ -24,6 +29,8 @@ class FunctionWrapper:
         The custom distance function to be wrapped.
     """
 
+    __slots__ = ("distance_function",)
+
     def __init__(self, distance_function: DistanceFunc):
         self.distance_function = distance_function
 
@@ -42,4 +49,8 @@ class BaseNN(base.Estimator, abc.ABC):
 
     @abc.abstractmethod
     def search(self, item: typing.Any, n_neighbors: int, **kwargs) -> tuple[list, list]:
+        pass
+
+    @abc.abstractmethod
+    def refresh_targets(self) -> set:
         pass

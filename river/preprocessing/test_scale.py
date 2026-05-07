@@ -8,6 +8,12 @@ import pandas as pd
 from river import datasets, preprocessing, stream
 
 
+def _pd_split(df, n):
+    """Split a pandas DataFrame or Series into n chunks without triggering swapaxes deprecation."""
+    indices = np.array_split(range(len(df)), n)
+    return [df.iloc[idx] for idx in indices]
+
+
 def test_standard_scaler_one_many_consistent():
     """Checks that using learn_one or learn_many produces the same result."""
 
@@ -19,7 +25,7 @@ def test_standard_scaler_one_many_consistent():
             one.learn_one(x)
 
         many = preprocessing.StandardScaler(with_std=with_std)
-        for xb in np.array_split(X, 10):
+        for xb in _pd_split(X, 10):
             many.learn_many(xb)
 
         for i in X:
@@ -34,11 +40,11 @@ def test_standard_scaler_shuffle_columns():
     X = pd.read_csv(datasets.TrumpApproval().path)
 
     normal = preprocessing.StandardScaler()
-    for xb in np.array_split(X, 10):
+    for xb in _pd_split(X, 10):
         normal.learn_many(xb)
 
     shuffled = preprocessing.StandardScaler()
-    for xb in np.array_split(X, 10):
+    for xb in _pd_split(X, 10):
         cols = np.random.permutation(X.columns)
         shuffled.learn_many(xb[cols])
 
@@ -54,7 +60,7 @@ def test_standard_scaler_add_remove_columns():
     X = pd.read_csv(datasets.TrumpApproval().path)
 
     ss = preprocessing.StandardScaler()
-    for xb in np.array_split(X, 10):
+    for xb in _pd_split(X, 10):
         # Pick half of the columns at random
         cols = np.random.choice(X.columns, len(X.columns) // 2, replace=False)
         ss.learn_many(xb[cols])

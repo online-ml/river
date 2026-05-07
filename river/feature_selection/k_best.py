@@ -16,6 +16,10 @@ class SelectKBest(base.SupervisedTransformer):
     similarity
     k
         The number of features to keep.
+    use_abs
+        A boolean indicating whether to rank features based on the absolute value of
+        their scores. This is particularly useful when the similarity metric can produce
+        negative values, such as Pearson correlation. Defaults to `False`.
 
     Attributes
     ----------
@@ -63,15 +67,53 @@ class SelectKBest(base.SupervisedTransformer):
     >>> selector.transform_one(xi)
     {7: -1.2795, 9: -1.8408}
 
+    >>> # Example demonstrating the `use_abs` parameter
+
+    >>> import random
+
+    >>> random.seed(42)
+    >>> X_abs = [[random.random() for _ in range(3)] for _ in range(100)]
+    >>> y_abs = [
+    ...     0.6 * x[0]
+    ...     - 0.9 * x[1]
+    ...     + 0.1 * x[2]
+    ...     + random.gauss(0, 0.1)
+    ...     for x in X_abs
+    ... ]
+
+    >>> selector_no_abs = feature_selection.SelectKBest(
+    ...     stats.PearsonCorr(),
+    ...     k=1,
+    ...     use_abs=False
+    ... )
+    >>> for xi, yi in stream.iter_array(X_abs, y_abs):
+    ...     selector_no_abs.learn_one(xi, yi)
+    >>> pprint(selector_no_abs.leaderboard)
+    Counter({0: 0.5683236302249015,
+             2: -0.09937590098236333,
+             1: -0.7655616041162767})
+    >>> selector_no_abs.transform_one({i: v for i, v in enumerate(X_abs[-1])})
+    {0: 0.009669699608339966}
+
+    >>> selector_with_abs = feature_selection.SelectKBest(
+    ...     stats.PearsonCorr(),
+    ...     k=1,
+    ...     use_abs=True
+    ... )
+    >>> for xi, yi in stream.iter_array(X_abs, y_abs):
+    ...     selector_with_abs.learn_one(xi, yi)
+    >>> selector_with_abs.transform_one({i: v for i, v in enumerate(X_abs[-1])})
+    {1: 0.07524386007376704}
     """
 
-    def __init__(self, similarity: stats.base.Bivariate, k=10):
+    def __init__(self, similarity: stats.base.Bivariate, k=10, use_abs: bool = False):
         self.k = k
         self.similarity = similarity
         self.similarities: collections.defaultdict = collections.defaultdict(
             functools.partial(copy.deepcopy, similarity)
         )
         self.leaderboard: typing.Counter = collections.Counter()
+        self.use_abs = use_abs
 
     @classmethod
     def _unit_test_params(cls):
@@ -80,7 +122,11 @@ class SelectKBest(base.SupervisedTransformer):
     def learn_one(self, x, y):
         for i, xi in x.items():
             self.similarities[i].update(xi, y)
-            self.leaderboard[i] = self.similarities[i].get()
+            if self.use_abs:
+                similarity_value = abs(self.similarities[i].get())
+            else:
+                similarity_value = self.similarities[i].get()
+            self.leaderboard[i] = similarity_value
 
     def transform_one(self, x):
         best_features = {pair[0] for pair in self.leaderboard.most_common(self.k)}

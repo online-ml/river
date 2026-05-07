@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from river import compose, linear_model, optim, preprocessing, tree, utils
+from river import base, compose, linear_model, optim, preprocessing, tree, utils
 
 
 @pytest.mark.parametrize(
@@ -56,11 +56,13 @@ from river import compose, linear_model, optim, preprocessing, tree, utils
         ),
     ],
 )
-def test_expand_param_grid_count(model, param_grid, count):
+def test_expand_param_grid_count(
+    model: base.Estimator, param_grid: dict[str, utils.param_grid.Params], count: int
+) -> None:
     assert len(utils.expand_param_grid(model, param_grid)) == count
 
 
-def test_decision_tree_max_depth():
+def test_decision_tree_max_depth() -> None:
     model = tree.HoeffdingTreeClassifier()
 
     max_depths = [1, 2, 3, 4, 5, 6]

@@ -224,7 +224,7 @@ class TransformerUnion(base.MiniBatchTransformer):
             transformer = func.FuncTransformer(transformer)
 
         def infer_name(transformer):
-            if isinstance(transformer, func.FuncTransformer):
+            if type(transformer) is func.FuncTransformer:
                 return infer_name(transformer.func)
             elif isinstance(transformer, types.FunctionType) or isinstance(
                 transformer, types.LambdaType

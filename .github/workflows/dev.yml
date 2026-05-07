@@ -1,0 +1,137 @@
+name: dev
+
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: dev
+  cancel-in-progress: true
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install pandoc
+        uses: pandoc/actions/setup@v1
+
+      - name: Setup Graphviz
+        uses: ts-graphviz/setup-graphviz@v2
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+
+      - name: Install the project
+        run: uv sync --locked --all-extras --dev
+
+      - name: Build docs
+        run: uv run make doc
+
+      - name: Deploy docs
+        env:
+          GH_TOKEN: ${{ secrets.GitHubToken }}
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          REMOTE=https://github.com/${{ github.repository }}.git
+          git fetch "$REMOTE" gh-pages:gh-pages --force || true
+          uv run mike deploy dev --remote "$REMOTE" --push
+
+  benchmarks:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: astral-sh/setup-uv@v7
+        with:
+          python-version: "3.12"
+          enable-cache: false
+
+      - name: Install asv
+        run: pip install asv virtualenv
+
+      - name: Configure asv machine
+        working-directory: benchmarks
+        run: asv machine --yes
+
+      - name: Restore results from asv branch
+        run: |
+          git fetch origin asv:asv || true
+          if git rev-parse --verify asv >/dev/null 2>&1; then
+            git worktree add /tmp/asv-results asv
+            if [ -d /tmp/asv-results/results ]; then
+              cp -r /tmp/asv-results/results benchmarks/results
+            fi
+            git worktree remove /tmp/asv-results
+          fi
+
+      - name: Run benchmarks
+        working-directory: benchmarks
+        run: asv run ${{ github.sha }}^! --skip-existing-commits
+
+      - name: Save results to asv branch
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          if git rev-parse --verify asv >/dev/null 2>&1; then
+            git worktree add /tmp/asv-save asv
+          else
+            git worktree add --orphan -b asv /tmp/asv-save
+          fi
+          cp -r benchmarks/results /tmp/asv-save/
+          cd /tmp/asv-save
+          git add results
+          git commit -m "Update benchmark results" --allow-empty
+          git fetch origin asv && git rebase origin/asv || true
+          git push origin asv
+          cd -
+          git worktree remove /tmp/asv-save
+
+      - name: Publish HTML
+        working-directory: benchmarks
+        run: asv publish
+
+      - name: Upload benchmark HTML
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-html
+          path: benchmarks/html
+
+  deploy-benchmarks:
+    needs: [docs, benchmarks]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download benchmark HTML
+        uses: actions/download-artifact@v4
+        with:
+          name: benchmark-html
+          path: benchmarks/html
+
+      - name: Deploy benchmarks to GitHub Pages
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git fetch origin gh-pages:gh-pages
+          git worktree add /tmp/gh-pages gh-pages
+          rm -rf /tmp/gh-pages/benchmarks
+          cp -r benchmarks/html /tmp/gh-pages/benchmarks
+          cd /tmp/gh-pages
+          git add benchmarks
+          git commit -m "Update benchmark results" --allow-empty
+          git push origin gh-pages
+          cd -
+          git worktree remove /tmp/gh-pages

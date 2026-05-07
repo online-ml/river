@@ -1,0 +1,21 @@
+{
+    "version": 1,
+    "project": "river",
+    "project_url": "https://riverml.xyz/",
+    "repo": "..",
+    "dvcs": "git",
+    "branches": ["main"],
+    "environment_type": "virtualenv",
+    "build_command": [],
+    "install_command": [
+        "in-dir={env_dir} python -m pip install -e {build_dir}"
+    ],
+    "show_commit_url": "https://github.com/online-ml/river/commit/",
+    "benchmark_dir": "benchmarks",
+    "results_dir": "results",
+    "html_dir": "html",
+    "env_dir": "env",
+    "build_cache_size": 8,
+    "default_benchmark_timeout": 600,
+    "matrix": {}
+}

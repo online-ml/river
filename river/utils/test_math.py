@@ -5,7 +5,7 @@ import numpy as np
 from river import utils
 
 
-def test_dotvecmat_zero_vector_times_matrix_of_ones():
+def test_dotvecmat_zero_vector_times_matrix_of_ones() -> None:
     A_numpy = np.array([[1, 1], [1, 1]])
     A_river = {(0, 0): 1, (0, 1): 1, (1, 0): 1, (1, 1): 1}
     x_numpy = np.array([0, 0])
@@ -18,7 +18,7 @@ def test_dotvecmat_zero_vector_times_matrix_of_ones():
     assert numpy_dotvecmat[1] == river_dotvecmat[1]
 
 
-def test_dotvecmat_vector_of_ones_times_zero_matrix():
+def test_dotvecmat_vector_of_ones_times_zero_matrix() -> None:
     A_numpy = np.array([[0, 0], [0, 0]])
     A_river = {(0, 0): 0, (0, 1): 0, (1, 0): 0, (1, 1): 0}
     x_numpy = np.array([1, 1])
@@ -31,7 +31,7 @@ def test_dotvecmat_vector_of_ones_times_zero_matrix():
     assert numpy_dotvecmat[1] == river_dotvecmat[1]
 
 
-def test_dotvecmat_filter_first_matrix_row_with_vector():
+def test_dotvecmat_filter_first_matrix_row_with_vector() -> None:
     A_numpy = np.array([[1, 1], [1, 1]])
     A_river = {(0, 0): 1, (0, 1): 1, (1, 0): 1, (1, 1): 1}
     x_numpy = np.array([1, 0])
@@ -44,7 +44,7 @@ def test_dotvecmat_filter_first_matrix_row_with_vector():
     assert numpy_dotvecmat[1] == river_dotvecmat[1]
 
 
-def test_dotvecmat_filter_second_matrix_row_with_vector():
+def test_dotvecmat_filter_second_matrix_row_with_vector() -> None:
     A_numpy = np.array([[1, 1], [1, 1]])
     A_river = {(0, 0): 1, (0, 1): 1, (1, 0): 1, (1, 1): 1}
     x_numpy = np.array([0, 1])
@@ -57,7 +57,7 @@ def test_dotvecmat_filter_second_matrix_row_with_vector():
     assert numpy_dotvecmat[1] == river_dotvecmat[1]
 
 
-def test_dotvecmat_vector_times_identity_matrix():
+def test_dotvecmat_vector_times_identity_matrix() -> None:
     A_numpy = np.array([[1, 0], [0, 1]])
     A_river = {(0, 0): 1, (0, 1): 0, (1, 0): 0, (1, 1): 1}
     x_numpy = np.array([1, 1])
@@ -70,7 +70,7 @@ def test_dotvecmat_vector_times_identity_matrix():
     assert numpy_dotvecmat[1] == river_dotvecmat[1]
 
 
-def test_dotvecmat_vector_times_anti_diagonal_identity_matrix():
+def test_dotvecmat_vector_times_anti_diagonal_identity_matrix() -> None:
     A_numpy = np.array([[0, 1], [1, 0]])
     A_river = {(0, 0): 0, (0, 1): 1, (1, 0): 1, (1, 1): 0}
     x_numpy = np.array([1, 1])
@@ -83,7 +83,7 @@ def test_dotvecmat_vector_times_anti_diagonal_identity_matrix():
     assert numpy_dotvecmat[1] == river_dotvecmat[1]
 
 
-def test_dotvecmat_three_dimensional_vector_times_non_quadratic_matrix():
+def test_dotvecmat_three_dimensional_vector_times_non_quadratic_matrix() -> None:
     A_numpy = np.array([[1, 2, 3, 4, 5], [6, 7, 8, 9, 10], [11, 12, 13, 14, 15]])
     A_river = {
         (0, 0): 1,

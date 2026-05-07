@@ -1,15 +1,17 @@
 from __future__ import annotations
 
+from typing import Any
+
 import numpy as np
 import pytest
 
 from river.utils import VectorDict
 
 
-def test_vectordict():
+def test_vectordict() -> None:
     # test empty init
-    x = dict()
-    vx = VectorDict()
+    x: dict[Any, Any] = dict()
+    vx: VectorDict[Any, Any] = VectorDict()
     assert vx == x
 
     # test basics

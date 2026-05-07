@@ -20,7 +20,7 @@ class HardSampling(base.Wrapper):
         self.loss = loss
         self.p = p
         self.size = size
-        self.buffer = utils.SortedWindow(self.size)
+        self.buffer: utils.SortedWindow[Triplet] = utils.SortedWindow(self.size)
         self.seed = seed
         self._rng = random.Random(seed)
 

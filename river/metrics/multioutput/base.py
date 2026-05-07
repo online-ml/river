@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import abc
 
-from river import base, utils
+from river import base
 from river.metrics.base import Metric
 
 from .confusion import MultiLabelConfusionMatrix
@@ -53,7 +53,7 @@ class MultiOutputClassificationMetric(MultiOutputMetric):
         self.cm.revert(y_true, y_pred, w)
 
     def works_with(self, model) -> bool:
-        return utils.inspect.ismoclassifier(model)
+        return isinstance(model, base.MultiLabelClassifier)
 
     @property
     def bigger_is_better(self):
@@ -84,7 +84,7 @@ class MultiOutputRegressionMetric(Metric):
         """Revert the metric."""
 
     def works_with(self, model) -> bool:
-        return utils.inspect.ismoregressor(model)
+        return isinstance(model, base.MultiTargetRegressor)
 
     @property
     def bigger_is_better(self):

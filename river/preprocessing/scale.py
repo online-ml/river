@@ -290,9 +290,9 @@ class MinMaxScaler(base.Transformer):
 
     """
 
-    def __init__(self):
-        self.min = collections.defaultdict(stats.Min)
-        self.max = collections.defaultdict(stats.Max)
+    def __init__(self) -> None:
+        self.min: collections.defaultdict = collections.defaultdict(stats.Min)
+        self.max: collections.defaultdict = collections.defaultdict(stats.Max)
 
     def learn_one(self, x):
         for i, xi in x.items():
@@ -347,8 +347,8 @@ class MaxAbsScaler(base.Transformer):
 
     """
 
-    def __init__(self):
-        self.abs_max = collections.defaultdict(stats.AbsMax)
+    def __init__(self) -> None:
+        self.abs_max: collections.defaultdict = collections.defaultdict(stats.AbsMax)
 
     def learn_one(self, x):
         for i, xi in x.items():

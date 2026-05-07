@@ -12,7 +12,7 @@ import numpy as np
 from scipy import special  # type: ignore
 
 from river import base, utils
-from river.optim.base import Loss
+from river.optim.base import Loss as Loss
 
 __all__ = [
     "Absolute",

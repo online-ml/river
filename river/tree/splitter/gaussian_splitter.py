@@ -55,6 +55,11 @@ class GaussianSplitter(Splitter):
         else:
             return 0.0
 
+    def cond_log_proba(self, att_val, target_val):
+        if target_val in self._att_dist_per_class:
+            return self._att_dist_per_class[target_val].log_pdf(att_val)
+        return -math.inf
+
     def best_evaluated_split_suggestion(self, criterion, pre_split_dist, att_idx, binary_only):
         best_suggestion = BranchFactory()
         suggested_split_values = self._split_point_suggestions()

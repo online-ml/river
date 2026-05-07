@@ -1,12 +1,15 @@
 from __future__ import annotations
 
-import functools
 import statistics
 
 from river import base, utils
 from river.neighbors import SWINN
 
-from .base import BaseNN, FunctionWrapper
+from .base import (
+    BaseNN,
+    FunctionWrapper,
+    _euclidean_tuple_distance,  # type: ignore[attr-defined]
+)
 
 
 class KNNRegressor(base.Regressor):
@@ -59,11 +62,15 @@ class KNNRegressor(base.Regressor):
     ):
         self.n_neighbors = n_neighbors
 
+        _default_dist = utils.math._euclidean_distance  # type: ignore[attr-defined]
         if engine is None:
-            engine = SWINN(dist_func=functools.partial(utils.math.minkowski_distance, p=2))
+            engine = SWINN(dist_func=_default_dist)  # type: ignore[arg-type]
 
         if not isinstance(engine.dist_func, FunctionWrapper):
-            engine.dist_func = FunctionWrapper(engine.dist_func)
+            if engine.dist_func is _default_dist:
+                engine.dist_func = _euclidean_tuple_distance  # type: ignore[assignment]
+            elif engine.dist_func is not _euclidean_tuple_distance:
+                engine.dist_func = FunctionWrapper(engine.dist_func)
 
         self.engine = engine
 
@@ -80,7 +87,8 @@ class KNNRegressor(base.Regressor):
         yield {
             "n_neighbors": 3,
             "engine": LazySearch(
-                window_size=50, dist_func=functools.partial(utils.math.minkowski_distance, p=2)
+                window_size=50,
+                dist_func=utils.math._euclidean_distance,  # type: ignore[attr-defined]
             ),
         }
 
@@ -104,13 +112,10 @@ class KNNRegressor(base.Regressor):
         self._nn.append((x, y))
 
     def predict_one(self, x, **kwargs):
-        # Find the nearest neighbors!
-        nearest = self._nn.search((x, None), n_neighbors=self.n_neighbors, **kwargs)
+        neighbors, distances = self._nn.search((x, None), n_neighbors=self.n_neighbors, **kwargs)
 
-        if not nearest:
+        if not neighbors:
             return 0.0
-
-        neighbors, distances = nearest
         # If the closest distance is 0 (it's the same) return it's output (y)
         if distances[0] == 0:
             return neighbors[0][1]

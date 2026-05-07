@@ -10,7 +10,7 @@ be processed by a particular machine learning algorithm.
 from __future__ import annotations
 
 from .agg import Agg, TargetAgg
-from .kernel_approx import RBFSampler
+from .kernel_approx import RandomTreesEmbedding, RBFSampler
 from .poly import PolynomialExtender
 from .vectorize import TFIDF, BagOfWords
 
@@ -18,6 +18,7 @@ __all__ = [
     "Agg",
     "BagOfWords",
     "PolynomialExtender",
+    "RandomTreesEmbedding",
     "RBFSampler",
     "TargetAgg",
     "TFIDF",

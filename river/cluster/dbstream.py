@@ -330,6 +330,8 @@ class DBSTREAM(base.Clusterer):
         for index in labels.keys():
             if labels[index] is not None:
                 continue
+            if self._micro_clusters[index].weight < self.minimum_weight:
+                continue
             count += 1
             labels[index] = count
             # if it is not in list of alpha-connected micro-clusters, label and continue
@@ -361,7 +363,10 @@ class DBSTREAM(base.Clusterer):
         clusters = {}
 
         # generate set of clusters with the same label with the structure {j: micro_cluster_index}
-        for i in range(max(cluster_labels.values()) + 1):
+        non_noise_labels = [v for v in cluster_labels.values() if v is not None]
+        if not non_noise_labels:
+            return 0, {}
+        for i in range(max(non_noise_labels) + 1):
             j = 0
             mcs_with_label_i = {}
             for index, label in cluster_labels.items():
