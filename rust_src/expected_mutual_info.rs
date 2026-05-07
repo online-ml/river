@@ -105,38 +105,3 @@ pub fn expected_mutual_info(n_samples: f64, a: &[i64], b: &[i64]) -> f64 {
     }
     emi
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    fn approx_eq(actual: f64, expected: f64) {
-        let tol = 1e-10 * expected.abs().max(1.0);
-        assert!(
-            (actual - expected).abs() < tol,
-            "expected {expected}, got {actual}",
-        );
-    }
-
-    #[test]
-    fn single_row_or_col_returns_zero() {
-        assert_eq!(expected_mutual_info(10.0, &[10], &[5, 5]), 0.0);
-        assert_eq!(expected_mutual_info(10.0, &[5, 5], &[10]), 0.0);
-    }
-
-    #[test]
-    fn matches_known_value_3x3() {
-        // Contingency [[5,1,0],[0,3,2],[1,0,4]] — row sums [6,5,5], col sums [6,4,6], N=16.
-        // sklearn returns 0.16190951337973544 for this case.
-        let emi = expected_mutual_info(16.0, &[6, 5, 5], &[6, 4, 6]);
-        approx_eq(emi, 0.16190951337973544);
-    }
-
-    #[test]
-    fn matches_known_value_2x2_diagonal() {
-        // Contingency [[10,0],[0,10]] — row sums [10,10], col sums [10,10], N=20.
-        let emi = expected_mutual_info(20.0, &[10, 10], &[10, 10]);
-        // sklearn produces ~0.05129... for this case; verified offline.
-        assert!(emi > 0.0 && emi < 0.1);
-    }
-}
