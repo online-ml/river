@@ -4,7 +4,8 @@ use pyo3::types::PyBytes;
 use serde::{Deserialize, Serialize};
 use crate::{
     ewmean::EWMean, ewvariance::EWVariance, iqr::RollingIQR, iqr::IQR, kurtosis::Kurtosis,
-    ptp::PeakToPeak, quantile::Quantile, quantile::RollingQuantile, skew::Skew, stats::Univariate,
+    ptp::PeakToPeak, quantile::Quantile, quantile::RollingQuantile,
+    rolling_pr_auc::RollingPRAUC, rolling_roc_auc::RollingROCAUC, skew::Skew, stats::Univariate,
 };
 
 #[derive(Serialize, Deserialize)]
@@ -319,6 +320,109 @@ impl RsRollingIQR {
     }
 }
 
+#[derive(Serialize, Deserialize)]
+#[pyclass(module = "river.stats._rust_stats")]
+pub struct RsRollingROCAUC {
+    inner: RollingROCAUC,
+    positive_label: i32,
+    window_size: usize,
+}
+
+#[pymethods]
+impl RsRollingROCAUC {
+    #[new]
+    pub fn new(positive_label: i32, window_size: usize) -> RsRollingROCAUC {
+        RsRollingROCAUC {
+            inner: RollingROCAUC::new(positive_label, window_size),
+            positive_label,
+            window_size,
+        }
+    }
+    pub fn update(&mut self, label: i32, score: f64) {
+        self.inner.update(label, score);
+    }
+    /// Apply many `(label, score)` updates in a single FFI call. The PyO3
+    /// per-call cost is several hundred ns, so batching is significantly
+    /// faster than calling `update` in a Python loop.
+    pub fn update_many(&mut self, labels: Vec<i32>, scores: Vec<f64>) -> PyResult<()> {
+        if labels.len() != scores.len() {
+            return Err(pyo3::exceptions::PyValueError::new_err(
+                "labels and scores must be the same length",
+            ));
+        }
+        for (label, score) in labels.into_iter().zip(scores.into_iter()) {
+            self.inner.update(label, score);
+        }
+        Ok(())
+    }
+    pub fn revert(&mut self, label: i32, score: f64) {
+        self.inner.revert(label, score);
+    }
+    pub fn get(&self) -> f64 {
+        self.inner.get()
+    }
+    pub fn __setstate__(&mut self, state: Bound<'_, PyBytes>) -> PyResult<()> {
+        *self = deserialize(state.as_bytes()).unwrap();
+        Ok(())
+    }
+    pub fn __getstate__<'py>(&self, py: Python<'py>) -> PyResult<Bound<'py, PyBytes>> {
+        Ok(PyBytes::new(py, &serialize(&self).unwrap()))
+    }
+    pub fn __getnewargs__(&self) -> PyResult<(i32, usize)> {
+        Ok((self.positive_label, self.window_size))
+    }
+}
+
+#[derive(Serialize, Deserialize)]
+#[pyclass(module = "river.stats._rust_stats")]
+pub struct RsRollingPRAUC {
+    inner: RollingPRAUC,
+    positive_label: i32,
+    window_size: usize,
+}
+
+#[pymethods]
+impl RsRollingPRAUC {
+    #[new]
+    pub fn new(positive_label: i32, window_size: usize) -> RsRollingPRAUC {
+        RsRollingPRAUC {
+            inner: RollingPRAUC::new(positive_label, window_size),
+            positive_label,
+            window_size,
+        }
+    }
+    pub fn update(&mut self, label: i32, score: f64) {
+        self.inner.update(label, score);
+    }
+    pub fn update_many(&mut self, labels: Vec<i32>, scores: Vec<f64>) -> PyResult<()> {
+        if labels.len() != scores.len() {
+            return Err(pyo3::exceptions::PyValueError::new_err(
+                "labels and scores must be the same length",
+            ));
+        }
+        for (label, score) in labels.into_iter().zip(scores.into_iter()) {
+            self.inner.update(label, score);
+        }
+        Ok(())
+    }
+    pub fn revert(&mut self, label: i32, score: f64) {
+        self.inner.revert(label, score);
+    }
+    pub fn get(&self) -> f64 {
+        self.inner.get()
+    }
+    pub fn __setstate__(&mut self, state: Bound<'_, PyBytes>) -> PyResult<()> {
+        *self = deserialize(state.as_bytes()).unwrap();
+        Ok(())
+    }
+    pub fn __getstate__<'py>(&self, py: Python<'py>) -> PyResult<Bound<'py, PyBytes>> {
+        Ok(PyBytes::new(py, &serialize(&self).unwrap()))
+    }
+    pub fn __getnewargs__(&self) -> PyResult<(i32, usize)> {
+        Ok((self.positive_label, self.window_size))
+    }
+}
+
 /// A Python module implemented in Rust.
 #[pymodule]
 fn _rust_stats(_py: Python, m: &Bound<PyModule>) -> PyResult<()> {
@@ -331,5 +435,7 @@ fn _rust_stats(_py: Python, m: &Bound<PyModule>) -> PyResult<()> {
     m.add_class::<RsSkew>()?;
     m.add_class::<RsRollingQuantile>()?;
     m.add_class::<RsRollingIQR>()?;
+    m.add_class::<RsRollingROCAUC>()?;
+    m.add_class::<RsRollingPRAUC>()?;
     Ok(())
 }
