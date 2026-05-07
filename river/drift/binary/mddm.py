@@ -28,6 +28,10 @@ class _MDDMBase(base.BinaryDriftAndWarningDetector, ABC):
         is computed once and remains constant.
         The value is cached as it is reused during the streaming process.
 
+    River's binary drift detectors follow the convention that `1` means error and `0` means
+    correct. MDDM internally converts that stream to a correctness signal because the detector
+    flags drift when the weighted mean decreases from its historical maximum.
+
     """
 
     def __init__(
@@ -76,7 +80,8 @@ class _MDDMBase(base.BinaryDriftAndWarningDetector, ABC):
         x
             This parameter indicates whether the last sample analyzed was
             correctly classified or not. 0 indicates correct prediction and
-            1 indicates an error (miss-classification).
+            1 indicates an error (misclassification). The detector internally flips this to
+            track correctness, which is the quantity used by the weighted-mean test.
 
         Returns
         -------
@@ -184,7 +189,7 @@ class MDDM_A(_MDDMBase):
         self.difference: float = difference
         super().__init__(sliding_window_size, drift_confidence, warning_confidence)
 
-    def _get_weight_arr(self) -> float:
+    def _get_weight_arr(self) -> np.ndarray:
         return np.array([1 + i * self.difference for i in range(self.sliding_window_size)])
 
 

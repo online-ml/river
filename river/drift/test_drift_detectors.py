@@ -90,26 +90,26 @@ def test_mddm_a():
 
 
 def test_mddm_e():
-    mddm_g = drift.binary.MDDM_G()
+    mddm_e = drift.binary.MDDM_E()
     expected_indices = [1030]
-    detected_indices = perform_test(mddm_g, data_stream_2)
+    detected_indices = perform_test(mddm_e, data_stream_2)
     assert detected_indices == expected_indices
 
     # Second test, more abrupt drifts
-    mddm_g = drift.binary.MDDM_G()
+    mddm_e = drift.binary.MDDM_E()
     expected_indices = [516, 1512]
-    detected_indices = perform_test(mddm_g, data_stream_3)
+    detected_indices = perform_test(mddm_e, data_stream_3)
     assert detected_indices == expected_indices
 
 
 def test_mddm_g():
-    mddm_g = drift.binary.MDDM_E()
+    mddm_g = drift.binary.MDDM_G()
     expected_indices = [1030]
     detected_indices = perform_test(mddm_g, data_stream_2)
     assert detected_indices == expected_indices
 
     # Second test, more abrupt drifts
-    mddm_g = drift.binary.MDDM_E()
+    mddm_g = drift.binary.MDDM_G()
     expected_indices = [516, 1512]
     detected_indices = perform_test(mddm_g, data_stream_3)
     assert detected_indices == expected_indices
