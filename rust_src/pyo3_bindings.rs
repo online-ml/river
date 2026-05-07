@@ -3,8 +3,10 @@ use pyo3::prelude::*;
 use pyo3::types::PyBytes;
 use serde::{Deserialize, Serialize};
 use crate::{
-    ewmean::EWMean, ewvariance::EWVariance, iqr::RollingIQR, iqr::IQR, kurtosis::Kurtosis,
-    ptp::PeakToPeak, quantile::Quantile, quantile::RollingQuantile, skew::Skew, stats::Univariate,
+    ewmean::EWMean, ewvariance::EWVariance,
+    expected_mutual_info::expected_mutual_info as compute_expected_mutual_info,
+    iqr::RollingIQR, iqr::IQR, kurtosis::Kurtosis, ptp::PeakToPeak, quantile::Quantile,
+    quantile::RollingQuantile, skew::Skew, stats::Univariate,
 };
 
 #[derive(Serialize, Deserialize)]
@@ -319,6 +321,12 @@ impl RsRollingIQR {
     }
 }
 
+#[pyfunction]
+#[pyo3(name = "expected_mutual_info")]
+fn rs_expected_mutual_info(n_samples: f64, a: Vec<i64>, b: Vec<i64>) -> f64 {
+    compute_expected_mutual_info(n_samples, &a, &b)
+}
+
 /// A Python module implemented in Rust.
 #[pymodule]
 fn _rust_stats(_py: Python, m: &Bound<PyModule>) -> PyResult<()> {
@@ -331,5 +339,6 @@ fn _rust_stats(_py: Python, m: &Bound<PyModule>) -> PyResult<()> {
     m.add_class::<RsSkew>()?;
     m.add_class::<RsRollingQuantile>()?;
     m.add_class::<RsRollingIQR>()?;
+    m.add_function(wrap_pyfunction!(rs_expected_mutual_info, m)?)?;
     Ok(())
 }

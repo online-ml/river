@@ -4,6 +4,7 @@ pub mod count;
 pub mod covariance;
 pub mod ewmean;
 pub mod ewvariance;
+pub mod expected_mutual_info;
 pub mod iqr;
 pub mod iter;
 pub mod kurtosis;
