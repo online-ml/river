@@ -3,9 +3,11 @@ use pyo3::prelude::*;
 use pyo3::types::PyBytes;
 use serde::{Deserialize, Serialize};
 use crate::{
-    ewmean::EWMean, ewvariance::EWVariance, iqr::RollingIQR, iqr::IQR, kurtosis::Kurtosis,
-    ptp::PeakToPeak, quantile::Quantile, quantile::RollingQuantile,
-    rolling_pr_auc::RollingPRAUC, rolling_roc_auc::RollingROCAUC, skew::Skew, stats::Univariate,
+    ewmean::EWMean, ewvariance::EWVariance,
+    expected_mutual_info::expected_mutual_info as compute_expected_mutual_info,
+    iqr::RollingIQR, iqr::IQR, kurtosis::Kurtosis, ptp::PeakToPeak, quantile::Quantile,
+    quantile::RollingQuantile, rolling_pr_auc::RollingPRAUC, rolling_roc_auc::RollingROCAUC,
+    skew::Skew, stats::Univariate,
 };
 
 #[derive(Serialize, Deserialize)]
@@ -320,6 +322,12 @@ impl RsRollingIQR {
     }
 }
 
+#[pyfunction]
+#[pyo3(name = "expected_mutual_info")]
+fn rs_expected_mutual_info(n_samples: f64, a: Vec<i64>, b: Vec<i64>) -> f64 {
+    compute_expected_mutual_info(n_samples, &a, &b)
+}
+
 #[derive(Serialize, Deserialize)]
 #[pyclass(module = "river.stats._rust_stats")]
 pub struct RsRollingROCAUC {
@@ -437,5 +445,6 @@ fn _rust_stats(_py: Python, m: &Bound<PyModule>) -> PyResult<()> {
     m.add_class::<RsRollingIQR>()?;
     m.add_class::<RsRollingROCAUC>()?;
     m.add_class::<RsRollingPRAUC>()?;
+    m.add_function(wrap_pyfunction!(rs_expected_mutual_info, m)?)?;
     Ok(())
 }
