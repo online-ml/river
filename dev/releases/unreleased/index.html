@@ -2159,6 +2159,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        metrics
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#tree" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -3352,6 +3363,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        metrics
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#tree" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -3394,6 +3416,10 @@
 <h2 id="neural_net">neural_net<a class="headerlink" href="#neural_net" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Deprecated <code>river.neural_net</code>; importing it now emits a <code>DeprecationWarning</code> and users are encouraged to use <code>deep-river</code> for neural networks. Addresses <a href="https://github.com/online-ml/river/issues/1828">#1828</a>.</li>
+</ul>
+<h2 id="metrics">metrics<a class="headerlink" href="#metrics" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Reimplemented <a href="../../api/metrics/RollingROCAUC"><code>metrics.RollingROCAUC</code></a> and <a href="../../api/metrics/RollingPRAUC"><code>metrics.RollingPRAUC</code></a> in Rust. The C++ implementation is removed. Output is bit-identical to the C++ version on all tested inputs and a latent bug in <code>revert()</code> with a non-default <code>pos_val</code> is also fixed.</li>
 </ul>
 <h2 id="tree">tree<a class="headerlink" href="#tree" title="Permanent link">&para;</a></h2>
 <ul>
