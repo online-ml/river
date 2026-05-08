@@ -24,3 +24,7 @@ ordered-float = { version = "3.9", features = ["serde"] }
 
 [dev-dependencies]
 criterion = "0.5"
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
