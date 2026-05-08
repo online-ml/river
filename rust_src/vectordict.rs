@@ -243,23 +243,40 @@ impl VectorDict {
         let mut mask = mask;
         let data: Bound<'py, PyDict> = match data {
             None => PyDict::new(py),
+            // Common case (`VectorDict({...})`) — check for plain dict first to skip
+            // the failed `VectorDict` downcast and a borrow.
             Some(d) => {
-                if let Ok(vd) = d.downcast::<VectorDict>() {
+                if let Ok(d) = d.downcast::<PyDict>() {
+                    if copy {
+                        if mask.is_none() {
+                            d.copy()?
+                        } else {
+                            let m = mask.take().unwrap();
+                            let new_mask =
+                                py.import("builtins")?.getattr("set")?.call1((&m,))?;
+                            let res = PyDict::new(py);
+                            for (k, v) in d.iter() {
+                                if new_mask.contains(&k)? {
+                                    res.set_item(k, v)?;
+                                }
+                            }
+                            mask = Some(new_mask);
+                            res
+                        }
+                    } else {
+                        d.clone()
+                    }
+                } else if let Ok(vd) = d.downcast::<VectorDict>() {
                     let inner = vd.borrow();
                     if copy {
-                        // Copy from VectorDict
                         let dict = inner.to_dict_internal(py, true)?;
                         if let Some(m) = mask.take() {
-                            // set(mask)
-                            let new_mask = py
-                                .import("builtins")?
-                                .getattr("set")?
-                                .call1((m,))?;
+                            let new_mask =
+                                py.import("builtins")?.getattr("set")?.call1((m,))?;
                             mask = Some(new_mask);
                         }
                         dict
                     } else {
-                        // Wrap a VectorDict
                         if inner.lazy_mask {
                             let outer_mask_is_inner_mask = match (&mask, &inner.mask) {
                                 (Some(om), Some(im)) => om.is(im.bind(py)),
@@ -272,28 +289,6 @@ impl VectorDict {
                             }
                         }
                         inner.data.bind(py).clone()
-                    }
-                } else if let Ok(d) = d.downcast::<PyDict>() {
-                    if copy {
-                        if mask.is_none() {
-                            d.copy()?
-                        } else {
-                            let m = mask.take().unwrap();
-                            let new_mask = py
-                                .import("builtins")?
-                                .getattr("set")?
-                                .call1((&m,))?;
-                            let res = PyDict::new(py);
-                            for (k, v) in d.iter() {
-                                if new_mask.contains(&k)? {
-                                    res.set_item(k, v)?;
-                                }
-                            }
-                            mask = Some(new_mask);
-                            res
-                        }
-                    } else {
-                        d.clone()
                     }
                 } else {
                     return Err(PyValueError::new_err(format!(
@@ -806,19 +801,8 @@ impl VectorDict {
     // ---- unary operators ----
 
     fn __neg__<'py>(&self, py: Python<'py>) -> PyResult<Py<VectorDict>> {
-        let res = self.to_dict_internal(py, true)?;
-        unsafe {
-            let mut pos: ffi::Py_ssize_t = 0;
-            let mut key: *mut ffi::PyObject = std::ptr::null_mut();
-            let mut val: *mut ffi::PyObject = std::ptr::null_mut();
-            while ffi::PyDict_Next(res.as_ptr(), &mut pos, &mut key, &mut val) != 0 {
-                let new_val = ffi_check(py, ffi::PyNumber_Negative(val))?;
-                let r = ffi::PyDict_SetItem(res.as_ptr(), key, new_val);
-                ffi::Py_DECREF(new_val);
-                ffi_status(py, r)?;
-            }
-        }
-        Py::new(py, VectorDict::from_dict(res.unbind()))
+        let res = unary_into_new(py, self, ffi::PyNumber_Negative)?;
+        Py::new(py, VectorDict::from_dict(res))
     }
 
     fn __pos__<'py>(&self, py: Python<'py>) -> PyResult<Py<VectorDict>> {
@@ -827,19 +811,8 @@ impl VectorDict {
     }
 
     fn __abs__<'py>(&self, py: Python<'py>) -> PyResult<Py<VectorDict>> {
-        let res = self.to_dict_internal(py, true)?;
-        unsafe {
-            let mut pos: ffi::Py_ssize_t = 0;
-            let mut key: *mut ffi::PyObject = std::ptr::null_mut();
-            let mut val: *mut ffi::PyObject = std::ptr::null_mut();
-            while ffi::PyDict_Next(res.as_ptr(), &mut pos, &mut key, &mut val) != 0 {
-                let new_val = ffi_check(py, ffi::PyNumber_Absolute(val))?;
-                let r = ffi::PyDict_SetItem(res.as_ptr(), key, new_val);
-                ffi::Py_DECREF(new_val);
-                ffi_status(py, r)?;
-            }
-        }
-        Py::new(py, VectorDict::from_dict(res.unbind()))
+        let res = unary_into_new(py, self, ffi::PyNumber_Absolute)?;
+        Py::new(py, VectorDict::from_dict(res))
     }
 
     // ---- additional utilities ----
@@ -865,14 +838,11 @@ impl VectorDict {
                     {
                         let scaled =
                             ffi_check(py, ffi::PyNumber_Multiply(scalar.as_ptr(), other_val))?;
-                        let self_val = ffi::PyDict_GetItemWithError(self_data.as_ptr(), key);
+                        let self_val = dict_get_or_null(self_data.as_ptr(), key);
                         let new_val = if !self_val.is_null() {
                             let nv = ffi::PyNumber_Add(self_val, scaled);
                             ffi::Py_DECREF(scaled);
                             ffi_check(py, nv)?
-                        } else if !ffi::PyErr_Occurred().is_null() {
-                            ffi::Py_DECREF(scaled);
-                            return Err(PyErr::fetch(py));
                         } else {
                             // Missing key — the new value is just `scaled`. Ownership of the
                             // single ref now belongs to `new_val`; the SetItem below INCREFs and
@@ -920,14 +890,11 @@ impl VectorDict {
                             py,
                             ffi::PyNumber_Multiply(scalar.as_ptr(), other_val),
                         )?;
-                        let self_val = ffi::PyDict_GetItemWithError(self_data.as_ptr(), key);
+                        let self_val = dict_get_or_null(self_data.as_ptr(), key);
                         let new_val = if !self_val.is_null() {
                             let nv = ffi::PyNumber_Subtract(self_val, scaled);
                             ffi::Py_DECREF(scaled);
                             ffi_check(py, nv)?
-                        } else if !ffi::PyErr_Occurred().is_null() {
-                            ffi::Py_DECREF(scaled);
-                            return Err(PyErr::fetch(py));
                         } else {
                             // missing key: result is -scaled
                             let nv = ffi::PyNumber_Negative(scaled);
@@ -1100,6 +1067,18 @@ unsafe fn ffi_check(py: Python<'_>, ptr: *mut ffi::PyObject) -> PyResult<*mut ff
     }
 }
 
+// `PyDict_GetItem`: dict lookup that returns NULL on miss without setting an
+// error. Safe to call for keys obtained from `PyDict_Next`, which were already
+// successfully hashed. Faster than the error-propagating variant because it
+// skips a `PyErr_Occurred` check on every miss.
+#[inline]
+unsafe fn dict_get_or_null(
+    dict: *mut ffi::PyObject,
+    key: *mut ffi::PyObject,
+) -> *mut ffi::PyObject {
+    ffi::PyDict_GetItem(dict, key)
+}
+
 unsafe fn ffi_status(py: Python<'_>, code: i32) -> PyResult<()> {
     if code != 0 {
         Err(PyErr::fetch(py))
@@ -1182,8 +1161,139 @@ unsafe fn dict_iop_scalar(
 }
 
 
+type UnaryOp = unsafe extern "C" fn(*mut ffi::PyObject) -> *mut ffi::PyObject;
+
+// Build a fresh PyDict pre-sized for `n` entries — avoids the resize/rehash
+// cost that `PyDict::new()` + repeated `set_item` would incur for large outputs.
+unsafe fn fresh_dict_for<'py>(py: Python<'py>, n: usize) -> PyResult<Bound<'py, PyDict>> {
+    let raw = ffi::_PyDict_NewPresized(n as ffi::Py_ssize_t);
+    if raw.is_null() {
+        return Err(PyErr::fetch(py));
+    }
+    Ok(Bound::from_owned_ptr(py, raw).downcast_into_unchecked())
+}
+
+// Single-pass unary op (`__neg__`, `__abs__`): read source, write fresh dict.
+#[inline]
+fn unary_into_new<'py>(
+    py: Python<'py>,
+    left: &VectorDict,
+    op: UnaryOp,
+) -> PyResult<Py<PyDict>> {
+    let n = left.data.bind(py).len();
+    let res = unsafe { fresh_dict_for(py, n)? };
+    let src = left.data.bind(py);
+    let mask_ptr = if left.lazy_mask {
+        Some(left.mask.as_ref().unwrap().bind(py).as_ptr())
+    } else {
+        None
+    };
+    unsafe {
+        let mut pos: ffi::Py_ssize_t = 0;
+        let mut key: *mut ffi::PyObject = std::ptr::null_mut();
+        let mut val: *mut ffi::PyObject = std::ptr::null_mut();
+        while ffi::PyDict_Next(src.as_ptr(), &mut pos, &mut key, &mut val) != 0 {
+            if let Some(m) = mask_ptr {
+                let in_mask = ffi::PySequence_Contains(m, key);
+                if in_mask < 0 {
+                    return Err(PyErr::fetch(py));
+                }
+                if in_mask == 0 {
+                    continue;
+                }
+            }
+            let new_val = ffi_check(py, op(val))?;
+            let r = ffi::PyDict_SetItem(res.as_ptr(), key, new_val);
+            ffi::Py_DECREF(new_val);
+            ffi_status(py, r)?;
+        }
+    }
+    Ok(res.unbind())
+}
+
+// Convenience: read self's data (filtered by mask if any), apply `value OP scalar`,
+// write into a fresh PyDict. Single-pass — avoids the dict.copy()+overwrite that
+// the Cython baseline does. The result dict is pre-sized via `_PyDict_NewPresized`
+// so large outputs don't pay the resize/rehash cost.
+fn scalar_op_into_new<'py>(
+    py: Python<'py>,
+    left: &VectorDict,
+    scalar: *mut ffi::PyObject,
+    op: BinOp,
+) -> PyResult<Py<PyDict>> {
+    let src = left.data.bind(py);
+    let n = src.len();
+    let res = unsafe { fresh_dict_for(py, n)? };
+    if !left.lazy_mask {
+        unsafe {
+            dict_op_scalar(py, src.as_ptr(), scalar, op, res.as_ptr())?;
+        }
+    } else {
+        let mask = left.mask.as_ref().unwrap().bind(py);
+        unsafe {
+            let mut pos: ffi::Py_ssize_t = 0;
+            let mut key: *mut ffi::PyObject = std::ptr::null_mut();
+            let mut val: *mut ffi::PyObject = std::ptr::null_mut();
+            while ffi::PyDict_Next(src.as_ptr(), &mut pos, &mut key, &mut val) != 0 {
+                let in_mask = ffi::PySequence_Contains(mask.as_ptr(), key);
+                if in_mask < 0 {
+                    return Err(PyErr::fetch(py));
+                }
+                if in_mask == 0 {
+                    continue;
+                }
+                let new_val = ffi_check(py, op(val, scalar))?;
+                let r = ffi::PyDict_SetItem(res.as_ptr(), key, new_val);
+                ffi::Py_DECREF(new_val);
+                ffi_status(py, r)?;
+            }
+        }
+    }
+    Ok(res.unbind())
+}
+
+// Same as `scalar_op_into_new` but with reversed operand order (for `scalar OP vec`).
+#[inline]
+fn scalar_op_into_new_rev<'py>(
+    py: Python<'py>,
+    left: &VectorDict,
+    scalar: *mut ffi::PyObject,
+    op: BinOp,
+) -> PyResult<Py<PyDict>> {
+    let src = left.data.bind(py);
+    let n = src.len();
+    let res = unsafe { fresh_dict_for(py, n)? };
+    if !left.lazy_mask {
+        unsafe {
+            dict_op_scalar_rev(py, src.as_ptr(), scalar, op, res.as_ptr())?;
+        }
+    } else {
+        let mask = left.mask.as_ref().unwrap().bind(py);
+        unsafe {
+            let mut pos: ffi::Py_ssize_t = 0;
+            let mut key: *mut ffi::PyObject = std::ptr::null_mut();
+            let mut val: *mut ffi::PyObject = std::ptr::null_mut();
+            while ffi::PyDict_Next(src.as_ptr(), &mut pos, &mut key, &mut val) != 0 {
+                let in_mask = ffi::PySequence_Contains(mask.as_ptr(), key);
+                if in_mask < 0 {
+                    return Err(PyErr::fetch(py));
+                }
+                if in_mask == 0 {
+                    continue;
+                }
+                let new_val = ffi_check(py, op(scalar, val))?;
+                let r = ffi::PyDict_SetItem(res.as_ptr(), key, new_val);
+                ffi::Py_DECREF(new_val);
+                ffi_status(py, r)?;
+            }
+        }
+    }
+    Ok(res.unbind())
+}
+
 // === Free helpers for arithmetic operators =======================================
 
+#[inline]
 fn binop_add<'py>(
     py: Python<'py>,
     left: &VectorDict,
@@ -1197,14 +1307,13 @@ fn binop_add<'py>(
             VectorDict::from_dict(add_dict_dict(py, left, &right_inner)?),
         );
     }
-    // vec + scalar
-    let res = left.to_dict_internal(py, true)?;
-    unsafe {
-        dict_iop_scalar(py, res.as_ptr(), right.as_ptr(), ffi::PyNumber_Add, None)?;
-    }
-    Py::new(py, VectorDict::from_dict(res.unbind()))
+    // vec + scalar — single-pass: read source, write fresh result. Saves the
+    // dict.copy()+overwrite double-pass that the Cython does.
+    let res = scalar_op_into_new(py, left, right.as_ptr(), ffi::PyNumber_Add)?;
+    Py::new(py, VectorDict::from_dict(res))
 }
 
+#[inline]
 fn add_dict_dict<'py>(
     py: Python<'py>,
     left: &VectorDict,
@@ -1219,14 +1328,12 @@ fn add_dict_dict<'py>(
             let mut key: *mut ffi::PyObject = std::ptr::null_mut();
             let mut right_val: *mut ffi::PyObject = std::ptr::null_mut();
             while ffi::PyDict_Next(right_data.as_ptr(), &mut pos, &mut key, &mut right_val) != 0 {
-                let left_val = ffi::PyDict_GetItemWithError(res.as_ptr(), key);
+                let left_val = dict_get_or_null(res.as_ptr(), key);
                 if !left_val.is_null() {
                     let new_val = ffi_check(py, ffi::PyNumber_Add(left_val, right_val))?;
                     let r = ffi::PyDict_SetItem(res.as_ptr(), key, new_val);
                     ffi::Py_DECREF(new_val);
                     ffi_status(py, r)?;
-                } else if !ffi::PyErr_Occurred().is_null() {
-                    return Err(PyErr::fetch(py));
                 } else {
                     // key only in right — copy the value
                     let r = ffi::PyDict_SetItem(res.as_ptr(), key, right_val);
@@ -1259,15 +1366,13 @@ fn iadd<'py>(py: Python<'py>, inner: &VectorDict, other: &Bound<'py, PyAny>) -> 
                 while ffi::PyDict_Next(other_data.as_ptr(), &mut pos, &mut key, &mut other_val)
                     != 0
                 {
-                    let self_val = ffi::PyDict_GetItemWithError(self_data.as_ptr(), key);
+                    let self_val = dict_get_or_null(self_data.as_ptr(), key);
                     if !self_val.is_null() {
                         let new_val =
                             ffi_check(py, ffi::PyNumber_Add(self_val, other_val))?;
                         let r = ffi::PyDict_SetItem(self_data.as_ptr(), key, new_val);
                         ffi::Py_DECREF(new_val);
                         ffi_status(py, r)?;
-                    } else if !ffi::PyErr_Occurred().is_null() {
-                        return Err(PyErr::fetch(py));
                     } else {
                         let r = ffi::PyDict_SetItem(self_data.as_ptr(), key, other_val);
                         ffi_status(py, r)?;
@@ -1302,6 +1407,7 @@ fn iadd<'py>(py: Python<'py>, inner: &VectorDict, other: &Bound<'py, PyAny>) -> 
     Ok(())
 }
 
+#[inline]
 fn binop_sub<'py>(
     py: Python<'py>,
     left: &VectorDict,
@@ -1318,32 +1424,15 @@ fn binop_sub<'py>(
         };
         return Py::new(py, VectorDict::from_dict(sub_dict_dict(py, l, r)?));
     }
-    let res = left.to_dict_internal(py, true)?;
-    if reverse {
-        // scalar - vec  ->  res[k] = scalar - res[k]
-        unsafe {
-            dict_op_scalar_rev(
-                py,
-                res.as_ptr(),
-                other.as_ptr(),
-                ffi::PyNumber_Subtract,
-                res.as_ptr(),
-            )?;
-        }
+    let res = if reverse {
+        scalar_op_into_new_rev(py, left, other.as_ptr(), ffi::PyNumber_Subtract)?
     } else {
-        unsafe {
-            dict_iop_scalar(
-                py,
-                res.as_ptr(),
-                other.as_ptr(),
-                ffi::PyNumber_Subtract,
-                None,
-            )?;
-        }
-    }
-    Py::new(py, VectorDict::from_dict(res.unbind()))
+        scalar_op_into_new(py, left, other.as_ptr(), ffi::PyNumber_Subtract)?
+    };
+    Py::new(py, VectorDict::from_dict(res))
 }
 
+#[inline]
 fn sub_dict_dict<'py>(
     py: Python<'py>,
     left: &VectorDict,
@@ -1358,11 +1447,9 @@ fn sub_dict_dict<'py>(
             let mut key: *mut ffi::PyObject = std::ptr::null_mut();
             let mut right_val: *mut ffi::PyObject = std::ptr::null_mut();
             while ffi::PyDict_Next(right_data.as_ptr(), &mut pos, &mut key, &mut right_val) != 0 {
-                let left_val = ffi::PyDict_GetItemWithError(res.as_ptr(), key);
+                let left_val = dict_get_or_null(res.as_ptr(), key);
                 let new_val = if !left_val.is_null() {
                     ffi_check(py, ffi::PyNumber_Subtract(left_val, right_val))?
-                } else if !ffi::PyErr_Occurred().is_null() {
-                    return Err(PyErr::fetch(py));
                 } else {
                     ffi_check(py, ffi::PyNumber_Negative(right_val))?
                 };
@@ -1395,11 +1482,9 @@ fn isub<'py>(py: Python<'py>, inner: &VectorDict, other: &Bound<'py, PyAny>) -> 
                 while ffi::PyDict_Next(other_data.as_ptr(), &mut pos, &mut key, &mut other_val)
                     != 0
                 {
-                    let self_val = ffi::PyDict_GetItemWithError(self_data.as_ptr(), key);
+                    let self_val = dict_get_or_null(self_data.as_ptr(), key);
                     let new_val = if !self_val.is_null() {
                         ffi_check(py, ffi::PyNumber_Subtract(self_val, other_val))?
-                    } else if !ffi::PyErr_Occurred().is_null() {
-                        return Err(PyErr::fetch(py));
                     } else {
                         ffi_check(py, ffi::PyNumber_Negative(other_val))?
                     };
@@ -1434,6 +1519,7 @@ fn isub<'py>(py: Python<'py>, inner: &VectorDict, other: &Bound<'py, PyAny>) -> 
     Ok(())
 }
 
+#[inline]
 fn binop_mul<'py>(
     py: Python<'py>,
     left: &VectorDict,
@@ -1446,13 +1532,11 @@ fn binop_mul<'py>(
             VectorDict::from_dict(mul_dict_dict(py, left, &other_inner)?),
         );
     }
-    let res = left.to_dict_internal(py, true)?;
-    unsafe {
-        dict_iop_scalar(py, res.as_ptr(), other.as_ptr(), ffi::PyNumber_Multiply, None)?;
-    }
-    Py::new(py, VectorDict::from_dict(res.unbind()))
+    let res = scalar_op_into_new(py, left, other.as_ptr(), ffi::PyNumber_Multiply)?;
+    Py::new(py, VectorDict::from_dict(res))
 }
 
+#[inline]
 fn mul_dict_dict<'py>(
     py: Python<'py>,
     left: &VectorDict,
@@ -1468,14 +1552,12 @@ fn mul_dict_dict<'py>(
             let mut key: *mut ffi::PyObject = std::ptr::null_mut();
             let mut left_val: *mut ffi::PyObject = std::ptr::null_mut();
             while ffi::PyDict_Next(left_data.as_ptr(), &mut pos, &mut key, &mut left_val) != 0 {
-                let right_val = ffi::PyDict_GetItemWithError(right_data.as_ptr(), key);
+                let right_val = dict_get_or_null(right_data.as_ptr(), key);
                 if !right_val.is_null() {
                     let new_val = ffi_check(py, ffi::PyNumber_Multiply(left_val, right_val))?;
                     let r = ffi::PyDict_SetItem(res.as_ptr(), key, new_val);
                     ffi::Py_DECREF(new_val);
                     ffi_status(py, r)?;
-                } else if !ffi::PyErr_Occurred().is_null() {
-                    return Err(PyErr::fetch(py));
                 } else {
                     let r = ffi::PyDict_SetItem(res.as_ptr(), key, zero.as_ptr());
                     ffi_status(py, r)?;
@@ -1521,15 +1603,13 @@ fn imul<'py>(py: Python<'py>, inner: &VectorDict, other: &Bound<'py, PyAny>) -> 
                 let mut self_val: *mut ffi::PyObject = std::ptr::null_mut();
                 while ffi::PyDict_Next(self_data.as_ptr(), &mut pos, &mut key, &mut self_val) != 0
                 {
-                    let other_val = ffi::PyDict_GetItemWithError(other_data.as_ptr(), key);
+                    let other_val = dict_get_or_null(other_data.as_ptr(), key);
                     if !other_val.is_null() {
                         let new_val =
                             ffi_check(py, ffi::PyNumber_Multiply(self_val, other_val))?;
                         let r = ffi::PyDict_SetItem(self_data.as_ptr(), key, new_val);
                         ffi::Py_DECREF(new_val);
                         ffi_status(py, r)?;
-                    } else if !ffi::PyErr_Occurred().is_null() {
-                        return Err(PyErr::fetch(py));
                     } else {
                         let r = ffi::PyDict_SetItem(self_data.as_ptr(), key, zero.as_ptr());
                         ffi_status(py, r)?;
@@ -1576,6 +1656,7 @@ fn imul<'py>(py: Python<'py>, inner: &VectorDict, other: &Bound<'py, PyAny>) -> 
     Ok(())
 }
 
+#[inline]
 fn binop_div<'py>(
     py: Python<'py>,
     left: &VectorDict,
@@ -1591,31 +1672,15 @@ fn binop_div<'py>(
         };
         return Py::new(py, VectorDict::from_dict(div_dict_dict(py, l, r)?));
     }
-    let res = left.to_dict_internal(py, true)?;
-    if reverse {
-        unsafe {
-            dict_op_scalar_rev(
-                py,
-                res.as_ptr(),
-                other.as_ptr(),
-                ffi::PyNumber_TrueDivide,
-                res.as_ptr(),
-            )?;
-        }
+    let res = if reverse {
+        scalar_op_into_new_rev(py, left, other.as_ptr(), ffi::PyNumber_TrueDivide)?
     } else {
-        unsafe {
-            dict_iop_scalar(
-                py,
-                res.as_ptr(),
-                other.as_ptr(),
-                ffi::PyNumber_TrueDivide,
-                None,
-            )?;
-        }
-    }
-    Py::new(py, VectorDict::from_dict(res.unbind()))
+        scalar_op_into_new(py, left, other.as_ptr(), ffi::PyNumber_TrueDivide)?
+    };
+    Py::new(py, VectorDict::from_dict(res))
 }
 
+#[inline]
 fn div_dict_dict<'py>(
     py: Python<'py>,
     left: &VectorDict,
@@ -1631,11 +1696,9 @@ fn div_dict_dict<'py>(
             let mut key: *mut ffi::PyObject = std::ptr::null_mut();
             let mut left_val: *mut ffi::PyObject = std::ptr::null_mut();
             while ffi::PyDict_Next(left_data.as_ptr(), &mut pos, &mut key, &mut left_val) != 0 {
-                let right_val = ffi::PyDict_GetItemWithError(right_data.as_ptr(), key);
+                let right_val = dict_get_or_null(right_data.as_ptr(), key);
                 let new_val = if !right_val.is_null() {
                     ffi_check(py, ffi::PyNumber_TrueDivide(left_val, right_val))?
-                } else if !ffi::PyErr_Occurred().is_null() {
-                    return Err(PyErr::fetch(py));
                 } else {
                     // matches Cython: `left_value / 0` raises ZeroDivisionError
                     ffi_check(py, ffi::PyNumber_TrueDivide(left_val, zero.as_ptr()))?
@@ -1686,11 +1749,9 @@ fn idiv<'py>(py: Python<'py>, inner: &VectorDict, other: &Bound<'py, PyAny>) -> 
                 let mut self_val: *mut ffi::PyObject = std::ptr::null_mut();
                 while ffi::PyDict_Next(self_data.as_ptr(), &mut pos, &mut key, &mut self_val) != 0
                 {
-                    let other_val = ffi::PyDict_GetItemWithError(other_data.as_ptr(), key);
+                    let other_val = dict_get_or_null(other_data.as_ptr(), key);
                     let new_val = if !other_val.is_null() {
                         ffi_check(py, ffi::PyNumber_TrueDivide(self_val, other_val))?
-                    } else if !ffi::PyErr_Occurred().is_null() {
-                        return Err(PyErr::fetch(py));
                     } else {
                         ffi_check(py, ffi::PyNumber_TrueDivide(self_val, zero.as_ptr()))?
                     };
@@ -1779,11 +1840,8 @@ fn matmul<'py>(
         let mut key: *mut ffi::PyObject = std::ptr::null_mut();
         let mut sv: *mut ffi::PyObject = std::ptr::null_mut();
         while ffi::PyDict_Next(small_data.as_ptr(), &mut pos, &mut key, &mut sv) != 0 {
-            let lv = ffi::PyDict_GetItemWithError(large_data.as_ptr(), key);
+            let lv = dict_get_or_null(large_data.as_ptr(), key);
             if lv.is_null() {
-                if !ffi::PyErr_Occurred().is_null() {
-                    return Err(PyErr::fetch(py));
-                }
                 continue; // missing in large = 0, contributes nothing
             }
             let prod = ffi_check(py, ffi::PyNumber_Multiply(sv, lv))?;
@@ -1869,15 +1927,13 @@ fn euclidean_distance_dict_dict<'py>(
             if av == -1.0 && !ffi::PyErr_Occurred().is_null() {
                 return Err(PyErr::fetch(py));
             }
-            let b_val = ffi::PyDict_GetItemWithError(b.as_ptr(), key);
+            let b_val = dict_get_or_null(b.as_ptr(), key);
             let bv = if !b_val.is_null() {
                 let v = ffi::PyFloat_AsDouble(b_val);
                 if v == -1.0 && !ffi::PyErr_Occurred().is_null() {
                     return Err(PyErr::fetch(py));
                 }
                 v
-            } else if !ffi::PyErr_Occurred().is_null() {
-                return Err(PyErr::fetch(py));
             } else {
                 0.0
             };
@@ -2010,15 +2066,13 @@ fn squared_euclid<'py>(
             if av == -1.0 && !ffi::PyErr_Occurred().is_null() {
                 return Err(PyErr::fetch(py));
             }
-            let b_val = ffi::PyDict_GetItemWithError(b.as_ptr(), key);
+            let b_val = dict_get_or_null(b.as_ptr(), key);
             let bv = if !b_val.is_null() {
                 let v = ffi::PyFloat_AsDouble(b_val);
                 if v == -1.0 && !ffi::PyErr_Occurred().is_null() {
                     return Err(PyErr::fetch(py));
                 }
                 v
-            } else if !ffi::PyErr_Occurred().is_null() {
-                return Err(PyErr::fetch(py));
             } else {
                 0.0
             };
