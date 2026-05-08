@@ -8,6 +8,9 @@ use crate::{
     iqr::RollingIQR, iqr::IQR, kurtosis::Kurtosis, ptp::PeakToPeak, quantile::Quantile,
     quantile::RollingQuantile, rolling_pr_auc::RollingPRAUC, rolling_roc_auc::RollingROCAUC,
     skew::Skew, stats::Univariate,
+    vectordict::{
+        euclidean_distance_dict, euclidean_distance_tuple, lazy_search_euclidean, VectorDict,
+    },
 };
 
 #[derive(Serialize, Deserialize)]
@@ -521,5 +524,9 @@ fn _rust_stats(_py: Python, m: &Bound<PyModule>) -> PyResult<()> {
     m.add_class::<RsRollingPRAUC>()?;
     m.add_class::<RsAdaptiveWindowing>()?;
     m.add_function(wrap_pyfunction!(rs_expected_mutual_info, m)?)?;
+    m.add_class::<VectorDict>()?;
+    m.add_function(wrap_pyfunction!(euclidean_distance_dict, m)?)?;
+    m.add_function(wrap_pyfunction!(euclidean_distance_tuple, m)?)?;
+    m.add_function(wrap_pyfunction!(lazy_search_euclidean, m)?)?;
     Ok(())
 }
