@@ -60,3 +60,49 @@ class RsRollingPRAUC:
     def get(self) -> float: ...
 
 def expected_mutual_info(n_samples: float, a: list[int], b: list[int]) -> float: ...
+
+# Mondrian tree helpers (return values are loose `object`-typed to match the
+# original Cython entry points which Pyright treated as Unknown).
+def log_sum_2_exp(a: float, b: float) -> float: ...
+def update_ranges(range_min: dict, range_max: dict, x: dict) -> None: ...
+def range_extension(range_min: dict, range_max: dict, x: dict) -> tuple[float, dict]: ...
+def predict_scores(
+    counts: list, n_counts: int, n_classes: int, dirichlet: float, n_samples: int
+) -> list: ...
+def go_downwards_classifier(
+    root: object,
+    x: dict,
+    y_idx: int,
+    n_classes: int,
+    dirichlet: float,
+    use_aggregation: bool,
+    step: float,
+    split_pure: bool,
+    iteration: int,
+    max_nodes: int,
+    n_nodes: int,
+    rng_random: object,
+    rng_choices: object,
+    rng_uniform: object,
+    split_fn: object,
+) -> object: ...
+def go_downwards_regressor(
+    root: object,
+    x: dict,
+    sample_value: float,
+    use_aggregation: bool,
+    step: float,
+    iteration: int,
+    max_nodes: int,
+    n_nodes: int,
+    rng_random: object,
+    rng_choices: object,
+    rng_uniform: object,
+    split_fn: object,
+) -> object: ...
+def go_upwards(leaf: object, iteration: int) -> None: ...
+def predict_proba_upward(leaf: object, n_classes: int, dirichlet: float) -> list[float]: ...
+def predict_proba_classifier(
+    root: object, x: dict, n_classes: int, dirichlet: float, use_aggregation: bool
+) -> list[float]: ...
+def predict_one_regressor(root: object, x: dict, use_aggregation: bool) -> float: ...

@@ -3,13 +3,19 @@ from __future__ import annotations
 import math
 
 from river import base, stats
-from river.tree.base import Branch, Leaf
-from river.tree.mondrian._mondrian_ops import (  # type: ignore[import-not-found]
-    log_sum_2_exp_c,
-    predict_scores_c,
-    range_extension_c,
-    update_ranges_c,
+from river.stats._rust_stats import (
+    log_sum_2_exp as log_sum_2_exp_c,
 )
+from river.stats._rust_stats import (
+    predict_scores as predict_scores_c,
+)
+from river.stats._rust_stats import (
+    range_extension as range_extension_c,
+)
+from river.stats._rust_stats import (
+    update_ranges as update_ranges_c,
+)
+from river.tree.base import Branch, Leaf
 
 
 class MondrianLeaf(Leaf):

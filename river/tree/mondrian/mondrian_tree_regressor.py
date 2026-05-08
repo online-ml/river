@@ -1,10 +1,14 @@
 from __future__ import annotations
 
-import math
-
 from river import base
-from river.tree.mondrian._mondrian_ops import (  # type: ignore[import-not-found]
-    go_downwards_regressor_c,
+from river.stats._rust_stats import (
+    go_downwards_regressor as go_downwards_regressor_c,
+)
+from river.stats._rust_stats import (
+    go_upwards as go_upwards_c,
+)
+from river.stats._rust_stats import (
+    predict_one_regressor as predict_one_regressor_c,
 )
 from river.tree.mondrian.mondrian_tree import MondrianTree
 from river.tree.mondrian.mondrian_tree_nodes import (
@@ -207,26 +211,8 @@ class MondrianTreeRegressor(MondrianTree, base.Regressor):
         return leaf
 
     def _go_upwards(self, leaf: MondrianLeafRegressor):
-        """Update the tree (upwards procedure).
-
-        Parameters
-        ----------
-        leaf
-            Leaf to start from when going upward.
-
-        """
-
-        current_node = leaf
-
-        if self.iteration >= 1:
-            while True:
-                current_node.update_weight_tree()
-                if current_node.parent is None:
-                    # We arrived at the root
-                    break
-                # Note that the root node is updated as well
-                # We go up to the root in the tree
-                current_node = current_node.parent
+        """Update the tree (upwards procedure)."""
+        go_upwards_c(leaf, self.iteration)
 
     def learn_one(self, x, y):
         # Setting current sample
@@ -251,36 +237,7 @@ class MondrianTreeRegressor(MondrianTree, base.Regressor):
 
         """
 
-        # If the tree hasn't seen any sample, then it should return
-        # the default empty dict
         if not self._is_initialized:
             return
 
-        # Find leaf using direct traversal, handling missing features
-        current = self._root
-        while not current.is_leaf:
-            if current.feature in x:
-                if x[current.feature] <= current.threshold:
-                    current = current.children[0]
-                else:
-                    current = current.children[1]
-            else:
-                # Missing feature: follow the most traversed path
-                _, current = current.most_common_path()
-
-        if not self.use_aggregation:
-            return self._predict(current)
-
-        # Start with leaf prediction
-        prediction = current._mean.get()
-
-        # Go upwards to root with inlined aggregation
-        current = current.parent
-        while current is not None:
-            w = math.exp(current.weight - current.log_weight_tree)
-            half_w = 0.5 * w
-            pred_new = current._mean.get()
-            prediction = half_w * pred_new + (1.0 - half_w) * prediction
-            current = current.parent
-
-        return prediction
+        return predict_one_regressor_c(self._root, x, self.use_aggregation)
