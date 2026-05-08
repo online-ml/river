@@ -15,6 +15,8 @@ pub mod moments;
 pub mod ptp;
 pub mod quantile;
 pub mod rolling;
+pub mod rolling_pr_auc;
+pub mod rolling_roc_auc;
 pub mod skew;
 pub mod sorted_window;
 pub mod stats;
