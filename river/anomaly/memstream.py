@@ -15,12 +15,6 @@ from sklearn.decomposition import PCA
 from river import anomaly, utils
 
 
-class ReplaceStrategy:
-    FIFO = "FIFO"  # First In, First Out
-    LRU = "LRU"  # Least Recently Used
-    RANDOM = "RANDOM"  # Random replacement
-
-
 class MemStream(anomaly.base.AnomalyDetector):
     """MemStream: Memory-Based Streaming Anomaly Detection
 
@@ -66,7 +60,7 @@ class MemStream(anomaly.base.AnomalyDetector):
         The number of nearest neighbors to consider when computing the anomaly score.
     gamma
         The weighting factor for the score computation.
-    n_components
+    n_comp
         The number of principal components to keep.
 
     Examples
@@ -94,7 +88,7 @@ class MemStream(anomaly.base.AnomalyDetector):
         self,
         memory_size=1_000,
         max_threshold=10,
-        rpl_stg=ReplaceStrategy.FIFO,
+        rpl_stg="FIFO",
         grace_period=1_000,
         k=5,
         gamma=0.25,
@@ -103,7 +97,17 @@ class MemStream(anomaly.base.AnomalyDetector):
         self.memory, self.mem_data = None, None
         self.memory_size = memory_size
         self.max_threshold = max_threshold
+        if rpl_stg not in ["FIFO", "LRU", "RANDOM"]:
+            raise ValueError(
+                f"Invalid replacement strategy: {rpl_stg}. "
+                "Choose from 'FIFO', 'LRU', or 'RANDOM'."
+            )
         self.rpl_stg = rpl_stg
+        if grace_period < memory_size:
+            raise ValueError(
+                f"Grace period must be at least equal to memory size. "
+                f"Got grace_period={grace_period} and memory_size={memory_size}."
+            )
         self.grace_period = grace_period
         self.count = 0
         self.encoder = None
@@ -172,17 +176,17 @@ class MemStream(anomaly.base.AnomalyDetector):
 
         idx_rpl = (
             np.random.randint(0, self.memory_size)
-            if self.rpl_stg == ReplaceStrategy.RANDOM
+            if self.rpl_stg == "RANDOM"
             else (
                 self.count % self.memory_size
-                if self.rpl_stg == ReplaceStrategy.FIFO
+                if self.rpl_stg == "FIFO"
                 else len(self.memory) - 1
             )
         )
         self._index_replace(self.memory, idx_rpl, encode_x)
         self._index_replace(self.mem_data, idx_rpl, x)
 
-        if self.rpl_stg == ReplaceStrategy.LRU:
+        if self.rpl_stg == "LRU":
             self._move_to_front(self.memory, idx_rpl)
             self._move_to_front(self.mem_data, idx_rpl)
 
@@ -217,7 +221,7 @@ class MemStream(anomaly.base.AnomalyDetector):
         norms = np.linalg.norm(self.memory - encode_x, ord=1, axis=1)
         loss_values = np.sort(norms)[: self.k]
         loss_value = np.sum(loss_values * self.exp) / (np.sum(self.exp))
-        if self.rpl_stg == ReplaceStrategy.LRU:
+        if self.rpl_stg == "LRU":
             mem_idx = np.argsort(norms)[: self.k]
             for index in mem_idx:
                 self._move_to_front(self.memory, index)
@@ -240,7 +244,9 @@ class MemStream(anomaly.base.AnomalyDetector):
             if (y is not None and y != 1) or y is None:
                 self._update_memory(0, np.zeros((1, self.n_comp)), x)
         elif self.count >= self.grace_period:
-            self._define_encoder(list(zip(self.mem_data, [0] * len(self.mem_data))))
+            self._define_encoder(
+                list(zip(self.mem_data, [0] * len(self.mem_data)))
+            )
             self.initialized = True
 
     def _def_feature_order(self, x):
@@ -262,4 +268,6 @@ class MemStream(anomaly.base.AnomalyDetector):
             loss_value, encode_x = self._get_score(self._normalize(x))
             if y is not None and y == 1:
                 return  # Do not learn from anomalies
-            self._update_memory(0 if self.count < self.grace_period else loss_value, encode_x, x)
+            self._update_memory(
+                0 if self.count < self.grace_period else loss_value, encode_x, x
+            )
