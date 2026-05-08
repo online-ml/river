@@ -25,9 +25,7 @@ ext_modules = cythonize(
     },
 )
 
-rust_extensions = [
-    RustExtension("river.stats._rust_stats", binding=Binding.PyO3)
-]
+rust_extensions = [RustExtension("river.stats._rust_stats", binding=Binding.PyO3)]
 
 
 class BuildFailed(Exception):
