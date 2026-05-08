@@ -3419,6 +3419,7 @@
 </ul>
 <h2 id="metrics">metrics<a class="headerlink" href="#metrics" title="Permanent link">&para;</a></h2>
 <ul>
+<li>Reimplemented the inner <code>expected_mutual_info</code> routine (used by <a href="../../api/metrics/AdjustedMutualInfo"><code>metrics.AdjustedMutualInfo</code></a>) in Rust. The Cython sources are removed and the new implementation is roughly twice as fast as the old one across all tested contingency-table sizes.</li>
 <li>Reimplemented <a href="../../api/metrics/RollingROCAUC"><code>metrics.RollingROCAUC</code></a> and <a href="../../api/metrics/RollingPRAUC"><code>metrics.RollingPRAUC</code></a> in Rust. The C++ implementation is removed. Output is bit-identical to the C++ version on all tested inputs and a latent bug in <code>revert()</code> with a non-default <code>pos_val</code> is also fixed.</li>
 </ul>
 <h2 id="tree">tree<a class="headerlink" href="#tree" title="Permanent link">&para;</a></h2>
