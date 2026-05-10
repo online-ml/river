@@ -59,7 +59,19 @@ use pyo3::IntoPyObjectExt;
 pub struct VectorDict {
     data: Py<PyDict>,
     mask: Option<Py<PyAny>>,
+    /// `true` whenever a mask was supplied. Operations that *write* (e.g.
+    /// `__setitem__`, factory-driven `__getitem__`) must consult the mask to
+    /// preserve its invariant, regardless of whether `data` was filtered at
+    /// construction time, so they check this flag.
     use_mask: bool,
+    /// `true` only when a mask was supplied *and* `copy=False` — meaning the
+    /// underlying `data` dict still contains entries outside the mask, so the
+    /// mask must be re-applied lazily on every *read* (`__contains__`,
+    /// `__delitem__`, `__len__`, iteration, ...). When `copy=True` the data was
+    /// already filtered at construction, so these reads can skip the mask
+    /// lookup; this flag captures that optimization.
+    ///
+    /// Invariant: `lazy_mask => use_mask`.
     lazy_mask: bool,
     use_factory: bool,
     default_factory: Option<Py<PyAny>>,
@@ -605,8 +617,9 @@ impl VectorDict {
             data.clear();
             data.update(keep1.as_mapping())?;
             data.update(keep2.as_mapping())?;
+        } else {
+            data.as_any().call_method("update", args, kwargs.as_ref())?;
         }
-        data.as_any().call_method("update", args, kwargs.as_ref())?;
         Ok(())
     }
 
@@ -973,15 +986,20 @@ impl VectorDict {
         per_element_min_max(py, self, &other, /*want_min=*/ false)
     }
 
-    fn __reduce__<'py>(&self, py: Python<'py>) -> PyResult<Py<PyAny>> {
+    fn __reduce__<'py>(slf: Bound<'py, VectorDict>) -> PyResult<Py<PyAny>> {
         // (constructor, (data, default_factory, mask, copy=True))
-        let cls = py.get_type::<VectorDict>();
-        let data = self.data.bind(py).clone().into_any();
-        let factory = match &self.default_factory {
+        //
+        // We pull the concrete type off `slf` (rather than hard-coding
+        // `VectorDict`) so subclasses unpickle as themselves.
+        let py = slf.py();
+        let cls = slf.get_type();
+        let inner = slf.borrow();
+        let data = inner.data.bind(py).clone().into_any();
+        let factory = match &inner.default_factory {
             Some(f) => f.bind(py).clone(),
             None => py.None().into_bound(py),
         };
-        let mask = match &self.mask {
+        let mask = match &inner.mask {
             Some(m) => m.bind(py).clone(),
             None => py.None().into_bound(py),
         };
@@ -1089,9 +1107,12 @@ unsafe fn ffi_status(py: Python<'_>, code: i32) -> PyResult<()> {
 
 type BinOp = unsafe extern "C" fn(*mut ffi::PyObject, *mut ffi::PyObject) -> *mut ffi::PyObject;
 
-/// Apply `res[k] = a[k] OP scalar` for every key in `a`. `res` must be writable
-/// and starts empty (or with values that will be overwritten).
-unsafe fn dict_op_scalar(
+/// Apply `res[k] = a[k] OP scalar` (or `scalar OP a[k]` when `REV=true`) for
+/// every key in `a`. `REV` is a const generic so the operand-swap branch is
+/// monomorphized away at compile time — both directions get the same codegen
+/// as the previous two specialized `dict_op_scalar` / `dict_op_scalar_rev`
+/// functions, but the body lives in one place.
+unsafe fn dict_op_scalar<const REV: bool>(
     py: Python<'_>,
     a: *mut ffi::PyObject,
     scalar: *mut ffi::PyObject,
@@ -1102,27 +1123,8 @@ unsafe fn dict_op_scalar(
     let mut key: *mut ffi::PyObject = std::ptr::null_mut();
     let mut val: *mut ffi::PyObject = std::ptr::null_mut();
     while ffi::PyDict_Next(a, &mut pos, &mut key, &mut val) != 0 {
-        let new_val = ffi_check(py, op(val, scalar))?;
-        let r = ffi::PyDict_SetItem(res, key, new_val);
-        ffi::Py_DECREF(new_val);
-        ffi_status(py, r)?;
-    }
-    Ok(())
-}
-
-/// Apply `res[k] = scalar OP a[k]` (reversed operand order) for every key in `a`.
-unsafe fn dict_op_scalar_rev(
-    py: Python<'_>,
-    a: *mut ffi::PyObject,
-    scalar: *mut ffi::PyObject,
-    op: BinOp,
-    res: *mut ffi::PyObject,
-) -> PyResult<()> {
-    let mut pos: ffi::Py_ssize_t = 0;
-    let mut key: *mut ffi::PyObject = std::ptr::null_mut();
-    let mut val: *mut ffi::PyObject = std::ptr::null_mut();
-    while ffi::PyDict_Next(a, &mut pos, &mut key, &mut val) != 0 {
-        let new_val = ffi_check(py, op(scalar, val))?;
+        let raw = if REV { op(scalar, val) } else { op(val, scalar) };
+        let new_val = ffi_check(py, raw)?;
         let r = ffi::PyDict_SetItem(res, key, new_val);
         ffi::Py_DECREF(new_val);
         ffi_status(py, r)?;
@@ -1211,11 +1213,13 @@ fn unary_into_new<'py>(
     Ok(res.unbind())
 }
 
-// Convenience: read self's data (filtered by mask if any), apply `value OP scalar`,
-// write into a fresh PyDict. Single-pass — avoids the dict.copy()+overwrite that
-// the Cython baseline does. The result dict is pre-sized via `_PyDict_NewPresized`
-// so large outputs don't pay the resize/rehash cost.
-fn scalar_op_into_new<'py>(
+// Convenience: read self's data (filtered by mask if any), apply `value OP scalar`
+// (or `scalar OP value` when `REV=true`), write into a fresh PyDict. Single-pass
+// — avoids the dict.copy()+overwrite that the Cython baseline does. The result
+// dict is pre-sized via `_PyDict_NewPresized` so large outputs don't pay the
+// resize/rehash cost. Direction is a const generic so monomorphization gives
+// each direction its own specialized loop body.
+fn scalar_op_into_new<'py, const REV: bool>(
     py: Python<'py>,
     left: &VectorDict,
     scalar: *mut ffi::PyObject,
@@ -1226,7 +1230,7 @@ fn scalar_op_into_new<'py>(
     let res = unsafe { fresh_dict_for(py, n)? };
     if !left.lazy_mask {
         unsafe {
-            dict_op_scalar(py, src.as_ptr(), scalar, op, res.as_ptr())?;
+            dict_op_scalar::<REV>(py, src.as_ptr(), scalar, op, res.as_ptr())?;
         }
     } else {
         let mask = left.mask.as_ref().unwrap().bind(py);
@@ -1242,46 +1246,8 @@ fn scalar_op_into_new<'py>(
                 if in_mask == 0 {
                     continue;
                 }
-                let new_val = ffi_check(py, op(val, scalar))?;
-                let r = ffi::PyDict_SetItem(res.as_ptr(), key, new_val);
-                ffi::Py_DECREF(new_val);
-                ffi_status(py, r)?;
-            }
-        }
-    }
-    Ok(res.unbind())
-}
-
-// Same as `scalar_op_into_new` but with reversed operand order (for `scalar OP vec`).
-#[inline]
-fn scalar_op_into_new_rev<'py>(
-    py: Python<'py>,
-    left: &VectorDict,
-    scalar: *mut ffi::PyObject,
-    op: BinOp,
-) -> PyResult<Py<PyDict>> {
-    let src = left.data.bind(py);
-    let n = src.len();
-    let res = unsafe { fresh_dict_for(py, n)? };
-    if !left.lazy_mask {
-        unsafe {
-            dict_op_scalar_rev(py, src.as_ptr(), scalar, op, res.as_ptr())?;
-        }
-    } else {
-        let mask = left.mask.as_ref().unwrap().bind(py);
-        unsafe {
-            let mut pos: ffi::Py_ssize_t = 0;
-            let mut key: *mut ffi::PyObject = std::ptr::null_mut();
-            let mut val: *mut ffi::PyObject = std::ptr::null_mut();
-            while ffi::PyDict_Next(src.as_ptr(), &mut pos, &mut key, &mut val) != 0 {
-                let in_mask = ffi::PySequence_Contains(mask.as_ptr(), key);
-                if in_mask < 0 {
-                    return Err(PyErr::fetch(py));
-                }
-                if in_mask == 0 {
-                    continue;
-                }
-                let new_val = ffi_check(py, op(scalar, val))?;
+                let raw = if REV { op(scalar, val) } else { op(val, scalar) };
+                let new_val = ffi_check(py, raw)?;
                 let r = ffi::PyDict_SetItem(res.as_ptr(), key, new_val);
                 ffi::Py_DECREF(new_val);
                 ffi_status(py, r)?;
@@ -1309,7 +1275,7 @@ fn binop_add<'py>(
     }
     // vec + scalar — single-pass: read source, write fresh result. Saves the
     // dict.copy()+overwrite double-pass that the Cython does.
-    let res = scalar_op_into_new(py, left, right.as_ptr(), ffi::PyNumber_Add)?;
+    let res = scalar_op_into_new::<false>(py, left, right.as_ptr(), ffi::PyNumber_Add)?;
     Py::new(py, VectorDict::from_dict(res))
 }
 
@@ -1425,9 +1391,9 @@ fn binop_sub<'py>(
         return Py::new(py, VectorDict::from_dict(sub_dict_dict(py, l, r)?));
     }
     let res = if reverse {
-        scalar_op_into_new_rev(py, left, other.as_ptr(), ffi::PyNumber_Subtract)?
+        scalar_op_into_new::<true>(py, left, other.as_ptr(), ffi::PyNumber_Subtract)?
     } else {
-        scalar_op_into_new(py, left, other.as_ptr(), ffi::PyNumber_Subtract)?
+        scalar_op_into_new::<false>(py, left, other.as_ptr(), ffi::PyNumber_Subtract)?
     };
     Py::new(py, VectorDict::from_dict(res))
 }
@@ -1532,7 +1498,7 @@ fn binop_mul<'py>(
             VectorDict::from_dict(mul_dict_dict(py, left, &other_inner)?),
         );
     }
-    let res = scalar_op_into_new(py, left, other.as_ptr(), ffi::PyNumber_Multiply)?;
+    let res = scalar_op_into_new::<false>(py, left, other.as_ptr(), ffi::PyNumber_Multiply)?;
     Py::new(py, VectorDict::from_dict(res))
 }
 
@@ -1673,9 +1639,9 @@ fn binop_div<'py>(
         return Py::new(py, VectorDict::from_dict(div_dict_dict(py, l, r)?));
     }
     let res = if reverse {
-        scalar_op_into_new_rev(py, left, other.as_ptr(), ffi::PyNumber_TrueDivide)?
+        scalar_op_into_new::<true>(py, left, other.as_ptr(), ffi::PyNumber_TrueDivide)?
     } else {
-        scalar_op_into_new(py, left, other.as_ptr(), ffi::PyNumber_TrueDivide)?
+        scalar_op_into_new::<false>(py, left, other.as_ptr(), ffi::PyNumber_TrueDivide)?
     };
     Py::new(py, VectorDict::from_dict(res))
 }
