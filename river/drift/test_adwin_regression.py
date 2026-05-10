@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import copy
+import pickle
 import random
 
 import numpy as np
@@ -307,3 +309,56 @@ class TestEdgeCases:
         adwin.update(50.0)
         # After reset, width should be 1 (fresh start)
         assert adwin.width == 1
+
+
+# ---- Serialization ----
+
+
+class TestSerialization:
+    """Round-trip pickle/copy of `AdaptiveWindowing` after non-trivial updates.
+
+    Exercises the `__getstate__` / `__setstate__` / `__getnewargs__` hooks so
+    they cannot silently regress.
+    """
+
+    @staticmethod
+    def _seed(aw: AdaptiveWindowing) -> None:
+        rng = random.Random(0xADBA)
+        for _ in range(500):
+            aw.update(rng.gauss(0.0, 1.0))
+        for _ in range(500):
+            aw.update(rng.gauss(2.0, 1.0))
+
+    def _assert_state_equal(self, a: AdaptiveWindowing, b: AdaptiveWindowing) -> None:
+        assert a.get_width() == b.get_width()
+        assert a.get_total() == b.get_total()
+        assert a.get_variance() == b.get_variance()
+        assert a.get_n_detections() == b.get_n_detections()
+        assert a.variance_in_window == b.variance_in_window
+
+    @pytest.mark.parametrize(
+        "params",
+        [
+            {},
+            {"delta": 0.01, "clock": 1, "max_buckets": 10},
+            {"min_window_length": 1, "grace_period": 50},
+        ],
+    )
+    def test_pickle_round_trip(self, params):
+        aw = AdaptiveWindowing(**params)
+        self._seed(aw)
+        revived = pickle.loads(pickle.dumps(aw))
+        self._assert_state_equal(aw, revived)
+        # Future updates must produce identical results.
+        for v in [0.5, -1.2, 3.7, 4.1, 2.0]:
+            assert aw.update(v) == revived.update(v)
+        self._assert_state_equal(aw, revived)
+
+    def test_deepcopy_round_trip(self):
+        aw = AdaptiveWindowing(clock=1)
+        self._seed(aw)
+        clone = copy.deepcopy(aw)
+        self._assert_state_equal(aw, clone)
+        for v in [0.5, -1.2, 3.7, 4.1, 2.0]:
+            assert aw.update(v) == clone.update(v)
+        self._assert_state_equal(aw, clone)

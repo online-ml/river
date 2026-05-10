@@ -77,6 +77,9 @@ pub struct AdaptiveWindowing {
     delta: f64,
     clock: i32,
     max_buckets: usize,
+    // Stored as f64 (rather than the i32 the Python API exposes) because
+    // `detect_change`'s hot loop compares them against `width`/`n0`/`n1`,
+    // which are all f64. Casting on each comparison would just add noise.
     min_window_length: f64,
     grace_period: f64,
 
@@ -166,12 +169,11 @@ impl AdaptiveWindowing {
     }
 
     fn delete_element(&mut self) -> f64 {
-        let deque_len = self.bucket_list.len();
-        let last = deque_len - 1;
+        let last = self.bucket_list.len() - 1;
         let n = (1u64 << last) as f64;
-        let (u, v, idx_after) = {
+        let (u, v) = {
             let bucket = &self.bucket_list[last];
-            (bucket.total_at(0), bucket.variance_at(0), bucket.current_idx)
+            (bucket.total_at(0), bucket.variance_at(0))
         };
         let mu = u / n;
 
@@ -185,7 +187,7 @@ impl AdaptiveWindowing {
         self.n_buckets -= 1;
 
         // Pop the empty trailing bucket so subsequent iterations don't see it.
-        if idx_after - 1 == 0 {
+        if self.bucket_list[last].current_idx == 0 {
             self.bucket_list.pop();
         }
 
@@ -230,9 +232,6 @@ impl AdaptiveWindowing {
             }
 
             idx += 1;
-            if idx >= self.bucket_list.len() {
-                break;
-            }
         }
     }
 
@@ -249,8 +248,6 @@ impl AdaptiveWindowing {
                 let mut n1 = self.width;
                 let mut u0 = 0.0_f64;
                 let mut u1 = self.total;
-                let mut v0 = 0.0_f64;
-                let mut v1 = self.variance;
 
                 let deque_len = self.bucket_list.len();
 
@@ -261,25 +258,11 @@ impl AdaptiveWindowing {
                     let bucket_size = (1u64 << idx) as f64;
                     let bucket_current_idx = self.bucket_list[idx].current_idx;
                     for k in 0..bucket_current_idx {
-                        let n2 = bucket_size;
-                        let u2 = self.bucket_list[idx].total_at(k);
-                        let mu2 = u2 / n2;
-
-                        if n0 > 0.0 {
-                            let mu0 = u0 / n0;
-                            v0 += self.bucket_list[idx].variance_at(k)
-                                + n0 * n2 * (mu0 - mu2) * (mu0 - mu2) / (n0 + n2);
-                        }
-                        if n1 > 0.0 {
-                            let mu1 = u1 / n1;
-                            v1 -= self.bucket_list[idx].variance_at(k)
-                                + n1 * n2 * (mu1 - mu2) * (mu1 - mu2) / (n1 + n2);
-                        }
-
                         n0 += bucket_size;
                         n1 -= bucket_size;
-                        u0 += self.bucket_list[idx].total_at(k);
-                        u1 -= self.bucket_list[idx].total_at(k);
+                        let total_at = self.bucket_list[idx].total_at(k);
+                        u0 += total_at;
+                        u1 -= total_at;
 
                         if idx == 0 && k == bucket_current_idx - 1 {
                             exit_flag = true;
@@ -294,14 +277,12 @@ impl AdaptiveWindowing {
                             reduce_width = true;
                             change_detected = true;
                             if self.width > 0.0 {
-                                let _ = n0 - self.delete_element();
+                                self.delete_element();
                                 break 'outer;
                             }
                         }
                     }
                 }
-
-                let _ = (v0, v1); // accumulators are scratch values
             }
         }
 
@@ -313,7 +294,7 @@ impl AdaptiveWindowing {
     }
 
     fn evaluate_cut(&self, n0: f64, n1: f64, delta_mean: f64, delta: f64) -> bool {
-        let delta_prime = (2.0 * (self.width).ln() / delta).ln();
+        let delta_prime = (2.0 * self.width.ln() / delta).ln();
         let m_recip = 1.0 / (n0 - self.min_window_length + 1.0)
             + 1.0 / (n1 - self.min_window_length + 1.0);
         let epsilon = (2.0 * m_recip * (self.variance / self.width) * delta_prime).sqrt()
