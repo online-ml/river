@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Hashable, Protocol
+
 class RsQuantile:
     def __init__(self, q: float): ...
     def update(self, x: float): ...
@@ -61,17 +63,57 @@ class RsRollingPRAUC:
 
 def expected_mutual_info(n_samples: float, a: list[int], b: list[int]) -> float: ...
 
-# Mondrian tree helpers (return values are loose `object`-typed to match the
-# original Cython entry points which Pyright treated as Unknown).
+# --- Mondrian tree helpers ----------------------------------------------------
+#
+# Structural (Protocol) types describing the duck-typed surface the Rust code
+# reads from `MondrianNode` instances. Pyright/Mypy can use these to flag
+# missing attributes on caller types; the Rust side only does `getattr`.
+
+class _MondrianMean(Protocol):
+    def get(self) -> float: ...
+    def update(self, x: float) -> None: ...
+
+class _MondrianNodeBase(Protocol):
+    """Attributes present on every Mondrian node (leaf or branch).
+
+    Branch-only fields (``children``, ``feature``, ``threshold``,
+    ``most_common_path``) are read by the Rust code only after an ``is_leaf``
+    check, so they are deliberately omitted here to keep this Protocol
+    structurally satisfied by both leaves and branches.
+    """
+
+    parent: _MondrianNodeBase | None
+    is_leaf: bool
+    time: float
+    weight: float
+    log_weight_tree: float
+    n_samples: int
+    memory_range_min: dict[Hashable, float]
+    memory_range_max: dict[Hashable, float]
+
+class MondrianClassifierNode(_MondrianNodeBase, Protocol):
+    counts: list[int]
+
+class MondrianRegressorNode(_MondrianNodeBase, Protocol):
+    _mean: _MondrianMean
+
 def log_sum_2_exp(a: float, b: float) -> float: ...
-def update_ranges(range_min: dict, range_max: dict, x: dict) -> None: ...
-def range_extension(range_min: dict, range_max: dict, x: dict) -> tuple[float, dict]: ...
+def update_ranges(
+    range_min: dict[Hashable, float],
+    range_max: dict[Hashable, float],
+    x: dict[Hashable, float],
+) -> None: ...
+def range_extension(
+    range_min: dict[Hashable, float],
+    range_max: dict[Hashable, float],
+    x: dict[Hashable, float],
+) -> tuple[float, dict[Hashable, float]]: ...
 def predict_scores(
-    counts: list, n_counts: int, n_classes: int, dirichlet: float, n_samples: int
-) -> list: ...
+    counts: list[int], n_counts: int, n_classes: int, dirichlet: float, n_samples: int
+) -> list[float]: ...
 def go_downwards_classifier(
-    root: object,
-    x: dict,
+    root: MondrianClassifierNode,
+    x: dict[Hashable, float],
     y_idx: int,
     n_classes: int,
     dirichlet: float,
@@ -85,10 +127,10 @@ def go_downwards_classifier(
     rng_choices: object,
     rng_uniform: object,
     split_fn: object,
-) -> object: ...
+) -> tuple[MondrianClassifierNode, MondrianClassifierNode | None, int]: ...
 def go_downwards_regressor(
-    root: object,
-    x: dict,
+    root: MondrianRegressorNode,
+    x: dict[Hashable, float],
     sample_value: float,
     use_aggregation: bool,
     step: float,
@@ -99,10 +141,18 @@ def go_downwards_regressor(
     rng_choices: object,
     rng_uniform: object,
     split_fn: object,
-) -> object: ...
-def go_upwards(leaf: object, iteration: int) -> None: ...
-def predict_proba_upward(leaf: object, n_classes: int, dirichlet: float) -> list[float]: ...
-def predict_proba_classifier(
-    root: object, x: dict, n_classes: int, dirichlet: float, use_aggregation: bool
+) -> tuple[MondrianRegressorNode, MondrianRegressorNode | None, int]: ...
+def go_upwards(leaf: _MondrianNodeBase, iteration: int) -> None: ...
+def predict_proba_upward(
+    leaf: MondrianClassifierNode, n_classes: int, dirichlet: float
 ) -> list[float]: ...
-def predict_one_regressor(root: object, x: dict, use_aggregation: bool) -> float: ...
+def predict_proba_classifier(
+    root: MondrianClassifierNode,
+    x: dict[Hashable, float],
+    n_classes: int,
+    dirichlet: float,
+    use_aggregation: bool,
+) -> list[float]: ...
+def predict_one_regressor(
+    root: MondrianRegressorNode, x: dict[Hashable, float], use_aggregation: bool
+) -> float: ...

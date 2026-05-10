@@ -16,7 +16,6 @@
 //     iterations descend without splitting).
 
 use pyo3::exceptions::PyValueError;
-use pyo3::ffi;
 use pyo3::intern;
 use pyo3::prelude::*;
 use pyo3::types::{PyDict, PyDictMethods, PyFloat, PyInt, PyList, PyListMethods};
@@ -90,46 +89,21 @@ pub fn update_ranges<'py>(
     update_ranges_inner(range_min, range_max, x)
 }
 
-/// Mirrors `range_extension_c`. Returns `(extensions_sum, extensions_dict)`.
-/// Features unknown to the node (absent from `range_min`) contribute 0.
-fn range_extension_inner<'py>(
-    py: Python<'py>,
+/// Compute total range extension for a sample, optionally populating a
+/// per-feature `extensions` dict. The extension for feature `k` is
+/// `max(range_min[k] - x[k], x[k] - range_max[k], 0)`; features not present in
+/// `range_min` are skipped.
+///
+/// When `extensions` is `None` the dict allocation and per-feature `set_item`
+/// are skipped — `go_downwards_*` only needs the dict on the (rare) splitting
+/// path, so the common descend path stays allocation-free. `range_max` is
+/// fetched lazily so the `xf < mn` branch (the common one when `xf` is below
+/// the box) skips one dict lookup.
+fn range_extension_into<'py>(
     range_min: &Bound<'py, PyDict>,
     range_max: &Bound<'py, PyDict>,
     x: &Bound<'py, PyDict>,
-) -> PyResult<(f64, Bound<'py, PyDict>)> {
-    let extensions = PyDict::new(py);
-    let mut sum = 0.0f64;
-    for (k, v) in x.iter() {
-        let xf = as_f64(&v)?;
-        let Some(min_v) = range_min.get_item(&k)? else {
-            continue;
-        };
-        let mn = as_f64(&min_v)?;
-        let max_v = range_max
-            .get_item(&k)?
-            .ok_or_else(|| PyValueError::new_err("range_max missing key"))?;
-        let mx = as_f64(&max_v)?;
-        let diff = if xf < mn {
-            mn - xf
-        } else if xf > mx {
-            xf - mx
-        } else {
-            continue;
-        };
-        extensions.set_item(&k, diff)?;
-        sum += diff;
-    }
-    Ok((sum, extensions))
-}
-
-/// Same arithmetic as `range_extension_inner` but only returns the sum — the
-/// extensions dict is only needed in the (rare) splitting path, so most
-/// `go_downwards_*` iterations skip the dict allocation entirely.
-fn range_extension_sum<'py>(
-    range_min: &Bound<'py, PyDict>,
-    range_max: &Bound<'py, PyDict>,
-    x: &Bound<'py, PyDict>,
+    extensions: Option<&Bound<'py, PyDict>>,
 ) -> PyResult<f64> {
     let mut sum = 0.0f64;
     for (k, v) in x.iter() {
@@ -138,17 +112,23 @@ fn range_extension_sum<'py>(
             continue;
         };
         let mn = as_f64(&min_v)?;
-        if xf < mn {
-            sum += mn - xf;
-            continue;
+        let diff = if xf < mn {
+            mn - xf
+        } else {
+            let max_v = range_max
+                .get_item(&k)?
+                .ok_or_else(|| PyValueError::new_err("range_max missing key"))?;
+            let mx = as_f64(&max_v)?;
+            if xf > mx {
+                xf - mx
+            } else {
+                continue;
+            }
+        };
+        if let Some(ext) = extensions {
+            ext.set_item(&k, diff)?;
         }
-        let max_v = range_max
-            .get_item(&k)?
-            .ok_or_else(|| PyValueError::new_err("range_max missing key"))?;
-        let mx = as_f64(&max_v)?;
-        if xf > mx {
-            sum += xf - mx;
-        }
+        sum += diff;
     }
     Ok(sum)
 }
@@ -160,7 +140,9 @@ pub fn range_extension<'py>(
     range_max: &Bound<'py, PyDict>,
     x: &Bound<'py, PyDict>,
 ) -> PyResult<(f64, Bound<'py, PyDict>)> {
-    range_extension_inner(py, range_min, range_max, x)
+    let extensions = PyDict::new(py);
+    let sum = range_extension_into(range_min, range_max, x, Some(&extensions))?;
+    Ok((sum, extensions))
 }
 
 /// Dirichlet-smoothed class probabilities. `counts` is the node's per-class
@@ -333,16 +315,14 @@ fn weighted_choice<'py>(
     extensions: &Bound<'py, PyDict>,
     rng_choices: &Bound<'py, PyAny>,
 ) -> PyResult<Bound<'py, PyAny>> {
+    // `extensions.keys()` already returns an owned PyList we can sort in place,
+    // matching `sorted(extensions.keys())` from the original Cython without
+    // re-importing `builtins.sorted` on every call.
     let keys = extensions.keys();
-    let builtins = py.import(intern!(py, "builtins"))?;
-    let sorted = builtins.getattr(intern!(py, "sorted"))?;
-    let sorted_keys_list = sorted.call1((keys,))?;
-    let sorted_keys_list = sorted_keys_list
-        .downcast_into::<PyList>()
-        .map_err(|e| PyValueError::new_err(e.to_string()))?;
+    keys.sort()?;
 
     let weights = PyList::empty(py);
-    for k in sorted_keys_list.iter() {
+    for k in keys.iter() {
         let v = extensions
             .get_item(&k)?
             .ok_or_else(|| PyValueError::new_err("extension key missing"))?;
@@ -351,9 +331,8 @@ fn weighted_choice<'py>(
 
     let kwargs = PyDict::new(py);
     kwargs.set_item(intern!(py, "k"), 1)?;
-    let chosen = rng_choices.call((sorted_keys_list, weights), Some(&kwargs))?;
-    let item = chosen.get_item(0)?;
-    Ok(item)
+    let chosen = rng_choices.call((keys, weights), Some(&kwargs))?;
+    Ok(chosen.get_item(0)?)
 }
 
 // --- Tree-walking entry points -------------------------------------------------
@@ -448,7 +427,7 @@ pub fn go_downwards_classifier<'py>(
                 .map_err(|e| PyValueError::new_err(e.to_string()))?;
             // Cheap sum-only pass; the extensions dict is built lazily only
             // if we end up splitting (the common case is to descend).
-            let sum = range_extension_sum(&range_min, &range_max, &x)?;
+            let sum = range_extension_into(&range_min, &range_max, &x, None)?;
             if sum > 0.0 {
                 let r: f64 = rng_random.call0()?.extract()?;
                 let t = -((1.0 - r).ln()) / sum;
@@ -472,7 +451,8 @@ pub fn go_downwards_classifier<'py>(
         if split_time > 0.0 {
             let (range_min, range_max) =
                 range_bounds.expect("range bounds set when split_time > 0");
-            let (_, extensions) = range_extension_inner(py, &range_min, &range_max, &x)?;
+            let extensions = PyDict::new(py);
+            range_extension_into(&range_min, &range_max, &x, Some(&extensions))?;
             let feature = weighted_choice(py, &extensions, &rng_choices)?;
 
             let xf = as_f64(
@@ -574,30 +554,24 @@ pub fn go_downwards_classifier<'py>(
                 return Ok((current.unbind(), new_root, nodes_added));
             }
             let feature = current.getattr(feature_attr)?;
-            unsafe {
-                let res = ffi::PyDict_Contains(x.as_ptr(), feature.as_ptr());
-                if res < 0 {
-                    return Err(PyErr::fetch(py));
-                }
-                if res == 1 {
-                    let xf = as_f64(
-                        &x.get_item(&feature)?
-                            .ok_or_else(|| PyValueError::new_err("feature missing in x"))?,
-                    )?;
-                    let threshold: f64 = current.getattr(threshold_attr)?.extract()?;
-                    let children = current.getattr(children_attr)?;
-                    if xf <= threshold {
-                        branch_no = 0;
-                        current = children.get_item(0)?;
-                    } else {
-                        branch_no = 1;
-                        current = children.get_item(1)?;
-                    }
+            if x.contains(&feature)? {
+                let xf = as_f64(
+                    &x.get_item(&feature)?
+                        .ok_or_else(|| PyValueError::new_err("feature missing in x"))?,
+                )?;
+                let threshold: f64 = current.getattr(threshold_attr)?.extract()?;
+                let children = current.getattr(children_attr)?;
+                if xf <= threshold {
+                    branch_no = 0;
+                    current = children.get_item(0)?;
                 } else {
-                    let result = current.call_method0(most_common_path_attr)?;
-                    branch_no = result.get_item(0)?.extract()?;
-                    current = result.get_item(1)?;
+                    branch_no = 1;
+                    current = children.get_item(1)?;
                 }
+            } else {
+                let result = current.call_method0(most_common_path_attr)?;
+                branch_no = result.get_item(0)?.extract()?;
+                current = result.get_item(1)?;
             }
         }
     }
@@ -650,44 +624,50 @@ pub fn go_downwards_regressor<'py>(
 
     let mut branch_no: i32 = -1;
     loop {
-        let range_min = current
-            .getattr(memory_range_min_attr)?
-            .downcast_into::<PyDict>()
-            .map_err(|e| PyValueError::new_err(e.to_string()))?;
-        let range_max = current
-            .getattr(memory_range_max_attr)?
-            .downcast_into::<PyDict>()
-            .map_err(|e| PyValueError::new_err(e.to_string()))?;
-
         let mut split_time = 0.0f64;
+        // Match the classifier's lazy-fetch pattern: only read `range_min` /
+        // `range_max` when we actually need them (i.e. when the split check is
+        // not skipped by `capacity_reached`). If we end up descending we reuse
+        // the same bounds in `update_downwards`.
+        let mut range_bounds: Option<(Bound<'py, PyDict>, Bound<'py, PyDict>)> = None;
         let capacity_reached = max_nodes >= 0 && (n_nodes + nodes_added) >= max_nodes;
-        // Compute only the sum here; the extensions dict is built lazily if
-        // we actually split (most iterations descend without splitting).
-        let sum = if capacity_reached {
-            0.0
-        } else {
-            range_extension_sum(&range_min, &range_max, &x)?
-        };
-        if !capacity_reached && sum > 0.0 {
-            let r: f64 = rng_random.call0()?.extract()?;
-            let t = -((1.0 - r).ln()) / sum;
-            let node_time: f64 = current.getattr(time_attr)?.extract()?;
-            let candidate = node_time + t;
-            let is_leaf: bool = current.getattr(is_leaf_attr)?.extract()?;
-            if is_leaf {
-                split_time = candidate;
-            } else {
-                let children = current.getattr(children_attr)?;
-                let left_child = children.get_item(0)?;
-                let child_time: f64 = left_child.getattr(time_attr)?.extract()?;
-                if candidate < child_time {
+
+        if !capacity_reached {
+            let range_min = current
+                .getattr(memory_range_min_attr)?
+                .downcast_into::<PyDict>()
+                .map_err(|e| PyValueError::new_err(e.to_string()))?;
+            let range_max = current
+                .getattr(memory_range_max_attr)?
+                .downcast_into::<PyDict>()
+                .map_err(|e| PyValueError::new_err(e.to_string()))?;
+            // Sum-only pass; extensions dict is built lazily if we split.
+            let sum = range_extension_into(&range_min, &range_max, &x, None)?;
+            if sum > 0.0 {
+                let r: f64 = rng_random.call0()?.extract()?;
+                let t = -((1.0 - r).ln()) / sum;
+                let node_time: f64 = current.getattr(time_attr)?.extract()?;
+                let candidate = node_time + t;
+                let is_leaf: bool = current.getattr(is_leaf_attr)?.extract()?;
+                if is_leaf {
                     split_time = candidate;
+                } else {
+                    let children = current.getattr(children_attr)?;
+                    let left_child = children.get_item(0)?;
+                    let child_time: f64 = left_child.getattr(time_attr)?.extract()?;
+                    if candidate < child_time {
+                        split_time = candidate;
+                    }
                 }
             }
+            range_bounds = Some((range_min, range_max));
         }
 
         if split_time > 0.0 {
-            let (_, extensions) = range_extension_inner(py, &range_min, &range_max, &x)?;
+            let (range_min, range_max) =
+                range_bounds.expect("range bounds set when split_time > 0");
+            let extensions = PyDict::new(py);
+            range_extension_into(&range_min, &range_max, &x, Some(&extensions))?;
             let feature = weighted_choice(py, &extensions, &rng_choices)?;
 
             let xf = as_f64(
@@ -767,6 +747,7 @@ pub fn go_downwards_regressor<'py>(
             )?;
             return Ok((leaf_child.unbind(), new_root, nodes_added));
         } else {
+            let ranges = range_bounds.as_ref().map(|(rmin, rmax)| (rmin, rmax));
             update_downwards_regressor_inner(
                 py,
                 &current,
@@ -775,37 +756,31 @@ pub fn go_downwards_regressor<'py>(
                 use_aggregation,
                 step,
                 true,
-                Some((&range_min, &range_max)),
+                ranges,
             )?;
             let is_leaf: bool = current.getattr(is_leaf_attr)?.extract()?;
             if is_leaf {
                 return Ok((current.unbind(), new_root, nodes_added));
             }
             let feature = current.getattr(feature_attr)?;
-            unsafe {
-                let res = ffi::PyDict_Contains(x.as_ptr(), feature.as_ptr());
-                if res < 0 {
-                    return Err(PyErr::fetch(py));
-                }
-                if res == 1 {
-                    let xf = as_f64(
-                        &x.get_item(&feature)?
-                            .ok_or_else(|| PyValueError::new_err("feature missing in x"))?,
-                    )?;
-                    let threshold: f64 = current.getattr(threshold_attr)?.extract()?;
-                    let children = current.getattr(children_attr)?;
-                    if xf <= threshold {
-                        branch_no = 0;
-                        current = children.get_item(0)?;
-                    } else {
-                        branch_no = 1;
-                        current = children.get_item(1)?;
-                    }
+            if x.contains(&feature)? {
+                let xf = as_f64(
+                    &x.get_item(&feature)?
+                        .ok_or_else(|| PyValueError::new_err("feature missing in x"))?,
+                )?;
+                let threshold: f64 = current.getattr(threshold_attr)?.extract()?;
+                let children = current.getattr(children_attr)?;
+                if xf <= threshold {
+                    branch_no = 0;
+                    current = children.get_item(0)?;
                 } else {
-                    let result = current.call_method0(most_common_path_attr)?;
-                    branch_no = result.get_item(0)?.extract()?;
-                    current = result.get_item(1)?;
+                    branch_no = 1;
+                    current = children.get_item(1)?;
                 }
+            } else {
+                let result = current.call_method0(most_common_path_attr)?;
+                branch_no = result.get_item(0)?.extract()?;
+                current = result.get_item(1)?;
             }
         }
     }
@@ -949,27 +924,21 @@ fn find_leaf<'py>(
             return Ok(current);
         }
         let feature = current.getattr(feature_attr)?;
-        unsafe {
-            let res = ffi::PyDict_Contains(x.as_ptr(), feature.as_ptr());
-            if res < 0 {
-                return Err(PyErr::fetch(py));
-            }
-            if res == 1 {
-                let xf = as_f64(
-                    &x.get_item(&feature)?
-                        .ok_or_else(|| PyValueError::new_err("feature missing in x"))?,
-                )?;
-                let threshold: f64 = current.getattr(threshold_attr)?.extract()?;
-                let children = current.getattr(children_attr)?;
-                current = if xf <= threshold {
-                    children.get_item(0)?
-                } else {
-                    children.get_item(1)?
-                };
+        if x.contains(&feature)? {
+            let xf = as_f64(
+                &x.get_item(&feature)?
+                    .ok_or_else(|| PyValueError::new_err("feature missing in x"))?,
+            )?;
+            let threshold: f64 = current.getattr(threshold_attr)?.extract()?;
+            let children = current.getattr(children_attr)?;
+            current = if xf <= threshold {
+                children.get_item(0)?
             } else {
-                let result = current.call_method0(most_common_path_attr)?;
-                current = result.get_item(1)?;
-            }
+                children.get_item(1)?
+            };
+        } else {
+            let result = current.call_method0(most_common_path_attr)?;
+            current = result.get_item(1)?;
         }
     }
 }
