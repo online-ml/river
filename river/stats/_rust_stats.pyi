@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import Hashable, Protocol
+from collections.abc import Hashable
+from typing import Protocol
 
 class RsQuantile:
     def __init__(self, q: float): ...
