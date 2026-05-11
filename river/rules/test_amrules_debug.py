@@ -62,7 +62,8 @@ def test_amrules_doctest_debug():
 
     score = model.anomaly_score(last_x)
     print(f"anomaly_score: {score!r}", flush=True)
+    print(f"n_drifts_detected: {model.n_drifts_detected}", flush=True)
     print("=== end debug ===", flush=True)
 
-    # Don't fail — we want the output regardless
-    assert score is not None
+    # Force fail so pytest dumps the captured stdout
+    assert score == (0, 0, 0), "intentional fail to expose captured stdout"
