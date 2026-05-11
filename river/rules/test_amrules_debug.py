@@ -1,4 +1,32 @@
-"""Temporary debug to isolate why amrules.anomaly_score doctest diverges on Linux CI under pytest 9."""
+"""Temporary debug: same code in 3 different contexts to isolate where divergence happens.
+
+Hypothesis: the AMRules.anomaly_score doctest fails on Linux CI because of
+something pytest's doctest plugin does, not because of platform/order. The
+debug function passed in the same CI process, so re-running the exact same
+training code from inside a doctest in *this* file should reveal whether the
+context (doctest vs function) is what flips the result.
+
+>>> from river import drift, rules, tree
+>>> from river.datasets import synth
+
+>>> dataset = synth.Friedman(seed=42).take(1001)
+
+>>> model = rules.AMRules(
+...     n_min=50,
+...     delta=0.1,
+...     drift_detector=drift.ADWIN(),
+...     splitter=tree.splitter.QOSplitter()
+... )
+
+>>> for i, (x, y) in enumerate(dataset):
+...     if i == 1000:
+...         break
+...     model.learn_one(x, y)
+
+>>> model.anomaly_score(x)
+(1.0168907243483933, 0.13045786430817402, 1.0)
+
+"""
 
 from __future__ import annotations
 
@@ -6,27 +34,13 @@ import math
 import sys
 
 
-def test_amrules_doctest_debug():
+def test_amrules_function():
+    """Same exact code as the failing doctest, but as a regular function."""
     from river import drift, rules, tree
     from river.datasets import synth
 
-    print("\n=== AMRules CI debug ===", flush=True)
-    print(f"python: {sys.version}", flush=True)
-    print(f"platform: {sys.platform}", flush=True)
-    print(f"float_repr: {sys.float_repr_style}", flush=True)
-    print(f"hash_seed: {sys.flags.hash_randomization}, hash_info: {sys.hash_info}", flush=True)
-    print(f"flags: {sys.flags}", flush=True)
-    print(f"math.pi repr: {math.pi!r}", flush=True)
-
-    # Probe libm determinism at the values Friedman will produce
-    import random
-
-    rng_probe = random.Random(42)
-    sample_xs = [rng_probe.uniform(0, 1) for _ in range(10)]
-    sample_ys = [rng_probe.gauss(0, 1) for _ in range(5)]
-    print(f"probe uniform: {sample_xs!r}", flush=True)
-    print(f"probe gauss: {sample_ys!r}", flush=True)
-    print(f"sin(pi*0.5*0.5): {math.sin(math.pi * 0.5 * 0.5)!r}", flush=True)
+    print(f"\n[function] python: {sys.version}", flush=True)
+    print(f"[function] platform: {sys.platform}", flush=True)
 
     dataset = synth.Friedman(seed=42).take(1001)
     model = rules.AMRules(
@@ -38,32 +52,43 @@ def test_amrules_doctest_debug():
 
     last_x = None
     for i, (x, y) in enumerate(dataset):
-        if i == 0:
-            print(f"first sample x: {x!r}", flush=True)
-            print(f"first sample y: {y!r}", flush=True)
-        if i in (10, 100, 500, 999):
-            print(
-                f"i={i} n_rules={len(model._rules)} default_rule_weight={model._default_rule.total_weight}",
-                flush=True,
-            )
         if i == 1000:
             last_x = x
             break
         model.learn_one(x, y)
 
-    print(f"final n_rules={len(model._rules)}", flush=True)
-    print(f"last sample x (not trained): {last_x!r}", flush=True)
-    for rule_id, rule in model._rules.items():
-        print(f"rule id={rule_id} literals={[lit.describe() for lit in rule.literals]}", flush=True)
-        print(f"  covers={rule.covers(last_x)} score_one={rule.score_one(last_x)!r}", flush=True)
-        print(f"  total_weight={rule.total_weight}", flush=True)
-        for feat, fs in rule._feat_stats.items():
-            print(f"  feat {feat}: mean={fs.mean.get()!r} var={fs.get()!r}", flush=True)
+    score = model.anomaly_score(last_x)
+    print(f"[function] anomaly_score: {score!r}", flush=True)
+
+    assert score == (0, 0, 0), f"intentional fail to dump output, got {score!r}"
+
+
+def test_with_explicit_math_check():
+    """Probe whether math.log returns the same value as in the doctest's score path."""
+    from river import drift, rules, tree
+    from river.datasets import synth
+
+    # Probe the inner expression used by RegRule.score_one: log(p) - log(1-p)
+    p = 0.6
+    val = math.log(p) - math.log(1 - p)
+    print(f"\n[probe] math.log(0.6) - math.log(0.4) = {val!r}", flush=True)
+    print(f"[probe] math.log(0.6) = {math.log(0.6)!r}", flush=True)
+    print(f"[probe] math.log(0.4) = {math.log(0.4)!r}", flush=True)
+
+    dataset = synth.Friedman(seed=42).take(1001)
+    model = rules.AMRules(
+        n_min=50,
+        delta=0.1,
+        drift_detector=drift.ADWIN(),
+        splitter=tree.splitter.QOSplitter(),
+    )
+
+    last_x = None
+    for i, (x, y) in enumerate(dataset):
+        if i == 1000:
+            last_x = x
+            break
+        model.learn_one(x, y)
 
     score = model.anomaly_score(last_x)
-    print(f"anomaly_score: {score!r}", flush=True)
-    print(f"n_drifts_detected: {model.n_drifts_detected}", flush=True)
-    print("=== end debug ===", flush=True)
-
-    # Force fail so pytest dumps the captured stdout
-    assert score == (0, 0, 0), "intentional fail to expose captured stdout"
+    assert score == (0, 0, 0), f"intentional fail to dump output, got {score!r}"
