@@ -37,6 +37,12 @@
 
 - Sped up `cluster.STREAMKMeans.predict_one` by switching the per-center distance from the `utils.math.minkowski_distance` Python wrapper to a direct call into the Rust `euclidean_distance_dict`.
 
+## compose
+
+- Sped up `compose.Pipeline` end-to-end throughput by 1.3x–1.9x (e.g. `scaler|lr` 7.4 µs → 5.7 µs/event, `(sel+sel)|scaler|lr` 12.5 µs → 6.7 µs/event on TrumpApproval) by precomputing an execution plan (kind/`_supervised` flags) for each step at construction time, eliminating per-event `isinstance` checks via the `EstimatorMeta.__instancecheck__` metaclass (~180k → 0 calls per 20k events) and repeated `_supervised` property lookups. The plan is invalidated on `_add_step`. The lazy `_anomaly_filter_cls` / `_anomaly_detector_cls` imports are now `functools.cache`d.
+- Sped up `compose.TransformerUnion.transform_one` by replacing the `dict(collections.ChainMap(*outputs))` merge with a single `dict.update` loop over reversed transformer outputs (~10x faster on the merge alone). Semantics are preserved (earlier transformers win on duplicate keys).
+- Sped up `compose.Prefixer` / `compose.Suffixer` `transform_one` by inlining the prefix/suffix concatenation in the dict comprehension instead of going through the `_rename` method on each key.
+
 ## tree
 
 - Fixed `MondrianNodeClassifier.replant` not copying the `counts` attribute when promoting a leaf to a branch, leaving the new branch with `n_samples != 0` but empty class counts. The fix mirrors the regressor's `_mean` copy and matches the reference [`onelearn`](https://github.com/onelearn/onelearn) implementation. Addresses [#1823](https://github.com/online-ml/river/issues/1823).
