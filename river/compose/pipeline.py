@@ -15,12 +15,14 @@ from river import base
 from . import func, union
 
 
+@functools.cache
 def _anomaly_filter_cls():
     from river.anomaly.base import AnomalyFilter
 
     return AnomalyFilter
 
 
+@functools.cache
 def _anomaly_detector_cls():
     from river.anomaly.base import AnomalyDetector
 
@@ -289,8 +291,45 @@ class Pipeline(base.Estimator):
 
     def __init__(self, *steps) -> None:
         self.steps: collections.OrderedDict = collections.OrderedDict()
+        self._plan: tuple | None = None
+        self._inference_transformers: tuple = ()
+        self._last_step_cached: typing.Any = None
         for step in steps:
             self |= step
+
+    def _build_plan(self) -> tuple:
+        """Build a cached execution plan describing each step's role.
+
+        Each item is a tuple ``(kind, step, *info)`` where ``kind`` is one of
+        ``"anomaly"``, ``"transformer"``, ``"union"``, ``"final"``. This avoids
+        repeated `isinstance` checks and ``_supervised`` property lookups on the
+        per-event hot path.
+        """
+        AnomalyFilter = _anomaly_filter_cls()
+        UnionCls = union.TransformerUnion
+        TransformerCls = base.Transformer
+
+        plan: list[tuple] = []
+        for step in self.steps.values():
+            if isinstance(step, AnomalyFilter):
+                plan.append(("anomaly", step, step._supervised))
+            elif isinstance(step, TransformerCls):
+                if isinstance(step, UnionCls):
+                    sup_subs: list = []
+                    unsup_subs: list = []
+                    for sub in step.transformers.values():
+                        (sup_subs if sub._supervised else unsup_subs).append(sub)
+                    plan.append(("union", step, sup_subs, unsup_subs))
+                else:
+                    plan.append(("transformer", step, step._supervised))
+            else:
+                plan.append(("final", step, step._supervised))
+        self._plan = tuple(plan)
+        # Precomputed fast-path inference list: intermediate non-anomaly transformers.
+        # Used by `_transform_one` to avoid per-call slicing and anomaly checks.
+        self._inference_transformers = tuple(item[1] for item in plan[:-1] if item[0] != "anomaly")
+        self._last_step_cached = plan[-1][1] if plan else None
+        return self._plan
 
     def __getitem__(self, key):
         """Just for convenience."""
@@ -426,6 +465,9 @@ class Pipeline(base.Estimator):
         if at_start:
             self.steps.move_to_end(name, last=False)
 
+        # Invalidate the cached plan
+        self._plan = None
+
     # Single instance methods
 
     def learn_one(self, x: dict, y=None, **params):
@@ -440,55 +482,50 @@ class Pipeline(base.Estimator):
 
         """
 
-        # Loop over the first n - 1 steps, which should all be transformers
-        for step in self.steps.values():
-            # There might be an anomaly filter in the pipeline. Its purpose is to prevent anomalous
-            # data from being learned by the subsequent parts of the pipeline.
-            if isinstance(step, _anomaly_filter_cls()):
-                if step._supervised:
+        plan = self._plan if self._plan is not None else self._build_plan()
+        learn_during_predict = self._LEARN_UNSUPERVISED_DURING_PREDICT
+
+        for item in plan:
+            kind = item[0]
+            step = item[1]
+
+            if kind == "transformer":
+                is_supervised = item[2]
+                x_pre = x
+                if not learn_during_predict and not is_supervised:
+                    step.learn_one(x)
+                x = step.transform_one(x)
+                if is_supervised:
+                    step.learn_one(x=x_pre, y=y)  # type: ignore
+
+            elif kind == "union":
+                sup_subs = item[2]
+                unsup_subs = item[3]
+                x_pre = x
+                if not learn_during_predict:
+                    for sub in unsup_subs:
+                        sub.learn_one(x)
+                x = step.transform_one(x)
+                for sub in sup_subs:
+                    sub.learn_one(x=x_pre, y=y)
+
+            elif kind == "final":
+                if item[2]:
+                    step.learn_one(x=x, y=y, **params)
+                else:
+                    step.learn_one(x=x)
+
+            else:  # "anomaly"
+                # There might be an anomaly filter in the pipeline. Its purpose is to prevent
+                # anomalous data from being learned by the subsequent parts of the pipeline.
+                if item[2]:
                     step.learn_one(x, y)
                     score = step.score_one(x, y)
                 else:
                     step.learn_one(x)
                     score = step.score_one(x)
-                # Skip the next parts of the pipeline if the score is classified as anomalous
                 if step.classify(score):
                     break
-                continue
-
-            x_pre = x
-            if isinstance(step, base.Transformer):
-                # In case of _LEARN_UNSUPERVISED_DURING_PREDICT, then the unsupervised transformers
-                # are updated before transforming.
-                if not self._LEARN_UNSUPERVISED_DURING_PREDICT:
-                    if isinstance(step, union.TransformerUnion):
-                        for sub_step in step.transformers.values():
-                            if not sub_step._supervised:
-                                sub_step.learn_one(x)
-                    elif not step._supervised:
-                        step.learn_one(x)
-                # Transform the data
-                x = step.transform_one(x)
-
-            # The supervised transformers have to be updated.
-            # Note that this is done after transforming in order to avoid target leakage.
-            if isinstance(step, base.Transformer):
-                if isinstance(step, union.TransformerUnion):
-                    for sub_step in step.transformers.values():
-                        if sub_step._supervised:
-                            sub_step.learn_one(x=x_pre, y=y)
-                # Here the step is a supervised transformer, such as a TargetAgg. It's important
-                # to pass the original features to the transformer, not the transformed ones.
-                elif step._supervised:
-                    step.learn_one(x=x_pre, y=y)  # type: ignore
-            # Here the step is not a transformer, and it's supervised, such as a LinearRegression.
-            # This is usually the last step of the pipeline.
-            elif step._supervised:
-                step.learn_one(x=x, y=y, **params)
-            # Here the step is not a transformer, and it's unsupervised, such as a KMeans. This
-            # is also usually the last step of the pipeline.
-            else:
-                step.learn_one(x=x)
 
     def _transform_one(self, x: dict):
         """This methods takes care of applying the first n - 1 steps of the pipeline, which are
@@ -497,27 +534,28 @@ class Pipeline(base.Estimator):
 
         """
 
-        steps = iter(self.steps.values())
+        plan = self._plan if self._plan is not None else self._build_plan()
 
-        for t in itertools.islice(steps, len(self) - 1):
-            # An anomaly filter is a no-op during inference
-            if isinstance(t, _anomaly_filter_cls()):
+        # Fast path: typical inference, no learn-during-predict.
+        if not self._LEARN_UNSUPERVISED_DURING_PREDICT:
+            for t in self._inference_transformers:
+                x = t.transform_one(x)
+            return x, self._last_step_cached
+
+        # Slow path: learn unsupervised steps before transforming.
+        for item in plan[:-1]:
+            kind = item[0]
+            if kind == "anomaly":
                 continue
+            step = item[1]
+            if kind == "union":
+                for sub in item[3]:  # unsup_subs
+                    sub.learn_one(x)
+            elif not item[2]:  # transformer, not supervised
+                step.learn_one(x)
+            x = step.transform_one(x)
 
-            # In case of _LEARN_UNSUPERVISED_DURING_PREDICT, then the unsupervised transformers
-            # are updated during the inference phase.
-            if self._LEARN_UNSUPERVISED_DURING_PREDICT:
-                if isinstance(t, union.TransformerUnion):
-                    for sub_t in t.transformers.values():
-                        if not sub_t._supervised:
-                            sub_t.learn_one(x)
-                elif not t._supervised:
-                    t.learn_one(x)
-
-            x = t.transform_one(x)
-
-        last_step = next(steps)
-        return x, last_step
+        return x, self._last_step_cached
 
     def transform_one(self, x: dict, **params):
         """Apply each transformer in the pipeline to some features.
