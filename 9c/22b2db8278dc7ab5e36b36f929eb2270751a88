@@ -1,0 +1,31 @@
+scripts/test_migrate_pickle_river_rust.py
+  s_fd1bf227325844::t_07f9386b01af48 18,22,26,28,30
+  s_fd1bf227325844::t_f21011a8e636fc 87
+  s_fd1bf227325844::t_ad048c1a9dd216 23
+  s_fd1bf227325844::t_335eefa7472fa2 1-16,29,31-86,88-128
+  s_fd1bf227325844::t_0ee88aa06dc385 17,19-21,24-25,27
+CLAUDE.md
+  s_fd1bf227325844::t_e7c26437177b23 13-14
+pyproject.toml
+  s_fd1bf227325844::t_2e23838ef8c829 234
+scripts/migrate_pickle_river_rust.py
+  s_fd1bf227325844::t_e958afcc402967 1-102
+docs/releases/unreleased.md
+  s_fd1bf227325844::t_2992ee069b0f40 3-10
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.4",
+  "base_commit_sha": "9c22b2db8278dc7ab5e36b36f929eb2270751a88",
+  "prompts": {},
+  "sessions": {
+    "s_fd1bf227325844": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "505fc521-f790-47ad-9dee-2347b5347597",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "AdilZouitine <adilzouitinegm@gmail.com>"
+    }
+  }
+}
