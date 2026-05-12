@@ -1,5 +1,6 @@
 // River: blazingly fast, generic and serializable online statistics.
 
+pub mod adwin;
 pub mod count;
 pub mod covariance;
 pub mod ewmean;
