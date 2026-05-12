@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from river.stats._rust_stats import (
+from river._river_rust.vectordict import (
     VectorDict,
     euclidean_distance_dict,
     euclidean_distance_tuple,

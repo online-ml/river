@@ -55,7 +55,7 @@ use pyo3::IntoPyObjectExt;
 /// copy
 ///     If data and/or mask are specified, whether to store a copy of the
 ///     underlying dictionaries or references at initialization.
-#[pyclass(name = "VectorDict", module = "river.utils.vectordict", subclass)]
+#[pyclass(name = "VectorDict", module = "river._river_rust.vectordict", subclass)]
 pub struct VectorDict {
     data: Py<PyDict>,
     mask: Option<Py<PyAny>>,

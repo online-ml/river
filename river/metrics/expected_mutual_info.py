@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from river import metrics
-from river.stats import _rust_stats
+from river._river_rust import stats as _rust_stats
 
 
 def expected_mutual_info(confusion_matrix: metrics.ConfusionMatrix) -> float:

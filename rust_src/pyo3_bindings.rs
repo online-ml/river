@@ -1,6 +1,6 @@
 use bincode::{deserialize, serialize};
 use pyo3::prelude::*;
-use pyo3::types::PyBytes;
+use pyo3::types::{PyBytes, PyDict};
 use serde::{Deserialize, Serialize};
 use crate::{
     adwin::AdaptiveWindowing, ewmean::EWMean, ewvariance::EWVariance,
@@ -20,7 +20,7 @@ use crate::{
 };
 
 #[derive(Serialize, Deserialize)]
-#[pyclass(module = "river.stats._rust_stats")]
+#[pyclass(module = "river._river_rust.stats")]
 pub struct RsQuantile {
     pub quantile: Quantile<f64>,
 }
@@ -56,7 +56,7 @@ impl RsQuantile {
 }
 
 #[derive(Serialize, Deserialize)]
-#[pyclass(module = "river.stats._rust_stats")]
+#[pyclass(module = "river._river_rust.stats")]
 pub struct RsEWMean {
     ewmean: EWMean<f64>,
     alpha: f64,
@@ -90,7 +90,7 @@ impl RsEWMean {
 }
 
 #[derive(Serialize, Deserialize)]
-#[pyclass(module = "river.stats._rust_stats")]
+#[pyclass(module = "river._river_rust.stats")]
 pub struct RsEWVar {
     ewvar: EWVariance<f64>,
     alpha: f64,
@@ -124,7 +124,7 @@ impl RsEWVar {
 }
 
 #[derive(Serialize, Deserialize)]
-#[pyclass(module = "river.stats._rust_stats")]
+#[pyclass(module = "river._river_rust.stats")]
 pub struct RsIQR {
     iqr: IQR<f64>,
     q_inf: f64,
@@ -161,7 +161,7 @@ impl RsIQR {
 }
 
 #[derive(Serialize, Deserialize)]
-#[pyclass(module = "river.stats._rust_stats")]
+#[pyclass(module = "river._river_rust.stats")]
 pub struct RsKurtosis {
     kurtosis: Kurtosis<f64>,
     bias: bool,
@@ -194,7 +194,7 @@ impl RsKurtosis {
 }
 
 #[derive(Serialize, Deserialize)]
-#[pyclass(module = "river.stats._rust_stats")]
+#[pyclass(module = "river._river_rust.stats")]
 pub struct RsPeakToPeak {
     ptp: PeakToPeak<f64>,
 }
@@ -225,7 +225,7 @@ impl RsPeakToPeak {
 }
 
 #[derive(Serialize, Deserialize)]
-#[pyclass(module = "river.stats._rust_stats")]
+#[pyclass(module = "river._river_rust.stats")]
 pub struct RsSkew {
     skew: Skew<f64>,
     bias: bool,
@@ -258,7 +258,7 @@ impl RsSkew {
     }
 }
 #[derive(Serialize, Deserialize)]
-#[pyclass(module = "river.stats._rust_stats")]
+#[pyclass(module = "river._river_rust.stats")]
 pub struct RsRollingQuantile {
     stat: RollingQuantile<f64>,
     q: f64,
@@ -294,7 +294,7 @@ impl RsRollingQuantile {
 }
 
 #[derive(Serialize, Deserialize)]
-#[pyclass(module = "river.stats._rust_stats")]
+#[pyclass(module = "river._river_rust.stats")]
 pub struct RsRollingIQR {
     stat: RollingIQR<f64>,
     q_inf: f64,
@@ -338,7 +338,7 @@ fn rs_expected_mutual_info(n_samples: f64, a: Vec<i64>, b: Vec<i64>) -> f64 {
 }
 
 #[derive(Serialize, Deserialize)]
-#[pyclass(module = "river.stats._rust_stats")]
+#[pyclass(module = "river._river_rust.stats")]
 pub struct RsRollingROCAUC {
     inner: RollingROCAUC,
     positive_label: i32,
@@ -391,7 +391,7 @@ impl RsRollingROCAUC {
 }
 
 #[derive(Serialize, Deserialize)]
-#[pyclass(module = "river.stats._rust_stats")]
+#[pyclass(module = "river._river_rust.stats")]
 pub struct RsRollingPRAUC {
     inner: RollingPRAUC,
     positive_label: i32,
@@ -441,7 +441,7 @@ impl RsRollingPRAUC {
 }
 
 #[derive(Serialize, Deserialize)]
-#[pyclass(name = "AdaptiveWindowing", module = "river.stats._rust_stats")]
+#[pyclass(name = "AdaptiveWindowing", module = "river._river_rust.drift")]
 pub struct RsAdaptiveWindowing {
     inner: AdaptiveWindowing,
     delta: f64,
@@ -514,9 +514,41 @@ impl RsAdaptiveWindowing {
     }
 }
 
-/// A Python module implemented in Rust.
+/// Top-level Rust extension. Builds four semantic submodules and registers each
+/// in `sys.modules` so dotted imports like `from river._river_rust.stats import X`
+/// resolve without first importing the parent.
 #[pymodule]
-fn _rust_stats(_py: Python, m: &Bound<PyModule>) -> PyResult<()> {
+fn _river_rust(py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
+    register_submodule(py, m, "stats", register_stats)?;
+    register_submodule(py, m, "drift", register_drift)?;
+    register_submodule(py, m, "tree", register_tree)?;
+    register_submodule(py, m, "vectordict", register_vectordict)?;
+    Ok(())
+}
+
+fn register_submodule(
+    py: Python<'_>,
+    parent: &Bound<'_, PyModule>,
+    name: &str,
+    builder: impl FnOnce(Python<'_>, &Bound<'_, PyModule>) -> PyResult<()>,
+) -> PyResult<()> {
+    let qualname = format!("river._river_rust.{}", name);
+    let child = PyModule::new(py, name)?;
+    // Pin __name__ to the full dotted path before populating so that functions
+    // registered via `m.add_function(...)` inherit `__module__` = qualname.
+    // PyO3 reads the module's __name__ at the moment a function is attached.
+    child.setattr("__name__", &qualname)?;
+    builder(py, &child)?;
+
+    let sys = PyModule::import(py, "sys")?;
+    let sys_modules: Bound<'_, PyDict> = sys.getattr("modules")?.cast_into()?;
+    sys_modules.set_item(&qualname, &child)?;
+
+    parent.add_submodule(&child)?;
+    Ok(())
+}
+
+fn register_stats(_py: Python, m: &Bound<PyModule>) -> PyResult<()> {
     m.add_class::<RsQuantile>()?;
     m.add_class::<RsEWMean>()?;
     m.add_class::<RsEWVar>()?;
@@ -528,8 +560,16 @@ fn _rust_stats(_py: Python, m: &Bound<PyModule>) -> PyResult<()> {
     m.add_class::<RsRollingIQR>()?;
     m.add_class::<RsRollingROCAUC>()?;
     m.add_class::<RsRollingPRAUC>()?;
-    m.add_class::<RsAdaptiveWindowing>()?;
     m.add_function(wrap_pyfunction!(rs_expected_mutual_info, m)?)?;
+    Ok(())
+}
+
+fn register_drift(_py: Python, m: &Bound<PyModule>) -> PyResult<()> {
+    m.add_class::<RsAdaptiveWindowing>()?;
+    Ok(())
+}
+
+fn register_tree(_py: Python, m: &Bound<PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(log_sum_2_exp, m)?)?;
     m.add_function(wrap_pyfunction!(update_ranges, m)?)?;
     m.add_function(wrap_pyfunction!(range_extension, m)?)?;
@@ -540,6 +580,10 @@ fn _rust_stats(_py: Python, m: &Bound<PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(predict_proba_upward, m)?)?;
     m.add_function(wrap_pyfunction!(predict_proba_classifier, m)?)?;
     m.add_function(wrap_pyfunction!(predict_one_regressor, m)?)?;
+    Ok(())
+}
+
+fn register_vectordict(_py: Python, m: &Bound<PyModule>) -> PyResult<()> {
     m.add_class::<VectorDict>()?;
     m.add_function(wrap_pyfunction!(euclidean_distance_dict, m)?)?;
     m.add_function(wrap_pyfunction!(euclidean_distance_tuple, m)?)?;
