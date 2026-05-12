@@ -1,0 +1,23 @@
+pyproject.toml
+  s_fd1bf227325844::t_f494397821249c 104,108,112
+rust-toolchain.toml
+  s_fd1bf227325844::t_a1d5fd931d6fbf 1-9
+CLAUDE.md
+  s_fd1bf227325844::t_b1f73be1cc68fd 11-12
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.4",
+  "base_commit_sha": "f0a10288971093541f9de224ab793240ea16b5fb",
+  "prompts": {},
+  "sessions": {
+    "s_fd1bf227325844": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "505fc521-f790-47ad-9dee-2347b5347597",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "AdilZouitine <adilzouitinegm@gmail.com>"
+    }
+  }
+}
