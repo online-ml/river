@@ -98,19 +98,18 @@ MACOSX_DEPLOYMENT_TARGET = "10.13"
 
 [tool.cibuildwheel.linux.environment]
 PATH = "$HOME/.cargo/bin:$PATH"
-CARGO_NET_GIT_FETCH_WITH_CLI = "true"
 
 [[tool.cibuildwheel.overrides]]
 select = "*-*linux_*"
-before-build = """curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain=nightly --profile=minimal -y && rustup show"""
+before-build = "curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain=none --profile=minimal -y && rustup show"
 
 [[tool.cibuildwheel.overrides]]
 select = ["*-macosx_*"]
-before-build = "rustup default nightly && rustup target add aarch64-apple-darwin && rustup target add x86_64-apple-darwin && rustup show"
+before-build = "rustup show"
 
 [[tool.cibuildwheel.overrides]]
 select = ["*-win_*", "*-win32"]
-before-build = "rustup default nightly && rustup toolchain install nightly-i686-pc-windows-msvc && rustup target add i686-pc-windows-msvc && rustup show"
+before-build = "rustup show"
 
 [tool.pytest.ini_options]
 addopts = [
