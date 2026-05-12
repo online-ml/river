@@ -1,0 +1,23 @@
+CLAUDE.md
+  s_fd1bf227325844::t_ff5770ef956180 10
+pyproject.toml
+  s_fd1bf227325844::t_527c482635818b 21-33
+Cargo.toml
+  s_fd1bf227325844::t_7d7e615960077b 14
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.4",
+  "base_commit_sha": "59e92582a9f1dc25510a39fbdd5c6105c0761ddb",
+  "prompts": {},
+  "sessions": {
+    "s_fd1bf227325844": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "505fc521-f790-47ad-9dee-2347b5347597",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "AdilZouitine <adilzouitinegm@gmail.com>"
+    }
+  }
+}
