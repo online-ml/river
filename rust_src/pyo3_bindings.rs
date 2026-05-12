@@ -3,7 +3,7 @@ use pyo3::prelude::*;
 use pyo3::types::PyBytes;
 use serde::{Deserialize, Serialize};
 use crate::{
-    ewmean::EWMean, ewvariance::EWVariance,
+    adwin::AdaptiveWindowing, ewmean::EWMean, ewvariance::EWVariance,
     expected_mutual_info::expected_mutual_info as compute_expected_mutual_info,
     iqr::RollingIQR, iqr::IQR, kurtosis::Kurtosis,
     mondrian::{
@@ -14,6 +14,9 @@ use crate::{
     ptp::PeakToPeak, quantile::Quantile,
     quantile::RollingQuantile, rolling_pr_auc::RollingPRAUC, rolling_roc_auc::RollingROCAUC,
     skew::Skew, stats::Univariate,
+    vectordict::{
+        euclidean_distance_dict, euclidean_distance_tuple, lazy_search_euclidean, VectorDict,
+    },
 };
 
 #[derive(Serialize, Deserialize)]
@@ -437,6 +440,80 @@ impl RsRollingPRAUC {
     }
 }
 
+#[derive(Serialize, Deserialize)]
+#[pyclass(name = "AdaptiveWindowing", module = "river.stats._rust_stats")]
+pub struct RsAdaptiveWindowing {
+    inner: AdaptiveWindowing,
+    delta: f64,
+    clock: i32,
+    max_buckets: usize,
+    min_window_length: i32,
+    grace_period: i32,
+}
+
+#[pymethods]
+impl RsAdaptiveWindowing {
+    #[new]
+    #[pyo3(signature = (delta=0.002, clock=32, max_buckets=5, min_window_length=5, grace_period=10))]
+    pub fn new(
+        delta: f64,
+        clock: i32,
+        max_buckets: usize,
+        min_window_length: i32,
+        grace_period: i32,
+    ) -> RsAdaptiveWindowing {
+        RsAdaptiveWindowing {
+            inner: AdaptiveWindowing::new(
+                delta,
+                clock,
+                max_buckets,
+                min_window_length,
+                grace_period,
+            ),
+            delta,
+            clock,
+            max_buckets,
+            min_window_length,
+            grace_period,
+        }
+    }
+    pub fn update(&mut self, value: f64) -> bool {
+        self.inner.update(value)
+    }
+    pub fn get_n_detections(&self) -> i32 {
+        self.inner.n_detections()
+    }
+    pub fn get_width(&self) -> f64 {
+        self.inner.width()
+    }
+    pub fn get_total(&self) -> f64 {
+        self.inner.total()
+    }
+    pub fn get_variance(&self) -> f64 {
+        self.inner.variance()
+    }
+    #[getter]
+    pub fn variance_in_window(&self) -> f64 {
+        self.inner.variance_in_window()
+    }
+    pub fn __setstate__(&mut self, state: Bound<'_, PyBytes>) -> PyResult<()> {
+        *self = deserialize(state.as_bytes()).unwrap();
+        Ok(())
+    }
+    pub fn __getstate__<'py>(&self, py: Python<'py>) -> PyResult<Bound<'py, PyBytes>> {
+        Ok(PyBytes::new(py, &serialize(&self).unwrap()))
+    }
+    pub fn __getnewargs__(&self) -> PyResult<(f64, i32, usize, i32, i32)> {
+        Ok((
+            self.delta,
+            self.clock,
+            self.max_buckets,
+            self.min_window_length,
+            self.grace_period,
+        ))
+    }
+}
+
 /// A Python module implemented in Rust.
 #[pymodule]
 fn _rust_stats(_py: Python, m: &Bound<PyModule>) -> PyResult<()> {
@@ -451,6 +528,7 @@ fn _rust_stats(_py: Python, m: &Bound<PyModule>) -> PyResult<()> {
     m.add_class::<RsRollingIQR>()?;
     m.add_class::<RsRollingROCAUC>()?;
     m.add_class::<RsRollingPRAUC>()?;
+    m.add_class::<RsAdaptiveWindowing>()?;
     m.add_function(wrap_pyfunction!(rs_expected_mutual_info, m)?)?;
     m.add_function(wrap_pyfunction!(log_sum_2_exp, m)?)?;
     m.add_function(wrap_pyfunction!(update_ranges, m)?)?;
@@ -462,5 +540,9 @@ fn _rust_stats(_py: Python, m: &Bound<PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(predict_proba_upward, m)?)?;
     m.add_function(wrap_pyfunction!(predict_proba_classifier, m)?)?;
     m.add_function(wrap_pyfunction!(predict_one_regressor, m)?)?;
+    m.add_class::<VectorDict>()?;
+    m.add_function(wrap_pyfunction!(euclidean_distance_dict, m)?)?;
+    m.add_function(wrap_pyfunction!(euclidean_distance_tuple, m)?)?;
+    m.add_function(wrap_pyfunction!(lazy_search_euclidean, m)?)?;
     Ok(())
 }

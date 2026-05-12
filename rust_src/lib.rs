@@ -1,5 +1,6 @@
 // River: blazingly fast, generic and serializable online statistics.
 
+pub mod adwin;
 pub mod count;
 pub mod covariance;
 pub mod ewmean;
@@ -24,6 +25,8 @@ pub mod sorted_window;
 pub mod stats;
 pub mod sum;
 pub mod variance;
+#[cfg(feature = "pyo3-bindings")]
+pub mod vectordict;
 
 #[cfg(feature = "pyo3-bindings")]
 mod pyo3_bindings;

@@ -2116,17 +2116,18 @@ wheels = [
 
 [[package]]
 name = "pytest"
-version = "7.4.4"
+version = "9.0.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "colorama", marker = "sys_platform == 'win32'" },
     { name = "iniconfig" },
     { name = "packaging" },
     { name = "pluggy" },
+    { name = "pygments" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/80/1f/9d8e98e4133ffb16c90f3b405c43e38d3abb715bb5d7a63a5a684f7e46a3/pytest-7.4.4.tar.gz", hash = "sha256:2cf0005922c6ace4a3e2ec8b4080eb0d9753fdc93107415332f50ce9e7994280", size = 1357116, upload-time = "2023-12-31T12:00:18.035Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/7d/0d/549bd94f1a0a402dc8cf64563a117c0f3765662e2e668477624baeec44d5/pytest-9.0.3.tar.gz", hash = "sha256:b86ada508af81d19edeb213c681b1d48246c1a91d304c6c81a427674c17eb91c", size = 1572165, upload-time = "2026-04-07T17:16:18.027Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/51/ff/f6e8b8f39e08547faece4bd80f89d5a8de68a38b2d179cc1c4490ffa3286/pytest-7.4.4-py3-none-any.whl", hash = "sha256:b090cdf5ed60bf4c45261be03239c2c1c22df034fbffe691abe93cd80cea01d8", size = 325287, upload-time = "2023-12-31T12:00:13.963Z" },
+    { url = "https://files.pythonhosted.org/packages/d4/24/a372aaf5c9b7208e7112038812994107bc65a84cd00e0354a88c2c77a617/pytest-9.0.3-py3-none-any.whl", hash = "sha256:2c5efc453d45394fdd706ade797c0a81091eccd1d6e4bccfcd476e2b8e0ab5d9", size = 375249, upload-time = "2026-04-07T17:16:16.13Z" },
 ]
 
 [[package]]
@@ -2489,19 +2490,19 @@ compat = [
 ]
 dev = [
     { name = "altair", specifier = ">=5.0.0" },
-    { name = "graphviz", specifier = ">=0.20.1,<0.21" },
-    { name = "gymnasium", specifier = ">=0.29.0,<0.30" },
-    { name = "jupyter", specifier = ">=1.0.0,<2" },
+    { name = "graphviz", specifier = ">=0.20.1" },
+    { name = "gymnasium", specifier = ">=0.29.0" },
+    { name = "jupyter", specifier = ">=1.0.0" },
     { name = "mike", git = "https://github.com/squidfunk/mike.git" },
-    { name = "mypy", specifier = ">=1.11.1,<2" },
-    { name = "polars", specifier = ">=1.1.0,<2" },
-    { name = "pre-commit", specifier = ">=3.5.0,<4" },
-    { name = "pytest", specifier = ">=7.4.2,<8" },
-    { name = "pytest-xdist", extras = ["psutil"], specifier = ">=3.3.1,<4" },
-    { name = "ruff", specifier = "~=0.15.8" },
-    { name = "scikit-learn", specifier = ">=1.5.1,<2" },
-    { name = "sqlalchemy", specifier = ">=2.0.22,<3" },
-    { name = "sympy", specifier = ">=1.12.1,<2" },
+    { name = "mypy", specifier = ">=1.11.1" },
+    { name = "polars", specifier = ">=1.1.0" },
+    { name = "pre-commit", specifier = ">=3.5.0" },
+    { name = "pytest", specifier = ">=9.0.3" },
+    { name = "pytest-xdist", extras = ["psutil"], specifier = ">=3.3.1" },
+    { name = "ruff", specifier = ">=0.15.8" },
+    { name = "scikit-learn", specifier = ">=1.5.1" },
+    { name = "sqlalchemy", specifier = ">=2.0.22" },
+    { name = "sympy", specifier = ">=1.12.1" },
 ]
 docs = [
     { name = "dominate" },
@@ -3235,11 +3236,11 @@ wheels = [
 
 [[package]]
 name = "urllib3"
-version = "2.6.3"
+version = "2.7.0"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/c7/24/5f1b3bdffd70275f6661c76461e25f024d5a38a46f04aaca912426a2b1d3/urllib3-2.6.3.tar.gz", hash = "sha256:1b62b6884944a57dbe321509ab94fd4d3b307075e0c2eae991ac71ee15ad38ed", size = 435556, upload-time = "2026-01-07T16:24:43.925Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/53/0c/06f8b233b8fd13b9e5ee11424ef85419ba0d8ba0b3138bf360be2ff56953/urllib3-2.7.0.tar.gz", hash = "sha256:231e0ec3b63ceb14667c67be60f2f2c40a518cb38b03af60abc813da26505f4c", size = 433602, upload-time = "2026-05-07T16:13:18.596Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/39/08/aaaad47bc4e9dc8c725e68f9d04865dbcb2052843ff09c97b08904852d84/urllib3-2.6.3-py3-none-any.whl", hash = "sha256:bf272323e553dfb2e87d9bfd225ca7b0f467b919d7bbd355436d3fd37cb0acd4", size = 131584, upload-time = "2026-01-07T16:24:42.685Z" },
+    { url = "https://files.pythonhosted.org/packages/7f/3e/5db95bcf282c52709639744ca2a8b149baccf648e39c8cc87553df9eae0c/urllib3-2.7.0-py3-none-any.whl", hash = "sha256:9fb4c81ebbb1ce9531cce37674bbc6f1360472bc18ca9a553ede278ef7276897", size = 131087, upload-time = "2026-05-07T16:13:17.151Z" },
 ]
 
 [[package]]
