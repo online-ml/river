@@ -2214,6 +2214,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#compose" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        compose
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#tree" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -3462,6 +3473,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#compose" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        compose
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#tree" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -3530,6 +3552,12 @@
 <h2 id="cluster">cluster<a class="headerlink" href="#cluster" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Sped up <code>cluster.STREAMKMeans.predict_one</code> by switching the per-center distance from the <a href="../../api/utils/math/minkowski-distance"><code>utils.math.minkowski_distance</code></a> Python wrapper to a direct call into the Rust <code>euclidean_distance_dict</code>.</li>
+</ul>
+<h2 id="compose">compose<a class="headerlink" href="#compose" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Sped up <a href="../../api/compose/Pipeline"><code>compose.Pipeline</code></a> end-to-end throughput by 1.3x–1.9x (e.g. <code>scaler|lr</code> 7.4 µs → 5.7 µs/event, <code>(sel+sel)|scaler|lr</code> 12.5 µs → 6.7 µs/event on TrumpApproval) by precomputing an execution plan (kind/<code>_supervised</code> flags) for each step at construction time, eliminating per-event <code>isinstance</code> checks via the <code>EstimatorMeta.__instancecheck__</code> metaclass (~180k → 0 calls per 20k events) and repeated <code>_supervised</code> property lookups. The plan is invalidated on <code>_add_step</code>. The lazy <code>_anomaly_filter_cls</code> / <code>_anomaly_detector_cls</code> imports are now <code>functools.cache</code>d.</li>
+<li>Sped up <code>compose.TransformerUnion.transform_one</code> by replacing the <code>dict(collections.ChainMap(*outputs))</code> merge with a single <code>dict.update</code> loop over reversed transformer outputs (~10x faster on the merge alone). Semantics are preserved (earlier transformers win on duplicate keys).</li>
+<li>Sped up <a href="../../api/compose/Prefixer"><code>compose.Prefixer</code></a> / <a href="../../api/compose/Suffixer"><code>compose.Suffixer</code></a> <code>transform_one</code> by inlining the prefix/suffix concatenation in the dict comprehension instead of going through the <code>_rename</code> method on each key.</li>
 </ul>
 <h2 id="tree">tree<a class="headerlink" href="#tree" title="Permanent link">&para;</a></h2>
 <ul>
