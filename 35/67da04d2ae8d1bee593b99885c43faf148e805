@@ -1,0 +1,12 @@
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.4",
+  "base_commit_sha": "3567da04d2ae8d1bee593b99885c43faf148e805",
+  "prompts": {},
+  "humans": {
+    "h_878b4b30f1ae9a": {
+      "author": "AdilZouitine <adilzouitinegm@gmail.com>"
+    }
+  }
+}
