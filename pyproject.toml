@@ -19,8 +19,6 @@ Repository = "https://github.com/online-ml/river/"
 
 [build-system]
 requires = [
-    "Cython",
-    "numpy",
     "setuptools",
     "setuptools-rust",
 ]

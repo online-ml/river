@@ -12,6 +12,8 @@ pub mod kurtosis;
 pub mod maximum;
 pub mod mean;
 pub mod minimum;
+#[cfg(feature = "pyo3-bindings")]
+pub mod mondrian;
 pub mod moments;
 pub mod ptp;
 pub mod quantile;

@@ -1,9 +1,14 @@
 from __future__ import annotations
 
 from river import base
-from river.tree.mondrian._mondrian_ops import (  # type: ignore[import-not-found]
-    go_downwards_classifier_c,
-    predict_proba_upward_c,
+from river.stats._rust_stats import (
+    go_downwards_classifier as go_downwards_classifier_c,
+)
+from river.stats._rust_stats import (
+    go_upwards as go_upwards_c,
+)
+from river.stats._rust_stats import (
+    predict_proba_classifier as predict_proba_classifier_c,
 )
 from river.tree.mondrian.mondrian_tree import MondrianTree
 from river.tree.mondrian.mondrian_tree_nodes import (
@@ -247,26 +252,8 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
         return leaf
 
     def _go_upwards(self, leaf: MondrianLeafClassifier):
-        """Update the tree (upwards procedure).
-
-        Parameters
-        ----------
-        leaf
-            Leaf to start from when going upward.
-
-        """
-
-        current_node = leaf
-
-        if self.iteration >= 1:
-            while True:
-                current_node.update_weight_tree()
-                if current_node.parent is None:
-                    # We arrived at the root
-                    break
-                # Note that the root node is updated as well
-                # We go up to the root in the tree
-                current_node = current_node.parent
+        """Update the tree (upwards procedure)."""
+        go_upwards_c(leaf, self.iteration)
 
     @property
     def _multiclass(self):
@@ -299,29 +286,11 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
 
         """
 
-        # If the tree hasn't seen any sample, then it should return
-        # the default empty dict
-
         if not self._is_initialized:
             return {}
 
-        # Find leaf using direct traversal, handling missing features
-        current = self._root
-        while not current.is_leaf:
-            if current.feature in x:
-                if x[current.feature] <= current.threshold:
-                    current = current.children[0]
-                else:
-                    current = current.children[1]
-            else:
-                # Missing feature: follow the most traversed path
-                _, current = current.most_common_path()
-
-        if not self.use_aggregation:
-            return self._predict(current)
-
-        # Use Cython for the entire upward aggregation walk
         n_classes = len(self._classes)
-        scores = predict_proba_upward_c(current, n_classes, self.dirichlet)
-
+        scores = predict_proba_classifier_c(
+            self._root, x, n_classes, self.dirichlet, self.use_aggregation
+        )
         return {self._idx_to_class[i]: scores[i] for i in range(n_classes)}

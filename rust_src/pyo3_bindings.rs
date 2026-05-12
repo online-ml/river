@@ -5,7 +5,13 @@ use serde::{Deserialize, Serialize};
 use crate::{
     adwin::AdaptiveWindowing, ewmean::EWMean, ewvariance::EWVariance,
     expected_mutual_info::expected_mutual_info as compute_expected_mutual_info,
-    iqr::RollingIQR, iqr::IQR, kurtosis::Kurtosis, ptp::PeakToPeak, quantile::Quantile,
+    iqr::RollingIQR, iqr::IQR, kurtosis::Kurtosis,
+    mondrian::{
+        go_downwards_classifier, go_downwards_regressor, go_upwards, log_sum_2_exp,
+        predict_one_regressor, predict_proba_classifier, predict_proba_upward, predict_scores,
+        range_extension, update_ranges,
+    },
+    ptp::PeakToPeak, quantile::Quantile,
     quantile::RollingQuantile, rolling_pr_auc::RollingPRAUC, rolling_roc_auc::RollingROCAUC,
     skew::Skew, stats::Univariate,
     vectordict::{
@@ -524,6 +530,16 @@ fn _rust_stats(_py: Python, m: &Bound<PyModule>) -> PyResult<()> {
     m.add_class::<RsRollingPRAUC>()?;
     m.add_class::<RsAdaptiveWindowing>()?;
     m.add_function(wrap_pyfunction!(rs_expected_mutual_info, m)?)?;
+    m.add_function(wrap_pyfunction!(log_sum_2_exp, m)?)?;
+    m.add_function(wrap_pyfunction!(update_ranges, m)?)?;
+    m.add_function(wrap_pyfunction!(range_extension, m)?)?;
+    m.add_function(wrap_pyfunction!(predict_scores, m)?)?;
+    m.add_function(wrap_pyfunction!(go_downwards_classifier, m)?)?;
+    m.add_function(wrap_pyfunction!(go_downwards_regressor, m)?)?;
+    m.add_function(wrap_pyfunction!(go_upwards, m)?)?;
+    m.add_function(wrap_pyfunction!(predict_proba_upward, m)?)?;
+    m.add_function(wrap_pyfunction!(predict_proba_classifier, m)?)?;
+    m.add_function(wrap_pyfunction!(predict_one_regressor, m)?)?;
     m.add_class::<VectorDict>()?;
     m.add_function(wrap_pyfunction!(euclidean_distance_dict, m)?)?;
     m.add_function(wrap_pyfunction!(euclidean_distance_tuple, m)?)?;
