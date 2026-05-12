@@ -1,0 +1,21 @@
+Cargo.toml
+  s_fd1bf227325844::t_dc9810102e11bc 14
+rust_src/vectordict.rs
+  s_fd1bf227325844::t_a34737a3f3cde5 1168-1174
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.4",
+  "base_commit_sha": "6b200a20a7248606fc72664b3855e784e5ad9205",
+  "prompts": {},
+  "sessions": {
+    "s_fd1bf227325844": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "505fc521-f790-47ad-9dee-2347b5347597",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "AdilZouitine <adilzouitinegm@gmail.com>"
+    }
+  }
+}
