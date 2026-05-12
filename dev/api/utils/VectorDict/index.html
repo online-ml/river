@@ -4830,6 +4830,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Parameters
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#methods" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -47101,6 +47112,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Parameters
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#methods" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -47130,143 +47152,95 @@
 
 
 <h1 id="vectordict">VectorDict<a class="headerlink" href="#vectordict" title="Permanent link">&para;</a></h1>
+<p>A dictionary-like object that supports vector-like operations.</p>
+<p>Supports addition (+), subtraction (-), multiplication (*) and division (/) with a VectorDict or a scalar. Supports dot product (@) with a VectorDict. A scalar is any object that supports the four arithmetic operations with the dictionary's values. </p>
+<p>If mask is not None, any key which is not contained in mask is said to be masked while other keys are said to be unmasked. If mask is None, any key is said to be unmasked. </p>
+<p>If default_factory is not None, it is called whenever an unmasked missing key is accessed, either externally with <strong>getitem</strong> or internally as part of an element-wise numeric operation such as addition, and the result is inserted as the value for that key. If a masked key, or an unmasked missing key when default_factory is None, is accessed externally through <strong>getitem</strong>, a KeyError exception is raised, and if it is accessed internally as part of an operation, its value is taken as 0, but is not inserted for that key. </p>
+<p>If copy is True, a copy of data and mask will be made if not None and these arguments will not be modified. If copy is False, references to data and mask will be used if not None. This means that the argument data may be modified, although only on unmasked keys, and that external modifications of data and mask will affect the internal operations.</p>
+<h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
+<ul>
+<li>
+<p><strong>data</strong></p>
+<p><em>Default</em> → <code>None</code></p>
+<p>A VectorDict or dict to initialize key-values from, or None.</p>
+</li>
+<li>
+<p><strong>default_factory</strong></p>
+<p><em>Default</em> → <code>None</code></p>
+<p>A callable returning a scalar, or None.</p>
+</li>
+<li>
+<p><strong>mask</strong></p>
+<p><em>Default</em> → <code>None</code></p>
+<p>A VectorDict or set-like object such that keys not in mask will not be considered in operations and will always result in a KeyError if accessed by <strong>getitem</strong>, or None.</p>
+</li>
+<li>
+<p><strong>copy</strong></p>
+<p><em>Default</em> → <code>False</code></p>
+<p>If data and/or mask are specified, whether to store a copy of the underlying dictionaries or references at initialization.</p>
+</li>
+</ul>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <details class="- abstract">
 <summary>abs</summary>
 </details>
-<p><span /></p>
 <details class="- abstract">
 <summary>clear</summary>
 </details>
-<p><span /></p>
 <details class="- abstract">
 <summary>euclidean_distance</summary>
-<p>Compute Euclidean distance to another VectorDict or dict.</p>
-<p><strong>Parameters</strong></p>
-<ul>
-<li><strong>other</strong>    </li>
-</ul>
 </details>
-<p><span /></p>
 <details class="- abstract">
 <summary>get</summary>
-<p><strong>Parameters</strong></p>
-<ul>
-<li><strong>key</strong>    </li>
-<li><strong>args</strong>    </li>
-<li><strong>kwargs</strong>    </li>
-</ul>
 </details>
-<p><span /></p>
 <details class="- abstract">
 <summary>iadd_scaled</summary>
-<p>self += scalar * other, fused into a single pass.</p>
-<p><strong>Parameters</strong></p>
-<ul>
-<li><strong>other</strong>    </li>
-<li><strong>scalar</strong>    </li>
-</ul>
 </details>
-<p><span /></p>
 <details class="- abstract">
 <summary>isub_scaled</summary>
-<p>self -= scalar * other, fused into a single pass.</p>
-<p><strong>Parameters</strong></p>
-<ul>
-<li><strong>other</strong>    </li>
-<li><strong>scalar</strong>    </li>
-</ul>
 </details>
-<p><span /></p>
 <details class="- abstract">
 <summary>items</summary>
 </details>
-<p><span /></p>
 <details class="- abstract">
 <summary>keys</summary>
 </details>
-<p><span /></p>
 <details class="- abstract">
 <summary>max</summary>
 </details>
-<p><span /></p>
 <details class="- abstract">
 <summary>maximum</summary>
-<p><strong>Parameters</strong></p>
-<ul>
-<li><strong>other</strong>    </li>
-</ul>
 </details>
-<p><span /></p>
 <details class="- abstract">
 <summary>min</summary>
 </details>
-<p><span /></p>
 <details class="- abstract">
 <summary>minimum</summary>
-<p><strong>Parameters</strong></p>
-<ul>
-<li><strong>other</strong>    </li>
-</ul>
 </details>
-<p><span /></p>
 <details class="- abstract">
 <summary>pop</summary>
-<p><strong>Parameters</strong></p>
-<ul>
-<li><strong>args</strong>    </li>
-<li><strong>kwargs</strong>    </li>
-</ul>
 </details>
-<p><span /></p>
 <details class="- abstract">
 <summary>popitem</summary>
 </details>
-<p><span /></p>
 <details class="- abstract">
 <summary>setdefault</summary>
-<p><strong>Parameters</strong></p>
-<ul>
-<li><strong>key</strong>    </li>
-<li><strong>args</strong>    </li>
-<li><strong>kwargs</strong>    </li>
-</ul>
 </details>
-<p><span /></p>
 <details class="- abstract">
 <summary>to_dict</summary>
 </details>
-<p><span /></p>
 <details class="- abstract">
 <summary>to_numpy</summary>
-<p><strong>Parameters</strong></p>
-<ul>
-<li><strong>fields</strong>    </li>
-</ul>
 </details>
-<p><span /></p>
 <details class="- abstract">
 <summary>update</summary>
-<p><strong>Parameters</strong></p>
-<ul>
-<li><strong>args</strong>    </li>
-<li><strong>kwargs</strong>    </li>
-</ul>
 </details>
-<p><span /></p>
 <details class="- abstract">
 <summary>values</summary>
 </details>
-<p><span /></p>
 <details class="- abstract">
 <summary>with_mask</summary>
-<p><strong>Parameters</strong></p>
-<ul>
-<li><strong>mask</strong>    </li>
-<li><strong>copy</strong>     — defaults to <code>False</code>    </li>
-</ul>
 </details>
-<p><span /></p>
 
 
 

@@ -2181,6 +2181,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#utils" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        utils
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#tree" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -3396,6 +3407,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#utils" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        utils
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#tree" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -3447,6 +3469,10 @@
 <ul>
 <li>Reimplemented the inner <code>expected_mutual_info</code> routine (used by <a href="../../api/metrics/AdjustedMutualInfo"><code>metrics.AdjustedMutualInfo</code></a>) in Rust. The Cython sources are removed and the new implementation is roughly twice as fast as the old one across all tested contingency-table sizes.</li>
 <li>Reimplemented <a href="../../api/metrics/RollingROCAUC"><code>metrics.RollingROCAUC</code></a> and <a href="../../api/metrics/RollingPRAUC"><code>metrics.RollingPRAUC</code></a> in Rust. The C++ implementation is removed. Output is bit-identical to the C++ version on all tested inputs and a latent bug in <code>revert()</code> with a non-default <code>pos_val</code> is also fixed.</li>
+</ul>
+<h2 id="utils">utils<a class="headerlink" href="#utils" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Reimplemented <a href="../../api/utils/VectorDict"><code>utils.VectorDict</code></a> (and the helper functions <code>euclidean_distance_dict</code>, <code>euclidean_distance_tuple</code>, <code>lazy_search_euclidean</code>) in Rust. The Cython sources are removed; the public API is unchanged. Element-wise operations are faster across the board: <code>vec + scalar</code> and <code>vec * scalar</code> are ~18% faster on 20-key dicts and ~14% faster on 1000-key dicts; <code>vec + vec</code> is 4-5% faster, <code>vec @ vec</code> (dot product) is 4-10% faster. The constructor and <code>__setitem__</code> are within 1-4% of the Cython baseline (~2 ns absolute, dominated by PyO3 object-allocation overhead).</li>
 </ul>
 <h2 id="tree">tree<a class="headerlink" href="#tree" title="Permanent link">&para;</a></h2>
 <ul>
