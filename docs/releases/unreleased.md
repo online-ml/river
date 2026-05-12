@@ -27,6 +27,10 @@
 
 - Reimplemented `utils.VectorDict` (and the helper functions `euclidean_distance_dict`, `euclidean_distance_tuple`, `lazy_search_euclidean`) in Rust. The Cython sources are removed; the public API is unchanged. Element-wise operations are faster across the board: `vec + scalar` and `vec * scalar` are ~18% faster on 20-key dicts and ~14% faster on 1000-key dicts; `vec + vec` is 4-5% faster, `vec @ vec` (dot product) is 4-10% faster. The constructor and `__setitem__` are within 1-4% of the Cython baseline (~2 ns absolute, dominated by PyO3 object-allocation overhead).
 
+## cluster
+
+- Sped up `cluster.DBSTREAM` by replacing the per-cleanup `copy.deepcopy` of the micro-cluster dict with an in-place pop, replacing the `deepcopy` in the offline reclustering step with a direct micro-cluster construction, hoisting the Gaussian neighborhood factor out of the per-feature center update (it does not vary across dimensions), and folding the nested `try/except KeyError` shared-density update into a plain `dict.get`. Output is unchanged. On the 15k-sample synthetic-sklearn workload, `learn_one` is ~6.1× faster (0.516 s → 0.084 s) and `learn_one + predict_one` is ~4.3× faster (0.872 s → 0.204 s).
+
 ## tree
 
 - Fixed `MondrianNodeClassifier.replant` not copying the `counts` attribute when promoting a leaf to a branch, leaving the new branch with `n_samples != 0` but empty class counts. The fix mirrors the regressor's `_mean` copy and matches the reference [`onelearn`](https://github.com/onelearn/onelearn) implementation. Addresses [#1823](https://github.com/online-ml/river/issues/1823).
