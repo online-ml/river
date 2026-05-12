@@ -18,11 +18,20 @@ Homepage = "https://riverml.xyz/"
 Repository = "https://github.com/online-ml/river/"
 
 [build-system]
-requires = [
-    "setuptools",
-    "setuptools-rust",
+requires = ["maturin>=1.13,<2"]
+build-backend = "maturin"
+
+[tool.maturin]
+module-name = "river.stats._rust_stats"
+python-source = "."
+features = ["pyo3/extension-module"]
+include = [
+    { path = "river/datasets/*.csv", format = ["sdist", "wheel"] },
+    { path = "river/datasets/*.gz",  format = ["sdist", "wheel"] },
+    { path = "river/datasets/*.zip", format = ["sdist", "wheel"] },
+    { path = "river/drift/datasets/*.csv", format = ["sdist", "wheel"] },
+    { path = "river/stream/*.zip", format = ["sdist", "wheel"] },
 ]
-build-backend = "setuptools.build_meta"
 
 [dependency-groups]
 dev = [
@@ -68,9 +77,6 @@ benchmark = [
 ]
 
 
-
-[tool.setuptools.packages.find]
-include = ["river*"]
 
 [tool.uv]
 default-groups = [

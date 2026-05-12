@@ -12,7 +12,6 @@ pub mod kurtosis;
 pub mod maximum;
 pub mod mean;
 pub mod minimum;
-#[cfg(feature = "pyo3-bindings")]
 pub mod mondrian;
 pub mod moments;
 pub mod ptp;
@@ -25,8 +24,6 @@ pub mod sorted_window;
 pub mod stats;
 pub mod sum;
 pub mod variance;
-#[cfg(feature = "pyo3-bindings")]
 pub mod vectordict;
 
-#[cfg(feature = "pyo3-bindings")]
 mod pyo3_bindings;
