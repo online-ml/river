@@ -1,5 +1,13 @@
 # Unreleased
 
+## Breaking changes
+
+- The native Rust extension moved from `river.stats._rust_stats` to `river._river_rust`,
+  split into submodules `stats`, `drift`, `tree`, and `vectordict`. Pickles produced
+  with prior versions no longer load directly. Run
+  `python scripts/migrate_pickle_river_rust.py old.pkl new.pkl` to convert them
+  (the new river must be installed in the conversion env).
+
 ## docs
 
 - Fixed corrupted markdown cells in the Hoeffding Trees notebook example that caused blank page titles and invisible sidebar navigation. Fixes [#1847](https://github.com/online-ml/river/issues/1847).

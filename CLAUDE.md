@@ -10,6 +10,8 @@ River is a Python library for online (streaming) machine learning. All estimator
 # Install / sync dependencies (also builds Rust extensions via maturin)
 # Rust toolchain is pinned via rust-toolchain.toml; rustup auto-installs
 # the right channel and targets on first `cargo` invocation.
+# Edits under rust_src/ require re-running this (or `uv run maturin develop
+# --release` for a tighter inner-loop).
 uv sync
 
 # Run tests (excludes datasets and slow markers by default, includes doctests)
