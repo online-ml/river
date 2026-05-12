@@ -1,0 +1,65 @@
+rust_src/vectordict.rs
+  s_fd1bf227325844::t_24cac3faf6c4d6 58
+river/stats/skew.py
+  s_fd1bf227325844::t_93522fd9bde100 4
+river/tree/mondrian/mondrian_tree_classifier.py
+  s_fd1bf227325844::t_423058ce1287bf 4,7,10
+river/tree/mondrian/mondrian_tree_regressor.py
+  s_fd1bf227325844::t_423058ce1287bf 4,7,10
+river/metrics/rolling_pr_auc.py
+  s_fd1bf227325844::t_f959aa5ad49d24 4
+river/metrics/expected_mutual_info.py
+  s_fd1bf227325844::t_93522fd9bde100 4
+river/stats/ewmean.py
+  s_fd1bf227325844::t_93522fd9bde100 4
+river/utils/math.py
+  s_fd1bf227325844::t_d5c7f3f0fcbbd7 175
+river/stats/kurtosis.py
+  s_fd1bf227325844::t_93522fd9bde100 4
+river/utils/test_native_submodules.py
+  s_fd1bf227325844::t_7e5d46e158ba6e 1-9
+river/drift/adwin.py
+  s_fd1bf227325844::t_f959aa5ad49d24 3
+river/drift/test_adwin_regression.py
+  s_fd1bf227325844::t_f959aa5ad49d24 13
+river/metrics/rolling_roc_auc.py
+  s_fd1bf227325844::t_f959aa5ad49d24 4
+river/stats/ewvar.py
+  s_fd1bf227325844::t_93522fd9bde100 4
+river/stats/ptp.py
+  s_fd1bf227325844::t_93522fd9bde100 4
+river/stats/quantile.py
+  s_fd1bf227325844::t_93522fd9bde100 4
+river/stats/iqr.py
+  s_fd1bf227325844::t_93522fd9bde100 4
+rust_src/pyo3_bindings.rs
+  s_fd1bf227325844::t_00deb19676054e 3
+  s_fd1bf227325844::t_ccb9eff51d8626 444
+  s_fd1bf227325844::t_f4ee073d0b4df1 517-519,521-534,536,541-544,546-551,564-572,583-586
+  s_fd1bf227325844::t_dab32652b574d2 535,537-540,545
+  s_fd1bf227325844::t_816c71671991a5 23,59,93,127,164,197,228,261,297,341,394
+pyproject.toml
+  s_fd1bf227325844::t_cf27ee563676db 192
+  s_fd1bf227325844::t_9e6987f48a4d49 25
+  s_fd1bf227325844::t_7f60aa61ab13ac 191
+river/tree/mondrian/mondrian_tree_nodes.py
+  s_fd1bf227325844::t_423058ce1287bf 6,9,12,15
+river/utils/vectordict.py
+  s_fd1bf227325844::t_f959aa5ad49d24 3
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.4",
+  "base_commit_sha": "aff71c5e0ea33b4b2704c1ed7ba8f4528f80b04c",
+  "prompts": {},
+  "sessions": {
+    "s_fd1bf227325844": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "505fc521-f790-47ad-9dee-2347b5347597",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "AdilZouitine <adilzouitinegm@gmail.com>"
+    }
+  }
+}
