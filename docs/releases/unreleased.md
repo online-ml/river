@@ -27,6 +27,10 @@
 
 - Reimplemented `utils.VectorDict` (and the helper functions `euclidean_distance_dict`, `euclidean_distance_tuple`, `lazy_search_euclidean`) in Rust. The Cython sources are removed; the public API is unchanged. Element-wise operations are faster across the board: `vec + scalar` and `vec * scalar` are ~18% faster on 20-key dicts and ~14% faster on 1000-key dicts; `vec + vec` is 4-5% faster, `vec @ vec` (dot product) is 4-10% faster. The constructor and `__setitem__` are within 1-4% of the Cython baseline (~2 ns absolute, dominated by PyO3 object-allocation overhead).
 
+## anomaly
+
+- Sped up `anomaly.HalfSpaceTrees.learn_one` and `score_one` by replacing the generic recursive `tree.base.Branch.walk` traversal with an iterative tight loop specialised for HST, caching the (constant) `size_limit` and tree height as locals, and pivoting node masses through a precomputed flat node list. Output is unchanged. On a synthetic 10-feature stream `score+learn` is ~3.0× faster (27.9k → 85.2k obs/s), `learn_one` ~2.6×, and `score_one` ~3.8×; in a `MinMaxScaler | HalfSpaceTrees` pipeline on CreditCard the end-to-end pipeline is ~2.0× faster (20.5k → 40.5k obs/s).
+
 ## tree
 
 - Fixed `MondrianNodeClassifier.replant` not copying the `counts` attribute when promoting a leaf to a branch, leaving the new branch with `n_samples != 0` but empty class counts. The fix mirrors the regressor's `_mean` copy and matches the reference [`onelearn`](https://github.com/onelearn/onelearn) implementation. Addresses [#1823](https://github.com/online-ml/river/issues/1823).
