@@ -37,6 +37,12 @@
 
 - Sped up `cluster.STREAMKMeans.predict_one` by switching the per-center distance from the `utils.math.minkowski_distance` Python wrapper to a direct call into the Rust `euclidean_distance_dict`.
 
+## preprocessing
+
+- Sped up `preprocessing.OneHotEncoder.transform_one` by ~8x and `learn_one + transform_one` by ~5.5x (on 100k rows × 5 features with cardinality 20). The previous implementation rebuilt the all-zeros dict via `{f"{i}_{v}": 0 ...}` on every call; the encoder now maintains an incremental cache of that zero-dict and `transform_one` copies it instead of rebuilding. Output is unchanged.
+- Sped up `preprocessing.StandardScaler` by ~15% on `learn_one` and `learn_one + transform_one` by hoisting the `self.counts`/`self.means`/`self.vars` dict references out of the inner loop, splitting the `with_std=True` and `with_std=False` paths, and folding the `safe_div` call in `transform_one` into an inline branch (eliminating ~1M function calls per 100k samples × 10 features). The Welford update formula is unchanged.
+- Sped up `preprocessing.MinMaxScaler.transform_one` by ~1.3x by caching each feature's `self.min[i].get()` and `self.max[i].get()` results in locals (previously `self.min[i].get()` was called twice per feature) and inlining `safe_div`. `preprocessing.MaxAbsScaler.transform_one` benefits from the same `safe_div` inlining. `learn_one` is also slightly faster thanks to hoisting `self.min`/`self.max`/`self.abs_max` out of the loop. `.update()`/`.get()` on `stats.Min`/`stats.Max`/`stats.AbsMax` remain the only paths into those objects.
+
 ## tree
 
 - Fixed `MondrianNodeClassifier.replant` not copying the `counts` attribute when promoting a leaf to a branch, leaving the new branch with `n_samples != 0` but empty class counts. The fix mirrors the regressor's `_mean` copy and matches the reference [`onelearn`](https://github.com/onelearn/onelearn) implementation. Addresses [#1823](https://github.com/online-ml/river/issues/1823).
