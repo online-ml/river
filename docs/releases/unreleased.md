@@ -27,6 +27,10 @@
 
 - Reimplemented `utils.VectorDict` (and the helper functions `euclidean_distance_dict`, `euclidean_distance_tuple`, `lazy_search_euclidean`) in Rust. The Cython sources are removed; the public API is unchanged. Element-wise operations are faster across the board: `vec + scalar` and `vec * scalar` are ~18% faster on 20-key dicts and ~14% faster on 1000-key dicts; `vec + vec` is 4-5% faster, `vec @ vec` (dot product) is 4-10% faster. The constructor and `__setitem__` are within 1-4% of the Cython baseline (~2 ns absolute, dominated by PyO3 object-allocation overhead).
 
+## cluster
+
+- Sped up `cluster.DenStream._merge` by replacing the speculative `copy.copy` + insert + radius check with a non-mutating `radius_with(x)` that computes the would-be radius directly from `linear_sum`, `squared_sum` and `N`. Cached each micro-cluster's center (it reduces to `linear_sum / N` once the fading factor is cancelled algebraically), and switched the per-candidate distance lookup in `_get_closest_cluster_key` from the `utils.math.minkowski_distance` Python wrapper to a direct call into the Rust `euclidean_distance_dict`. On a 20k-sample 10-feature synthetic stream, `learn_one` is ~1.7× faster (6.4 µs/point → 3.8 µs/point). The change also fixes a latent shallow-copy bug: the previous code shared `linear_sum`/`squared_sum` between the `copy.copy` and the original, so a failed radius check left the original cluster with the candidate point's contributions added in (without bumping `N`).
+
 ## tree
 
 - Fixed `MondrianNodeClassifier.replant` not copying the `counts` attribute when promoting a leaf to a branch, leaving the new branch with `n_samples != 0` but empty class counts. The fix mirrors the regressor's `_mean` copy and matches the reference [`onelearn`](https://github.com/onelearn/onelearn) implementation. Addresses [#1823](https://github.com/online-ml/river/issues/1823).
