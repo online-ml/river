@@ -1,6 +1,6 @@
 """
 This is an adaptation of the MemStream algorithm for anomaly detection in data streams.
-The code was extracted from https://github.com/Stream-AD/MemStream/
+The code was inspired from https://github.com/Stream-AD/MemStream/
 and adapted to fit into the River framework.
 The original paper can be found: https://arxiv.org/pdf/2106.03837
 """
