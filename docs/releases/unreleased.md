@@ -43,6 +43,12 @@
 - Sped up `preprocessing.StandardScaler` by ~15% on `learn_one` and `learn_one + transform_one` by hoisting the `self.counts`/`self.means`/`self.vars` dict references out of the inner loop, splitting the `with_std=True` and `with_std=False` paths, and folding the `safe_div` call in `transform_one` into an inline branch (eliminating ~1M function calls per 100k samples × 10 features). The Welford update formula is unchanged.
 - Sped up `preprocessing.MinMaxScaler.transform_one` by ~1.3x by caching each feature's `self.min[i].get()` and `self.max[i].get()` results in locals (previously `self.min[i].get()` was called twice per feature) and inlining `safe_div`. `preprocessing.MaxAbsScaler.transform_one` benefits from the same `safe_div` inlining. `learn_one` is also slightly faster thanks to hoisting `self.min`/`self.max`/`self.abs_max` out of the loop. `.update()`/`.get()` on `stats.Min`/`stats.Max`/`stats.AbsMax` remain the only paths into those objects.
 
+## compose
+
+- Sped up `compose.Pipeline` end-to-end throughput by 1.3x–1.9x (e.g. `scaler|lr` 7.4 µs → 5.7 µs/event, `(sel+sel)|scaler|lr` 12.5 µs → 6.7 µs/event on TrumpApproval) by precomputing an execution plan (kind/`_supervised` flags) for each step at construction time, eliminating per-event `isinstance` checks via the `EstimatorMeta.__instancecheck__` metaclass (~180k → 0 calls per 20k events) and repeated `_supervised` property lookups. The plan is invalidated on `_add_step`. The lazy `_anomaly_filter_cls` / `_anomaly_detector_cls` imports are now `functools.cache`d.
+- Sped up `compose.TransformerUnion.transform_one` by replacing the `dict(collections.ChainMap(*outputs))` merge with a single `dict.update` loop over reversed transformer outputs (~10x faster on the merge alone). Semantics are preserved (earlier transformers win on duplicate keys).
+- Sped up `compose.Prefixer` / `compose.Suffixer` `transform_one` by inlining the prefix/suffix concatenation in the dict comprehension instead of going through the `_rename` method on each key.
+
 ## tree
 
 - Fixed `MondrianNodeClassifier.replant` not copying the `counts` attribute when promoting a leaf to a branch, leaving the new branch with `n_samples != 0` but empty class counts. The fix mirrors the regressor's `_mean` copy and matches the reference [`onelearn`](https://github.com/onelearn/onelearn) implementation. Addresses [#1823](https://github.com/online-ml/river/issues/1823).
