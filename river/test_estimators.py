@@ -24,7 +24,6 @@ from river import (
     neighbors,
     neural_net,
     preprocessing,
-    time_series,
 )
 from river.compat.river_to_sklearn import River2SKLBase
 from river.compat.sklearn_to_river import SKL2RiverBase
@@ -74,7 +73,6 @@ def iter_estimators_which_can_be_tested():
         preprocessing.PreviousImputer,
         preprocessing.OneHotEncoder,
         preprocessing.StatImputer,
-        time_series.base.Forecaster,
     )
 
     def can_be_tested(estimator):
