@@ -895,6 +895,9 @@
         <loc>https://riverml.xyz/dev/api/misc/Skyline/</loc>
       </url>
       <url>
+        <loc>https://riverml.xyz/dev/api/misc/ZstdClassifier/</loc>
+      </url>
+      <url>
         <loc>https://riverml.xyz/dev/api/model-selection/BanditClassifier/</loc>
       </url>
       <url>
