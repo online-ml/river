@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 import collections
+import typing
 
-import pandas as pd
+from river import base, utils
 
-from river import base
+if typing.TYPE_CHECKING:
+    pass
 
 __all__ = ["OneHotEncoder"]
 
@@ -324,6 +326,7 @@ class OneHotEncoder(base.MiniBatchTransformer):
                         zero_dict[f"{col}_{v}"] = 0
 
     def transform_many(self, X):
+        pd = utils.pandas.import_pandas()
         oh = pd.get_dummies(X, columns=X.columns, sparse=True, dtype="uint8")
 
         # NOTE: assume if category mappings are explicitly provided,

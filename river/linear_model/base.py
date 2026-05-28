@@ -1,11 +1,14 @@
 from __future__ import annotations
 
 import numbers
+import typing
 
 import numpy as np
-import pandas as pd
 
 from river import optim, utils
+
+if typing.TYPE_CHECKING:
+    import pandas as pd
 
 __all__ = ["GLM"]
 

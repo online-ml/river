@@ -2424,8 +2424,12 @@ source = { editable = "." }
 dependencies = [
     { name = "altair" },
     { name = "numpy" },
-    { name = "pandas" },
     { name = "scipy" },
+]
+
+[package.optional-dependencies]
+pandas = [
+    { name = "pandas" },
 ]
 
 [package.dev-dependencies]
@@ -2444,6 +2448,7 @@ dev = [
     { name = "jupyter" },
     { name = "mike" },
     { name = "mypy" },
+    { name = "pandas" },
     { name = "polars" },
     { name = "pre-commit" },
     { name = "pytest" },
@@ -2475,9 +2480,10 @@ docs = [
 requires-dist = [
     { name = "altair", specifier = ">=5.0.0" },
     { name = "numpy", specifier = ">=2.3.4,<3" },
-    { name = "pandas", specifier = ">=2.2,<3" },
+    { name = "pandas", marker = "extra == 'pandas'", specifier = ">=2.2,<3" },
     { name = "scipy", specifier = ">=1.16,<2" },
 ]
+provides-extras = ["pandas"]
 
 [package.metadata.requires-dev]
 benchmark = [
@@ -2495,6 +2501,7 @@ dev = [
     { name = "jupyter", specifier = ">=1.0.0" },
     { name = "mike", git = "https://github.com/squidfunk/mike.git" },
     { name = "mypy", specifier = ">=1.11.1" },
+    { name = "pandas", specifier = ">=2.2,<3" },
     { name = "polars", specifier = ">=1.1.0" },
     { name = "pre-commit", specifier = ">=3.5.0" },
     { name = "pytest", specifier = ">=9.0.3" },

@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 import copy
-
-import pandas as pd
+import typing
 
 from river import anomaly
 from river.neighbors.base import DistanceFunc
 from river.utils.vectordict import euclidean_distance_dict
+
+if typing.TYPE_CHECKING:
+    import pandas as pd
 
 
 def check_equal(x_list: list, y_list: list):

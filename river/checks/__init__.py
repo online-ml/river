@@ -146,7 +146,7 @@ def yield_checks(model: Estimator) -> typing.Iterator[typing.Callable]:
 
     """
 
-    from river import base
+    from river import base, utils
     from river.anomaly.base import AnomalyDetector
     from river.time_series.base import Forecaster
 
@@ -188,12 +188,13 @@ def yield_checks(model: Estimator) -> typing.Iterator[typing.Callable]:
     if isinstance(model, (base.Transformer, base.SupervisedTransformer)):
         dataset_checks.append(common.check_transform_one)
 
-    if isinstance(model, (base.MiniBatchClassifier, base.MiniBatchRegressor)):
-        dataset_checks.append(common.check_predict_many_matches_predict_one)
-    if isinstance(model, base.MiniBatchClassifier):
-        dataset_checks.append(common.check_predict_proba_many_matches_predict_proba_one)
-    if isinstance(model, (base.MiniBatchTransformer, base.MiniBatchSupervisedTransformer)):
-        dataset_checks.append(common.check_transform_many_matches_transform_one)
+    if utils.pandas.PANDAS_INSTALLED:
+        if isinstance(model, (base.MiniBatchClassifier, base.MiniBatchRegressor)):
+            dataset_checks.append(common.check_predict_many_matches_predict_one)
+        if isinstance(model, base.MiniBatchClassifier):
+            dataset_checks.append(common.check_predict_proba_many_matches_predict_proba_one)
+        if isinstance(model, (base.MiniBatchTransformer, base.MiniBatchSupervisedTransformer)):
+            dataset_checks.append(common.check_transform_many_matches_transform_one)
 
     if hasattr(model, "debug_one"):
         dataset_checks.append(common.check_debug_one)

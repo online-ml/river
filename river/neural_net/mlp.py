@@ -3,11 +3,14 @@ from __future__ import annotations
 import collections
 import copy
 import functools
+import typing
 
 import numpy as np
-import pandas as pd
 
-from river import base, optim
+from river import base, optim, utils
+
+if typing.TYPE_CHECKING:
+    import pandas as pd
 
 __all__ = ["MLPRegressor"]
 
@@ -145,6 +148,7 @@ class MLP:
             A DataFrame of shape (batch_size, n_targets).
 
         """
+        pd = utils.pandas.import_pandas()
 
         # We expect y to be 2D, even if there is only one target to predict
         if isinstance(y, pd.Series):
@@ -171,6 +175,7 @@ class MLP:
             A DataFrame of shape (batch_size, n_features).
 
         """
+        pd = utils.pandas.import_pandas()
         _, a = self._forward(X)
         y_pred = a[self.n_layers]
         return pd.DataFrame(y_pred, columns=self.targets, index=X.index)
@@ -208,6 +213,7 @@ class MLPRegressor(base.Regressor, MLP):
     Examples
     --------
 
+    >>> import pandas as pd
     >>> from river import datasets
     >>> from river import evaluate
     >>> from river import neural_net as nn
@@ -301,11 +307,13 @@ class MLPRegressor(base.Regressor, MLP):
         }
 
     def predict_many(self, X):
+        pd = utils.pandas.import_pandas()
         if not hasattr(self, "w"):
             return pd.DataFrame({0: 0}, index=X.index)
         return self(X)
 
     def learn_one(self, x, y):
+        pd = utils.pandas.import_pandas()
         # Multi-output
         if isinstance(y, dict):
             self.learn_many(X=pd.DataFrame([x]), y=pd.DataFrame([y]))
@@ -315,6 +323,7 @@ class MLPRegressor(base.Regressor, MLP):
         self.learn_many(X=pd.DataFrame([x]), y=pd.Series([y]))
 
     def predict_one(self, x):
+        pd = utils.pandas.import_pandas()
         y_pred = self.predict_many(X=pd.DataFrame([x]))
 
         # Multi-output

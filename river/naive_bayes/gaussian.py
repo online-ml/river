@@ -3,11 +3,14 @@ from __future__ import annotations
 import collections
 import functools
 import math
+import typing
 
-import pandas as pd
 from scipy import special
 
 from river import base, proba
+
+if typing.TYPE_CHECKING:
+    import pandas as pd
 
 __all__ = ["GaussianNB"]
 

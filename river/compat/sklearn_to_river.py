@@ -2,13 +2,16 @@ from __future__ import annotations
 
 import copy
 import functools
+import typing
 
-import pandas as pd
 from sklearn import base as sklearn_base
 from sklearn import exceptions as sklearn_exceptions
 from sklearn import linear_model as sklearn_linear_model
 
-from river import base
+from river import base, utils
+
+if typing.TYPE_CHECKING:
+    import pandas as pd
 
 __all__ = ["convert_sklearn_to_river", "SKL2RiverClassifier", "SKL2RiverRegressor"]
 
@@ -117,6 +120,7 @@ class SKL2RiverRegressor(SKL2RiverBase, base.Regressor):
             return 0
 
     def predict_many(self, X):
+        pd = utils.pandas.import_pandas()
         try:
             return pd.Series(self.estimator.predict(self._align_df(X)))
         except sklearn_exceptions.NotFittedError:
@@ -192,6 +196,7 @@ class SKL2RiverClassifier(SKL2RiverBase, base.Classifier):
             return {c: 1 / len(self.classes) for c in self.classes}
 
     def predict_proba_many(self, X):
+        pd = utils.pandas.import_pandas()
         try:
             return pd.DataFrame(
                 self.estimator.predict_proba(self._align_df(X)),
@@ -213,6 +218,7 @@ class SKL2RiverClassifier(SKL2RiverBase, base.Classifier):
             return self.classes[0]
 
     def predict_many(self, X):
+        pd = utils.pandas.import_pandas()
         try:
             return pd.Series(self.estimator.predict(self._align_df(X)))
         except sklearn_exceptions.NotFittedError:

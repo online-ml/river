@@ -8,9 +8,10 @@ import itertools
 import types
 import typing
 
-import pandas as pd
-
 from river import base
+
+if typing.TYPE_CHECKING:
+    import pandas as pd
 
 from . import func, union
 
@@ -51,6 +52,7 @@ def learn_during_predict():
 
     >>> import io
     >>> import logging
+    >>> import pandas as pd
     >>> from river import compose
     >>> from river import datasets
     >>> from river import linear_model
