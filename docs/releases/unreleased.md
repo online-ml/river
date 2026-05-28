@@ -2,7 +2,8 @@
 
 ## packaging
 
-- **Breaking:** `pandas` is no longer a hard dependency of River. The core online interface (`learn_one` / `predict_one`) works with `pip install river` alone. The mini-batch interface (`learn_many`, `predict_many`, `predict_proba_many`, `transform_many`) still requires `pandas`; install with `pip install "river[pandas]"`. Calling a `*_many` method without `pandas` raises an `ImportError`.
+- **Breaking:** `pandas` is no longer a hard dependency of River. The core online interface (`learn_one` / `predict_one`) works with `pip install river` alone. The mini-batch interface (`learn_many`, `predict_many`, `predict_proba_many`, `transform_many`) still requires `pandas`; install with `pip install "river[pandas]"`. Calling a `*_many` method without `pandas` raises an `ImportError` pointing to the extra.
+- Added a `no-pandas` CI job that installs River without `pandas` and runs the full test suite. A conftest hook auto-skips test modules and doctest sources that mention `pandas` (or `fetch_openml`, which goes through pandas inside scikit-learn).
 
 ## checks
 

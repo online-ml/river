@@ -44,3 +44,22 @@ jobs:
       - name: Run pre-commit
         run: uv run pre-commit run --all-files
 
+  no-pandas:
+    name: Tests without pandas
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+
+      - name: Install the project without the pandas extra
+        # pytest is in the dev group; pandas is not. The lockfile is honoured.
+        run: uv sync --locked
+
+      - name: Uninstall pandas
+        run: uv pip uninstall pandas
+
+      - name: Run tests
+        run: uv run --no-sync pytest
+

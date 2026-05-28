@@ -87,7 +87,6 @@ default-groups = [
 
 [tool.cibuildwheel]
 build-frontend = "build[uv]"
-# TODO: re-enable 32-bit builds once pandas is confirmed to be optional everywhere
 skip = ["*_i686", "*-win32", "*-musllinux_i686"]
 test-command = "python -c \"import river\""
 

@@ -4,18 +4,12 @@ import copy
 import typing
 
 import numpy as np
-
-try:
-    import pandas as pd
-
-    PANDAS_INSTALLED = True
-except ImportError:
-    PANDAS_INSTALLED = False
 from sklearn import base as sklearn_base
 from sklearn import pipeline, preprocessing, utils
 from sklearn.utils.validation import validate_data
 
 from river import base, compose, stream
+from river.utils.pandas import PANDAS_INSTALLED, import_pandas
 
 __all__ = [
     "convert_river_to_sklearn",
@@ -30,7 +24,7 @@ __all__ = [
 STREAM_METHODS: dict[type, typing.Callable] = {np.ndarray: stream.iter_array}
 
 if PANDAS_INSTALLED:
-    STREAM_METHODS[pd.DataFrame] = stream.iter_pandas
+    STREAM_METHODS[import_pandas().DataFrame] = stream.iter_pandas
 
 # Params passed to sklearn.utils.check_X_y and sklearn.utils.check_array
 SKLEARN_INPUT_X_PARAMS = {
