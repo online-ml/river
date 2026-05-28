@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import importlib
 import inspect
+import sys
 
 import pytest
 from sklearn import linear_model as sk_linear_model
@@ -19,6 +20,7 @@ from river import (
     feature_selection,
     imblearn,
     linear_model,
+    misc,
     model_selection,
     multiclass,
     neighbors,
@@ -74,6 +76,9 @@ def iter_estimators_which_can_be_tested():
         preprocessing.OneHotEncoder,
         preprocessing.StatImputer,
     )
+    if sys.version_info < (3, 14):
+        # misc.ZstdClassifier requires Python 3.14 (compression.zstd); skip on older.
+        ignored = (*ignored, misc.ZstdClassifier)
 
     def can_be_tested(estimator):
         return not inspect.isabstract(estimator) and not issubclass(estimator, ignored)
