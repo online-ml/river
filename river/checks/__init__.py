@@ -188,8 +188,6 @@ def yield_checks(model: Estimator) -> typing.Iterator[typing.Callable]:
     if isinstance(model, (base.Transformer, base.SupervisedTransformer)):
         dataset_checks.append(common.check_transform_one)
 
-    # Mini-batch checks are skipped when pandas is not installed, since pandas
-    # is an optional extra and the *_many methods all require it.
     if utils.pandas.PANDAS_INSTALLED:
         if isinstance(model, (base.MiniBatchClassifier, base.MiniBatchRegressor)):
             dataset_checks.append(common.check_predict_many_matches_predict_one)

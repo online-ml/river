@@ -9,7 +9,7 @@ from sklearn import pipeline, preprocessing, utils
 from sklearn.utils.validation import validate_data
 
 from river import base, compose, stream
-from river.utils.pandas import PANDAS_INSTALLED, import_pandas
+from river.utils.pandas import PANDAS_INSTALLED
 
 __all__ = [
     "convert_river_to_sklearn",
@@ -24,7 +24,9 @@ __all__ = [
 STREAM_METHODS: dict[type, typing.Callable] = {np.ndarray: stream.iter_array}
 
 if PANDAS_INSTALLED:
-    STREAM_METHODS[import_pandas().DataFrame] = stream.iter_pandas
+    import pandas as pd
+
+    STREAM_METHODS[pd.DataFrame] = stream.iter_pandas
 
 # Params passed to sklearn.utils.check_X_y and sklearn.utils.check_array
 SKLEARN_INPUT_X_PARAMS = {
