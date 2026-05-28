@@ -12,10 +12,10 @@
         <meta name="author" content="The Fellowship of Online Machine Learning">
       
       
-        <link rel="canonical" href="https://riverml.xyz/dev/api/drift/binary/HDDM-W/">
+        <link rel="canonical" href="https://riverml.xyz/dev/api/drift/binary/HDDMW/">
       
       
-        <link rel="prev" href="../HDDM-A/">
+        <link rel="prev" href="../HDDMA/">
       
       
         <link rel="next" href="../../datasets/AirlinePassengers/">
@@ -29,7 +29,7 @@
     
     
       
-        <title>HDDM_W - River</title>
+        <title>HDDMW - River</title>
       
     
     
@@ -79,14 +79,14 @@
   <!-- Open Graph -->
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="River" />
-  <meta property="og:title" content="HDDM_W - River" />
+  <meta property="og:title" content="HDDMW - River" />
   <meta property="og:description" content="Online machine learning in Python" />
-  <meta property="og:url" content="https://riverml.xyz/dev/api/drift/binary/HDDM-W/" />
+  <meta property="og:url" content="https://riverml.xyz/dev/api/drift/binary/HDDMW/" />
   <meta property="og:image" content="https://riverml.xyz/img/icon.png" />
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="HDDM_W - River" />
+  <meta name="twitter:title" content="HDDMW - River" />
   <meta name="twitter:description" content="Online machine learning in Python" />
   <meta name="twitter:image" content="https://riverml.xyz/img/icon.png" />
 
@@ -109,7 +109,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#hddm_w" class="md-skip">
+        <a href="#hddmw" class="md-skip">
           Skip to content
         </a>
       
@@ -146,7 +146,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              HDDM_W
+              HDDMW
             
           </span>
         </div>
@@ -2973,14 +2973,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../HDDM-A/" class="md-nav__link">
+      <a href="../HDDMA/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-  HDDM_A
+  HDDMA
 
     
   </span>
@@ -3018,7 +3018,7 @@
   <span class="md-ellipsis">
     
   
-  HDDM_W
+  HDDMW
 
     
   </span>
@@ -3035,7 +3035,7 @@
   <span class="md-ellipsis">
     
   
-  HDDM_W
+  HDDMW
 
     
   </span>
@@ -47155,9 +47155,9 @@
   
 
 
-<h1 id="hddm_w">HDDM_W<a class="headerlink" href="#hddm_w" title="Permanent link">&para;</a></h1>
+<h1 id="hddmw">HDDMW<a class="headerlink" href="#hddmw" title="Permanent link">&para;</a></h1>
 <p>Drift Detection Method based on Hoeffding's bounds with moving weighted average-test.</p>
-<p>HDDM_W is an online drift detection method based on McDiarmid's bounds. HDDM_W uses the Exponentially Weighted Moving Average (EWMA) statistic as estimator. </p>
+<p>HDDMW is an online drift detection method based on McDiarmid's bounds. HDDMW uses the Exponentially Weighted Moving Average (EWMA) statistic as estimator. </p>
 <p><strong>Input:</strong> <code>x</code> is an entry in a stream of bits, where 1 indicates error/failure and 0 represents correct/normal values. </p>
 <p>For example, if a classifier's prediction <span class="arithmatex">\(y'\)</span> is right or wrong w.r.t. the true target label <span class="arithmatex">\(y\)</span>: </p>
 <ul>
@@ -47208,7 +47208,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">river</span><span class="w"> </span><span class="kn">import</span> <span class="n">drift</span>
 
 <span class="n">rng</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">Random</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
-<span class="n">hddm_w</span> <span class="o">=</span> <span class="n">drift</span><span class="o">.</span><span class="n">binary</span><span class="o">.</span><span class="n">HDDM_W</span><span class="p">()</span>
+<span class="n">hddm_w</span> <span class="o">=</span> <span class="n">drift</span><span class="o">.</span><span class="n">binary</span><span class="o">.</span><span class="n">HDDMW</span><span class="p">()</span>
 
 <span class="n">data_stream</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">choices</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">k</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
 <span class="n">data_stream</span> <span class="o">=</span> <span class="n">data_stream</span> <span class="o">+</span> <span class="n">rng</span><span class="o">.</span><span class="n">choices</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">k</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="p">[</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">])</span>

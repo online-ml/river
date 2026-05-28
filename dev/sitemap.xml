@@ -478,10 +478,10 @@
         <loc>https://riverml.xyz/dev/api/drift/binary/FHDDM/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/api/drift/binary/HDDM-A/</loc>
+        <loc>https://riverml.xyz/dev/api/drift/binary/HDDMA/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/api/drift/binary/HDDM-W/</loc>
+        <loc>https://riverml.xyz/dev/api/drift/binary/HDDMW/</loc>
       </url>
       <url>
         <loc>https://riverml.xyz/dev/api/drift/datasets/AirlinePassengers/</loc>
@@ -1381,6 +1381,9 @@
         <loc>https://riverml.xyz/dev/api/tree/HoeffdingTreeRegressor/</loc>
       </url>
       <url>
+        <loc>https://riverml.xyz/dev/api/tree/ISOUPTreeRegressor/</loc>
+      </url>
+      <url>
         <loc>https://riverml.xyz/dev/api/tree/LASTClassifier/</loc>
       </url>
       <url>
@@ -1388,9 +1391,6 @@
       </url>
       <url>
         <loc>https://riverml.xyz/dev/api/tree/SGTRegressor/</loc>
-      </url>
-      <url>
-        <loc>https://riverml.xyz/dev/api/tree/iSOUPTreeRegressor/</loc>
       </url>
       <url>
         <loc>https://riverml.xyz/dev/api/tree/base/Branch/</loc>
@@ -1927,10 +1927,10 @@
         <loc>https://riverml.xyz/dev/api/drift/binary/FHDDM/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/api/drift/binary/HDDM-A/</loc>
+        <loc>https://riverml.xyz/dev/api/drift/binary/HDDMA/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/api/drift/binary/HDDM-W/</loc>
+        <loc>https://riverml.xyz/dev/api/drift/binary/HDDMW/</loc>
       </url>
       <url>
         <loc>https://riverml.xyz/dev/api/drift/datasets/AirlinePassengers/</loc>
@@ -2836,7 +2836,7 @@
         <loc>https://riverml.xyz/dev/api/tree/SGTRegressor/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/api/tree/iSOUPTreeRegressor/</loc>
+        <loc>https://riverml.xyz/dev/api/tree/ISOUPTreeRegressor/</loc>
       </url>
       <url>
         <loc>https://riverml.xyz/dev/api/tree/base/Branch/</loc>
@@ -3373,10 +3373,10 @@
         <loc>https://riverml.xyz/dev/api/drift/binary/FHDDM/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/api/drift/binary/HDDM-A/</loc>
+        <loc>https://riverml.xyz/dev/api/drift/binary/HDDMA/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/api/drift/binary/HDDM-W/</loc>
+        <loc>https://riverml.xyz/dev/api/drift/binary/HDDMW/</loc>
       </url>
       <url>
         <loc>https://riverml.xyz/dev/api/drift/datasets/AirlinePassengers/</loc>
@@ -4282,7 +4282,7 @@
         <loc>https://riverml.xyz/dev/api/tree/SGTRegressor/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/api/tree/iSOUPTreeRegressor/</loc>
+        <loc>https://riverml.xyz/dev/api/tree/ISOUPTreeRegressor/</loc>
       </url>
       <url>
         <loc>https://riverml.xyz/dev/api/tree/base/Branch/</loc>
@@ -4819,10 +4819,10 @@
         <loc>https://riverml.xyz/dev/api/drift/binary/FHDDM/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/api/drift/binary/HDDM-A/</loc>
+        <loc>https://riverml.xyz/dev/api/drift/binary/HDDMA/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/api/drift/binary/HDDM-W/</loc>
+        <loc>https://riverml.xyz/dev/api/drift/binary/HDDMW/</loc>
       </url>
       <url>
         <loc>https://riverml.xyz/dev/api/drift/datasets/AirlinePassengers/</loc>
@@ -5728,7 +5728,7 @@
         <loc>https://riverml.xyz/dev/api/tree/SGTRegressor/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/api/tree/iSOUPTreeRegressor/</loc>
+        <loc>https://riverml.xyz/dev/api/tree/ISOUPTreeRegressor/</loc>
       </url>
       <url>
         <loc>https://riverml.xyz/dev/api/tree/base/Branch/</loc>
@@ -6265,10 +6265,10 @@
         <loc>https://riverml.xyz/dev/api/drift/binary/FHDDM/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/api/drift/binary/HDDM-A/</loc>
+        <loc>https://riverml.xyz/dev/api/drift/binary/HDDMA/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/api/drift/binary/HDDM-W/</loc>
+        <loc>https://riverml.xyz/dev/api/drift/binary/HDDMW/</loc>
       </url>
       <url>
         <loc>https://riverml.xyz/dev/api/drift/datasets/AirlinePassengers/</loc>
@@ -7174,7 +7174,7 @@
         <loc>https://riverml.xyz/dev/api/tree/SGTRegressor/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/api/tree/iSOUPTreeRegressor/</loc>
+        <loc>https://riverml.xyz/dev/api/tree/ISOUPTreeRegressor/</loc>
       </url>
       <url>
         <loc>https://riverml.xyz/dev/api/tree/base/Branch/</loc>
@@ -7711,10 +7711,10 @@
         <loc>https://riverml.xyz/dev/api/drift/binary/FHDDM/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/api/drift/binary/HDDM-A/</loc>
+        <loc>https://riverml.xyz/dev/api/drift/binary/HDDMA/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/api/drift/binary/HDDM-W/</loc>
+        <loc>https://riverml.xyz/dev/api/drift/binary/HDDMW/</loc>
       </url>
       <url>
         <loc>https://riverml.xyz/dev/api/drift/datasets/AirlinePassengers/</loc>
@@ -8620,7 +8620,7 @@
         <loc>https://riverml.xyz/dev/api/tree/SGTRegressor/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/api/tree/iSOUPTreeRegressor/</loc>
+        <loc>https://riverml.xyz/dev/api/tree/ISOUPTreeRegressor/</loc>
       </url>
       <url>
         <loc>https://riverml.xyz/dev/api/tree/base/Branch/</loc>
@@ -9157,10 +9157,10 @@
         <loc>https://riverml.xyz/dev/api/drift/binary/FHDDM/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/api/drift/binary/HDDM-A/</loc>
+        <loc>https://riverml.xyz/dev/api/drift/binary/HDDMA/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/api/drift/binary/HDDM-W/</loc>
+        <loc>https://riverml.xyz/dev/api/drift/binary/HDDMW/</loc>
       </url>
       <url>
         <loc>https://riverml.xyz/dev/api/drift/datasets/AirlinePassengers/</loc>
@@ -10066,7 +10066,7 @@
         <loc>https://riverml.xyz/dev/api/tree/SGTRegressor/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/api/tree/iSOUPTreeRegressor/</loc>
+        <loc>https://riverml.xyz/dev/api/tree/ISOUPTreeRegressor/</loc>
       </url>
       <url>
         <loc>https://riverml.xyz/dev/api/tree/base/Branch/</loc>
@@ -10603,10 +10603,10 @@
         <loc>https://riverml.xyz/dev/api/drift/binary/FHDDM/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/api/drift/binary/HDDM-A/</loc>
+        <loc>https://riverml.xyz/dev/api/drift/binary/HDDMA/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/api/drift/binary/HDDM-W/</loc>
+        <loc>https://riverml.xyz/dev/api/drift/binary/HDDMW/</loc>
       </url>
       <url>
         <loc>https://riverml.xyz/dev/api/drift/datasets/AirlinePassengers/</loc>
@@ -11512,7 +11512,7 @@
         <loc>https://riverml.xyz/dev/api/tree/SGTRegressor/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/api/tree/iSOUPTreeRegressor/</loc>
+        <loc>https://riverml.xyz/dev/api/tree/ISOUPTreeRegressor/</loc>
       </url>
       <url>
         <loc>https://riverml.xyz/dev/api/tree/base/Branch/</loc>
@@ -12049,10 +12049,10 @@
         <loc>https://riverml.xyz/dev/api/drift/binary/FHDDM/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/api/drift/binary/HDDM-A/</loc>
+        <loc>https://riverml.xyz/dev/api/drift/binary/HDDMA/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/api/drift/binary/HDDM-W/</loc>
+        <loc>https://riverml.xyz/dev/api/drift/binary/HDDMW/</loc>
       </url>
       <url>
         <loc>https://riverml.xyz/dev/api/drift/datasets/AirlinePassengers/</loc>
@@ -12958,7 +12958,7 @@
         <loc>https://riverml.xyz/dev/api/tree/SGTRegressor/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/api/tree/iSOUPTreeRegressor/</loc>
+        <loc>https://riverml.xyz/dev/api/tree/ISOUPTreeRegressor/</loc>
       </url>
       <url>
         <loc>https://riverml.xyz/dev/api/tree/base/Branch/</loc>
@@ -13495,10 +13495,10 @@
         <loc>https://riverml.xyz/dev/api/drift/binary/FHDDM/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/api/drift/binary/HDDM-A/</loc>
+        <loc>https://riverml.xyz/dev/api/drift/binary/HDDMA/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/api/drift/binary/HDDM-W/</loc>
+        <loc>https://riverml.xyz/dev/api/drift/binary/HDDMW/</loc>
       </url>
       <url>
         <loc>https://riverml.xyz/dev/api/drift/datasets/AirlinePassengers/</loc>
@@ -14401,7 +14401,7 @@
         <loc>https://riverml.xyz/dev/api/tree/SGTRegressor/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/api/tree/iSOUPTreeRegressor/</loc>
+        <loc>https://riverml.xyz/dev/api/tree/ISOUPTreeRegressor/</loc>
       </url>
       <url>
         <loc>https://riverml.xyz/dev/api/tree/base/Branch/</loc>
@@ -14938,10 +14938,10 @@
         <loc>https://riverml.xyz/dev/api/drift/binary/FHDDM/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/api/drift/binary/HDDM-A/</loc>
+        <loc>https://riverml.xyz/dev/api/drift/binary/HDDMA/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/api/drift/binary/HDDM-W/</loc>
+        <loc>https://riverml.xyz/dev/api/drift/binary/HDDMW/</loc>
       </url>
       <url>
         <loc>https://riverml.xyz/dev/api/drift/datasets/AirlinePassengers/</loc>
@@ -15844,7 +15844,7 @@
         <loc>https://riverml.xyz/dev/api/tree/SGTRegressor/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/api/tree/iSOUPTreeRegressor/</loc>
+        <loc>https://riverml.xyz/dev/api/tree/ISOUPTreeRegressor/</loc>
       </url>
       <url>
         <loc>https://riverml.xyz/dev/api/tree/base/Branch/</loc>
@@ -16381,10 +16381,10 @@
         <loc>https://riverml.xyz/dev/api/drift/binary/FHDDM/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/api/drift/binary/HDDM-A/</loc>
+        <loc>https://riverml.xyz/dev/api/drift/binary/HDDMA/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/api/drift/binary/HDDM-W/</loc>
+        <loc>https://riverml.xyz/dev/api/drift/binary/HDDMW/</loc>
       </url>
       <url>
         <loc>https://riverml.xyz/dev/api/drift/datasets/AirlinePassengers/</loc>
@@ -17287,7 +17287,7 @@
         <loc>https://riverml.xyz/dev/api/tree/SGTRegressor/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/api/tree/iSOUPTreeRegressor/</loc>
+        <loc>https://riverml.xyz/dev/api/tree/ISOUPTreeRegressor/</loc>
       </url>
       <url>
         <loc>https://riverml.xyz/dev/api/tree/base/Branch/</loc>
@@ -17824,10 +17824,10 @@
         <loc>https://riverml.xyz/dev/api/drift/binary/FHDDM/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/api/drift/binary/HDDM-A/</loc>
+        <loc>https://riverml.xyz/dev/api/drift/binary/HDDMA/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/api/drift/binary/HDDM-W/</loc>
+        <loc>https://riverml.xyz/dev/api/drift/binary/HDDMW/</loc>
       </url>
       <url>
         <loc>https://riverml.xyz/dev/api/drift/datasets/AirlinePassengers/</loc>
@@ -18730,7 +18730,7 @@
         <loc>https://riverml.xyz/dev/api/tree/SGTRegressor/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/api/tree/iSOUPTreeRegressor/</loc>
+        <loc>https://riverml.xyz/dev/api/tree/ISOUPTreeRegressor/</loc>
       </url>
       <url>
         <loc>https://riverml.xyz/dev/api/tree/base/Branch/</loc>
@@ -19267,10 +19267,10 @@
         <loc>https://riverml.xyz/dev/api/drift/binary/FHDDM/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/api/drift/binary/HDDM-A/</loc>
+        <loc>https://riverml.xyz/dev/api/drift/binary/HDDMA/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/api/drift/binary/HDDM-W/</loc>
+        <loc>https://riverml.xyz/dev/api/drift/binary/HDDMW/</loc>
       </url>
       <url>
         <loc>https://riverml.xyz/dev/api/drift/datasets/AirlinePassengers/</loc>
@@ -20173,7 +20173,7 @@
         <loc>https://riverml.xyz/dev/api/tree/SGTRegressor/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/api/tree/iSOUPTreeRegressor/</loc>
+        <loc>https://riverml.xyz/dev/api/tree/ISOUPTreeRegressor/</loc>
       </url>
       <url>
         <loc>https://riverml.xyz/dev/api/tree/base/Branch/</loc>
@@ -20710,10 +20710,10 @@
         <loc>https://riverml.xyz/dev/api/drift/binary/FHDDM/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/api/drift/binary/HDDM-A/</loc>
+        <loc>https://riverml.xyz/dev/api/drift/binary/HDDMA/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/api/drift/binary/HDDM-W/</loc>
+        <loc>https://riverml.xyz/dev/api/drift/binary/HDDMW/</loc>
       </url>
       <url>
         <loc>https://riverml.xyz/dev/api/drift/datasets/AirlinePassengers/</loc>
@@ -21616,7 +21616,7 @@
         <loc>https://riverml.xyz/dev/api/tree/SGTRegressor/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/api/tree/iSOUPTreeRegressor/</loc>
+        <loc>https://riverml.xyz/dev/api/tree/ISOUPTreeRegressor/</loc>
       </url>
       <url>
         <loc>https://riverml.xyz/dev/api/tree/base/Branch/</loc>
@@ -22153,10 +22153,10 @@
         <loc>https://riverml.xyz/dev/api/drift/binary/FHDDM/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/api/drift/binary/HDDM-A/</loc>
+        <loc>https://riverml.xyz/dev/api/drift/binary/HDDMA/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/api/drift/binary/HDDM-W/</loc>
+        <loc>https://riverml.xyz/dev/api/drift/binary/HDDMW/</loc>
       </url>
       <url>
         <loc>https://riverml.xyz/dev/api/drift/datasets/AirlinePassengers/</loc>
@@ -23059,7 +23059,7 @@
         <loc>https://riverml.xyz/dev/api/tree/SGTRegressor/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/api/tree/iSOUPTreeRegressor/</loc>
+        <loc>https://riverml.xyz/dev/api/tree/ISOUPTreeRegressor/</loc>
       </url>
       <url>
         <loc>https://riverml.xyz/dev/api/tree/base/Branch/</loc>
