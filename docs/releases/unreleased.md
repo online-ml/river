@@ -18,6 +18,10 @@
 
 - Reimplemented `drift.ADWIN`'s inner `AdaptiveWindowing` in Rust. The Cython sources are removed; output is bit-identical to the Cython baseline (width, total, variance, n_detections, drift_detected) over a 3.8k-step parity fuzz. Rust is 1.3-3.5x faster than the previous Cython implementation across `clock` settings.
 
+## misc
+
+- Added `misc.ZstdClassifier`, a compression-based text classifier that scores documents by the size of their zstd-compressed output under per-class prefix dictionaries built from a sliding byte window. Requires Python 3.14 (`compression.zstd`). See [Zstd-based text classification](https://maxhalford.github.io/blog/text-classification-zstd/).
+
 ## metrics
 
 - Sped up `metrics.Silhouette` by switching the centroid distance computations from the `utils.math.minkowski_distance` Python wrapper to a direct call into the Rust `euclidean_distance_dict`.

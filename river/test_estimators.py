@@ -19,6 +19,7 @@ from river import (
     feature_selection,
     imblearn,
     linear_model,
+    misc,
     model_selection,
     multiclass,
     neighbors,
@@ -67,6 +68,7 @@ def iter_estimators_which_can_be_tested():
         imblearn.RandomOverSampler,
         imblearn.RandomUnderSampler,
         imblearn.RandomSampler,
+        misc.ZstdClassifier,  # consumes raw text, not feature dicts
         model_selection.SuccessiveHalvingClassifier,
         neighbors.LazySearch,
         neural_net.MLPRegressor,
