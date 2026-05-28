@@ -18,6 +18,10 @@
 
 - Reimplemented `drift.ADWIN`'s inner `AdaptiveWindowing` in Rust. The Cython sources are removed; output is bit-identical to the Cython baseline (width, total, variance, n_detections, drift_detected) over a 3.8k-step parity fuzz. Rust is 1.3-3.5x faster than the previous Cython implementation across `clock` settings.
 
+## compat
+
+- Fixed `compat.SKL2RiverClassifier.predict_proba_many` raising a `TypeError` whenever the wrapped estimator was already fitted: it incorrectly built a `pd.Series(..., columns=...)` instead of a `pd.DataFrame`. Test coverage previously only exercised the not-fitted branch. `SKL2RiverClassifier` and `SKL2RiverRegressor` are now also exercised by the generic estimator-check suite via `_unit_test_params`.
+- Fixed `compat.SKL2RiverClassifier._multiclass` advertising multi-class support unconditionally; it now reflects `len(classes) > 2`.
 ## misc
 
 - Added `misc.ZstdClassifier`, a compression-based text classifier that scores documents by the size of their zstd-compressed output under per-class prefix dictionaries built from a sliding byte window. Requires Python 3.14 (`compression.zstd`). See [Zstd-based text classification](https://maxhalford.github.io/blog/text-classification-zstd/).
