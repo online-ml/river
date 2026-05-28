@@ -77,6 +77,40 @@ def _is_broken_link(source_file: Path, target: str) -> bool:
     return not (resolved.is_dir() or resolved.is_file() or resolved.with_suffix(".md").is_file())
 
 
+def test_submodules_define_all() -> None:
+    """Every submodule reachable via __all__ must itself define __all__.
+
+    The docs parser walks submodules listed in a module's __all__ and reads
+    each submodule's __all__ to find public members. A missing __all__ on a
+    reachable submodule crashes the docs build with an AttributeError.
+    """
+    missing: list[str] = []
+
+    def visit(prefix: str, mod: types.ModuleType) -> None:
+        if not hasattr(mod, "__all__"):
+            missing.append(prefix)
+            return
+        for name, submod in inspect.getmembers(mod, inspect.ismodule):
+            if (
+                name in mod.__all__
+                and not name.startswith("_")
+                and name not in ("tags", "typing", "inspect", "skmultiflow_utils")
+            ):
+                visit(f"{prefix}.{name}", submod)
+
+    library = importlib.import_module("river.api")
+    for mod_name, mod in inspect.getmembers(library, inspect.ismodule):
+        if mod_name.startswith("_") or mod_name == "api":
+            continue
+        visit(f"river.{mod_name}", mod)
+
+    if missing:
+        pytest.fail(
+            "The following submodules are exposed via __all__ but do not "
+            "define __all__ themselves (the docs build will fail):\n  " + "\n  ".join(missing)
+        )
+
+
 def test_print_docstring() -> None:
     """Every public object's docstring must be parseable by the doc generator."""
     failures = []
