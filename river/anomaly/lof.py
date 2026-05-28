@@ -1,11 +1,11 @@
 from __future__ import annotations
 
 import copy
-import functools
 import typing
 
-from river import anomaly, utils
+from river import anomaly
 from river.neighbors.base import DistanceFunc
+from river.utils.vectordict import euclidean_distance_dict
 
 if typing.TYPE_CHECKING:
     import pandas as pd
@@ -269,11 +269,7 @@ class LocalOutlierFactor(anomaly.base.AnomalyDetector):
         self.lof: dict = {}
         self.local_reach: dict = {}
         self.distance_func = distance_func
-        self.distance = (
-            distance_func
-            if distance_func is not None
-            else functools.partial(utils.math.minkowski_distance, p=2)
-        )
+        self.distance = distance_func if distance_func is not None else euclidean_distance_dict
 
     def learn_many(self, x: pd.DataFrame):
         x = x[0].tolist()

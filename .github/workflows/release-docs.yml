@@ -24,9 +24,10 @@ jobs:
       - name: Install the project
         run: uv sync --locked --all-extras --dev
 
-      - name: Install dependencies
+      - name: Use Rich in notebooks
         run: |
-          uv pip install en_core_web_sm@https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl
+          uv run ipython profile create
+          echo "%load_ext rich" > ~/.ipython/profile_default/startup/00_rich.ipy
 
       - name: Execute notebooks
         run: uv run make execute-notebooks

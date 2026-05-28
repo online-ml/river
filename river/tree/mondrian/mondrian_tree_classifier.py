@@ -1,9 +1,14 @@
 from __future__ import annotations
 
 from river import base
-from river.tree.mondrian._mondrian_ops import (  # type: ignore[import-not-found]
-    go_downwards_classifier_c,
-    predict_proba_upward_c,
+from river.stats._rust_stats import (
+    go_downwards_classifier as go_downwards_classifier_c,
+)
+from river.stats._rust_stats import (
+    go_upwards as go_upwards_c,
+)
+from river.stats._rust_stats import (
+    predict_proba_classifier as predict_proba_classifier_c,
 )
 from river.tree.mondrian.mondrian_tree import MondrianTree
 from river.tree.mondrian.mondrian_tree_nodes import (
@@ -16,54 +21,64 @@ from river.tree.mondrian.mondrian_tree_nodes import (
 class MondrianTreeClassifier(MondrianTree, base.Classifier):
     """Mondrian Tree classifier.
 
-    Parameters
-    ----------
-    step
-        Step of the tree.
-    use_aggregation
-        Whether to use aggregation weighting techniques or not.
-    dirichlet
-        Dirichlet parameter of the problem.
-    split_pure
-        Whether the tree should split pure leafs during training or not.
-    iteration
-        Number iterations to do during training.
-    max_nodes
-        Maximum number of nodes allowed in the tree. No new splits will occur once this
-        limit is reached. If `None`, the tree grows without bound.
-    seed
-        Random seed for reproducibility.
+        By default, this implementation assumes that all feature values are scaled between 0 and 1.
+        If you cannot assume the minimum and maximum values for each feature,
+        you can use preprocessing.MinMaxScaler as an initial preprocessing step.
+        This is important because Mondrian trees are highly sensitive to feature scaling, as
+        the distance between a sample and the node's bounding box is calculated as the sum of the distances across all features.
 
-    Notes
-    -----
-    The Mondrian Tree Classifier is a type of decision tree that bases splitting decisions over a
-    Mondrian process.
+        Parameters
+        ----------
+        step
+            Step of the tree.
+        use_aggregation
+            Whether to use aggregation weighting techniques or not.
+        dirichlet
+            Dirichlet parameter of the problem.
+        split_pure
+            Whether the tree should split pure leafs during training or not.
+        iteration
+            Number iterations to do during training.
+        max_nodes
+            Maximum number of nodes allowed in the tree. No new splits will occur once this
+            limit is reached. If `None`, the tree grows without bound.
+        seed
+            Random seed for reproducibility.
 
-    Examples
-    --------
+        Notes
+        -----
+        The Mondrian Tree Classifier is a type of decision tree that bases splitting decisions over a
+        Mondrian process.
+
+        Examples
+        --------
     >>> from river import datasets
-    >>> from river import evaluate
-    >>> from river import metrics
-    >>> from river import tree
+        >>> from river import evaluate
+        >>> from river import metrics
+        >>> from river import preprocessing
+        >>> from river import tree
 
-    >>> dataset = datasets.Bananas().take(500)
+        >>> dataset = datasets.Bananas()
 
-    >>> model = tree.mondrian.MondrianTreeClassifier(
-    ...     step=0.1,
-    ...     use_aggregation=True,
-    ...     dirichlet=0.2,
-    ...     seed=1
-    ... )
+        >>> model = (
+        ...     preprocessing.MinMaxScaler() |
+        ...     tree.mondrian.MondrianTreeClassifier(
+        ...         step=1.0,
+        ...         use_aggregation=True,
+        ...         dirichlet=0.5,
+        ...         seed=1
+        ...     )
+        ... )
 
-    >>> metric = metrics.Accuracy()
+        >>> metric = metrics.Accuracy()
 
-    >>> evaluate.progressive_val_score(dataset, model, metric)
-    Accuracy: 76.15%
+        >>> evaluate.progressive_val_score(dataset, model, metric)
+        Accuracy: 70.64%
 
-    References
-    ----------
-    [^1]: Balaji Lakshminarayanan, Daniel M. Roy, Yee Whye Teh. Mondrian Forests: Efficient Online Random Forests.
-        arXiv:1406.2673, pages 2-4
+        References
+        ----------
+        [^1]: Balaji Lakshminarayanan, Daniel M. Roy, Yee Whye Teh. Mondrian Forests: Efficient Online Random Forests.
+            arXiv:1406.2673, pages 2-4
 
     """
 
@@ -200,9 +215,9 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
         branch.replant(node, True)
 
         if is_right_extension:
-            left.replant(node)
+            left.replant(node, True)
         else:
-            right.replant(node)
+            right.replant(node, True)
 
         # To avoid leaving garbage behind
         del node
@@ -237,26 +252,8 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
         return leaf
 
     def _go_upwards(self, leaf: MondrianLeafClassifier):
-        """Update the tree (upwards procedure).
-
-        Parameters
-        ----------
-        leaf
-            Leaf to start from when going upward.
-
-        """
-
-        current_node = leaf
-
-        if self.iteration >= 1:
-            while True:
-                current_node.update_weight_tree()
-                if current_node.parent is None:
-                    # We arrived at the root
-                    break
-                # Note that the root node is updated as well
-                # We go up to the root in the tree
-                current_node = current_node.parent
+        """Update the tree (upwards procedure)."""
+        go_upwards_c(leaf, self.iteration)
 
     @property
     def _multiclass(self):
@@ -289,29 +286,11 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
 
         """
 
-        # If the tree hasn't seen any sample, then it should return
-        # the default empty dict
-
         if not self._is_initialized:
             return {}
 
-        # Find leaf using direct traversal, handling missing features
-        current = self._root
-        while not current.is_leaf:
-            if current.feature in x:
-                if x[current.feature] <= current.threshold:
-                    current = current.children[0]
-                else:
-                    current = current.children[1]
-            else:
-                # Missing feature: follow the most traversed path
-                _, current = current.most_common_path()
-
-        if not self.use_aggregation:
-            return self._predict(current)
-
-        # Use Cython for the entire upward aggregation walk
         n_classes = len(self._classes)
-        scores = predict_proba_upward_c(current, n_classes, self.dirichlet)
-
+        scores = predict_proba_classifier_c(
+            self._root, x, n_classes, self.dirichlet, self.use_aggregation
+        )
         return {self._idx_to_class[i]: scores[i] for i in range(n_classes)}

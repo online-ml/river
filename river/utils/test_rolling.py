@@ -32,12 +32,12 @@ def test_with_counter() -> None:
 
 def test_rolling_with_not_rollable() -> None:
     with pytest.raises(ValueError):
-        utils.Rolling(stats.Quantile(), window_size=10)  # type: ignore[arg-type]
+        utils.Rolling(stats.Quantile(), window_size=10)  # type: ignore[type-var]
 
 
 def test_time_rolling_with_not_rollable() -> None:
     with pytest.raises(ValueError):
-        utils.TimeRolling(stats.Quantile(), period=dt.timedelta(seconds=10))  # type: ignore[arg-type]
+        utils.TimeRolling(stats.Quantile(), period=dt.timedelta(seconds=10))  # type: ignore[type-var]
 
 
 def test_issue_1343() -> None:

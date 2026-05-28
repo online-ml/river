@@ -1,5 +1,5 @@
-# Cython and C/C++ sources
-recursive-include river/ *.pyx *.pxd *.c *.cpp *.hpp *.h
+# Cython sources
+recursive-include river/ *.pyx *.pxd
 
 # Dataset files shipped with the package
 include river/datasets/*.csv
