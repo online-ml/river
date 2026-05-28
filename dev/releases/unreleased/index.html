@@ -2126,6 +2126,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#packaging" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        packaging
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#checks" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -3539,6 +3550,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#packaging" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        packaging
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#checks" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -3821,6 +3843,11 @@
 
 
 <h1 id="unreleased">Unreleased<a class="headerlink" href="#unreleased" title="Permanent link">&para;</a></h1>
+<h2 id="packaging">packaging<a class="headerlink" href="#packaging" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Breaking:</strong> <code>pandas</code> is no longer a hard dependency of River. The core online interface (<code>learn_one</code> / <code>predict_one</code>) works with <code>pip install river</code> alone. The mini-batch interface (<code>learn_many</code>, <code>predict_many</code>, <code>predict_proba_many</code>, <code>transform_many</code>) still requires <code>pandas</code>; install with <code>pip install "river[pandas]"</code>. Calling a <code>*_many</code> method without <code>pandas</code> raises an <code>ImportError</code> pointing to the extra.</li>
+<li>Added a <code>no-pandas</code> CI job that installs River without <code>pandas</code> and runs the full test suite. A conftest hook auto-skips test modules and doctest sources that mention <code>pandas</code> (or <code>fetch_openml</code>, which goes through pandas inside scikit-learn).</li>
+</ul>
 <h2 id="checks">checks<a class="headerlink" href="#checks" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Added ten new global estimator checks to <code>river.checks</code>: <code>check_predict_one_pure</code> (inference methods are pure), <code>check_transform_one</code> (transform_one is exercised and returns a dict), <code>check_clone_is_independent</code> (training the original does not mutate clones), <code>check_predict_many_matches_predict_one</code> / <code>check_predict_proba_many_matches_predict_proba_one</code> / <code>check_transform_many_matches_transform_one</code> (mini-batch ↔ one-at-a-time consistency for <code>base.MiniBatch*</code> estimators), <code>check_get_params_matches_signature</code> (<code>_get_params()</code> exposes every <code>__init__</code> keyword), <code>check_predict_one_before_any_learn</code> (cold-start inference does not crash), <code>check_repr_roundtrips_clone</code> (<code>repr(model) == repr(model.clone())</code>), <code>check_clone_with_new_params_applies</code> (<code>clone(new_params=...)</code> applies the overrides), <code>check_classifier_tracks_seen_labels</code> (<code>predict_proba_one</code> includes every label observed during training), and <code>check_no_state_aliasing_with_input</code> (mutating <code>x</code> after <code>learn_one</code> does not change model state). <code>_yield_datasets</code> now also yields a dataset for plain <a href="../../api/base/Transformer"><code>base.Transformer</code></a> / <a href="../../api/base/SupervisedTransformer"><code>base.SupervisedTransformer</code></a> estimators, which were previously skipped by the dataset-driven checks.</li>

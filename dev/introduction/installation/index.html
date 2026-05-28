@@ -500,6 +500,23 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Installation
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="././" class="md-nav__link md-nav__link--active">
         
   
@@ -515,6 +532,37 @@
   
 
       </a>
+      
+        
+
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#mini-batch-support-optional-pandas-extra" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Mini-batch support (optional <code>pandas</code> extra)
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -2351,6 +2399,25 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#mini-batch-support-optional-pandas-extra" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Mini-batch support (optional <code>pandas</code> extra)
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -2379,6 +2446,14 @@
 pip<span class="w"> </span>install<span class="w"> </span>git+ssh://git@github.com/online-ml/river.git<span class="w"> </span>--upgrade<span class="w">  </span><span class="c1"># using SSH</span>
 </code></pre></div>
 <p>This method requires having Cython and Rust installed on your machine.</p>
+<h2 id="mini-batch-support-optional-pandas-extra">Mini-batch support (optional <code>pandas</code> extra)<a class="headerlink" href="#mini-batch-support-optional-pandas-extra" title="Permanent link">&para;</a></h2>
+<p>River's core online interface (<code>learn_one</code> / <code>predict_one</code>) does <strong>not</strong> require <code>pandas</code>. The mini-batch interface (<code>learn_many</code>, <code>predict_many</code>, <code>predict_proba_many</code>, <code>transform_many</code>) is built on top of <code>pandas.DataFrame</code> and <code>pandas.Series</code>, so <code>pandas</code> is an opt-in dependency.</p>
+<p>To install River together with <code>pandas</code>:</p>
+<div class="language-sh highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;river[pandas]&quot;</span>
+<span class="c1"># or</span>
+uv<span class="w"> </span>add<span class="w"> </span><span class="s2">&quot;river[pandas]&quot;</span>
+</code></pre></div>
+<p>If you call a mini-batch method without <code>pandas</code> installed, River raises an <code>ImportError</code> pointing you to this extra.</p>
 <p>Feel welcome to <a href="https://github.com/online-ml/river/issues/new">open an issue on GitHub</a> if you are having any trouble.</p>
 
 
