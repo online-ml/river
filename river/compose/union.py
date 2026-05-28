@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import collections
 import types
 
 import pandas as pd
@@ -264,15 +263,21 @@ class TransformerUnion(base.MiniBatchTransformer):
             is supervised (i.e. it inherits from `base.SupervisedTransformer`).
 
         """
+        SupervisedT = base.SupervisedTransformer
         for t in self.transformers.values():
-            if isinstance(t, base.SupervisedTransformer):
+            if isinstance(t, SupervisedT):
                 t.learn_one(x, y)
             else:
                 t.learn_one(x)
 
     def transform_one(self, x):
         """Passes the data through each transformer and packs the results together."""
-        return dict(collections.ChainMap(*(t.transform_one(x) for t in self.transformers.values())))
+        # Equivalent to `dict(ChainMap(*outputs))` (first-occurrence wins for duplicate
+        # keys) but avoids the ChainMap construction overhead.
+        result: dict = {}
+        for t in reversed(self.transformers.values()):
+            result.update(t.transform_one(x))
+        return result
 
     # Mini-batch methods
 

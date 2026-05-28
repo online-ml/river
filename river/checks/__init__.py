@@ -11,7 +11,7 @@ from river.base import Estimator
 from river.model_selection.base import ModelSelector
 from river.reco.base import Ranker
 
-from . import anomaly, clf, common, model_selection, reco
+from . import anomaly, clf, common, model_selection, reco, time_series
 
 __all__ = ["check_estimator", "yield_checks"]
 
@@ -53,6 +53,23 @@ def _yield_datasets(model: Estimator):
 
     from river import base, compose, datasets, preprocessing, stream
     from river.anomaly.base import AnomalyDetector
+    from river.time_series.base import Forecaster
+
+    # Time series forecasters have a specialized interface: learn_one(y, x=None) and
+    # forecast(horizon, xs=None). The dataset still yields (x, y) pairs so checks can
+    # exercise optional exogenous features.
+    if isinstance(model, Forecaster):
+        yield _DummyDataset(
+            ({"time": 1.0, "period": 1.0}, 10.0),
+            ({"time": 2.0, "period": 2.0}, 12.0),
+            ({"time": 3.0, "period": 3.0}, 13.0),
+            ({"time": 4.0, "period": 0.0}, 16.0),
+            ({"time": 5.0, "period": 1.0}, 18.0),
+            ({"time": 6.0, "period": 2.0}, 20.0),
+            ({"time": 7.0, "period": 3.0}, 21.0),
+            ({"time": 8.0, "period": 0.0}, 24.0),
+        )
+        return
 
     # Recommendation models can be regressors or classifiers, but they have requirements as to the
     # structure of the data
@@ -122,6 +139,7 @@ def yield_checks(model: Estimator) -> typing.Iterator[typing.Callable]:
 
     from river import base
     from river.anomaly.base import AnomalyDetector
+    from river.time_series.base import Forecaster
 
     # General checks
     yield common.check_repr
@@ -174,6 +192,12 @@ def yield_checks(model: Estimator) -> typing.Iterator[typing.Callable]:
 
     if isinstance(model, AnomalyDetector):
         dataset_checks.append(anomaly.check_roc_auc)
+
+    if isinstance(model, Forecaster):
+        dataset_checks = [
+            time_series.check_learn_one,
+            time_series.check_forecast,
+        ]
 
     for dataset_check in dataset_checks:
         for dataset in _yield_datasets(model):
