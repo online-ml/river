@@ -215,8 +215,10 @@ class MondrianTreeRegressor(MondrianTree, base.Regressor):
         go_upwards_c(leaf, self.iteration)
 
     def learn_one(self, x, y):
-        # Setting current sample
-        self._x = x
+        # Setting current sample. Copy x so the caller can safely mutate the
+        # input dict after learn_one without disturbing the tree's stored
+        # bounding boxes.
+        self._x = dict(x)
         self._y = y
 
         # Learning step

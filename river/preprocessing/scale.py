@@ -432,7 +432,9 @@ class RobustScaler(base.Transformer):
         for i, xi in x.items():
             x_tf[i] = xi
             if self.with_centering:
-                x_tf[i] -= self.median[i].get()
+                median = self.median[i].get()
+                if median is not None:
+                    x_tf[i] -= median
             if self.with_scaling:
                 x_tf[i] = safe_div(x_tf[i], self.iqr[i].get())
 

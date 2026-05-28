@@ -1,5 +1,44 @@
 # Unreleased
 
+## checks
+
+- Added ten new global estimator checks to `river.checks`: `check_predict_one_pure` (inference methods are pure), `check_transform_one` (transform_one is exercised and returns a dict), `check_clone_is_independent` (training the original does not mutate clones), `check_predict_many_matches_predict_one` / `check_predict_proba_many_matches_predict_proba_one` / `check_transform_many_matches_transform_one` (mini-batch ↔ one-at-a-time consistency for `base.MiniBatch*` estimators), `check_get_params_matches_signature` (`_get_params()` exposes every `__init__` keyword), `check_predict_one_before_any_learn` (cold-start inference does not crash), `check_repr_roundtrips_clone` (`repr(model) == repr(model.clone())`), `check_clone_with_new_params_applies` (`clone(new_params=...)` applies the overrides), `check_classifier_tracks_seen_labels` (`predict_proba_one` includes every label observed during training), and `check_no_state_aliasing_with_input` (mutating `x` after `learn_one` does not change model state). `_yield_datasets` now also yields a dataset for plain `base.Transformer` / `base.SupervisedTransformer` estimators, which were previously skipped by the dataset-driven checks.
+- Refactored the existing dataset-driven checks (`check_pickling`, `check_shuffle_features_no_impact`, `check_emerging_features`, `check_disappearing_features`, `check_radically_disappearing_features`, `check_seeding_is_idempotent`) to dispatch through `_infer` / `_learn` helpers so transformers are exercised on the same code paths as classifiers, regressors, and anomaly detectors.
+- `checks.utils.assert_predictions_are_close` now treats two NaN floats as equivalent, so transformers that legitimately return NaN before they have observed any data (e.g. `MinMaxScaler.transform_one` on the first event) no longer trip the shuffle-invariance check.
+
+## cluster
+
+- Fixed `cluster.TextClust` corrupting its own parameters: `__init__` was overwriting `self.micro_distance` / `self.macro_distance` with runtime distance instances, breaking `clone` and `repr` round-trips. The runtime instances are now stored on `_micro_distance` / `_macro_distance`. Internal camelCase identifiers (`clusterId`, `microToMacro`, `numClusters`, `updateMacroClusters`, `_calculateIDF`) were renamed to snake_case, and the nested helper classes `tfcontainer`, `microcluster`, `distances` were renamed to `TfContainer`, `MicroCluster`, `Distances`.
+
+## drift
+
+- **Breaking:** Renamed `drift.binary.HDDM_A` → `drift.binary.HDDMA` and `drift.binary.HDDM_W` → `drift.binary.HDDMW` to comply with PEP-8 CapWords class naming.
+
+## imblearn
+
+- Fixed `imblearn.HardSamplingClassifier` / `imblearn.HardSamplingRegressor` storing references to user-supplied feature dictionaries in their buffer; the buffered triplets now hold shallow copies so callers can safely mutate `x` after `learn_one`.
+
+## naive_bayes
+
+- Marked `predict_many`/`predict_proba_many` checks as skipped on `BaseNB` subclasses (`MultinomialNB`, `BernoulliNB`, `ComplementNB`) via `_unit_test_skips`. `joint_log_likelihood_many`'s output is mis-aligned with the input batch when the model is trained via `learn_one` rather than `learn_many`, so the new mini-batch consistency checks fail. Tracked separately.
+
+## neighbors
+
+- Fixed `neighbors.KNNClassifier` / `neighbors.KNNRegressor` storing references to the input feature dicts in their search window; `learn_one` now stores a shallow copy.
+
+## preprocessing
+
+- Fixed `preprocessing.RobustScaler.transform_one` crashing with `TypeError` when called before any `learn_one` (the running median returned `None`); transform now passes the value through unchanged when centering statistics are not yet available.
+
+## tree
+
+- Fixed `tree.mondrian.MondrianTreeRegressor.learn_one` storing the input feature dict by reference on `self._x`; it now stores a shallow copy so callers can safely mutate `x` after `learn_one`. Knock-on fix for `forest.AMFRegressor`.
+- **Breaking:** Renamed `tree.iSOUPTreeRegressor` → `tree.ISOUPTreeRegressor` to comply with PEP-8 CapWords class naming.
+
+## tooling
+
+- Enabled the pep8-naming ruleset (`N801`, `N802`, `N804`) in ruff so that future class, function, and `classmethod`-first-argument naming violations are caught at lint time. `N803` (argument names) and `N806` (local variable names) were intentionally left out — `X: pd.DataFrame`, `A_numpy = ...`, and similar scientific-Python conventions are pervasive in the codebase.
+
 ## docs
 
 - Fixed corrupted markdown cells in the Hoeffding Trees notebook example that caused blank page titles and invisible sidebar navigation. Fixes [#1847](https://github.com/online-ml/river/issues/1847).

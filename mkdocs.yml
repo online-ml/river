@@ -197,8 +197,8 @@ nav:
         - api/drift/binary/DDM.md
         - api/drift/binary/EDDM.md
         - api/drift/binary/FHDDM.md
-        - api/drift/binary/HDDM-A.md
-        - api/drift/binary/HDDM-W.md
+        - api/drift/binary/HDDMA.md
+        - api/drift/binary/HDDMW.md
       - datasets:
         - api/drift/datasets/AirlinePassengers.md
         - api/drift/datasets/Apple.md
@@ -542,7 +542,7 @@ nav:
       - api/tree/LASTClassifier.md
       - api/tree/SGTClassifier.md
       - api/tree/SGTRegressor.md
-      - api/tree/iSOUPTreeRegressor.md
+      - api/tree/ISOUPTreeRegressor.md
       - base:
         - api/tree/base/Branch.md
         - api/tree/base/Leaf.md
@@ -746,8 +746,8 @@ nav:
         - api/drift/binary/DDM.md
         - api/drift/binary/EDDM.md
         - api/drift/binary/FHDDM.md
-        - api/drift/binary/HDDM-A.md
-        - api/drift/binary/HDDM-W.md
+        - api/drift/binary/HDDMA.md
+        - api/drift/binary/HDDMW.md
       - datasets:
         - api/drift/datasets/AirlinePassengers.md
         - api/drift/datasets/Apple.md
@@ -1091,7 +1091,7 @@ nav:
       - api/tree/LASTClassifier.md
       - api/tree/SGTClassifier.md
       - api/tree/SGTRegressor.md
-      - api/tree/iSOUPTreeRegressor.md
+      - api/tree/ISOUPTreeRegressor.md
       - base:
         - api/tree/base/Branch.md
         - api/tree/base/Leaf.md
@@ -1295,8 +1295,8 @@ nav:
         - api/drift/binary/DDM.md
         - api/drift/binary/EDDM.md
         - api/drift/binary/FHDDM.md
-        - api/drift/binary/HDDM-A.md
-        - api/drift/binary/HDDM-W.md
+        - api/drift/binary/HDDMA.md
+        - api/drift/binary/HDDMW.md
       - datasets:
         - api/drift/datasets/AirlinePassengers.md
         - api/drift/datasets/Apple.md
@@ -1640,7 +1640,7 @@ nav:
       - api/tree/LASTClassifier.md
       - api/tree/SGTClassifier.md
       - api/tree/SGTRegressor.md
-      - api/tree/iSOUPTreeRegressor.md
+      - api/tree/ISOUPTreeRegressor.md
       - base:
         - api/tree/base/Branch.md
         - api/tree/base/Leaf.md
@@ -1844,8 +1844,8 @@ nav:
         - api/drift/binary/DDM.md
         - api/drift/binary/EDDM.md
         - api/drift/binary/FHDDM.md
-        - api/drift/binary/HDDM-A.md
-        - api/drift/binary/HDDM-W.md
+        - api/drift/binary/HDDMA.md
+        - api/drift/binary/HDDMW.md
       - datasets:
         - api/drift/datasets/AirlinePassengers.md
         - api/drift/datasets/Apple.md
@@ -2189,7 +2189,7 @@ nav:
       - api/tree/LASTClassifier.md
       - api/tree/SGTClassifier.md
       - api/tree/SGTRegressor.md
-      - api/tree/iSOUPTreeRegressor.md
+      - api/tree/ISOUPTreeRegressor.md
       - base:
         - api/tree/base/Branch.md
         - api/tree/base/Leaf.md
@@ -2393,8 +2393,8 @@ nav:
         - api/drift/binary/DDM.md
         - api/drift/binary/EDDM.md
         - api/drift/binary/FHDDM.md
-        - api/drift/binary/HDDM-A.md
-        - api/drift/binary/HDDM-W.md
+        - api/drift/binary/HDDMA.md
+        - api/drift/binary/HDDMW.md
       - datasets:
         - api/drift/datasets/AirlinePassengers.md
         - api/drift/datasets/Apple.md
@@ -2738,7 +2738,7 @@ nav:
       - api/tree/LASTClassifier.md
       - api/tree/SGTClassifier.md
       - api/tree/SGTRegressor.md
-      - api/tree/iSOUPTreeRegressor.md
+      - api/tree/ISOUPTreeRegressor.md
       - base:
         - api/tree/base/Branch.md
         - api/tree/base/Leaf.md
@@ -2942,8 +2942,8 @@ nav:
         - api/drift/binary/DDM.md
         - api/drift/binary/EDDM.md
         - api/drift/binary/FHDDM.md
-        - api/drift/binary/HDDM-A.md
-        - api/drift/binary/HDDM-W.md
+        - api/drift/binary/HDDMA.md
+        - api/drift/binary/HDDMW.md
       - datasets:
         - api/drift/datasets/AirlinePassengers.md
         - api/drift/datasets/Apple.md
@@ -3287,7 +3287,7 @@ nav:
       - api/tree/LASTClassifier.md
       - api/tree/SGTClassifier.md
       - api/tree/SGTRegressor.md
-      - api/tree/iSOUPTreeRegressor.md
+      - api/tree/ISOUPTreeRegressor.md
       - base:
         - api/tree/base/Branch.md
         - api/tree/base/Leaf.md
@@ -3491,8 +3491,8 @@ nav:
         - api/drift/binary/DDM.md
         - api/drift/binary/EDDM.md
         - api/drift/binary/FHDDM.md
-        - api/drift/binary/HDDM-A.md
-        - api/drift/binary/HDDM-W.md
+        - api/drift/binary/HDDMA.md
+        - api/drift/binary/HDDMW.md
       - datasets:
         - api/drift/datasets/AirlinePassengers.md
         - api/drift/datasets/Apple.md
@@ -3836,7 +3836,7 @@ nav:
       - api/tree/LASTClassifier.md
       - api/tree/SGTClassifier.md
       - api/tree/SGTRegressor.md
-      - api/tree/iSOUPTreeRegressor.md
+      - api/tree/ISOUPTreeRegressor.md
       - base:
         - api/tree/base/Branch.md
         - api/tree/base/Leaf.md
@@ -4040,8 +4040,8 @@ nav:
         - api/drift/binary/DDM.md
         - api/drift/binary/EDDM.md
         - api/drift/binary/FHDDM.md
-        - api/drift/binary/HDDM-A.md
-        - api/drift/binary/HDDM-W.md
+        - api/drift/binary/HDDMA.md
+        - api/drift/binary/HDDMW.md
       - datasets:
         - api/drift/datasets/AirlinePassengers.md
         - api/drift/datasets/Apple.md
@@ -4385,7 +4385,7 @@ nav:
       - api/tree/LASTClassifier.md
       - api/tree/SGTClassifier.md
       - api/tree/SGTRegressor.md
-      - api/tree/iSOUPTreeRegressor.md
+      - api/tree/ISOUPTreeRegressor.md
       - base:
         - api/tree/base/Branch.md
         - api/tree/base/Leaf.md
@@ -4589,8 +4589,8 @@ nav:
         - api/drift/binary/DDM.md
         - api/drift/binary/EDDM.md
         - api/drift/binary/FHDDM.md
-        - api/drift/binary/HDDM-A.md
-        - api/drift/binary/HDDM-W.md
+        - api/drift/binary/HDDMA.md
+        - api/drift/binary/HDDMW.md
       - datasets:
         - api/drift/datasets/AirlinePassengers.md
         - api/drift/datasets/Apple.md
@@ -4933,7 +4933,7 @@ nav:
       - api/tree/LASTClassifier.md
       - api/tree/SGTClassifier.md
       - api/tree/SGTRegressor.md
-      - api/tree/iSOUPTreeRegressor.md
+      - api/tree/ISOUPTreeRegressor.md
       - base:
         - api/tree/base/Branch.md
         - api/tree/base/Leaf.md
@@ -5137,8 +5137,8 @@ nav:
         - api/drift/binary/DDM.md
         - api/drift/binary/EDDM.md
         - api/drift/binary/FHDDM.md
-        - api/drift/binary/HDDM-A.md
-        - api/drift/binary/HDDM-W.md
+        - api/drift/binary/HDDMA.md
+        - api/drift/binary/HDDMW.md
       - datasets:
         - api/drift/datasets/AirlinePassengers.md
         - api/drift/datasets/Apple.md
@@ -5481,7 +5481,7 @@ nav:
       - api/tree/LASTClassifier.md
       - api/tree/SGTClassifier.md
       - api/tree/SGTRegressor.md
-      - api/tree/iSOUPTreeRegressor.md
+      - api/tree/ISOUPTreeRegressor.md
       - base:
         - api/tree/base/Branch.md
         - api/tree/base/Leaf.md
@@ -5685,8 +5685,8 @@ nav:
         - api/drift/binary/DDM.md
         - api/drift/binary/EDDM.md
         - api/drift/binary/FHDDM.md
-        - api/drift/binary/HDDM-A.md
-        - api/drift/binary/HDDM-W.md
+        - api/drift/binary/HDDMA.md
+        - api/drift/binary/HDDMW.md
       - datasets:
         - api/drift/datasets/AirlinePassengers.md
         - api/drift/datasets/Apple.md
@@ -6029,7 +6029,7 @@ nav:
       - api/tree/LASTClassifier.md
       - api/tree/SGTClassifier.md
       - api/tree/SGTRegressor.md
-      - api/tree/iSOUPTreeRegressor.md
+      - api/tree/ISOUPTreeRegressor.md
       - base:
         - api/tree/base/Branch.md
         - api/tree/base/Leaf.md
@@ -6233,8 +6233,8 @@ nav:
         - api/drift/binary/DDM.md
         - api/drift/binary/EDDM.md
         - api/drift/binary/FHDDM.md
-        - api/drift/binary/HDDM-A.md
-        - api/drift/binary/HDDM-W.md
+        - api/drift/binary/HDDMA.md
+        - api/drift/binary/HDDMW.md
       - datasets:
         - api/drift/datasets/AirlinePassengers.md
         - api/drift/datasets/Apple.md
@@ -6577,7 +6577,7 @@ nav:
       - api/tree/LASTClassifier.md
       - api/tree/SGTClassifier.md
       - api/tree/SGTRegressor.md
-      - api/tree/iSOUPTreeRegressor.md
+      - api/tree/ISOUPTreeRegressor.md
       - base:
         - api/tree/base/Branch.md
         - api/tree/base/Leaf.md
@@ -6781,8 +6781,8 @@ nav:
         - api/drift/binary/DDM.md
         - api/drift/binary/EDDM.md
         - api/drift/binary/FHDDM.md
-        - api/drift/binary/HDDM-A.md
-        - api/drift/binary/HDDM-W.md
+        - api/drift/binary/HDDMA.md
+        - api/drift/binary/HDDMW.md
       - datasets:
         - api/drift/datasets/AirlinePassengers.md
         - api/drift/datasets/Apple.md
@@ -7125,7 +7125,7 @@ nav:
       - api/tree/LASTClassifier.md
       - api/tree/SGTClassifier.md
       - api/tree/SGTRegressor.md
-      - api/tree/iSOUPTreeRegressor.md
+      - api/tree/ISOUPTreeRegressor.md
       - base:
         - api/tree/base/Branch.md
         - api/tree/base/Leaf.md
@@ -7329,8 +7329,8 @@ nav:
         - api/drift/binary/DDM.md
         - api/drift/binary/EDDM.md
         - api/drift/binary/FHDDM.md
-        - api/drift/binary/HDDM-A.md
-        - api/drift/binary/HDDM-W.md
+        - api/drift/binary/HDDMA.md
+        - api/drift/binary/HDDMW.md
       - datasets:
         - api/drift/datasets/AirlinePassengers.md
         - api/drift/datasets/Apple.md
@@ -7673,7 +7673,7 @@ nav:
       - api/tree/LASTClassifier.md
       - api/tree/SGTClassifier.md
       - api/tree/SGTRegressor.md
-      - api/tree/iSOUPTreeRegressor.md
+      - api/tree/ISOUPTreeRegressor.md
       - base:
         - api/tree/base/Branch.md
         - api/tree/base/Leaf.md
@@ -7877,8 +7877,8 @@ nav:
         - api/drift/binary/DDM.md
         - api/drift/binary/EDDM.md
         - api/drift/binary/FHDDM.md
-        - api/drift/binary/HDDM-A.md
-        - api/drift/binary/HDDM-W.md
+        - api/drift/binary/HDDMA.md
+        - api/drift/binary/HDDMW.md
       - datasets:
         - api/drift/datasets/AirlinePassengers.md
         - api/drift/datasets/Apple.md
@@ -8221,7 +8221,7 @@ nav:
       - api/tree/LASTClassifier.md
       - api/tree/SGTClassifier.md
       - api/tree/SGTRegressor.md
-      - api/tree/iSOUPTreeRegressor.md
+      - api/tree/ISOUPTreeRegressor.md
       - base:
         - api/tree/base/Branch.md
         - api/tree/base/Leaf.md
