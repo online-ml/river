@@ -2214,6 +2214,39 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#anomaly_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        anomaly
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cluster_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        cluster
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#preprocessing" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        preprocessing
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#compose" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -3473,6 +3506,39 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#anomaly_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        anomaly
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cluster_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        cluster
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#preprocessing" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        preprocessing
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#compose" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -3547,11 +3613,27 @@
 </ul>
 <h2 id="anomaly">anomaly<a class="headerlink" href="#anomaly" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Sped up <a href="../../api/api/anomaly/LocalOutlierFactor"><code>api.anomaly.LocalOutlierFactor</code></a> by replacing the default <code>functools.partial([utils.math.minkowski_distance](../api/utils/math/minkowski-distance), p=2)</code> distance function with a direct call into the Rust <code>euclidean_distance_dict</code>, removing the Python-level dispatch.</li>
+<li>Sped up <code>anomaly.HalfSpaceTrees.learn_one</code> and <code>score_one</code> by replacing the generic recursive <code>tree.base.Branch.walk</code> traversal with an iterative tight loop specialised for HST, caching the (constant) <code>size_limit</code> and tree height as locals, and pivoting node masses through a precomputed flat node list. Output is unchanged. On a synthetic 10-feature stream <code>score+learn</code> is ~3.0× faster (27.9k → 85.2k obs/s), <code>learn_one</code> ~2.6×, and <code>score_one</code> ~3.8×; in a <code>MinMaxScaler | HalfSpaceTrees</code> pipeline on CreditCard the end-to-end pipeline is ~2.0× faster (20.5k → 40.5k obs/s).</li>
 </ul>
 <h2 id="cluster">cluster<a class="headerlink" href="#cluster" title="Permanent link">&para;</a></h2>
 <ul>
+<li>Sped up <a href="../../api/cluster/DBSTREAM"><code>cluster.DBSTREAM</code></a> by replacing the per-cleanup <code>copy.deepcopy</code> of the micro-cluster dict with an in-place pop, replacing the <code>deepcopy</code> in the offline reclustering step with a direct micro-cluster construction, hoisting the Gaussian neighborhood factor out of the per-feature center update (it does not vary across dimensions), and folding the nested <code>try/except KeyError</code> shared-density update into a plain <code>dict.get</code>. Output is unchanged. On the 15k-sample synthetic-sklearn workload, <code>learn_one</code> is ~6.1× faster (0.516 s → 0.084 s) and <code>learn_one + predict_one</code> is ~4.3× faster (0.872 s → 0.204 s).</li>
+<li>Sped up <code>cluster.DenStream._merge</code> by replacing the speculative <code>copy.copy</code> + insert + radius check with a non-mutating <code>radius_with(x)</code> that computes the would-be radius directly from <code>linear_sum</code>, <code>squared_sum</code> and <code>N</code>. Cached each micro-cluster's center (it reduces to <code>linear_sum / N</code> once the fading factor is cancelled algebraically), and switched the per-candidate distance lookup in <code>_get_closest_cluster_key</code> from the <a href="../../api/utils/math/minkowski-distance"><code>utils.math.minkowski_distance</code></a> Python wrapper to a direct call into the Rust <code>euclidean_distance_dict</code>. On a 20k-sample 10-feature synthetic stream, <code>learn_one</code> is ~1.7× faster (6.4 µs/point → 3.8 µs/point). The change also fixes a latent shallow-copy bug: the previous code shared <code>linear_sum</code>/<code>squared_sum</code> between the <code>copy.copy</code> and the original, so a failed radius check left the original cluster with the candidate point's contributions added in (without bumping <code>N</code>).</li>
+<li>Sped up <code>cluster.CluStream.learn_one</code> by caching each micro-cluster's <code>center</code> dict on the micro-cluster itself (invalidated on <code>insert</code> / <code>__iadd__</code>), materializing the center list once at the top of <code>_maintain_micro_clusters</code> instead of rebuilding it inside the n² pairwise scan, replacing the deepcopy-heavy <code>Var.__add__</code> calls in <code>CluStreamMicroCluster.__iadd__</code> with in-place <code>Var.__iadd__</code>, and switching <code>_distance</code> from the <a href="../../api/utils/math/minkowski-distance"><code>utils.math.minkowski_distance</code></a> Python wrapper to a direct call into the Rust <code>euclidean_distance_dict</code>. The fix removes ~36M redundant <code>center</code> dict rebuilds and 367M <code>Mean.get</code> calls on a 5k-sample 10-feature synthetic stream. End-to-end <code>learn_one</code> is ~3.9× faster at d=10 (25.5 s → 6.5 s for 5k points), ~3.8× at d=20 and ~3.8× at d=50.</li>
+</ul>
+<h2 id="anomaly_1">anomaly<a class="headerlink" href="#anomaly_1" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Sped up <a href="../../api/api/anomaly/LocalOutlierFactor"><code>api.anomaly.LocalOutlierFactor</code></a> by replacing the default <code>functools.partial([utils.math.minkowski_distance](../api/utils/math/minkowski-distance), p=2)</code> distance function with a direct call into the Rust <code>euclidean_distance_dict</code>, removing the Python-level dispatch.</li>
+</ul>
+<h2 id="cluster_1">cluster<a class="headerlink" href="#cluster_1" title="Permanent link">&para;</a></h2>
+<ul>
 <li>Sped up <code>cluster.STREAMKMeans.predict_one</code> by switching the per-center distance from the <a href="../../api/utils/math/minkowski-distance"><code>utils.math.minkowski_distance</code></a> Python wrapper to a direct call into the Rust <code>euclidean_distance_dict</code>.</li>
+</ul>
+<h2 id="preprocessing">preprocessing<a class="headerlink" href="#preprocessing" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Sped up <code>preprocessing.OneHotEncoder.transform_one</code> by ~8x and <code>learn_one + transform_one</code> by ~5.5x (on 100k rows × 5 features with cardinality 20). The previous implementation rebuilt the all-zeros dict via <code>{f"{i}_{v}": 0 ...}</code> on every call; the encoder now maintains an incremental cache of that zero-dict and <code>transform_one</code> copies it instead of rebuilding. Output is unchanged.</li>
+<li>Sped up <a href="../../api/preprocessing/StandardScaler"><code>preprocessing.StandardScaler</code></a> by ~15% on <code>learn_one</code> and <code>learn_one + transform_one</code> by hoisting the <code>self.counts</code>/<code>self.means</code>/<code>self.vars</code> dict references out of the inner loop, splitting the <code>with_std=True</code> and <code>with_std=False</code> paths, and folding the <code>safe_div</code> call in <code>transform_one</code> into an inline branch (eliminating ~1M function calls per 100k samples × 10 features). The Welford update formula is unchanged.</li>
+<li>Sped up <code>preprocessing.MinMaxScaler.transform_one</code> by ~1.3x by caching each feature's <code>self.min[i].get()</code> and <code>self.max[i].get()</code> results in locals (previously <code>self.min[i].get()</code> was called twice per feature) and inlining <code>safe_div</code>. <code>preprocessing.MaxAbsScaler.transform_one</code> benefits from the same <code>safe_div</code> inlining. <code>learn_one</code> is also slightly faster thanks to hoisting <code>self.min</code>/<code>self.max</code>/<code>self.abs_max</code> out of the loop. <code>.update()</code>/<code>.get()</code> on <a href="../../api/stats/Min"><code>stats.Min</code></a>/<a href="../../api/stats/Max"><code>stats.Max</code></a>/<a href="../../api/stats/AbsMax"><code>stats.AbsMax</code></a> remain the only paths into those objects.</li>
 </ul>
 <h2 id="compose">compose<a class="headerlink" href="#compose" title="Permanent link">&para;</a></h2>
 <ul>
