@@ -37,6 +37,12 @@
 
 - Sped up `cluster.STREAMKMeans.predict_one` by switching the per-center distance from the `utils.math.minkowski_distance` Python wrapper to a direct call into the Rust `euclidean_distance_dict`.
 
+## preprocessing
+
+- Sped up `preprocessing.OneHotEncoder.transform_one` by ~8x and `learn_one + transform_one` by ~5.5x (on 100k rows × 5 features with cardinality 20). The previous implementation rebuilt the all-zeros dict via `{f"{i}_{v}": 0 ...}` on every call; the encoder now maintains an incremental cache of that zero-dict and `transform_one` copies it instead of rebuilding. Output is unchanged.
+- Sped up `preprocessing.StandardScaler` by ~15% on `learn_one` and `learn_one + transform_one` by hoisting the `self.counts`/`self.means`/`self.vars` dict references out of the inner loop, splitting the `with_std=True` and `with_std=False` paths, and folding the `safe_div` call in `transform_one` into an inline branch (eliminating ~1M function calls per 100k samples × 10 features). The Welford update formula is unchanged.
+- Sped up `preprocessing.MinMaxScaler.transform_one` by ~1.3x by caching each feature's `self.min[i].get()` and `self.max[i].get()` results in locals (previously `self.min[i].get()` was called twice per feature) and inlining `safe_div`. `preprocessing.MaxAbsScaler.transform_one` benefits from the same `safe_div` inlining. `learn_one` is also slightly faster thanks to hoisting `self.min`/`self.max`/`self.abs_max` out of the loop. `.update()`/`.get()` on `stats.Min`/`stats.Max`/`stats.AbsMax` remain the only paths into those objects.
+
 ## compose
 
 - Sped up `compose.Pipeline` end-to-end throughput by 1.3x–1.9x (e.g. `scaler|lr` 7.4 µs → 5.7 µs/event, `(sel+sel)|scaler|lr` 12.5 µs → 6.7 µs/event on TrumpApproval) by precomputing an execution plan (kind/`_supervised` flags) for each step at construction time, eliminating per-event `isinstance` checks via the `EstimatorMeta.__instancecheck__` metaclass (~180k → 0 calls per 20k events) and repeated `_supervised` property lookups. The plan is invalidated on `_add_step`. The lazy `_anomaly_filter_cls` / `_anomaly_detector_cls` imports are now `functools.cache`d.
