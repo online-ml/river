@@ -29,6 +29,10 @@
 
 - Reimplemented `utils.VectorDict` (and the helper functions `euclidean_distance_dict`, `euclidean_distance_tuple`, `lazy_search_euclidean`) in Rust. The Cython sources are removed; the public API is unchanged. Element-wise operations are faster across the board: `vec + scalar` and `vec * scalar` are ~18% faster on 20-key dicts and ~14% faster on 1000-key dicts; `vec + vec` is 4-5% faster, `vec @ vec` (dot product) is 4-10% faster. The constructor and `__setitem__` are within 1-4% of the Cython baseline (~2 ns absolute, dominated by PyO3 object-allocation overhead).
 
+## anomaly
+
+- Sped up `anomaly.HalfSpaceTrees.learn_one` and `score_one` by replacing the generic recursive `tree.base.Branch.walk` traversal with an iterative tight loop specialised for HST, caching the (constant) `size_limit` and tree height as locals, and pivoting node masses through a precomputed flat node list. Output is unchanged. On a synthetic 10-feature stream `score+learn` is ~3.0× faster (27.9k → 85.2k obs/s), `learn_one` ~2.6×, and `score_one` ~3.8×; in a `MinMaxScaler | HalfSpaceTrees` pipeline on CreditCard the end-to-end pipeline is ~2.0× faster (20.5k → 40.5k obs/s).
+
 ## cluster
 
 - Sped up `cluster.DBSTREAM` by replacing the per-cleanup `copy.deepcopy` of the micro-cluster dict with an in-place pop, replacing the `deepcopy` in the offline reclustering step with a direct micro-cluster construction, hoisting the Gaussian neighborhood factor out of the per-feature center update (it does not vary across dimensions), and folding the nested `try/except KeyError` shared-density update into a plain `dict.get`. Output is unchanged. On the 15k-sample synthetic-sklearn workload, `learn_one` is ~6.1× faster (0.516 s → 0.084 s) and `learn_one + predict_one` is ~4.3× faster (0.872 s → 0.204 s).
