@@ -127,6 +127,15 @@ def _yield_datasets(model: Estimator):
     elif isinstance(model, AnomalyDetector):
         yield datasets.CreditCard().take(1000)
 
+    # Plain transformers (no other base class matched above). These were
+    # previously uncovered by the dataset-driven checks; TrumpApproval provides
+    # numeric features and a numeric target so both Transformer and
+    # SupervisedTransformer can be exercised. Text-input transformers expect
+    # raw strings, not dicts, and are skipped for now.
+    elif isinstance(model, (base.Transformer, base.SupervisedTransformer)):
+        if base.tags.TEXT_INPUT not in model._tags:
+            yield datasets.TrumpApproval().take(200)
+
 
 def yield_checks(model: Estimator) -> typing.Iterator[typing.Callable]:
     """Generates unit tests for a given model.
@@ -153,6 +162,9 @@ def yield_checks(model: Estimator) -> typing.Iterator[typing.Callable]:
     yield common.check_clone_changes_memory_addresses
     yield common.check_mutate_can_be_idempotent
     yield common.check_pickling_supports_roundtrip
+    yield common.check_repr_roundtrips_clone
+    yield common.check_clone_with_new_params_applies
+    yield common.check_get_params_matches_signature
     if model._mutable_attributes:
         yield common.check_mutable_attributes_exist
 
@@ -167,7 +179,21 @@ def yield_checks(model: Estimator) -> typing.Iterator[typing.Callable]:
         common.check_emerging_features,
         common.check_disappearing_features,
         common.check_radically_disappearing_features,
+        common.check_predict_one_pure,
+        common.check_predict_one_before_any_learn,
+        common.check_no_state_aliasing_with_input,
+        common.check_clone_is_independent,
     ]
+
+    if isinstance(model, (base.Transformer, base.SupervisedTransformer)):
+        dataset_checks.append(common.check_transform_one)
+
+    if isinstance(model, (base.MiniBatchClassifier, base.MiniBatchRegressor)):
+        dataset_checks.append(common.check_predict_many_matches_predict_one)
+    if isinstance(model, base.MiniBatchClassifier):
+        dataset_checks.append(common.check_predict_proba_many_matches_predict_proba_one)
+    if isinstance(model, (base.MiniBatchTransformer, base.MiniBatchSupervisedTransformer)):
+        dataset_checks.append(common.check_transform_many_matches_transform_one)
 
     if hasattr(model, "debug_one"):
         dataset_checks.append(common.check_debug_one)
@@ -178,6 +204,7 @@ def yield_checks(model: Estimator) -> typing.Iterator[typing.Callable]:
     # Classifier checks
     if isinstance(model, base.Classifier) and not isinstance(model, base.MultiLabelClassifier):
         dataset_checks.append(_allow_exception(clf.check_predict_proba_one, NotImplementedError))
+        dataset_checks.append(clf.check_classifier_tracks_seen_labels)
         # Specific checks for binary classifiers
         if not model._multiclass:  # type: ignore
             dataset_checks.append(

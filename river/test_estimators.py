@@ -45,6 +45,12 @@ def iter_estimators():
 def iter_estimators_which_can_be_tested():
     ignored = (
         River2SKLBase,
+        # base.Transformer / base.SupervisedTransformer are not marked abstract
+        # by Python (their abstract `transform_one` sits on the BaseTransformer
+        # mixin, which is not an ABC), but they are not meant to be tested
+        # directly.
+        base.Transformer,
+        base.SupervisedTransformer,
         anomaly.LocalOutlierFactor,  # needs warm-start to work correctly
         compose.FuncTransformer,
         compose.Grouper,
@@ -53,6 +59,8 @@ def iter_estimators_which_can_be_tested():
         compose.Renamer,
         compose.Suffixer,
         compose.TargetTransformRegressor,
+        compose.TransformerProduct,
+        compose.TransformerUnion,
         facto.FFMClassifier,
         facto.FFMRegressor,
         facto.FMClassifier,

@@ -292,7 +292,7 @@ class MLPRegressor(base.Regressor, MLP):
         )
 
     @classmethod
-    def _default_params(self):
+    def _default_params(cls):
         from . import activations
 
         return {

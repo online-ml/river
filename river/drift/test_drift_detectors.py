@@ -51,26 +51,26 @@ def test_eddm():
 
 
 def test_hddm_a():
-    hddm_a = drift.binary.HDDM_A()
+    hddm_a = drift.binary.HDDMA()
     expected_indices = [1047]
     detected_indices = perform_test(hddm_a, data_stream_2)
     assert detected_indices == expected_indices
 
     # Second test, more abrupt drifts
-    hddm_a = drift.binary.HDDM_A(two_sided_test=True)
+    hddm_a = drift.binary.HDDMA(two_sided_test=True)
     expected_indices = [531, 1015, 1545]
     detected_indices = perform_test(hddm_a, data_stream_3)
     assert detected_indices == expected_indices
 
 
 def test_hddm_w():
-    hddm_w = drift.binary.HDDM_W()
+    hddm_w = drift.binary.HDDMW()
     expected_indices = [1018]
     detected_indices = perform_test(hddm_w, data_stream_2)
     assert detected_indices == expected_indices
 
     # Second test, more abrupt drifts
-    hddm_w = drift.binary.HDDM_W(two_sided_test=True)
+    hddm_w = drift.binary.HDDMW(two_sided_test=True)
     expected_indices = [507, 1032, 1508]
     detected_indices = perform_test(hddm_w, data_stream_3)
     assert detected_indices == expected_indices
