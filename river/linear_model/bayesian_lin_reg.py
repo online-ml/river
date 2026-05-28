@@ -1,12 +1,13 @@
 from __future__ import annotations
 
-import numpy as np
 import typing
+
+import numpy as np
 
 from river import base, proba, utils
 
 if typing.TYPE_CHECKING:
-    import pandas as pd
+    pass
 
 
 class BayesianLinearRegression(base.Regressor):

@@ -49,6 +49,7 @@ class TransformerUnion(base.MiniBatchTransformer):
     As an example, let's assume we want to compute two aggregates of a dataset. We therefore
     define two `feature_extraction.Agg`s and initialize a `TransformerUnion` with them:
 
+    >>> import pandas as pd
     >>> from river import compose
     >>> from river import feature_extraction
     >>> from river import stats

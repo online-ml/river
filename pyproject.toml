@@ -156,6 +156,14 @@ select = [
     "UP",
     # isort
     "I",
+    # pep8-naming: class names (N801), function/method names (N802), and the
+    # cls/self convention on classmethods (N804). N803 (argument names) and
+    # N806 (local variable names) are deliberately left out — `X: pd.DataFrame`
+    # and `A_numpy = ...` are conventional in ML/scientific code and would
+    # produce hundreds of false positives.
+    "N801",
+    "N802",
+    "N804",
 ]
 ignore = ["E501"]
 fixable = ["ALL"]

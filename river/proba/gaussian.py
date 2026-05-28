@@ -170,9 +170,9 @@ class MultivariateGaussian(base.MultivariateContinuousDistribution):
     𝒩(
         μ=(0.518, 0.387, 0.416),
         σ^2=(
-            [ 0.076  0.020 -0.010]
-            [ 0.020  0.113 -0.053]
-            [-0.010 -0.053  0.079]
+            [0.076 0.020 -0.010]
+            [0.020 0.113 -0.053]
+            [-0.010 -0.053 0.079]
         )
     )
 
@@ -335,9 +335,7 @@ class MultivariateGaussian(base.MultivariateContinuousDistribution):
         _, cov = self._covariance_array()
         sample_ = map(
             float,
-            multivariate_normal(
-                [*self.mu.values()], cov, seed=self._rng.randint(0, 2**10)
-            ).rvs(),
+            multivariate_normal([*self.mu.values()], cov, seed=self._rng.randint(0, 2**10)).rvs(),
         )
         return dict(zip(self.mu.keys(), sample_))
 

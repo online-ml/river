@@ -5,7 +5,7 @@ import typing
 from river import base, linear_model, utils
 
 if typing.TYPE_CHECKING:
-    import pandas as pd
+    pass
 
 __all__ = ["OneVsRestClassifier"]
 
@@ -37,6 +37,7 @@ class OneVsRestClassifier(base.Wrapper, base.Classifier):
     Examples
     --------
 
+    >>> import pandas as pd
     >>> from river import datasets
     >>> from river import evaluate
     >>> from river import linear_model

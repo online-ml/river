@@ -52,6 +52,7 @@ def learn_during_predict():
 
     >>> import io
     >>> import logging
+    >>> import pandas as pd
     >>> from river import compose
     >>> from river import datasets
     >>> from river import linear_model

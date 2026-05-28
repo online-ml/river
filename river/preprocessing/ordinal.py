@@ -8,7 +8,7 @@ import numpy as np
 from river import base, utils
 
 if typing.TYPE_CHECKING:
-    import pandas as pd
+    pass
 
 
 class OrdinalEncoder(base.MiniBatchTransformer):

@@ -9,7 +9,7 @@ import numpy as np
 from river import utils
 
 if typing.TYPE_CHECKING:
-    import pandas as pd
+    pass
 
 from . import union
 

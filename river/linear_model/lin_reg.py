@@ -1,12 +1,13 @@
 from __future__ import annotations
 
-import numpy as np
 import typing
+
+import numpy as np
 
 from river import base, linear_model, optim, utils
 
 if typing.TYPE_CHECKING:
-    import pandas as pd
+    pass
 
 
 class LinearRegression(linear_model.base.GLM, base.MiniBatchRegressor):
