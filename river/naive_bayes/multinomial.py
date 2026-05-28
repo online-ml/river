@@ -7,6 +7,7 @@ import typing
 import numpy as np
 from scipy import sparse
 
+from river import utils
 from river.base import tags
 
 from . import base
@@ -259,7 +260,7 @@ class MultinomialNB(base.BaseNB):
         Input samples joint log likelihood.
 
         """
-        pd = base.utils.pandas.import_pandas()
+        pd = utils.pandas.import_pandas()
         index, columns = X.index, X.columns
         known, unknown = [], []
 

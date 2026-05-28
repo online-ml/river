@@ -7,6 +7,8 @@ import typing
 import numpy as np
 from scipy import sparse
 
+from river import utils
+
 from . import base
 
 if typing.TYPE_CHECKING:
@@ -252,7 +254,7 @@ class BernoulliNB(base.BaseNB):
         Input samples joint log likelihood.
 
         """
-        pd = base.utils.pandas.import_pandas()
+        pd = utils.pandas.import_pandas()
         unknown = [x for x in X.columns if x not in self.feature_counts]
         missing = [x for x in self.feature_counts if x not in X.columns]
 

@@ -19,6 +19,9 @@ from xml.etree import ElementTree as ET
 
 from river import base, utils
 
+if typing.TYPE_CHECKING:
+    import pandas as pd
+
 __all__ = ["Branch", "Leaf"]
 
 
