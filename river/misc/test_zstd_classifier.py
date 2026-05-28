@@ -13,7 +13,7 @@ zstd_only = pytest.mark.skipif(
 )
 
 
-def test_requires_python_314():
+def test_requires_python_314() -> None:
     if sys.version_info < (3, 14):
         with pytest.raises(RuntimeError, match="Python 3.14"):
             misc.ZstdClassifier()
@@ -22,7 +22,7 @@ def test_requires_python_314():
 
 
 @zstd_only
-def test_learn_and_predict():
+def test_learn_and_predict() -> None:
     model = misc.ZstdClassifier(window=100_000, level=3, rebuild_every=1)
     animal_corpus = [
         "the cat sat on the mat",
@@ -45,8 +45,8 @@ def test_learn_and_predict():
     for text in finance_corpus:
         model.learn_one(text, "finance")
 
-    assert model.predict_one("the dog chased the cat in the garden") == "animal"
-    assert model.predict_one("treasury bond yields slipped on inflation data") == "finance"
+    assert model.predict_one("the dog chased the cat in the garden") == "animal"  # type: ignore[arg-type]
+    assert model.predict_one("treasury bond yields slipped on inflation data") == "finance"  # type: ignore[arg-type]
 
     probas = model.predict_proba_one("the dog chased the cat in the garden")
     assert set(probas) == {"animal", "finance"}
@@ -55,14 +55,14 @@ def test_learn_and_predict():
 
 
 @zstd_only
-def test_empty_predict_returns_empty_dict():
+def test_empty_predict_returns_empty_dict() -> None:
     model = misc.ZstdClassifier()
     assert model.predict_proba_one("anything") == {}
-    assert model.predict_one("anything") is None
+    assert model.predict_one("anything") is None  # type: ignore[arg-type]
 
 
 @zstd_only
-def test_sliding_window_eviction():
+def test_sliding_window_eviction() -> None:
     model = misc.ZstdClassifier(window=20, rebuild_every=1)
     model.learn_one("a" * 30, "x")
     assert len(model.buffers["x"]) == 20
@@ -72,19 +72,19 @@ def test_sliding_window_eviction():
 
 
 @zstd_only
-def test_on_extracts_field():
+def test_on_extracts_field() -> None:
     model = misc.ZstdClassifier(window=4096, rebuild_every=1, on="text")
     model.learn_one({"text": "cats and dogs"}, "animal")
     assert b"cats and dogs" in bytes(model.buffers["animal"])
 
 
 @zstd_only
-def test_pickling_roundtrip():
+def test_pickling_roundtrip() -> None:
     model = misc.ZstdClassifier(rebuild_every=1)
     model.learn_one("cats and dogs", "animal")
     model.learn_one("stocks rose today", "finance")
     # Trigger compressor build
-    model.predict_one("dogs")
+    model.predict_one("dogs")  # type: ignore[arg-type]
     restored = pickle.loads(pickle.dumps(model))
     assert dict(restored.buffers) == {
         "animal": bytearray(b"cats and dogs"),
@@ -94,7 +94,7 @@ def test_pickling_roundtrip():
 
 
 @zstd_only
-def test_clone_resets_state():
+def test_clone_resets_state() -> None:
     model = misc.ZstdClassifier()
     model.learn_one("hello", "a")
     clone = model.clone()

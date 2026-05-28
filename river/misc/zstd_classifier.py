@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import math
 import sys
+from typing import Any
 
 from river import base
 
@@ -37,8 +38,9 @@ class ZstdClassifier(base.Classifier):
         is a few tens of microseconds, but skipping rebuilds amortises the cost when many
         documents arrive in a row.
     on
-        Name of the field in `x` that contains the text to classify. If `None`, `x` itself is
-        expected to be a `str` or `bytes` instance.
+        Name of the field in `x` that contains the text to classify. If `None`, `x` is either a
+        `str` (used directly as text) or a feature `dict` (serialised in sorted-key order so the
+        encoding is invariant to feature insertion order).
 
     Attributes
     ----------
@@ -101,11 +103,15 @@ class ZstdClassifier(base.Classifier):
     def _multiclass(self) -> bool:
         return True
 
-    def _extract_bytes(self, x) -> bytes:
-        text = x[self.on] if self.on is not None else x
-        if isinstance(text, str):
-            return text.encode("utf-8")
-        return bytes(text)
+    def _extract_bytes(self, x: str | dict[base.typing.FeatureName, Any]) -> bytes:
+        if isinstance(x, str):
+            return x.encode("utf-8")
+        if self.on is not None:
+            return str(x[self.on]).encode("utf-8")
+        # Generic feature dict: serialise in sorted-key order so the byte
+        # representation is invariant to feature insertion order.
+        parts = (f"{k}={x[k]}" for k in sorted(x, key=str))
+        return " ".join(parts).encode("utf-8")
 
     def _append(self, buffer: bytearray, data: bytes) -> None:
         buffer.extend(data)
@@ -113,7 +119,7 @@ class ZstdClassifier(base.Classifier):
         if overflow > 0:
             del buffer[:overflow]
 
-    def _build_compressor(self, label: base.typing.ClfTarget):
+    def _build_compressor(self, label: base.typing.ClfTarget) -> None:
         from compression import zstd  # type: ignore[import-not-found, unused-ignore]
 
         buffer = self.buffers[label]
@@ -128,12 +134,14 @@ class ZstdClassifier(base.Classifier):
         self._compressors[label] = compressor
         self._pending[label] = 0
 
-    def _get_compressor(self, label: base.typing.ClfTarget):
+    def _get_compressor(self, label: base.typing.ClfTarget) -> Any:
         if label not in self._compressors or self._pending.get(label, 0) >= self.rebuild_every:
             self._build_compressor(label)
         return self._compressors[label]
 
-    def learn_one(self, x, y: base.typing.ClfTarget) -> None:
+    def learn_one(
+        self, x: str | dict[base.typing.FeatureName, Any], y: base.typing.ClfTarget
+    ) -> None:
         data = self._extract_bytes(x)
         if y not in self.buffers:
             self.buffers[y] = bytearray()
@@ -145,9 +153,11 @@ class ZstdClassifier(base.Classifier):
         from compression import zstd  # type: ignore[import-not-found, unused-ignore]
 
         compressor = self._get_compressor(label)
-        return len(compressor.compress(data, mode=zstd.ZstdCompressor.FLUSH_FRAME))  # type: ignore[attr-defined]
+        return len(compressor.compress(data, mode=zstd.ZstdCompressor.FLUSH_FRAME))
 
-    def predict_proba_one(self, x, **kwargs) -> dict[base.typing.ClfTarget, float]:
+    def predict_proba_one(
+        self, x: str | dict[base.typing.FeatureName, Any], **kwargs: Any
+    ) -> dict[base.typing.ClfTarget, float]:
         if not self.buffers:
             return {}
         data = self._extract_bytes(x)
@@ -157,7 +167,7 @@ class ZstdClassifier(base.Classifier):
         total = sum(weights.values())
         return {label: w / total for label, w in weights.items()}
 
-    def __getstate__(self):
+    def __getstate__(self) -> dict[str, Any]:
         state = self.__dict__.copy()
         state["_compressors"] = {}
         state["_pending"] = {label: self.rebuild_every for label in self.buffers}
