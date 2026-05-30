@@ -4,8 +4,8 @@
 
 - The native Rust extension moved from `river.stats._rust_stats` to `river._river_rust`,
   split into submodules `stats`, `drift`, `tree`, and `vectordict`. Pickles produced
-  with prior versions no longer load directly. Run
-  `python scripts/migrate_pickle_river_rust.py old.pkl new.pkl` to convert them
+  with prior versions no longer load directly. To convert existing pickles, use
+  [this migration script](https://gist.github.com/AdilZouitine/ee10421a11d2dac84fcc7c5895d1c549)
   (the new river must be installed in the conversion env).
 
 ## docs
