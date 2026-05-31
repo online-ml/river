@@ -2,6 +2,8 @@ COMMIT_HASH := $(shell eval git rev-parse HEAD)
 
 download-datasets:
 	python -c "from river import datasets, bandit; datasets.Elec2().download(); datasets.SMSSpam().download(); datasets.CreditCard().download(); datasets.Music().download(); bandit.datasets.NewsArticles().download()"
+	# Also warm sklearn's openml cache (~/scikit_learn_data) for datasets used in doctests.
+	python -c "from sklearn.datasets import fetch_openml; fetch_openml('yeast', version=4, parser='auto', as_frame=False)"
 
 format:
 	pre-commit run --all-files
