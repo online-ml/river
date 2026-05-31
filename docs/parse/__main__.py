@@ -790,7 +790,9 @@ def update_releases_nav(docs_dir: pathlib.Path, config_path: pathlib.Path):
 
     versions.sort(key=Version, reverse=True)
 
-    lines = ["  - Releases:\n", "    - unreleased: releases/unreleased.md\n"]
+    lines = ["  - Releases:\n"]
+    if (releases_dir / "unreleased.md").exists():
+        lines.append("    - unreleased: releases/unreleased.md\n")
     for v in versions:
         lines.append(f'    - "{v}": releases/{v}.md\n')
 
