@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://riverml.xyz/dev/releases/0.25.0/">
       
       
-        <link rel="prev" href="../unreleased.md">
+        <link rel="prev" href="../../faq">
       
       
         <link rel="next" href="../0.24.2/">
@@ -326,7 +326,7 @@
     
     
       <li class="md-tabs__item md-tabs__item--active">
-        <a href="../unreleased.md" class="md-tabs__link">
+        <a href="././" class="md-tabs__link">
           
   
   Releases
@@ -2012,8 +2012,6 @@
       
         
       
-        
-      
     
     
     
@@ -2059,33 +2057,6 @@
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../unreleased.md" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-  unreleased
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
             
               
                 
@@ -3868,6 +3839,7 @@
 <li>Fixed corrupted markdown cells in the Hoeffding Trees notebook example that caused blank page titles and invisible sidebar navigation. Fixes <a href="https://github.com/online-ml/river/issues/1847">#1847</a>.</li>
 <li>Bumped zensical to 0.0.40 and enabled strict mode with link and footnote validation.</li>
 <li>Fixed doc generation to escape bare brackets in type annotations and descriptions, produce proper footnote definitions, and use fenced code blocks for notebook outputs.</li>
+<li>Fixed the "Releases" entry in the docs nav 404'ing when no <code>unreleased.md</code> exists: the <code>update_releases_nav</code> script no longer hard-codes an <code>unreleased: releases/unreleased.md</code> line in <code>mkdocs.yml</code>, instead only emitting it when the file is present on disk.</li>
 </ul>
 <h2 id="feature_extraction">feature_extraction<a class="headerlink" href="#feature_extraction" title="Permanent link">&para;</a></h2>
 <ul>
