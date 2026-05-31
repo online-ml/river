@@ -73,3 +73,22 @@ jobs:
       - name: Run tests
         run: uv run --no-sync pytest
 
+  sdist-build:
+    name: Build wheel from sdist
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          python-version: "3.13"
+
+      - name: Build sdist and wheel from sdist
+        run: uv build --python 3.13
+
+      - name: Install wheel and smoke-test the native extension
+        run: |
+          uv venv --python 3.13 .venv-wheel
+          uv pip install --python .venv-wheel/bin/python dist/*.whl
+          .venv-wheel/bin/python -c "import river; from river._river_rust import stats, drift, tree, vectordict"

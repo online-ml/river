@@ -51,6 +51,7 @@
 ## tooling
 
 - Enabled the pep8-naming ruleset (`N801`, `N802`, `N804`) in ruff so that future class, function, and `classmethod`-first-argument naming violations are caught at lint time. `N803` (argument names) and `N806` (local variable names) were intentionally left out — `X: pd.DataFrame`, `A_numpy = ...`, and similar scientific-Python conventions are pervasive in the codebase.
+- Added a `sdist-build` CI job that runs `uv build` to build the sdist and then a wheel from that sdist, then imports the native submodules from the installed wheel. Catches regressions like [#1813](https://github.com/online-ml/river/issues/1813) where the sdist was missing `Cargo.toml` and `rust_src/`. Addresses [#1818](https://github.com/online-ml/river/issues/1818).
 
 ## docs
 
