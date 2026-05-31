@@ -2,30 +2,14 @@
 
 ## Breaking changes
 
-- The native Rust extension moved from `river.stats._rust_stats` to `river._river_rust`,
-  split into submodules `stats`, `drift`, `tree`, and `vectordict`. Pickles produced
-  with prior versions no longer load directly. To convert existing pickles, use
-  [this migration script](https://gist.github.com/AdilZouitine/ee10421a11d2dac84fcc7c5895d1c549)
-  (the new river must be installed in the conversion env).
+- The native Rust extension moved from `river.stats._rust_stats` to `river._river_rust`, split into submodules `stats`, `drift`, `tree`, and `vectordict`. Pickles produced with prior versions no longer load directly. To convert existing pickles, use [this migration script](https://gist.github.com/AdilZouitine/ee10421a11d2dac84fcc7c5895d1c549) (the new river must be installed in the conversion env).
+- `pandas` is no longer a hard dependency of River. The core online interface (`learn_one` / `predict_one`) works with `pip install river` alone. The mini-batch interface (`learn_many`, `predict_many`, `predict_proba_many`, `transform_many`) still requires `pandas`; install with `pip install "river[pandas]"`. Calling a `*_many` method without `pandas` raises an `ImportError` pointing to the extra.
+- Renamed `drift.binary.HDDM_A` → `drift.binary.HDDMA` and `drift.binary.HDDM_W` → `drift.binary.HDDMW` to comply with PEP-8 CapWords class naming.
 
-## packaging
-
-- **Breaking:** `pandas` is no longer a hard dependency of River. The core online interface (`learn_one` / `predict_one`) works with `pip install river` alone. The mini-batch interface (`learn_many`, `predict_many`, `predict_proba_many`, `transform_many`) still requires `pandas`; install with `pip install "river[pandas]"`. Calling a `*_many` method without `pandas` raises an `ImportError` pointing to the extra.
-- Added a `no-pandas` CI job that installs River without `pandas` and runs the full test suite. A conftest hook auto-skips test modules and doctest sources that mention `pandas` (or `fetch_openml`, which goes through pandas inside scikit-learn).
-
-## checks
-
-- Added ten new global estimator checks to `river.checks`: `check_predict_one_pure` (inference methods are pure), `check_transform_one` (transform_one is exercised and returns a dict), `check_clone_is_independent` (training the original does not mutate clones), `check_predict_many_matches_predict_one` / `check_predict_proba_many_matches_predict_proba_one` / `check_transform_many_matches_transform_one` (mini-batch ↔ one-at-a-time consistency for `base.MiniBatch*` estimators), `check_get_params_matches_signature` (`_get_params()` exposes every `__init__` keyword), `check_predict_one_before_any_learn` (cold-start inference does not crash), `check_repr_roundtrips_clone` (`repr(model) == repr(model.clone())`), `check_clone_with_new_params_applies` (`clone(new_params=...)` applies the overrides), `check_classifier_tracks_seen_labels` (`predict_proba_one` includes every label observed during training), and `check_no_state_aliasing_with_input` (mutating `x` after `learn_one` does not change model state). `_yield_datasets` now also yields a dataset for plain `base.Transformer` / `base.SupervisedTransformer` estimators, which were previously skipped by the dataset-driven checks.
-- Refactored the existing dataset-driven checks (`check_pickling`, `check_shuffle_features_no_impact`, `check_emerging_features`, `check_disappearing_features`, `check_radically_disappearing_features`, `check_seeding_is_idempotent`) to dispatch through `_infer` / `_learn` helpers so transformers are exercised on the same code paths as classifiers, regressors, and anomaly detectors.
-- `checks.utils.assert_predictions_are_close` now treats two NaN floats as equivalent, so transformers that legitimately return NaN before they have observed any data (e.g. `MinMaxScaler.transform_one` on the first event) no longer trip the shuffle-invariance check.
 
 ## cluster
 
 - Fixed `cluster.TextClust` corrupting its own parameters: `__init__` was overwriting `self.micro_distance` / `self.macro_distance` with runtime distance instances, breaking `clone` and `repr` round-trips. The runtime instances are now stored on `_micro_distance` / `_macro_distance`. Internal camelCase identifiers (`clusterId`, `microToMacro`, `numClusters`, `updateMacroClusters`, `_calculateIDF`) were renamed to snake_case, and the nested helper classes `tfcontainer`, `microcluster`, `distances` were renamed to `TfContainer`, `MicroCluster`, `Distances`.
-
-## drift
-
-- **Breaking:** Renamed `drift.binary.HDDM_A` → `drift.binary.HDDMA` and `drift.binary.HDDM_W` → `drift.binary.HDDMW` to comply with PEP-8 CapWords class naming.
 
 ## imblearn
 
