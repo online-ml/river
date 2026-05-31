@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block extrahead %}
+  {% set og_title = page.title %}
+  {% if page.meta and page.meta.title %}
+    {% set og_title = page.meta.title %}
+  {% endif %}
+  {% set og_desc = config.site_description %}
+  {% if page.meta and page.meta.description %}
+    {% set og_desc = page.meta.description %}
+  {% endif %}
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="River" />
+  <meta property="og:title" content="{{ og_title }} - River" />
+  <meta property="og:description" content="{{ og_desc }}" />
+  <meta property="og:url" content="{{ page.canonical_url }}" />
+  <meta property="og:image" content="https://riverml.xyz/img/icon.png" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="{{ og_title }} - River" />
+  <meta name="twitter:description" content="{{ og_desc }}" />
+  <meta name="twitter:image" content="https://riverml.xyz/img/icon.png" />
+{% endblock %}

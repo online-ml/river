@@ -1,0 +1,4598 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Online machine learning in Python">
+      
+      
+        <meta name="author" content="The Fellowship of Online Machine Learning">
+      
+      
+        <link rel="canonical" href="https://riverml.xyz/0.25.0/recipes/bandits-101/">
+      
+      
+        <link rel="prev" href="../active-learning/">
+      
+      
+        <link rel="next" href="../cloning-and-mutating/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../img/favicon.ico">
+      <meta name="generator" content="zensical-0.0.40">
+    
+    
+      
+        <title>Multi-armed bandits - River</title>
+      
+    
+    
+      
+        
+      
+      <link rel="stylesheet" href="../../assets/stylesheets/classic/main.a2001754.min.css">
+      
+        
+          
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/classic/palette.7dc9a0ad.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Sans:300,300i,400,400i,500,500i,700,700i%7CFira+Code:400,400i,700,700i&amp;display=fallback">
+        <style>:root{--md-text-font:"Fira Sans";--md-code-font:"Fira Code"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_scope.pathname.endsWith("/")||(__md_scope=new URL(__md_scope.pathname+"/",location)),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,_=__md_scope)=>JSON.parse(t.getItem(_.pathname+"."+e)),__md_set=(e,t,_=localStorage,a=__md_scope)=>{try{_.setItem(a.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script>
+    
+      <script
+  defer
+  src="https://eu.umami.is/script.js"
+  data-website-id="b9f84709-bbc5-48b5-b43b-ef0bcc45a1f8"
+></script>
+    
+    
+  
+  
+  
+  
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="River" />
+  <meta property="og:title" content="Multi-armed bandits - River" />
+  <meta property="og:description" content="Online machine learning in Python" />
+  <meta property="og:url" content="https://riverml.xyz/0.25.0/recipes/bandits-101/" />
+  <meta property="og:image" content="https://riverml.xyz/img/icon.png" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Multi-armed bandits - River" />
+  <meta name="twitter:description" content="Online machine learning in Python" />
+  <meta name="twitter:image" content="https://riverml.xyz/img/icon.png" />
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer" aria-label="Navigation"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#multi-armed-bandits" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="River" class="md-header__button md-logo" aria-label="River" data-md-component="logo">
+      
+  <img src="../../img/icon.png" alt="River">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer" aria-label="Navigation">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            River
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Multi-armed bandits
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="none" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="none" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search" aria-label="Search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog" aria-label="Search">
+  <button type="button" class="md-search__button">
+    Search
+  </button>
+</div>
+      
+    
+    <div class="md-header__source">
+      
+        <a href="https://github.com/online-ml/river" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    online-ml/river
+  </div>
+</a>
+      
+    </div>
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../introduction/installation/" class="md-tabs__link">
+          
+  
+  Introduction
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../reading-data/" class="md-tabs__link">
+          
+  
+  Recipes
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../api/overview/" class="md-tabs__link">
+          
+  
+  API
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../examples/batch-to-online/" class="md-tabs__link">
+          
+  
+  Examples
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../faq" class="md-tabs__link">
+        
+  
+  FAQ
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../releases/0.25.0/" class="md-tabs__link">
+          
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../benchmarks" class="md-tabs__link">
+        
+  
+  Benchmarks
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../license" class="md-tabs__link">
+        
+  
+  License
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="River" class="md-nav__button md-logo" aria-label="River" data-md-component="logo">
+      
+  <img src="../../img/icon.png" alt="River">
+
+    </a>
+    River
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/online-ml/river" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    online-ml/river
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../introduction/installation/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Introduction
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Recipes
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+  Recipes
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reading-data/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Reading data
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../model-evaluation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Model evaluation
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pipelines/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Pipelines
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../feature-extraction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Feature extraction
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../saving-loading/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Saving and loading models
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mini-batching/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Mini-batching
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../active-learning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Active learning
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      
+        <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Multi-armed bandits
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="././" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Multi-armed bandits
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#controlling-the-evaluation-loop" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Controlling the evaluation loop
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#handling-drift" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Handling drift
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cloning-and-mutating/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Cloning and mutating
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../rolling-computations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Rolling computations
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../api/overview/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  API
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../examples/batch-to-online/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Examples
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../faq" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  FAQ
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../releases/0.25.0/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Releases
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../benchmarks" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Benchmarks
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../license" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  License
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#controlling-the-evaluation-loop" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Controlling the evaluation loop
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#handling-drift" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Handling drift
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+  
+  
+
+
+<h1 id="multi-armed-bandits">Multi-armed bandits<a class="headerlink" href="#multi-armed-bandits" title="Permanent link">&para;</a></h1>
+<p>River has a <code>bandit</code> module. It contains several multi-armed bandit policies, bandit environments, and utilities to benchmark policies on bandit problems.</p>
+<p>Bandit environments in River implement the <a href="https://www.gymlibrary.dev/">Gym</a> interface. You can thus load them with <code>gym.make</code>. Note that Gym is intended for reinforcement learning algorithms, while bandit policies are the simplest form of reinforcement learning. Bandit policies learn by receiving a reward after each step, while reinforcement learning algorithms have to learn from feedback that may arrive at the end of a (long) sequence of steps.</p>
+<div class="language-python highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">gymnasium</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">gym</span>
+
+<span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">gym</span><span class="o">.</span><span class="n">envs</span><span class="o">.</span><span class="n">registry</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;river_bandits&#39;</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+</code></pre></div>
+<p>River's bandit module offers the <a href="../../api/bandit/evaluate"><code>bandit.evaluate</code></a> function to benchmark several policies on a given environment. It takes as input a list of bandit policies, a bandit environment (the problem to solve), and a reward object.</p>
+<div class="language-python highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">gymnasium</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">gym</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">river</span><span class="w"> </span><span class="kn">import</span> <span class="n">bandit</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tqdm</span><span class="w"> </span><span class="kn">import</span> <span class="n">tqdm</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">river</span><span class="w"> </span><span class="kn">import</span> <span class="n">stats</span>
+
+<span class="n">policies</span><span class="o">=</span><span class="p">[</span>
+    <span class="n">bandit</span><span class="o">.</span><span class="n">EpsilonGreedy</span><span class="p">(</span><span class="n">epsilon</span><span class="o">=</span><span class="mf">0.1</span><span class="p">),</span>
+    <span class="n">bandit</span><span class="o">.</span><span class="n">EpsilonGreedy</span><span class="p">(</span><span class="n">epsilon</span><span class="o">=</span><span class="mf">0.01</span><span class="p">),</span>
+    <span class="n">bandit</span><span class="o">.</span><span class="n">EpsilonGreedy</span><span class="p">(</span><span class="n">epsilon</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+<span class="p">]</span>
+
+<span class="n">env</span> <span class="o">=</span> <span class="n">gym</span><span class="o">.</span><span class="n">make</span><span class="p">(</span>
+    <span class="s1">&#39;river_bandits/KArmedTestbed-v0&#39;</span><span class="p">,</span>
+    <span class="n">max_episode_steps</span><span class="o">=</span><span class="mi">1000</span>
+<span class="p">)</span>
+
+<span class="n">trace</span> <span class="o">=</span> <span class="n">bandit</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span>
+    <span class="n">policies</span><span class="o">=</span><span class="n">policies</span><span class="p">,</span>
+    <span class="n">env</span><span class="o">=</span><span class="n">env</span><span class="p">,</span>
+    <span class="n">reward_stat</span><span class="o">=</span><span class="n">stats</span><span class="o">.</span><span class="n">Mean</span><span class="p">(),</span>
+    <span class="n">n_episodes</span><span class="o">=</span><span class="p">(</span><span class="n">n_episodes</span> <span class="o">:=</span> <span class="mi">2000</span><span class="p">),</span>
+<span class="p">)</span>
+</code></pre></div>
+<p>The <a href="../../api/bandit/evaluate"><code>bandit.evaluate</code></a> function returns a generator containing the results at each step of the benchmark. This can be wrapped with a <code>pandas.DataFrame</code> to gather all the results.</p>
+<div class="language-python highlight"><pre><span></span><code><span class="n">trace_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">tqdm</span><span class="p">(</span>
+    <span class="n">trace</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="p">(</span>
+        <span class="n">n_episodes</span> <span class="o">*</span>
+        <span class="nb">len</span><span class="p">(</span><span class="n">policies</span><span class="p">)</span> <span class="o">*</span>
+        <span class="n">env</span><span class="o">.</span><span class="n">_max_episode_steps</span>
+    <span class="p">)</span>
+<span class="p">))</span>
+<span class="n">trace_df</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>0%|          | 0/6000000 [00:00&lt;?, ?it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>0%|          | 16296/6000000 [00:00&lt;00:36, 162952.39it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>1%|          | 33279/6000000 [00:00&lt;00:35, 166990.80it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>1%|          | 50382/6000000 [00:00&lt;00:35, 168832.07it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>1%|          | 67266/6000000 [00:00&lt;00:35, 168776.01it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>1%|▏         | 84144/6000000 [00:00&lt;00:35, 167627.15it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>2%|▏         | 101250/6000000 [00:00&lt;00:34, 168787.02it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>2%|▏         | 118131/6000000 [00:00&lt;00:34, 168394.84it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>2%|▏         | 134972/6000000 [00:00&lt;00:44, 130684.45it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>3%|▎         | 151764/6000000 [00:00&lt;00:41, 140368.53it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>3%|▎         | 168453/6000000 [00:01&lt;00:39, 147551.69it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>3%|▎         | 185728/6000000 [00:01&lt;00:37, 154582.30it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>3%|▎         | 202484/6000000 [00:01&lt;00:36, 158278.27it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>4%|▎         | 219375/6000000 [00:01&lt;00:35, 161353.13it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>4%|▍         | 236492/6000000 [00:01&lt;00:35, 164222.62it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>4%|▍         | 253171/6000000 [00:01&lt;00:34, 164977.25it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>5%|▍         | 270004/6000000 [00:01&lt;00:34, 165945.01it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>5%|▍         | 286955/6000000 [00:01&lt;00:34, 167004.23it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>5%|▌         | 303743/6000000 [00:01&lt;00:34, 166791.03it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>5%|▌         | 320483/6000000 [00:01&lt;00:34, 166858.77it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>6%|▌         | 337212/6000000 [00:02&lt;00:33, 166733.36it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>6%|▌         | 354086/6000000 [00:02&lt;00:33, 167329.46it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>6%|▌         | 371173/6000000 [00:02&lt;00:33, 168387.57it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>6%|▋         | 388027/6000000 [00:02&lt;00:33, 168308.80it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>7%|▋         | 405001/6000000 [00:02&lt;00:33, 168164.17it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>7%|▋         | 422237/6000000 [00:02&lt;00:32, 169416.21it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>7%|▋         | 439185/6000000 [00:02&lt;00:32, 169119.39it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>8%|▊         | 456102/6000000 [00:02&lt;00:32, 168213.86it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>8%|▊         | 473359/6000000 [00:02&lt;00:32, 169509.59it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>8%|▊         | 490314/6000000 [00:03&lt;00:32, 168883.14it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>8%|▊         | 507205/6000000 [00:03&lt;00:32, 168451.02it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>9%|▊         | 524652/6000000 [00:03&lt;00:32, 170243.58it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>9%|▉         | 541679/6000000 [00:03&lt;00:32, 169711.36it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>9%|▉         | 558652/6000000 [00:03&lt;00:32, 169560.95it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>10%|▉         | 575976/6000000 [00:03&lt;00:31, 170658.63it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>10%|▉         | 593044/6000000 [00:03&lt;00:31, 170214.96it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>10%|█         | 610067/6000000 [00:03&lt;00:31, 169269.79it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>10%|█         | 627001/6000000 [00:03&lt;00:31, 169038.31it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>11%|█         | 643906/6000000 [00:03&lt;00:32, 163915.88it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>11%|█         | 660586/6000000 [00:04&lt;00:32, 164757.03it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>11%|█▏        | 677456/6000000 [00:04&lt;00:32, 165916.34it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>12%|█▏        | 694251/6000000 [00:04&lt;00:31, 166517.85it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>12%|█▏        | 711011/6000000 [00:04&lt;00:31, 166838.48it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>12%|█▏        | 727706/6000000 [00:04&lt;00:32, 162137.07it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>12%|█▏        | 744455/6000000 [00:04&lt;00:32, 163701.61it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>13%|█▎        | 761211/6000000 [00:04&lt;00:31, 164837.43it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>13%|█▎        | 777717/6000000 [00:04&lt;00:31, 164765.60it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>13%|█▎        | 794672/6000000 [00:04&lt;00:31, 166185.22it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>14%|█▎        | 811303/6000000 [00:04&lt;00:31, 166098.28it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>14%|█▍        | 828001/6000000 [00:05&lt;00:31, 165956.65it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>14%|█▍        | 844911/6000000 [00:05&lt;00:30, 166890.75it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>14%|█▍        | 861605/6000000 [00:05&lt;00:30, 166630.15it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>15%|█▍        | 878515/6000000 [00:05&lt;00:30, 167365.05it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>15%|█▍        | 895254/6000000 [00:05&lt;00:30, 167019.89it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>15%|█▌        | 911958/6000000 [00:05&lt;00:30, 166600.64it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>15%|█▌        | 928620/6000000 [00:05&lt;00:30, 166018.96it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>16%|█▌        | 945224/6000000 [00:05&lt;00:30, 165944.18it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>16%|█▌        | 962422/6000000 [00:05&lt;00:30, 167746.50it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>16%|█▋        | 979198/6000000 [00:05&lt;00:30, 167189.09it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>17%|█▋        | 996141/6000000 [00:06&lt;00:29, 167856.93it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>17%|█▋        | 1013266/6000000 [00:06&lt;00:29, 168868.53it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>17%|█▋        | 1030154/6000000 [00:06&lt;00:29, 167926.39it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>17%|█▋        | 1047214/6000000 [00:06&lt;00:29, 168723.08it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>18%|█▊        | 1064181/6000000 [00:06&lt;00:29, 169004.32it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>18%|█▊        | 1081083/6000000 [00:06&lt;00:29, 168582.03it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>18%|█▊        | 1098001/6000000 [00:06&lt;00:29, 168586.37it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>19%|█▊        | 1115119/6000000 [00:06&lt;00:28, 169360.99it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>19%|█▉        | 1132056/6000000 [00:06&lt;00:28, 169046.95it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>19%|█▉        | 1149003/6000000 [00:06&lt;00:28, 169127.35it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>19%|█▉        | 1166323/6000000 [00:07&lt;00:28, 170343.54it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>20%|█▉        | 1183358/6000000 [00:07&lt;00:28, 169822.95it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>20%|██        | 1200341/6000000 [00:07&lt;00:28, 169310.66it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>20%|██        | 1217483/6000000 [00:07&lt;00:28, 169939.51it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>21%|██        | 1234478/6000000 [00:07&lt;00:28, 168641.96it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>21%|██        | 1251345/6000000 [00:07&lt;00:28, 168441.58it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>21%|██        | 1268191/6000000 [00:07&lt;00:28, 168354.73it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>21%|██▏       | 1285028/6000000 [00:07&lt;00:28, 168017.49it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>22%|██▏       | 1302001/6000000 [00:07&lt;00:27, 168424.20it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>22%|██▏       | 1319097/6000000 [00:07&lt;00:27, 169178.89it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>22%|██▏       | 1336016/6000000 [00:08&lt;00:27, 167933.71it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>23%|██▎       | 1352826/6000000 [00:08&lt;00:27, 167980.19it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>23%|██▎       | 1369626/6000000 [00:08&lt;00:27, 167003.18it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>23%|██▎       | 1386329/6000000 [00:08&lt;00:27, 166644.38it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>23%|██▎       | 1403453/6000000 [00:08&lt;00:27, 168012.38it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>24%|██▎       | 1420257/6000000 [00:08&lt;00:27, 167919.67it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>24%|██▍       | 1437051/6000000 [00:08&lt;00:27, 167250.79it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>24%|██▍       | 1453953/6000000 [00:08&lt;00:27, 167776.91it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>25%|██▍       | 1470732/6000000 [00:08&lt;00:27, 166807.59it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>25%|██▍       | 1487486/6000000 [00:08&lt;00:27, 167024.22it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>25%|██▌       | 1504190/6000000 [00:09&lt;00:26, 166642.37it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>25%|██▌       | 1521001/6000000 [00:09&lt;00:26, 166991.99it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>26%|██▌       | 1538194/6000000 [00:09&lt;00:26, 168466.20it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>26%|██▌       | 1555042/6000000 [00:09&lt;00:26, 168095.43it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>26%|██▌       | 1571892/6000000 [00:09&lt;00:26, 168215.71it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>26%|██▋       | 1588715/6000000 [00:09&lt;00:27, 162167.31it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>27%|██▋       | 1605225/6000000 [00:09&lt;00:26, 163020.69it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>27%|██▋       | 1622272/6000000 [00:09&lt;00:26, 165210.98it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>27%|██▋       | 1639020/6000000 [00:09&lt;00:26, 165879.62it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>28%|██▊       | 1655977/6000000 [00:09&lt;00:26, 166974.26it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>28%|██▊       | 1672691/6000000 [00:10&lt;00:26, 166139.23it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>28%|██▊       | 1689317/6000000 [00:10&lt;00:25, 166043.77it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>28%|██▊       | 1706140/6000000 [00:10&lt;00:25, 166692.74it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>29%|██▊       | 1723103/6000000 [00:10&lt;00:25, 167568.43it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>29%|██▉       | 1739982/6000000 [00:10&lt;00:25, 167930.79it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>29%|██▉       | 1756779/6000000 [00:10&lt;00:25, 167703.09it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>30%|██▉       | 1773552/6000000 [00:10&lt;00:25, 166813.51it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>30%|██▉       | 1790431/6000000 [00:10&lt;00:25, 167402.03it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>30%|███       | 1807174/6000000 [00:10&lt;00:25, 166816.53it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>30%|███       | 1823928/6000000 [00:10&lt;00:25, 167031.66it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>31%|███       | 1840633/6000000 [00:11&lt;00:25, 166277.74it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>31%|███       | 1857626/6000000 [00:11&lt;00:24, 167365.15it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>31%|███       | 1874745/6000000 [00:11&lt;00:24, 168505.98it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>32%|███▏      | 1891598/6000000 [00:11&lt;00:24, 168358.79it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>32%|███▏      | 1908435/6000000 [00:11&lt;00:24, 168082.45it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>32%|███▏      | 1925482/6000000 [00:11&lt;00:24, 168795.29it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>32%|███▏      | 1942363/6000000 [00:11&lt;00:24, 168304.58it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>33%|███▎      | 1959195/6000000 [00:11&lt;00:24, 168033.78it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>33%|███▎      | 1976508/6000000 [00:11&lt;00:23, 169555.23it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>33%|███▎      | 1993465/6000000 [00:11&lt;00:23, 169478.93it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>34%|███▎      | 2010414/6000000 [00:12&lt;00:23, 168733.56it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>34%|███▍      | 2027495/6000000 [00:12&lt;00:23, 169351.88it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>34%|███▍      | 2044432/6000000 [00:12&lt;00:23, 168129.53it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>34%|███▍      | 2061248/6000000 [00:12&lt;00:23, 167116.32it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>35%|███▍      | 2077962/6000000 [00:12&lt;00:23, 166447.64it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>35%|███▍      | 2094609/6000000 [00:12&lt;00:23, 166189.17it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>35%|███▌      | 2111507/6000000 [00:12&lt;00:23, 167018.93it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>35%|███▌      | 2128211/6000000 [00:12&lt;00:23, 166427.03it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>36%|███▌      | 2144997/6000000 [00:12&lt;00:23, 166851.77it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>36%|███▌      | 2161803/6000000 [00:12&lt;00:22, 167211.84it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>36%|███▋      | 2178526/6000000 [00:13&lt;00:22, 167135.33it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>37%|███▋      | 2195297/6000000 [00:13&lt;00:22, 167306.63it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>37%|███▋      | 2212029/6000000 [00:13&lt;00:22, 166462.67it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>37%|███▋      | 2228811/6000000 [00:13&lt;00:22, 166865.94it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>37%|███▋      | 2245598/6000000 [00:13&lt;00:22, 167163.69it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>38%|███▊      | 2262329/6000000 [00:13&lt;00:22, 167204.19it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>38%|███▊      | 2279401/6000000 [00:13&lt;00:22, 168254.09it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>38%|███▊      | 2296227/6000000 [00:13&lt;00:22, 168015.85it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>39%|███▊      | 2313030/6000000 [00:13&lt;00:21, 167889.24it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>39%|███▉      | 2329950/6000000 [00:13&lt;00:21, 168279.76it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>39%|███▉      | 2346779/6000000 [00:14&lt;00:21, 167274.38it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>39%|███▉      | 2363805/6000000 [00:14&lt;00:21, 168164.59it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>40%|███▉      | 2380623/6000000 [00:14&lt;00:21, 167351.76it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>40%|███▉      | 2397373/6000000 [00:14&lt;00:21, 167394.35it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>40%|████      | 2414364/6000000 [00:14&lt;00:21, 168143.80it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>41%|████      | 2431180/6000000 [00:14&lt;00:21, 167509.69it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>41%|████      | 2447949/6000000 [00:14&lt;00:21, 167560.95it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>41%|████      | 2464706/6000000 [00:14&lt;00:21, 167242.75it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>41%|████▏     | 2481642/6000000 [00:14&lt;00:20, 167874.81it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>42%|████▏     | 2498608/6000000 [00:14&lt;00:20, 168408.08it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>42%|████▏     | 2515450/6000000 [00:15&lt;00:20, 167618.74it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>42%|████▏     | 2532214/6000000 [00:15&lt;00:20, 167273.44it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>42%|████▏     | 2549233/6000000 [00:15&lt;00:20, 168141.50it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>43%|████▎     | 2566049/6000000 [00:15&lt;00:20, 167267.04it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>43%|████▎     | 2583001/6000000 [00:15&lt;00:20, 167535.26it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>43%|████▎     | 2599932/6000000 [00:15&lt;00:20, 168063.54it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>44%|████▎     | 2616740/6000000 [00:15&lt;00:20, 167517.70it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>44%|████▍     | 2633804/6000000 [00:15&lt;00:19, 168446.95it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>44%|████▍     | 2650650/6000000 [00:15&lt;00:19, 168305.29it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>44%|████▍     | 2667482/6000000 [00:15&lt;00:19, 168194.25it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>45%|████▍     | 2684323/6000000 [00:16&lt;00:19, 168256.33it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>45%|████▌     | 2701150/6000000 [00:16&lt;00:19, 168124.96it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>45%|████▌     | 2718037/6000000 [00:16&lt;00:19, 168345.58it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>46%|████▌     | 2735142/6000000 [00:16&lt;00:19, 169154.30it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>46%|████▌     | 2752058/6000000 [00:16&lt;00:19, 168568.95it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>46%|████▌     | 2769001/6000000 [00:16&lt;00:19, 168298.02it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>46%|████▋     | 2785981/6000000 [00:16&lt;00:19, 168745.38it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>47%|████▋     | 2802857/6000000 [00:16&lt;00:19, 168008.70it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>47%|████▋     | 2820001/6000000 [00:16&lt;00:18, 168402.38it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>47%|████▋     | 2836930/6000000 [00:17&lt;00:18, 168664.29it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>48%|████▊     | 2853797/6000000 [00:17&lt;00:18, 167613.19it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>48%|████▊     | 2870820/6000000 [00:17&lt;00:18, 168390.63it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>48%|████▊     | 2887712/6000000 [00:17&lt;00:18, 168545.90it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>48%|████▊     | 2904568/6000000 [00:17&lt;00:18, 168425.82it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>49%|████▊     | 2921689/6000000 [00:17&lt;00:18, 169257.93it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>49%|████▉     | 2938616/6000000 [00:17&lt;00:18, 168718.76it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>49%|████▉     | 2955489/6000000 [00:17&lt;00:18, 168464.08it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>50%|████▉     | 2972662/6000000 [00:17&lt;00:17, 169438.46it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>50%|████▉     | 2989607/6000000 [00:17&lt;00:17, 168562.80it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>50%|█████     | 3006465/6000000 [00:18&lt;00:17, 168549.28it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>50%|█████     | 3023412/6000000 [00:18&lt;00:17, 168823.38it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>51%|█████     | 3040296/6000000 [00:18&lt;00:17, 168036.61it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>51%|█████     | 3057101/6000000 [00:18&lt;00:17, 167618.57it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>51%|█████     | 3074167/6000000 [00:18&lt;00:17, 168524.92it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>52%|█████▏    | 3091021/6000000 [00:18&lt;00:17, 167787.27it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>52%|█████▏    | 3108003/6000000 [00:18&lt;00:17, 168364.90it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>52%|█████▏    | 3124896/6000000 [00:18&lt;00:17, 168531.62it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>52%|█████▏    | 3141751/6000000 [00:18&lt;00:16, 168281.29it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>53%|█████▎    | 3158703/6000000 [00:18&lt;00:16, 168648.07it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>53%|█████▎    | 3175569/6000000 [00:19&lt;00:16, 168641.22it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>53%|█████▎    | 3192434/6000000 [00:19&lt;00:16, 168446.38it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>53%|█████▎    | 3209551/6000000 [00:19&lt;00:16, 169260.13it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>54%|█████▍    | 3226492/6000000 [00:19&lt;00:16, 169303.99it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>54%|█████▍    | 3243423/6000000 [00:19&lt;00:16, 168594.32it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>54%|█████▍    | 3260614/6000000 [00:19&lt;00:16, 169583.79it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>55%|█████▍    | 3277574/6000000 [00:19&lt;00:16, 169189.87it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>55%|█████▍    | 3294494/6000000 [00:19&lt;00:16, 168503.75it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>55%|█████▌    | 3311377/6000000 [00:19&lt;00:15, 168599.12it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>55%|█████▌    | 3328305/6000000 [00:19&lt;00:15, 168800.64it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>56%|█████▌    | 3345186/6000000 [00:20&lt;00:15, 168198.36it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>56%|█████▌    | 3362198/6000000 [00:20&lt;00:15, 168769.40it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>56%|█████▋    | 3379076/6000000 [00:20&lt;00:15, 168363.83it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>57%|█████▋    | 3396039/6000000 [00:20&lt;00:15, 168740.11it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>57%|█████▋    | 3413219/6000000 [00:20&lt;00:15, 169653.36it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>57%|█████▋    | 3430185/6000000 [00:20&lt;00:15, 168998.34it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>57%|█████▋    | 3447086/6000000 [00:20&lt;00:15, 168895.76it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>58%|█████▊    | 3464094/6000000 [00:20&lt;00:14, 169246.66it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>58%|█████▊    | 3481020/6000000 [00:20&lt;00:14, 168376.21it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>58%|█████▊    | 3497960/6000000 [00:20&lt;00:14, 168679.15it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>59%|█████▊    | 3514855/6000000 [00:21&lt;00:14, 168742.96it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>59%|█████▉    | 3531731/6000000 [00:21&lt;00:14, 168227.99it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>59%|█████▉    | 3548649/6000000 [00:21&lt;00:14, 168510.58it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>59%|█████▉    | 3565501/6000000 [00:21&lt;00:14, 167897.09it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>60%|█████▉    | 3582292/6000000 [00:21&lt;00:14, 167336.72it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>60%|█████▉    | 3599574/6000000 [00:21&lt;00:14, 168971.09it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>60%|██████    | 3616473/6000000 [00:21&lt;00:14, 168355.09it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>61%|██████    | 3633463/6000000 [00:21&lt;00:14, 168814.96it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>61%|██████    | 3650601/6000000 [00:21&lt;00:13, 169580.33it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>61%|██████    | 3667579/6000000 [00:21&lt;00:13, 169636.73it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>61%|██████▏   | 3684544/6000000 [00:22&lt;00:13, 169240.45it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>62%|██████▏   | 3701813/6000000 [00:22&lt;00:13, 170271.59it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>62%|██████▏   | 3718874/6000000 [00:22&lt;00:13, 170371.01it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>62%|██████▏   | 3735912/6000000 [00:22&lt;00:13, 170029.23it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>63%|██████▎   | 3753001/6000000 [00:22&lt;00:13, 169550.26it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>63%|██████▎   | 3770133/6000000 [00:22&lt;00:13, 170077.50it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>63%|██████▎   | 3787142/6000000 [00:22&lt;00:13, 169359.91it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>63%|██████▎   | 3804079/6000000 [00:22&lt;00:13, 168598.51it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>64%|██████▎   | 3821286/6000000 [00:22&lt;00:12, 169631.53it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>64%|██████▍   | 3838251/6000000 [00:22&lt;00:12, 168794.96it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>64%|██████▍   | 3855133/6000000 [00:23&lt;00:12, 168557.01it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>65%|██████▍   | 3872012/6000000 [00:23&lt;00:12, 168624.99it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>65%|██████▍   | 3888876/6000000 [00:23&lt;00:12, 168225.93it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>65%|██████▌   | 3906001/6000000 [00:23&lt;00:12, 168957.89it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>65%|██████▌   | 3923158/6000000 [00:23&lt;00:12, 169735.86it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>66%|██████▌   | 3940133/6000000 [00:23&lt;00:12, 169045.60it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>66%|██████▌   | 3957056/6000000 [00:23&lt;00:12, 169099.74it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>66%|██████▌   | 3974318/6000000 [00:23&lt;00:11, 170151.23it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>67%|██████▋   | 3991334/6000000 [00:23&lt;00:11, 170112.63it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>67%|██████▋   | 4008346/6000000 [00:23&lt;00:11, 169626.95it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>67%|██████▋   | 4025478/6000000 [00:24&lt;00:11, 170126.58it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>67%|██████▋   | 4042492/6000000 [00:24&lt;00:11, 169504.45it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>68%|██████▊   | 4059454/6000000 [00:24&lt;00:11, 169536.72it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>68%|██████▊   | 4076598/6000000 [00:24&lt;00:11, 170105.34it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>68%|██████▊   | 4093610/6000000 [00:24&lt;00:11, 169041.72it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>69%|██████▊   | 4110516/6000000 [00:24&lt;00:11, 168278.54it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>69%|██████▉   | 4127720/6000000 [00:24&lt;00:11, 169396.28it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>69%|██████▉   | 4144662/6000000 [00:24&lt;00:10, 169092.49it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>69%|██████▉   | 4161573/6000000 [00:24&lt;00:10, 168800.76it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>70%|██████▉   | 4178629/6000000 [00:24&lt;00:10, 169323.24it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>70%|██████▉   | 4195563/6000000 [00:25&lt;00:10, 169041.36it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>70%|███████   | 4212757/6000000 [00:25&lt;00:10, 169905.68it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>70%|███████   | 4229826/6000000 [00:25&lt;00:10, 170138.14it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>71%|███████   | 4246841/6000000 [00:25&lt;00:10, 169736.46it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>71%|███████   | 4263816/6000000 [00:25&lt;00:10, 169357.06it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>71%|███████▏  | 4280861/6000000 [00:25&lt;00:10, 169681.03it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>72%|███████▏  | 4297830/6000000 [00:25&lt;00:10, 169630.88it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>72%|███████▏  | 4314935/6000000 [00:25&lt;00:09, 170053.02it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>72%|███████▏  | 4332001/6000000 [00:25&lt;00:09, 169939.59it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>72%|███████▏  | 4349074/6000000 [00:25&lt;00:09, 170173.57it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>73%|███████▎  | 4366092/6000000 [00:26&lt;00:09, 170010.18it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>73%|███████▎  | 4383094/6000000 [00:26&lt;00:09, 169277.60it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>73%|███████▎  | 4400401/6000000 [00:26&lt;00:09, 170409.18it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>74%|███████▎  | 4417443/6000000 [00:26&lt;00:09, 169963.28it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>74%|███████▍  | 4434441/6000000 [00:26&lt;00:09, 169580.63it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>74%|███████▍  | 4451506/6000000 [00:26&lt;00:09, 169898.40it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>74%|███████▍  | 4468497/6000000 [00:26&lt;00:09, 169628.07it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>75%|███████▍  | 4485495/6000000 [00:26&lt;00:08, 169730.81it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>75%|███████▌  | 4502605/6000000 [00:26&lt;00:08, 170140.06it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>75%|███████▌  | 4519620/6000000 [00:26&lt;00:08, 169331.60it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>76%|███████▌  | 4536562/6000000 [00:27&lt;00:08, 169355.88it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>76%|███████▌  | 4553499/6000000 [00:27&lt;00:08, 169244.42it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>76%|███████▌  | 4570424/6000000 [00:27&lt;00:08, 168553.94it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>76%|███████▋  | 4587281/6000000 [00:27&lt;00:08, 167823.58it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>77%|███████▋  | 4604276/6000000 [00:27&lt;00:08, 168456.29it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>77%|███████▋  | 4621123/6000000 [00:27&lt;00:08, 168199.82it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>77%|███████▋  | 4638019/6000000 [00:27&lt;00:08, 168424.08it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>78%|███████▊  | 4655297/6000000 [00:27&lt;00:07, 169725.57it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>78%|███████▊  | 4672271/6000000 [00:27&lt;00:07, 169727.15it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>78%|███████▊  | 4689273/6000000 [00:27&lt;00:07, 169811.90it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>78%|███████▊  | 4706570/6000000 [00:28&lt;00:07, 170756.43it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>79%|███████▊  | 4723647/6000000 [00:28&lt;00:07, 169603.50it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>79%|███████▉  | 4740610/6000000 [00:28&lt;00:07, 169384.53it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>79%|███████▉  | 4757753/6000000 [00:28&lt;00:07, 169993.08it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>80%|███████▉  | 4774844/6000000 [00:28&lt;00:07, 170264.03it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>80%|███████▉  | 4791872/6000000 [00:28&lt;00:07, 169933.43it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>80%|████████  | 4809001/6000000 [00:28&lt;00:07, 169639.29it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>80%|████████  | 4826209/6000000 [00:28&lt;00:06, 170365.97it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>81%|████████  | 4843247/6000000 [00:28&lt;00:06, 167143.96it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>81%|████████  | 4860049/6000000 [00:28&lt;00:06, 167399.14it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>81%|████████▏ | 4877095/6000000 [00:29&lt;00:06, 168304.52it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>82%|████████▏ | 4894075/6000000 [00:29&lt;00:06, 168746.72it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>82%|████████▏ | 4911001/6000000 [00:29&lt;00:06, 168289.27it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>82%|████████▏ | 4928128/6000000 [00:29&lt;00:06, 169167.73it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>82%|████████▏ | 4945049/6000000 [00:29&lt;00:06, 168978.63it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>83%|████████▎ | 4962001/6000000 [00:29&lt;00:06, 168702.49it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>83%|████████▎ | 4979126/6000000 [00:29&lt;00:06, 169461.82it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>83%|████████▎ | 4996074/6000000 [00:29&lt;00:05, 169277.71it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>84%|████████▎ | 5013224/6000000 [00:29&lt;00:05, 169941.44it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>84%|████████▍ | 5030300/6000000 [00:29&lt;00:05, 170185.92it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>84%|████████▍ | 5047320/6000000 [00:30&lt;00:05, 169387.05it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>84%|████████▍ | 5064260/6000000 [00:30&lt;00:05, 169210.09it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>85%|████████▍ | 5081351/6000000 [00:30&lt;00:05, 169715.88it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>85%|████████▍ | 5098324/6000000 [00:30&lt;00:05, 169118.64it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>85%|████████▌ | 5115237/6000000 [00:30&lt;00:05, 168598.35it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>86%|████████▌ | 5132348/6000000 [00:30&lt;00:05, 169345.19it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>86%|████████▌ | 5149284/6000000 [00:30&lt;00:05, 169018.92it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>86%|████████▌ | 5166252/6000000 [00:30&lt;00:04, 169215.79it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>86%|████████▋ | 5183211/6000000 [00:30&lt;00:04, 169326.22it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>87%|████████▋ | 5200262/6000000 [00:30&lt;00:04, 169679.02it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>87%|████████▋ | 5217231/6000000 [00:31&lt;00:04, 168720.42it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>87%|████████▋ | 5234770/6000000 [00:31&lt;00:04, 170710.14it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>88%|████████▊ | 5251843/6000000 [00:31&lt;00:04, 169506.35it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>88%|████████▊ | 5268797/6000000 [00:31&lt;00:04, 169333.20it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>88%|████████▊ | 5286001/6000000 [00:31&lt;00:04, 169659.64it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>88%|████████▊ | 5302997/6000000 [00:31&lt;00:04, 169745.74it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>89%|████████▊ | 5319973/6000000 [00:31&lt;00:04, 168709.08it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>89%|████████▉ | 5337001/6000000 [00:31&lt;00:03, 168936.58it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>89%|████████▉ | 5353896/6000000 [00:31&lt;00:03, 168874.84it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>90%|████████▉ | 5370785/6000000 [00:31&lt;00:03, 168505.22it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>90%|████████▉ | 5387637/6000000 [00:32&lt;00:03, 168413.53it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>90%|█████████ | 5404479/6000000 [00:32&lt;00:03, 167671.15it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>90%|█████████ | 5421277/6000000 [00:32&lt;00:03, 167761.18it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>91%|█████████ | 5438281/6000000 [00:32&lt;00:03, 168439.37it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>91%|█████████ | 5455126/6000000 [00:32&lt;00:03, 168151.04it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>91%|█████████ | 5472001/6000000 [00:32&lt;00:03, 167912.03it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>91%|█████████▏| 5489230/6000000 [00:32&lt;00:03, 169218.33it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>92%|█████████▏| 5506340/6000000 [00:32&lt;00:02, 169779.00it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>92%|█████████▏| 5523319/6000000 [00:32&lt;00:02, 169508.87it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>92%|█████████▏| 5540418/6000000 [00:32&lt;00:02, 169949.00it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>93%|█████████▎| 5557414/6000000 [00:33&lt;00:02, 169358.86it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>93%|█████████▎| 5574351/6000000 [00:33&lt;00:02, 168892.37it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>93%|█████████▎| 5591467/6000000 [00:33&lt;00:02, 169567.46it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>93%|█████████▎| 5608425/6000000 [00:33&lt;00:02, 169138.21it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>94%|█████████▍| 5625340/6000000 [00:33&lt;00:02, 168738.84it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>94%|█████████▍| 5642403/6000000 [00:33&lt;00:02, 169301.53it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>94%|█████████▍| 5659334/6000000 [00:33&lt;00:02, 168051.85it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>95%|█████████▍| 5676142/6000000 [00:33&lt;00:01, 166949.43it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>95%|█████████▍| 5693519/6000000 [00:33&lt;00:01, 168974.39it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>95%|█████████▌| 5710421/6000000 [00:33&lt;00:01, 168533.71it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>95%|█████████▌| 5727277/6000000 [00:34&lt;00:01, 168035.29it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>96%|█████████▌| 5744280/6000000 [00:34&lt;00:01, 168628.84it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>96%|█████████▌| 5761145/6000000 [00:34&lt;00:01, 168313.51it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>96%|█████████▋| 5778045/6000000 [00:34&lt;00:01, 168515.30it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>97%|█████████▋| 5795343/6000000 [00:34&lt;00:01, 169847.20it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>97%|█████████▋| 5812329/6000000 [00:34&lt;00:01, 169131.52it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>97%|█████████▋| 5829244/6000000 [00:34&lt;00:01, 168620.62it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>97%|█████████▋| 5846651/6000000 [00:34&lt;00:00, 170246.00it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>98%|█████████▊| 5863678/6000000 [00:34&lt;00:00, 169470.34it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>98%|█████████▊| 5880627/6000000 [00:35&lt;00:00, 168392.14it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>98%|█████████▊| 5897812/6000000 [00:35&lt;00:00, 169419.56it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>99%|█████████▊| 5914757/6000000 [00:35&lt;00:00, 168877.72it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>99%|█████████▉| 5931647/6000000 [00:35&lt;00:00, 168294.34it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>99%|█████████▉| 5948824/6000000 [00:35&lt;00:00, 169327.63it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>99%|█████████▉| 5965759/6000000 [00:35&lt;00:00, 167832.36it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>100%|█████████▉| 5982546/6000000 [00:35&lt;00:00, 167831.70it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>100%|█████████▉| 5999766/6000000 [00:35&lt;00:00, 169132.44it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>100%|██████████| 6000000/6000000 [00:35&lt;00:00, 168001.05it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>
+</code></pre></div>
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>episode</th>
+      <th>step</th>
+      <th>policy_idx</th>
+      <th>arm</th>
+      <th>reward</th>
+      <th>reward_stat</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>1324896</th>
+      <td>441</td>
+      <td>632</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0.394166</td>
+      <td>1.123978</td>
+    </tr>
+    <tr>
+      <th>3566176</th>
+      <td>1188</td>
+      <td>725</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1.663107</td>
+      <td>0.665520</td>
+    </tr>
+    <tr>
+      <th>1109043</th>
+      <td>369</td>
+      <td>681</td>
+      <td>0</td>
+      <td>4</td>
+      <td>-1.580458</td>
+      <td>1.168326</td>
+    </tr>
+    <tr>
+      <th>4286042</th>
+      <td>1428</td>
+      <td>680</td>
+      <td>2</td>
+      <td>0</td>
+      <td>0.703739</td>
+      <td>1.782960</td>
+    </tr>
+    <tr>
+      <th>5395174</th>
+      <td>1798</td>
+      <td>391</td>
+      <td>1</td>
+      <td>0</td>
+      <td>-0.390197</td>
+      <td>0.734739</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<p>It is then straightforward to plot the average reward each policy obtains at each step, by averaging over episodes.</p>
+<div class="language-python highlight"><pre><span></span><code><span class="n">policy_names</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">0</span><span class="p">:</span> <span class="s1">&#39;ε = 0.1&#39;</span><span class="p">,</span>
+    <span class="mi">1</span><span class="p">:</span> <span class="s1">&#39;ε = 0.01&#39;</span><span class="p">,</span>
+    <span class="mi">2</span><span class="p">:</span> <span class="s1">&#39;ε = 0 (greedy)&#39;</span>
+<span class="p">}</span>
+
+<span class="p">(</span>
+    <span class="n">trace_df</span>
+    <span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">policy</span><span class="o">=</span><span class="n">trace_df</span><span class="o">.</span><span class="n">policy_idx</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">policy_names</span><span class="p">))</span>
+    <span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s1">&#39;step&#39;</span><span class="p">,</span> <span class="s1">&#39;policy&#39;</span><span class="p">])</span>
+    <span class="p">[</span><span class="s1">&#39;reward&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+    <span class="o">.</span><span class="n">unstack</span><span class="p">()</span>
+    <span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+<span class="p">)</span>
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>&lt;Axes: xlabel=&#39;step&#39;&gt;
+</code></pre></div>
+<p><img alt="png" src="../bandits-101_files/bandits-101_8_1.png" /></p>
+<h2 id="controlling-the-evaluation-loop">Controlling the evaluation loop<a class="headerlink" href="#controlling-the-evaluation-loop" title="Permanent link">&para;</a></h2>
+<p>The <a href="../../api/bandit/evaluate"><code>bandit.evaluate</code></a> function is useful for benchmarking. But in practice, you'll want to have control over your bandit policy. Indeed you'll want the freedom to pull arms (with the <code>pull</code> method) and update the policy (with the <code>update</code> method) at your discretion.</p>
+<p>As an example, the following is a possible reimplementation of the <a href="../../api/bandit/evaluate"><code>bandit.evaluate</code></a> function. Here we'll be measuring the rate at which each policy selects the optimal arm.</p>
+<p>Note how the <code>pull</code> and <code>update</code> methods are used.</p>
+<div class="language-python highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
+
+<span class="n">policies</span><span class="o">=</span><span class="p">[</span>
+    <span class="n">bandit</span><span class="o">.</span><span class="n">EpsilonGreedy</span><span class="p">(</span><span class="n">epsilon</span><span class="o">=</span><span class="mf">0.1</span><span class="p">),</span>
+    <span class="n">bandit</span><span class="o">.</span><span class="n">EpsilonGreedy</span><span class="p">(</span><span class="n">epsilon</span><span class="o">=</span><span class="mf">0.01</span><span class="p">),</span>
+    <span class="n">bandit</span><span class="o">.</span><span class="n">EpsilonGreedy</span><span class="p">(</span><span class="n">epsilon</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+<span class="p">]</span>
+
+<span class="n">env</span> <span class="o">=</span> <span class="n">gym</span><span class="o">.</span><span class="n">make</span><span class="p">(</span>
+    <span class="s1">&#39;river_bandits/KArmedTestbed-v0&#39;</span><span class="p">,</span>
+    <span class="n">max_episode_steps</span><span class="o">=</span><span class="mi">1000</span>
+<span class="p">)</span>
+<span class="n">n_episodes</span> <span class="o">=</span> <span class="mi">2000</span>
+
+<span class="n">trace</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="k">with</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">total</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">policies</span><span class="p">)</span> <span class="o">*</span> <span class="n">n_episodes</span> <span class="o">*</span> <span class="n">env</span><span class="o">.</span><span class="n">_max_episode_steps</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="k">as</span> <span class="n">progress</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">policy</span> <span class="ow">in</span> <span class="n">policies</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">episode</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_episodes</span><span class="p">):</span>
+            <span class="n">episode_policy</span> <span class="o">=</span> <span class="n">policy</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+            <span class="n">episode_env</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
+            <span class="n">episode_env</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+            <span class="n">step</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="n">action</span> <span class="o">=</span> <span class="n">episode_policy</span><span class="o">.</span><span class="n">pull</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">episode_env</span><span class="o">.</span><span class="n">action_space</span><span class="o">.</span><span class="n">n</span><span class="p">))</span>
+                <span class="n">observation</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">terminated</span><span class="p">,</span> <span class="n">truncated</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">episode_env</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
+                <span class="n">best_action</span> <span class="o">=</span> <span class="n">observation</span>
+                <span class="n">episode_policy</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">action</span><span class="p">,</span> <span class="n">reward</span><span class="p">)</span>
+
+                <span class="n">trace</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                    <span class="s2">&quot;episode&quot;</span><span class="p">:</span> <span class="n">episode</span><span class="p">,</span>
+                    <span class="s2">&quot;step&quot;</span><span class="p">:</span> <span class="n">step</span><span class="p">,</span>
+                    <span class="s2">&quot;policy&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;ε = </span><span class="si">{</span><span class="n">policy</span><span class="o">.</span><span class="n">epsilon</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;is_action_optimal&quot;</span><span class="p">:</span> <span class="n">action</span> <span class="o">==</span> <span class="n">best_action</span>
+                <span class="p">})</span>
+                <span class="n">step</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">progress</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+
+                <span class="k">if</span> <span class="n">terminated</span> <span class="ow">or</span> <span class="n">truncated</span><span class="p">:</span>
+                    <span class="k">break</span>
+
+<span class="n">trace_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">trace</span><span class="p">)</span>
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>0%|          | 0/6000000 [00:00&lt;?, ?it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>0%|          | 16720/6000000 [00:00&lt;00:35, 167192.98it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>1%|          | 34491/6000000 [00:00&lt;00:34, 173374.59it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>1%|          | 52001/6000000 [00:00&lt;00:34, 174090.30it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>1%|          | 69804/6000000 [00:00&lt;00:33, 175643.98it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>1%|▏         | 87463/6000000 [00:00&lt;00:33, 175982.70it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>2%|▏         | 105217/6000000 [00:00&lt;00:33, 176510.03it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>2%|▏         | 122979/6000000 [00:00&lt;00:33, 176870.72it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>2%|▏         | 140737/6000000 [00:00&lt;00:33, 177094.01it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>3%|▎         | 158447/6000000 [00:00&lt;00:33, 176203.20it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>3%|▎         | 176202/6000000 [00:01&lt;00:32, 176616.28it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>3%|▎         | 194173/6000000 [00:01&lt;00:32, 177559.94it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>4%|▎         | 212001/6000000 [00:01&lt;00:32, 177657.36it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>4%|▍         | 229817/6000000 [00:01&lt;00:32, 177808.40it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>4%|▍         | 247599/6000000 [00:01&lt;00:32, 177348.63it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>4%|▍         | 265335/6000000 [00:01&lt;00:32, 177186.23it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>5%|▍         | 283178/6000000 [00:01&lt;00:32, 177559.21it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>5%|▌         | 301017/6000000 [00:01&lt;00:32, 177807.37it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>5%|▌         | 318799/6000000 [00:01&lt;00:31, 177550.39it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>6%|▌         | 336581/6000000 [00:01&lt;00:31, 177629.36it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>6%|▌         | 354433/6000000 [00:02&lt;00:31, 177894.68it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>6%|▌         | 372223/6000000 [00:02&lt;00:31, 177738.24it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>7%|▋         | 390007/6000000 [00:02&lt;00:31, 177767.27it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>7%|▋         | 407889/6000000 [00:02&lt;00:31, 178080.65it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>7%|▋         | 425717/6000000 [00:02&lt;00:31, 178138.19it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>7%|▋         | 443531/6000000 [00:02&lt;00:31, 177879.95it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>8%|▊         | 461480/6000000 [00:02&lt;00:31, 178361.65it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>8%|▊         | 479347/6000000 [00:02&lt;00:30, 178452.60it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>8%|▊         | 497193/6000000 [00:02&lt;00:30, 178414.31it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>9%|▊         | 515108/6000000 [00:02&lt;00:30, 178634.17it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>9%|▉         | 533045/6000000 [00:03&lt;00:30, 178853.22it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>9%|▉         | 551002/6000000 [00:03&lt;00:30, 179033.68it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>9%|▉         | 568992/6000000 [00:03&lt;00:30, 179291.23it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>10%|▉         | 586922/6000000 [00:03&lt;00:30, 179206.64it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>10%|█         | 604843/6000000 [00:03&lt;00:30, 178160.25it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>10%|█         | 622778/6000000 [00:03&lt;00:30, 178514.87it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>11%|█         | 640848/6000000 [00:03&lt;00:29, 179167.65it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>11%|█         | 658766/6000000 [00:03&lt;00:29, 179086.15it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>11%|█▏        | 676676/6000000 [00:03&lt;00:29, 179052.00it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>12%|█▏        | 694582/6000000 [00:03&lt;00:29, 178784.13it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>12%|█▏        | 712461/6000000 [00:04&lt;00:29, 178450.06it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>12%|█▏        | 730307/6000000 [00:04&lt;00:29, 178190.75it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>12%|█▏        | 748135/6000000 [00:04&lt;00:29, 178215.84it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>13%|█▎        | 766015/6000000 [00:04&lt;00:29, 178388.99it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>13%|█▎        | 783855/6000000 [00:04&lt;00:29, 177625.97it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>13%|█▎        | 801619/6000000 [00:04&lt;00:29, 176420.08it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>14%|█▎        | 819263/6000000 [00:04&lt;00:29, 175543.98it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>14%|█▍        | 836820/6000000 [00:04&lt;00:29, 174525.07it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>14%|█▍        | 854275/6000000 [00:04&lt;00:29, 173749.76it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>15%|█▍        | 871652/6000000 [00:04&lt;00:29, 173400.73it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>15%|█▍        | 888993/6000000 [00:05&lt;00:29, 173049.79it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>15%|█▌        | 906418/6000000 [00:05&lt;00:29, 173406.46it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>15%|█▌        | 923760/6000000 [00:05&lt;00:29, 172673.67it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>16%|█▌        | 941083/6000000 [00:05&lt;00:29, 172836.93it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>16%|█▌        | 958417/6000000 [00:05&lt;00:29, 172984.73it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>16%|█▋        | 975716/6000000 [00:05&lt;00:29, 172865.09it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>17%|█▋        | 993003/6000000 [00:05&lt;00:29, 172639.79it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>17%|█▋        | 1010268/6000000 [00:05&lt;00:28, 172566.96it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>17%|█▋        | 1027525/6000000 [00:05&lt;00:28, 172310.93it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>17%|█▋        | 1044757/6000000 [00:05&lt;00:28, 172157.85it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>18%|█▊        | 1061973/6000000 [00:06&lt;00:28, 171874.05it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>18%|█▊        | 1079161/6000000 [00:06&lt;00:28, 171494.77it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>18%|█▊        | 1096432/6000000 [00:06&lt;00:28, 171855.14it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>19%|█▊        | 1113618/6000000 [00:06&lt;00:28, 171721.76it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>19%|█▉        | 1130894/6000000 [00:06&lt;00:28, 172031.08it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>19%|█▉        | 1148209/6000000 [00:06&lt;00:28, 172363.80it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>19%|█▉        | 1165446/6000000 [00:06&lt;00:28, 172132.66it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>20%|█▉        | 1182686/6000000 [00:06&lt;00:27, 172212.16it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>20%|█▉        | 1199908/6000000 [00:06&lt;00:27, 172168.44it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>20%|██        | 1217233/6000000 [00:06&lt;00:27, 172491.75it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>21%|██        | 1234550/6000000 [00:07&lt;00:27, 172694.75it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>21%|██        | 1251956/6000000 [00:07&lt;00:27, 173103.05it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>21%|██        | 1269267/6000000 [00:07&lt;00:27, 172726.42it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>21%|██▏       | 1286613/6000000 [00:07&lt;00:27, 172943.68it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>22%|██▏       | 1303908/6000000 [00:07&lt;00:27, 172715.39it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>22%|██▏       | 1321181/6000000 [00:07&lt;00:27, 172718.09it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>22%|██▏       | 1338453/6000000 [00:07&lt;00:27, 172530.76it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>23%|██▎       | 1355707/6000000 [00:07&lt;00:26, 172510.05it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>23%|██▎       | 1373001/6000000 [00:07&lt;00:26, 172487.24it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>23%|██▎       | 1390418/6000000 [00:07&lt;00:26, 172991.24it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>23%|██▎       | 1407826/6000000 [00:08&lt;00:26, 173316.96it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>24%|██▍       | 1425182/6000000 [00:08&lt;00:26, 173389.49it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>24%|██▍       | 1442522/6000000 [00:08&lt;00:26, 173164.05it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>24%|██▍       | 1459839/6000000 [00:08&lt;00:26, 172841.41it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>25%|██▍       | 1477124/6000000 [00:08&lt;00:26, 172268.78it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>25%|██▍       | 1494352/6000000 [00:08&lt;00:26, 172048.59it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>25%|██▌       | 1511558/6000000 [00:08&lt;00:26, 171698.42it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>25%|██▌       | 1528729/6000000 [00:08&lt;00:26, 171687.86it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>26%|██▌       | 1545898/6000000 [00:08&lt;00:25, 171637.50it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>26%|██▌       | 1563065/6000000 [00:08&lt;00:25, 171646.55it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>26%|██▋       | 1580230/6000000 [00:09&lt;00:25, 171316.68it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>27%|██▋       | 1597362/6000000 [00:09&lt;00:25, 170791.64it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>27%|██▋       | 1614498/6000000 [00:09&lt;00:25, 170958.62it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>27%|██▋       | 1631661/6000000 [00:09&lt;00:25, 171157.46it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>27%|██▋       | 1648778/6000000 [00:09&lt;00:25, 170705.97it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>28%|██▊       | 1666001/6000000 [00:09&lt;00:25, 171035.80it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>28%|██▊       | 1683172/6000000 [00:09&lt;00:25, 171234.01it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>28%|██▊       | 1700296/6000000 [00:09&lt;00:25, 171177.20it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>29%|██▊       | 1717414/6000000 [00:09&lt;00:25, 171002.24it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>29%|██▉       | 1734620/6000000 [00:09&lt;00:24, 171317.93it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>29%|██▉       | 1751778/6000000 [00:10&lt;00:24, 171396.13it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>29%|██▉       | 1769115/6000000 [00:10&lt;00:24, 171985.35it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>30%|██▉       | 1786314/6000000 [00:10&lt;00:24, 171829.82it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>30%|███       | 1803498/6000000 [00:10&lt;00:24, 171735.25it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>30%|███       | 1820672/6000000 [00:10&lt;00:24, 171563.41it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>31%|███       | 1837933/6000000 [00:10&lt;00:24, 171875.24it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>31%|███       | 1855121/6000000 [00:10&lt;00:24, 171600.97it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>31%|███       | 1872282/6000000 [00:10&lt;00:24, 171336.82it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>31%|███▏      | 1889416/6000000 [00:10&lt;00:23, 171292.11it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>32%|███▏      | 1906546/6000000 [00:10&lt;00:23, 171074.80it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>32%|███▏      | 1923739/6000000 [00:11&lt;00:23, 171328.16it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>32%|███▏      | 1941000/6000000 [00:11&lt;00:23, 171710.69it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>33%|███▎      | 1958345/6000000 [00:11&lt;00:23, 172230.73it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>33%|███▎      | 1975782/6000000 [00:11&lt;00:23, 172871.08it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>33%|███▎      | 1993070/6000000 [00:11&lt;00:23, 172137.93it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>34%|███▎      | 2010285/6000000 [00:11&lt;00:23, 170541.11it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>34%|███▍      | 2027343/6000000 [00:11&lt;00:23, 169728.64it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>34%|███▍      | 2044319/6000000 [00:11&lt;00:23, 167980.56it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>34%|███▍      | 2061122/6000000 [00:11&lt;00:23, 166729.42it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>35%|███▍      | 2077799/6000000 [00:11&lt;00:23, 166083.10it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>35%|███▍      | 2094410/6000000 [00:12&lt;00:23, 165430.91it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>35%|███▌      | 2110955/6000000 [00:12&lt;00:23, 165082.73it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>35%|███▌      | 2127464/6000000 [00:12&lt;00:23, 164710.79it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>36%|███▌      | 2143936/6000000 [00:12&lt;00:23, 164323.70it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>36%|███▌      | 2160369/6000000 [00:12&lt;00:23, 163786.12it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>36%|███▋      | 2176748/6000000 [00:12&lt;00:23, 163652.12it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>37%|███▋      | 2193359/6000000 [00:12&lt;00:23, 164385.01it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>37%|███▋      | 2209872/6000000 [00:12&lt;00:23, 164606.68it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>37%|███▋      | 2226355/6000000 [00:12&lt;00:22, 164671.06it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>37%|███▋      | 2242823/6000000 [00:12&lt;00:23, 162989.79it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>38%|███▊      | 2259170/6000000 [00:13&lt;00:22, 163132.19it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>38%|███▊      | 2275658/6000000 [00:13&lt;00:22, 163652.01it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>38%|███▊      | 2292026/6000000 [00:13&lt;00:22, 163282.59it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>38%|███▊      | 2308424/6000000 [00:13&lt;00:22, 163489.03it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>39%|███▊      | 2324775/6000000 [00:13&lt;00:22, 163112.29it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>39%|███▉      | 2341097/6000000 [00:13&lt;00:22, 163143.36it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>39%|███▉      | 2357413/6000000 [00:13&lt;00:22, 162938.95it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>40%|███▉      | 2373739/6000000 [00:13&lt;00:22, 163033.41it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>40%|███▉      | 2390107/6000000 [00:13&lt;00:22, 163225.89it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>40%|████      | 2406686/6000000 [00:13&lt;00:21, 163993.63it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>40%|████      | 2423086/6000000 [00:14&lt;00:21, 163699.76it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>41%|████      | 2439479/6000000 [00:14&lt;00:21, 163768.39it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>41%|████      | 2455894/6000000 [00:14&lt;00:21, 163880.07it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>41%|████      | 2472283/6000000 [00:14&lt;00:21, 163856.87it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>41%|████▏     | 2488669/6000000 [00:14&lt;00:21, 163432.57it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>42%|████▏     | 2505013/6000000 [00:14&lt;00:21, 163424.70it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>42%|████▏     | 2521389/6000000 [00:14&lt;00:21, 163523.06it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>42%|████▏     | 2537742/6000000 [00:14&lt;00:21, 163334.99it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>43%|████▎     | 2554076/6000000 [00:14&lt;00:21, 163199.26it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>43%|████▎     | 2570397/6000000 [00:14&lt;00:21, 163097.60it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>43%|████▎     | 2586755/6000000 [00:15&lt;00:20, 163240.61it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>43%|████▎     | 2603080/6000000 [00:15&lt;00:20, 161991.05it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>44%|████▎     | 2619433/6000000 [00:15&lt;00:20, 162449.34it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>44%|████▍     | 2635802/6000000 [00:15&lt;00:20, 162819.73it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>44%|████▍     | 2652086/6000000 [00:15&lt;00:20, 162629.39it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>44%|████▍     | 2668580/6000000 [00:15&lt;00:20, 163319.74it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>45%|████▍     | 2685115/6000000 [00:15&lt;00:20, 163927.36it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>45%|████▌     | 2701672/6000000 [00:15&lt;00:20, 164418.77it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>45%|████▌     | 2718115/6000000 [00:15&lt;00:20, 163045.05it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>46%|████▌     | 2734519/6000000 [00:15&lt;00:19, 163341.15it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>46%|████▌     | 2750999/6000000 [00:16&lt;00:19, 163776.01it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>46%|████▌     | 2767592/6000000 [00:16&lt;00:19, 164418.51it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>46%|████▋     | 2784142/6000000 [00:16&lt;00:19, 164741.56it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>47%|████▋     | 2800618/6000000 [00:16&lt;00:19, 164703.96it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>47%|████▋     | 2817090/6000000 [00:16&lt;00:19, 163847.52it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>47%|████▋     | 2833477/6000000 [00:16&lt;00:19, 163848.21it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>48%|████▊     | 2850017/6000000 [00:16&lt;00:19, 164311.35it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>48%|████▊     | 2866452/6000000 [00:16&lt;00:19, 164321.33it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>48%|████▊     | 2882885/6000000 [00:16&lt;00:19, 163760.42it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>48%|████▊     | 2899262/6000000 [00:16&lt;00:18, 163472.40it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>49%|████▊     | 2915610/6000000 [00:17&lt;00:18, 162929.03it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>49%|████▉     | 2931928/6000000 [00:17&lt;00:18, 163003.88it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>49%|████▉     | 2948229/6000000 [00:17&lt;00:18, 162878.98it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>49%|████▉     | 2964518/6000000 [00:17&lt;00:18, 162587.58it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>50%|████▉     | 2980849/6000000 [00:17&lt;00:18, 162802.01it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>50%|████▉     | 2997130/6000000 [00:17&lt;00:18, 162615.65it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>50%|█████     | 3013436/6000000 [00:17&lt;00:18, 162748.33it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>50%|█████     | 3029798/6000000 [00:17&lt;00:18, 163006.98it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>51%|█████     | 3046192/6000000 [00:17&lt;00:18, 163285.54it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>51%|█████     | 3062521/6000000 [00:17&lt;00:18, 163121.86it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>51%|█████▏    | 3078890/6000000 [00:18&lt;00:17, 163290.84it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>52%|█████▏    | 3095220/6000000 [00:18&lt;00:17, 163274.61it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>52%|█████▏    | 3111593/6000000 [00:18&lt;00:17, 163409.66it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>52%|█████▏    | 3127935/6000000 [00:18&lt;00:17, 163278.81it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>52%|█████▏    | 3144288/6000000 [00:18&lt;00:17, 163352.39it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>53%|█████▎    | 3160692/6000000 [00:18&lt;00:17, 163557.30it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>53%|█████▎    | 3177049/6000000 [00:18&lt;00:17, 163559.52it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>53%|█████▎    | 3193405/6000000 [00:18&lt;00:17, 163241.64it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>53%|█████▎    | 3209730/6000000 [00:18&lt;00:17, 162584.95it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>54%|█████▍    | 3226212/6000000 [00:18&lt;00:16, 163250.31it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>54%|█████▍    | 3242550/6000000 [00:19&lt;00:16, 163288.81it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>54%|█████▍    | 3258906/6000000 [00:19&lt;00:16, 163367.95it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>55%|█████▍    | 3275244/6000000 [00:19&lt;00:16, 162959.68it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>55%|█████▍    | 3291541/6000000 [00:19&lt;00:16, 162853.85it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>55%|█████▌    | 3307919/6000000 [00:19&lt;00:16, 163128.52it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>55%|█████▌    | 3324400/6000000 [00:19&lt;00:16, 163630.65it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>56%|█████▌    | 3340764/6000000 [00:19&lt;00:16, 163425.33it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>56%|█████▌    | 3357107/6000000 [00:19&lt;00:16, 162755.30it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>56%|█████▌    | 3373445/6000000 [00:19&lt;00:16, 162940.37it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>56%|█████▋    | 3389821/6000000 [00:19&lt;00:15, 163183.15it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>57%|█████▋    | 3406183/6000000 [00:20&lt;00:15, 163313.64it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>57%|█████▋    | 3422527/6000000 [00:20&lt;00:15, 163351.19it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>57%|█████▋    | 3438863/6000000 [00:20&lt;00:15, 163026.77it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>58%|█████▊    | 3455166/6000000 [00:20&lt;00:15, 162763.49it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>58%|█████▊    | 3471443/6000000 [00:20&lt;00:15, 162344.38it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>58%|█████▊    | 3487791/6000000 [00:20&lt;00:15, 162682.14it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>58%|█████▊    | 3504093/6000000 [00:20&lt;00:15, 162781.77it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>59%|█████▊    | 3520702/6000000 [00:20&lt;00:15, 163772.04it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>59%|█████▉    | 3537204/6000000 [00:20&lt;00:15, 164143.42it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>59%|█████▉    | 3553752/6000000 [00:20&lt;00:14, 164543.14it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>60%|█████▉    | 3570207/6000000 [00:21&lt;00:14, 163710.77it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>60%|█████▉    | 3586580/6000000 [00:21&lt;00:14, 163664.79it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>60%|██████    | 3602948/6000000 [00:21&lt;00:14, 163408.14it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>60%|██████    | 3619395/6000000 [00:21&lt;00:14, 163725.01it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>61%|██████    | 3635768/6000000 [00:21&lt;00:14, 163588.56it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>61%|██████    | 3652128/6000000 [00:21&lt;00:14, 163349.54it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>61%|██████    | 3668464/6000000 [00:21&lt;00:14, 163226.84it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>61%|██████▏   | 3684831/6000000 [00:21&lt;00:14, 163359.06it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>62%|██████▏   | 3701168/6000000 [00:21&lt;00:14, 163257.46it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>62%|██████▏   | 3717494/6000000 [00:21&lt;00:13, 163098.82it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>62%|██████▏   | 3733804/6000000 [00:22&lt;00:13, 163047.65it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>63%|██████▎   | 3750123/6000000 [00:22&lt;00:13, 163089.06it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>63%|██████▎   | 3766432/6000000 [00:22&lt;00:13, 163070.74it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>63%|██████▎   | 3782809/6000000 [00:22&lt;00:13, 163279.58it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>63%|██████▎   | 3799137/6000000 [00:22&lt;00:13, 163193.89it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>64%|██████▎   | 3815676/6000000 [00:22&lt;00:13, 163850.39it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>64%|██████▍   | 3832062/6000000 [00:22&lt;00:13, 163846.99it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>64%|██████▍   | 3848447/6000000 [00:22&lt;00:13, 163810.70it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>64%|██████▍   | 3865001/6000000 [00:22&lt;00:13, 164205.10it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>65%|██████▍   | 3881533/6000000 [00:22&lt;00:12, 164537.81it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>65%|██████▍   | 3898042/6000000 [00:23&lt;00:12, 164702.12it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>65%|██████▌   | 3914513/6000000 [00:23&lt;00:12, 163059.58it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>66%|██████▌   | 3930953/6000000 [00:23&lt;00:12, 163457.08it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>66%|██████▌   | 3947370/6000000 [00:23&lt;00:12, 163664.43it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>66%|██████▌   | 3963793/6000000 [00:23&lt;00:12, 163832.36it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>66%|██████▋   | 3980178/6000000 [00:23&lt;00:12, 163238.27it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>67%|██████▋   | 3996631/6000000 [00:23&lt;00:12, 163621.24it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>67%|██████▋   | 4013296/6000000 [00:23&lt;00:12, 164526.43it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>67%|██████▋   | 4029970/6000000 [00:23&lt;00:11, 165187.48it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>67%|██████▋   | 4046743/6000000 [00:23&lt;00:11, 165946.52it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>68%|██████▊   | 4063493/6000000 [00:24&lt;00:11, 166410.45it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>68%|██████▊   | 4080426/6000000 [00:24&lt;00:11, 167279.85it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>68%|██████▊   | 4097155/6000000 [00:24&lt;00:11, 167104.47it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>69%|██████▊   | 4113866/6000000 [00:24&lt;00:11, 166776.24it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>69%|██████▉   | 4130544/6000000 [00:24&lt;00:11, 166509.44it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>69%|██████▉   | 4147383/6000000 [00:24&lt;00:11, 167071.56it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>69%|██████▉   | 4164241/6000000 [00:24&lt;00:10, 167522.34it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>70%|██████▉   | 4181001/6000000 [00:24&lt;00:10, 167538.24it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>70%|██████▉   | 4198001/6000000 [00:24&lt;00:10, 168136.27it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>70%|███████   | 4214862/6000000 [00:24&lt;00:10, 168277.18it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>71%|███████   | 4231690/6000000 [00:25&lt;00:10, 167422.01it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>71%|███████   | 4248434/6000000 [00:25&lt;00:10, 167383.56it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>71%|███████   | 4265230/6000000 [00:25&lt;00:10, 167553.49it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>71%|███████▏  | 4282001/6000000 [00:25&lt;00:10, 167413.88it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>72%|███████▏  | 4298743/6000000 [00:25&lt;00:10, 166981.19it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>72%|███████▏  | 4315454/6000000 [00:25&lt;00:10, 167016.89it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>72%|███████▏  | 4332156/6000000 [00:25&lt;00:09, 166863.21it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>72%|███████▏  | 4348843/6000000 [00:25&lt;00:09, 166646.84it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>73%|███████▎  | 4365529/6000000 [00:25&lt;00:09, 166708.65it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>73%|███████▎  | 4382298/6000000 [00:25&lt;00:09, 166999.95it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>73%|███████▎  | 4399120/6000000 [00:26&lt;00:09, 167364.47it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>74%|███████▎  | 4416187/6000000 [00:26&lt;00:09, 168354.45it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>74%|███████▍  | 4433023/6000000 [00:26&lt;00:09, 168096.02it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>74%|███████▍  | 4450001/6000000 [00:26&lt;00:09, 168472.12it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>74%|███████▍  | 4466849/6000000 [00:26&lt;00:09, 168227.65it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>75%|███████▍  | 4483672/6000000 [00:26&lt;00:09, 167985.14it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>75%|███████▌  | 4500479/6000000 [00:26&lt;00:08, 168007.22it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>75%|███████▌  | 4517280/6000000 [00:26&lt;00:08, 167524.04it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>76%|███████▌  | 4534033/6000000 [00:26&lt;00:08, 166905.33it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>76%|███████▌  | 4551001/6000000 [00:27&lt;00:08, 167656.39it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>76%|███████▌  | 4568001/6000000 [00:27&lt;00:08, 168117.42it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>76%|███████▋  | 4584814/6000000 [00:27&lt;00:08, 167670.86it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>77%|███████▋  | 4601701/6000000 [00:27&lt;00:08, 168026.91it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>77%|███████▋  | 4618505/6000000 [00:27&lt;00:08, 167348.44it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>77%|███████▋  | 4635241/6000000 [00:27&lt;00:08, 167037.52it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>78%|███████▊  | 4652139/6000000 [00:27&lt;00:08, 167617.14it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>78%|███████▊  | 4668910/6000000 [00:27&lt;00:07, 167644.11it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>78%|███████▊  | 4685675/6000000 [00:27&lt;00:07, 167086.16it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>78%|███████▊  | 4702385/6000000 [00:27&lt;00:07, 167081.53it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>79%|███████▊  | 4719094/6000000 [00:28&lt;00:07, 167049.80it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>79%|███████▉  | 4735882/6000000 [00:28&lt;00:07, 167295.63it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>79%|███████▉  | 4752612/6000000 [00:28&lt;00:07, 167275.01it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>79%|███████▉  | 4769340/6000000 [00:28&lt;00:07, 166914.63it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>80%|███████▉  | 4786127/6000000 [00:28&lt;00:07, 167200.26it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>80%|████████  | 4802926/6000000 [00:28&lt;00:07, 167434.10it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>80%|████████  | 4819670/6000000 [00:28&lt;00:07, 167240.68it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>81%|████████  | 4836509/6000000 [00:28&lt;00:06, 167583.53it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>81%|████████  | 4853268/6000000 [00:28&lt;00:06, 166689.37it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>81%|████████  | 4870034/6000000 [00:28&lt;00:06, 166978.69it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>81%|████████▏ | 4887001/6000000 [00:29&lt;00:06, 167686.47it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>82%|████████▏ | 4903790/6000000 [00:29&lt;00:06, 167744.91it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>82%|████████▏ | 4920609/6000000 [00:29&lt;00:06, 167877.99it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>82%|████████▏ | 4937398/6000000 [00:29&lt;00:06, 167392.47it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>83%|████████▎ | 4954138/6000000 [00:29&lt;00:06, 167042.99it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>83%|████████▎ | 4971088/6000000 [00:29&lt;00:06, 167776.58it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>83%|████████▎ | 4987941/6000000 [00:29&lt;00:06, 168000.77it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>83%|████████▎ | 5004742/6000000 [00:29&lt;00:05, 167714.27it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>84%|████████▎ | 5021651/6000000 [00:29&lt;00:05, 168123.16it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>84%|████████▍ | 5038464/6000000 [00:29&lt;00:05, 167928.49it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>84%|████████▍ | 5055408/6000000 [00:30&lt;00:05, 168380.71it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>85%|████████▍ | 5072247/6000000 [00:30&lt;00:05, 168063.64it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>85%|████████▍ | 5089054/6000000 [00:30&lt;00:05, 167309.61it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>85%|████████▌ | 5105898/6000000 [00:30&lt;00:05, 167645.48it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>85%|████████▌ | 5122990/6000000 [00:30&lt;00:05, 168622.79it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>86%|████████▌ | 5139854/6000000 [00:30&lt;00:05, 168097.69it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>86%|████████▌ | 5156665/6000000 [00:30&lt;00:05, 167003.73it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>86%|████████▌ | 5173577/6000000 [00:30&lt;00:04, 167632.61it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>87%|████████▋ | 5190639/6000000 [00:30&lt;00:04, 168524.06it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>87%|████████▋ | 5207494/6000000 [00:30&lt;00:04, 167934.63it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>87%|████████▋ | 5224371/6000000 [00:31&lt;00:04, 168182.36it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>87%|████████▋ | 5241197/6000000 [00:31&lt;00:04, 168203.22it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>88%|████████▊ | 5258224/6000000 [00:31&lt;00:04, 168820.45it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>88%|████████▊ | 5275144/6000000 [00:31&lt;00:04, 168932.48it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>88%|████████▊ | 5292038/6000000 [00:31&lt;00:04, 168306.91it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>88%|████████▊ | 5309113/6000000 [00:31&lt;00:04, 169034.94it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>89%|████████▉ | 5326018/6000000 [00:31&lt;00:03, 169014.77it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>89%|████████▉ | 5342921/6000000 [00:31&lt;00:03, 168759.13it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>89%|████████▉ | 5359798/6000000 [00:31&lt;00:03, 168443.18it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>90%|████████▉ | 5376643/6000000 [00:31&lt;00:03, 167815.18it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>90%|████████▉ | 5393566/6000000 [00:32&lt;00:03, 168237.20it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>90%|█████████ | 5410505/6000000 [00:32&lt;00:03, 168579.31it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>90%|█████████ | 5427364/6000000 [00:32&lt;00:03, 168280.18it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>91%|█████████ | 5444193/6000000 [00:32&lt;00:03, 167682.82it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>91%|█████████ | 5461010/6000000 [00:32&lt;00:03, 167827.89it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>91%|█████████▏| 5477959/6000000 [00:32&lt;00:03, 168324.15it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>92%|█████████▏| 5494792/6000000 [00:32&lt;00:03, 168290.52it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>92%|█████████▏| 5511678/6000000 [00:32&lt;00:02, 168458.95it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>92%|█████████▏| 5528525/6000000 [00:32&lt;00:02, 168197.36it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>92%|█████████▏| 5545345/6000000 [00:32&lt;00:02, 168127.15it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>93%|█████████▎| 5562465/6000000 [00:33&lt;00:02, 169045.83it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>93%|█████████▎| 5579370/6000000 [00:33&lt;00:02, 168850.87it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>93%|█████████▎| 5596256/6000000 [00:33&lt;00:02, 168659.74it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>94%|█████████▎| 5613290/6000000 [00:33&lt;00:02, 169161.92it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>94%|█████████▍| 5630207/6000000 [00:33&lt;00:02, 168825.90it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>94%|█████████▍| 5647090/6000000 [00:33&lt;00:02, 168412.09it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>94%|█████████▍| 5664040/6000000 [00:33&lt;00:01, 168736.09it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>95%|█████████▍| 5680914/6000000 [00:33&lt;00:01, 168459.27it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>95%|█████████▍| 5697802/6000000 [00:33&lt;00:01, 168582.42it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>95%|█████████▌| 5714692/6000000 [00:33&lt;00:01, 168677.43it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>96%|█████████▌| 5731560/6000000 [00:34&lt;00:01, 168037.92it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>96%|█████████▌| 5748627/6000000 [00:34&lt;00:01, 168822.56it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>96%|█████████▌| 5765533/6000000 [00:34&lt;00:01, 168891.01it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>96%|█████████▋| 5782423/6000000 [00:34&lt;00:01, 168825.29it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>97%|█████████▋| 5799306/6000000 [00:34&lt;00:01, 168609.28it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>97%|█████████▋| 5816168/6000000 [00:34&lt;00:01, 168452.01it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>97%|█████████▋| 5833014/6000000 [00:34&lt;00:00, 168035.01it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>97%|█████████▋| 5849925/6000000 [00:34&lt;00:00, 168354.25it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>98%|█████████▊| 5866762/6000000 [00:34&lt;00:00, 168358.65it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>98%|█████████▊| 5883812/6000000 [00:34&lt;00:00, 168998.05it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>98%|█████████▊| 5900713/6000000 [00:35&lt;00:00, 168653.56it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>99%|█████████▊| 5917579/6000000 [00:35&lt;00:00, 168570.72it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>99%|█████████▉| 5934437/6000000 [00:35&lt;00:00, 167690.78it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>99%|█████████▉| 5951416/6000000 [00:35&lt;00:00, 168315.29it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>99%|█████████▉| 5968397/6000000 [00:35&lt;00:00, 168760.13it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>100%|█████████▉| 5985282/6000000 [00:35&lt;00:00, 168786.71it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>100%|██████████| 6000000/6000000 [00:35&lt;00:00, 168450.74it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>
+</code></pre></div>
+<div class="language-python highlight"><pre><span></span><code><span class="n">colors</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;ε = 0.1&#39;</span><span class="p">:</span> <span class="s1">&#39;tab:blue&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ε = 0.01&#39;</span><span class="p">:</span> <span class="s1">&#39;tab:red&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ε = 0&#39;</span><span class="p">:</span> <span class="s1">&#39;tab:green&#39;</span>
+<span class="p">}</span>
+
+<span class="p">(</span>
+    <span class="n">trace_df</span>
+    <span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s1">&#39;step&#39;</span><span class="p">,</span> <span class="s1">&#39;policy&#39;</span><span class="p">])</span>
+    <span class="p">[</span><span class="s1">&#39;is_action_optimal&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+    <span class="o">.</span><span class="n">unstack</span><span class="p">()</span>
+    <span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+<span class="p">)</span>
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>&lt;Axes: xlabel=&#39;step&#39;&gt;
+</code></pre></div>
+<p><img alt="png" src="../bandits-101_files/bandits-101_12_1.png" /></p>
+<h2 id="handling-drift">Handling drift<a class="headerlink" href="#handling-drift" title="Permanent link">&para;</a></h2>
+<p>The environment used above is a toy situation used for introducing bandits. It is stationary, meaning that the expected reward of each arm does not change over time.</p>
+<p>In practice, arms are dynamic, and their performance can vary over time. A simple example of this is the <a href="https://www.kaggle.com/c/santa-2020">Candy Cane Contest</a> that was hosted on Kaggle in 2020. The expected reward of each arm diminishes each time it is pulled.</p>
+<p>The way bandit policies in River deal with drift depends on the method. For the <a href="../../api/bandit/EpsilonGreedy"><code>bandit.EpsilonGreedy</code></a> policy, it makes sense to use a rolling average as the reward object. What this means is that the empirical reward the policy calculates for each arm is a rolling average, rather than a global one.</p>
+<div class="language-python highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">river</span><span class="w"> </span><span class="kn">import</span> <span class="n">proba</span><span class="p">,</span> <span class="n">utils</span>
+
+<span class="n">policies</span><span class="o">=</span><span class="p">[</span>
+    <span class="n">bandit</span><span class="o">.</span><span class="n">EpsilonGreedy</span><span class="p">(</span>
+        <span class="n">epsilon</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+        <span class="n">seed</span><span class="o">=</span><span class="mi">42</span>
+    <span class="p">),</span>
+    <span class="n">bandit</span><span class="o">.</span><span class="n">EpsilonGreedy</span><span class="p">(</span>
+        <span class="n">epsilon</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span>
+        <span class="n">reward_obj</span><span class="o">=</span><span class="n">utils</span><span class="o">.</span><span class="n">Rolling</span><span class="p">(</span><span class="n">stats</span><span class="o">.</span><span class="n">Mean</span><span class="p">(),</span> <span class="n">window_size</span><span class="o">=</span><span class="mi">50</span><span class="p">),</span>
+        <span class="n">seed</span><span class="o">=</span><span class="mi">42</span>
+    <span class="p">),</span>
+    <span class="n">bandit</span><span class="o">.</span><span class="n">ThompsonSampling</span><span class="p">(</span>
+        <span class="n">reward_obj</span><span class="o">=</span><span class="n">proba</span><span class="o">.</span><span class="n">Beta</span><span class="p">(),</span>
+        <span class="n">seed</span><span class="o">=</span><span class="mi">42</span>
+    <span class="p">)</span>
+<span class="p">]</span>
+
+<span class="n">env</span> <span class="o">=</span> <span class="n">gym</span><span class="o">.</span><span class="n">make</span><span class="p">(</span><span class="s1">&#39;river_bandits/CandyCaneContest-v0&#39;</span><span class="p">)</span>
+
+<span class="n">trace</span> <span class="o">=</span> <span class="n">bandit</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span>
+    <span class="n">policies</span><span class="o">=</span><span class="n">policies</span><span class="p">,</span>
+    <span class="n">env</span><span class="o">=</span><span class="n">env</span><span class="p">,</span>
+    <span class="n">n_episodes</span><span class="o">=</span><span class="p">(</span><span class="n">n_episodes</span> <span class="o">:=</span> <span class="mi">30</span><span class="p">),</span>
+    <span class="n">seed</span><span class="o">=</span><span class="mi">42</span>
+<span class="p">)</span>
+
+<span class="n">trace_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">tqdm</span><span class="p">(</span>
+    <span class="n">trace</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="p">(</span>
+        <span class="n">n_episodes</span> <span class="o">*</span>
+        <span class="nb">len</span><span class="p">(</span><span class="n">policies</span><span class="p">)</span> <span class="o">*</span>
+        <span class="n">env</span><span class="o">.</span><span class="n">_max_episode_steps</span>
+    <span class="p">)</span>
+<span class="p">))</span>
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>0%|          | 0/180000 [00:00&lt;?, ?it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>1%|          | 1263/180000 [00:00&lt;00:14, 12629.38it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>1%|▏         | 2574/180000 [00:00&lt;00:13, 12905.75it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>2%|▏         | 3882/180000 [00:00&lt;00:13, 12976.88it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>3%|▎         | 5181/180000 [00:00&lt;00:13, 12981.99it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>4%|▎         | 6480/180000 [00:00&lt;00:13, 12636.45it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>4%|▍         | 7746/180000 [00:00&lt;00:13, 12618.72it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>5%|▌         | 9054/180000 [00:00&lt;00:13, 12762.76it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>6%|▌         | 10354/180000 [00:00&lt;00:13, 12836.28it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>6%|▋         | 11655/180000 [00:00&lt;00:13, 12887.08it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>7%|▋         | 12945/180000 [00:01&lt;00:13, 12739.14it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>8%|▊         | 14220/180000 [00:01&lt;00:13, 12549.15it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>9%|▊         | 15476/180000 [00:01&lt;00:13, 12411.40it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>9%|▉         | 16718/180000 [00:01&lt;00:13, 12351.01it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>10%|▉         | 17954/180000 [00:01&lt;00:13, 12318.92it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>11%|█         | 19221/180000 [00:01&lt;00:12, 12420.60it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>11%|█▏        | 20526/180000 [00:01&lt;00:12, 12607.55it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>12%|█▏        | 21834/180000 [00:01&lt;00:12, 12745.60it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>13%|█▎        | 23145/180000 [00:01&lt;00:12, 12854.07it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>14%|█▎        | 24431/180000 [00:01&lt;00:12, 12741.50it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>14%|█▍        | 25706/180000 [00:02&lt;00:12, 12601.49it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>15%|█▍        | 26967/180000 [00:02&lt;00:12, 12475.73it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>16%|█▌        | 28254/180000 [00:02&lt;00:12, 12589.84it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>16%|█▋        | 29541/180000 [00:02&lt;00:11, 12672.25it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>17%|█▋        | 30809/180000 [00:02&lt;00:11, 12592.08it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>18%|█▊        | 32130/180000 [00:02&lt;00:11, 12771.23it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>19%|█▊        | 33429/180000 [00:02&lt;00:11, 12832.96it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>19%|█▉        | 34731/180000 [00:02&lt;00:11, 12886.45it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>20%|██        | 36020/180000 [00:02&lt;00:11, 12578.84it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>21%|██        | 37413/180000 [00:02&lt;00:10, 12975.27it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>22%|██▏       | 38735/180000 [00:03&lt;00:10, 13047.08it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>22%|██▏       | 40052/180000 [00:03&lt;00:10, 13083.05it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>23%|██▎       | 41364/180000 [00:03&lt;00:10, 13092.77it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>24%|██▎       | 42675/180000 [00:03&lt;00:10, 12754.10it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>24%|██▍       | 43968/180000 [00:03&lt;00:10, 12799.56it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>25%|██▌       | 45272/180000 [00:03&lt;00:10, 12869.50it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>26%|██▌       | 46563/180000 [00:03&lt;00:10, 12880.72it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>27%|██▋       | 47853/180000 [00:03&lt;00:10, 12676.84it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>27%|██▋       | 49122/180000 [00:03&lt;00:10, 12410.48it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>28%|██▊       | 50365/180000 [00:03&lt;00:10, 12335.25it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>29%|██▊       | 51600/180000 [00:04&lt;00:10, 12281.09it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>29%|██▉       | 52829/180000 [00:04&lt;00:10, 12258.04it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>30%|███       | 54056/180000 [00:04&lt;00:10, 11643.28it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>31%|███       | 55425/180000 [00:04&lt;00:10, 12224.92it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>31%|███▏      | 56655/180000 [00:04&lt;00:10, 12187.88it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>32%|███▏      | 57882/180000 [00:04&lt;00:10, 12210.72it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>33%|███▎      | 59178/180000 [00:04&lt;00:09, 12428.12it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>34%|███▎      | 60424/180000 [00:04&lt;00:09, 12415.58it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>34%|███▍      | 61734/180000 [00:04&lt;00:09, 12613.28it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>35%|███▌      | 63039/180000 [00:04&lt;00:09, 12742.00it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>36%|███▌      | 64326/180000 [00:05&lt;00:09, 12776.81it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>36%|███▋      | 65605/180000 [00:05&lt;00:09, 12635.23it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>37%|███▋      | 66870/180000 [00:05&lt;00:09, 12518.54it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>38%|███▊      | 68123/180000 [00:05&lt;00:09, 12351.64it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>39%|███▊      | 69417/180000 [00:05&lt;00:08, 12521.54it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>39%|███▉      | 70671/180000 [00:05&lt;00:08, 12425.94it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>40%|███▉      | 71968/180000 [00:05&lt;00:08, 12585.61it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>41%|████      | 73230/180000 [00:05&lt;00:08, 12592.85it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>41%|████▏     | 74536/180000 [00:05&lt;00:08, 12730.82it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>42%|████▏     | 75831/180000 [00:06&lt;00:08, 12795.70it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>43%|████▎     | 77134/180000 [00:06&lt;00:07, 12865.17it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>44%|████▎     | 78421/180000 [00:06&lt;00:07, 12745.69it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>44%|████▍     | 79729/180000 [00:06&lt;00:07, 12844.10it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>45%|████▌     | 81027/180000 [00:06&lt;00:07, 12880.50it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>46%|████▌     | 82323/180000 [00:06&lt;00:07, 12901.07it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>46%|████▋     | 83618/180000 [00:06&lt;00:07, 12914.85it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>47%|████▋     | 84910/180000 [00:06&lt;00:07, 12840.38it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>48%|████▊     | 86210/180000 [00:06&lt;00:07, 12887.88it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>49%|████▊     | 87499/180000 [00:06&lt;00:07, 12880.84it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>49%|████▉     | 88788/180000 [00:07&lt;00:07, 12621.89it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>50%|█████     | 90052/180000 [00:07&lt;00:07, 12299.41it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>51%|█████     | 91413/180000 [00:07&lt;00:06, 12680.75it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>51%|█████▏    | 92684/180000 [00:07&lt;00:06, 12576.71it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>52%|█████▏    | 93987/180000 [00:07&lt;00:06, 12708.17it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>53%|█████▎    | 95292/180000 [00:07&lt;00:06, 12803.43it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>54%|█████▎    | 96574/180000 [00:07&lt;00:06, 12733.26it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>54%|█████▍    | 97882/180000 [00:07&lt;00:06, 12835.03it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>55%|█████▌    | 99167/180000 [00:07&lt;00:06, 12676.16it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>56%|█████▌    | 100436/180000 [00:07&lt;00:06, 12525.36it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>57%|█████▋    | 101724/180000 [00:08&lt;00:06, 12627.92it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>57%|█████▋    | 102988/180000 [00:08&lt;00:06, 12451.28it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>58%|█████▊    | 104235/180000 [00:08&lt;00:06, 12337.56it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>59%|█████▊    | 105533/180000 [00:08&lt;00:05, 12525.62it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>59%|█████▉    | 106830/180000 [00:08&lt;00:05, 12655.88it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>60%|██████    | 108097/180000 [00:08&lt;00:05, 12373.68it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>61%|██████    | 109434/180000 [00:08&lt;00:05, 12661.79it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>62%|██████▏   | 110742/180000 [00:08&lt;00:05, 12779.24it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>62%|██████▏   | 112053/180000 [00:08&lt;00:05, 12873.80it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>63%|██████▎   | 113367/180000 [00:08&lt;00:05, 12947.76it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>64%|██████▎   | 114663/180000 [00:09&lt;00:05, 12830.82it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>64%|██████▍   | 115985/180000 [00:09&lt;00:04, 12946.10it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>65%|██████▌   | 117281/180000 [00:09&lt;00:04, 12766.94it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>66%|██████▌   | 118590/180000 [00:09&lt;00:04, 12860.39it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>67%|██████▋   | 119901/180000 [00:09&lt;00:04, 12930.81it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>67%|██████▋   | 121195/180000 [00:09&lt;00:04, 12871.28it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>68%|██████▊   | 122505/180000 [00:09&lt;00:04, 12936.43it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>69%|██████▉   | 123800/180000 [00:09&lt;00:04, 12754.25it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>69%|██████▉   | 125077/180000 [00:09&lt;00:04, 12621.78it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>70%|███████   | 126340/180000 [00:09&lt;00:04, 12441.73it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>71%|███████   | 127681/180000 [00:10&lt;00:04, 12724.69it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>72%|███████▏  | 128955/180000 [00:10&lt;00:04, 12578.56it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>72%|███████▏  | 130259/180000 [00:10&lt;00:03, 12713.59it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>73%|███████▎  | 131532/180000 [00:10&lt;00:03, 12431.64it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>74%|███████▍  | 132795/180000 [00:10&lt;00:03, 12484.02it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>74%|███████▍  | 134067/180000 [00:10&lt;00:03, 12550.34it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>75%|███████▌  | 135360/180000 [00:10&lt;00:03, 12659.45it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>76%|███████▌  | 136627/180000 [00:10&lt;00:03, 12552.63it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>77%|███████▋  | 137926/180000 [00:10&lt;00:03, 12681.73it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>77%|███████▋  | 139195/180000 [00:10&lt;00:03, 12659.81it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>78%|███████▊  | 140508/180000 [00:11&lt;00:03, 12796.99it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>79%|███████▉  | 141789/180000 [00:11&lt;00:03, 12691.92it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>79%|███████▉  | 143059/180000 [00:11&lt;00:02, 12555.76it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>80%|████████  | 144316/180000 [00:11&lt;00:02, 12484.29it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>81%|████████  | 145658/180000 [00:11&lt;00:02, 12760.62it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>82%|████████▏ | 146977/180000 [00:11&lt;00:02, 12887.08it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>82%|████████▏ | 148267/180000 [00:11&lt;00:02, 12776.07it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>83%|████████▎ | 149546/180000 [00:11&lt;00:02, 12661.36it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>84%|████████▍ | 150813/180000 [00:11&lt;00:02, 12463.29it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>84%|████████▍ | 152061/180000 [00:12&lt;00:02, 12459.32it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>85%|████████▌ | 153384/180000 [00:12&lt;00:02, 12685.83it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>86%|████████▌ | 154695/180000 [00:12&lt;00:01, 12807.62it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>87%|████████▋ | 155997/180000 [00:12&lt;00:01, 12868.28it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>87%|████████▋ | 157285/180000 [00:12&lt;00:01, 12604.31it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>88%|████████▊ | 158568/180000 [00:12&lt;00:01, 12664.58it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>89%|████████▉ | 159844/180000 [00:12&lt;00:01, 12692.34it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>90%|████████▉ | 161123/180000 [00:12&lt;00:01, 12720.44it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>90%|█████████ | 162396/180000 [00:12&lt;00:01, 12581.93it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>91%|█████████ | 163718/180000 [00:12&lt;00:01, 12770.70it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>92%|█████████▏| 165022/180000 [00:13&lt;00:01, 12849.43it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>92%|█████████▏| 166321/180000 [00:13&lt;00:01, 12891.24it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>93%|█████████▎| 167611/180000 [00:13&lt;00:00, 12779.08it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>94%|█████████▍| 168890/180000 [00:13&lt;00:00, 12612.08it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>95%|█████████▍| 170208/180000 [00:13&lt;00:00, 12776.56it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>95%|█████████▌| 171489/180000 [00:13&lt;00:00, 12781.84it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>96%|█████████▌| 172788/180000 [00:13&lt;00:00, 12842.05it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>97%|█████████▋| 174073/180000 [00:13&lt;00:00, 12584.60it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>97%|█████████▋| 175435/180000 [00:13&lt;00:00, 12888.92it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>98%|█████████▊| 176751/180000 [00:13&lt;00:00, 12965.83it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>99%|█████████▉| 178056/180000 [00:14&lt;00:00, 12987.97it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>100%|█████████▉| 179372/180000 [00:14&lt;00:00, 13039.05it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>100%|██████████| 180000/180000 [00:14&lt;00:00, 12680.89it/s]
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>
+</code></pre></div>
+<p>We can compare the performance of each policy by checking the average reward at the end of each episode.</p>
+<div class="language-python highlight"><pre><span></span><code><span class="p">(</span>
+    <span class="n">trace_df</span>
+    <span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s1">&#39;policy_idx&#39;</span><span class="p">,</span> <span class="s1">&#39;episode&#39;</span><span class="p">])</span>
+    <span class="o">.</span><span class="n">last</span><span class="p">()</span>
+    <span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;policy_idx&#39;</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">reward_stat</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+<span class="p">)</span>
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>policy_idx
+0    736.1
+1    817.0
+2    854.0
+Name: reward_stat, dtype: float64
+</code></pre></div>
+<p>We see that using a rolling average gives a boost to the epsilon greedy strategy. However, we see that the <a href="../../api/bandit/ThompsonSampling"><code>bandit.ThompsonSampling</code></a> policy performs even better, even though no particular care was given to drift. A natural next step would thus be to see how it could be improved to handle drift. For instance, its <code>dist</code> parameter could be wrapped with a <a href="../../api/utils/Rolling"><code>utils.Rolling</code></a>:</p>
+<div class="language-python highlight"><pre><span></span><code><span class="n">policy</span> <span class="o">=</span> <span class="n">bandit</span><span class="o">.</span><span class="n">ThompsonSampling</span><span class="p">(</span>
+    <span class="n">reward_obj</span><span class="o">=</span><span class="n">utils</span><span class="o">.</span><span class="n">Rolling</span><span class="p">(</span><span class="n">proba</span><span class="o">.</span><span class="n">Beta</span><span class="p">(),</span> <span class="n">window_size</span><span class="o">=</span><span class="mi">50</span><span class="p">),</span>
+    <span class="n">seed</span><span class="o">=</span><span class="mi">42</span>
+<span class="p">)</span>
+</code></pre></div>
+<p>Bandits can be used for several tasks. They can be used for content personalization, as well as online model selection (see <a href="../../api/model-selection/BanditRegressor"><code>model_selection.BanditRegressor</code></a>). The policies in River are therefore designed to be flexible, so that they can be used in conjunction with other River modules. For instance, the <code>reward_obj</code> in <a href="../../api/bandit/EpsilonGreedy"><code>bandit.EpsilonGreedy</code></a> can be a metric, a probability distribution, or a statistic. This works because objects in River adher to a coherent get/update interface.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        
+
+<!-- Application footer -->
+<footer class="md-footer">
+
+  <!-- Further information -->
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+
+      <!-- Copyright and theme information -->
+      <div class="md-footer-copyright">
+        
+          <div class="md-footer-copyright__highlight">
+            Copyright &copy; 2019 - 2026
+          </div>
+        
+        Made with
+        <a
+          href="https://squidfunk.github.io/mkdocs-material/"
+          target="_blank" rel="noopener"
+        >
+          Material for MkDocs
+        </a>
+      </div>
+
+      <!-- Social links -->
+      
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/online-ml/river" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M202.1 328.7c0 20.9-10.9 55.1-36.7 55.1s-36.7-34.2-36.7-55.1 10.9-55.1 36.7-55.1 36.7 34.2 36.7 55.1M496 278.2c0 31.9-3.2 65.7-17.5 95-37.9 76.6-142.1 74.8-216.7 74.8-75.8 0-186.2 2.7-225.6-74.8-14.6-29-20.2-63.1-20.2-95 0-41.9 13.9-81.5 41.5-113.6-5.2-15.8-7.7-32.4-7.7-48.8 0-21.5 4.9-32.3 14.6-51.8 45.3 0 74.3 9 108.8 36 29-6.9 58.8-10 88.7-10 27 0 54.2 2.9 80.4 9.2 34-26.7 63-35.2 107.8-35.2 9.8 19.5 14.6 30.3 14.6 51.8 0 16.4-2.6 32.7-7.7 48.2 27.5 32.4 39 72.3 39 114.2m-64.3 50.5c0-43.9-26.7-82.6-73.5-82.6-18.9 0-37 3.4-56 6-14.9 2.3-29.8 3.2-45.1 3.2-15.2 0-30.1-.9-45.1-3.2-18.7-2.6-37-6-56-6-46.8 0-73.5 38.7-73.5 82.6 0 87.8 80.4 101.3 150.4 101.3h48.2c70.3 0 150.6-13.4 150.6-101.3m-82.6-55.1c-25.8 0-36.7 34.2-36.7 55.1s10.9 55.1 36.7 55.1 36.7-34.2 36.7-55.1-10.9-55.1-36.7-55.1"/></svg>
+    </a>
+  
+</div>
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate":null,"base":"../..","features":["content.code.copy","navigation.tabs","navigation.instant","navigation.indexes","navigation.prune"],"search":"../../assets/javascripts/workers/search.e2d2d235.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":{"provider":"mike"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.dbc0afdc.min.js"></script>
+      
+        <script src="../../javascripts/config.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2/es5/tex-mml-chtml.js"></script>
+      
+        <script src="https://unpkg.com/tablesort@5.3.0/dist/tablesort.min.js"></script>
+      
+        <script src="../../javascripts/tablesort.js"></script>
+      
+    
+  </body>
+</html>
