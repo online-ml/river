@@ -8,9 +8,13 @@ readme = "README.md"
 license = "BSD-3-Clause"
 dependencies = [
     "scipy>=1.16,<2",
-    "pandas>=2.2,<3",
     "numpy>=2.3.4,<3",
     "altair>=5.0.0",
+]
+
+[project.optional-dependencies]
+pandas = [
+    "pandas>=2.2,<3",
 ]
 
 [project.urls]
@@ -39,6 +43,7 @@ dev = [
     "gymnasium>=0.29.0",
     "altair>=5.0.0",
     "mypy>=1.11.1",
+    "pandas>=2.2,<3",
     "pre-commit>=3.5.0",
     "pytest>=9.0.3",
     "ruff>=0.15.8",
@@ -88,7 +93,6 @@ default-groups = [
 
 [tool.cibuildwheel]
 build-frontend = "build[uv]"
-# TODO: re-enable 32-bit builds once pandas is removed as a dependency
 skip = ["*_i686", "*-win32", "*-musllinux_i686"]
 test-command = "python -c \"import river\""
 
@@ -157,6 +161,14 @@ select = [
     "UP",
     # isort
     "I",
+    # pep8-naming: class names (N801), function/method names (N802), and the
+    # cls/self convention on classmethods (N804). N803 (argument names) and
+    # N806 (local variable names) are deliberately left out — `X: pd.DataFrame`
+    # and `A_numpy = ...` are conventional in ML/scientific code and would
+    # produce hundreds of false positives.
+    "N801",
+    "N802",
+    "N804",
 ]
 ignore = ["E501"]
 fixable = ["ALL"]

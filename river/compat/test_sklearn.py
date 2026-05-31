@@ -75,13 +75,22 @@ def test_not_fitted_still_works_regression(estimator):
     ],
 )
 def test_not_fitted_still_works_classification(estimator, n_classes):
-    X, _ = sk_datasets.make_classification(
+    X, y = sk_datasets.make_classification(
         n_samples=500, n_features=10, n_informative=6, n_classes=n_classes
     )
     X = pd.DataFrame(X)
+    y = pd.Series(y)
     y_pred = estimator.predict_many(X)
     assert len(y_pred) == len(X)
     assert y_pred.eq(0).all()
 
     y_pred_proba = estimator.predict_proba_many(X)
+    assert isinstance(y_pred_proba, pd.DataFrame)
     assert y_pred_proba.shape == (len(X), n_classes)
+
+    # Also exercise the fitted path of predict_proba_many.
+    estimator.learn_many(X, y)
+    y_pred_proba = estimator.predict_proba_many(X)
+    assert isinstance(y_pred_proba, pd.DataFrame)
+    assert y_pred_proba.shape == (len(X), n_classes)
+    assert list(y_pred_proba.index) == list(X.index)

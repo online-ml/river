@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from . import math, norm, pretty, random
+from . import math, norm, pandas, pretty, random  # noqa: F401
 from .context_managers import log_method_calls
 from .param_grid import expand_param_grid
 from .rolling import Rolling, TimeRolling
