@@ -2137,43 +2137,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#packaging" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        packaging
-      </span>
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#checks" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        checks
-      </span>
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#cluster" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
         cluster
-      </span>
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#drift" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        drift
       </span>
     </span>
   </a>
@@ -2280,7 +2247,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#drift_1" class="md-nav__link">
+  <a href="#drift" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
         drift
@@ -3572,43 +3539,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#packaging" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        packaging
-      </span>
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#checks" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        checks
-      </span>
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#cluster" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
         cluster
-      </span>
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#drift" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        drift
       </span>
     </span>
   </a>
@@ -3715,7 +3649,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#drift_1" class="md-nav__link">
+  <a href="#drift" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
         drift
@@ -3867,30 +3801,13 @@
 <h1 id="unreleased">Unreleased<a class="headerlink" href="#unreleased" title="Permanent link">&para;</a></h1>
 <h2 id="breaking-changes">Breaking changes<a class="headerlink" href="#breaking-changes" title="Permanent link">&para;</a></h2>
 <ul>
-<li>The native Rust extension moved from <code>river.stats._rust_stats</code> to <code>river._river_rust</code>,
-  split into submodules <code>stats</code>, <code>drift</code>, <code>tree</code>, and <code>vectordict</code>. Pickles produced
-  with prior versions no longer load directly. To convert existing pickles, use
-  <a href="https://gist.github.com/AdilZouitine/ee10421a11d2dac84fcc7c5895d1c549">this migration script</a>
-  (the new river must be installed in the conversion env).</li>
-</ul>
-<h2 id="packaging">packaging<a class="headerlink" href="#packaging" title="Permanent link">&para;</a></h2>
-<ul>
-<li><strong>Breaking:</strong> <code>pandas</code> is no longer a hard dependency of River. The core online interface (<code>learn_one</code> / <code>predict_one</code>) works with <code>pip install river</code> alone. The mini-batch interface (<code>learn_many</code>, <code>predict_many</code>, <code>predict_proba_many</code>, <code>transform_many</code>) still requires <code>pandas</code>; install with <code>pip install "river[pandas]"</code>. Calling a <code>*_many</code> method without <code>pandas</code> raises an <code>ImportError</code> pointing to the extra.</li>
-<li>Added a <code>no-pandas</code> CI job that installs River without <code>pandas</code> and runs the full test suite. A conftest hook auto-skips test modules and doctest sources that mention <code>pandas</code> (or <code>fetch_openml</code>, which goes through pandas inside scikit-learn).</li>
-</ul>
-<h2 id="checks">checks<a class="headerlink" href="#checks" title="Permanent link">&para;</a></h2>
-<ul>
-<li>Added ten new global estimator checks to <code>river.checks</code>: <code>check_predict_one_pure</code> (inference methods are pure), <code>check_transform_one</code> (transform_one is exercised and returns a dict), <code>check_clone_is_independent</code> (training the original does not mutate clones), <code>check_predict_many_matches_predict_one</code> / <code>check_predict_proba_many_matches_predict_proba_one</code> / <code>check_transform_many_matches_transform_one</code> (mini-batch ↔ one-at-a-time consistency for <code>base.MiniBatch*</code> estimators), <code>check_get_params_matches_signature</code> (<code>_get_params()</code> exposes every <code>__init__</code> keyword), <code>check_predict_one_before_any_learn</code> (cold-start inference does not crash), <code>check_repr_roundtrips_clone</code> (<code>repr(model) == repr(model.clone())</code>), <code>check_clone_with_new_params_applies</code> (<code>clone(new_params=...)</code> applies the overrides), <code>check_classifier_tracks_seen_labels</code> (<code>predict_proba_one</code> includes every label observed during training), and <code>check_no_state_aliasing_with_input</code> (mutating <code>x</code> after <code>learn_one</code> does not change model state). <code>_yield_datasets</code> now also yields a dataset for plain <a href="../../api/base/Transformer"><code>base.Transformer</code></a> / <a href="../../api/base/SupervisedTransformer"><code>base.SupervisedTransformer</code></a> estimators, which were previously skipped by the dataset-driven checks.</li>
-<li>Refactored the existing dataset-driven checks (<code>check_pickling</code>, <code>check_shuffle_features_no_impact</code>, <code>check_emerging_features</code>, <code>check_disappearing_features</code>, <code>check_radically_disappearing_features</code>, <code>check_seeding_is_idempotent</code>) to dispatch through <code>_infer</code> / <code>_learn</code> helpers so transformers are exercised on the same code paths as classifiers, regressors, and anomaly detectors.</li>
-<li><code>checks.utils.assert_predictions_are_close</code> now treats two NaN floats as equivalent, so transformers that legitimately return NaN before they have observed any data (e.g. <code>MinMaxScaler.transform_one</code> on the first event) no longer trip the shuffle-invariance check.</li>
+<li>The native Rust extension moved from <code>river.stats._rust_stats</code> to <code>river._river_rust</code>, split into submodules <code>stats</code>, <code>drift</code>, <code>tree</code>, and <code>vectordict</code>. Pickles produced with prior versions no longer load directly. To convert existing pickles, use <a href="https://gist.github.com/AdilZouitine/ee10421a11d2dac84fcc7c5895d1c549">this migration script</a> (the new river must be installed in the conversion env).</li>
+<li><code>pandas</code> is no longer a hard dependency of River. The core online interface (<code>learn_one</code> / <code>predict_one</code>) works with <code>pip install river</code> alone. The mini-batch interface (<code>learn_many</code>, <code>predict_many</code>, <code>predict_proba_many</code>, <code>transform_many</code>) still requires <code>pandas</code>; install with <code>pip install "river[pandas]"</code>. Calling a <code>*_many</code> method without <code>pandas</code> raises an <code>ImportError</code> pointing to the extra.</li>
+<li>Renamed <code>drift.binary.HDDM_A</code> → <a href="../../api/drift/binary/HDDMA"><code>drift.binary.HDDMA</code></a> and <code>drift.binary.HDDM_W</code> → <a href="../../api/drift/binary/HDDMW"><code>drift.binary.HDDMW</code></a> to comply with PEP-8 CapWords class naming.</li>
 </ul>
 <h2 id="cluster">cluster<a class="headerlink" href="#cluster" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Fixed <a href="../../api/cluster/TextClust"><code>cluster.TextClust</code></a> corrupting its own parameters: <code>__init__</code> was overwriting <code>self.micro_distance</code> / <code>self.macro_distance</code> with runtime distance instances, breaking <code>clone</code> and <code>repr</code> round-trips. The runtime instances are now stored on <code>_micro_distance</code> / <code>_macro_distance</code>. Internal camelCase identifiers (<code>clusterId</code>, <code>microToMacro</code>, <code>numClusters</code>, <code>updateMacroClusters</code>, <code>_calculateIDF</code>) were renamed to snake_case, and the nested helper classes <code>tfcontainer</code>, <code>microcluster</code>, <code>distances</code> were renamed to <code>TfContainer</code>, <code>MicroCluster</code>, <code>Distances</code>.</li>
-</ul>
-<h2 id="drift">drift<a class="headerlink" href="#drift" title="Permanent link">&para;</a></h2>
-<ul>
-<li><strong>Breaking:</strong> Renamed <code>drift.binary.HDDM_A</code> → <a href="../../api/drift/binary/HDDMA"><code>drift.binary.HDDMA</code></a> and <code>drift.binary.HDDM_W</code> → <a href="../../api/drift/binary/HDDMW"><code>drift.binary.HDDMW</code></a> to comply with PEP-8 CapWords class naming.</li>
 </ul>
 <h2 id="imblearn">imblearn<a class="headerlink" href="#imblearn" title="Permanent link">&para;</a></h2>
 <ul>
@@ -3931,7 +3848,7 @@
 <ul>
 <li>Deprecated <code>river.neural_net</code>; importing it now emits a <code>DeprecationWarning</code> and users are encouraged to use <code>deep-river</code> for neural networks. Addresses <a href="https://github.com/online-ml/river/issues/1828">#1828</a>.</li>
 </ul>
-<h2 id="drift_1">drift<a class="headerlink" href="#drift_1" title="Permanent link">&para;</a></h2>
+<h2 id="drift">drift<a class="headerlink" href="#drift" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Reimplemented <a href="../../api/drift/ADWIN"><code>drift.ADWIN</code></a>'s inner <code>AdaptiveWindowing</code> in Rust. The Cython sources are removed; output is bit-identical to the Cython baseline (width, total, variance, n_detections, drift_detected) over a 3.8k-step parity fuzz. Rust is 1.3-3.5x faster than the previous Cython implementation across <code>clock</code> settings.</li>
 </ul>
