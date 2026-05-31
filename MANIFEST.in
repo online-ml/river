@@ -1,6 +1,3 @@
-# Cython sources
-recursive-include river/ *.pyx *.pxd
-
 # Dataset files shipped with the package
 include river/datasets/*.csv
 include river/datasets/*.gz
