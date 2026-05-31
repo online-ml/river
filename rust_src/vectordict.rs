@@ -1165,14 +1165,13 @@ unsafe fn dict_iop_scalar(
 
 type UnaryOp = unsafe extern "C" fn(*mut ffi::PyObject) -> *mut ffi::PyObject;
 
-// Build a fresh PyDict pre-sized for `n` entries — avoids the resize/rehash
-// cost that `PyDict::new()` + repeated `set_item` would incur for large outputs.
-unsafe fn fresh_dict_for<'py>(py: Python<'py>, n: usize) -> PyResult<Bound<'py, PyDict>> {
-    let raw = ffi::_PyDict_NewPresized(n as ffi::Py_ssize_t);
-    if raw.is_null() {
-        return Err(PyErr::fetch(py));
-    }
-    Ok(Bound::from_owned_ptr(py, raw).downcast_into_unchecked())
+// Build a fresh PyDict. The previous implementation called the private
+// CPython _PyDict_NewPresized to preallocate `n` slots, but pyo3 0.28
+// stopped re-exporting that symbol. PyDict::new() falls back to the public
+// PyDict_New, which doesn't preallocate; the amortised rehash cost is
+// O(n) and dominated by the per-key set_item work the caller does next.
+unsafe fn fresh_dict_for<'py>(py: Python<'py>, _n: usize) -> PyResult<Bound<'py, PyDict>> {
+    Ok(PyDict::new(py))
 }
 
 // Single-pass unary op (`__neg__`, `__abs__`): read source, write fresh dict.
