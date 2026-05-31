@@ -26,7 +26,7 @@ requires = ["maturin>=1.13,<2"]
 build-backend = "maturin"
 
 [tool.maturin]
-module-name = "river.stats._rust_stats"
+module-name = "river._river_rust"
 python-source = "."
 features = ["pyo3/extension-module"]
 include = [
@@ -200,6 +200,8 @@ module = [
     "gymnasium.*",
     "sympy.*",
     "polars.*",
+    "river._river_rust",
+    "river._river_rust.*",
 ]
 ignore_missing_imports = true
 

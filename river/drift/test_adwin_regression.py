@@ -10,7 +10,7 @@ import numpy as np
 import pytest
 
 from river import drift
-from river.stats._rust_stats import AdaptiveWindowing
+from river._river_rust.drift import AdaptiveWindowing
 
 # ---- Drift detection correctness ----
 

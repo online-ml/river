@@ -1,13 +1,13 @@
 from __future__ import annotations
 
 from river import base
-from river.stats._rust_stats import (
+from river._river_rust.tree import (
     go_downwards_classifier as go_downwards_classifier_c,
 )
-from river.stats._rust_stats import (
+from river._river_rust.tree import (
     go_upwards as go_upwards_c,
 )
-from river.stats._rust_stats import (
+from river._river_rust.tree import (
     predict_proba_classifier as predict_proba_classifier_c,
 )
 from river.tree.mondrian.mondrian_tree import MondrianTree

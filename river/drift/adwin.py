@@ -1,7 +1,7 @@
 from __future__ import annotations
 
+from river._river_rust.drift import AdaptiveWindowing
 from river.base import DriftDetector
-from river.stats._rust_stats import AdaptiveWindowing
 
 
 class ADWIN(DriftDetector):

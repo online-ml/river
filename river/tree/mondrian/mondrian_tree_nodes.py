@@ -3,16 +3,16 @@ from __future__ import annotations
 import math
 
 from river import base, stats
-from river.stats._rust_stats import (
+from river._river_rust.tree import (
     log_sum_2_exp as log_sum_2_exp_c,
 )
-from river.stats._rust_stats import (
+from river._river_rust.tree import (
     predict_scores as predict_scores_c,
 )
-from river.stats._rust_stats import (
+from river._river_rust.tree import (
     range_extension as range_extension_c,
 )
-from river.stats._rust_stats import (
+from river._river_rust.tree import (
     update_ranges as update_ranges_c,
 )
 from river.tree.base import Branch, Leaf

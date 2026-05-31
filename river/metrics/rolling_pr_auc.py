@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 from river import metrics
+from river._river_rust.stats import RsRollingPRAUC
 from river.anomaly.base import AnomalyDetector, AnomalyFilter
-from river.stats._rust_stats import RsRollingPRAUC
 
 __all__ = ["RollingPRAUC"]
 
