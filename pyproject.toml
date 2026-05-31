@@ -71,6 +71,7 @@ docs = [
     "numpydoc",
     "plotly>=6.3.0",
     "python-slugify",
+    "matplotlib",
     "tabulate",
     "tqdm",
     "watermark",
