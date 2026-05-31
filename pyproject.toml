@@ -72,6 +72,7 @@ docs = [
     "plotly>=6.3.0",
     "python-slugify",
     "tabulate",
+    "tqdm",
     "watermark",
     "notebook<7",
     "jupyter-contrib-nbextensions>=0.7.0,<0.8",
