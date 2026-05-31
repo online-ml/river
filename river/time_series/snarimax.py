@@ -271,6 +271,10 @@ class SNARIMAX(time_series.base.Forecaster):
 
     """
 
+    @classmethod
+    def _unit_test_params(cls):
+        yield {"p": 1, "d": 0, "q": 0}
+
     def __init__(
         self,
         p: int,
@@ -300,8 +304,7 @@ class SNARIMAX(time_series.base.Forecaster):
         self.errors: collections.deque[float] = collections.deque(maxlen=max(q, m * sq))
 
     def _add_lag_features(self, x, Y, errors):
-        if x is None:
-            x = {}
+        x = {} if x is None else x.copy()
 
         # AR
         for t in range(self.p):

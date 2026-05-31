@@ -1,9 +1,13 @@
 from __future__ import annotations
 
+import typing
+
 import numpy as np
-import pandas as pd
 
 from river import base, linear_model, optim, utils
+
+if typing.TYPE_CHECKING:
+    pass
 
 
 class LinearRegression(linear_model.base.GLM, base.MiniBatchRegressor):
@@ -132,6 +136,7 @@ class LinearRegression(linear_model.base.GLM, base.MiniBatchRegressor):
         return self.loss.mean_func(self._raw_dot_one(x))
 
     def predict_many(self, X):
+        pd = utils.pandas.import_pandas()
         return pd.Series(
             self.loss.mean_func(self._raw_dot_many(X)),
             index=X.index,

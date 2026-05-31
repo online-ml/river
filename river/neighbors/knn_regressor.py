@@ -109,7 +109,9 @@ class KNNRegressor(base.Regressor):
             )
 
     def learn_one(self, x, y):
-        self._nn.append((x, y))
+        # Copy x so the caller can safely mutate the input dict after learn_one
+        # without disturbing the stored neighbours.
+        self._nn.append((dict(x), y))
 
     def predict_one(self, x, **kwargs):
         neighbors, distances = self._nn.search((x, None), n_neighbors=self.n_neighbors, **kwargs)
