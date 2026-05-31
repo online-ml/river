@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 import collections
+import typing
 
-import pandas as pd
+from river import base, utils
 
-from river import base
+if typing.TYPE_CHECKING:
+    pass
 
 __all__ = ["OneHotEncoder"]
 
@@ -249,11 +251,14 @@ class OneHotEncoder(base.MiniBatchTransformer):
         self.drop_first = drop_first
         self.categories = categories
         self.values: collections.defaultdict | dict | None = None
+        self._zero_dict: dict = {}
 
         if self.categories is None:
             self.values = collections.defaultdict(set)
         else:
             self.values = self.categories
+            if not self.drop_zeros:
+                self._zero_dict = {f"{i}_{v}": 0 for i, vals in self.values.items() for v in vals}
 
     def learn_one(self, x):
         if self.drop_zeros:
@@ -262,42 +267,45 @@ class OneHotEncoder(base.MiniBatchTransformer):
         # NOTE: assume if category mappings are explicitly provided,
         # they're intended to be kept fixed.
         if self.categories is None:
+            values = self.values
+            zero_dict = self._zero_dict
             for i, xi in x.items():
-                if isinstance(xi, list) or isinstance(xi, set):
+                vi = values[i]
+                if isinstance(xi, (list, set)):
                     for xj in xi:
-                        self.values[i].add(xj)
-                else:
-                    self.values[i].add(xi)
+                        if xj not in vi:
+                            vi.add(xj)
+                            zero_dict[f"{i}_{xj}"] = 0
+                elif xi not in vi:
+                    vi.add(xi)
+                    zero_dict[f"{i}_{xi}"] = 0
 
     def transform_one(self, x, y=None):
-        oh = {}
-
-        # Add 0s
-        if not self.drop_zeros:
-            oh = {f"{i}_{v}": 0 for i, values in self.values.items() for v in values}
+        oh = {} if self.drop_zeros else self._zero_dict.copy()
 
         # Add 1
         # NOTE: assume if category mappings are explicitly provided,
         # no other category values are allowed for output. Aligns with `sklearn` behavior.
         if self.categories is None:
             for i, xi in x.items():
-                if isinstance(xi, list) or isinstance(xi, set):
+                if isinstance(xi, (list, set)):
                     for xj in xi:
                         oh[f"{i}_{xj}"] = 1
                 else:
                     oh[f"{i}_{xi}"] = 1
         else:
+            values = self.values
             for i, xi in x.items():
-                if isinstance(xi, list) or isinstance(xi, set):
+                vi = values[i]
+                if isinstance(xi, (list, set)):
                     for xj in xi:
-                        if xj in self.values[i]:
+                        if xj in vi:
                             oh[f"{i}_{xj}"] = 1
-                else:
-                    if xi in self.values[i]:
-                        oh[f"{i}_{xi}"] = 1
+                elif xi in vi:
+                    oh[f"{i}_{xi}"] = 1
 
         if self.drop_first:
-            oh.pop(min(oh.keys()))
+            oh.pop(min(oh))
 
         return oh
 
@@ -308,10 +316,17 @@ class OneHotEncoder(base.MiniBatchTransformer):
         # NOTE: assume if category mappings are explicitly provided,
         # they're intended to be kept fixed.
         if self.categories is None:
+            values = self.values
+            zero_dict = self._zero_dict
             for col in X.columns:
-                self.values[col].update(X[col].unique())
+                vi = values[col]
+                for v in X[col].unique():
+                    if v not in vi:
+                        vi.add(v)
+                        zero_dict[f"{col}_{v}"] = 0
 
     def transform_many(self, X):
+        pd = utils.pandas.import_pandas()
         oh = pd.get_dummies(X, columns=X.columns, sparse=True, dtype="uint8")
 
         # NOTE: assume if category mappings are explicitly provided,

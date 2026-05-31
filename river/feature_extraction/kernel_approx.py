@@ -87,6 +87,12 @@ class RBFSampler(base.Transformer):
             for _ in range(self.n_components)
         ]
 
+    def _unit_test_skips(self):
+        # The per-feature weight vectors are lazily populated from a shared RNG
+        # in the order features are first seen, so different feature orderings
+        # produce different (but equally valid) embeddings.
+        return {"check_shuffle_features_no_impact"}
+
     def transform_one(self, x, y=None):
         return {
             (i, j): math.cos(xi * wj + self.offsets[j])

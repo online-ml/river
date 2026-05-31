@@ -42,13 +42,15 @@ class HardSampling(base.Wrapper):
     def learn_one(self, x, y, **kwargs):
         loss = self.loss(y_true=y, y_pred=self._model_pred_func(x))
 
+        # Copy x so the caller can safely mutate the input after learn_one
+        # without disturbing the buffered triplets.
         if len(self.buffer) < self.size:
-            self.buffer.append(Triplet(x=x, y=y, loss=loss))
+            self.buffer.append(Triplet(x=dict(x), y=y, loss=loss))
 
         elif loss > self.buffer[0].loss:
             self.buffer.pop(0)
 
-            self.buffer.append(Triplet(x=x, y=y, loss=loss))
+            self.buffer.append(Triplet(x=dict(x), y=y, loss=loss))
 
         # Probability p
         if self._rng.uniform(0, 1) <= self.p:

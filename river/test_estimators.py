@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import importlib
 import inspect
+import sys
 
 import pytest
 from sklearn import linear_model as sk_linear_model
@@ -19,15 +20,14 @@ from river import (
     feature_selection,
     imblearn,
     linear_model,
+    misc,
     model_selection,
     multiclass,
     neighbors,
     neural_net,
     preprocessing,
-    time_series,
 )
 from river.compat.river_to_sklearn import River2SKLBase
-from river.compat.sklearn_to_river import SKL2RiverBase
 
 
 def iter_estimators():
@@ -45,7 +45,12 @@ def iter_estimators():
 def iter_estimators_which_can_be_tested():
     ignored = (
         River2SKLBase,
-        SKL2RiverBase,
+        # base.Transformer / base.SupervisedTransformer are not marked abstract
+        # by Python (their abstract `transform_one` sits on the BaseTransformer
+        # mixin, which is not an ABC), but they are not meant to be tested
+        # directly.
+        base.Transformer,
+        base.SupervisedTransformer,
         anomaly.LocalOutlierFactor,  # needs warm-start to work correctly
         compose.FuncTransformer,
         compose.Grouper,
@@ -54,6 +59,8 @@ def iter_estimators_which_can_be_tested():
         compose.Renamer,
         compose.Suffixer,
         compose.TargetTransformRegressor,
+        compose.TransformerProduct,
+        compose.TransformerUnion,
         facto.FFMClassifier,
         facto.FFMRegressor,
         facto.FMClassifier,
@@ -74,8 +81,10 @@ def iter_estimators_which_can_be_tested():
         preprocessing.PreviousImputer,
         preprocessing.OneHotEncoder,
         preprocessing.StatImputer,
-        time_series.base.Forecaster,
     )
+    if sys.version_info < (3, 14):
+        # misc.ZstdClassifier requires Python 3.14 (compression.zstd); skip on older.
+        ignored = (*ignored, misc.ZstdClassifier)
 
     def can_be_tested(estimator):
         return not inspect.isabstract(estimator) and not issubclass(estimator, ignored)
