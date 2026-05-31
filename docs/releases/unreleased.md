@@ -1,5 +1,13 @@
 # Unreleased
 
+## Breaking changes
+
+- The native Rust extension moved from `river.stats._rust_stats` to `river._river_rust`,
+  split into submodules `stats`, `drift`, `tree`, and `vectordict`. Pickles produced
+  with prior versions no longer load directly. To convert existing pickles, use
+  [this migration script](https://gist.github.com/AdilZouitine/ee10421a11d2dac84fcc7c5895d1c549)
+  (the new river must be installed in the conversion env).
+
 ## packaging
 
 - **Breaking:** `pandas` is no longer a hard dependency of River. The core online interface (`learn_one` / `predict_one`) works with `pip install river` alone. The mini-batch interface (`learn_many`, `predict_many`, `predict_proba_many`, `transform_many`) still requires `pandas`; install with `pip install "river[pandas]"`. Calling a `*_many` method without `pandas` raises an `ImportError` pointing to the extra.
