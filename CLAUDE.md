@@ -7,7 +7,7 @@ River is a Python library for online (streaming) machine learning. All estimator
 ## Common commands
 
 ```sh
-# Install / sync dependencies (also builds Cython + Rust extensions)
+# Install / sync dependencies (also builds Rust extensions via maturin)
 uv sync
 
 # Run tests (excludes datasets and slow markers by default, includes doctests)
