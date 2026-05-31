@@ -8,7 +8,7 @@
     "environment_type": "virtualenv",
     "build_command": [],
     "install_command": [
-        "in-dir={env_dir} python -m pip install -e {build_dir}"
+        "in-dir={env_dir} python -m pip install -e {build_dir}[pandas]"
     ],
     "show_commit_url": "https://github.com/online-ml/river/commit/",
     "benchmark_dir": "benchmarks",

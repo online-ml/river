@@ -99,6 +99,12 @@ pip install river
 
 There are [wheels available](https://pypi.org/project/river/#files) for Linux, MacOS, and Windows. This means you most probably won't have to build River from source.
 
+River's core online interface (`learn_one` / `predict_one`) has no `pandas` dependency. The mini-batch interface (`learn_many`, `predict_many`, `predict_proba_many`, `transform_many`) is built on `pandas` and is opt-in:
+
+```sh
+pip install "river[pandas]"
+```
+
 You can install the latest development version from GitHub as so:
 
 ```sh

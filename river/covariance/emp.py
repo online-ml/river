@@ -2,11 +2,14 @@ from __future__ import annotations
 
 import abc
 import itertools
+import typing
 
 import numpy as np
-import pandas as pd
 
 from river import stats, utils
+
+if typing.TYPE_CHECKING:
+    import pandas as pd
 
 
 class SymmetricMatrix(abc.ABC):

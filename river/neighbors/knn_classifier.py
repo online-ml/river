@@ -132,8 +132,9 @@ class KNNClassifier(base.Classifier):
         self.classes = self._nn.refresh_targets()
 
     def learn_one(self, x, y):
-        # Update the data buffer
-        self._nn.append((x, y))
+        # Copy x so the caller can safely mutate the input dict after learn_one
+        # without disturbing the stored neighbours.
+        self._nn.append((dict(x), y))
 
         # Update the set of known classes
         self.classes.add(y)
