@@ -12,10 +12,10 @@
         <meta name="author" content="The Fellowship of Online Machine Learning">
       
       
-        <link rel="canonical" href="https://riverml.xyz/dev/releases/unreleased/">
+        <link rel="canonical" href="https://riverml.xyz/dev/releases/0.25.0/">
       
       
-        <link rel="prev" href="../../faq">
+        <link rel="prev" href="../unreleased.md">
       
       
         <link rel="next" href="../0.24.2/">
@@ -29,7 +29,7 @@
     
     
       
-        <title>Unreleased - River</title>
+        <title>0.25.0 - 2026-05-31 - River</title>
       
     
     
@@ -79,14 +79,14 @@
   <!-- Open Graph -->
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="River" />
-  <meta property="og:title" content="Unreleased - River" />
+  <meta property="og:title" content="0.25.0 - 2026-05-31 - River" />
   <meta property="og:description" content="Online machine learning in Python" />
-  <meta property="og:url" content="https://riverml.xyz/dev/releases/unreleased/" />
+  <meta property="og:url" content="https://riverml.xyz/dev/releases/0.25.0/" />
   <meta property="og:image" content="https://riverml.xyz/img/icon.png" />
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Unreleased - River" />
+  <meta name="twitter:title" content="0.25.0 - 2026-05-31 - River" />
   <meta name="twitter:description" content="Online machine learning in Python" />
   <meta name="twitter:image" content="https://riverml.xyz/img/icon.png" />
 
@@ -109,7 +109,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#unreleased" class="md-skip">
+        <a href="#0250-2026-05-31" class="md-skip">
           Skip to content
         </a>
       
@@ -146,7 +146,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Unreleased
+              0.25.0 - 2026-05-31
             
           </span>
         </div>
@@ -326,7 +326,7 @@
     
     
       <li class="md-tabs__item md-tabs__item--active">
-        <a href="././" class="md-tabs__link">
+        <a href="../unreleased.md" class="md-tabs__link">
           
   
   Releases
@@ -2012,6 +2012,8 @@
       
         
       
+        
+      
     
     
     
@@ -2062,6 +2064,33 @@
                 
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="../unreleased.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  unreleased
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
     
   
   
@@ -2083,7 +2112,7 @@
   <span class="md-ellipsis">
     
   
-  unreleased
+  0.25.0
 
     
   </span>
@@ -2100,7 +2129,7 @@
   <span class="md-ellipsis">
     
   
-  unreleased
+  0.25.0
 
     
   </span>
@@ -3798,7 +3827,7 @@
   
 
 
-<h1 id="unreleased">Unreleased<a class="headerlink" href="#unreleased" title="Permanent link">&para;</a></h1>
+<h1 id="0250-2026-05-31">0.25.0 - 2026-05-31<a class="headerlink" href="#0250-2026-05-31" title="Permanent link">&para;</a></h1>
 <h2 id="breaking-changes">Breaking changes<a class="headerlink" href="#breaking-changes" title="Permanent link">&para;</a></h2>
 <ul>
 <li>The native Rust extension moved from <code>river.stats._rust_stats</code> to <code>river._river_rust</code>, split into submodules <code>stats</code>, <code>drift</code>, <code>tree</code>, and <code>vectordict</code>. Pickles produced with prior versions no longer load directly. To convert existing pickles, use <a href="https://gist.github.com/AdilZouitine/ee10421a11d2dac84fcc7c5895d1c549">this migration script</a> (the new river must be installed in the conversion env).</li>
