@@ -1,14 +1,3 @@
-"""
-
-This module defines generic branch and leaf implementations. These should be used in River by each
-tree-based model. Using these classes makes the code more DRY. The only exception for not doing so
-would be for performance, whereby a tree-based model uses a bespoke implementation.
-
-This module defines a bunch of methods to ease the manipulation and diagnostic of trees. Its
-intention is to provide utilities for walking over a tree and visualizing it.
-
-"""
-
 from __future__ import annotations
 
 import abc
@@ -69,8 +58,11 @@ class Branch(base.Base, abc.ABC):
 
     def traverse(self, x, until_leaf=True) -> Branch | Leaf:
         """Return the leaf corresponding to the given input."""
+        node = None
         for node in self.walk(x, until_leaf):
             pass
+        if node is None:
+            raise RuntimeError("No node found during traversal")
         return node
 
     @property
