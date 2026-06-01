@@ -24,9 +24,7 @@ jobs:
       - name: Cache datasets
         uses: actions/cache@v4
         with:
-          path: |
-            ~/river_data
-            ~/scikit_learn_data
+          path: ~/river_data
           key: river-data-${{ hashFiles('river/datasets/**/*.py', 'river/bandit/datasets/**/*.py', 'Makefile') }}
           restore-keys: |
             river-data-
@@ -61,9 +59,7 @@ jobs:
       - name: Cache datasets
         uses: actions/cache@v4
         with:
-          path: |
-            ~/river_data
-            ~/scikit_learn_data
+          path: ~/river_data
           key: river-data-${{ hashFiles('river/datasets/**/*.py', 'river/bandit/datasets/**/*.py', 'Makefile') }}
           restore-keys: |
             river-data-

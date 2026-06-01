@@ -35,6 +35,7 @@ from .trec07 import TREC07
 from .trump_approval import TrumpApproval
 from .water_flow import WaterFlow
 from .web_traffic import WebTraffic
+from .yeast import Yeast
 
 __all__ = [
     "AirlinePassengers",
@@ -64,6 +65,7 @@ __all__ = [
     "TrumpApproval",
     "WaterFlow",
     "WebTraffic",
+    "Yeast",
 ]
 
 
