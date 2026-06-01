@@ -382,6 +382,9 @@
         <loc>https://riverml.xyz/dev/api/datasets/WebTraffic/</loc>
       </url>
       <url>
+        <loc>https://riverml.xyz/dev/api/datasets/Yeast/</loc>
+      </url>
+      <url>
         <loc>https://riverml.xyz/dev/api/datasets/base/Dataset/</loc>
       </url>
       <url>
