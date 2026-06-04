@@ -23,7 +23,7 @@ jobs:
         run: uv sync --locked --all-extras --dev
 
       - name: Cache datasets
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/river_data
           key: river-data-${{ hashFiles('river/datasets/**/*.py', 'river/bandit/datasets/**/*.py', 'Makefile') }}
@@ -38,7 +38,6 @@ jobs:
 
       - name: Run prek
         uses: j178/prek-action@v2
-       
 
   no-pandas:
     name: Tests without pandas
@@ -53,7 +52,7 @@ jobs:
         run: uv sync --locked --all-extras --dev
 
       - name: Cache datasets
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/river_data
           key: river-data-${{ hashFiles('river/datasets/**/*.py', 'river/bandit/datasets/**/*.py', 'Makefile') }}
