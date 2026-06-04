@@ -26,8 +26,8 @@ uv run pytest -n auto
 # Run only web-dependent tests (datasets downloads)
 uv run pytest -m datasets
 
-# Lint and format (via pre-commit hooks)
-uv run pre-commit run --all-files
+# Lint and format (via prek hooks)
+uv run prek run --all-files
 
 # Type checking
 uv run mypy river

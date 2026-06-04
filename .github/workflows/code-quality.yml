@@ -10,7 +10,7 @@ on:
 
 jobs:
   ubuntu:
-    name: Tests + pre-commit
+    name: Tests + prek
     runs-on: ubuntu-latest
     steps:
       - name: Clone repository
@@ -36,14 +36,9 @@ jobs:
       - name: Run tests
         run: uv run pytest
 
-      - name: Install pre-commit
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/pre-commit/
-          key: pre-commit|${{ hashFiles('.pre-commit-config.yaml') }}
-
-      - name: Run pre-commit
-        run: uv run pre-commit run --all-files
+      - name: Run prek
+        uses: j178/prek-action@v2
+       
 
   no-pandas:
     name: Tests without pandas

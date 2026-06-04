@@ -44,16 +44,16 @@ Now you're set to install River:
 uv sync
 ```
 
-Finally, install the [pre-commit](https://pre-commit.com/) push hooks. This will run some code quality checks every time you push to GitHub.
+Finally, install the [prek](https://github.com/j178/prek) push hooks. This will run some code quality checks every time you push to GitHub.
 
 ```sh
-uv run pre-commit install --hook-type pre-push
+uv run prek install --hook-type pre-push
 ```
 
-You can optionally run `pre-commit` at any time as so:
+You can optionally run `prek` at any time as so:
 
 ```sh
-uv run pre-commit run --all-files
+uv run prek run --all-files
 ```
 
 ## Making changes
