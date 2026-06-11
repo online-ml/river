@@ -11,14 +11,26 @@ References:
 
 from __future__ import annotations
 
+import typing
 from collections.abc import Hashable
-from typing import Any
+from typing import Any, TypeGuard
 
 import numpy as np
-import pandas as pd
 import scipy as sp
 
+from river import utils
 from river.base import MiniBatchTransformer
+
+if typing.TYPE_CHECKING:
+    import pandas as pd
+
+
+def _is_dataframe(x: Any) -> TypeGuard[pd.DataFrame]:
+    """Return True iff ``x`` is a pandas DataFrame, without importing pandas eagerly."""
+    if not utils.pandas.PANDAS_INSTALLED:
+        return False
+    return isinstance(x, utils.pandas.import_pandas().DataFrame)
+
 
 __all__ = [
     "OnlineSVD",
@@ -169,6 +181,8 @@ class OnlineSVD(MiniBatchTransformer):
         _Vt: Right singular vectors (transposed) (n_components, n_seen).
 
     Examples:
+    >>> import numpy as np
+    >>> import pandas as pd
     >>> np.random.seed(0)
     >>> r = 3
     >>> m = 4
@@ -407,7 +421,7 @@ class OnlineSVD(MiniBatchTransformer):
         Args:
             X: The input to learn many samples from.
         """
-        if isinstance(X, pd.DataFrame):
+        if _is_dataframe(X):
             self.feature_names_in_ = list(X.columns)
             X = X.values
         else:
@@ -469,6 +483,7 @@ class OnlineSVD(MiniBatchTransformer):
         Returns:
             pd.DataFrame: The transformed samples.
         """
+        pd = utils.pandas.import_pandas()
         if not hasattr(self, "_U"):
             return pd.DataFrame(
                 np.zeros((X.shape[0], self.n_components)),
@@ -501,6 +516,8 @@ class OnlineSVDZhang(OnlineSVD):
         _Vt: Right singular vectors (transposed) (n_components, n_seen).
 
     Examples:
+    >>> import numpy as np
+    >>> import pandas as pd
     >>> np.random.seed(0)
     >>> r = 3
     >>> m = 4
