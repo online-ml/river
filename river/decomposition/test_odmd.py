@@ -145,7 +145,22 @@ def test_one_svd_is_enough() -> None:
     u_aug, s_aug, _ = sp.sparse.linalg.svds(X_.values.T, k=3, return_singular_vectors="u")
     u_out, s_out, _ = sp.sparse.linalg.svds(Y.values.T, k=2, return_singular_vectors="u")
 
-    assert (np.abs(u_orig - u_aug[:3, :2]) <= np.abs(u_orig - u_out)).all()
+    # `sp.sparse.linalg.svds` uses ARPACK and returns singular vectors with an
+    # arbitrary sign (and ARPACK's own random initial vector is not controlled
+    # by `np.random.seed`). To compare across three independent SVD calls, we
+    # align column signs to `u_orig` before computing distances.
+    def _align_sign(u_ref: np.ndarray, u: np.ndarray) -> np.ndarray:
+        k = min(u_ref.shape[1], u.shape[1])
+        out = u.copy()
+        for j in range(k):
+            if np.dot(u_ref[:, j], u[: u_ref.shape[0], j]) < 0:
+                out[:, j] *= -1
+        return out
+
+    u_aug_aligned = _align_sign(u_orig, u_aug)
+    u_out_aligned = _align_sign(u_orig, u_out)
+
+    assert (np.abs(u_orig - u_aug_aligned[:3, :2]) <= np.abs(u_orig - u_out_aligned)).all()
     assert (np.abs(s_orig - s_aug[:2]) <= np.abs(s_orig - s_out)).all()
 
 
