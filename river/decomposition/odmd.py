@@ -16,17 +16,29 @@ References:
 
 from __future__ import annotations
 
+import typing
 from collections.abc import Hashable
-from typing import Any, Literal
+from typing import Any, Literal, TypeGuard
 
 import numpy as np
-import pandas as pd
 import scipy as sp
 
+from river import utils
 from river.base import BaseTransformer
 from river.base.multi_output import MiniBatchMultiTargetRegressor
 
 from .osvd import OnlineSVDZhang as OnlineSVD
+
+if typing.TYPE_CHECKING:
+    import pandas as pd
+
+
+def _is_dataframe(x: Any) -> TypeGuard[pd.DataFrame]:
+    """Return True iff ``x`` is a pandas DataFrame, without importing pandas eagerly."""
+    if not utils.pandas.PANDAS_INSTALLED:
+        return False
+    return isinstance(x, utils.pandas.import_pandas().DataFrame)
+
 
 __all__ = [
     "OnlineDMD",
@@ -178,7 +190,7 @@ class OnlineDMD(MiniBatchMultiTargetRegressor, BaseTransformer):
         self._Y: np.ndarray  # for xi and modes computation
 
         self._A_last: np.ndarray
-        self._A_allclose: bool = False
+        self._a_allclose: bool = False
 
         # Properties to be reset at each update
         self._eig: tuple[np.ndarray, np.ndarray] | None = None
@@ -259,7 +271,7 @@ class OnlineDMD(MiniBatchMultiTargetRegressor, BaseTransformer):
         return self._xi
 
     @property
-    def A_allclose(self) -> bool:
+    def a_allclose(self) -> bool:
         """Check if A has changed since last update of eigenvalues."""
         if self.eig_rtol is None:
             return False
@@ -319,7 +331,7 @@ class OnlineDMD(MiniBatchMultiTargetRegressor, BaseTransformer):
 
         return x, y
 
-    def _update_A_P(self, X: np.ndarray, Y: np.ndarray, W: float | np.ndarray) -> None:
+    def _update_a_p(self, X: np.ndarray, Y: np.ndarray, W: float | np.ndarray) -> None:
         Xt = X.T
         AX = self.A.dot(Xt)
         PX = self._P.dot(Xt)
@@ -335,7 +347,7 @@ class OnlineDMD(MiniBatchMultiTargetRegressor, BaseTransformer):
         self._P = (self._P + self._P.T) / 2
 
         # Reset properties
-        if not self.A_allclose:
+        if not self.a_allclose:
             self._eig = None
             self._A_last = self.A.copy()
         self._modes = None
@@ -404,7 +416,7 @@ class OnlineDMD(MiniBatchMultiTargetRegressor, BaseTransformer):
             if self.r < self.m:
                 x_, y_ = self._truncate_w_svd(x_, y_, svd_modify="update")
 
-            self._update_A_P(x_, y_, 1.0)
+            self._update_a_p(x_, y_, 1.0)
 
         self.n_seen += 1
 
@@ -469,7 +481,7 @@ class OnlineDMD(MiniBatchMultiTargetRegressor, BaseTransformer):
         else:
             weight = -1.0
 
-        self._update_A_P(x_, y_, weight)
+        self._update_a_p(x_, y_, weight)
 
         self.n_seen -= 1
 
@@ -500,17 +512,17 @@ class OnlineDMD(MiniBatchMultiTargetRegressor, BaseTransformer):
         # Zhang (2019): Gamma = (C^{-1}  U^T P U )^{-1} )
         C_inv = np.diag(np.reciprocal(weights))
 
-        if isinstance(X, pd.DataFrame):
+        if _is_dataframe(X):
             X_ = X.values
         else:
             X_ = X
-        if isinstance(Y, pd.DataFrame):
+        if _is_dataframe(Y):
             Y_ = Y.values
         else:
             Y_ = Y
         if self.r < self.m:
             X_, Y_ = self._truncate_w_svd(X_, Y_, svd_modify="update")
-        self._update_A_P(X_, Y_, C_inv)
+        self._update_a_p(X_, Y_, C_inv)
 
     def update_many(
         self,
@@ -527,16 +539,16 @@ class OnlineDMD(MiniBatchMultiTargetRegressor, BaseTransformer):
             Y: The output snapshot matrix of shape (p, m), where p is the number of snapshots and m is the number of features.
         """
         if Y is None:
-            if isinstance(X, pd.DataFrame):
+            if _is_dataframe(X):
                 Y = X.shift(-1).iloc[:-1]
                 X = X.iloc[:-1]
             elif isinstance(X, np.ndarray):
                 Y = np.roll(X, -1)[:-1]
                 X = X[:-1]
 
-        if isinstance(X, pd.DataFrame):
+        if _is_dataframe(X):
             X = X.values
-        if isinstance(Y, pd.DataFrame):
+        if _is_dataframe(Y):
             Y = Y.values
 
         # necessary condition for over-constrained initialization
@@ -942,7 +954,7 @@ class OnlineDMDwC(OnlineDMD):
         self._Y_init = np.empty((self.initialize, self.m))
         self._Y = np.empty((0, self.m))
 
-    def _reconstruct_AB(self) -> tuple[np.ndarray, np.ndarray]:
+    def _reconstruct_ab(self) -> tuple[np.ndarray, np.ndarray]:
         # self.m stores augumented state dimension
         _m = self.m - self.l if not self.known_B else self.m
         if self.r < self.m:
@@ -1153,11 +1165,11 @@ class OnlineDMDwC(OnlineDMD):
             super().learn_many(X, Y)
             return
 
-        if isinstance(X, pd.DataFrame):
+        if _is_dataframe(X):
             X = X.values
-        if isinstance(Y, pd.DataFrame):
+        if _is_dataframe(Y):
             Y = Y.values
-        if isinstance(U, pd.DataFrame):
+        if _is_dataframe(U):
             U = U.values
 
         if Y is None:
@@ -1203,7 +1215,7 @@ class OnlineDMDwC(OnlineDMD):
             u = np.array(list(u.values()))
         keys = list(x.keys())
         x_arr = np.array(list(x.values()))
-        A, B = self._reconstruct_AB()
+        A, B = self._reconstruct_ab()
         action = (B @ u).real
         result = (A @ x_arr).real + action
         return dict(zip(keys, result))
@@ -1226,10 +1238,10 @@ class OnlineDMDwC(OnlineDMD):
         """
         if U is None:
             return super().predict_horizon(x, horizon)
-        if isinstance(U, pd.DataFrame):
+        if _is_dataframe(U):
             U = U.values
         _m = len(x)
-        A, B = self._reconstruct_AB()
+        A, B = self._reconstruct_ab()
         mat = np.zeros((horizon + 1, _m))
         mat[0, :] = x if isinstance(x, np.ndarray) else list(x.values())
         for s in range(1, horizon + 1):
@@ -1255,6 +1267,6 @@ class OnlineDMDwC(OnlineDMD):
         """
         if U is None:
             return super().truncation_error(X, Y)
-        A, B = self._reconstruct_AB()
+        A, B = self._reconstruct_ab()
         Y_hat = A @ X.T + B @ U.T
         return float(np.linalg.norm(Y - Y_hat.T) / np.linalg.norm(Y))
