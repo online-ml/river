@@ -25,7 +25,7 @@ __all__ = [
 
 
 def safe_div(a, b):
-    """Returns a if b is nil, else divides a by b.
+    """Return a if b is nil, else divides a by b.
 
     When scaling, sometimes a denominator might be nil. For instance, during standard scaling
     the denominator can be nil if a feature has no variance.
@@ -35,7 +35,7 @@ def safe_div(a, b):
 
 
 class Binarizer(base.Transformer):
-    """Binarizes the data to 0 or 1 according to a threshold.
+    """Binarize the data to 0 or 1 according to a threshold.
 
     Parameters
     ----------
@@ -46,7 +46,6 @@ class Binarizer(base.Transformer):
 
     Examples
     --------
-
     >>> import river
     >>> import numpy as np
 
@@ -100,7 +99,6 @@ class StandardScaler(base.MiniBatchTransformer):
 
     Examples
     --------
-
     >>> import random
     >>> from river import preprocessing
 
@@ -148,6 +146,17 @@ class StandardScaler(base.MiniBatchTransformer):
     4 -0.444084 -0.914195
     5 -1.274664  0.992296
 
+    A scaler can also be warm-started from previously computed statistics, e.g. to
+    resume from a checkpoint or to seed the stream with an offline estimate:
+
+    >>> scaler = preprocessing.StandardScaler._from_state(
+    ...     counts={'x': 100},
+    ...     means={'x': 10.0},
+    ...     vars={'x': 4.0},
+    ... )
+    >>> scaler.transform_one({'x': 12.0})
+    {'x': 1.0}
+
     References
     ----------
     [^1]: [Welford's Method (and Friends)](https://www.embeddedrelated.com/showarticle/785.php)
@@ -160,6 +169,41 @@ class StandardScaler(base.MiniBatchTransformer):
         self.counts: collections.Counter = collections.Counter()
         self.means: collections.defaultdict = collections.defaultdict(float)
         self.vars: collections.defaultdict = collections.defaultdict(float)
+
+    @classmethod
+    def _from_state(
+        cls,
+        counts: dict,
+        means: dict,
+        vars: dict | None = None,
+        *,
+        with_std: bool = True,
+    ) -> StandardScaler:
+        """Create a new instance with pre-populated running statistics.
+
+        Useful to warm-start a scaler from offline-computed statistics or to resume
+        from a checkpoint without replaying past observations.
+
+        Parameters
+        ----------
+        counts
+            Mapping between features and the number of observations they have been
+            updated with.
+        means
+            Mapping between features and their running mean.
+        vars
+            Mapping between features and their running variance. Required when
+            ``with_std`` is ``True``; ignored otherwise.
+        with_std
+            Whether or not each feature should be divided by its standard deviation.
+
+        """
+        new = cls(with_std=with_std)
+        new.counts.update(counts)
+        new.means.update(means)
+        if with_std and vars is not None:
+            new.vars.update(vars)
+        return new
 
     def learn_one(self, x):
         counts = self.counts
@@ -198,9 +242,7 @@ class StandardScaler(base.MiniBatchTransformer):
         ----------
         X
             A dataframe where each column is a feature.
-
         """
-
         # Operating on X.values, which is a view to the underlying numpy array, is slightly faster
         # than operating on X
         columns = X.columns
@@ -268,17 +310,26 @@ class MinMaxScaler(base.Transformer):
     """Scales the data to a fixed range from 0 to 1.
 
     Under the hood a running min and a running peak to peak (max - min) are maintained.
+    When ``window_size`` is set, the scaler tracks the min and max over the last
+    ``window_size`` observations via `stats.RollingMin` and `stats.RollingMax` instead.
+
+    Parameters
+    ----------
+    window_size
+        Size of the rolling window used to compute the min and max. If ``None``, the
+        running min and max over the entire stream are used.
 
     Attributes
     ----------
     min : dict
-        Mapping between features and instances of `stats.Min`.
+        Mapping between features and instances of `stats.Min` (or `stats.RollingMin`
+        when ``window_size`` is set).
     max : dict
-        Mapping between features and instances of `stats.Max`.
+        Mapping between features and instances of `stats.Max` (or `stats.RollingMax`
+        when ``window_size`` is set).
 
     Examples
     --------
-
     >>> import random
     >>> from river import preprocessing
 
@@ -303,11 +354,67 @@ class MinMaxScaler(base.Transformer):
     {'x': 0.322582}
     {'x': 1.0}
 
+    A rolling window can be used to scale relative to the most recent observations
+    only:
+
+    >>> scaler = preprocessing.MinMaxScaler(window_size=3)
+    >>> for x in X:
+    ...     scaler.learn_one(x)
+    ...     print(scaler.transform_one(x))
+    {'x': 0.0}
+    {'x': 0.0}
+    {'x': 0.406920}
+    {'x': 0.792741}
+    {'x': 1.0}
+
+    A scaler can also be warm-started from previously computed statistics, e.g. to
+    resume from a checkpoint or to seed the stream with an offline estimate:
+
+    >>> scaler = preprocessing.MinMaxScaler._from_state(min={'x': 8.0}, max={'x': 12.0})
+    >>> scaler.transform_one({'x': 10.0})
+    {'x': 0.5}
+
     """
 
-    def __init__(self) -> None:
-        self.min: collections.defaultdict = collections.defaultdict(stats.Min)
-        self.max: collections.defaultdict = collections.defaultdict(stats.Max)
+    def __init__(self, window_size: int | None = None) -> None:
+        self.window_size = window_size
+        if window_size is None:
+            self.min: collections.defaultdict = collections.defaultdict(stats.Min)
+            self.max: collections.defaultdict = collections.defaultdict(stats.Max)
+        else:
+            self.min = collections.defaultdict(functools.partial(stats.RollingMin, window_size))
+            self.max = collections.defaultdict(functools.partial(stats.RollingMax, window_size))
+
+    @classmethod
+    def _from_state(
+        cls,
+        min: dict,
+        max: dict,
+        window_size: int | None = None,
+    ) -> MinMaxScaler:
+        """Create a new instance with pre-populated running min and max.
+
+        Useful to warm-start a scaler from offline-computed statistics or to resume
+        from a checkpoint without replaying past observations.
+
+        Parameters
+        ----------
+        min
+            Mapping between features and their initial min.
+        max
+            Mapping between features and their initial max.
+        window_size
+            Size of the rolling window, forwarded to ``__init__``. When set, each
+            initial value seeds one slot of the rolling window and will eventually be
+            evicted as fresh observations arrive.
+
+        """
+        new = cls(window_size=window_size)
+        for k, v in min.items():
+            new.min[k].update(v)
+        for k, v in max.items():
+            new.max[k].update(v)
+        return new
 
     def learn_one(self, x):
         min_ = self.min
@@ -335,14 +442,24 @@ class MaxAbsScaler(base.Transformer):
     data that is already centered at zero or sparse data. It does not shift/center
     the data, and thus does not destroy any sparsity.
 
+    When ``window_size`` is set, the scaler tracks the absolute max over the last
+    ``window_size`` observations via `stats.RollingAbsMax` instead of the entire
+    stream.
+
+    Parameters
+    ----------
+    window_size
+        Size of the rolling window used to compute the absolute max. If ``None``,
+        the running absolute max over the entire stream is used.
+
     Attributes
     ----------
     abs_max : dict
-        Mapping between features and instances of `stats.AbsMax`.
+        Mapping between features and instances of `stats.AbsMax` (or
+        `stats.RollingAbsMax` when ``window_size`` is set).
 
     Examples
     --------
-
     >>> import random
     >>> from river import preprocessing
 
@@ -367,10 +484,48 @@ class MaxAbsScaler(base.Transformer):
     {'x': 0.842308}
     {'x': 1.0}
 
+    A scaler can also be warm-started from a previously computed absolute max:
+
+    >>> scaler = preprocessing.MaxAbsScaler._from_state(abs_max={'x': 12.0})
+    >>> scaler.transform_one({'x': 6.0})
+    {'x': 0.5}
+
     """
 
-    def __init__(self) -> None:
-        self.abs_max: collections.defaultdict = collections.defaultdict(stats.AbsMax)
+    def __init__(self, window_size: int | None = None) -> None:
+        self.window_size = window_size
+        if window_size is None:
+            self.abs_max: collections.defaultdict = collections.defaultdict(stats.AbsMax)
+        else:
+            self.abs_max = collections.defaultdict(
+                functools.partial(stats.RollingAbsMax, window_size)
+            )
+
+    @classmethod
+    def _from_state(
+        cls,
+        abs_max: dict,
+        window_size: int | None = None,
+    ) -> MaxAbsScaler:
+        """Create a new instance with a pre-populated running absolute max.
+
+        Useful to warm-start a scaler from an offline-computed statistic or to resume
+        from a checkpoint without replaying past observations.
+
+        Parameters
+        ----------
+        abs_max
+            Mapping between features and their initial absolute max.
+        window_size
+            Size of the rolling window, forwarded to ``__init__``. When set, each
+            initial value seeds one slot of the rolling window and will eventually
+            be evicted as fresh observations arrive.
+
+        """
+        new = cls(window_size=window_size)
+        for k, v in abs_max.items():
+            new.abs_max[k].update(v)
+        return new
 
     def learn_one(self, x):
         abs_max = self.abs_max
@@ -412,7 +567,6 @@ class RobustScaler(base.Transformer):
 
     Examples
     --------
-
     >>> from pprint import pprint
     >>> import random
     >>> from river import preprocessing
@@ -481,7 +635,6 @@ class Normalizer(base.Transformer):
 
     Examples
     --------
-
     >>> from river import preprocessing
     >>> from river import stream
 
@@ -523,7 +676,6 @@ class AdaptiveStandardScaler(base.Transformer):
 
     Examples
     --------
-
     Consider the following series which contains a positive trend.
 
     >>> import random
