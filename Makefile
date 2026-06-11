@@ -1,7 +1,7 @@
 COMMIT_HASH := $(shell eval git rev-parse HEAD)
 
 download-datasets:
-	python -c "from river import datasets, bandit; datasets.Elec2().download(); datasets.SMSSpam().download(); bandit.datasets.NewsArticles().download()"
+	python -c "from river import datasets, bandit; datasets.Elec2().download(); datasets.SMSSpam().download(); datasets.CreditCard().download(); datasets.Music().download(); bandit.datasets.NewsArticles().download()"
 
 format:
 	pre-commit run --all-files
@@ -13,18 +13,17 @@ execute-notebooks:
 	jupyter nbconvert --execute --to notebook --inplace docs/examples/*/*.ipynb --ExecutePreprocessor.timeout=-1
 
 render-notebooks:
-	jupyter nbconvert --to markdown docs/introduction/*/*.ipynb
-	jupyter nbconvert --to markdown docs/recipes/*.ipynb
-	jupyter nbconvert --to markdown docs/examples/*.ipynb
-	jupyter nbconvert --to markdown docs/examples/*/*.ipynb
+	jupyter nbconvert --to markdown --template docs/parse/nbconvert_template docs/introduction/*/*.ipynb
+	jupyter nbconvert --to markdown --template docs/parse/nbconvert_template docs/recipes/*.ipynb
+	jupyter nbconvert --to markdown --template docs/parse/nbconvert_template docs/examples/*.ipynb
+	jupyter nbconvert --to markdown --template docs/parse/nbconvert_template docs/examples/*/*.ipynb
 
 doc: render-notebooks
-	(cd benchmarks && python render.py)
 	python docs/parse river --out docs --verbose
-	mkdocs build
+	zensical build
 
 livedoc: doc
-	mkdocs serve --dirtyreload
+	zensical serve
 
 rebase:
 	git fetch && git rebase origin/main

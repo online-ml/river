@@ -35,6 +35,7 @@ from .trec07 import TREC07
 from .trump_approval import TrumpApproval
 from .water_flow import WaterFlow
 from .web_traffic import WebTraffic
+from .yeast import Yeast
 
 __all__ = [
     "AirlinePassengers",
@@ -64,6 +65,7 @@ __all__ = [
     "TrumpApproval",
     "WaterFlow",
     "WebTraffic",
+    "Yeast",
 ]
 
 
@@ -82,7 +84,7 @@ def _docs_overview(print):
         dataset = eval(dataset_name)()
 
         details = {
-            "Name": f"[{dataset_name}](../datasets/{dataset_name})",
+            "Name": f"[{dataset_name}](datasets/{dataset_name})",
             "Samples": dataset.n_samples,
             "Features": dataset.n_features,
             "Sparse": "✔️" if dataset.sparse else "",

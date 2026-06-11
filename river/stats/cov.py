@@ -77,16 +77,20 @@ class Cov(stats.base.Bivariate):
         return self.mean_x.n
 
     def update(self, x, y, w=1.0):
-        dx = x - self.mean_x.get()
+        dx = x - self.mean_x._mean
         self.mean_x.update(x, w)
         self.mean_y.update(y, w)
-        self.cov += w * (dx * (y - self.mean_y.get()) - self.cov) / max(self.n - self.ddof, 1)
+        n = self.mean_x.n
+        denom = n - self.ddof
+        self.cov += w * (dx * (y - self.mean_y._mean) - self.cov) / (denom if denom > 1 else 1)
 
     def revert(self, x, y, w=1.0):
-        dx = x - self.mean_x.get()
+        dx = x - self.mean_x._mean
         self.mean_x.revert(x, w)
         self.mean_y.revert(y, w)
-        self.cov -= w * (dx * (y - self.mean_y.get()) - self.cov) / max(self.n - self.ddof, 1)
+        n = self.mean_x.n
+        denom = n - self.ddof
+        self.cov -= w * (dx * (y - self.mean_y._mean) - self.cov) / (denom if denom > 1 else 1)
 
     def update_many(self, X: np.ndarray, Y: np.ndarray):
         dx = X - self.mean_x.get()

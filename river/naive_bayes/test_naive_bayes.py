@@ -49,7 +49,7 @@ def yield_unseen_data():
         "Tokyo Japan Chinese",
         "new unseen data",
         "Taiwanese Taipei",
-        "Chinese Shanghai" "Shanghai",
+        "Chinese ShanghaiShanghai",
         "Chinese",
         "Tokyo Macao",
         "Tokyo Tokyo",

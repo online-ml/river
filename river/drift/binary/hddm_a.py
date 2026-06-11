@@ -5,10 +5,10 @@ import math
 from river import base, stats
 
 
-class HDDM_A(base.BinaryDriftAndWarningDetector):
+class HDDMA(base.BinaryDriftAndWarningDetector):
     """Drift Detection Method based on Hoeffding's bounds with moving average-test.
 
-    HDDM_A is a drift detection method based on the Hoeffding's inequality which uses
+    HDDMA is a drift detection method based on the Hoeffding's inequality which uses
     the input average as estimator.
 
     **Input:** `x` is an entry in a stream of bits, where 1 indicates error/failure and 0
@@ -39,7 +39,7 @@ class HDDM_A(base.BinaryDriftAndWarningDetector):
     >>> from river import drift
 
     >>> rng = random.Random(42)
-    >>> hddm_a = drift.binary.HDDM_A()
+    >>> hddm_a = drift.binary.HDDMA()
 
     >>> # Simulate a data stream where the first 1000 instances come from a uniform distribution
     >>> # of 1's and 0's

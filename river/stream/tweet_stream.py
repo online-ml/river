@@ -22,7 +22,7 @@ class TwitterLiveStream:
         Parameters
         ----------
         rules
-            See the documentation[^2] for a comprehensive overview of filtering rules.
+            See the [documentation](https://developer.twitter.com/en/docs/twitter-api/tweets/filtered-stream/integrate/build-a-rule) for a comprehensive overview of filtering rules.
         bearer_token
             A bearer token that is available in each account's developer portal.
 

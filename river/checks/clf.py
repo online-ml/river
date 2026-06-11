@@ -7,7 +7,7 @@ import math
 def check_predict_proba_one(classifier, dataset):
     """predict_proba_one should return a valid probability distribution and be pure."""
 
-    from river import utils
+    from river.active.base import ActiveLearningClassifier
 
     if not hasattr(classifier, "predict_proba_one"):
         return
@@ -18,7 +18,7 @@ def check_predict_proba_one(classifier, dataset):
         classifier.learn_one(x, y)
         y_pred = classifier.predict_proba_one(x)
 
-        if utils.inspect.isactivelearner(classifier):
+        if isinstance(classifier, ActiveLearningClassifier):
             y_pred, _ = y_pred
 
         # Check the probabilities are coherent
@@ -43,3 +43,38 @@ def check_predict_proba_one_binary(classifier, dataset):
 
 def check_multiclass_is_bool(model):
     assert isinstance(model._multiclass, bool)
+
+
+def check_classifier_tracks_seen_labels(classifier, dataset):
+    """Every label seen during training should appear in `predict_proba_one`.
+
+    Catches classifiers that silently drop labels they have already observed.
+    """
+
+    from river.active.base import ActiveLearningClassifier
+
+    if not hasattr(classifier, "predict_proba_one"):
+        return
+
+    seen: set = set()
+    last_x = None
+    for x, y in dataset:
+        classifier.learn_one(x, y)
+        seen.add(y)
+        last_x = x
+
+    if last_x is None or len(seen) < 2:
+        return
+
+    try:
+        proba = classifier.predict_proba_one(last_x)
+    except NotImplementedError:
+        return
+
+    if isinstance(classifier, ActiveLearningClassifier):
+        proba, _ = proba
+
+    missing = seen - set(proba.keys())
+    assert not missing, (
+        f"predict_proba_one is missing labels seen during training: {sorted(missing, key=repr)}"
+    )

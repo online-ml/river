@@ -1,3 +1,7 @@
+---
+description: Core concepts of online machine learning — data streams, incremental learning, and progressive validation.
+---
+
 # Basic concepts
 
 Here are some concepts to give you a feel for what problems River addresses.

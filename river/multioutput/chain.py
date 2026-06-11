@@ -53,38 +53,34 @@ class ClassifierChain(BaseChain, base.MultiLabelClassifier):  # type:ignore[misc
     Examples
     --------
 
+    >>> import random
+
+    >>> from river import datasets
     >>> from river import feature_selection
     >>> from river import linear_model
     >>> from river import metrics
     >>> from river import multioutput
     >>> from river import preprocessing
-    >>> from river import stream
-    >>> from sklearn import datasets
 
-    >>> dataset = stream.iter_sklearn_dataset(
-    ...     dataset=datasets.fetch_openml('yeast', version=4, parser='auto', as_frame=False),
-    ...     shuffle=True,
-    ...     seed=42
-    ... )
+    >>> dataset = list(datasets.Yeast())
+    >>> random.Random(42).shuffle(dataset)
 
     >>> model = feature_selection.VarianceThreshold(threshold=0.01)
     >>> model |= preprocessing.StandardScaler()
     >>> model |= multioutput.ClassifierChain(
     ...     model=linear_model.LogisticRegression(),
-    ...     order=list(range(14))
+    ...     order=[f"Class{i}" for i in range(1, 15)],
     ... )
 
     >>> metric = metrics.multioutput.MicroAverage(metrics.Jaccard())
 
     >>> for x, y in dataset:
-    ...     # Convert y values to booleans
-    ...     y = {i: yi == 'TRUE' for i, yi in y.items()}
     ...     y_pred = model.predict_one(x)
     ...     metric.update(y, y_pred)
     ...     model.learn_one(x, y)
 
     >>> metric
-    MicroAverage(Jaccard): 41.81%
+    MicroAverage(Jaccard): 42.31%
 
     References
     ----------

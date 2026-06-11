@@ -4,11 +4,14 @@ import collections
 import functools
 import itertools
 import numbers
+import typing
 
 import numpy as np
-import pandas as pd
 
 from river import base, stats, utils
+
+if typing.TYPE_CHECKING:
+    import pandas as pd
 
 __all__ = [
     "AdaptiveStandardScaler",
@@ -159,19 +162,31 @@ class StandardScaler(base.MiniBatchTransformer):
         self.vars: collections.defaultdict = collections.defaultdict(float)
 
     def learn_one(self, x):
-        for i, xi in x.items():
-            self.counts[i] += 1
-            old_mean = self.means[i]
-            self.means[i] += (xi - old_mean) / self.counts[i]
-            if self.with_std:
-                self.vars[i] += (
-                    (xi - old_mean) * (xi - self.means[i]) - self.vars[i]
-                ) / self.counts[i]
+        counts = self.counts
+        means = self.means
+        vars_ = self.vars
+        if self.with_std:
+            for i, xi in x.items():
+                counts[i] += 1
+                old_mean = means[i]
+                means[i] += (xi - old_mean) / counts[i]
+                vars_[i] += ((xi - old_mean) * (xi - means[i]) - vars_[i]) / counts[i]
+        else:
+            for i, xi in x.items():
+                counts[i] += 1
+                old_mean = means[i]
+                means[i] += (xi - old_mean) / counts[i]
 
     def transform_one(self, x):
+        means = self.means
         if self.with_std:
-            return {i: safe_div(xi - self.means[i], self.vars[i] ** 0.5) for i, xi in x.items()}
-        return {i: xi - self.means[i] for i, xi in x.items()}
+            vars_ = self.vars
+            result = {}
+            for i, xi in x.items():
+                v = vars_[i]
+                result[i] = (xi - means[i]) / v**0.5 if v else 0.0
+            return result
+        return {i: xi - means[i] for i, xi in x.items()}
 
     def learn_many(self, X: pd.DataFrame):
         """Update with a mini-batch of features.
@@ -229,7 +244,7 @@ class StandardScaler(base.MiniBatchTransformer):
             the features has not been seen during a previous call to `learn_many`.
 
         """
-
+        pd = utils.pandas.import_pandas()
         # Determine dtype of input
         dtypes = X.dtypes.unique()
         dtype = dtypes[0] if len(dtypes) == 1 else np.float64
@@ -290,20 +305,27 @@ class MinMaxScaler(base.Transformer):
 
     """
 
-    def __init__(self):
-        self.min = collections.defaultdict(stats.Min)
-        self.max = collections.defaultdict(stats.Max)
+    def __init__(self) -> None:
+        self.min: collections.defaultdict = collections.defaultdict(stats.Min)
+        self.max: collections.defaultdict = collections.defaultdict(stats.Max)
 
     def learn_one(self, x):
+        min_ = self.min
+        max_ = self.max
         for i, xi in x.items():
-            self.min[i].update(xi)
-            self.max[i].update(xi)
+            min_[i].update(xi)
+            max_[i].update(xi)
 
     def transform_one(self, x):
-        return {
-            i: safe_div(xi - self.min[i].get(), self.max[i].get() - self.min[i].get())
-            for i, xi in x.items()
-        }
+        min_ = self.min
+        max_ = self.max
+        result = {}
+        for i, xi in x.items():
+            lo = min_[i].get()
+            hi = max_[i].get()
+            d = hi - lo
+            result[i] = (xi - lo) / d if d else 0.0
+        return result
 
 
 class MaxAbsScaler(base.Transformer):
@@ -347,15 +369,21 @@ class MaxAbsScaler(base.Transformer):
 
     """
 
-    def __init__(self):
-        self.abs_max = collections.defaultdict(stats.AbsMax)
+    def __init__(self) -> None:
+        self.abs_max: collections.defaultdict = collections.defaultdict(stats.AbsMax)
 
     def learn_one(self, x):
+        abs_max = self.abs_max
         for i, xi in x.items():
-            self.abs_max[i].update(xi)
+            abs_max[i].update(xi)
 
     def transform_one(self, x):
-        return {i: safe_div(xi, self.abs_max[i].get()) for i, xi in x.items()}
+        abs_max = self.abs_max
+        result = {}
+        for i, xi in x.items():
+            m = abs_max[i].get()
+            result[i] = xi / m if m else 0.0
+        return result
 
 
 class RobustScaler(base.Transformer):
@@ -432,7 +460,9 @@ class RobustScaler(base.Transformer):
         for i, xi in x.items():
             x_tf[i] = xi
             if self.with_centering:
-                x_tf[i] -= self.median[i].get()
+                median = self.median[i].get()
+                if median is not None:
+                    x_tf[i] -= median
             if self.with_scaling:
                 x_tf[i] = safe_div(x_tf[i], self.iqr[i].get())
 

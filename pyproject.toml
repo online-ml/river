@@ -1,6 +1,6 @@
 [project]
 name = "river"
-version = "0.23.0"
+version = "0.25.0"
 description = "Online machine learning in Python"
 authors = [{ name = "Max Halford", email = "maxhalford25@gmail.com" }]
 requires-python = ">=3.11"
@@ -8,8 +8,13 @@ readme = "README.md"
 license = "BSD-3-Clause"
 dependencies = [
     "scipy>=1.16,<2",
-    "pandas>=2.2,<3",
     "numpy>=2.3.4,<3",
+    "altair>=5.0.0",
+]
+
+[project.optional-dependencies]
+pandas = [
+    "pandas>=2.2,<3",
 ]
 
 [project.urls]
@@ -17,33 +22,38 @@ Homepage = "https://riverml.xyz/"
 Repository = "https://github.com/online-ml/river/"
 
 [build-system]
-requires = [
-    "Cython",
-    "numpy",
-    "setuptools",
-    "setuptools-rust",
+requires = ["maturin>=1.13,<2"]
+build-backend = "maturin"
+
+[tool.maturin]
+module-name = "river._river_rust"
+python-source = "."
+features = ["pyo3/extension-module"]
+include = [
+    { path = "river/datasets/*.csv", format = ["sdist", "wheel"] },
+    { path = "river/datasets/*.gz",  format = ["sdist", "wheel"] },
+    { path = "river/datasets/*.zip", format = ["sdist", "wheel"] },
+    { path = "river/drift/datasets/*.csv", format = ["sdist", "wheel"] },
+    { path = "river/stream/*.zip", format = ["sdist", "wheel"] },
 ]
-build-backend = "setuptools.build_meta"
 
 [dependency-groups]
 dev = [
-    "graphviz>=0.20.1,<0.21",
-    "gymnasium>=0.29.0,<0.30",
-    "matplotlib>=3.8.4,<4",
-    "mypy>=1.11.1,<2",
-    "pre-commit>=3.5.0,<4",
-    "pytest>=7.4.2,<8",
-    "ruff>=0.4.10,<0.5",
-    "scikit-learn>=1.5.1,<2",
-    "sqlalchemy>=2.0.22,<3",
-    "sympy>=1.12.1,<2",
-    "pytest-xdist[psutil]>=3.3.1,<4",
-    "ipykernel>=6.26.0,<7",
-    "ipython>=8.17.2,<9",
-    "rich>=13.6.0,<14",
-    "jupyter>=1.0.0,<2",
-    "mike>=2.0.0,<3",
-    "polars>=1.1.0,<2",
+    "graphviz>=0.20.1",
+    "gymnasium>=0.29.0",
+    "altair>=5.0.0",
+    "mypy>=1.11.1",
+    "pandas>=2.2,<3",
+    "prek>=0.2",
+    "pytest>=9.0.3",
+    "ruff>=0.15.8",
+    "scikit-learn>=1.5.1",
+    "sqlalchemy>=2.0.22",
+    "sympy>=1.12.1",
+    "pytest-xdist[psutil]>=3.3.1",
+    "jupyter>=1.0.0",
+    "mike @ git+https://github.com/squidfunk/mike.git",
+    "polars>=1.1.0",
 ]
 compat = [
     "scikit-learn>=1.5.1,<2",
@@ -52,98 +62,28 @@ compat = [
 docs = [
     "dominate",
     "flask",
-    "ipykernel",
     "jupyter-client",
-    "mike",
-    "mkdocs",
-    "mkdocs-awesome-pages-plugin",
-    "mkdocs-charts-plugin",
-    "mkdocs-material",
+    "mike @ git+https://github.com/squidfunk/mike.git",
+    "pygments",
+    "TA-Lib",
+    "zensical>=0.0.40",
     "nbconvert",
     "numpydoc",
     "plotly>=6.3.0",
     "python-slugify",
-    "spacy",
+    "matplotlib",
     "tabulate",
+    "tqdm",
     "watermark",
     "notebook<7",
     "jupyter-contrib-nbextensions>=0.7.0,<0.8",
 ]
 benchmark = [
-    "dominate",
-    "scikit-learn",
-    "tabulate",
-    "watermark",
+    "asv",
+    "virtualenv",
 ]
 
-[tool.poetry.build]
-generate-setup-file = true
-script = "build.py"
 
-[tool.poetry.dependencies]
-python = "^3.10"
-numpy = ">=1.23.0"
-scipy = "^1.14.1"
-pandas = "^2.2.3"
-
-[tool.poetry.group.dev.dependencies]
-graphviz = "^0.20.1"
-gymnasium = "^0.29.0"
-matplotlib = "^3.8.4"
-mypy = "^1.11.1"
-pre-commit = "^3.5.0"
-pytest = "^7.4.2"
-ruff = "^0.4.10"
-scikit-learn = "^1.5.1"
-sqlalchemy = "^2.0.22"
-sympy = "^1.12.1"
-pytest-xdist = { extras = ["psutil"], version = "^3.3.1" }
-ipykernel = "^6.26.0"
-ipython = "^8.17.2"
-rich = "^13.6.0"
-jupyter = "^1.0.0"
-mike = "^2.0.0"
-polars = "^1.1.0"
-
-[tool.poetry.group.compat]
-optional = true
-
-[tool.poetry.group.compat.dependencies]
-scikit-learn = "^1.5.1"
-sqlalchemy = "^2.0.0"
-
-[tool.poetry.group.docs]
-optional = true
-
-[tool.poetry.group.docs.dependencies]
-"dominate" = "*"
-"flask" = "*"
-"ipykernel" = "*"
-"jupyter-client" = "*"
-"jupyter-contrib-nbextensions" = "^0.7.0"
-"mike" = "*"
-"mkdocs" = "*"
-"mkdocs-awesome-pages-plugin" = "*"
-"mkdocs-charts-plugin" = "*"
-"mkdocs-material" = "*"
-"nbconvert" = "*"
-"notebook" = "<7"
-"numpydoc" = "*"
-"plotly" = ">6.3.0"
-"python-slugify" = "*"
-"spacy" = "*"
-"tabulate" = "*"
-"watermark" = "*"
-
-[tool.poetry.group.benchmark]
-optional = true
-
-
-
-
-
-[tool.setuptools]
-packages = ["river"]
 
 [tool.uv]
 default-groups = [
@@ -153,31 +93,29 @@ default-groups = [
     "benchmark",
 ]
 
-[tool.hatch.build.targets.sdist]
-include = [
-    "**/*.cpp",
-    "**/*.pyx",
-    "**/*.pxd",
-    "river/datasets/*.csv",
-    "river/datasets/*.gz",
-    "river/datasets/*.zip",
-    "river/stream/*.zip",
-    "Cargo.toml",
-    "rust_src/**/*",
-]
+[tool.cibuildwheel]
+build-frontend = "build[uv]"
+skip = ["*_i686", "*-win32", "*-musllinux_i686"]
+test-command = "python -c \"import river\""
 
-[tool.hatch.build.targets.wheel]
-include = [
-    "**/*.cpp",
-    "**/*.pyx",
-    "**/*.pxd",
-    "river/datasets/*.csv",
-    "river/datasets/*.gz",
-    "river/datasets/*.zip",
-    "river/stream/*.zip",
-    "Cargo.toml",
-    "rust_src/**/*",
-]
+[tool.cibuildwheel.environment]
+PATH = "$HOME/.cargo/bin:$PATH"
+MACOSX_DEPLOYMENT_TARGET = "10.13"
+
+[tool.cibuildwheel.linux.environment]
+PATH = "$HOME/.cargo/bin:$PATH"
+
+[[tool.cibuildwheel.overrides]]
+select = "*-*linux_*"
+before-build = "curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain=none --profile=minimal -y && rustup show"
+
+[[tool.cibuildwheel.overrides]]
+select = ["*-macosx_*"]
+before-build = "rustup show"
+
+[[tool.cibuildwheel.overrides]]
+select = ["*-win_*", "*-win32"]
+before-build = "rustup show"
 
 [tool.pytest.ini_options]
 addopts = [
@@ -190,6 +128,9 @@ addopts = [
     "-ra",
     "-m not datasets and not slow",
     "--color=yes",
+]
+filterwarnings = [
+    "ignore:A single label was found in 'y_true' and 'y_pred':UserWarning:sklearn",
 ]
 doctest_optionflags = "NORMALIZE_WHITESPACE NUMBER ELLIPSIS"
 norecursedirs = [
@@ -221,6 +162,14 @@ select = [
     "UP",
     # isort
     "I",
+    # pep8-naming: class names (N801), function/method names (N802), and the
+    # cls/self convention on classmethods (N804). N803 (argument names) and
+    # N806 (local variable names) are deliberately left out — `X: pd.DataFrame`
+    # and `A_numpy = ...` are conventional in ML/scientific code and would
+    # produce hundreds of false positives.
+    "N801",
+    "N802",
+    "N804",
 ]
 ignore = ["E501"]
 fixable = ["ALL"]
@@ -252,6 +201,8 @@ module = [
     "gymnasium.*",
     "sympy.*",
     "polars.*",
+    "river._river_rust",
+    "river._river_rust.*",
 ]
 ignore_missing_imports = true
 
@@ -259,7 +210,6 @@ ignore_missing_imports = true
 # Disable strict mode for all non fully-typed modules
 module = [
     "river.metrics.*",
-    "river.utils.*",
     "river.stats.*",
     "river.optim.*",
     "river.datasets.*",
@@ -295,7 +245,6 @@ module = [
     "river.active.*",
     "river.neural_net.*",
     "river.test_estimators",
-    "river.dummy",
 ]
 # The strict option is global, the checks must be disabled one by one
 warn_unused_ignores = false
@@ -305,5 +254,4 @@ allow_any_generics = true
 allow_untyped_calls = true
 allow_incomplete_defs = true
 allow_untyped_defs = true
-implicit_reexport = true
 warn_return_any = false

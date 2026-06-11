@@ -1,11 +1,14 @@
 from __future__ import annotations
 
 import datetime as dt
+import inspect
 import itertools
 import time
 import typing
 
 from river import base, metrics, stream, utils
+from river.anomaly.base import AnomalyDetector, AnomalyFilter
+from river.compose.pipeline import Pipeline
 
 __all__ = ["progressive_val_score"]
 
@@ -25,20 +28,55 @@ def _progressive_validation(
     if not metric.works_with(model):
         raise ValueError(f"{metric.__class__.__name__} metric is not compatible with {model}")
 
-    # Determine if predict_one or predict_proba_one should be used in case of a classifier
-    if utils.inspect.isanomalydetector(model) or utils.inspect.isanomalyfilter(model):
-        pred_func = model.score_one
-    elif utils.inspect.isclassifier(model) and not metric.requires_labels:  # type: ignore
-        pred_func = model.predict_proba_one
-    else:
-        pred_func = model.predict_one
+    # Build predict/learn/update closures once — shared by both fast and general paths.
+    # Using closures avoids per-sample isinstance checks and branching.
 
-    preds = {}
+    # Predict closure: score_one + classify for anomaly filters, predict_proba_one or predict_one
+    if isinstance(model, AnomalyFilter):
+        _score = model.score_one
+        _classify = model.classify
+
+        def predict(x, **kwargs):
+            return _classify(_score(x, **kwargs))
+
+    elif isinstance(model, AnomalyDetector):
+        predict = model.score_one  # type: ignore[assignment]
+    elif isinstance(model, base.Classifier) and not metric.requires_labels:  # type: ignore
+        predict = model.predict_proba_one  # type: ignore[assignment]
+    else:
+        predict = model.predict_one  # type: ignore[assignment]
+
+    # Learn closure: supervised vs unsupervised dispatch
+    is_supervised = model._supervised
+    if is_supervised:
+        learn = model.learn_one
+    else:
+
+        def learn(x, _y=None, **kwargs):
+            model.learn_one(x, **kwargs)
+
+    # Metric update closure: uniform (x, y, y_pred) signature for all metric types.
+    metric_update: typing.Callable
+    if isinstance(metric, metrics.base.ClusteringMetric):
+        predict, metric_update = _build_clustering_closures(metric, model)
+    else:
+        _metric_update = metric.update
+
+        def metric_update(x, y, y_pred):  # type: ignore[no-redef]
+            _metric_update(y_true=y, y_pred=y_pred)
 
     # If we are dealing with an active learner, we need to check whether or not a label should be
     # used for training or not. We'll also record how many times labels were used.
-    active_learning = utils.inspect.isactivelearner(model)
+    from river.active.base import ActiveLearningClassifier
+
+    active_learning = isinstance(model, ActiveLearningClassifier)
     n_samples_learned = 0
+
+    # Check once whether the model's learn_one accepts a sample weight parameter.
+    _learn_params = inspect.signature(model.learn_one).parameters
+    _model_accepts_w = "w" in _learn_params or any(
+        p.kind == inspect.Parameter.VAR_KEYWORD for p in _learn_params.values()
+    )
 
     prev_checkpoint = None
     next_checkpoint = next(checkpoints, None)
@@ -64,32 +102,58 @@ def _progressive_validation(
 
         return state
 
-    for i, x, y, *kwargs in stream.simulate_qa(dataset, moment, delay, copy=True):
-        kwargs = kwargs[0] if kwargs else {}
+    # Fast path: no delay and no moment — the common case.
+    # Iterates the dataset directly, skipping simulate_qa and the preds dict.
+    if moment is None and delay is None and not active_learning:
+        extra: list
+        for x, y, *extra in dataset:
+            kwargs: dict = extra[0] if extra else {}
+            w = kwargs.pop("w", None)
+
+            y_pred = predict(x, **kwargs)
+            if y_pred is not None and y_pred != {}:
+                metric_update(x, y, y_pred)
+            if w is not None and _model_accepts_w:
+                learn(x, y, w=w, **kwargs)
+            else:
+                learn(x, y, **kwargs)
+
+            n_total_answers += 1
+            if n_total_answers == next_checkpoint:
+                yield report(y_pred=y_pred)
+                prev_checkpoint = next_checkpoint
+                next_checkpoint = next(checkpoints, None)
+        else:
+            if prev_checkpoint and n_total_answers != prev_checkpoint:
+                yield report(y_pred=None)
+        return
+
+    # General path: delayed labels or active learning — uses simulate_qa with preds dict.
+    preds = {}
+
+    for i, x, y, *extra in stream.simulate_qa(dataset, moment, delay, copy=True):
+        kwargs = extra[0] if extra else {}
+        w = kwargs.pop("w", None)
 
         # Case 1: no ground truth, just make a prediction
         if y is None:
-            y_pred = pred_func(x, **kwargs)
-            y_pred, ask_for_label = y_pred if active_learning else (y_pred, True)
-            if utils.inspect.isanomalyfilter(model):
-                y_pred = model.classify(y_pred)
-            preds[i] = y_pred, ask_for_label
+            y_pred = predict(x, **kwargs)
+            y_pred, ask_for_label = y_pred if active_learning else (y_pred, True)  # type: ignore[misc]
+            preds[i] = y_pred, ask_for_label, w
             continue
 
         # Case 2: there's a ground truth, model and metric can be updated
-        y_pred, use_label = preds.pop(i)
+        y_pred, use_label, sample_w = preds.pop(i)
 
-        # Update the metric
-        if y_pred != {} and y_pred is not None:
-            metric.update(y_true=y, y_pred=y_pred)
+        if y_pred is not None and y_pred != {}:
+            metric_update(x, y, y_pred)
 
-        # Update the model
         if use_label:
             n_samples_learned += 1
-            if model._supervised:
-                model.learn_one(x, y, **kwargs)
+            if sample_w is not None and _model_accepts_w:
+                learn(x, y, w=sample_w, **kwargs)
             else:
-                model.learn_one(x, **kwargs)
+                learn(x, y, **kwargs)
 
         # Yield current results
         n_total_answers += 1
@@ -124,7 +188,11 @@ def iter_progressive_val_score(
     Parameters
     ----------
     dataset
-        The stream of observations against which the model will be evaluated.
+        The stream of observations against which the model will be evaluated. Each element is
+        an `(x, y)` pair or an `(x, y, kwargs)` triple where `kwargs` is a `dict` of extra
+        parameters passed to `learn_one`. To supply per-sample weights, include a `"w"` key
+        in `kwargs`, e.g. `(x, y, {"w": 2.0})`. The weight is forwarded to `learn_one` for
+        models that accept a `w` parameter (e.g. `linear_model.LogisticRegression`).
     model
         The model to evaluate.
     metric
@@ -263,7 +331,11 @@ def progressive_val_score(
     Parameters
     ----------
     dataset
-        The stream of observations against which the model will be evaluated.
+        The stream of observations against which the model will be evaluated. Each element is
+        an `(x, y)` pair or an `(x, y, kwargs)` triple where `kwargs` is a `dict` of extra
+        parameters passed to `learn_one`. To supply per-sample weights, include a `"w"` key
+        in `kwargs`, e.g. `(x, y, {"w": 2.0})`. The weight is forwarded to `learn_one` for
+        models that accept a `w` parameter (e.g. `linear_model.LogisticRegression`).
     model
         The model to evaluate.
     metric
@@ -392,7 +464,9 @@ def progressive_val_score(
         measure_memory=show_memory,
     )
 
-    active_learning = utils.inspect.isactivelearner(model)
+    from river.active.base import ActiveLearningClassifier
+
+    active_learning = isinstance(model, ActiveLearningClassifier)
 
     for checkpoint in checkpoints:
         msg = f"[{checkpoint['Step']:,d}] {metric}"
@@ -407,3 +481,43 @@ def progressive_val_score(
         print(msg, **print_kwargs)
 
     return metric
+
+
+def _build_clustering_closures(metric, model):
+    """Build predict and metric-update closures for clustering evaluation.
+
+    Clustering metrics expect ``(x, y_pred, centers)`` rather than
+    ``(y_true, y_pred)``.  When the model is a pipeline the raw features
+    must be transformed through every step except the final clusterer so
+    that ``x`` and ``centers`` live in the same feature space.
+
+    Returns ``(predict, metric_update)`` where both closures share a single
+    transform pass for pipelines, avoiding redundant work.
+    """
+
+    if isinstance(model, Pipeline):
+        clusterer = model._last_step
+        _predict = clusterer.predict_one
+
+        # Stash the last transformed x so metric_update can reuse it.
+        _state = {}
+
+        def predict(x, **kwargs):
+            x_transformed, _ = model._transform_one(x)
+            _state["x"] = x_transformed
+            return _predict(x_transformed, **kwargs)
+
+        def metric_update(x, y, y_pred):
+            centers = getattr(clusterer, "centers", None)
+            if centers is not None:
+                metric.update(_state["x"], y_pred, centers)
+
+    else:
+        predict = model.predict_one  # type: ignore[assignment]
+
+        def metric_update(x, y, y_pred):
+            centers = getattr(model, "centers", None)
+            if centers is not None:
+                metric.update(x, y_pred, centers)
+
+    return predict, metric_update

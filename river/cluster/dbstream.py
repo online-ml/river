@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import collections
-import copy
 import math
 from abc import ABCMeta
 
@@ -179,116 +178,104 @@ class DBSTREAM(base.Clusterer):
     def _update(self, x):
         # Algorithm 1 of Michael Hahsler and Matthew Bolanos
         neighbor_clusters = self._find_fixed_radius_nn(x)
+        fading = self.fading_factor
+        t = self._time_stamp
 
-        if len(neighbor_clusters) < 1:
+        if not neighbor_clusters:
             # create new micro cluster
-            if len(self._micro_clusters) > 0:
-                self._micro_clusters[max(self._micro_clusters.keys()) + 1] = DBSTREAMMicroCluster(
-                    x=x, last_update=self._time_stamp, weight=1
-                )
-            else:
-                self._micro_clusters[0] = DBSTREAMMicroCluster(
-                    x=x, last_update=self._time_stamp, weight=1
-                )
+            new_id = (max(self._micro_clusters) + 1) if self._micro_clusters else 0
+            self._micro_clusters[new_id] = DBSTREAMMicroCluster(x=x, last_update=t, weight=1)
         else:
             # update existing micro clusters
             current_centers = {}
-            for i in neighbor_clusters.keys():
-                current_centers[i] = self._micro_clusters[i].center
-                self._micro_clusters[i].weight = (
-                    self._micro_clusters[i].weight
-                    * 2
-                    ** (
-                        -self.fading_factor
-                        * (self._time_stamp - self._micro_clusters[i].last_update)
-                    )
-                    + 1
-                )
+            neighbor_ids = list(neighbor_clusters)
+            for i in neighbor_ids:
+                mc = self._micro_clusters[i]
+                center = mc.center
+                current_centers[i] = center
 
-                # Update the center (i) with overlapping keys (j)
-                self._micro_clusters[i].center = {
-                    j: self._micro_clusters[i].center[j]
-                    + self._gaussian_neighborhood(x, self._micro_clusters[i].center)
-                    * (x[j] - self._micro_clusters[i].center[j])
-                    for j in self._micro_clusters[i].center.keys()
-                    if j in x
-                }
-                self._micro_clusters[i].last_update = self._time_stamp
+                # Fade the weight to the current time step, then add 1 for the new point.
+                mc.weight = mc.weight * 2 ** (-fading * (t - mc.last_update)) + 1
 
-                # update shared density
-                for j in neighbor_clusters.keys():
+                # Move the center towards x using a single Gaussian factor (same for all dims).
+                h = self._gaussian_neighborhood(x, center)
+                new_center = {j: c_j + h * (x[j] - c_j) for j, c_j in center.items() if j in x}
+                mc.center = new_center
+                mc.last_update = t
+
+                # Update shared density for every (i, j) pair with j > i.
+                # self.s[i] is created lazily on the first such j to keep the
+                # mapping free of empty rows.
+                s_i = self.s.get(i)
+                s_t_i = self.s_t.get(i) if s_i is not None else None
+                for j in neighbor_ids:
                     if j > i:
-                        try:
-                            self.s[i][j] = (
-                                self.s[i][j]
-                                * 2 ** (-self.fading_factor * (self._time_stamp - self.s_t[i][j]))
-                                + 1
-                            )
-                            self.s_t[i][j] = self._time_stamp
-                        except KeyError:
-                            try:
-                                self.s[i][j] = 1
-                                self.s_t[i][j] = self._time_stamp
-                            except KeyError:
-                                self.s[i] = {j: 1}
-                                self.s_t[i] = {j: self._time_stamp}
+                        if s_i is None:
+                            s_i = {}
+                            s_t_i = {}
+                            self.s[i] = s_i
+                            self.s_t[i] = s_t_i
+                        if j in s_i:
+                            s_i[j] = s_i[j] * 2 ** (-fading * (t - s_t_i[j])) + 1
+                        else:
+                            s_i[j] = 1
+                        s_t_i[j] = t
 
-            # prevent collapsing clusters
-            for i in neighbor_clusters.keys():
-                for j in neighbor_clusters.keys():
-                    if j > i:
-                        if (
-                            self._distance(
-                                self._micro_clusters[i].center,
-                                self._micro_clusters[j].center,
-                            )
-                            < self.clustering_threshold
-                        ):
-                            # revert centers of mc_i and mc_j to previous positions
-                            self._micro_clusters[i].center = current_centers[i]
-                            self._micro_clusters[j].center = current_centers[j]
+            # Prevent collapsing clusters: if any updated pair is now within the
+            # clustering threshold, revert both centers to their previous positions.
+            n = len(neighbor_ids)
+            for a in range(n):
+                i = neighbor_ids[a]
+                for b in range(a + 1, n):
+                    j = neighbor_ids[b]
+                    mc_i = self._micro_clusters[i]
+                    mc_j = self._micro_clusters[j]
+                    if self._distance(mc_i.center, mc_j.center) < self.clustering_threshold:
+                        mc_i.center = current_centers[i]
+                        mc_j.center = current_centers[j]
 
-        self._time_stamp += 1
+        self._time_stamp = t + 1
 
     def _cleanup(self):
         # Algorithm 2 of Michael Hahsler and Matthew Bolanos: Cleanup process to remove
-        # inactive clusters and shared density entries from memory
-        weight_weak = 2 ** (-self.fading_factor * self.cleanup_interval)
+        # inactive clusters and shared density entries from memory.
+        fading = self.fading_factor
+        t = self._time_stamp
+        weight_weak = 2 ** (-fading * self.cleanup_interval)
 
-        micro_clusters = copy.deepcopy(self._micro_clusters)
-        for i, micro_cluster_i in self._micro_clusters.items():
+        weak_ids = []
+        for i, mc in self._micro_clusters.items():
             try:
-                value = 2 ** (
-                    -self.fading_factor * (self._time_stamp - micro_cluster_i.last_update)
-                )
+                value = 2 ** (-fading * (t - mc.last_update))
             except OverflowError:
                 continue
+            if mc.weight * value < weight_weak:
+                weak_ids.append(i)
 
-            if micro_cluster_i.weight * value < weight_weak:
-                micro_clusters.pop(i)
-                self.s.pop(i, None)
-                self.s_t.pop(i, None)
-                # Since self.s and self.s_t always have the same keys and are arranged in ascending orders
-                for j in self.s:
-                    if j < i:
-                        self.s[j].pop(i, None)
-                        self.s_t[j].pop(i, None)
-                    else:
-                        break
+        for i in weak_ids:
+            del self._micro_clusters[i]
+            self.s.pop(i, None)
+            self.s_t.pop(i, None)
+            # self.s / self.s_t share keys and are inserted in ascending order, so
+            # we can stop scanning once j >= i.
+            for j in self.s:
+                if j < i:
+                    self.s[j].pop(i, None)
+                    self.s_t[j].pop(i, None)
+                else:
+                    break
 
-        # Update microclusters
-        self._micro_clusters = micro_clusters
-
-        for i in self.s.keys():
-            for j in self.s[i].keys():
+        threshold = self.intersection_factor * weight_weak
+        for i, s_i in self.s.items():
+            s_t_i = self.s_t[i]
+            for j, value in s_i.items():
                 try:
-                    value = 2 ** (-self.fading_factor * (self._time_stamp - self.s_t[i][j]))
+                    decay = 2 ** (-fading * (t - s_t_i[j]))
                 except OverflowError:
                     continue
-
-                if self.s[i][j] * value < self.intersection_factor * weight_weak:
-                    self.s[i][j] = 0
-                    self.s_t[i][j] = 0
+                if value * decay < threshold:
+                    s_i[j] = 0
+                    s_t_i[j] = 0
 
     def _generate_weighted_adjacency_matrix(self):
         # Algorithm 3 of Michael Hahsler and Matthew Bolanos: Reclustering using
@@ -330,6 +317,8 @@ class DBSTREAM(base.Clusterer):
         for index in labels.keys():
             if labels[index] is not None:
                 continue
+            if self._micro_clusters[index].weight < self.minimum_weight:
+                continue
             count += 1
             labels[index] = count
             # if it is not in list of alpha-connected micro-clusters, label and continue
@@ -357,29 +346,32 @@ class DBSTREAM(base.Clusterer):
         return labels
 
     def _generate_clusters_from_labels(self, cluster_labels):
-        # initiate the set for final clusters
-        clusters = {}
+        # Group micro clusters by label in one pass, preserving the input ordering.
+        by_label: dict[int, list[DBSTREAMMicroCluster]] = {}
+        for index, label in cluster_labels.items():
+            if label is None:
+                continue
+            by_label.setdefault(label, []).append(self._micro_clusters[index])
 
-        # generate set of clusters with the same label with the structure {j: micro_cluster_index}
-        for i in range(max(cluster_labels.values()) + 1):
-            j = 0
-            mcs_with_label_i = {}
-            for index, label in cluster_labels.items():
-                if label == i:
-                    mcs_with_label_i[j] = self._micro_clusters[index]
-                    j += 1
+        if not by_label:
+            return 0, {}
 
-            # generate a final macro-cluster from clusters with the same label using the
-            # merge function of DBStreamMicroCluster
-            macro_cluster = copy.deepcopy(mcs_with_label_i[0])
-            for m in range(1, len(mcs_with_label_i)):
-                macro_cluster.merge(mcs_with_label_i[m])
+        clusters: dict[int, DBSTREAMMicroCluster] = {}
+        for label in sorted(by_label):
+            members = by_label[label]
+            first = members[0]
+            # Build the macro cluster as a fresh DBSTREAMMicroCluster so the original
+            # micro cluster is not mutated by the subsequent merge calls.
+            macro_cluster = DBSTREAMMicroCluster(
+                x=dict(first.center),
+                last_update=first.last_update,
+                weight=first.weight,
+            )
+            for member in members[1:]:
+                macro_cluster.merge(member)
+            clusters[label] = macro_cluster
 
-            clusters[i] = macro_cluster
-
-        n_clusters = len(clusters)
-
-        return n_clusters, clusters
+        return len(clusters), clusters
 
     def _recluster(self):
         # Algorithm 3 of Michael Hahsler and Matthew Bolanos: Reclustering

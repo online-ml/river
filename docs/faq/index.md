@@ -39,7 +39,7 @@ The algorithms from `sklearn` that support incremental learning are mostly meant
 >>> from river import ensemble
 >>> import pickle
 
->>> model = ensemble.AdaptiveRandomForestClassifier()
+>>> model = ensemble.ARFClassifier()
 
 # save
 >>> with open('model.pkl', 'wb') as f:

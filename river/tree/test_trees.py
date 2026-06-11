@@ -85,7 +85,7 @@ def test_memory_usage_reg(dataset, model):
 def test_memory_usage_multitarget():
     dataset = get_regression_data()
 
-    model = tree.iSOUPTreeRegressor(
+    model = tree.ISOUPTreeRegressor(
         leaf_prediction="mean",
         max_size=0.5,
         memory_estimate_period=100,

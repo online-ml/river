@@ -308,6 +308,10 @@ class LeveragingBaggingClassifier(BaggingClassifier):
     >>> evaluate.progressive_val_score(dataset, model, metric)
     F1: 88.55%
 
+    References
+    ----------
+    [^1]: Bifet, A., Holmes, G., & Pfahringer, B. (2010). Leveraging Bagging for Evolving Data Streams. In Joint European conference on machine learning and knowledge discovery in databases (pp. 135-150). Springer, Berlin, Heidelberg.
+
     """
 
     _BAGGING_METHODS = ("bag", "me", "half", "wt", "subag")
@@ -341,8 +345,7 @@ class LeveragingBaggingClassifier(BaggingClassifier):
             self._bagging_fct = self._leveraging_subag
         else:
             raise ValueError(
-                f"Invalid bagging_method: {bagging_method}\n"
-                f"Valid options: {self._BAGGING_METHODS}"
+                f"Invalid bagging_method: {bagging_method}\nValid options: {self._BAGGING_METHODS}"
             )
 
     def _leveraging_bag(self, **kwargs):

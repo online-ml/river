@@ -10,7 +10,24 @@ if TYPE_CHECKING:
 from . import base
 
 
-class Estimator(base.Base, abc.ABC):
+class EstimatorMeta(abc.ABCMeta):
+    """Metaclass that makes isinstance() work transparently with pipelines.
+
+    When checking isinstance(pipeline, Classifier), this metaclass automatically
+    unwraps Pipeline-like objects by checking their _last_step attribute. This
+    means isinstance(scaler | log_reg, base.Classifier) returns True.
+
+    """
+
+    def __instancecheck__(cls, instance: object) -> bool:
+        if super().__instancecheck__(instance):
+            return True
+        if hasattr(instance, "_last_step"):
+            return isinstance(instance._last_step, cls)
+        return False
+
+
+class Estimator(base.Base, abc.ABC, metaclass=EstimatorMeta):
     """An estimator."""
 
     @property
@@ -76,7 +93,7 @@ class Estimator(base.Base, abc.ABC):
         return tags
 
     @classmethod
-    def _unit_test_params(self) -> Iterator[dict[str, Any]]:
+    def _unit_test_params(cls) -> Iterator[dict[str, Any]]:
         """Indicates which parameters to use during unit testing.
 
         Most estimators have a default value for each of their parameters. However, in some cases,

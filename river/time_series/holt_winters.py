@@ -17,6 +17,9 @@ class AdditiveLevel(Component):
         super().__init__([], maxlen=2)
         self.alpha = alpha
 
+    def __reduce__(self):
+        return self.__class__, (self.alpha,), None, iter(self)
+
     def update(self, y, trend, season):
         self.append(
             self.alpha * (y - (season[-season.seasonality] if season else 0))
@@ -28,6 +31,9 @@ class MultiplicativeLevel(Component):
     def __init__(self, alpha):
         super().__init__([], maxlen=2)
         self.alpha = alpha
+
+    def __reduce__(self):
+        return self.__class__, (self.alpha,), None, iter(self)
 
     def update(self, y, trend, season):
         self.append(
@@ -41,6 +47,9 @@ class Trend(Component):
         super().__init__([], maxlen=2)
         self.beta = beta
 
+    def __reduce__(self):
+        return self.__class__, (self.beta,), None, iter(self)
+
     def update(self, y, level):
         self.append(self.beta * (level[-1] - level[-2]) + (1 - self.beta) * self[-1])
 
@@ -50,6 +59,9 @@ class AdditiveSeason(Component):
         super().__init__([], maxlen=seasonality + 1)
         self.gamma = gamma
         self.seasonality = seasonality
+
+    def __reduce__(self):
+        return self.__class__, (self.gamma, self.seasonality), None, iter(self)
 
     def update(self, y, level, trend):
         self.append(
@@ -62,6 +74,9 @@ class MultiplicativeSeason(Component):
         super().__init__([], maxlen=seasonality + 1)
         self.gamma = gamma
         self.seasonality = seasonality
+
+    def __reduce__(self):
+        return self.__class__, (self.gamma, self.seasonality), None, iter(self)
 
     def update(self, y, level, trend):
         self.append(
@@ -109,6 +124,7 @@ class HoltWinters(time_series.base.Forecaster):
     --------
 
     >>> from river import datasets
+    >>> from river import evaluate
     >>> from river import metrics
     >>> from river import time_series
 
@@ -124,7 +140,7 @@ class HoltWinters(time_series.base.Forecaster):
 
     >>> metric = metrics.MAE()
 
-    >>> time_series.evaluate(
+    >>> evaluate.evaluate(
     ...     dataset,
     ...     model,
     ...     metric,
@@ -150,6 +166,10 @@ class HoltWinters(time_series.base.Forecaster):
     [^3]: [What is Exponential Smoothing? — Engineering statistics handbook](https://www.itl.nist.gov/div898/handbook/pmc/section4/pmc43.htm)
 
     """
+
+    @classmethod
+    def _unit_test_params(cls):
+        yield {"alpha": 0.4}
 
     def __init__(
         self,
