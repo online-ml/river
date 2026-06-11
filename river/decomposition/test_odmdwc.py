@@ -101,9 +101,9 @@ def test_dmdwc_variations() -> None:
     assert np.allclose(eig_b, true_eigs[-1], atol=atol)
     # Rolling variants: numerical precision limits prevent exact eigenvalue
     # recovery on long time-varying sequences (see docstring). Check finite.
-    eig_window = get_ct_eigs(odmdc_window.A)
+    eig_window = get_ct_eigs(odmdc_window.obj.A)
     assert np.isfinite(eig_window).all()
-    eig_b_window = get_ct_eigs(odmdc_b_window.A)
+    eig_b_window = get_ct_eigs(odmdc_b_window.obj.A)
     assert np.isfinite(eig_b_window).all()
 
 

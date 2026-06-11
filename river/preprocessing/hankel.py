@@ -15,12 +15,19 @@ class Hankelizer(Transformer):
 
     Convert a time series into a time delay embedded Hankel vectors.
 
-    Args:
-        w: The number of data snapshots to preserve
-        return_partial: Whether to return partial Hankel matrices when the
-            window is not full. Default "copy" fills missing with copies.
+    Parameters
+    ----------
+    w
+        The number of data snapshots to preserve.
+    return_partial
+        Whether to return partial Hankel matrices when the window is not full.
+        Default ``"copy"`` fills missing entries with copies of the most recent
+        snapshot; ``True`` fills missing entries with NaN; ``False`` raises
+        until the window is full.
 
-    Examples:
+    Examples
+    --------
+
     >>> h = Hankelizer(w=3)
     >>> h.learn_one({"a": 1, "b": 2})
     >>> h.transform_one({"a": 1, "b": 2})
@@ -38,7 +45,9 @@ class Hankelizer(Transformer):
     >>> h.transform_one({"a": 1, "b": 2})
     {'a_0': nan, 'b_0': nan, 'a_1': nan, 'b_1': nan, 'a_2': 1, 'b_2': 2}
 
-    Actually, transform_one does not care about the data as the learn should precede.
+    ``transform_one`` does not care about the data passed in, as ``learn_one``
+    should precede.
+
     >>> h.learn_one({"a": 3, "b": 4})
     >>> h.transform_one({"a": 5, "b": 6})
     {'a_0': nan, 'b_0': nan, 'a_1': 1, 'b_1': 2, 'a_2': 3, 'b_2': 4}
@@ -46,11 +55,14 @@ class Hankelizer(Transformer):
     deque([{'a': 1, 'b': 2}, {'a': 3, 'b': 4}], maxlen=3)
 
     Transform and learn in one go.
+
     >>> h.learn_transform_one({"a": 5, "b": 6})
     {'a_0': 1, 'b_0': 2, 'a_1': 3, 'b_1': 4, 'a_2': 5, 'b_2': 6}
 
-    Todo:
-        - [ ] Find out how to hankelize u while staying aligned with pipeline
+    Notes
+    -----
+    Find out how to hankelize ``u`` while staying aligned with the pipeline.
+
     """
 
     def __init__(self, w: int = 2, return_partial: bool | Literal["copy"] = "copy"):
