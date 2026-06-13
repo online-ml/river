@@ -258,7 +258,7 @@ impl VectorDict {
             // Common case (`VectorDict({...})`) — check for plain dict first to skip
             // the failed `VectorDict` downcast and a borrow.
             Some(d) => {
-                if let Ok(d) = d.downcast::<PyDict>() {
+                if let Ok(d) = d.cast::<PyDict>() {
                     if copy {
                         if mask.is_none() {
                             d.copy()?
@@ -278,7 +278,7 @@ impl VectorDict {
                     } else {
                         d.clone()
                     }
-                } else if let Ok(vd) = d.downcast::<VectorDict>() {
+                } else if let Ok(vd) = d.cast::<VectorDict>() {
                     let inner = vd.borrow();
                     if copy {
                         let dict = inner.to_dict_internal(py, true)?;
@@ -538,7 +538,7 @@ impl VectorDict {
             let mut keep: Vec<(Bound<'py, PyAny>, Bound<'py, PyAny>)> = Vec::new();
             loop {
                 let pair = data.as_any().call_method0("popitem")?;
-                let tup = pair.downcast::<PyTuple>()?;
+                let tup = pair.cast::<PyTuple>()?;
                 let k = tup.get_item(0)?;
                 let v = tup.get_item(1)?;
                 if mask.contains(&k)? {
@@ -632,12 +632,12 @@ impl VectorDict {
 
     fn __eq__<'py>(&self, py: Python<'py>, right: Bound<'py, PyAny>) -> PyResult<Py<PyAny>> {
         let left_dict = self.to_dict_internal(py, false)?;
-        if let Ok(other_vd) = right.downcast::<VectorDict>() {
+        if let Ok(other_vd) = right.cast::<VectorDict>() {
             let inner = other_vd.borrow();
             let other_dict = inner.to_dict_internal(py, false)?;
             return Ok(left_dict.as_any().eq(other_dict)?.into_py_any(py)?);
         }
-        if right.downcast::<PyDict>().is_ok() {
+        if right.cast::<PyDict>().is_ok() {
             return Ok(left_dict.as_any().eq(&right)?.into_py_any(py)?);
         }
         Ok(py.NotImplemented())
@@ -803,7 +803,7 @@ impl VectorDict {
         py: Python<'py>,
         right: Bound<'py, PyAny>,
     ) -> PyResult<Bound<'py, PyAny>> {
-        let other_vd = match right.downcast::<VectorDict>() {
+        let other_vd = match right.cast::<VectorDict>() {
             Ok(o) => o,
             Err(_) => return Ok(py.NotImplemented().bind(py).clone()),
         };
@@ -836,7 +836,7 @@ impl VectorDict {
         other: Bound<'py, PyAny>,
         scalar: Bound<'py, PyAny>,
     ) -> PyResult<Py<VectorDict>> {
-        if let Ok(other_vd) = other.downcast::<VectorDict>() {
+        if let Ok(other_vd) = other.cast::<VectorDict>() {
             let inner = slf.borrow();
             let other_inner = other_vd.borrow();
             if inner.is_simple() && other_inner.is_simple() {
@@ -886,7 +886,7 @@ impl VectorDict {
         other: Bound<'py, PyAny>,
         scalar: Bound<'py, PyAny>,
     ) -> PyResult<Py<VectorDict>> {
-        if let Ok(other_vd) = other.downcast::<VectorDict>() {
+        if let Ok(other_vd) = other.cast::<VectorDict>() {
             let inner = slf.borrow();
             let other_inner = other_vd.borrow();
             if inner.is_simple() && other_inner.is_simple() {
@@ -1049,9 +1049,9 @@ impl VectorDict {
         py: Python<'py>,
         other: Bound<'py, PyAny>,
     ) -> PyResult<f64> {
-        let other_dict_ptr = if let Ok(vd) = other.downcast::<VectorDict>() {
+        let other_dict_ptr = if let Ok(vd) = other.cast::<VectorDict>() {
             vd.borrow().data.clone_ref(py)
-        } else if let Ok(d) = other.downcast::<PyDict>() {
+        } else if let Ok(d) = other.cast::<PyDict>() {
             d.clone().unbind()
         } else {
             return Err(PyTypeError::new_err(format!(
@@ -1265,7 +1265,7 @@ fn binop_add<'py>(
     right: &Bound<'py, PyAny>,
     _reverse: bool,
 ) -> PyResult<Py<VectorDict>> {
-    if let Ok(right_vd) = right.downcast::<VectorDict>() {
+    if let Ok(right_vd) = right.cast::<VectorDict>() {
         let right_inner = right_vd.borrow();
         return Py::new(
             py,
@@ -1319,7 +1319,7 @@ fn add_dict_dict<'py>(
 }
 
 fn iadd<'py>(py: Python<'py>, inner: &VectorDict, other: &Bound<'py, PyAny>) -> PyResult<()> {
-    if let Ok(other_vd) = other.downcast::<VectorDict>() {
+    if let Ok(other_vd) = other.cast::<VectorDict>() {
         let other_inner = other_vd.borrow();
         let self_data = inner.data.bind(py);
         let other_data = other_inner.data.bind(py);
@@ -1379,7 +1379,7 @@ fn binop_sub<'py>(
     other: &Bound<'py, PyAny>,
     reverse: bool,
 ) -> PyResult<Py<VectorDict>> {
-    if let Ok(right_vd) = other.downcast::<VectorDict>() {
+    if let Ok(right_vd) = other.cast::<VectorDict>() {
         // Both VectorDicts. `reverse` only happens if the LHS isn't a VectorDict.
         let right_inner = right_vd.borrow();
         let (l, r) = if reverse {
@@ -1435,7 +1435,7 @@ fn sub_dict_dict<'py>(
 }
 
 fn isub<'py>(py: Python<'py>, inner: &VectorDict, other: &Bound<'py, PyAny>) -> PyResult<()> {
-    if let Ok(other_vd) = other.downcast::<VectorDict>() {
+    if let Ok(other_vd) = other.cast::<VectorDict>() {
         let other_inner = other_vd.borrow();
         if inner.is_simple() && other_inner.is_simple() {
             let self_data = inner.data.bind(py);
@@ -1490,7 +1490,7 @@ fn binop_mul<'py>(
     left: &VectorDict,
     other: &Bound<'py, PyAny>,
 ) -> PyResult<Py<VectorDict>> {
-    if let Ok(other_vd) = other.downcast::<VectorDict>() {
+    if let Ok(other_vd) = other.cast::<VectorDict>() {
         let other_inner = other_vd.borrow();
         return Py::new(
             py,
@@ -1555,7 +1555,7 @@ fn mul_dict_dict<'py>(
 }
 
 fn imul<'py>(py: Python<'py>, inner: &VectorDict, other: &Bound<'py, PyAny>) -> PyResult<()> {
-    if let Ok(other_vd) = other.downcast::<VectorDict>() {
+    if let Ok(other_vd) = other.cast::<VectorDict>() {
         let other_inner = other_vd.borrow();
         if inner.is_simple() && other_inner.is_simple() {
             let self_data = inner.data.bind(py);
@@ -1628,7 +1628,7 @@ fn binop_div<'py>(
     other: &Bound<'py, PyAny>,
     reverse: bool,
 ) -> PyResult<Py<VectorDict>> {
-    if let Ok(other_vd) = other.downcast::<VectorDict>() {
+    if let Ok(other_vd) = other.cast::<VectorDict>() {
         let other_inner = other_vd.borrow();
         let (l, r) = if reverse {
             (&*other_inner, left)
@@ -1702,7 +1702,7 @@ fn div_dict_dict<'py>(
 }
 
 fn idiv<'py>(py: Python<'py>, inner: &VectorDict, other: &Bound<'py, PyAny>) -> PyResult<()> {
-    if let Ok(other_vd) = other.downcast::<VectorDict>() {
+    if let Ok(other_vd) = other.cast::<VectorDict>() {
         let other_inner = other_vd.borrow();
         if inner.is_simple() && other_inner.is_simple() {
             let self_data = inner.data.bind(py);
@@ -1827,7 +1827,7 @@ fn per_element_min_max<'py>(
     want_min: bool,
 ) -> PyResult<Py<VectorDict>> {
     let res = PyDict::new(py);
-    if let Ok(other_vd) = other.downcast::<VectorDict>() {
+    if let Ok(other_vd) = other.cast::<VectorDict>() {
         let right = other_vd.borrow();
         if left.is_simple() && right.is_simple() {
             let zero = 0i64.into_bound_py_any(py)?;
@@ -1944,8 +1944,8 @@ pub fn euclidean_distance_tuple<'py>(
 ) -> PyResult<f64> {
     let da = a.get_item(0)?;
     let db = b.get_item(0)?;
-    let da = da.downcast::<PyDict>()?;
-    let db = db.downcast::<PyDict>()?;
+    let da = da.cast::<PyDict>()?;
+    let db = db.cast::<PyDict>()?;
     euclidean_distance_dict_dict(py, da, db)
 }
 
@@ -1959,7 +1959,7 @@ pub fn lazy_search_euclidean<'py>(
     n_neighbors: i32,
 ) -> PyResult<(Py<PyAny>, Py<PyAny>)> {
     let qx = query.get_item(0)?;
-    let qx = qx.downcast::<PyDict>()?;
+    let qx = qx.cast::<PyDict>()?;
     let k = n_neighbors.max(0) as usize;
 
     // The Cython path uses the C-level `_heapify_max` / `_heapreplace_max` from
@@ -1974,9 +1974,9 @@ pub fn lazy_search_euclidean<'py>(
     for entry_res in iter {
         let entry = entry_res?;
         let item_tuple = entry.get_item(0)?;
-        let item_tuple = item_tuple.downcast::<PyTuple>()?;
+        let item_tuple = item_tuple.cast::<PyTuple>()?;
         let px = item_tuple.get_item(0)?;
-        let px = px.downcast::<PyDict>()?;
+        let px = px.cast::<PyDict>()?;
         let dist_sq = squared_euclid(py, qx, px)?;
         let neg = -dist_sq;
         let triple = PyTuple::new(py, [

@@ -41,10 +41,10 @@ pub fn log_sum_2_exp(a: f64, b: f64) -> f64 {
 /// check; this saves a handful of ns per value inside the hot loops.
 #[inline]
 fn as_f64(v: &Bound<'_, PyAny>) -> PyResult<f64> {
-    if let Ok(f) = v.downcast::<PyFloat>() {
+    if let Ok(f) = v.cast::<PyFloat>() {
         return Ok(f.value());
     }
-    if let Ok(i) = v.downcast::<PyInt>() {
+    if let Ok(i) = v.cast::<PyInt>() {
         return i.extract::<f64>();
     }
     v.extract::<f64>()
@@ -213,11 +213,11 @@ fn update_downwards_classifier_inner<'py>(
     } else {
         let range_min = node
             .getattr(intern!(py, "memory_range_min"))?
-            .downcast_into::<PyDict>()
+            .cast_into::<PyDict>()
             .map_err(|e| PyValueError::new_err(e.to_string()))?;
         let range_max = node
             .getattr(intern!(py, "memory_range_max"))?
-            .downcast_into::<PyDict>()
+            .cast_into::<PyDict>()
             .map_err(|e| PyValueError::new_err(e.to_string()))?;
         update_ranges_inner(&range_min, &range_max, x)?;
     }
@@ -227,7 +227,7 @@ fn update_downwards_classifier_inner<'py>(
 
     let counts = node
         .getattr(counts_attr)?
-        .downcast_into::<PyList>()
+        .cast_into::<PyList>()
         .map_err(|e| PyValueError::new_err(e.to_string()))?;
     let y_idx_usize = y_idx as usize;
     let len = counts.len();
@@ -283,11 +283,11 @@ fn update_downwards_regressor_inner<'py>(
     } else {
         let range_min = node
             .getattr(intern!(py, "memory_range_min"))?
-            .downcast_into::<PyDict>()
+            .cast_into::<PyDict>()
             .map_err(|e| PyValueError::new_err(e.to_string()))?;
         let range_max = node
             .getattr(intern!(py, "memory_range_max"))?
-            .downcast_into::<PyDict>()
+            .cast_into::<PyDict>()
             .map_err(|e| PyValueError::new_err(e.to_string()))?;
         update_ranges_inner(&range_min, &range_max, x)?;
     }
@@ -403,7 +403,7 @@ pub fn go_downwards_classifier<'py>(
         if !do_split_check {
             let counts = current
                 .getattr(counts_attr)?
-                .downcast_into::<PyList>()
+                .cast_into::<PyList>()
                 .map_err(|e| PyValueError::new_err(e.to_string()))?;
             let n_samples_here: i64 = current.getattr(n_samples_attr)?.extract()?;
             let count_val: i64 = if (y_idx as usize) < counts.len() {
@@ -419,11 +419,11 @@ pub fn go_downwards_classifier<'py>(
         if do_split_check && !(max_nodes >= 0 && (n_nodes + nodes_added) >= max_nodes) {
             let range_min = current
                 .getattr(memory_range_min_attr)?
-                .downcast_into::<PyDict>()
+                .cast_into::<PyDict>()
                 .map_err(|e| PyValueError::new_err(e.to_string()))?;
             let range_max = current
                 .getattr(memory_range_max_attr)?
-                .downcast_into::<PyDict>()
+                .cast_into::<PyDict>()
                 .map_err(|e| PyValueError::new_err(e.to_string()))?;
             // Cheap sum-only pass; the extensions dict is built lazily only
             // if we end up splitting (the common case is to descend).
@@ -635,11 +635,11 @@ pub fn go_downwards_regressor<'py>(
         if !capacity_reached {
             let range_min = current
                 .getattr(memory_range_min_attr)?
-                .downcast_into::<PyDict>()
+                .cast_into::<PyDict>()
                 .map_err(|e| PyValueError::new_err(e.to_string()))?;
             let range_max = current
                 .getattr(memory_range_max_attr)?
-                .downcast_into::<PyDict>()
+                .cast_into::<PyDict>()
                 .map_err(|e| PyValueError::new_err(e.to_string()))?;
             // Sum-only pass; extensions dict is built lazily if we split.
             let sum = range_extension_into(&range_min, &range_max, &x, None)?;
@@ -804,7 +804,7 @@ pub fn predict_proba_upward<'py>(
     let mut current = leaf;
     let counts = current
         .getattr(counts_attr)?
-        .downcast_into::<PyList>()
+        .cast_into::<PyList>()
         .map_err(|e| PyValueError::new_err(e.to_string()))?;
     let n_samples: i64 = current.getattr(n_samples_attr)?.extract()?;
     let denom = n_samples as f64 + dirichlet * n_classes as f64;
@@ -835,7 +835,7 @@ pub fn predict_proba_upward<'py>(
 
         let counts = current
             .getattr(counts_attr)?
-            .downcast_into::<PyList>()
+            .cast_into::<PyList>()
             .map_err(|e| PyValueError::new_err(e.to_string()))?;
         let n_samples: i64 = current.getattr(n_samples_attr)?.extract()?;
         let denom = n_samples as f64 + dirichlet * n_classes as f64;
@@ -961,7 +961,7 @@ pub fn predict_proba_classifier<'py>(
         let n_samples_attr = intern!(py, "n_samples");
         let counts = leaf
             .getattr(counts_attr)?
-            .downcast_into::<PyList>()
+            .cast_into::<PyList>()
             .map_err(|e| PyValueError::new_err(e.to_string()))?;
         let n_samples: i64 = leaf.getattr(n_samples_attr)?.extract()?;
         return predict_scores(py, &counts, counts.len(), n_classes, dirichlet, n_samples);
