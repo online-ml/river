@@ -27,7 +27,7 @@ jobs:
         timeout-minutes: 720
         env:
           CIBW_BUILD: "cp${{ matrix.python-version }}-${{ matrix.linux_tag }}_*"
-          CIBW_ARCHS_LINUX: "x86_64 aarch64"
+          CIBW_ARCHS_LINUX: "x86_64 aarch64 ppc64le"
       - uses: actions/upload-artifact@v5
         with:
           name: cibw-wheels-${{ matrix.linux_tag }}-${{ matrix.python-version }}-${{ strategy.job-index }}
