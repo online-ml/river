@@ -2860,7 +2860,7 @@ docs = [
 [package.metadata]
 requires-dist = [
     { name = "altair", specifier = ">=5.0.0" },
-    { name = "narwhals", specifier = ">=2.18.1" },
+    { name = "narwhals", specifier = ">=2.0.0" },
     { name = "numpy", specifier = ">=2.3.4,<3" },
     { name = "pandas", marker = "extra == 'pandas'", specifier = ">=2.2,<3" },
     { name = "scipy", specifier = ">=1.16,<2" },
