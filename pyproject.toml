@@ -10,6 +10,7 @@ dependencies = [
     "scipy>=1.16,<2",
     "numpy>=2.3.4,<3",
     "altair>=5.0.0",
+    "narwhals>=2.18.1",
 ]
 
 [project.optional-dependencies]

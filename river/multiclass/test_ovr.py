@@ -39,7 +39,7 @@ def test_online_batch_consistent():
     X = pd.read_csv(dataset.path)
     Y = X.pop("category")
 
-    for i, (x, y) in enumerate(stream.iter_pandas(X, Y)):
+    for i, (x, y) in enumerate(stream.iter_frame(X, Y)):
         y_pred = online.predict_one(x)
         online.learn_one(x, y)
 

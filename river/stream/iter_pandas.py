@@ -1,8 +1,11 @@
 from __future__ import annotations
 
 import typing
+import warnings
 
-from river import base, stream, utils
+import narwhals.stable.v2 as nw
+
+from river import base, stream
 
 if typing.TYPE_CHECKING:
     import pandas as pd
@@ -12,6 +15,10 @@ def iter_pandas(
     X: pd.DataFrame, y: pd.Series | pd.DataFrame | None = None, **kwargs
 ) -> base.typing.Stream:
     """Iterates over the rows of a `pandas.DataFrame`.
+
+    .. deprecated::
+        Use `stream.iter_frame` instead, which works with any eager dataframe (pandas, polars,
+        PyArrow, ...). `stream.iter_pandas` will be removed in a future release.
 
     Parameters
     ----------
@@ -43,9 +50,18 @@ def iter_pandas(
     {'x1': 4, 'x2': 'blue'} True
 
     """
-    pd = utils.pandas.import_pandas()
-    kwargs["feature_names"] = X.columns
-    if isinstance(y, pd.DataFrame):
-        kwargs["target_names"] = y.columns
+    warnings.warn(
+        "`stream.iter_pandas` is deprecated; use `stream.iter_frame` instead. "
+        "It will be removed in a future release.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
 
-    yield from stream.iter_array(X=X.to_numpy(), y=y if y is None else y.to_numpy(), **kwargs)
+    if not nw.dependencies.is_pandas_dataframe(X):
+        raise TypeError(f"Expected a pandas DataFrame, got {type(X)}")
+    if y is not None and not (
+        nw.dependencies.is_pandas_dataframe(y) or nw.dependencies.is_pandas_series(y)
+    ):
+        raise TypeError(f"Expected a pandas DataFrame or Series, got {type(y)}")
+
+    yield from stream.iter_frame(X, y, **kwargs)
