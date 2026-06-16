@@ -55,6 +55,7 @@ dev = [
     "jupyter>=1.0.0",
     "mike @ git+https://github.com/squidfunk/mike.git",
     "polars>=1.1.0",
+    "pyarrow>=11.0.0",
 ]
 compat = [
     "scikit-learn>=1.5.1,<2",
@@ -202,6 +203,7 @@ module = [
     "gymnasium.*",
     "sympy.*",
     "polars.*",
+    "pyarrow.*",
     "river._river_rust",
     "river._river_rust.*",
 ]

@@ -12,7 +12,7 @@ if typing.TYPE_CHECKING:
 
 
 def iter_polars(
-    X: pl.DataFrame, y: pl.Series | pl.DataFrame | None = None, **kwargs
+    X: pl.DataFrame, y: pl.Series | pl.DataFrame | None = None, **kwargs: typing.Any
 ) -> base.typing.Stream:
     """Iterates over the rows of a `polars.DataFrame`.
 
@@ -27,7 +27,8 @@ def iter_polars(
     y
         A series or a dataframe with one column per target.
     kwargs
-        Extra keyword arguments are passed to the underlying call to `stream.iter_array`.
+        Extra keyword arguments are passed to the underlying call to `stream.iter_frame`
+        (e.g. `shuffle` and `seed`).
 
     Examples
     --------
