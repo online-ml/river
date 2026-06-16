@@ -10,6 +10,7 @@ if typing.TYPE_CHECKING:
     from collections.abc import Callable
 
     from narwhals.stable.v2.typing import IntoDataFrame, IntoSeries
+
     from river.base.typing import FeatureName
 
     Data = dict[str, list[typing.Any]]
@@ -83,7 +84,7 @@ def test_no_target(backend: Backend) -> None:
     """When `y` is omitted the target is `None` for every row."""
     rows = stream.iter_frame(backend.frame(FEATURES))
     assert [(xi, yi) for xi, yi in rows] == [(xi, None) for xi, _ in EXPECTED]
-    
+
 
 def test_multioutput_target(backend: Backend) -> None:
     """A dataframe target yields one dict per row with a column per output."""
@@ -126,7 +127,7 @@ def test_different_seeds_give_different_orders(backend: Backend) -> None:
 
 def test_backends_agree() -> None:
     """All installed backends produce byte-for-byte identical streams."""
-    streams: list[typing.List[typing.Tuple[dict[FeatureName, typing.Any], typing.Any]]] = []
+    streams: list[list[tuple[dict[FeatureName, typing.Any], typing.Any]]] = []
     for backend_builder in BACKENDS.values():
         backend = backend_builder()
         streams.append([*stream.iter_frame(backend.frame(FEATURES), backend.series(TARGET))])
