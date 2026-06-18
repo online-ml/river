@@ -49,7 +49,7 @@ class BayesianLinearRegression(base.Regressor):
 
     >>> x, _ = next(iter(dataset))
     >>> model.predict_one(x)
-    43.852...
+    43.855...
 
     >>> model.predict_one(x, with_dist=True)
     𝒩(μ=43.85..., σ=1.00...)
@@ -130,7 +130,7 @@ class BayesianLinearRegression(base.Regressor):
     >>> evaluate.progressive_val_score(
     ...     with_missing(datasets.TrumpApproval()), model, metric
     ... )
-    MAE: 0.775...
+    MAE: 0.774...
 
     References
     ----------
@@ -145,93 +145,86 @@ class BayesianLinearRegression(base.Regressor):
         self.beta = beta
         self.smoothing = smoothing
         self._idx: dict[base.typing.FeatureName, int] = {}
-        self._m_arr = np.zeros(0, dtype=np.float64)
+        # We track:
+        # - `_ss_arr`: the posterior precision matrix, updated by exact rank-1
+        #   additions and so identical across BLAS implementations.
+        # - `_ss_inv_arr`: the posterior covariance, maintained in-place via a
+        #   Sherman-Morrison rank-1 update (one BLAS dger per `learn_one`).
+        # - `_eta_arr = beta * sum_i(y_i * x_i)`: the natural mean, also an
+        #   exact accumulator.
+        # The posterior mean is recovered from these on demand as
+        # `_ss_inv_arr @ _eta_arr` and cached in `_m_arr` until the next
+        # `learn_one`. Recomputing `m` from the natural parameters rather than
+        # propagating it through `m_new = ss_inv @ (ss_old @ m_old + bx*y)`
+        # keeps cross-platform drift roughly linear in BLAS rounding rather
+        # than compounding multiplicatively.
         self._ss_arr = np.zeros((0, 0), dtype=np.float64)
         self._ss_inv_arr = np.zeros((0, 0), dtype=np.float64, order="F")
+        self._eta_arr = np.zeros(0, dtype=np.float64)
+        self._m_arr = np.zeros(0, dtype=np.float64)
+        self._m_dirty = False
         self._cap = 0
         self._n = 1
 
     def _grow(self, needed: int) -> None:
         new_cap = max(needed, max(8, self._cap * 2))
         diag = 1.0 / self.alpha
-        new_m = np.zeros(new_cap, dtype=np.float64)
         new_ss = np.eye(new_cap, dtype=np.float64) * diag
         new_ss_inv = np.eye(new_cap, dtype=np.float64, order="F") * diag
+        new_eta = np.zeros(new_cap, dtype=np.float64)
         if self._cap:
-            new_m[: self._cap] = self._m_arr
             new_ss[: self._cap, : self._cap] = self._ss_arr
             new_ss_inv[: self._cap, : self._cap] = self._ss_inv_arr
-        self._m_arr = new_m
+            new_eta[: self._cap] = self._eta_arr
         self._ss_arr = new_ss
         self._ss_inv_arr = new_ss_inv
+        self._eta_arr = new_eta
         self._cap = new_cap
 
-    def _ensure_features(self, features) -> np.ndarray:
+    def _ensure_features(self, features) -> None:
         idx = self._idx
-        ids = []
         for f in features:
-            i = idx.get(f)
-            if i is None:
-                i = len(idx)
-                idx[f] = i
-            ids.append(i)
+            if f not in idx:
+                idx[f] = len(idx)
         if len(idx) > self._cap:
             self._grow(len(idx))
-        return np.asarray(ids, dtype=np.intp)
 
-    def _gather_ss_inv(self, features) -> np.ndarray:
-        """Build the ss_inv submatrix for `features` without mutating state.
-
-        Features not yet in the model get a diagonal of 1/alpha and zeros off-diagonal,
-        matching the original dict-default behavior.
-        """
-        diag = 1.0 / self.alpha
-        n = len(features)
-        ids = np.fromiter(
-            (self._idx.get(f, -1) for f in features),
-            dtype=np.intp,
-            count=n,
-        )
-        out = np.eye(n, dtype=np.float64, order="F") * diag
-        known_mask = ids >= 0
-        if known_mask.any():
-            local = np.where(known_mask)[0]
-            global_ = ids[local]
-            out[np.ix_(local, local)] = self._ss_inv_arr[np.ix_(global_, global_)]
-        return out
+    def _ensure_m(self) -> None:
+        if not self._m_dirty:
+            return
+        if self._idx:
+            self._m_arr = self._ss_inv_arr @ self._eta_arr
+        self._m_dirty = False
 
     def learn_one(self, x, y):
-        # Update the full-cap state, treating features absent from `x` as 0.
-        # Operating on submatrices via np.ix_(ids, ids) breaks the invariant
-        # `_ss_inv_arr = inv(_ss_arr)` once different feature subsets are touched
-        # across calls (the submatrix of an inverse ≠ inverse of the submatrix),
-        # which causes coefficients to diverge under emerging/disappearing
-        # features.
+        # Treat features absent from `x` as observed values of 0. Updating the
+        # full-cap state (rather than just the touched submatrix via np.ix_)
+        # keeps `_ss_inv_arr = inv(_ss_arr)` consistent across
+        # emerging/disappearing feature subsets.
         self._ensure_features(x.keys())
         x_arr = np.zeros(self._cap, dtype=np.float64)
         for f, v in x.items():
             x_arr[self._idx[f]] = v
 
         bx = self.beta * x_arr
-        ss_arr = self._ss_arr
-        ss_inv_arr = self._ss_inv_arr
 
         if self.smoothing is None:
-            utils.math.sherman_morrison(A=ss_inv_arr, u=bx, v=x_arr)
-            # Bishop equation 3.50
-            self._m_arr = ss_inv_arr @ (ss_arr @ self._m_arr + bx * y)
             # Bishop equation 3.51
-            ss_arr += np.outer(bx, x_arr)
+            self._ss_arr += np.outer(bx, x_arr)
+            utils.math.sherman_morrison(A=self._ss_inv_arr, u=bx, v=x_arr)
+            # Natural mean: eta_N = eta_{N-1} + beta * y_N * x_N
+            self._eta_arr += bx * y
         else:
             s = self.smoothing
-            new_ss_arr = s * ss_arr + (1 - s) * np.outer(bx, x_arr)
+            new_ss_arr = s * self._ss_arr + (1 - s) * np.outer(bx, x_arr)
             # TODO: we use standard matrix inversion. This is not very efficient. However, we don't
             # yet have a formula for the Sherman-Morrison approximation when a smoothing factor is
             # involved. This is an interesting research direction!
-            new_ss_inv = np.linalg.inv(new_ss_arr)
-            self._m_arr = new_ss_inv @ (s * ss_arr @ self._m_arr + (1 - s) * bx * y)
+            self._ss_inv_arr = np.asfortranarray(np.linalg.inv(new_ss_arr))
             self._ss_arr = new_ss_arr
-            self._ss_inv_arr = np.asfortranarray(new_ss_inv)
+            self._eta_arr = s * self._eta_arr + (1 - s) * bx * y
+
+        self._m_dirty = True
 
     def predict_one(self, x, with_dist=False):
         """Predict the output of features `x`.
@@ -252,6 +245,7 @@ class BayesianLinearRegression(base.Regressor):
         # Bishop equation 3.58
         y_pred_mean = 0.0
         if self._idx:
+            self._ensure_m()
             m_arr = self._m_arr
             for f, v in x.items():
                 i = self._idx.get(f)
@@ -261,18 +255,32 @@ class BayesianLinearRegression(base.Regressor):
         if not with_dist:
             return float(y_pred_mean)
 
-        x_arr = np.fromiter(x.values(), dtype=np.float64, count=len(x))
-        ss_inv_arr = self._gather_ss_inv(x.keys())
+        n = len(self._idx)
+        diag = 1.0 / self.alpha
+        x_arr = np.zeros(self._cap, dtype=np.float64)
+        unknown_norm_sq = 0.0
+        for f, v in x.items():
+            i = self._idx.get(f)
+            if i is None:
+                unknown_norm_sq += float(v) * float(v)
+            elif n:
+                x_arr[i] = v
         # Bishop equation 3.59
-        y_pred_var = 1 / self.beta + x_arr @ ss_inv_arr @ x_arr.T
+        if n:
+            y_pred_var = 1 / self.beta + float(x_arr @ self._ss_inv_arr @ x_arr)
+        else:
+            y_pred_var = 1 / self.beta
+        y_pred_var += diag * unknown_norm_sq
 
         return proba.Gaussian._from_state(n=1, m=y_pred_mean, sig=y_pred_var**0.5, ddof=0)
 
     def predict_many(self, X):
         pd = utils.pandas.import_pandas()
+        self._ensure_m()
+        m_full = self._m_arr
         m = np.zeros(len(X.columns), dtype=np.float64)
         for k, f in enumerate(X.columns):
             i = self._idx.get(f)
             if i is not None:
-                m[k] = self._m_arr[i]
+                m[k] = m_full[i]
         return pd.Series(X.values @ m, index=X.index)
