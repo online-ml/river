@@ -22,6 +22,11 @@
 
 - `utils.Rolling` and `utils.TimeRolling` now accept a class as their first argument and forward extra keyword arguments to its constructor, e.g. `utils.Rolling(stats.Mean, window_size=3)` or `utils.Rolling(stats.Var, window_size=3, ddof=0)`. This avoids a footgun when using these wrappers as `collections.defaultdict` factories, where the previous instance form silently shared state across keys. Passing a pre-built instance still works but now emits a `DeprecationWarning` and will be removed in a future release.
 
+## rules
+
+- Fixed `RecursionError` in `AMRules` on long streams: `tree.splitter.EBSTSplitter` (and `TEBSTSplitter`) now traverses its binary search tree iteratively and the BST nodes carry a custom iterative `__deepcopy__`, so deeply-skewed trees no longer blow Python's recursion limit when rules are cloned during expansion. `tree.splitter.ExhaustiveSplitter` received the same treatment (iterative split-search, iterative node insertion, and iterative `__deepcopy__`).
+- Fixed an `AMRules` memory leak where `HoeffdingRule.expand` appended a redundant `NumericLiteral` whenever a new split shared the feature and direction of an existing literal but did not tighten the threshold.
+
 ## stream
 
 - Added `stream.iter_frame`, a dataframe-agnostic row iterator powered by [Narwhals](https://narwhals-dev.github.io/narwhals/) that works with any eager dataframe (pandas, polars, PyArrow, Modin, cuDF, ...).
