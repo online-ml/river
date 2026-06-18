@@ -1,9 +1,9 @@
 {
     "arch": "x86_64",
-    "cpu": "AMD EPYC 9V74 80-Core Processor",
+    "cpu": "INTEL(R) XEON(R) PLATINUM 8573C",
     "machine": "runnervm7b5n9",
     "num_cpu": "4",
     "os": "Linux 6.17.0-1018-azure",
-    "ram": "16373460",
+    "ram": "16372440",
     "version": 1
 }
