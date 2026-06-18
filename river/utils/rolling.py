@@ -5,7 +5,7 @@ import collections
 import datetime as dt
 import inspect
 import warnings
-from typing import Any, Generic, Protocol, TypeVar, runtime_checkable
+from typing import Any, Generic, Protocol, TypeVar, cast, overload, runtime_checkable
 
 
 @runtime_checkable
@@ -90,9 +90,13 @@ class Rolling(BaseRolling[_T]):
 
     """
 
+    @overload
+    def __init__(self, cls: type[_T], window_size: int, **kwargs: Any) -> None: ...
+    @overload
+    def __init__(self, cls: _T, window_size: int) -> None: ...
     def __init__(self, cls: type[_T] | _T, window_size: int, **kwargs: Any) -> None:
         if inspect.isclass(cls):
-            obj: _T = cls(**kwargs)
+            obj = cls(**kwargs)
         else:
             if kwargs:
                 raise TypeError(
@@ -107,7 +111,7 @@ class Rolling(BaseRolling[_T]):
             obj = cls
         if not isinstance(obj, Rollable):
             raise ValueError(f"{obj} does not satisfy the necessary protocol")
-        super().__init__(obj)
+        super().__init__(cast(_T, obj))
         self._window_size = window_size
         self.window: collections.deque[tuple[tuple[Any, ...], dict[str, Any]]] = collections.deque(
             maxlen=window_size
@@ -169,9 +173,13 @@ class TimeRolling(BaseRolling[_T]):
 
     """
 
+    @overload
+    def __init__(self, cls: type[_T], period: dt.timedelta, **kwargs: Any) -> None: ...
+    @overload
+    def __init__(self, cls: _T, period: dt.timedelta) -> None: ...
     def __init__(self, cls: type[_T] | _T, period: dt.timedelta, **kwargs: Any) -> None:
         if inspect.isclass(cls):
-            obj: _T = cls(**kwargs)
+            obj = cls(**kwargs)
         else:
             if kwargs:
                 raise TypeError(
@@ -186,7 +194,7 @@ class TimeRolling(BaseRolling[_T]):
             obj = cls
         if not isinstance(obj, Rollable):
             raise ValueError(f"{obj} does not satisfy the necessary protocol")
-        super().__init__(obj)
+        super().__init__(cast(_T, obj))
         self.period = period
         self._timestamps: list[dt.datetime] = []
         self._datum: list[Any] = []

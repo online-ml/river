@@ -44,7 +44,7 @@ def test_rolling_forwards_kwargs_to_class() -> None:
     rvar = utils.Rolling(stats.Var, window_size=3, ddof=0)
     for x in [1, 2, 3]:
         rvar.update(x)
-    assert rvar.get() == pytest.approx(2 / 3)
+    assert rvar.get() == pytest.approx(2 / 3)  # type: ignore[operator]
 
 
 def test_rolling_instance_is_deprecated() -> None:
