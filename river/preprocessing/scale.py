@@ -34,6 +34,23 @@ def safe_div(a, b):
     return a / b if b else 0.0
 
 
+class _RollingStatFactory:
+    """Picklable factory producing a fresh `utils.Rolling(stat_factory(), window_size=n)` per call.
+
+    A plain `functools.partial(utils.Rolling, stat_factory(), window_size=n)` would share the
+    same underlying `stat_factory()` instance across every key of a `defaultdict`, which is a
+    silent correctness bug for per-feature rolling statistics. This factory creates a fresh
+    stat instance on each call while remaining picklable (unlike a closure / `lambda`).
+    """
+
+    def __init__(self, stat_factory: typing.Callable[[], typing.Any], window_size: int) -> None:
+        self.stat_factory = stat_factory
+        self.window_size = window_size
+
+    def __call__(self) -> utils.Rolling:
+        return utils.Rolling(self.stat_factory(), window_size=self.window_size)
+
+
 class Binarizer(base.Transformer):
     """Binarize the data to 0 or 1 according to a threshold.
 
@@ -92,10 +109,18 @@ class StandardScaler(base.MiniBatchTransformer):
     calls. In other words, this transformer will keep working even if you add and/or remove
     features every time you call `learn_many` and `transform_many`.
 
+    When ``window_size`` is set, the running mean and variance are replaced by rolling versions
+    computed over the last ``window_size`` observations via `utils.Rolling` wrapping `stats.Mean`
+    and `stats.Var`. In this mode, `learn_many` is processed row by row because the mini-batch
+    merge formula for variance does not yield a correct rolling estimate.
+
     Parameters
     ----------
     with_std
         Whether or not each feature should be divided by its standard deviation.
+    window_size
+        Size of the rolling window used to compute the mean and variance. If ``None``, the
+        running mean and variance over the entire stream are used.
 
     Examples
     --------
@@ -124,6 +149,21 @@ class StandardScaler(base.MiniBatchTransformer):
     {'x': 1.129, 'y': -0.651}
     {'x': -0.776, 'y': -0.729}
     {'x': -1.274, 'y': 0.992}
+
+    A rolling window can be used to scale relative to the most recent observations only.
+    The variance is the population variance (``ddof=0``), matching the running estimator
+    used in the default mode:
+
+    >>> scaler = preprocessing.StandardScaler(window_size=3)
+    >>> for x in X:
+    ...     scaler.learn_one(x)
+    ...     print(scaler.transform_one(x))
+    {'x': 0.0, 'y': 0.0}
+    {'x': -1.0, 'y': 1.0}
+    {'x': 0.937, 'y': 1.351}
+    {'x': 0.983, 'y': -0.960}
+    {'x': -1.337, 'y': -0.803}
+    {'x': -1.036, 'y': 1.406}
 
     This transformer also supports mini-batch updates. You can call `learn_many` and provide a
     `pandas.DataFrame`:
@@ -164,11 +204,20 @@ class StandardScaler(base.MiniBatchTransformer):
 
     """
 
-    def __init__(self, with_std=True) -> None:
+    def __init__(self, with_std=True, window_size: int | None = None) -> None:
         self.with_std = with_std
+        self.window_size = window_size
         self.counts: collections.Counter = collections.Counter()
-        self.means: collections.defaultdict = collections.defaultdict(float)
-        self.vars: collections.defaultdict = collections.defaultdict(float)
+        if window_size is None:
+            self.means: collections.defaultdict = collections.defaultdict(float)
+            self.vars: collections.defaultdict = collections.defaultdict(float)
+        else:
+            self.means = collections.defaultdict(_RollingStatFactory(stats.Mean, window_size))
+            # Use ddof=0 (population variance) to match the Welford estimator used in the
+            # non-windowed branch; otherwise the two modes would disagree.
+            self.vars = collections.defaultdict(
+                _RollingStatFactory(functools.partial(stats.Var, ddof=0), window_size)
+            )
 
     @classmethod
     def _from_state(
@@ -183,6 +232,11 @@ class StandardScaler(base.MiniBatchTransformer):
 
         Useful to warm-start a scaler from offline-computed statistics or to resume
         from a checkpoint without replaying past observations.
+
+        Note that warm-starting a windowed scaler from scalar statistics is not
+        supported because a single mean/variance cannot reconstruct the underlying
+        window of observations; replay the recent observations through ``learn_one``
+        instead.
 
         Parameters
         ----------
@@ -209,6 +263,18 @@ class StandardScaler(base.MiniBatchTransformer):
         counts = self.counts
         means = self.means
         vars_ = self.vars
+        if self.window_size is not None:
+            # Rolling Mean/Var: delegate eviction logic to the underlying stats objects.
+            if self.with_std:
+                for i, xi in x.items():
+                    counts[i] += 1
+                    means[i].update(xi)
+                    vars_[i].update(xi)
+            else:
+                for i, xi in x.items():
+                    counts[i] += 1
+                    means[i].update(xi)
+            return
         if self.with_std:
             for i, xi in x.items():
                 counts[i] += 1
@@ -223,6 +289,16 @@ class StandardScaler(base.MiniBatchTransformer):
 
     def transform_one(self, x):
         means = self.means
+        if self.window_size is not None:
+            if self.with_std:
+                vars_ = self.vars
+                result = {}
+                for i, xi in x.items():
+                    m = means[i].get()
+                    v = vars_[i].get()
+                    result[i] = (xi - m) / v**0.5 if v else 0.0
+                return result
+            return {i: xi - means[i].get() for i, xi in x.items()}
         if self.with_std:
             vars_ = self.vars
             result = {}
@@ -236,13 +312,22 @@ class StandardScaler(base.MiniBatchTransformer):
         """Update with a mini-batch of features.
 
         Note that the update formulas for mean and variance are slightly different than in the
-        single instance case, but they produce exactly the same result.
+        single instance case, but they produce exactly the same result. When ``window_size``
+        is set, the rows are processed sequentially because the batched merge formula is not
+        compatible with rolling-window eviction.
 
         Parameters
         ----------
         X
             A dataframe where each column is a feature.
         """
+        if self.window_size is not None:
+            # Row-by-row to preserve correct rolling-window semantics.
+            columns = X.columns
+            for row in X.values:
+                self.learn_one(dict(zip(columns, row)))
+            return
+
         # Operating on X.values, which is a view to the underlying numpy array, is slightly faster
         # than operating on X
         columns = X.columns
@@ -296,11 +381,17 @@ class StandardScaler(base.MiniBatchTransformer):
             bytes_size = dtype.itemsize
             dtype = np.dtype(f"float{bytes_size * 8}")  # type: ignore[operator]
 
-        means = np.array([self.means[c] for c in X.columns], dtype=dtype)
+        if self.window_size is None:
+            means = np.array([self.means[c] for c in X.columns], dtype=dtype)
+        else:
+            means = np.array([self.means[c].get() for c in X.columns], dtype=dtype)
         Xt = X.values - means
 
         if self.with_std:
-            stds = np.array([self.vars[c] ** 0.5 for c in X.columns], dtype=dtype)
+            if self.window_size is None:
+                stds = np.array([self.vars[c] ** 0.5 for c in X.columns], dtype=dtype)
+            else:
+                stds = np.array([self.vars[c].get() ** 0.5 for c in X.columns], dtype=dtype)
             np.divide(Xt, stds, where=stds > 0, out=Xt)
 
         return pd.DataFrame(Xt, index=X.index, columns=X.columns, copy=False)

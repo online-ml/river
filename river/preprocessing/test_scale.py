@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 import math
+import pickle
+import random
 
 import numpy as np
 import pandas as pd
 
-from river import datasets, preprocessing, stream
+from river import datasets, preprocessing, stats, stream, utils
 
 
 def _pd_split(df, n):
@@ -245,6 +247,220 @@ def test_standard_scaler_warm_start_without_std():
         with_std=False,
     )
     assert scaler.transform_one({"x": 5.0}) == {"x": 2.0}
+
+
+def _np_population_stats(values: list[float]) -> tuple[float, float]:
+    """Compute population mean and variance (ddof=0) for a list of floats."""
+    arr = np.asarray(values, dtype=float)
+    return float(arr.mean()), float(arr.var(ddof=0))
+
+
+def test_standard_scaler_window_default_unchanged():
+    """Zero-arg construction stays behavior-identical to the previous version."""
+    scaler = preprocessing.StandardScaler()
+    assert scaler.window_size is None
+    assert isinstance(scaler.means["x"], float)
+    assert isinstance(scaler.vars["x"], float)
+
+
+def test_standard_scaler_window_uses_rolling_stats():
+    """With window_size set, per-feature means/vars are Rolling wrappers."""
+    scaler = preprocessing.StandardScaler(window_size=3)
+    scaler.learn_one({"x": 1.0})
+    assert isinstance(scaler.means["x"], utils.Rolling)
+    assert isinstance(scaler.vars["x"], utils.Rolling)
+    assert isinstance(scaler.means["x"].obj, stats.Mean)
+    assert isinstance(scaler.vars["x"].obj, stats.Var)
+    # ddof=0 to match the Welford population-variance estimator.
+    assert scaler.vars["x"].obj.ddof == 0
+
+
+def test_standard_scaler_window_independent_per_feature():
+    """Each feature must have its own underlying Mean/Var instance.
+
+    This guards against the silent-aliasing bug that occurs when the
+    `defaultdict` factory shares a single stats instance across keys.
+    """
+    scaler = preprocessing.StandardScaler(window_size=10)
+    scaler.learn_one({"x": 1.0, "y": 100.0})
+    scaler.learn_one({"x": 2.0, "y": 200.0})
+
+    assert scaler.means["x"] is not scaler.means["y"]
+    assert scaler.means["x"].obj is not scaler.means["y"].obj
+    assert scaler.vars["x"].obj is not scaler.vars["y"].obj
+    assert math.isclose(scaler.means["x"].get(), 1.5)
+    assert math.isclose(scaler.means["y"].get(), 150.0)
+
+
+def test_standard_scaler_window_matches_numpy_pop_var():
+    """The rolling mean/var must equal a NumPy ddof=0 computation over the window."""
+    rng = random.Random(0)
+    window_size = 5
+    scaler = preprocessing.StandardScaler(window_size=window_size)
+    values = [rng.uniform(-10, 10) for _ in range(25)]
+
+    for i, v in enumerate(values, start=1):
+        scaler.learn_one({"x": v})
+        window = values[max(0, i - window_size) : i]
+        expected_mean, expected_var = _np_population_stats(window)
+        assert math.isclose(scaler.means["x"].get(), expected_mean, abs_tol=1e-9)
+        assert math.isclose(scaler.vars["x"].get(), expected_var, abs_tol=1e-9)
+
+
+def test_standard_scaler_window_transform_one_matches_numpy():
+    """transform_one must compute (x - rolling_mean) / rolling_std."""
+    rng = random.Random(42)
+    window_size = 4
+    scaler = preprocessing.StandardScaler(window_size=window_size)
+    values = [rng.uniform(0, 50) for _ in range(20)]
+
+    for i, v in enumerate(values, start=1):
+        scaler.learn_one({"x": v})
+        out = scaler.transform_one({"x": v})
+        window = values[max(0, i - window_size) : i]
+        m, var = _np_population_stats(window)
+        expected = (v - m) / var**0.5 if var else 0.0
+        assert math.isclose(out["x"], expected, abs_tol=1e-9)
+
+
+def test_standard_scaler_window_equivalent_below_threshold():
+    """While n <= window_size, the windowed and running scalers must agree exactly."""
+    rng = random.Random(7)
+    window_size = 8
+    running = preprocessing.StandardScaler()
+    windowed = preprocessing.StandardScaler(window_size=window_size)
+
+    for _ in range(window_size):
+        x = {"x": rng.uniform(-5, 5)}
+        running.learn_one(x)
+        windowed.learn_one(x)
+        r_out = running.transform_one(x)
+        w_out = windowed.transform_one(x)
+        assert math.isclose(r_out["x"], w_out["x"], abs_tol=1e-9)
+
+
+def test_standard_scaler_window_adapts_to_drift():
+    """After a drift, the windowed scaler's mean must move toward the new regime
+    faster than the global running scaler.
+    """
+    pre_drift = [1.0] * 50
+    post_drift = [100.0] * 10
+    running = preprocessing.StandardScaler()
+    windowed = preprocessing.StandardScaler(window_size=5)
+    for v in pre_drift + post_drift:
+        x = {"x": v}
+        running.learn_one(x)
+        windowed.learn_one(x)
+    assert windowed.means["x"].get() == 100.0
+    assert running.means["x"] < 50.0
+
+
+def test_standard_scaler_window_with_std_false():
+    """`with_std=False` skips the variance update path under windowed mode."""
+    scaler = preprocessing.StandardScaler(with_std=False, window_size=3)
+    for v in [1.0, 2.0, 3.0, 4.0]:
+        scaler.learn_one({"x": v})
+    # Mean is updated; vars stay at their default empty Rolling(Var).
+    assert math.isclose(scaler.means["x"].get(), 3.0)
+    out = scaler.transform_one({"x": 4.0})
+    assert math.isclose(out["x"], 4.0 - 3.0)
+
+
+def test_standard_scaler_window_learn_many_matches_learn_one():
+    """In windowed mode, learn_many should be equivalent to row-by-row learn_one."""
+    rng = random.Random(1)
+    values = [rng.uniform(-5, 5) for _ in range(30)]
+    df = pd.DataFrame({"x": values, "y": [v * 2 for v in values]})
+
+    one = preprocessing.StandardScaler(window_size=7)
+    for _, row in df.iterrows():
+        one.learn_one(row.to_dict())
+
+    many = preprocessing.StandardScaler(window_size=7)
+    many.learn_many(df)
+
+    assert math.isclose(one.means["x"].get(), many.means["x"].get(), abs_tol=1e-9)
+    assert math.isclose(one.vars["x"].get(), many.vars["x"].get(), abs_tol=1e-9)
+    assert math.isclose(one.means["y"].get(), many.means["y"].get(), abs_tol=1e-9)
+    assert math.isclose(one.vars["y"].get(), many.vars["y"].get(), abs_tol=1e-9)
+
+
+def test_standard_scaler_window_learn_many_chunks_equivalent():
+    """Splitting a stream into mini-batches must not change the final rolling state."""
+    rng = random.Random(2)
+    df = pd.DataFrame({"x": [rng.uniform(-3, 3) for _ in range(50)]})
+
+    monolithic = preprocessing.StandardScaler(window_size=10)
+    monolithic.learn_many(df)
+
+    chunked = preprocessing.StandardScaler(window_size=10)
+    for piece in _pd_split(df, 7):
+        chunked.learn_many(piece)
+
+    assert math.isclose(monolithic.means["x"].get(), chunked.means["x"].get(), abs_tol=1e-9)
+    assert math.isclose(monolithic.vars["x"].get(), chunked.vars["x"].get(), abs_tol=1e-9)
+
+
+def test_standard_scaler_window_transform_many_matches_transform_one():
+    """transform_many under windowed mode must match per-row transform_one."""
+    rng = random.Random(3)
+    df = pd.DataFrame({"x": [rng.uniform(-2, 2) for _ in range(15)]})
+
+    scaler = preprocessing.StandardScaler(window_size=4)
+    scaler.learn_many(df)
+
+    out_many = scaler.transform_many(df)
+    out_one = pd.DataFrame([scaler.transform_one(row.to_dict()) for _, row in df.iterrows()])
+    np.testing.assert_allclose(out_many.values, out_one.values, atol=1e-9)
+
+
+def test_standard_scaler_window_clone_preserves_window_size():
+    """`clone()` reconstructs window_size via __init__ but drops learned state."""
+    scaler = preprocessing.StandardScaler(window_size=5, with_std=False)
+    scaler.learn_one({"x": 1.0})
+    cloned = scaler.clone()
+    assert cloned.window_size == 5
+    assert cloned.with_std is False
+    assert isinstance(cloned.means["x"], utils.Rolling)
+    assert len(cloned.means["x"].window) == 0
+
+
+def test_standard_scaler_window_pickle_roundtrip():
+    """A windowed scaler must survive pickle and keep producing correct outputs."""
+    scaler = preprocessing.StandardScaler(window_size=4)
+    for v in [1.0, 2.0, 3.0, 4.0]:
+        scaler.learn_one({"x": v})
+
+    restored = pickle.loads(pickle.dumps(scaler))
+    assert restored.window_size == 4
+    assert isinstance(restored.means["x"], utils.Rolling)
+    assert math.isclose(restored.means["x"].get(), scaler.means["x"].get())
+    assert math.isclose(restored.vars["x"].get(), scaler.vars["x"].get())
+
+    # Continued learning after unpickling stays correct (no aliased state).
+    restored.learn_one({"x": 5.0})
+    expected_mean = (2.0 + 3.0 + 4.0 + 5.0) / 4
+    assert math.isclose(restored.means["x"].get(), expected_mean)
+
+
+def test_standard_scaler_window_pipeline_integration():
+    """A windowed scaler composes through `|` like any other Transformer."""
+    from river import compose
+
+    pipeline = compose.Select("x") | preprocessing.StandardScaler(window_size=3)
+    for v in [1.0, 2.0, 3.0]:
+        pipeline.learn_one({"x": v, "ignored": 99.0})
+    out = pipeline.transform_one({"x": 3.0, "ignored": 0.0})
+    # mean(1,2,3)=2, popvar=2/3, std=sqrt(2/3); (3-2)/std
+    assert math.isclose(out["x"], (3.0 - 2.0) / (2.0 / 3.0) ** 0.5)
+
+
+def test_standard_scaler_window_counts_track_cumulative_observations():
+    """In windowed mode, counts still track the cumulative observation count."""
+    scaler = preprocessing.StandardScaler(window_size=3)
+    for v in [1.0, 2.0, 3.0, 4.0, 5.0]:
+        scaler.learn_one({"x": v})
+    assert scaler.counts["x"] == 5
 
 
 def test_issue_1313():

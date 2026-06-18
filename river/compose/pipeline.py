@@ -178,6 +178,7 @@ class Pipeline(base.Estimator):
     Pipeline (
       StandardScaler (
         with_std=True
+        window_size=None
       ),
       LinearRegression (
         optimizer=SGD (
