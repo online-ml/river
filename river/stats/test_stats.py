@@ -53,7 +53,7 @@ def test_pickling(stat):
 @pytest.mark.parametrize("stat", load_stats(), ids=lambda stat: stat.__class__.__name__)
 def test_pickling_value(stat):
     for i in range(10):
-        if isinstance(stat, (stats.base.Bivariate, stats.base.RollingBivariate)):
+        if isinstance(stat, stats.base.Bivariate):
             stat.update(i, i)
         else:
             stat.update(i)
@@ -242,8 +242,8 @@ def _chi2_stat(x, y):
     import scipy.stats
 
     # Get unique values to build contingency table
-    x_vals = sorted(list(set(x)))
-    y_vals = sorted(list(set(y)))
+    x_vals = sorted(set(x))
+    y_vals = sorted(set(y))
     if len(x_vals) <= 1 or len(y_vals) <= 1:
         return 0.0
 
@@ -255,8 +255,8 @@ def _chi2_stat(x, y):
             row.append(count)
         table.append(row)
 
-    chi2, _, _, _ = scipy.stats.chi2_contingency(table, correction=False)
-    return chi2
+    chi2 = float(scipy.stats.chi2_contingency(table, correction=False)[0])  # type: ignore[arg-type]
+    return 0.0 if math.isnan(chi2) else chi2
 
 
 @pytest.mark.parametrize(
@@ -266,8 +266,8 @@ def _chi2_stat(x, y):
         (utils.Rolling(stats.PearsonCorr, 10), lambda x, y: sp_stats.pearsonr(x, y)[0]),
         (utils.Rolling(stats.Cov, 3), lambda x, y: np.cov(x, y)[0, 1]),
         (utils.Rolling(stats.Cov, 10), lambda x, y: np.cov(x, y)[0, 1]),
-        (stats.RollingChiSquared(3), _chi2_stat),
-        (stats.RollingChiSquared(10), _chi2_stat),
+        (utils.Rolling(stats.ChiSquared, 3), _chi2_stat),
+        (utils.Rolling(stats.ChiSquared, 10), _chi2_stat),
     ],
 )
 def test_rolling_bivariate(stat, func):
@@ -283,10 +283,9 @@ def test_rolling_bivariate(stat, func):
     for i, (x, y) in enumerate(zip(X, Y)):
         stat.update(x, y)
         if i >= 1:
-            val = stat.get()
-            expected = func(tail(X[: i + 1], n), tail(Y[: i + 1], n))
-            if val is not None and not math.isnan(expected):
-                assert math.isclose(val, expected, abs_tol=1e-10)
+            assert math.isclose(
+                stat.get(), func(tail(X[: i + 1], n), tail(Y[: i + 1], n)), abs_tol=1e-10
+            )
 
 
 @pytest.mark.parametrize(

@@ -56,7 +56,7 @@ class RollingUnivariate(Univariate):
 
     @property
     @abc.abstractmethod
-    def window_size(self):
+    def window_size(self) -> int:
         pass
 
     @property
@@ -70,16 +70,3 @@ class Bivariate(Statistic):
     @abc.abstractmethod
     def update(self, x, y) -> None:
         """Update the called instance."""
-
-
-class RollingBivariate(Bivariate):
-    """A rolling bivariate statistic measures a relationship between two variables over a window."""
-
-    @property
-    @abc.abstractmethod
-    def window_size(self):
-        pass
-
-    @property
-    def name(self):
-        return f"{self.__class__.__name__.lower()}_{self.window_size}"
