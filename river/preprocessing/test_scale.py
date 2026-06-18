@@ -21,7 +21,7 @@ def test_standard_scaler_one_many_consistent():
         X = pd.read_csv(datasets.TrumpApproval().path)
 
         one = preprocessing.StandardScaler(with_std=with_std)
-        for x, _ in stream.iter_pandas(X):
+        for x, _ in stream.iter_frame(X):
             one.learn_one(x)
 
         many = preprocessing.StandardScaler(with_std=with_std)
