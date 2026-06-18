@@ -47052,7 +47052,7 @@ instance, we can calculate the average (how) revenue (on) for each place (by) ov
 <span class="n">agg</span> <span class="o">=</span> <span class="n">fx</span><span class="o">.</span><span class="n">Agg</span><span class="p">(</span>
     <span class="n">on</span><span class="o">=</span><span class="s2">&quot;value&quot;</span><span class="p">,</span>
     <span class="n">by</span><span class="o">=</span><span class="s2">&quot;group&quot;</span><span class="p">,</span>
-    <span class="n">how</span><span class="o">=</span><span class="n">utils</span><span class="o">.</span><span class="n">TimeRolling</span><span class="p">(</span><span class="n">stats</span><span class="o">.</span><span class="n">Mean</span><span class="p">(),</span> <span class="n">dt</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">7</span><span class="p">))</span>
+    <span class="n">how</span><span class="o">=</span><span class="n">utils</span><span class="o">.</span><span class="n">TimeRolling</span><span class="p">(</span><span class="n">stats</span><span class="o">.</span><span class="n">Mean</span><span class="p">,</span> <span class="n">dt</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">7</span><span class="p">))</span>
 <span class="p">)</span>
 
 <span class="k">for</span> <span class="n">day</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">366</span><span class="p">):</span>

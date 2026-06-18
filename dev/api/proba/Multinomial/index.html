@@ -46926,7 +46926,7 @@
 <span class="n">X</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="s1">&#39;green&#39;</span><span class="p">,</span> <span class="s1">&#39;green&#39;</span><span class="p">,</span> <span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="s1">&#39;blue&#39;</span><span class="p">]</span>
 
 <span class="n">dist</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">Rolling</span><span class="p">(</span>
-    <span class="n">proba</span><span class="o">.</span><span class="n">Multinomial</span><span class="p">(),</span>
+    <span class="n">proba</span><span class="o">.</span><span class="n">Multinomial</span><span class="p">,</span>
     <span class="n">window_size</span><span class="o">=</span><span class="mi">3</span>
 <span class="p">)</span>
 
@@ -46959,7 +46959,7 @@ P(red) = 0.000
 <span class="n">days</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>
 
 <span class="n">dist</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">TimeRolling</span><span class="p">(</span>
-    <span class="n">proba</span><span class="o">.</span><span class="n">Multinomial</span><span class="p">(),</span>
+    <span class="n">proba</span><span class="o">.</span><span class="n">Multinomial</span><span class="p">,</span>
     <span class="n">period</span><span class="o">=</span><span class="n">dt</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 <span class="p">)</span>
 
