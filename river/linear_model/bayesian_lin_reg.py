@@ -117,67 +117,70 @@ class BayesianLinearRegression(base.Regressor):
         self.alpha = alpha
         self.beta = beta
         self.smoothing = smoothing
-        self._ss: dict[tuple[base.typing.FeatureName, base.typing.FeatureName], float] = {}
-        self._ss_inv: dict[tuple[base.typing.FeatureName, base.typing.FeatureName], float] = {}
-        self._m: dict[base.typing.FeatureName, float] = {}
+        self._idx: dict[base.typing.FeatureName, int] = {}
+        self._m_arr = np.zeros(0, dtype=np.float64)
+        self._ss_arr = np.zeros((0, 0), dtype=np.float64)
+        self._ss_inv_arr = np.zeros((0, 0), dtype=np.float64, order="F")
+        self._cap = 0
         self._n = 1
 
-    def _unit_test_skips(self):
-        return {"check_shuffle_features_no_impact", "check_emerging_features"}
+    def _grow(self, needed: int) -> None:
+        new_cap = max(needed, max(8, self._cap * 2))
+        diag = 1.0 / self.alpha
+        new_m = np.zeros(new_cap, dtype=np.float64)
+        new_ss = np.eye(new_cap, dtype=np.float64) * diag
+        new_ss_inv = np.eye(new_cap, dtype=np.float64, order="F") * diag
+        if self._cap:
+            new_m[: self._cap] = self._m_arr
+            new_ss[: self._cap, : self._cap] = self._ss_arr
+            new_ss_inv[: self._cap, : self._cap] = self._ss_inv_arr
+        self._m_arr = new_m
+        self._ss_arr = new_ss
+        self._ss_inv_arr = new_ss_inv
+        self._cap = new_cap
 
-    def _get_arrays(self, features, m=True, ss=True, ss_inv=True):
-        m_arr = np.array([self._m.get(i, 0.0) for i in features]) if m else None
-        ss_arr = (
-            np.array(
-                [
-                    [
-                        self._ss.get(
-                            # Get value if it exists
-                            min((i, j), (j, i)),
-                            # Initialize to eye matrix
-                            1.0 / self.alpha if i == j else 0.0,
-                        )
-                        for j in features
-                    ]
-                    for i in features
-                ]
-            )
-            if ss
-            else None
-        )
-        ss_inv_arr = (
-            np.array(
-                [
-                    [
-                        self._ss_inv.get(
-                            # Get value if it exists
-                            min((i, j), (j, i)),
-                            # Initialize to eye matrix
-                            1.0 / self.alpha if i == j else 0.0,
-                        )
-                        for j in features
-                    ]
-                    for i in features
-                ],
-                order="F",
-            )
-            if ss_inv
-            else None
-        )
-        return m_arr, ss_arr, ss_inv_arr
+    def _ensure_features(self, features) -> np.ndarray:
+        idx = self._idx
+        ids = []
+        for f in features:
+            i = idx.get(f)
+            if i is None:
+                i = len(idx)
+                idx[f] = i
+            ids.append(i)
+        if len(idx) > self._cap:
+            self._grow(len(idx))
+        return np.asarray(ids, dtype=np.intp)
 
-    def _set_arrays(self, features, m_arr, ss_arr, ss_inv_arr):
-        for i, fi in enumerate(features):
-            self._m[fi] = m_arr[i]
-            ss_row = ss_arr[i]
-            ss_inv_row = ss_inv_arr[i]
-            for j, fj in enumerate(features):
-                self._ss[min((fi, fj), (fj, fi))] = ss_row[j]
-                self._ss_inv[min((fi, fj), (fj, fi))] = ss_inv_row[j]
+    def _gather_ss_inv(self, features) -> np.ndarray:
+        """Build the ss_inv submatrix for `features` without mutating state.
+
+        Features not yet in the model get a diagonal of 1/alpha and zeros off-diagonal,
+        matching the original dict-default behavior.
+        """
+        diag = 1.0 / self.alpha
+        n = len(features)
+        ids = np.fromiter(
+            (self._idx.get(f, -1) for f in features),
+            dtype=np.intp,
+            count=n,
+        )
+        out = np.eye(n, dtype=np.float64, order="F") * diag
+        known_mask = ids >= 0
+        if known_mask.any():
+            local = np.where(known_mask)[0]
+            global_ = ids[local]
+            out[np.ix_(local, local)] = self._ss_inv_arr[np.ix_(global_, global_)]
+        return out
 
     def learn_one(self, x, y):
-        x_arr = np.array(list(x.values()))
-        m_arr, ss_arr, ss_inv_arr = self._get_arrays(x.keys())
+        ids = self._ensure_features(x.keys())
+        x_arr = np.fromiter(x.values(), dtype=np.float64, count=len(x))
+
+        m_arr = self._m_arr[ids].copy()
+        ix = np.ix_(ids, ids)
+        ss_arr = self._ss_arr[ix].copy()
+        ss_inv_arr = np.asfortranarray(self._ss_inv_arr[ix])
 
         bx = self.beta * x_arr
 
@@ -196,7 +199,9 @@ class BayesianLinearRegression(base.Regressor):
             m_arr = ss_inv_arr @ (self.smoothing * ss_arr @ m_arr + (1 - self.smoothing) * bx * y)
             ss_arr = new_ss_arr
 
-        self._set_arrays(x.keys(), m_arr, ss_arr, ss_inv_arr)
+        self._m_arr[ids] = m_arr
+        self._ss_arr[ix] = ss_arr
+        self._ss_inv_arr[ix] = ss_inv_arr
 
     def predict_one(self, x, with_dist=False):
         """Predict the output of features `x`.
@@ -215,12 +220,22 @@ class BayesianLinearRegression(base.Regressor):
         """
 
         # Bishop equation 3.58
-        y_pred_mean = 0.0 if not len(self._m) else utils.math.dot(self._m, x).item()
+        y_pred_mean = 0.0
+        if self._idx:
+            m_arr = self._m_arr
+            for f, v in x.items():
+                i = self._idx.get(f)
+                if i is not None:
+                    # Cast to Python float so coefficient blow-up under emerging
+                    # features overflows to inf silently (as in the dict-math days)
+                    # instead of emitting a NumPy RuntimeWarning.
+                    y_pred_mean += float(m_arr[i]) * v
+
         if not with_dist:
             return y_pred_mean
 
-        x_arr = np.array(list(x.values()))
-        *_, ss_inv_arr = self._get_arrays(x.keys(), m=False, ss=False)
+        x_arr = np.fromiter(x.values(), dtype=np.float64, count=len(x))
+        ss_inv_arr = self._gather_ss_inv(x.keys())
         # Bishop equation 3.59
         y_pred_var = 1 / self.beta + x_arr @ ss_inv_arr @ x_arr.T
 
@@ -228,5 +243,9 @@ class BayesianLinearRegression(base.Regressor):
 
     def predict_many(self, X):
         pd = utils.pandas.import_pandas()
-        m, *_ = self._get_arrays(X.columns, m=True, ss=False, ss_inv=False)
+        m = np.zeros(len(X.columns), dtype=np.float64)
+        for k, f in enumerate(X.columns):
+            i = self._idx.get(f)
+            if i is not None:
+                m[k] = self._m_arr[i]
         return pd.Series(X.values @ m, index=X.index)
