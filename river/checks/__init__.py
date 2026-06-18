@@ -46,8 +46,18 @@ class _DummyDataset:
         yield from self.data
 
 
-def _yield_datasets(model: Estimator):
-    """Generates datasets for a given model."""
+def _yield_datasets(model: Estimator, scale: int = 1):
+    """Generates datasets for a given model.
+
+    Parameters
+    ----------
+    scale
+        Multiplier applied to each dataset's sample budget. The default of 1
+        produces short streams that are fast enough to run on every estimator
+        for every check. Pass a larger value (e.g. 10) when a check needs a
+        long stream — for instance to reliably observe whether memory plateaus.
+
+    """
 
     from sklearn import datasets as sk_datasets
 
@@ -101,31 +111,31 @@ def _yield_datasets(model: Estimator):
                 oh = (compose.SelectType(str) | preprocessing.OneHotEncoder()) + compose.SelectType(
                     int
                 )
-                for x, y in datasets.SolarFlare().take(200):
+                for x, y in datasets.SolarFlare().take(200 * scale):
                     yield oh.transform_one(x), y
 
         yield SolarFlare()
 
     # Regression
     elif isinstance(model, base.Regressor):
-        yield datasets.TrumpApproval().take(200)
+        yield datasets.TrumpApproval().take(200 * scale)
 
     # Multi-output classification
     if isinstance(model, base.MultiLabelClassifier):
-        yield datasets.Music().take(50)
+        yield datasets.Music().take(50 * scale)
 
     # Classification
     elif isinstance(model, base.Classifier):
-        yield datasets.Phishing().take(200)
-        yield ((x, np.bool_(y)) for x, y in datasets.Phishing().take(200))
+        yield datasets.Phishing().take(200 * scale)
+        yield ((x, np.bool_(y)) for x, y in datasets.Phishing().take(200 * scale))
 
         # Multi-class classification
         if model._multiclass and base.tags.POSITIVE_INPUT not in model._tags:  # type: ignore
-            yield datasets.ImageSegments().take(200)
+            yield datasets.ImageSegments().take(200 * scale)
 
     # Anomaly detection
     elif isinstance(model, AnomalyDetector):
-        yield datasets.CreditCard().take(1000)
+        yield datasets.CreditCard().take(1000 * scale)
 
     # Plain transformers (no other base class matched above). These were
     # previously uncovered by the dataset-driven checks; TrumpApproval provides
@@ -134,7 +144,7 @@ def _yield_datasets(model: Estimator):
     # raw strings, not dicts, and are skipped for now.
     elif isinstance(model, (base.Transformer, base.SupervisedTransformer)):
         if base.tags.TEXT_INPUT not in model._tags:
-            yield datasets.TrumpApproval().take(200)
+            yield datasets.TrumpApproval().take(200 * scale)
 
 
 def yield_checks(model: Estimator) -> typing.Iterator[typing.Callable]:
@@ -183,7 +193,6 @@ def yield_checks(model: Estimator) -> typing.Iterator[typing.Callable]:
         common.check_predict_one_before_any_learn,
         common.check_no_state_aliasing_with_input,
         common.check_clone_is_independent,
-        common.check_bounded_memory_growth,
     ]
 
     if isinstance(model, (base.Transformer, base.SupervisedTransformer)):
@@ -231,6 +240,13 @@ def yield_checks(model: Estimator) -> typing.Iterator[typing.Callable]:
     for dataset_check in dataset_checks:
         for dataset in _yield_datasets(model):
             yield _wrapped_partial(dataset_check, dataset=dataset)
+
+    # check_bounded_memory_growth needs a longer stream to reliably distinguish
+    # accelerating growth (real) from one-time bumps (dict rehashes, Python
+    # interpreter retention) — short streams let slow growers slip through.
+    if not isinstance(model, Forecaster):
+        for dataset in _yield_datasets(model, scale=10):
+            yield _wrapped_partial(common.check_bounded_memory_growth, dataset=dataset)
 
 
 def check_estimator(model: Estimator):
