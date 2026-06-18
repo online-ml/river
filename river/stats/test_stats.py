@@ -134,11 +134,10 @@ def test_univariate_reliability_weights(stat, func):
 @pytest.mark.parametrize(
     "stat, func",
     [
-        # TODO: we shouldn't ignore these types
-        (utils.Rolling(stats.Mean(), 3), statistics.mean),  # type: ignore
-        (utils.Rolling(stats.Mean(), 10), statistics.mean),  # type: ignore
-        (utils.Rolling(stats.Var(ddof=0), 3), np.var),  # type: ignore
-        (utils.Rolling(stats.Var(ddof=0), 10), np.var),  # type: ignore
+        (utils.Rolling(stats.Mean, 3), statistics.mean),
+        (utils.Rolling(stats.Mean, 10), statistics.mean),
+        (utils.Rolling(stats.Var, 3, ddof=0), np.var),
+        (utils.Rolling(stats.Var, 10, ddof=0), np.var),
         (
             stats.RollingQuantile(0.0, 10),
             functools.partial(np.quantile, q=0.0, method="linear"),
@@ -177,9 +176,8 @@ def test_rolling_univariate(stat, func):
 @pytest.mark.parametrize(
     "stat, func",
     [
-        # TODO: we shouldn't ignore these types
-        (utils.Rolling(stats.Mean(), 3), lambda x, w: np.average(x, weights=w)),  # type: ignore
-        (utils.Rolling(stats.Mean(), 10), lambda x, w: np.average(x, weights=w)),  # type: ignore
+        (utils.Rolling(stats.Mean, 3), lambda x, w: np.average(x, weights=w)),
+        (utils.Rolling(stats.Mean, 10), lambda x, w: np.average(x, weights=w)),
     ],
 )
 def test_rolling_univariate_sample_weights(stat, func):
@@ -201,9 +199,8 @@ def test_rolling_univariate_sample_weights(stat, func):
 @pytest.mark.parametrize(
     "stat, func",
     [
-        # TODO: we shouldn't ignore these types
-        (utils.Rolling(stats.Mean(), 3), lambda x, w: np.average(x, weights=w)),  # type: ignore
-        (utils.Rolling(stats.Mean(), 10), lambda x, w: np.average(x, weights=w)),  # type: ignore
+        (utils.Rolling(stats.Mean, 3), lambda x, w: np.average(x, weights=w)),
+        (utils.Rolling(stats.Mean, 10), lambda x, w: np.average(x, weights=w)),
     ],
 )
 def test_rolling_univariate_reliability_weights(stat, func):
@@ -242,10 +239,10 @@ def test_bivariate(stat, func):
 @pytest.mark.parametrize(
     "stat, func",
     [
-        (utils.Rolling(stats.PearsonCorr(), 3), lambda x, y: sp_stats.pearsonr(x, y)[0]),  # type: ignore
-        (utils.Rolling(stats.PearsonCorr(), 10), lambda x, y: sp_stats.pearsonr(x, y)[0]),  # type: ignore
-        (utils.Rolling(stats.Cov(), 3), lambda x, y: np.cov(x, y)[0, 1]),  # type: ignore
-        (utils.Rolling(stats.Cov(), 10), lambda x, y: np.cov(x, y)[0, 1]),  # type: ignore
+        (utils.Rolling(stats.PearsonCorr, 3), lambda x, y: sp_stats.pearsonr(x, y)[0]),
+        (utils.Rolling(stats.PearsonCorr, 10), lambda x, y: sp_stats.pearsonr(x, y)[0]),
+        (utils.Rolling(stats.Cov, 3), lambda x, y: np.cov(x, y)[0, 1]),
+        (utils.Rolling(stats.Cov, 10), lambda x, y: np.cov(x, y)[0, 1]),
     ],
 )
 def test_rolling_bivariate(stat, func):

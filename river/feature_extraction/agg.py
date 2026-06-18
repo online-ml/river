@@ -147,7 +147,7 @@ class Agg(base.Transformer):
     >>> agg = fx.Agg(
     ...     on="value",
     ...     by="group",
-    ...     how=utils.TimeRolling(stats.Mean(), dt.timedelta(days=7))
+    ...     how=utils.TimeRolling(stats.Mean, dt.timedelta(days=7))
     ... )
 
     >>> for day in range(366):
@@ -322,7 +322,7 @@ class TargetAgg(base.SupervisedTransformer, Agg):
 
     >>> agg = feature_extraction.TargetAgg(
     ...     by="group",
-    ...     how=utils.TimeRolling(stats.Mean(), dt.timedelta(days=7))
+    ...     how=utils.TimeRolling(stats.Mean, dt.timedelta(days=7))
     ... )
 
     >>> for day in range(366):

@@ -207,6 +207,7 @@ class SuccessiveHalvingRegressor(SuccessiveHalving, ModelSelectionRegressor):
     Pipeline (
       StandardScaler (
         with_std=True
+        window_size=None
       ),
       LinearRegression (
         optimizer=Adam (
@@ -364,6 +365,7 @@ class SuccessiveHalvingClassifier(SuccessiveHalving, ModelSelectionClassifier):
     Pipeline (
       StandardScaler (
         with_std=True
+        window_size=None
       ),
       LogisticRegression (
         optimizer=Adam (

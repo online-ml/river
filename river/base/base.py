@@ -148,6 +148,7 @@ class Base:
         Pipeline (
           StandardScaler (
             with_std=True
+            window_size=None
           ),
           LinearRegression (
             optimizer=SGD (
@@ -277,6 +278,7 @@ class Base:
         Pipeline (
           StandardScaler (
             with_std=True
+            window_size=None
           ),
           LinearRegression (
             optimizer=SGD (
