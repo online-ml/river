@@ -34,23 +34,6 @@ def safe_div(a, b):
     return a / b if b else 0.0
 
 
-class _RollingStatFactory:
-    """Picklable factory producing a fresh `utils.Rolling(stat_factory(), window_size=n)` per call.
-
-    A plain `functools.partial(utils.Rolling, stat_factory(), window_size=n)` would share the
-    same underlying `stat_factory()` instance across every key of a `defaultdict`, which is a
-    silent correctness bug for per-feature rolling statistics. This factory creates a fresh
-    stat instance on each call while remaining picklable (unlike a closure / `lambda`).
-    """
-
-    def __init__(self, stat_factory: typing.Callable[[], typing.Any], window_size: int) -> None:
-        self.stat_factory = stat_factory
-        self.window_size = window_size
-
-    def __call__(self) -> utils.Rolling:
-        return utils.Rolling(self.stat_factory(), window_size=self.window_size)
-
-
 class Binarizer(base.Transformer):
     """Binarize the data to 0 or 1 according to a threshold.
 
@@ -212,11 +195,13 @@ class StandardScaler(base.MiniBatchTransformer):
             self.means: collections.defaultdict = collections.defaultdict(float)
             self.vars: collections.defaultdict = collections.defaultdict(float)
         else:
-            self.means = collections.defaultdict(_RollingStatFactory(stats.Mean, window_size))
+            self.means = collections.defaultdict(
+                functools.partial(utils.Rolling, stats.Mean, window_size=window_size)
+            )
             # Use ddof=0 (population variance) to match the Welford estimator used in the
             # non-windowed branch; otherwise the two modes would disagree.
             self.vars = collections.defaultdict(
-                _RollingStatFactory(functools.partial(stats.Var, ddof=0), window_size)
+                functools.partial(utils.Rolling, stats.Var, window_size=window_size, ddof=0)
             )
 
     def __setstate__(self, state: dict) -> None:

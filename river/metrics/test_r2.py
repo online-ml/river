@@ -62,7 +62,7 @@ def test_rolling_r2():
     def tail(iterable, n):
         return collections.deque(iterable, maxlen=n)
 
-    r2 = utils.Rolling(metrics.R2(), window_size=3)
+    r2 = utils.Rolling(metrics.R2, window_size=3)
     n = r2.window_size
     sk_r2 = sk_metrics.r2_score
     y_true = [

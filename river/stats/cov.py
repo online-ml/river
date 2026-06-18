@@ -39,7 +39,7 @@ class Cov(stats.base.Bivariate):
     >>> x = [-2.1,  -1, 4.3, 1, -2.1,  -1, 4.3]
     >>> y = [   3, 1.1, .12, 1,    3, 1.1, .12]
 
-    >>> rcov = utils.Rolling(stats.Cov(), window_size=3)
+    >>> rcov = utils.Rolling(stats.Cov, window_size=3)
 
     >>> for xi, yi in zip(x, y):
     ...     rcov.update(xi, yi)

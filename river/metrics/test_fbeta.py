@@ -33,8 +33,10 @@ def test_rolling_multi_fbeta():
         return collections.deque(iterable, maxlen=n)
 
     fbeta = utils.Rolling(
-        metrics.MultiFBeta(betas={0: 0.25, 1: 1, 2: 4}, weights={0: 1, 1: 1, 2: 2}),
+        metrics.MultiFBeta,
         window_size=3,
+        betas={0: 0.25, 1: 1, 2: 4},
+        weights={0: 1, 1: 1, 2: 2},
     )
     n = fbeta.window_size
     sk_fbeta = sk_metrics.fbeta_score

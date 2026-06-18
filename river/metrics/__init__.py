@@ -12,7 +12,7 @@ from river import metrics, utils
 y_true = [True, False, True, True]
 y_pred = [False, False, True, True]
 
-metric = utils.Rolling(metrics.Accuracy(), window_size=3)
+metric = utils.Rolling(metrics.Accuracy, window_size=3)
 
 for yt, yp in zip(y_true, y_pred):
     print(metric.update(yt, yp))
