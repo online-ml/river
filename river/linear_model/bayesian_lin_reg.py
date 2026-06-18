@@ -105,6 +105,33 @@ class BayesianLinearRegression(base.Regressor):
     >>> evaluate.progressive_val_score(dataset, model, metric)
     MAE: 0.242...
 
+    Features that are absent from `x` in `learn_one` are treated as observed values of 0. This is
+    the right default when features are centered around zero (e.g. sparse counts or indicators),
+    but biases the posterior when typical feature values are far from zero. In that case, combine
+    the model with `preprocessing.StatImputer` in a pipeline so that missing observations are
+    filled with a running statistic before they reach the model:
+
+    >>> from river import preprocessing
+    >>> from river import stats
+
+    >>> def with_missing(dataset, p_missing=0.2, seed=42):
+    ...     rng = random.Random(seed)
+    ...     for x, y in dataset:
+    ...         x = {f: (None if rng.random() < p_missing else v) for f, v in x.items()}
+    ...         yield x, y
+
+    >>> features = ['ordinal_date', 'gallup', 'ipsos', 'morning_consult',
+    ...             'rasmussen', 'you_gov']
+    >>> model = (
+    ...     preprocessing.StatImputer(*[(f, stats.Mean()) for f in features])
+    ...     | linear_model.BayesianLinearRegression()
+    ... )
+    >>> metric = metrics.MAE()
+    >>> evaluate.progressive_val_score(
+    ...     with_missing(datasets.TrumpApproval()), model, metric
+    ... )
+    MAE: 0.775...
+
     References
     ----------
     [^1]: [Pattern Recognition and Machine Learning, page 52 — Christopher M. Bishop](https://www.microsoft.com/en-us/research/uploads/prod/2006/01/Bishop-Pattern-Recognition-and-Machine-Learning-2006.pdf)
@@ -174,34 +201,37 @@ class BayesianLinearRegression(base.Regressor):
         return out
 
     def learn_one(self, x, y):
-        ids = self._ensure_features(x.keys())
-        x_arr = np.fromiter(x.values(), dtype=np.float64, count=len(x))
-
-        m_arr = self._m_arr[ids].copy()
-        ix = np.ix_(ids, ids)
-        ss_arr = self._ss_arr[ix].copy()
-        ss_inv_arr = np.asfortranarray(self._ss_inv_arr[ix])
+        # Update the full-cap state, treating features absent from `x` as 0.
+        # Operating on submatrices via np.ix_(ids, ids) breaks the invariant
+        # `_ss_inv_arr = inv(_ss_arr)` once different feature subsets are touched
+        # across calls (the submatrix of an inverse ≠ inverse of the submatrix),
+        # which causes coefficients to diverge under emerging/disappearing
+        # features.
+        self._ensure_features(x.keys())
+        x_arr = np.zeros(self._cap, dtype=np.float64)
+        for f, v in x.items():
+            x_arr[self._idx[f]] = v
 
         bx = self.beta * x_arr
+        ss_arr = self._ss_arr
+        ss_inv_arr = self._ss_inv_arr
 
         if self.smoothing is None:
             utils.math.sherman_morrison(A=ss_inv_arr, u=bx, v=x_arr)
             # Bishop equation 3.50
-            m_arr = ss_inv_arr @ (ss_arr @ m_arr + bx * y)
+            self._m_arr = ss_inv_arr @ (ss_arr @ self._m_arr + bx * y)
             # Bishop equation 3.51
             ss_arr += np.outer(bx, x_arr)
         else:
-            new_ss_arr = self.smoothing * ss_arr + (1 - self.smoothing) * np.outer(bx, x_arr)
+            s = self.smoothing
+            new_ss_arr = s * ss_arr + (1 - s) * np.outer(bx, x_arr)
             # TODO: we use standard matrix inversion. This is not very efficient. However, we don't
             # yet have a formula for the Sherman-Morrison approximation when a smoothing factor is
             # involved. This is an interesting research direction!
-            ss_inv_arr = np.linalg.inv(new_ss_arr)
-            m_arr = ss_inv_arr @ (self.smoothing * ss_arr @ m_arr + (1 - self.smoothing) * bx * y)
-            ss_arr = new_ss_arr
-
-        self._m_arr[ids] = m_arr
-        self._ss_arr[ix] = ss_arr
-        self._ss_inv_arr[ix] = ss_inv_arr
+            new_ss_inv = np.linalg.inv(new_ss_arr)
+            self._m_arr = new_ss_inv @ (s * ss_arr @ self._m_arr + (1 - s) * bx * y)
+            self._ss_arr = new_ss_arr
+            self._ss_inv_arr = np.asfortranarray(new_ss_inv)
 
     def predict_one(self, x, with_dist=False):
         """Predict the output of features `x`.
@@ -226,13 +256,10 @@ class BayesianLinearRegression(base.Regressor):
             for f, v in x.items():
                 i = self._idx.get(f)
                 if i is not None:
-                    # Cast to Python float so coefficient blow-up under emerging
-                    # features overflows to inf silently (as in the dict-math days)
-                    # instead of emitting a NumPy RuntimeWarning.
-                    y_pred_mean += float(m_arr[i]) * v
+                    y_pred_mean += m_arr[i] * v
 
         if not with_dist:
-            return y_pred_mean
+            return float(y_pred_mean)
 
         x_arr = np.fromiter(x.values(), dtype=np.float64, count=len(x))
         ss_inv_arr = self._gather_ss_inv(x.keys())

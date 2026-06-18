@@ -12,6 +12,7 @@
 
 - Restructured `BayesianLinearRegression` to use the same NumPy-backed storage as `EmpiricalPrecision`. ~11× faster `learn_one` at 20 features, ~24× at 50 features. Speeds up `bandit.LinUCB` as a side effect.
 - `BayesianLinearRegression` now passes `check_emerging_features` and `check_shuffle_features_no_impact` (the two checks previously skipped via `_unit_test_skips`). It now handles features arriving and disappearing after training begins.
+- Fixed `BayesianLinearRegression` coefficient blow-up under emerging/disappearing features. The previous submatrix-only update broke the `_ss_inv ≈ inv(_ss)` invariant once different feature subsets were touched across calls (the submatrix of an inverse is generally not the inverse of the submatrix), causing coefficients to diverge to `inf`/`nan` on `check_emerging_features`-style streams. `learn_one` now updates the full state with a zero-padded `x` and is also ~1.5× faster on dense streams (no `np.ix_` fancy-indexing copies, contiguous BLAS calls). Behavior change: features absent from `learn_one`'s `x` are now treated as observed values of 0 (matching `LinearRegression` and the rest of the online-learning estimators), rather than being silently skipped. Identical to the previous behavior to floating-point roundoff when every call sees the same feature set.
 
 ## preprocessing
 
