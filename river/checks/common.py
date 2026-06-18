@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import copy
+import gc
 import inspect
 import itertools
 import pickle
@@ -183,6 +184,66 @@ def check_debug_one(model, dataset):
             model.learn_one(x)
         model.debug_one(x)
         break
+
+
+def check_bounded_memory_growth(model, dataset):
+    """A truly online model's memory should not grow unboundedly with samples.
+
+    The dataset is consumed in three segments: a warmup segment during which the
+    model is allowed to grow (allocating per-feature weights the first time each
+    feature is seen, internal dict rehashes, filling a fixed-size buffer, etc.),
+    followed by two equally sized measurement segments. After warmup, the
+    measurement-segment growth must not accelerate: the second segment's delta
+    is compared against the first segment's, with a small tolerance to absorb
+    Python interpreter noise (transient object retention, dict capacity bumps)
+    that can vary slightly across machines and Python versions.
+
+    Note: with only a few hundred samples per dataset, this check catches
+    *accelerating* growth (unbounded buffers, structural growth that scales
+    with N). It can miss models whose growth merely decelerates within the
+    test window.
+    """
+
+    samples = list(dataset)
+    if len(samples) < 4:
+        return  # not enough data to split meaningfully
+
+    # 50% warmup, 25% first measurement window, 25% second measurement window.
+    warmup_end = len(samples) // 2
+    measure_mid = warmup_end + (len(samples) - warmup_end) // 2
+
+    for x, y in samples[:warmup_end]:
+        _learn(model, x, y)
+    gc.collect()
+    size_after_warmup = model._raw_memory_usage
+
+    for x, y in samples[warmup_end:measure_mid]:
+        _learn(model, x, y)
+    gc.collect()
+    size_mid = model._raw_memory_usage
+
+    for x, y in samples[measure_mid:]:
+        _learn(model, x, y)
+    gc.collect()
+    size_final = model._raw_memory_usage
+
+    first_half_delta = size_mid - size_after_warmup
+    second_half_delta = size_final - size_mid
+    # Noise floor: the larger of 1 KiB (covers transient object retention and
+    # dict capacity jitter on small models) or 1% of the post-warmup size
+    # (proportional jitter for larger models). The second-half delta is allowed
+    # to be up to (first-half delta + noise) — anything beyond signals
+    # accelerating growth.
+    tolerance = max(1024, size_after_warmup // 100)
+
+    assert second_half_delta <= first_half_delta + tolerance, (
+        f"Model memory grew unboundedly: "
+        f"{size_after_warmup} B (after {warmup_end} warmup samples) -> "
+        f"{size_mid} B (after {measure_mid}) -> "
+        f"{size_final} B (after {len(samples)}). "
+        f"Second-half delta {second_half_delta:+d} B exceeds first-half delta "
+        f"{first_half_delta:+d} B by more than the {tolerance} B tolerance."
+    )
 
 
 def check_pickling_supports_roundtrip(model):

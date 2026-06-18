@@ -183,6 +183,7 @@ def yield_checks(model: Estimator) -> typing.Iterator[typing.Callable]:
         common.check_predict_one_before_any_learn,
         common.check_no_state_aliasing_with_input,
         common.check_clone_is_independent,
+        common.check_bounded_memory_growth,
     ]
 
     if isinstance(model, (base.Transformer, base.SupervisedTransformer)):
