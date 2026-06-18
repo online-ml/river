@@ -463,6 +463,48 @@ def test_standard_scaler_window_counts_track_cumulative_observations():
     assert scaler.counts["x"] == 5
 
 
+def _strip_attr(obj, attr):
+    """Simulate an old pickle by deleting an attribute added later."""
+    new = obj.__class__.__new__(obj.__class__)
+    new.__dict__.update({k: v for k, v in obj.__dict__.items() if k != attr})
+    return new
+
+
+def test_standard_scaler_unpickle_missing_window_size():
+    """Old pickles (pre-`window_size`) must keep working after upgrade."""
+    scaler = preprocessing.StandardScaler()
+    for v in [1.0, 2.0, 3.0]:
+        scaler.learn_one({"x": v})
+
+    legacy = pickle.loads(pickle.dumps(_strip_attr(scaler, "window_size")))
+    assert legacy.window_size is None
+    legacy.learn_one({"x": 4.0})
+    out = legacy.transform_one({"x": 4.0})
+    assert isinstance(out["x"], float)
+
+
+def test_minmax_scaler_unpickle_missing_window_size():
+    scaler = preprocessing.MinMaxScaler()
+    for v in [1.0, 2.0, 3.0]:
+        scaler.learn_one({"x": v})
+
+    legacy = pickle.loads(pickle.dumps(_strip_attr(scaler, "window_size")))
+    assert legacy.window_size is None
+    legacy.learn_one({"x": 4.0})
+    assert legacy.transform_one({"x": 4.0}) == {"x": 1.0}
+
+
+def test_maxabs_scaler_unpickle_missing_window_size():
+    scaler = preprocessing.MaxAbsScaler()
+    for v in [1.0, 2.0, 3.0]:
+        scaler.learn_one({"x": v})
+
+    legacy = pickle.loads(pickle.dumps(_strip_attr(scaler, "window_size")))
+    assert legacy.window_size is None
+    legacy.learn_one({"x": 4.0})
+    assert legacy.transform_one({"x": 4.0}) == {"x": 1.0}
+
+
 def test_issue_1313():
     """>>> import numpy as np
     >>> import pandas as pd

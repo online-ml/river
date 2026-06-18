@@ -219,6 +219,12 @@ class StandardScaler(base.MiniBatchTransformer):
                 _RollingStatFactory(functools.partial(stats.Var, ddof=0), window_size)
             )
 
+    def __setstate__(self, state: dict) -> None:
+        # Default `window_size` to None so pickles written before this attribute was
+        # introduced keep working without re-running __init__.
+        state.setdefault("window_size", None)
+        self.__dict__.update(state)
+
     @classmethod
     def _from_state(
         cls,
@@ -476,6 +482,12 @@ class MinMaxScaler(base.Transformer):
             self.min = collections.defaultdict(functools.partial(stats.RollingMin, window_size))
             self.max = collections.defaultdict(functools.partial(stats.RollingMax, window_size))
 
+    def __setstate__(self, state: dict) -> None:
+        # Default `window_size` to None so pickles written before this attribute was
+        # introduced keep working without re-running __init__.
+        state.setdefault("window_size", None)
+        self.__dict__.update(state)
+
     @classmethod
     def _from_state(
         cls,
@@ -591,6 +603,12 @@ class MaxAbsScaler(base.Transformer):
             self.abs_max = collections.defaultdict(
                 functools.partial(stats.RollingAbsMax, window_size)
             )
+
+    def __setstate__(self, state: dict) -> None:
+        # Default `window_size` to None so pickles written before this attribute was
+        # introduced keep working without re-running __init__.
+        state.setdefault("window_size", None)
+        self.__dict__.update(state)
 
     @classmethod
     def _from_state(
