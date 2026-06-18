@@ -274,7 +274,7 @@ def test_rolling_bivariate(stat, func):
     # Enough already
 
     def tail(iterable, n):
-        return list(collections.deque(iterable, maxlen=n))
+        return collections.deque(iterable, maxlen=n)
 
     n = stat.window_size
     X = [random.random() for _ in range(30)]
@@ -283,9 +283,9 @@ def test_rolling_bivariate(stat, func):
     for i, (x, y) in enumerate(zip(X, Y)):
         stat.update(x, y)
         if i >= 1:
-            assert math.isclose(
-                stat.get(), func(tail(X[: i + 1], n), tail(Y[: i + 1], n)), abs_tol=1e-10
-            )
+            x_tail = tail(X[: i + 1], n)
+            y_tail = tail(Y[: i + 1], n)
+            assert math.isclose(stat.get(), func(x_tail, y_tail), abs_tol=1e-10)
 
 
 @pytest.mark.parametrize(
