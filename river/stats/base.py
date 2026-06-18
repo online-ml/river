@@ -56,7 +56,7 @@ class RollingUnivariate(Univariate):
 
     @property
     @abc.abstractmethod
-    def window_size(self):
+    def window_size(self) -> int:
         pass
 
     @property
