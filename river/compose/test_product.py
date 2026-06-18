@@ -195,7 +195,7 @@ def test_one_many_consistent():
     X = pd.read_csv(datasets.TrumpApproval().path)
 
     one_outputs = []
-    for x, _ in stream.iter_pandas(X):
+    for x, _ in stream.iter_frame(X):
         one_outputs.append(product.transform_one(x))
     one_outputs = pd.DataFrame(one_outputs)
 

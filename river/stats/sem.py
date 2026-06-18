@@ -39,7 +39,7 @@ class SEM(var.Var):
 
     >>> X = [1, 4, 2, -4, -8, 0]
 
-    >>> rolling_sem = utils.Rolling(stats.SEM(ddof=1), window_size=3)
+    >>> rolling_sem = utils.Rolling(stats.SEM, window_size=3, ddof=1)
     >>> for x in X:
     ...     rolling_sem.update(x)
     ...     print(rolling_sem.get())

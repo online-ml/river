@@ -3,7 +3,9 @@ from __future__ import annotations
 import bisect
 import collections
 import datetime as dt
-from typing import Any, Generic, Protocol, TypeVar, runtime_checkable
+import inspect
+import warnings
+from typing import Any, Generic, Protocol, TypeVar, cast, overload, runtime_checkable
 
 
 @runtime_checkable
@@ -16,11 +18,16 @@ class Rollable(Protocol):
 _T = TypeVar("_T", bound=Rollable)
 
 
+_INSTANCE_DEPRECATION = (
+    "Passing an instance to utils.{cls} is deprecated and will be removed in a future release. "
+    "Pass the class and forward constructor kwargs instead, "
+    "e.g. utils.{cls}(stats.Mean, {window_kw}=...) "
+    "or utils.{cls}(stats.Var, {window_kw}=..., ddof=0)."
+)
+
+
 class BaseRolling(Generic[_T]):
     def __init__(self, obj: _T) -> None:
-        if not isinstance(obj, Rollable):
-            raise ValueError(f"{obj} does not satisfy the necessary protocol")
-
         self.obj = obj
 
     def __getattr__(self, name: str) -> object:
@@ -44,16 +51,20 @@ class BaseRolling(Generic[_T]):
 class Rolling(BaseRolling[_T]):
     """A generic wrapper for performing rolling computations.
 
-    This can be wrapped around any object which implements both an `update` and a `revert` method.
-    Inputs to `update` are stored in a queue. Elements of the queue are popped when the window is
-    full.
+    This can be wrapped around any class whose instances implement both an ``update`` and a
+    ``revert`` method. The wrapped class is instantiated internally; any extra keyword
+    arguments are forwarded to its constructor. Inputs to ``update`` are stored in a queue,
+    and elements of the queue are popped when the window is full.
 
     Parameters
     ----------
-    obj
-        An object that implements both an `update` method and a `rolling `method.
+    cls
+        A class whose instances implement ``update`` and ``revert``. Passing a pre-built
+        instance is deprecated and will be removed in a future release.
     window_size
         Size of the window.
+    **kwargs
+        Forwarded to ``cls`` when instantiating the wrapped object.
 
     Examples
     --------
@@ -63,7 +74,7 @@ class Rolling(BaseRolling[_T]):
     >>> from river import stats, utils
 
     >>> X = [1, 3, 5, 7]
-    >>> rmean = utils.Rolling(stats.Mean(), window_size=3)
+    >>> rmean = utils.Rolling(stats.Mean, window_size=3)
 
     >>> for x in X:
     ...     rmean.update(x)
@@ -73,10 +84,34 @@ class Rolling(BaseRolling[_T]):
     3.0
     5.0
 
+    Constructor arguments for the wrapped class are passed as keyword arguments:
+
+    >>> rvar = utils.Rolling(stats.Var, window_size=3, ddof=0)
+
     """
 
-    def __init__(self, obj: _T, window_size: int) -> None:
-        super().__init__(obj)
+    @overload
+    def __init__(self, cls: type[_T], window_size: int, **kwargs: Any) -> None: ...
+    @overload
+    def __init__(self, cls: _T, window_size: int) -> None: ...
+    def __init__(self, cls: type[_T] | _T, window_size: int, **kwargs: Any) -> None:
+        if inspect.isclass(cls):
+            obj = cls(**kwargs)
+        else:
+            if kwargs:
+                raise TypeError(
+                    "utils.Rolling received constructor kwargs alongside a pre-built instance. "
+                    "Pass the class instead, e.g. utils.Rolling(stats.Var, window_size=..., ddof=0)."
+                )
+            warnings.warn(
+                _INSTANCE_DEPRECATION.format(cls="Rolling", window_kw="window_size"),
+                DeprecationWarning,
+                stacklevel=2,
+            )
+            obj = cls
+        if not isinstance(obj, Rollable):
+            raise ValueError(f"{obj} does not satisfy the necessary protocol")
+        super().__init__(cast(_T, obj))
         self._window_size = window_size
         self.window: collections.deque[tuple[tuple[Any, ...], dict[str, Any]]] = collections.deque(
             maxlen=window_size
@@ -98,16 +133,20 @@ class Rolling(BaseRolling[_T]):
 class TimeRolling(BaseRolling[_T]):
     """A generic wrapper for performing time rolling computations.
 
-    This can be wrapped around any object which implements both an `update` and a `revert` method.
-    Inputs to `update` are stored in a queue. Elements of the queue are popped when they are too
-    old.
+    This can be wrapped around any class whose instances implement both an ``update`` and a
+    ``revert`` method. The wrapped class is instantiated internally; any extra keyword
+    arguments are forwarded to its constructor. Inputs to ``update`` are stored in a queue,
+    and elements of the queue are popped when they are too old.
 
     Parameters
     ----------
-    obj
-        An object that implements both an `update` method and a `rolling `method.
+    cls
+        A class whose instances implement ``update`` and ``revert``. Passing a pre-built
+        instance is deprecated and will be removed in a future release.
     period
         A duration of time, expressed as a `datetime.timedelta`.
+    **kwargs
+        Forwarded to ``cls`` when instantiating the wrapped object.
 
     Examples
     --------
@@ -123,7 +162,7 @@ class TimeRolling(BaseRolling[_T]):
     ...     dt.datetime(2019, 1, 4): 13
     ... }
 
-    >>> rmean = utils.TimeRolling(stats.Mean(), period=dt.timedelta(days=3))
+    >>> rmean = utils.TimeRolling(stats.Mean, period=dt.timedelta(days=3))
     >>> for t, x in X.items():
     ...     rmean.update(x, t=t)
     ...     print(rmean.get())
@@ -134,8 +173,28 @@ class TimeRolling(BaseRolling[_T]):
 
     """
 
-    def __init__(self, obj: _T, period: dt.timedelta) -> None:
-        super().__init__(obj)
+    @overload
+    def __init__(self, cls: type[_T], period: dt.timedelta, **kwargs: Any) -> None: ...
+    @overload
+    def __init__(self, cls: _T, period: dt.timedelta) -> None: ...
+    def __init__(self, cls: type[_T] | _T, period: dt.timedelta, **kwargs: Any) -> None:
+        if inspect.isclass(cls):
+            obj = cls(**kwargs)
+        else:
+            if kwargs:
+                raise TypeError(
+                    "utils.TimeRolling received constructor kwargs alongside a pre-built instance. "
+                    "Pass the class instead, e.g. utils.TimeRolling(stats.Var, period=..., ddof=0)."
+                )
+            warnings.warn(
+                _INSTANCE_DEPRECATION.format(cls="TimeRolling", window_kw="period"),
+                DeprecationWarning,
+                stacklevel=2,
+            )
+            obj = cls
+        if not isinstance(obj, Rollable):
+            raise ValueError(f"{obj} does not satisfy the necessary protocol")
+        super().__init__(cast(_T, obj))
         self.period = period
         self._timestamps: list[dt.datetime] = []
         self._datum: list[Any] = []

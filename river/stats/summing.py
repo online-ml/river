@@ -31,7 +31,7 @@ class Sum(stats.base.Univariate):
     >>> from river import utils
 
     >>> X = [1, -4, 3, -2, 2, 1]
-    >>> rolling_sum = utils.Rolling(stats.Sum(), window_size=2)
+    >>> rolling_sum = utils.Rolling(stats.Sum, window_size=2)
     >>> for x in X:
     ...     rolling_sum.update(x)
     ...     print(rolling_sum.get())

@@ -276,6 +276,7 @@ def test_metric(metric, sk_metric):
 )
 @pytest.mark.filterwarnings("ignore::RuntimeWarning")
 @pytest.mark.filterwarnings("ignore::sklearn.exceptions.UndefinedMetricWarning")
+@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 def test_rolling_metric(metric, sk_metric):
     def tail(iterable, n):
         return collections.deque(iterable, maxlen=n)

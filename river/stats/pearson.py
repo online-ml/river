@@ -50,7 +50,7 @@ class PearsonCorr(stats.base.Bivariate):
     >>> x = [0, 0, 0, 1, 1, 1, 1]
     >>> y = [0, 1, 2, 3, 4, 5, 6]
 
-    >>> pearson = utils.Rolling(stats.PearsonCorr(), window_size=4)
+    >>> pearson = utils.Rolling(stats.PearsonCorr, window_size=4)
 
     >>> for xi, yi in zip(x, y):
     ...     pearson.update(xi, yi)
