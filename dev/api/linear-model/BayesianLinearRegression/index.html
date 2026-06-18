@@ -47071,6 +47071,33 @@ learning rate.</p>
 </code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>MAE: 0.242...
 </code></pre></div></p>
+<p>Features that are absent from <code>x</code> in <code>learn_one</code> are treated as observed values of 0. This is
+the right default when features are centered around zero (e.g. sparse counts or indicators),
+but biases the posterior when typical feature values are far from zero. In that case, combine
+the model with <a href="../../preprocessing/StatImputer"><code>preprocessing.StatImputer</code></a> in a pipeline so that missing observations are
+filled with a running statistic before they reach the model:</p>
+<p><div class="language-python highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">river</span><span class="w"> </span><span class="kn">import</span> <span class="n">preprocessing</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">river</span><span class="w"> </span><span class="kn">import</span> <span class="n">stats</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">with_missing</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">p_missing</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">):</span>
+    <span class="n">rng</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">Random</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">dataset</span><span class="p">:</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="p">{</span><span class="n">f</span><span class="p">:</span> <span class="p">(</span><span class="kc">None</span> <span class="k">if</span> <span class="n">rng</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">p_missing</span> <span class="k">else</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">x</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+        <span class="k">yield</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span>
+
+<span class="n">features</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;ordinal_date&#39;</span><span class="p">,</span> <span class="s1">&#39;gallup&#39;</span><span class="p">,</span> <span class="s1">&#39;ipsos&#39;</span><span class="p">,</span> <span class="s1">&#39;morning_consult&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;rasmussen&#39;</span><span class="p">,</span> <span class="s1">&#39;you_gov&#39;</span><span class="p">]</span>
+<span class="n">model</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">preprocessing</span><span class="o">.</span><span class="n">StatImputer</span><span class="p">(</span><span class="o">*</span><span class="p">[(</span><span class="n">f</span><span class="p">,</span> <span class="n">stats</span><span class="o">.</span><span class="n">Mean</span><span class="p">())</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">features</span><span class="p">])</span>
+    <span class="o">|</span> <span class="n">linear_model</span><span class="o">.</span><span class="n">BayesianLinearRegression</span><span class="p">()</span>
+<span class="p">)</span>
+<span class="n">metric</span> <span class="o">=</span> <span class="n">metrics</span><span class="o">.</span><span class="n">MAE</span><span class="p">()</span>
+<span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span>
+    <span class="n">with_missing</span><span class="p">(</span><span class="n">datasets</span><span class="o">.</span><span class="n">TrumpApproval</span><span class="p">()),</span> <span class="n">model</span><span class="p">,</span> <span class="n">metric</span>
+<span class="p">)</span>
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>MAE: 0.775...
+</code></pre></div></p>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <details class="- abstract">
 <summary>learn_one</summary>
