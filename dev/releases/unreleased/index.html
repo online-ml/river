@@ -2183,6 +2183,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#stats" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        stats
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#stream" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -3425,6 +3436,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#stats" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        stats
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#stream" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -3481,6 +3503,10 @@
 <ul>
 <li>Fixed <code>RecursionError</code> in <code>AMRules</code> on long streams: <a href="../../api/tree/splitter/EBSTSplitter"><code>tree.splitter.EBSTSplitter</code></a> (and <code>TEBSTSplitter</code>) now traverses its binary search tree iteratively and the BST nodes carry a custom iterative <code>__deepcopy__</code>, so deeply-skewed trees no longer blow Python's recursion limit when rules are cloned during expansion. <a href="../../api/tree/splitter/ExhaustiveSplitter"><code>tree.splitter.ExhaustiveSplitter</code></a> received the same treatment (iterative split-search, iterative node insertion, and iterative <code>__deepcopy__</code>).</li>
 <li>Fixed an <code>AMRules</code> memory leak where <code>HoeffdingRule.expand</code> appended a redundant <code>NumericLiteral</code> whenever a new split shared the feature and direction of an existing literal but did not tighten the threshold.</li>
+</ul>
+<h2 id="stats">stats<a class="headerlink" href="#stats" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Added <a href="../../api/stats/ChiSquared"><code>stats.ChiSquared</code></a>, a streaming Chi-squared statistic between two categorical variables. Wrap it with <a href="../../api/utils/Rolling"><code>utils.Rolling</code></a> for a rolling version.</li>
 </ul>
 <h2 id="stream">stream<a class="headerlink" href="#stream" title="Permanent link">&para;</a></h2>
 <ul>

@@ -1213,6 +1213,9 @@
         <loc>https://riverml.xyz/dev/api/stats/BayesianMean/</loc>
       </url>
       <url>
+        <loc>https://riverml.xyz/dev/api/stats/ChiSquared/</loc>
+      </url>
+      <url>
         <loc>https://riverml.xyz/dev/api/stats/Count/</loc>
       </url>
       <url>
