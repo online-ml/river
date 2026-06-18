@@ -1324,6 +1324,9 @@
         <loc>https://riverml.xyz/dev/api/stream/iter-csv/</loc>
       </url>
       <url>
+        <loc>https://riverml.xyz/dev/api/stream/iter-frame/</loc>
+      </url>
+      <url>
         <loc>https://riverml.xyz/dev/api/stream/iter-libsvm/</loc>
       </url>
       <url>

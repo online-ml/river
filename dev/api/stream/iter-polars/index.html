@@ -4421,6 +4421,8 @@
       
         
       
+        
+      
     
     
     
@@ -4614,6 +4616,33 @@
     
   
   iter_csv
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../iter-frame/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  iter_frame
 
     
   </span>
@@ -47010,6 +47039,7 @@
 
 <h1 id="iter_polars">iter_polars<a class="headerlink" href="#iter_polars" title="Permanent link">&para;</a></h1>
 <p>Iterates over the rows of a <code>polars.DataFrame</code>.</p>
+<p>.. deprecated::     Use <a href="../../stream/iter-frame"><code>stream.iter_frame</code></a> instead, which works with any eager dataframe (pandas, polars,     PyArrow, ...). <a href="../../stream/iter-polars"><code>stream.iter_polars</code></a> will be removed in a future release.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
@@ -47034,7 +47064,7 @@
     <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">]</span>
 <span class="p">})</span>
 <span class="n">y</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">get_column</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
-<span class="n">X</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">)</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
 
 <span class="k">for</span> <span class="n">xi</span><span class="p">,</span> <span class="n">yi</span> <span class="ow">in</span> <span class="n">stream</span><span class="o">.</span><span class="n">iter_polars</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">xi</span><span class="p">,</span> <span class="n">yi</span><span class="p">)</span>
