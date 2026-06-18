@@ -2172,6 +2172,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        rules
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#stream" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -3403,6 +3414,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        rules
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#stream" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -3454,6 +3476,11 @@
 <h2 id="utils">utils<a class="headerlink" href="#utils" title="Permanent link">&para;</a></h2>
 <ul>
 <li><a href="../../api/utils/Rolling"><code>utils.Rolling</code></a> and <a href="../../api/utils/TimeRolling"><code>utils.TimeRolling</code></a> now accept a class as their first argument and forward extra keyword arguments to its constructor, e.g. <a href="../../api/utils/Rolling"><code>utils.Rolling</code></a>(<a href="../../api/stats/Mean">stats.Mean</a>, window_size=3)<code>or [</code>utils.Rolling<code>](../api/utils/Rolling)([stats.Var](../api/stats/Var), window_size=3, ddof=0)</code>. This avoids a footgun when using these wrappers as <code>collections.defaultdict</code> factories, where the previous instance form silently shared state across keys. Passing a pre-built instance still works but now emits a <code>DeprecationWarning</code> and will be removed in a future release.</li>
+</ul>
+<h2 id="rules">rules<a class="headerlink" href="#rules" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Fixed <code>RecursionError</code> in <code>AMRules</code> on long streams: <a href="../../api/tree/splitter/EBSTSplitter"><code>tree.splitter.EBSTSplitter</code></a> (and <code>TEBSTSplitter</code>) now traverses its binary search tree iteratively and the BST nodes carry a custom iterative <code>__deepcopy__</code>, so deeply-skewed trees no longer blow Python's recursion limit when rules are cloned during expansion. <a href="../../api/tree/splitter/ExhaustiveSplitter"><code>tree.splitter.ExhaustiveSplitter</code></a> received the same treatment (iterative split-search, iterative node insertion, and iterative <code>__deepcopy__</code>).</li>
+<li>Fixed an <code>AMRules</code> memory leak where <code>HoeffdingRule.expand</code> appended a redundant <code>NumericLiteral</code> whenever a new split shared the feature and direction of an existing literal but did not tighten the threshold.</li>
 </ul>
 <h2 id="stream">stream<a class="headerlink" href="#stream" title="Permanent link">&para;</a></h2>
 <ul>
