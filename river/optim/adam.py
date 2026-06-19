@@ -6,6 +6,7 @@ import typing
 import numpy as np
 
 from river import optim, utils
+from river.optim.base import DictLike
 
 __all__ = ["Adam"]
 
@@ -64,7 +65,7 @@ class Adam(optim.base.Optimizer):
         self.m: typing.Any = None
         self.v: typing.Any = None
 
-    def _step_with_dict(self, w, g):
+    def _step_with_dict(self, w: DictLike, g: DictLike) -> DictLike:
         if self.m is None:
             self.m = collections.defaultdict(float)
             self.v = collections.defaultdict(float)

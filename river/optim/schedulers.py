@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import math
-import typing
 
 from river import optim
 
@@ -73,10 +72,7 @@ class Optimal(optim.base.Scheduler):
         self.alpha = alpha
 
         typw = math.sqrt(1.0 / math.sqrt(self.alpha))
-        # The binary loss gradient of two scalars is a scalar; `cast` documents that (one-time
-        # cost in `__init__`, not a hot path).
-        grad = typing.cast(float, self.loss.gradient(True, -typw))
-        initial_eta0 = typw / max(1.0, grad)
+        initial_eta0 = typw / max(1.0, self.loss.gradient(True, -typw))
         self.t0 = 1.0 / (initial_eta0 * self.alpha)
 
     def get(self, t):

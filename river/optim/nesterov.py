@@ -3,6 +3,7 @@ from __future__ import annotations
 import collections
 
 from river import optim
+from river.optim.base import DictLike
 
 __all__ = ["NesterovMomentum"]
 
@@ -49,7 +50,7 @@ class NesterovMomentum(optim.base.Optimizer):
 
         return w
 
-    def _step_with_dict(self, w, g):
+    def _step_with_dict(self, w: DictLike, g: DictLike) -> DictLike:
         # Move w back to it's initial position
         for i in w:
             w[i] += self.rho * self.s[i]

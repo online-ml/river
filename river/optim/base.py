@@ -17,9 +17,6 @@ VectorLike = typing.Union[utils.VectorDict, np.ndarray]  # noqa: UP007
 # cannot be indexed by feature name. `VectorDict` belongs to both unions because it implements both
 # the mapping and the array protocols.
 DictLike = typing.Union[dict, utils.VectorDict]  # noqa: UP007
-# Losses and their gradients work on scalars, numpy vectors, or (for multi-class) dicts keyed by
-# class label.
-LossValue = typing.Union[float, np.ndarray, typing.MutableMapping]  # noqa: UP007
 
 
 class Initializer(base.Base, abc.ABC):
@@ -102,7 +99,7 @@ class Optimizer(base.Base):
         """
         return w
 
-    def _step_with_dict(self, w: DictLike, g: DictLike) -> DictLike:
+    def _step_with_dict(self, w: dict | VectorLike, g: dict | VectorLike) -> dict | VectorLike:
         raise NotImplementedError
 
     def _step_with_vector(self, w: VectorLike, g: VectorLike) -> VectorLike:
@@ -134,11 +131,7 @@ class Optimizer(base.Base):
             except NotImplementedError:
                 pass
 
-        # Only dict-like inputs reach this point: an `np.ndarray` is always routed through
-        # `_step_with_vector` above, and an optimizer that cannot consume arrays raises rather than
-        # falling through with one. The checker can't prove that. We annotate rather than narrow at
-        # runtime (`isinstance`/`cast`) because `step` is a per-sample hot path.
-        w = self._step_with_dict(w, g)  # type: ignore[arg-type]
+        w = self._step_with_dict(w, g)
         self.n_iterations += 1
         return w
 
@@ -153,7 +146,7 @@ class Loss(base.Base, abc.ABC):
         return f"{self.__class__.__name__}({vars(self)})"
 
     @abc.abstractmethod
-    def __call__(self, y_true, y_pred) -> LossValue:
+    def __call__(self, y_true, y_pred) -> typing.Any:
         """Returns the loss.
 
         Parameters
@@ -170,7 +163,7 @@ class Loss(base.Base, abc.ABC):
         """
 
     @abc.abstractmethod
-    def gradient(self, y_true, y_pred) -> LossValue:
+    def gradient(self, y_true, y_pred) -> typing.Any:
         """Return the gradient with respect to y_pred.
 
         Parameters
@@ -187,7 +180,7 @@ class Loss(base.Base, abc.ABC):
         """
 
     @abc.abstractmethod
-    def mean_func(self, y_pred) -> LossValue:
+    def mean_func(self, y_pred) -> typing.Any:
         """Mean function.
 
         This is the inverse of the link function. Typically, a loss function takes as input the raw

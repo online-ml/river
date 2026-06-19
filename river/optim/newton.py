@@ -3,6 +3,7 @@ from __future__ import annotations
 import numpy as np
 
 from river import base, optim, utils
+from river.optim.base import DictLike
 
 __all__ = ["Newton"]
 
@@ -89,7 +90,7 @@ class Newton(optim.base.Optimizer):
         if len(idx) > self._cap:
             self._grow(len(idx))
 
-    def _step_with_dict(self, w, g):
+    def _step_with_dict(self, w: DictLike, g: DictLike) -> DictLike:
         self._ensure_features(g.keys())
         g_arr = np.zeros(self._cap, dtype=np.float64)
         for f, gi in g.items():

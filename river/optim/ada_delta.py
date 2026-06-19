@@ -3,6 +3,7 @@ from __future__ import annotations
 import collections
 
 from river import optim
+from river.optim.base import DictLike
 
 __all__ = ["AdaDelta"]
 
@@ -59,7 +60,7 @@ class AdaDelta(optim.base.Optimizer):
     def _rms(self, x):
         return (x + self.eps) ** 0.5
 
-    def _step_with_dict(self, w, g):
+    def _step_with_dict(self, w: DictLike, g: DictLike) -> DictLike:
         for i, gi in g.items():
             # Accumulate the gradient
             self.g2[i] = self.rho * self.g2[i] + (1 - self.rho) * gi**2

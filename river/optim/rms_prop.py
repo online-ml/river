@@ -6,6 +6,7 @@ import typing
 import numpy as np
 
 from river import optim, utils
+from river.optim.base import DictLike
 
 __all__ = ["RMSProp"]
 
@@ -55,7 +56,7 @@ class RMSProp(optim.base.Optimizer):
         # disjoint operations, so no single static type fits both — hence `Any`.
         self.g2: typing.Any = None
 
-    def _step_with_dict(self, w, g):
+    def _step_with_dict(self, w: DictLike, g: DictLike) -> DictLike:
         if self.g2 is None:
             self.g2 = collections.defaultdict(float)
 
