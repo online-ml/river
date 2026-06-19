@@ -136,13 +136,9 @@ class LinearRegression(linear_model.base.GLM, base.MiniBatchRegressor):
         return self.loss.mean_func(self._raw_dot_one(x))
 
     def predict_many(self, X):
-        pd = utils.pandas.import_pandas()
-        return pd.Series(
-            self.loss.mean_func(self._raw_dot_many(X)),
-            index=X.index,
-            name=self._y_name,
-            copy=False,
-        )
+        X = utils.dataframe.into_frame(X)
+        y_pred = self.loss.mean_func(self._raw_dot_many(X.to_numpy(), X.columns))
+        return utils.dataframe.to_native_series(y_pred, name=self._y_name, like=X)
 
     def debug_one(self, x: dict, decimals: int = 5) -> str:
         """Debugs the output of the linear regression.

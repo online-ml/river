@@ -5,6 +5,7 @@ import itertools
 import math
 import random
 
+import narwhals as nw
 import numpy as np
 import pandas as pd
 import pytest
@@ -483,3 +484,178 @@ def test_log_reg_sklearn_l1_non_regression():
 
     # since we can't access true coefficients from sklearn.make_classification, we compare losses
     assert math.isclose(log_loss(y, rv_pred), log_loss(y, sk_pred))
+
+
+# ---------------------------------------------------------------------------
+# Dataframe-agnostic mini-batching (narwhals): pandas, polars and pyarrow
+# ---------------------------------------------------------------------------
+
+BACKENDS = ["pandas", "polars", "pyarrow"]
+
+
+def _make_frame(backend, data):
+    """Build a native eager dataframe for `backend` from a {column: values} mapping."""
+    if backend == "pandas":
+        return pd.DataFrame(data)
+    if backend == "polars":
+        pl = pytest.importorskip("polars")
+        return pl.DataFrame(data)
+    if backend == "pyarrow":
+        pa = pytest.importorskip("pyarrow")
+        return pa.table(data)
+    raise ValueError(backend)  # pragma: no cover
+
+
+def _make_series(backend, values, name="y"):
+    """Build the `backend`'s native series (the pyarrow analogue is a ChunkedArray)."""
+    if backend == "pandas":
+        return pd.Series(values, name=name)
+    if backend == "polars":
+        pl = pytest.importorskip("polars")
+        return pl.Series(name, values)
+    if backend == "pyarrow":
+        pa = pytest.importorskip("pyarrow")
+        return pa.chunked_array([values])
+    raise ValueError(backend)  # pragma: no cover
+
+
+def _columnar(dataset, n=80, cast=None):
+    """Materialise a dataset into ({column: values}, [targets], [feature dicts])."""
+    rows = list(dataset.take(n))
+    feats = [x for x, _ in rows]
+    targets = [y if cast is None else cast(y) for _, y in rows]
+    cols = list(feats[0])
+    data = {c: [f[c] for f in feats] for c in cols}
+    return data, targets, feats
+
+
+@pytest.fixture(scope="module")
+def reg_batch():
+    return _columnar(datasets.TrumpApproval(), cast=float)
+
+
+@pytest.fixture(scope="module")
+def clf_batch():
+    return _columnar(datasets.Bananas(), cast=bool)
+
+
+@pytest.mark.parametrize("backend", BACKENDS)
+@pytest.mark.parametrize("Model", [lm.LinearRegression, lm.LogisticRegression])
+def test_learn_many_is_backend_agnostic(backend, Model, reg_batch, clf_batch):
+    """`learn_many` must produce identical weights regardless of the input backend."""
+
+    data, targets, _ = reg_batch if Model is lm.LinearRegression else clf_batch
+
+    reference = Model()
+    reference.learn_many(_make_frame("pandas", data), _make_series("pandas", targets))
+
+    model = Model()
+    model.learn_many(_make_frame(backend, data), _make_series(backend, targets))
+
+    assert model.weights.keys() == reference.weights.keys()
+    for key, weight in reference.weights.items():
+        assert math.isclose(model.weights[key], weight, rel_tol=1e-12, abs_tol=1e-12)
+    assert math.isclose(model.intercept, reference.intercept, rel_tol=1e-12, abs_tol=1e-12)
+
+
+@pytest.mark.parametrize("backend", BACKENDS)
+def test_learn_many_matches_learn_one(backend, reg_batch):
+    """Row-by-row `learn_many` must match `learn_one` on every backend."""
+
+    data, targets, feats = reg_batch
+
+    one = lm.LinearRegression()
+    for x, y in zip(feats, targets):
+        one.learn_one(x, y)
+
+    many = lm.LinearRegression()
+    for i, y in enumerate(targets):
+        X = _make_frame(backend, {c: [data[c][i]] for c in data})
+        many.learn_many(X, _make_series(backend, [y]))
+
+    for key in one.weights:
+        assert math.isclose(many.weights[key], one.weights[key], rel_tol=1e-9)
+
+
+@pytest.mark.parametrize("backend", BACKENDS)
+def test_predict_many_returns_native_backend(backend, reg_batch):
+    """`predict_many` returns the input backend's native type, with matching values."""
+
+    data, targets, feats = reg_batch
+    X = _make_frame(backend, data)
+
+    model = lm.LinearRegression()
+    model.learn_many(X, _make_series(backend, targets))
+
+    y_pred = model.predict_many(X)
+    assert type(y_pred).__module__.split(".")[0] == backend
+
+    expected = [model.predict_one(x) for x in feats]
+    got = nw.from_native(y_pred, series_only=True).to_list()
+    assert all(math.isclose(g, e, rel_tol=1e-9) for g, e in zip(got, expected))
+
+
+@pytest.mark.parametrize("backend", BACKENDS)
+def test_logreg_predict_many_matches_predict_one(backend, clf_batch):
+    """Logistic `predict_many` labels must match `predict_one` on every backend."""
+
+    data, targets, feats = clf_batch
+    X = _make_frame(backend, data)
+
+    model = lm.LogisticRegression()
+    model.learn_many(X, _make_series(backend, targets))
+
+    y_pred = model.predict_many(X)
+    assert type(y_pred).__module__.split(".")[0] == backend
+
+    expected = [model.predict_one(x) for x in feats]
+    got = nw.from_native(y_pred, series_only=True).to_list()
+    assert [bool(g) for g in got] == [bool(e) for e in expected]
+
+
+@pytest.mark.parametrize("backend", BACKENDS)
+def test_logreg_predict_proba_many_matches_predict_proba_one(backend, clf_batch):
+    """Logistic `predict_proba_many` must agree column-wise with `predict_proba_one`.
+
+    Column order is always (False, True); only the labels differ across backends
+    (booleans for pandas, their string form elsewhere).
+    """
+
+    data, targets, feats = clf_batch
+    X = _make_frame(backend, data)
+
+    model = lm.LogisticRegression()
+    model.learn_many(X, _make_series(backend, targets))
+
+    proba = model.predict_proba_many(X)
+    assert type(proba).__module__.split(".")[0] == backend
+
+    expected_labels = [False, True] if backend == "pandas" else ["False", "True"]
+    proba_nw = nw.from_native(proba, eager_only=True)
+    assert list(proba_nw.columns) == expected_labels
+
+    got = proba_nw.to_numpy()
+    for i, x in enumerate(feats):
+        one = model.predict_proba_one(x)
+        assert math.isclose(got[i, 0], one[False], rel_tol=1e-9)
+        assert math.isclose(got[i, 1], one[True], rel_tol=1e-9)
+
+
+def test_predict_many_preserves_pandas_index():
+    """The pandas index contract is kept for series and frame outputs."""
+
+    index = [100, 200, 300, 400]
+    X = pd.DataFrame({"a": [1.0, 2, 3, 4], "b": [4.0, 3, 2, 1]}, index=index)
+
+    reg = lm.LinearRegression()
+    reg.learn_many(X, pd.Series([1.0, 2, 3, 4], index=index, name="target"))
+    pred = reg.predict_many(X)
+    assert list(pred.index) == index
+    assert pred.name == "target"
+
+    clf = lm.LogisticRegression()
+    clf.learn_many(X, pd.Series([False, True, False, True], index=index, name="label"))
+    proba = clf.predict_proba_many(X)
+    assert list(proba.index) == index
+    assert list(proba.columns) == [False, True]
+    assert list(clf.predict_many(X).index) == index

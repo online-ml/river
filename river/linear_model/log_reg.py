@@ -5,7 +5,7 @@ import typing
 from river import base, linear_model, optim, utils
 
 if typing.TYPE_CHECKING:
-    import pandas as pd
+    from narwhals.typing import IntoDataFrame
 
 
 class LogisticRegression(linear_model.base.GLM, base.MiniBatchClassifier):
@@ -96,7 +96,15 @@ class LogisticRegression(linear_model.base.GLM, base.MiniBatchClassifier):
         p = self.loss.mean_func(self._raw_dot_one(x))  # Convert logit to probability
         return {False: 1.0 - p, True: p}
 
-    def predict_proba_many(self, X: pd.DataFrame) -> pd.DataFrame:
-        pd = utils.pandas.import_pandas()
-        p = self.loss.mean_func(self._raw_dot_many(X))  # Convert logits to probabilities
-        return pd.DataFrame({False: 1.0 - p, True: p}, index=X.index, copy=False)
+    def predict_proba_many(self, X: IntoDataFrame):
+        X = utils.dataframe.into_frame(X)
+        p = self.loss.mean_func(self._raw_dot_many(X.to_numpy(), X.columns))  # logits to probas
+        # pandas keeps the boolean column labels; other backends require string names.
+        return utils.dataframe.to_native_frame({False: 1.0 - p, True: p}, like=X)
+
+    def predict_many(self, X: IntoDataFrame):
+        # Labels are the booleans False/True, so the base `idxmax` over the proba frame is
+        # replaced by a numpy threshold that returns the actual booleans on every backend.
+        X = utils.dataframe.into_frame(X)
+        p = self.loss.mean_func(self._raw_dot_many(X.to_numpy(), X.columns))
+        return utils.dataframe.to_native_series(p > 0.5, name=self._y_name, like=X)
