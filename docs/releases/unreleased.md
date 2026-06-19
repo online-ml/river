@@ -1,6 +1,7 @@
 # Unreleased
 
 * Add `ppc64le` architecture to Linux wheel builds.
+* Dropped `altair` from River's runtime dependencies. It was never imported by the package itself (it is only used to draw plots in the documentation notebooks), so it has been moved to the `docs`/`dev` dependency groups. Installing River no longer pulls in `altair` and its transitive dependencies.
 
 ## covariance
 
