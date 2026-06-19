@@ -199,7 +199,7 @@ class MultivariateGaussian(base.MultivariateContinuousDistribution):
 
     >>> from river import utils
 
-    >>> p = utils.Rolling(MultivariateGaussian(), window_size=5)
+    >>> p = utils.Rolling(MultivariateGaussian, window_size=5)
     >>> for x in X.to_dict(orient="records"):
     ...     p.update(x)
     >>> p.var
@@ -212,7 +212,7 @@ class MultivariateGaussian(base.MultivariateContinuousDistribution):
 
     >>> from datetime import datetime as dt, timedelta as td
     >>> X.index = [dt(2023, 3, 28, 0, 0, 0) + td(seconds=x) for x in range(8)]
-    >>> p = utils.TimeRolling(MultivariateGaussian(), period=td(seconds=5))
+    >>> p = utils.TimeRolling(MultivariateGaussian, period=td(seconds=5))
     >>> for t, x in X.iterrows():
     ...     p.update(x.to_dict(), t=t)
     >>> p.var

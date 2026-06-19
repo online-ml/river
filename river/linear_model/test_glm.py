@@ -126,7 +126,7 @@ def test_one_many_consistent():
     Y = X.pop("five_thirty_eight")
 
     one = lm.LinearRegression()
-    for x, y in stream.iter_pandas(X[:100], Y[:100]):
+    for x, y in stream.iter_frame(X[:100], Y[:100]):
         one.learn_one(x, y)
 
     many = lm.LinearRegression()
@@ -414,7 +414,7 @@ def test_lin_reg_sklearn_l1_non_regression():
         }
     )
 
-    for xi, yi in stream.iter_pandas(X, y):
+    for xi, yi in stream.iter_frame(X, y):
         ss.learn_one(xi)
         xi_tr = ss.transform_one(xi)
         rv.learn_one(xi_tr, yi)
@@ -467,7 +467,7 @@ def test_log_reg_sklearn_l1_non_regression():
 
     rv_pred = list()
     sk_pred = list()
-    for xi, yi in stream.iter_pandas(X, y):
+    for xi, yi in stream.iter_frame(X, y):
         ss.learn_one(xi)
         xi_tr = ss.transform_one(xi)
         rv.learn_one(xi_tr, yi)

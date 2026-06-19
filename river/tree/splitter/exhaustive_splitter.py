@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 from collections import Counter, defaultdict
 
 from ..utils import BranchFactory
@@ -45,104 +46,80 @@ class ExhaustiveSplitter(Splitter):
         return 0.0
 
     def best_evaluated_split_suggestion(self, criterion, pre_split_dist, att_idx, binary_only):
-        current_best_option = BranchFactory()
-
         return self._search_for_best_split_option(
-            current_node=self._root,
-            current_best_option=current_best_option,
-            actual_parent_left=None,
-            parent_left=None,
-            parent_right=None,
-            left_child=False,
+            root=self._root,
             criterion=criterion,
             pre_split_dist=pre_split_dist,
             att_idx=att_idx,
         )
 
-    def _search_for_best_split_option(
-        self,
-        current_node,
-        current_best_option,
-        actual_parent_left,
-        parent_left,
-        parent_right,
-        left_child,
-        criterion,
-        pre_split_dist,
-        att_idx,
-    ):
-        if current_node is None:
-            return current_best_option
+    def _search_for_best_split_option(self, root, criterion, pre_split_dist, att_idx):
+        # Iterative pre-order traversal. The recursive form blows Python's
+        # recursion limit on long streams since the BST can be degenerate.
+        # Each stack entry carries the arguments of one recursive call.
+        # Push order is right-then-left so the left subtree is processed
+        # first when popping (matching the original pre-order behaviour).
+        current_best_option = BranchFactory()
+        stack: list[tuple] = [(root, None, None, None, False)]
 
-        left_dist = {}
-        right_dist = {}
+        while stack:
+            node, actual_parent_left, parent_left, parent_right, left_child = stack.pop()
+            if node is None:
+                continue
 
-        if parent_left is None:
-            left_dist.update(dict(Counter(left_dist) + Counter(current_node.class_count_left)))
-            right_dist.update(dict(Counter(right_dist) + Counter(current_node.class_count_right)))
-        else:
-            left_dist.update(dict(Counter(left_dist) + Counter(parent_left)))
-            right_dist.update(dict(Counter(right_dist) + Counter(parent_right)))
+            left_dist: dict = {}
+            right_dist: dict = {}
 
-            if left_child:
-                # get the exact statistics of the parent value
-                exact_parent_dist = {}
-                exact_parent_dist.update(
-                    dict(Counter(exact_parent_dist) + Counter(actual_parent_left))
-                )
-                exact_parent_dist.update(
-                    dict(Counter(exact_parent_dist) - Counter(current_node.class_count_left))
-                )
-                exact_parent_dist.update(
-                    dict(Counter(exact_parent_dist) - Counter(current_node.class_count_right))
-                )
-
-                # move the subtrees
-                left_dist.update(dict(Counter(left_dist) - Counter(current_node.class_count_right)))
-                right_dist.update(
-                    dict(Counter(right_dist) + Counter(current_node.class_count_right))
-                )
-
-                # move the exact value from the parent
-                right_dist.update(dict(Counter(right_dist) + Counter(exact_parent_dist)))
-                left_dist.update(dict(Counter(left_dist) - Counter(exact_parent_dist)))
+            if parent_left is None:
+                left_dist.update(dict(Counter(left_dist) + Counter(node.class_count_left)))
+                right_dist.update(dict(Counter(right_dist) + Counter(node.class_count_right)))
             else:
-                left_dist.update(dict(Counter(left_dist) + Counter(current_node.class_count_left)))
-                right_dist.update(
-                    dict(Counter(right_dist) - Counter(current_node.class_count_left))
+                left_dist.update(dict(Counter(left_dist) + Counter(parent_left)))
+                right_dist.update(dict(Counter(right_dist) + Counter(parent_right)))
+
+                if left_child:
+                    # get the exact statistics of the parent value
+                    exact_parent_dist: dict = {}
+                    exact_parent_dist.update(
+                        dict(Counter(exact_parent_dist) + Counter(actual_parent_left))
+                    )
+                    exact_parent_dist.update(
+                        dict(Counter(exact_parent_dist) - Counter(node.class_count_left))
+                    )
+                    exact_parent_dist.update(
+                        dict(Counter(exact_parent_dist) - Counter(node.class_count_right))
+                    )
+
+                    # move the subtrees
+                    left_dist.update(dict(Counter(left_dist) - Counter(node.class_count_right)))
+                    right_dist.update(dict(Counter(right_dist) + Counter(node.class_count_right)))
+
+                    # move the exact value from the parent
+                    right_dist.update(dict(Counter(right_dist) + Counter(exact_parent_dist)))
+                    left_dist.update(dict(Counter(left_dist) - Counter(exact_parent_dist)))
+                else:
+                    left_dist.update(dict(Counter(left_dist) + Counter(node.class_count_left)))
+                    right_dist.update(dict(Counter(right_dist) - Counter(node.class_count_left)))
+
+            post_split_dists = [left_dist, right_dist]
+            merit = criterion.merit_of_split(pre_split_dist, post_split_dists)
+            if merit > current_best_option.merit:
+                current_best_option = BranchFactory(
+                    merit, att_idx, node.cut_point, post_split_dists
                 )
 
-        post_split_dists = [left_dist, right_dist]
-        merit = criterion.merit_of_split(pre_split_dist, post_split_dists)
-
-        if merit > current_best_option.merit:
-            current_best_option = BranchFactory(
-                merit, att_idx, current_node.cut_point, post_split_dists
+            stack.append(
+                (
+                    node._right,
+                    node.class_count_left,
+                    post_split_dists[0],
+                    post_split_dists[1],
+                    False,
+                )
             )
-
-        current_best_option = self._search_for_best_split_option(
-            current_node=current_node._left,  # noqa
-            current_best_option=current_best_option,
-            actual_parent_left=current_node.class_count_left,
-            parent_left=post_split_dists[0],
-            parent_right=post_split_dists[1],
-            left_child=True,
-            criterion=criterion,
-            pre_split_dist=pre_split_dist,
-            att_idx=att_idx,
-        )
-
-        current_best_option = self._search_for_best_split_option(
-            current_node=current_node._right,  # noqa
-            current_best_option=current_best_option,
-            actual_parent_left=current_node.class_count_left,
-            parent_left=post_split_dists[0],
-            parent_right=post_split_dists[1],
-            left_child=False,
-            criterion=criterion,
-            pre_split_dist=pre_split_dist,
-            att_idx=att_idx,
-        )
+            stack.append(
+                (node._left, node.class_count_left, post_split_dists[0], post_split_dists[1], True)
+            )
 
         return current_best_option
 
@@ -157,18 +134,49 @@ class ExhaustiveNode:
         self.cut_point = att_val
         self.class_count_left[target_val] += w
 
+    def __deepcopy__(self, memo):
+        # Iterative copy: the BST can be deep enough on long streams that the
+        # default recursive deepcopy blows Python's recursion limit.
+        cls = type(self)
+        new_root = cls.__new__(cls)
+        memo[id(self)] = new_root
+        stack: list[tuple[ExhaustiveNode, ExhaustiveNode]] = [(self, new_root)]
+        while stack:
+            src, dst = stack.pop()
+            dst.class_count_left = copy.deepcopy(src.class_count_left, memo)
+            dst.class_count_right = copy.deepcopy(src.class_count_right, memo)
+            dst.cut_point = copy.deepcopy(src.cut_point, memo)
+            dst._left = None
+            dst._right = None
+            if src._left is not None:
+                child = cls.__new__(cls)
+                memo[id(src._left)] = child
+                dst._left = child
+                stack.append((src._left, child))
+            if src._right is not None:
+                child = cls.__new__(cls)
+                memo[id(src._right)] = child
+                dst._right = child
+                stack.append((src._right, child))
+        return new_root
+
     def insert_value(self, val, label, w):
-        if val == self.cut_point:
-            self.class_count_left[label] += w
-        elif val < self.cut_point:
-            self.class_count_left[label] += w
-            if self._left is None:
-                self._left = ExhaustiveNode(val, label, w)
+        # Iterative descent: a degenerate (monotonically inserted) BST would
+        # otherwise blow Python's recursion limit.
+        current = self
+        while True:
+            if val == current.cut_point:
+                current.class_count_left[label] += w
+                return
+            if val < current.cut_point:
+                current.class_count_left[label] += w
+                if current._left is None:
+                    current._left = ExhaustiveNode(val, label, w)
+                    return
+                current = current._left
             else:
-                self._left.insert_value(val, label, w)
-        else:
-            self.class_count_right[label] += w
-            if self._right is None:
-                self._right = ExhaustiveNode(val, label, w)
-            else:
-                self._right.insert_value(val, label, w)
+                current.class_count_right[label] += w
+                if current._right is None:
+                    current._right = ExhaustiveNode(val, label, w)
+                    return
+                current = current._right

@@ -203,6 +203,7 @@ module = [
     "gymnasium.*",
     "sympy.*",
     "polars.*",
+    "pyarrow.*",
     "river._river_rust",
     "river._river_rust.*",
 ]

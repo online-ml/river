@@ -26,7 +26,7 @@ STREAM_METHODS: dict[type, typing.Callable] = {np.ndarray: stream.iter_array}
 if PANDAS_INSTALLED:
     import pandas as pd
 
-    STREAM_METHODS[pd.DataFrame] = stream.iter_pandas
+    STREAM_METHODS[pd.DataFrame] = stream.iter_frame
 
 # Params passed to sklearn.utils.check_X_y and sklearn.utils.check_array
 SKLEARN_INPUT_X_PARAMS = {

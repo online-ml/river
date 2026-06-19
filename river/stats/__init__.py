@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from . import base
 from .auto_corr import AutoCorr
+from .chi_squared import ChiSquared
 from .count import Count
 from .cov import Cov
 from .entropy import Entropy
@@ -34,6 +35,7 @@ __all__ = [
     "BayesianMean",
     "Count",
     "Cov",
+    "ChiSquared",
     "Entropy",
     "EWMean",
     "EWVar",

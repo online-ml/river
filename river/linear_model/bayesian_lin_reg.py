@@ -49,7 +49,7 @@ class BayesianLinearRegression(base.Regressor):
 
     >>> x, _ = next(iter(dataset))
     >>> model.predict_one(x)
-    43.852...
+    43.855...
 
     >>> model.predict_one(x, with_dist=True)
     𝒩(μ=43.85..., σ=1.00...)
@@ -105,6 +105,33 @@ class BayesianLinearRegression(base.Regressor):
     >>> evaluate.progressive_val_score(dataset, model, metric)
     MAE: 0.242...
 
+    Features that are absent from `x` in `learn_one` are treated as observed values of 0. This is
+    the right default when features are centered around zero (e.g. sparse counts or indicators),
+    but biases the posterior when typical feature values are far from zero. In that case, combine
+    the model with `preprocessing.StatImputer` in a pipeline so that missing observations are
+    filled with a running statistic before they reach the model:
+
+    >>> from river import preprocessing
+    >>> from river import stats
+
+    >>> def with_missing(dataset, p_missing=0.2, seed=42):
+    ...     rng = random.Random(seed)
+    ...     for x, y in dataset:
+    ...         x = {f: (None if rng.random() < p_missing else v) for f, v in x.items()}
+    ...         yield x, y
+
+    >>> features = ['ordinal_date', 'gallup', 'ipsos', 'morning_consult',
+    ...             'rasmussen', 'you_gov']
+    >>> model = (
+    ...     preprocessing.StatImputer(*[(f, stats.Mean()) for f in features])
+    ...     | linear_model.BayesianLinearRegression()
+    ... )
+    >>> metric = metrics.MAE()
+    >>> evaluate.progressive_val_score(
+    ...     with_missing(datasets.TrumpApproval()), model, metric
+    ... )
+    MAE: 0.774...
+
     References
     ----------
     [^1]: [Pattern Recognition and Machine Learning, page 52 — Christopher M. Bishop](https://www.microsoft.com/en-us/research/uploads/prod/2006/01/Bishop-Pattern-Recognition-and-Machine-Learning-2006.pdf)
@@ -117,86 +144,87 @@ class BayesianLinearRegression(base.Regressor):
         self.alpha = alpha
         self.beta = beta
         self.smoothing = smoothing
-        self._ss: dict[tuple[base.typing.FeatureName, base.typing.FeatureName], float] = {}
-        self._ss_inv: dict[tuple[base.typing.FeatureName, base.typing.FeatureName], float] = {}
-        self._m: dict[base.typing.FeatureName, float] = {}
+        self._idx: dict[base.typing.FeatureName, int] = {}
+        # We track:
+        # - `_ss_arr`: the posterior precision matrix, updated by exact rank-1
+        #   additions and so identical across BLAS implementations.
+        # - `_ss_inv_arr`: the posterior covariance, maintained in-place via a
+        #   Sherman-Morrison rank-1 update (one BLAS dger per `learn_one`).
+        # - `_eta_arr = beta * sum_i(y_i * x_i)`: the natural mean, also an
+        #   exact accumulator.
+        # The posterior mean is recovered from these on demand as
+        # `_ss_inv_arr @ _eta_arr` and cached in `_m_arr` until the next
+        # `learn_one`. Recomputing `m` from the natural parameters rather than
+        # propagating it through `m_new = ss_inv @ (ss_old @ m_old + bx*y)`
+        # keeps cross-platform drift roughly linear in BLAS rounding rather
+        # than compounding multiplicatively.
+        self._ss_arr = np.zeros((0, 0), dtype=np.float64)
+        self._ss_inv_arr = np.zeros((0, 0), dtype=np.float64, order="F")
+        self._eta_arr = np.zeros(0, dtype=np.float64)
+        self._m_arr = np.zeros(0, dtype=np.float64)
+        self._m_dirty = False
+        self._cap = 0
         self._n = 1
 
-    def _unit_test_skips(self):
-        return {"check_shuffle_features_no_impact", "check_emerging_features"}
+    def _grow(self, needed: int) -> None:
+        new_cap = max(needed, max(8, self._cap * 2))
+        diag = 1.0 / self.alpha
+        new_ss = np.eye(new_cap, dtype=np.float64) * diag
+        new_ss_inv = np.eye(new_cap, dtype=np.float64, order="F") * diag
+        new_eta = np.zeros(new_cap, dtype=np.float64)
+        if self._cap:
+            new_ss[: self._cap, : self._cap] = self._ss_arr
+            new_ss_inv[: self._cap, : self._cap] = self._ss_inv_arr
+            new_eta[: self._cap] = self._eta_arr
+        self._ss_arr = new_ss
+        self._ss_inv_arr = new_ss_inv
+        self._eta_arr = new_eta
+        self._cap = new_cap
 
-    def _get_arrays(self, features, m=True, ss=True, ss_inv=True):
-        m_arr = np.array([self._m.get(i, 0.0) for i in features]) if m else None
-        ss_arr = (
-            np.array(
-                [
-                    [
-                        self._ss.get(
-                            # Get value if it exists
-                            min((i, j), (j, i)),
-                            # Initialize to eye matrix
-                            1.0 / self.alpha if i == j else 0.0,
-                        )
-                        for j in features
-                    ]
-                    for i in features
-                ]
-            )
-            if ss
-            else None
-        )
-        ss_inv_arr = (
-            np.array(
-                [
-                    [
-                        self._ss_inv.get(
-                            # Get value if it exists
-                            min((i, j), (j, i)),
-                            # Initialize to eye matrix
-                            1.0 / self.alpha if i == j else 0.0,
-                        )
-                        for j in features
-                    ]
-                    for i in features
-                ],
-                order="F",
-            )
-            if ss_inv
-            else None
-        )
-        return m_arr, ss_arr, ss_inv_arr
+    def _ensure_features(self, features) -> None:
+        idx = self._idx
+        for f in features:
+            if f not in idx:
+                idx[f] = len(idx)
+        if len(idx) > self._cap:
+            self._grow(len(idx))
 
-    def _set_arrays(self, features, m_arr, ss_arr, ss_inv_arr):
-        for i, fi in enumerate(features):
-            self._m[fi] = m_arr[i]
-            ss_row = ss_arr[i]
-            ss_inv_row = ss_inv_arr[i]
-            for j, fj in enumerate(features):
-                self._ss[min((fi, fj), (fj, fi))] = ss_row[j]
-                self._ss_inv[min((fi, fj), (fj, fi))] = ss_inv_row[j]
+    def _ensure_m(self) -> None:
+        if not self._m_dirty:
+            return
+        if self._idx:
+            self._m_arr = self._ss_inv_arr @ self._eta_arr
+        self._m_dirty = False
 
     def learn_one(self, x, y):
-        x_arr = np.array(list(x.values()))
-        m_arr, ss_arr, ss_inv_arr = self._get_arrays(x.keys())
+        # Treat features absent from `x` as observed values of 0. Updating the
+        # full-cap state (rather than just the touched submatrix via np.ix_)
+        # keeps `_ss_inv_arr = inv(_ss_arr)` consistent across
+        # emerging/disappearing feature subsets.
+        self._ensure_features(x.keys())
+        x_arr = np.zeros(self._cap, dtype=np.float64)
+        for f, v in x.items():
+            x_arr[self._idx[f]] = v
 
         bx = self.beta * x_arr
 
         if self.smoothing is None:
-            utils.math.sherman_morrison(A=ss_inv_arr, u=bx, v=x_arr)
-            # Bishop equation 3.50
-            m_arr = ss_inv_arr @ (ss_arr @ m_arr + bx * y)
             # Bishop equation 3.51
-            ss_arr += np.outer(bx, x_arr)
+            self._ss_arr += np.outer(bx, x_arr)
+            utils.math.sherman_morrison(A=self._ss_inv_arr, u=bx, v=x_arr)
+            # Natural mean: eta_N = eta_{N-1} + beta * y_N * x_N
+            self._eta_arr += bx * y
         else:
-            new_ss_arr = self.smoothing * ss_arr + (1 - self.smoothing) * np.outer(bx, x_arr)
+            s = self.smoothing
+            new_ss_arr = s * self._ss_arr + (1 - s) * np.outer(bx, x_arr)
             # TODO: we use standard matrix inversion. This is not very efficient. However, we don't
             # yet have a formula for the Sherman-Morrison approximation when a smoothing factor is
             # involved. This is an interesting research direction!
-            ss_inv_arr = np.linalg.inv(new_ss_arr)
-            m_arr = ss_inv_arr @ (self.smoothing * ss_arr @ m_arr + (1 - self.smoothing) * bx * y)
-            ss_arr = new_ss_arr
+            self._ss_inv_arr = np.asfortranarray(np.linalg.inv(new_ss_arr))
+            self._ss_arr = new_ss_arr
+            self._eta_arr = s * self._eta_arr + (1 - s) * bx * y
 
-        self._set_arrays(x.keys(), m_arr, ss_arr, ss_inv_arr)
+        self._m_dirty = True
 
     def predict_one(self, x, with_dist=False):
         """Predict the output of features `x`.
@@ -215,18 +243,44 @@ class BayesianLinearRegression(base.Regressor):
         """
 
         # Bishop equation 3.58
-        y_pred_mean = 0.0 if not len(self._m) else utils.math.dot(self._m, x).item()
-        if not with_dist:
-            return y_pred_mean
+        y_pred_mean = 0.0
+        if self._idx:
+            self._ensure_m()
+            m_arr = self._m_arr
+            for f, v in x.items():
+                i = self._idx.get(f)
+                if i is not None:
+                    y_pred_mean += m_arr[i] * v
 
-        x_arr = np.array(list(x.values()))
-        *_, ss_inv_arr = self._get_arrays(x.keys(), m=False, ss=False)
+        if not with_dist:
+            return float(y_pred_mean)
+
+        n = len(self._idx)
+        diag = 1.0 / self.alpha
+        x_arr = np.zeros(self._cap, dtype=np.float64)
+        unknown_norm_sq = 0.0
+        for f, v in x.items():
+            i = self._idx.get(f)
+            if i is None:
+                unknown_norm_sq += float(v) * float(v)
+            elif n:
+                x_arr[i] = v
         # Bishop equation 3.59
-        y_pred_var = 1 / self.beta + x_arr @ ss_inv_arr @ x_arr.T
+        if n:
+            y_pred_var = 1 / self.beta + float(x_arr @ self._ss_inv_arr @ x_arr)
+        else:
+            y_pred_var = 1 / self.beta
+        y_pred_var += diag * unknown_norm_sq
 
         return proba.Gaussian._from_state(n=1, m=y_pred_mean, sig=y_pred_var**0.5, ddof=0)
 
     def predict_many(self, X):
         pd = utils.pandas.import_pandas()
-        m, *_ = self._get_arrays(X.columns, m=True, ss=False, ss_inv=False)
+        self._ensure_m()
+        m_full = self._m_arr
+        m = np.zeros(len(X.columns), dtype=np.float64)
+        for k, f in enumerate(X.columns):
+            i = self._idx.get(f)
+            if i is not None:
+                m[k] = m_full[i]
         return pd.Series(X.values @ m, index=X.index)

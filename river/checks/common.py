@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import copy
+import gc
 import inspect
 import itertools
 import pickle
@@ -183,6 +184,61 @@ def check_debug_one(model, dataset):
             model.learn_one(x)
         model.debug_one(x)
         break
+
+
+def check_bounded_memory_growth(model, dataset):
+    """A truly online model's memory should not grow unboundedly with samples.
+
+    The dataset is split in half: a warmup phase (during which the model is
+    allowed to grow freely as features are discovered, dicts rehash, buffers
+    fill, etc.) and an equally sized measurement phase. The measurement-phase
+    growth is then compared against the warmup-phase growth. A genuinely
+    online model's growth slows after warmup, so measurement-phase growth
+    should be at most comparable to warmup-phase growth. A model that retains
+    state per sample would keep growing at the same rate and blow past that.
+
+    This is intentionally lenient: the goal is to catch dramatic regressions
+    (e.g. accidentally storing every sample) on heterogeneous CI machines, not
+    to police every byte. Measurement is noisy in practice — Python's garbage
+    collector, dict capacity jumps, and bursty tree splits can all shift the
+    numbers by tens of percent between runs.
+    """
+
+    samples = list(dataset)
+    if len(samples) < 4:
+        return  # not enough data to split meaningfully
+
+    warmup_end = len(samples) // 2
+
+    for x, y in samples[:warmup_end]:
+        _learn(model, x, y)
+    gc.collect()
+    size_after_warmup = model._raw_memory_usage
+
+    for x, y in samples[warmup_end:]:
+        _learn(model, x, y)
+    gc.collect()
+    size_final = model._raw_memory_usage
+
+    warmup_growth = size_after_warmup  # baseline is an empty model (~0 B)
+    measurement_growth = size_final - size_after_warmup
+    # Allow the measurement phase to grow by up to 3× the warmup phase plus
+    # a 16 KiB absolute floor. Same number of samples in each phase, so a
+    # model growing at a constant per-sample rate would land near 1×; bursty
+    # tree-ensemble splits (whose timing depends on data order and may all
+    # land in the measurement phase) can push that ratio higher. 3× catches
+    # dramatic acceleration without flagging benign bursts.
+    tolerance = max(16 * 1024, warmup_growth // 4)
+    limit = 3 * max(warmup_growth, 0) + tolerance
+
+    assert measurement_growth <= limit, (
+        f"Model memory grew unboundedly: "
+        f"{size_after_warmup} B after {warmup_end} warmup samples -> "
+        f"{size_final} B after {len(samples)} samples. "
+        f"Measurement-phase growth {measurement_growth:+d} B exceeds "
+        f"the {limit} B limit (3× warmup growth {warmup_growth} B + "
+        f"{tolerance} B tolerance)."
+    )
 
 
 def check_pickling_supports_roundtrip(model):
