@@ -1015,6 +1015,12 @@
         <loc>https://riverml.xyz/dev/api/optim/NesterovMomentum/</loc>
       </url>
       <url>
+        <loc>https://riverml.xyz/dev/api/optim/Newton/</loc>
+      </url>
+      <url>
+        <loc>https://riverml.xyz/dev/api/optim/Optimizer/</loc>
+      </url>
+      <url>
         <loc>https://riverml.xyz/dev/api/optim/RMSProp/</loc>
       </url>
       <url>

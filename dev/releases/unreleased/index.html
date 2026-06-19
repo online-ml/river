@@ -2150,10 +2150,32 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#optim" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        optim
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#preprocessing" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
         preprocessing
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reco" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        reco
       </span>
     </span>
   </a>
@@ -3403,10 +3425,32 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#optim" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        optim
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#preprocessing" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
         preprocessing
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reco" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        reco
       </span>
     </span>
   </a>
@@ -3493,10 +3537,18 @@
 <li>Sped up the mini-batch gradient in <code>LinearRegression</code>/<code>LogisticRegression.learn_many</code> by contracting the sample axis directly inside the <code>np.einsum</code> call instead of building the intermediate <code>(n, p)</code> matrix and averaging it afterwards. ~2-3× faster on that step, no semantic change.</li>
 <li>Stabilised <code>BayesianLinearRegression</code> across BLAS implementations and sped it up further. <code>learn_one</code> now accumulates an exact natural mean <code>_eta_arr = beta * sum_i(y_i * x_i)</code> alongside the existing Sherman-Morrison rank-1 update of <code>_ss_inv_arr</code>, and the posterior mean is recovered lazily as <code>_ss_inv_arr @ _eta_arr</code> (cached and invalidated on <code>learn_one</code>). Previously the posterior mean was propagated through <code>m_new = ss_inv @ (ss_old @ m_old + bx*y)</code>, which compounded BLAS rounding multiplicatively across rank-1 updates and caused a ~0.6% relative drift between macOS Accelerate and Linux OpenBLAS on <code>TrumpApproval</code> with imputation. The new path keeps <code>learn_one</code> ~20% faster than before and the full <code>predict</code>+<code>learn</code> cycle ~10% faster.</li>
 </ul>
+<h2 id="optim">optim<a class="headerlink" href="#optim" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Exposed <a href="../../api/optim/Newton"><code>optim.Newton</code></a>, the Online Newton Step optimizer, which was previously implemented but never exported. Fixed a correctness bug whereby the inverse Hessian was initialized to <code>eps * I</code> instead of <code>(1 / eps) * I</code>, which crippled learning (the maintained inverse could only ever shrink from a tiny starting value). Reworked the internals to use NumPy-backed dense state and <a href="../../api/utils/math/sherman-morrison"><code>utils.math.sherman_morrison</code></a> (the same BLAS rank-1 update used by <code>BayesianLinearRegression</code>) instead of a bespoke dict-based reimplementation.</li>
+</ul>
 <h2 id="preprocessing">preprocessing<a class="headerlink" href="#preprocessing" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Added <code>window_size</code> parameter to <a href="../../api/preprocessing/StandardScaler"><code>preprocessing.StandardScaler</code></a>, <a href="../../api/preprocessing/MinMaxScaler"><code>preprocessing.MinMaxScaler</code></a>, and <a href="../../api/preprocessing/MaxAbsScaler"><code>preprocessing.MaxAbsScaler</code></a>. When set, the scaler tracks its statistics over the last <code>window_size</code> observations instead of the entire stream.</li>
 <li>Added <code>_from_state</code> classmethod to <a href="../../api/preprocessing/MinMaxScaler"><code>preprocessing.MinMaxScaler</code></a>, <a href="../../api/preprocessing/MaxAbsScaler"><code>preprocessing.MaxAbsScaler</code></a>, and <a href="../../api/preprocessing/StandardScaler"><code>preprocessing.StandardScaler</code></a> so a scaler can be warm-started from offline-computed statistics or resumed from a checkpoint without replaying past observations.</li>
+</ul>
+<h2 id="reco">reco<a class="headerlink" href="#reco" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Corrected the type annotations of the weight/latent <code>defaultdict</code>s in <code>BiasedMF</code>, <code>Baseline</code>, and <code>FunkMF</code>: their values are floats/arrays (not <code>Initializer</code> objects), and their keys are hashable IDs. Removed the bespoke <code>reco.base.ID</code> alias in favour of the built-in <code>typing.Hashable</code> (matching <code>base.typing.FeatureName</code>). Typing-only; no behavioral change.</li>
 </ul>
 <h2 id="utils">utils<a class="headerlink" href="#utils" title="Permanent link">&para;</a></h2>
 <ul>

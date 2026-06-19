@@ -3888,6 +3888,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -46986,8 +46990,8 @@
 <p>Fits a <code>user</code>-<code>item</code> pair and a real-valued target <code>y</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>user</strong>     — <code>ID</code>    </li>
-<li><strong>item</strong>     — <code>ID</code>    </li>
+<li><strong>user</strong>     — <code>typing.Hashable</code>    </li>
+<li><strong>item</strong>     — <code>typing.Hashable</code>    </li>
 <li><strong>y</strong>     — <code>Reward</code>    </li>
 <li><strong>x</strong>     — <code>dict | None</code>     — defaults to <code>None</code>    </li>
 </ul>
@@ -46998,8 +47002,8 @@
 <p>Predicts the target value of a set of features <code>x</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>user</strong>     — <code>ID</code>    </li>
-<li><strong>item</strong>     — <code>ID</code>    </li>
+<li><strong>user</strong>     — <code>typing.Hashable</code>    </li>
+<li><strong>item</strong>     — <code>typing.Hashable</code>    </li>
 <li><strong>x</strong>     — <code>dict | None</code>     — defaults to <code>None</code>    </li>
 </ul>
 <p><strong>Returns</strong></p>
@@ -47011,8 +47015,8 @@
 <p>Rank models by decreasing order of preference for a given user.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>user</strong>     — <code>ID</code>    </li>
-<li><strong>items</strong>     — <code>set[ID]</code>    </li>
+<li><strong>user</strong>     — <code>typing.Hashable</code>    </li>
+<li><strong>items</strong>     — <code>set[typing.Hashable]</code>    </li>
 <li><strong>x</strong>     — <code>dict | None</code>     — defaults to <code>None</code>    </li>
 </ul>
 </details>
