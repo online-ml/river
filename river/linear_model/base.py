@@ -179,11 +179,12 @@ class GLM:
         loss_gradient = np.clip(loss_gradient, -self.clip_gradient, self.clip_gradient)
 
         # At this point we have a feature matrix X of shape (n, p). The loss gradient is a vector
-        # of length p. We want to multiply each of X's rows by the corresponding value in the loss
-        # gradient. When this is all done, we collapse X by computing the average of each column,
-        # thereby obtaining the mean gradient of the batch. From thereon, the code reduces to the
-        # single instance case.
-        gradient = np.einsum("ij,i->ij", X.values, loss_gradient).mean(axis=0)
+        # of length n. We want to multiply each of X's rows by the corresponding value in the loss
+        # gradient, then collapse X by computing the average of each column, thereby obtaining the
+        # mean gradient of the batch. From thereon, the code reduces to the single instance case.
+        # Contracting the sample axis directly inside the einsum avoids materialising the
+        # intermediate (n, p) matrix that an "ij,i->ij" contraction followed by .mean(axis=0) would.
+        gradient = np.einsum("ij,i->j", X.values, loss_gradient) / len(X)
         if self.l2:
             gradient += self.l2 * self._weights.to_numpy(X.columns)
 
