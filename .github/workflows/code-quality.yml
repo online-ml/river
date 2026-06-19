@@ -9,7 +9,7 @@ on:
       - main
 
 jobs:
-  ubuntu:
+  tests:
     name: Tests + prek
     runs-on: ubuntu-latest
     steps:
@@ -33,14 +33,21 @@ jobs:
       - name: Download datasets
         run: uv run make download-datasets
 
-      - name: Run tests
-        run: uv run pytest
-
+      # prek runs while pandas is still installed (mypy etc. type-check against it).
       - name: Run prek
         uses: j178/prek-action@v2
 
-  no-pandas:
-    name: Tests without pandas
+      # The bulk of the suite runs without pandas, which also guards the
+      # optional-dependency contract. The pandas subset runs in the companion
+      # job below, so nothing is tested twice.
+      - name: Uninstall pandas
+        run: uv pip uninstall pandas
+
+      - name: Run tests
+        run: uv run --no-sync pytest
+
+  pandas:
+    name: Tests with pandas
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -62,11 +69,12 @@ jobs:
       - name: Download datasets
         run: uv run make download-datasets
 
-      - name: Uninstall pandas
-        run: uv pip uninstall pandas
-
-      - name: Run tests
-        run: uv run --no-sync pytest
+      # RIVER_PANDAS_ONLY restricts collection to the pandas-dependent modules
+      # (see river/conftest.py).
+      - name: Run pandas tests
+        env:
+          RIVER_PANDAS_ONLY: "1"
+        run: uv run pytest
 
   build-sdist:
     name: Build sdist and wheel from sdist
@@ -81,4 +89,3 @@ jobs:
 
       - name: Build sdist and wheel from sdist
         run: uv build
-
