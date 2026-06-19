@@ -2911,9 +2911,9 @@ docs = [
 [package.metadata]
 requires-dist = [
     { name = "narwhals", specifier = ">=2.0.0" },
-    { name = "numpy", specifier = ">=2.3.4,<3" },
+    { name = "numpy", specifier = ">=2.2.5,<3" },
     { name = "pandas", marker = "extra == 'pandas'", specifier = ">=2.2,<3" },
-    { name = "scipy", specifier = ">=1.16,<2" },
+    { name = "scipy", specifier = ">=1.14.1,<2" },
 ]
 provides-extras = ["pandas"]
 
