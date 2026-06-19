@@ -5,7 +5,7 @@ import typing
 from river import base, linear_model, optim, utils
 
 if typing.TYPE_CHECKING:
-    from narwhals.typing import IntoDataFrame
+    from narwhals.stable.v2.typing import IntoDataFrame
 
 
 class LogisticRegression(linear_model.base.GLM, base.MiniBatchClassifier):

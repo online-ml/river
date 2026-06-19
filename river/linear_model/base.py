@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import functools
 import numbers
 import typing
 
@@ -10,7 +11,7 @@ from river import optim, utils
 if typing.TYPE_CHECKING:
     from collections.abc import Sequence
 
-    from narwhals.typing import IntoDataFrame, IntoSeries
+    from narwhals.stable.v2.typing import IntoDataFrame, IntoSeries
 
 __all__ = ["GLM"]
 
@@ -203,18 +204,24 @@ class GLM:
         cols = Xnw.columns
         X_np = Xnw.to_numpy()
         y_np = ynw.to_numpy()
-        if isinstance(w, numbers.Number):
-            w_np: float | np.ndarray = typing.cast("float", w)
+        # A scalar weight stays a scalar; a per-sample weight series is converted to numpy. The
+        # concrete `(int, float)` check (rather than `numbers.Number`) lets the type narrow on
+        # both branches, so no cast is needed.
+        if isinstance(w, (int, float)):
+            w_np: float | np.ndarray = w
         else:
-            w_np = utils.dataframe.into_series(typing.cast("IntoSeries", w)).to_numpy()
+            w_np = utils.dataframe.into_series(w).to_numpy()
 
         saved = self._enter_learn_mode(set(cols))
         try:
+            # `_fit`'s `get_grad(x, y, w)` reuses its first argument both to compute the gradient
+            # and to drive the weight update. For mini-batches that argument is the column names,
+            # while the feature matrix is bound here via `partial`.
             self._fit(
                 cols,
                 y_np,
                 w_np,
-                get_grad=lambda c, yv, wv: self._eval_gradient_many(X_np, c, yv, wv),
+                get_grad=functools.partial(self._eval_gradient_many, X_np),
             )
         finally:
             self._exit_learn_mode(saved)

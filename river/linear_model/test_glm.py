@@ -5,7 +5,7 @@ import itertools
 import math
 import random
 
-import narwhals as nw
+import narwhals.stable.v2 as nw
 import numpy as np
 import pandas as pd
 import pytest
@@ -15,6 +15,7 @@ from sklearn.metrics import log_loss
 
 from river import datasets, optim, preprocessing, stream, utils
 from river import linear_model as lm
+from river.conftest import BACKENDS
 
 
 def _pd_split(df, n):
@@ -488,35 +489,10 @@ def test_log_reg_sklearn_l1_non_regression():
 
 # ---------------------------------------------------------------------------
 # Dataframe-agnostic mini-batching (narwhals): pandas, polars and pyarrow
+#
+# Native frame/series construction is parametrized through the shared `backend` fixture
+# (see `river/conftest.py`); `BACKENDS` is imported only to build the pandas reference.
 # ---------------------------------------------------------------------------
-
-BACKENDS = ["pandas", "polars", "pyarrow"]
-
-
-def _make_frame(backend, data):
-    """Build a native eager dataframe for `backend` from a {column: values} mapping."""
-    if backend == "pandas":
-        return pd.DataFrame(data)
-    if backend == "polars":
-        pl = pytest.importorskip("polars")
-        return pl.DataFrame(data)
-    if backend == "pyarrow":
-        pa = pytest.importorskip("pyarrow")
-        return pa.table(data)
-    raise ValueError(backend)  # pragma: no cover
-
-
-def _make_series(backend, values, name="y"):
-    """Build the `backend`'s native series (the pyarrow analogue is a ChunkedArray)."""
-    if backend == "pandas":
-        return pd.Series(values, name=name)
-    if backend == "polars":
-        pl = pytest.importorskip("polars")
-        return pl.Series(name, values)
-    if backend == "pyarrow":
-        pa = pytest.importorskip("pyarrow")
-        return pa.chunked_array([values])
-    raise ValueError(backend)  # pragma: no cover
 
 
 def _columnar(dataset, n=80, cast=None):
@@ -539,18 +515,18 @@ def clf_batch():
     return _columnar(datasets.Bananas(), cast=bool)
 
 
-@pytest.mark.parametrize("backend", BACKENDS)
 @pytest.mark.parametrize("Model", [lm.LinearRegression, lm.LogisticRegression])
 def test_learn_many_is_backend_agnostic(backend, Model, reg_batch, clf_batch):
     """`learn_many` must produce identical weights regardless of the input backend."""
 
     data, targets, _ = reg_batch if Model is lm.LinearRegression else clf_batch
 
+    pandas = BACKENDS["pandas"]()
     reference = Model()
-    reference.learn_many(_make_frame("pandas", data), _make_series("pandas", targets))
+    reference.learn_many(pandas.frame(data), pandas.series(targets))
 
     model = Model()
-    model.learn_many(_make_frame(backend, data), _make_series(backend, targets))
+    model.learn_many(backend.frame(data), backend.series(targets))
 
     assert model.weights.keys() == reference.weights.keys()
     for key, weight in reference.weights.items():
@@ -558,7 +534,6 @@ def test_learn_many_is_backend_agnostic(backend, Model, reg_batch, clf_batch):
     assert math.isclose(model.intercept, reference.intercept, rel_tol=1e-12, abs_tol=1e-12)
 
 
-@pytest.mark.parametrize("backend", BACKENDS)
 def test_learn_many_matches_learn_one(backend, reg_batch):
     """Row-by-row `learn_many` must match `learn_one` on every backend."""
 
@@ -570,50 +545,47 @@ def test_learn_many_matches_learn_one(backend, reg_batch):
 
     many = lm.LinearRegression()
     for i, y in enumerate(targets):
-        X = _make_frame(backend, {c: [data[c][i]] for c in data})
-        many.learn_many(X, _make_series(backend, [y]))
+        X = backend.frame({c: [data[c][i]] for c in data})
+        many.learn_many(X, backend.series([y]))
 
     for key in one.weights:
         assert math.isclose(many.weights[key], one.weights[key], rel_tol=1e-9)
 
 
-@pytest.mark.parametrize("backend", BACKENDS)
 def test_predict_many_returns_native_backend(backend, reg_batch):
     """`predict_many` returns the input backend's native type, with matching values."""
 
     data, targets, feats = reg_batch
-    X = _make_frame(backend, data)
+    X = backend.frame(data)
 
     model = lm.LinearRegression()
-    model.learn_many(X, _make_series(backend, targets))
+    model.learn_many(X, backend.series(targets))
 
     y_pred = model.predict_many(X)
-    assert type(y_pred).__module__.split(".")[0] == backend
+    assert type(y_pred).__module__.split(".")[0] == backend.name
 
     expected = [model.predict_one(x) for x in feats]
     got = nw.from_native(y_pred, series_only=True).to_list()
     assert all(math.isclose(g, e, rel_tol=1e-9) for g, e in zip(got, expected))
 
 
-@pytest.mark.parametrize("backend", BACKENDS)
 def test_logreg_predict_many_matches_predict_one(backend, clf_batch):
     """Logistic `predict_many` labels must match `predict_one` on every backend."""
 
     data, targets, feats = clf_batch
-    X = _make_frame(backend, data)
+    X = backend.frame(data)
 
     model = lm.LogisticRegression()
-    model.learn_many(X, _make_series(backend, targets))
+    model.learn_many(X, backend.series(targets))
 
     y_pred = model.predict_many(X)
-    assert type(y_pred).__module__.split(".")[0] == backend
+    assert type(y_pred).__module__.split(".")[0] == backend.name
 
     expected = [model.predict_one(x) for x in feats]
     got = nw.from_native(y_pred, series_only=True).to_list()
     assert [bool(g) for g in got] == [bool(e) for e in expected]
 
 
-@pytest.mark.parametrize("backend", BACKENDS)
 def test_logreg_predict_proba_many_matches_predict_proba_one(backend, clf_batch):
     """Logistic `predict_proba_many` must agree column-wise with `predict_proba_one`.
 
@@ -622,15 +594,15 @@ def test_logreg_predict_proba_many_matches_predict_proba_one(backend, clf_batch)
     """
 
     data, targets, feats = clf_batch
-    X = _make_frame(backend, data)
+    X = backend.frame(data)
 
     model = lm.LogisticRegression()
-    model.learn_many(X, _make_series(backend, targets))
+    model.learn_many(X, backend.series(targets))
 
     proba = model.predict_proba_many(X)
-    assert type(proba).__module__.split(".")[0] == backend
+    assert type(proba).__module__.split(".")[0] == backend.name
 
-    expected_labels = [False, True] if backend == "pandas" else ["False", "True"]
+    expected_labels = [False, True] if backend.name == "pandas" else ["False", "True"]
     proba_nw = nw.from_native(proba, eager_only=True)
     assert list(proba_nw.columns) == expected_labels
 

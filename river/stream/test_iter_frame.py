@@ -5,11 +5,10 @@ import typing
 import pytest
 
 from river import stream
+from river.conftest import BACKENDS, Backend
 
 if typing.TYPE_CHECKING:
     from collections.abc import Callable
-
-    from narwhals.stable.v2.typing import IntoDataFrame, IntoSeries
 
     from river.base.typing import FeatureName
 
@@ -26,45 +25,6 @@ EXPECTED: list[Row] = [
     ({"x1": 3, "x2": "yellow"}, False),
     ({"x1": 4, "x2": "blue"}, True),
 ]
-
-
-class Backend(typing.NamedTuple):
-    """Builds native frames and series for one dataframe library."""
-
-    frame: Callable[[Data], IntoDataFrame]
-    series: Callable[[list[typing.Any]], IntoSeries]
-
-
-def _pandas() -> Backend:
-    pd = pytest.importorskip("pandas")
-    return Backend(frame=pd.DataFrame, series=pd.Series)
-
-
-def _polars() -> Backend:
-    pl = pytest.importorskip("polars")
-    return Backend(frame=pl.DataFrame, series=pl.Series)
-
-
-def _pyarrow() -> Backend:
-    pa = pytest.importorskip("pyarrow")
-
-    def series(values: list[typing.Any]) -> IntoSeries:
-        return pa.chunked_array([values])
-
-    return Backend(frame=pa.table, series=series)
-
-
-BACKENDS: dict[str, Callable[[], Backend]] = {
-    "pandas": _pandas,
-    "polars": _polars,
-    "pyarrow": _pyarrow,
-}
-
-
-@pytest.fixture(params=list(BACKENDS))
-def backend(request: pytest.FixtureRequest) -> Backend:
-    """Yields one `Backend` per dataframe library, skipping those that are not installed."""
-    return BACKENDS[request.param]()
 
 
 def test_features_and_target(backend: Backend) -> None:
@@ -146,7 +106,7 @@ def test_lazy_frame_raises() -> None:
 
 @pytest.mark.parametrize(
     ("iter_fn", "make_backend"),
-    [(stream.iter_pandas, _pandas), (stream.iter_polars, _polars)],
+    [(stream.iter_pandas, BACKENDS["pandas"]), (stream.iter_polars, BACKENDS["polars"])],
 )
 def test_deprecated_wrapper_forwards_shuffle(
     iter_fn: Callable[..., typing.Iterator[Row]], make_backend: Callable[[], Backend]

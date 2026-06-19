@@ -14,23 +14,32 @@ from __future__ import annotations
 
 import typing
 
-import narwhals as nw
+import narwhals.stable.v2 as nw
 
 if typing.TYPE_CHECKING:
     from collections.abc import Mapping, Sequence
     from typing import Any
 
-    from narwhals.typing import IntoDataFrame, IntoSeries
+    from narwhals.stable.v2.typing import (
+        IntoDataFrame,
+        IntoDataFrameT,
+        IntoSeries,
+        IntoSeriesT,
+    )
 
 __all__ = ["into_frame", "into_series", "to_native_frame", "to_native_series"]
 
 
-def into_frame(X: IntoDataFrame) -> nw.DataFrame[IntoDataFrame]:
-    """Wrap a native eager dataframe in a narwhals `DataFrame`."""
+def into_frame(X: IntoDataFrameT) -> nw.DataFrame[IntoDataFrameT]:
+    """Wrap a native eager dataframe in a narwhals `DataFrame`.
+
+    The native frame type flows through the `IntoDataFrameT` type variable, so callers keep a
+    precisely-typed handle (e.g. `nw.DataFrame[pd.DataFrame]`) instead of a backend union.
+    """
     return nw.from_native(X, eager_only=True)
 
 
-def into_series(y: IntoSeries) -> nw.Series[IntoSeries]:
+def into_series(y: IntoSeriesT) -> nw.Series[IntoSeriesT]:
     """Wrap a native eager series in a narwhals `Series`."""
     return nw.from_native(y, series_only=True)
 
@@ -53,9 +62,7 @@ def to_native_series(
     # TODO(FBruzzesi): narwhals' stub types `name` as `str`, but every backend accepts `None` at runtime.
     series = nw.new_series(name=name, values=values, backend=nw.get_native_namespace(like))  # type: ignore[arg-type]
     native = series.to_native()
-    # `index` is only ever non-None for pandas-like backends, which is exactly where
-    # `native` exposes a mutable `.index`. `maybe_set_index` does not round-trip the
-    # output of `maybe_get_index` (it expects a narwhals Series), so we assign directly.
+    # Carry over the pandas index; no-op for non-pandas backends (maybe_get_index -> None).
     if (index := nw.maybe_get_index(like)) is not None:
         native.index = index
     return typing.cast("IntoSeries", native)
@@ -80,6 +87,7 @@ def to_native_frame(data: Mapping[Any, Sequence[Any]], *, like: nw.DataFrame[Any
     if not impl.is_pandas_like():
         data = {str(key): value for key, value in data.items()}
     frame = nw.from_dict(data, backend=impl).to_native()
+    # Carry over the pandas index; no-op for non-pandas backends (maybe_get_index -> None).
     if (index := nw.maybe_get_index(like)) is not None:
         frame.index = index
     return typing.cast("IntoDataFrame", frame)
