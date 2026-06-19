@@ -5,6 +5,7 @@ import collections
 import numpy as np
 
 from river import optim
+from river.optim.base import DictLike
 
 __all__ = ["FTRLProximal"]
 
@@ -61,7 +62,7 @@ class FTRLProximal(optim.base.Optimizer):
         self.n = collections.defaultdict(float)
         self.n_iterations = 0
 
-    def _step_with_dict(self, w, g):
+    def _step_with_dict(self, w: DictLike, g: DictLike) -> DictLike:
         alpha = self.alpha
         beta = self.beta
         l1 = self.l1

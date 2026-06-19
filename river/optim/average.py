@@ -3,6 +3,7 @@ from __future__ import annotations
 import collections
 
 from river import optim
+from river.optim.base import DictLike
 
 
 class Averager(optim.base.Optimizer):
@@ -59,8 +60,10 @@ class Averager(optim.base.Optimizer):
     def look_ahead(self, w):
         return self.optimizer.look_ahead(w)
 
-    def _step_with_dict(self, w, g):
-        w = self.optimizer.step(w, g)
+    def _step_with_dict(self, w: DictLike, g: DictLike) -> DictLike:
+        # The wrapped optimizer updates `w` in place (same contract `linear_model` relies on), so we
+        # keep the original `w` reference and its `DictLike` type for the `.items()` loop below.
+        self.optimizer.step(w, g)
 
         # No averaging occurs during the first start iterations
         if self.n_iterations < self.start:

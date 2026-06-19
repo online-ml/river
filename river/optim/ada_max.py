@@ -3,6 +3,7 @@ from __future__ import annotations
 import collections
 
 from river import optim
+from river.optim.base import DictLike
 
 __all__ = ["AdaMax"]
 
@@ -58,7 +59,7 @@ class AdaMax(optim.base.Optimizer):
         self.m = collections.defaultdict(float)
         self.u = collections.defaultdict(float)
 
-    def _step_with_dict(self, w, g):
+    def _step_with_dict(self, w: DictLike, g: DictLike) -> DictLike:
         # Correct bias for `m`
         learning_rate = self.learning_rate / (1 - self.beta_1 ** (self.n_iterations + 1))
 
