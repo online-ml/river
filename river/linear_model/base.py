@@ -213,11 +213,7 @@ class GLM:
             # `_fit`'s `get_grad(x, y, w)` reuses its first argument both to compute the gradient
             # and to drive the weight update. For mini-batches that argument is the column names,
             # while the feature matrix is bound here via `partial`.
-            self._fit(
-                cols,
-                y_np,
-                w_np,
-                get_grad=functools.partial(self._eval_gradient_many, X_np),
-            )
+            get_grad = functools.partial(self._eval_gradient_many, X_np)
+            self._fit(x=cols, y=y_np, w=w_np, get_grad=get_grad)
         finally:
             self._exit_learn_mode(saved)
