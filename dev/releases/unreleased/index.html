@@ -3522,6 +3522,7 @@
 <h1 id="unreleased">Unreleased<a class="headerlink" href="#unreleased" title="Permanent link">&para;</a></h1>
 <ul>
 <li>Add <code>ppc64le</code> architecture to Linux wheel builds.</li>
+<li>Dropped <code>altair</code> from River's runtime dependencies. It was never imported by the package itself (it is only used to draw plots in the documentation notebooks), so it has been moved to the <code>docs</code>/<code>dev</code> dependency groups. Installing River no longer pulls in <code>altair</code> and its transitive dependencies.</li>
 </ul>
 <h2 id="covariance">covariance<a class="headerlink" href="#covariance" title="Permanent link">&para;</a></h2>
 <ul>
