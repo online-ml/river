@@ -47,17 +47,7 @@ except ImportError:
             collect_ignore.append(str(_path.relative_to(_root)))
 
 
-# --------------------------------------------------------------------------------------------
-# Dataframe-backend test matrix
-#
-# Shared by every test that exercises the narwhals boundary (stream iterators and the
-# mini-batch `*_many` methods). Each `Backend` packages the native frame/series constructors
-# for one eager dataframe library; the `backend` fixture parametrizes over all of them and
-# skips those that are not installed.
-# --------------------------------------------------------------------------------------------
-
-
-class Backend(typing.NamedTuple):
+class FrameBackend(typing.NamedTuple):
     """Native frame/series constructors for one dataframe library."""
 
     name: str
@@ -65,30 +55,32 @@ class Backend(typing.NamedTuple):
     series: Callable[..., IntoSeries]
 
 
-def _pandas() -> Backend:
+def _pandas() -> FrameBackend:
     pd = pytest.importorskip("pandas")
-    return Backend("pandas", pd.DataFrame, lambda values, name="y": pd.Series(values, name=name))
+    return FrameBackend(
+        "pandas", pd.DataFrame, lambda values, name="y": pd.Series(values, name=name)
+    )
 
 
-def _polars() -> Backend:
+def _polars() -> FrameBackend:
     pl = pytest.importorskip("polars")
-    return Backend("polars", pl.DataFrame, lambda values, name="y": pl.Series(name, values))
+    return FrameBackend("polars", pl.DataFrame, lambda values, name="y": pl.Series(name, values))
 
 
-def _pyarrow() -> Backend:
+def _pyarrow() -> FrameBackend:
     pa = pytest.importorskip("pyarrow")
     # pyarrow has no Series; its 1D analogue is a ChunkedArray, which carries no name.
-    return Backend("pyarrow", pa.table, lambda values, name="y": pa.chunked_array([values]))
+    return FrameBackend("pyarrow", pa.table, lambda values, name="y": pa.chunked_array([values]))
 
 
-BACKENDS: dict[str, Callable[[], Backend]] = {
+FRAME_BACKENDS: dict[str, Callable[[], FrameBackend]] = {
     "pandas": _pandas,
     "polars": _polars,
     "pyarrow": _pyarrow,
 }
 
 
-@pytest.fixture(params=list(BACKENDS))
-def backend(request: pytest.FixtureRequest) -> Backend:
+@pytest.fixture(params=list(FRAME_BACKENDS))
+def frame_backend(request: pytest.FixtureRequest) -> FrameBackend:
     """Yield one `Backend` per dataframe library, skipping those that are not installed."""
-    return BACKENDS[request.param]()
+    return FRAME_BACKENDS[request.param]()

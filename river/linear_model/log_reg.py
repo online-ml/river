@@ -5,7 +5,9 @@ import typing
 from river import base, linear_model, optim, utils
 
 if typing.TYPE_CHECKING:
-    from narwhals.stable.v2.typing import IntoDataFrame
+    import numpy as np
+    from narwhals.stable.v2.typing import IntoDataFrame, IntoSeries
+    from numpy.typing import NDArray
 
 
 class LogisticRegression(linear_model.base.GLM, base.MiniBatchClassifier):
@@ -96,15 +98,19 @@ class LogisticRegression(linear_model.base.GLM, base.MiniBatchClassifier):
         p = self.loss.mean_func(self._raw_dot_one(x))  # Convert logit to probability
         return {False: 1.0 - p, True: p}
 
-    def predict_proba_many(self, X: IntoDataFrame):
-        X = utils.dataframe.into_frame(X)
-        p = self.loss.mean_func(self._raw_dot_many(X.to_numpy(), X.columns))  # logits to probas
+    def predict_proba_many(self, X: IntoDataFrame) -> IntoDataFrame:
+        X_nw = utils.dataframe.into_frame(X)
+        p: NDArray[np.float64] = self.loss.mean_func(
+            self._raw_dot_many(X_nw.to_numpy(), X_nw.columns)
+        )  # logits to probas
         # pandas keeps the boolean column labels; other backends require string names.
-        return utils.dataframe.to_native_frame({False: 1.0 - p, True: p}, like=X)
+        return utils.dataframe.to_native_frame({False: 1.0 - p, True: p}, like=X_nw)
 
-    def predict_many(self, X: IntoDataFrame):
+    def predict_many(self, X: IntoDataFrame) -> IntoSeries:
         # Labels are the booleans False/True, so the base `idxmax` over the proba frame is
         # replaced by a numpy threshold that returns the actual booleans on every backend.
-        X = utils.dataframe.into_frame(X)
-        p = self.loss.mean_func(self._raw_dot_many(X.to_numpy(), X.columns))
-        return utils.dataframe.to_native_series(p > 0.5, name=self._y_name, like=X)
+        X_nw = utils.dataframe.into_frame(X)
+        values: NDArray[np.bool_] = (
+            self.loss.mean_func(self._raw_dot_many(X_nw.to_numpy(), X_nw.columns)) > 0.5
+        )
+        return utils.dataframe.to_native_series(values, name=self._y_name, like=X_nw)

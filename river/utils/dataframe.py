@@ -26,6 +26,7 @@ if typing.TYPE_CHECKING:
         IntoSeries,
         IntoSeriesT,
     )
+    from numpy.typing import NDArray
 
 __all__ = ["into_frame", "into_series", "to_native_frame", "to_native_series"]
 
@@ -45,7 +46,7 @@ def into_series(y: IntoSeriesT) -> nw.Series[IntoSeriesT]:
 
 
 def to_native_series(
-    values: Sequence[Any], *, name: str | None, like: nw.DataFrame[IntoDataFrame]
+    values: NDArray[Any] | Sequence[Any], *, name: str | None, like: nw.DataFrame[IntoDataFrame]
 ) -> IntoSeries:
     """Build a native series matching the backend (and pandas index) of `like`.
 
@@ -68,7 +69,9 @@ def to_native_series(
     return typing.cast("IntoSeries", native)
 
 
-def to_native_frame(data: Mapping[Any, Sequence[Any]], *, like: nw.DataFrame[Any]) -> IntoDataFrame:
+def to_native_frame(
+    data: Mapping[Any, NDArray[Any] | Sequence[Any]], *, like: nw.DataFrame[Any]
+) -> IntoDataFrame:
     """Build a native dataframe matching the backend (and pandas index) of `like`.
 
     Pandas-like backends accept arbitrary column labels (e.g. the booleans `False`/`True`

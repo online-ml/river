@@ -128,8 +128,6 @@ class GLM:
     def _update_weights(self, x):
         # L1 cumulative penalty helper
 
-        # `x` only needs to yield the feature names whose weights were just updated: a dict
-        # of features for `learn_one`, the column names for `learn_many`. Both iterate to keys.
         # Apply penalty to each weight iteratively, with the potential of being parallelized by using VectorDict
         for j in x:
             wj_temp = self._weights[j]
@@ -204,13 +202,11 @@ class GLM:
         cols = Xnw.columns
         X_np = Xnw.to_numpy()
         y_np = ynw.to_numpy()
-        # A scalar weight stays a scalar; a per-sample weight series is converted to numpy. The
-        # concrete `(int, float)` check (rather than `numbers.Number`) lets the type narrow on
-        # both branches, so no cast is needed.
-        if isinstance(w, (int, float)):
-            w_np: float | np.ndarray = w
-        else:
-            w_np = utils.dataframe.into_series(w).to_numpy()
+
+        # A scalar weight stays a scalar; a per-sample weight series is converted to numpy.
+        w_np: float | np.ndarray = (
+            w if isinstance(w, (int, float)) else utils.dataframe.into_series(w).to_numpy()
+        )
 
         saved = self._enter_learn_mode(set(cols))
         try:
