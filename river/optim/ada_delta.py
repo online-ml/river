@@ -48,7 +48,9 @@ class AdaDelta(optim.base.Optimizer):
     """
 
     def __init__(self, rho=0.95, eps=1e-8):
-        super().__init__(lr=None)
+        # AdaDelta has no global learning rate (it derives per-coordinate steps from `rho`). We pass
+        # an inert 0 so the base keeps a valid `Scheduler`; `learning_rate` is never read here.
+        super().__init__(lr=0.0)
         self.rho = rho
         self.eps = eps
         self.g2 = collections.defaultdict(float)

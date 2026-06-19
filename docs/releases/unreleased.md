@@ -16,6 +16,11 @@
 - Sped up the mini-batch gradient in `LinearRegression`/`LogisticRegression.learn_many` by contracting the sample axis directly inside the `np.einsum` call instead of building the intermediate `(n, p)` matrix and averaging it afterwards. ~2-3× faster on that step, no semantic change.
 - Stabilised `BayesianLinearRegression` across BLAS implementations and sped it up further. `learn_one` now accumulates an exact natural mean `_eta_arr = beta * sum_i(y_i * x_i)` alongside the existing Sherman-Morrison rank-1 update of `_ss_inv_arr`, and the posterior mean is recovered lazily as `_ss_inv_arr @ _eta_arr` (cached and invalidated on `learn_one`). Previously the posterior mean was propagated through `m_new = ss_inv @ (ss_old @ m_old + bx*y)`, which compounded BLAS rounding multiplicatively across rank-1 updates and caused a ~0.6% relative drift between macOS Accelerate and Linux OpenBLAS on `TrumpApproval` with imputation. The new path keeps `learn_one` ~20% faster than before and the full `predict`+`learn` cycle ~10% faster.
 
+## optim
+
+- Exposed `optim.Newton`, the Online Newton Step optimizer, which was previously implemented but never exported. Fixed a correctness bug whereby the inverse Hessian was initialized to `eps * I` instead of `(1 / eps) * I`, which crippled learning (the maintained inverse could only ever shrink from a tiny starting value). Reworked the internals to use NumPy-backed dense state and `utils.math.sherman_morrison` (the same BLAS rank-1 update used by `BayesianLinearRegression`) instead of a bespoke dict-based reimplementation.
+- Cleaned up the static typing of the whole `optim` module (now passes `pyright` with zero errors, in addition to `mypy`). Added return-type annotations to the abstract `Loss`/`Initializer`/`Optimizer` interfaces, split the optimizer step interface into a dict-like path and an array path, and resolved the remaining type errors without adding any runtime overhead. No behavioral change.
+
 ## preprocessing
 
 - Added `window_size` parameter to `preprocessing.StandardScaler`, `preprocessing.MinMaxScaler`, and `preprocessing.MaxAbsScaler`. When set, the scaler tracks its statistics over the last `window_size` observations instead of the entire stream.

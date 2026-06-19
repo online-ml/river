@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import collections
+import typing
 
 import numpy as np
 
@@ -49,7 +50,10 @@ class RMSProp(optim.base.Optimizer):
         super().__init__(lr)
         self.rho = rho
         self.eps = eps
-        self.g2 = None
+        # Dual-mode accumulator: a `defaultdict` of floats on the `learn_one` path, or an
+        # array-like (`np.ndarray`/`VectorDict`) on the `learn_many` path. These modes support
+        # disjoint operations, so no single static type fits both — hence `Any`.
+        self.g2: typing.Any = None
 
     def _step_with_dict(self, w, g):
         if self.g2 is None:

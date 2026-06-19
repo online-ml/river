@@ -9,15 +9,29 @@ from river import base, optim, utils
 
 __all__ = ["Initializer", "Scheduler", "Optimizer", "Loss"]
 
+# Array-like weights/gradients: numpy arrays and `VectorDict`. These support elementwise
+# arithmetic but not necessarily feature-name indexing (a raw `np.ndarray` does not).
 VectorLike = typing.Union[utils.VectorDict, np.ndarray]  # noqa: UP007
+# The "dict" path operates on feature-keyed, dict-like containers: plain dicts and `VectorDict`
+# (which is dict-like). It explicitly excludes `np.ndarray`, which has no `.keys()`/`.items()` and
+# cannot be indexed by feature name. `VectorDict` belongs to both unions because it implements both
+# the mapping and the array protocols.
+DictLike = typing.Union[dict, utils.VectorDict]  # noqa: UP007
+# Losses and their gradients work on scalars, numpy vectors, or (for multi-class) dicts keyed by
+# class label.
+LossValue = typing.Union[float, np.ndarray, typing.MutableMapping]  # noqa: UP007
 
 
 class Initializer(base.Base, abc.ABC):
     """An initializer is used to set initial weights in a model."""
 
     @abc.abstractmethod
-    def __call__(self, shape=1):
+    def __call__(self, shape: int = 1) -> typing.Any:
         """Returns a fresh set of weights.
+
+        The return type is shape-dependent (a scalar when ``shape == 1``, otherwise an array), and
+        these values are routinely used as `collections.defaultdict` factories elsewhere, so the
+        return is intentionally left dynamic.
 
         Parameters
         ----------
@@ -88,13 +102,13 @@ class Optimizer(base.Base):
         """
         return w
 
-    def _step_with_dict(self, w: dict | VectorLike, g: dict | VectorLike) -> dict:  # type: ignore
+    def _step_with_dict(self, w: DictLike, g: DictLike) -> DictLike:
         raise NotImplementedError
 
-    def _step_with_vector(self, w: VectorLike, g: VectorLike) -> VectorLike:  # type: ignore
+    def _step_with_vector(self, w: VectorLike, g: VectorLike) -> VectorLike:
         raise NotImplementedError
 
-    def step(self, w: dict | VectorLike, g: dict | VectorLike) -> dict | VectorLike:  # type: ignore
+    def step(self, w: dict | VectorLike, g: dict | VectorLike) -> dict | VectorLike:
         """Updates a weight vector given a gradient.
 
         Parameters
@@ -120,7 +134,11 @@ class Optimizer(base.Base):
             except NotImplementedError:
                 pass
 
-        w = self._step_with_dict(w, g)
+        # Only dict-like inputs reach this point: an `np.ndarray` is always routed through
+        # `_step_with_vector` above, and an optimizer that cannot consume arrays raises rather than
+        # falling through with one. The checker can't prove that. We annotate rather than narrow at
+        # runtime (`isinstance`/`cast`) because `step` is a per-sample hot path.
+        w = self._step_with_dict(w, g)  # type: ignore[arg-type]
         self.n_iterations += 1
         return w
 
@@ -135,7 +153,7 @@ class Loss(base.Base, abc.ABC):
         return f"{self.__class__.__name__}({vars(self)})"
 
     @abc.abstractmethod
-    def __call__(self, y_true, y_pred):
+    def __call__(self, y_true, y_pred) -> LossValue:
         """Returns the loss.
 
         Parameters
@@ -152,7 +170,7 @@ class Loss(base.Base, abc.ABC):
         """
 
     @abc.abstractmethod
-    def gradient(self, y_true, y_pred):
+    def gradient(self, y_true, y_pred) -> LossValue:
         """Return the gradient with respect to y_pred.
 
         Parameters
@@ -169,7 +187,7 @@ class Loss(base.Base, abc.ABC):
         """
 
     @abc.abstractmethod
-    def mean_func(self, y_pred):
+    def mean_func(self, y_pred) -> LossValue:
         """Mean function.
 
         This is the inverse of the link function. Typically, a loss function takes as input the raw

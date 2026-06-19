@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import numpy as np
+
 from river import optim
 
 __all__ = ["SGD"]
@@ -48,8 +50,8 @@ class SGD(optim.base.Optimizer):
         return w
 
     def _step_with_vector(self, w, g):
-        if hasattr(w, "isub_scaled"):
-            w.isub_scaled(g, self.learning_rate)
-        else:
+        if isinstance(w, np.ndarray):
             w -= self.learning_rate * g
+        else:
+            w.isub_scaled(g, self.learning_rate)
         return w

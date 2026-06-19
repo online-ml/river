@@ -60,7 +60,9 @@ class Averager(optim.base.Optimizer):
         return self.optimizer.look_ahead(w)
 
     def _step_with_dict(self, w, g):
-        w = self.optimizer.step(w, g)
+        # `step` updates `w` in place (and returns it); we keep the original reference so its static
+        # `DictLike` type is preserved for the `.items()` iteration below.
+        self.optimizer.step(w, g)
 
         # No averaging occurs during the first start iterations
         if self.n_iterations < self.start:
