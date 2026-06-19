@@ -19,8 +19,6 @@
 ## optim
 
 - Exposed `optim.Newton`, the Online Newton Step optimizer, which was previously implemented but never exported. Fixed a correctness bug whereby the inverse Hessian was initialized to `eps * I` instead of `(1 / eps) * I`, which crippled learning (the maintained inverse could only ever shrink from a tiny starting value). Reworked the internals to use NumPy-backed dense state and `utils.math.sherman_morrison` (the same BLAS rank-1 update used by `BayesianLinearRegression`) instead of a bespoke dict-based reimplementation.
-- Cleaned up the static typing of the whole `optim` module (now passes `pyright` with zero errors, in addition to `mypy`). Annotated the abstract `Loss`/`Initializer`/`Optimizer` interfaces and split the optimizer step interface into a feature-keyed (`dict`/`VectorDict`) path and an array (`VectorDict`/`ndarray`) path, with each `_step_with_dict` override narrowed accordingly. Resolved everything without adding any `type: ignore`, runtime checks, or casts, so there is no runtime overhead and no behavioral change.
-
 ## preprocessing
 
 - Added `window_size` parameter to `preprocessing.StandardScaler`, `preprocessing.MinMaxScaler`, and `preprocessing.MaxAbsScaler`. When set, the scaler tracks its statistics over the last `window_size` observations instead of the entire stream.
