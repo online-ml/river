@@ -2850,7 +2850,6 @@ name = "river"
 version = "0.25.0"
 source = { editable = "." }
 dependencies = [
-    { name = "altair" },
     { name = "narwhals" },
     { name = "numpy" },
     { name = "scipy" },
@@ -2889,6 +2888,7 @@ dev = [
     { name = "sympy" },
 ]
 docs = [
+    { name = "altair" },
     { name = "dominate" },
     { name = "flask" },
     { name = "jupyter-client" },
@@ -2910,7 +2910,6 @@ docs = [
 
 [package.metadata]
 requires-dist = [
-    { name = "altair", specifier = ">=5.0.0" },
     { name = "narwhals", specifier = ">=2.0.0" },
     { name = "numpy", specifier = ">=2.3.4,<3" },
     { name = "pandas", marker = "extra == 'pandas'", specifier = ">=2.2,<3" },
@@ -2946,6 +2945,7 @@ dev = [
     { name = "sympy", specifier = ">=1.12.1" },
 ]
 docs = [
+    { name = "altair", specifier = ">=5.0.0" },
     { name = "dominate" },
     { name = "flask" },
     { name = "jupyter-client" },

@@ -9,7 +9,6 @@ license = "BSD-3-Clause"
 dependencies = [
     "scipy>=1.16,<2",
     "numpy>=2.3.4,<3",
-    "altair>=5.0.0",
     "narwhals>=2.0.0",
 ]
 
@@ -67,6 +66,7 @@ docs = [
     "jupyter-client",
     "mike @ git+https://github.com/squidfunk/mike.git",
     "pygments",
+    "altair>=5.0.0",
     "TA-Lib",
     "zensical>=0.0.40",
     "nbconvert",
