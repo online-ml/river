@@ -57,3 +57,7 @@
 
 - Added `stream.iter_frame`, a dataframe-agnostic row iterator powered by [Narwhals](https://narwhals-dev.github.io/narwhals/) that works with any eager dataframe (pandas, polars, PyArrow, Modin, cuDF, ...).
 - Deprecated `stream.iter_pandas` and `stream.iter_polars` in favour of `stream.iter_frame`. They now emit a `DeprecationWarning` and will be removed in a future release.
+
+## feature_extraction
+
+- Added proper mini-batch support to `feature_extraction.TFIDF`: `learn_many` now updates document frequencies, and `transform_many` now returns TF-IDF weights for both `Series` input and `DataFrame` input when `on` is set. Fixes [#1576](https://github.com/online-ml/river/issues/1576).
