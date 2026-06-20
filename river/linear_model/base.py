@@ -187,7 +187,7 @@ class GLM:
         # mean gradient of the batch. From thereon, the code reduces to the single instance case.
         # Contracting the sample axis directly inside the einsum avoids materialising the
         # intermediate (n, p) matrix that an "ij,i->ij" contraction followed by .mean(axis=0) would.
-        gradient = np.einsum("ij,i->j", X.values, loss_gradient) / len(X)
+        gradient = np.einsum("ij,i->j", X, loss_gradient) / len(X)
         if self.l2:
             gradient += self.l2 * self._weights.to_numpy(cols)
 
