@@ -89,3 +89,27 @@ def test_optimizer_step_with_dict_same_as_step_with_numpy_array(optimizer):
 
     for i, w in dict(enumerate(w_vector)).items():
         assert math.isclose(w, w_dict[i])
+
+
+def test_newton_maintains_true_inverse_hessian():
+    """Newton must keep `_H_inv` equal to inv(eps * I + sum_t g_t g_t^T).
+
+    This pins both the Sherman-Morrison update and, crucially, the inverse-Hessian
+    initialization: starting from `eps * I` (instead of `(1 / eps) * I`) would break the
+    invariant immediately.
+    """
+    rng = random.Random(42)
+    eps = 1e-3
+    optimizer = optim.Newton(eps=eps)
+    d = 5
+
+    hessian = np.eye(d) * eps
+    for _ in range(50):
+        g = {i: rng.uniform(-3, 3) for i in range(d)}
+        optimizer._step_with_dict({i: 0.0 for i in range(d)}, g)
+        g_arr = np.array([g[i] for i in range(d)])
+        hessian += np.outer(g_arr, g_arr)
+
+    # `_H_inv` is allocated with spare capacity; the active block holds the inverse Hessian
+    # while untouched features keep the (1 / eps) prior on the diagonal.
+    assert np.allclose(optimizer._H_inv[:d, :d], np.linalg.inv(hessian))

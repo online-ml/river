@@ -3,6 +3,7 @@ from __future__ import annotations
 import collections
 
 from river import optim
+from river.optim.base import DictLike
 
 __all__ = ["AdaGrad"]
 
@@ -51,7 +52,7 @@ class AdaGrad(optim.base.Optimizer):
         self.eps = eps
         self.g2 = collections.defaultdict(float)
 
-    def _step_with_dict(self, w, g):
+    def _step_with_dict(self, w: DictLike, g: DictLike) -> DictLike:
         for i, gi in g.items():
             self.g2[i] += gi**2
             w[i] -= self.learning_rate / (self.g2[i] + self.eps) ** 0.5 * gi
