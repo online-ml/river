@@ -222,6 +222,18 @@ class VectorizerMixin:
             x = step(x)
         return x
 
+    def process_many(self, X):
+        processing_steps = self.processing_steps
+
+        if self.on is not None:
+            X = X[self.on]
+            processing_steps = self.processing_steps[1:]
+
+        for x in X:
+            for step in processing_steps:
+                x = step(x)
+            yield x
+
     def _more_tags(self):
         if self.on is None:
             return {base.tags.TEXT_INPUT}
@@ -347,16 +359,16 @@ class BagOfWords(base.Transformer, VectorizerMixin):
         indptr, indices, data = [0], [], []
         index: dict[int, int] = {}
 
-        for d in X:
+        for d in self.process_many(X):
             t: int
-            for t, f in collections.Counter(self.process_text(d)).items():
+            for t, f in collections.Counter(d).items():
                 indices.append(index.setdefault(t, len(index)))
                 data.append(f)
 
             indptr.append(len(data))
 
         return pd.DataFrame.sparse.from_spmatrix(
-            sparse.csr_matrix((data, indices, indptr)),
+            sparse.csr_matrix((data, indices, indptr), shape=(len(indptr) - 1, len(index))),
             index=X.index,
             columns=index.keys(),
         )
@@ -497,11 +509,40 @@ class TFIDF(BagOfWords):
             return {term: tfidf / norm for term, tfidf in tfidfs.items()}
         return tfidfs
 
-    # Mini-batch methods should be done well™ and not just be a loop over the *_one equivalent.
     def learn_many(self, X):
-        "Not available, will raise an exception."
-        raise NotImplementedError
+        for terms in self.process_many(X):
+            self.dfs.update(set(terms))
+            self.n += 1
 
     def transform_many(self, X):
-        "Not available, will raise an exception."
-        raise NotImplementedError
+        """Transform text into a TF-IDF pandas sparse dataframe."""
+        pd = utils.pandas.import_pandas()
+        indptr, indices, data = [0], [], []
+        index: dict[int, int] = {}
+
+        for terms in self.process_many(X):
+            term_counts = collections.Counter(terms)
+            n_terms = sum(term_counts.values())
+
+            if n_terms:
+                weights = {}
+                for term, count in term_counts.items():
+                    tf = count / n_terms
+                    idf = math.log((1 + self.n) / (1 + self.dfs[term])) + 1
+                    weights[term] = tf * idf
+
+                if self.normalize:
+                    norm = math.sqrt(sum(weight**2 for weight in weights.values()))
+                    weights = {term: weight / norm for term, weight in weights.items()}
+
+                for term, weight in weights.items():
+                    indices.append(index.setdefault(term, len(index)))
+                    data.append(weight)
+
+            indptr.append(len(data))
+
+        return pd.DataFrame.sparse.from_spmatrix(
+            sparse.csr_matrix((data, indices, indptr), shape=(len(indptr) - 1, len(index))),
+            index=X.index,
+            columns=index.keys(),
+        )
