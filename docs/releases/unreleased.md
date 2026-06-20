@@ -19,8 +19,6 @@
 
 - `linear_model.LinearRegression` and `linear_model.LogisticRegression` mini-batch methods (`learn_many`, `predict_many`, `predict_proba_many`) now accept and return any [narwhals](https://github.com/narwhals-dev/narwhals)-supported eager backend (pandas, polars, pyarrow, ...) instead of being pandas-only. The input backend is preserved on output, including the pandas index. These methods no longer require `pandas` to be installed.
 
-- `linear_model.LinearRegression` and `linear_model.LogisticRegression` mini-batch methods (`learn_many`, `predict_many`, `predict_proba_many`) now accept and return any [narwhals](https://github.com/narwhals-dev/narwhals)-supported eager backend (pandas, polars, pyarrow, ...) instead of being pandas-only. The input backend is preserved on output, including the pandas index. These methods no longer require `pandas` to be installed.
-
 ## optim
 
 - Exposed `optim.Newton`, the Online Newton Step optimizer, which was previously implemented but never exported. Fixed a correctness bug whereby the inverse Hessian was initialized to `eps * I` instead of `(1 / eps) * I`, which crippled learning (the maintained inverse could only ever shrink from a tiny starting value). Reworked the internals to use NumPy-backed dense state and `utils.math.sherman_morrison` (the same BLAS rank-1 update used by `BayesianLinearRegression`) instead of a bespoke dict-based reimplementation.
