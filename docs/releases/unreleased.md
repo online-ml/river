@@ -27,6 +27,10 @@
 
 - Added `multioutput.PerOutputRegressor`, the streaming equivalent of scikit-learn's `MultiOutputRegressor`. Trains one independent regressor per target output, with no inter-output dependencies.
 
+## naive_bayes
+
+- Added mini-batch support to `GaussianNB` via `learn_many`, `predict_many`, and `predict_proba_many`.
+
 ## optim
 
 - Exposed `optim.Newton`, the Online Newton Step optimizer, which was previously implemented but never exported. Fixed a correctness bug whereby the inverse Hessian was initialized to `eps * I` instead of `(1 / eps) * I`, which crippled learning (the maintained inverse could only ever shrink from a tiny starting value). Reworked the internals to use NumPy-backed dense state and `utils.math.sherman_morrison` (the same BLAS rank-1 update used by `BayesianLinearRegression`) instead of a bespoke dict-based reimplementation.
