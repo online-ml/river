@@ -2139,6 +2139,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#datasets" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        datasets
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#linear_model" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -3425,6 +3436,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#datasets" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        datasets
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#linear_model" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -3545,6 +3567,7 @@
 <ul>
 <li>Add <code>ppc64le</code> architecture to Linux wheel builds.</li>
 <li>Dropped <code>altair</code> from River's runtime dependencies. It was never imported by the package itself (it is only used to draw plots in the documentation notebooks), so it has been moved to the <code>docs</code>/<code>dev</code> dependency groups. Installing River no longer pulls in <code>altair</code> and its transitive dependencies.</li>
+<li>Publish Pyodide/WebAssembly wheels (CPython 3.13 and 3.14) so River can be installed in the browser, e.g. via <a href="https://jupyterlite.readthedocs.io/">JupyterLite</a> or <code>micropip</code>. The minimum <code>numpy</code> and <code>scipy</code> versions were lowered to <code>2.2.5</code> and <code>1.14.1</code> to match the versions bundled with Pyodide.</li>
 </ul>
 <h2 id="covariance">covariance<a class="headerlink" href="#covariance" title="Permanent link">&para;</a></h2>
 <ul>
@@ -3552,8 +3575,13 @@
 <li>Restructured <code>EmpiricalPrecision</code> to use NumPy-backed dense state indexed by a feature → integer map, eliminating the dict ↔ numpy marshalling on every <code>update</code>/<code>update_many</code>. ~7× faster on 2000 × 20 sample streams.</li>
 <li>Fixed a latent asymmetry in <code>EmpiricalPrecision</code> under emerging features: the per-feature <code>w</code> scaling left the stored matrix skewed (e.g. <code>prec[a, b]</code> ≠ <code>prec[b, a]</code>) when features were introduced at different times.</li>
 </ul>
+<h2 id="datasets">datasets<a class="headerlink" href="#datasets" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Added <a href="../../api/datasets/CriteoAds"><code>datasets.CriteoAds</code></a>, a 100,000-row sample of the Criteo Display Advertising Challenge (binary click prediction with 13 integer and 26 high-cardinality categorical features). A natural fit for one-hot models such as <a href="../../api/linear-model/AdPredictor"><code>linear_model.AdPredictor</code></a>.</li>
+</ul>
 <h2 id="linear_model">linear_model<a class="headerlink" href="#linear_model" title="Permanent link">&para;</a></h2>
 <ul>
+<li>Added <a href="../../api/linear-model/AdPredictor"><code>linear_model.AdPredictor</code></a>, the Bayesian online probit-regression classifier Microsoft used for click-through-rate prediction in Bing's sponsored search (Graepel et al., 2010). It keeps a Gaussian belief over each feature weight, yields well-calibrated probabilities, and its per-example cost scales only with the number of active features.</li>
 <li>Restructured <code>BayesianLinearRegression</code> to use the same NumPy-backed storage as <code>EmpiricalPrecision</code>. ~11× faster <code>learn_one</code> at 20 features, ~24× at 50 features. Speeds up <code>bandit.LinUCB</code> as a side effect.</li>
 <li><code>BayesianLinearRegression</code> now passes <code>check_emerging_features</code> and <code>check_shuffle_features_no_impact</code> (the two checks previously skipped via <code>_unit_test_skips</code>). It now handles features arriving and disappearing after training begins.</li>
 <li>Fixed <code>BayesianLinearRegression</code> coefficient blow-up under emerging/disappearing features. The previous submatrix-only update broke the <code>_ss_inv ≈ inv(_ss)</code> invariant once different feature subsets were touched across calls (the submatrix of an inverse is generally not the inverse of the submatrix), causing coefficients to diverge to <code>inf</code>/<code>nan</code> on <code>check_emerging_features</code>-style streams. <code>learn_one</code> now updates the full state with a zero-padded <code>x</code>. Behavior change: features absent from <code>learn_one</code>'s <code>x</code> are now treated as observed values of 0 (matching <code>LinearRegression</code> and the rest of the online-learning estimators), rather than being silently skipped. Identical to the previous behavior to floating-point roundoff when every call sees the same feature set.</li>
@@ -3579,6 +3607,7 @@
 </ul>
 <h2 id="utils">utils<a class="headerlink" href="#utils" title="Permanent link">&para;</a></h2>
 <ul>
+<li>Added <a href="../../api/utils/math/norm-cdf"><code>utils.math.norm_cdf</code></a> and <a href="../../api/utils/math/norm-pdf"><code>utils.math.norm_pdf</code></a>, the CDF and PDF of the standard normal distribution (used by <a href="../../api/linear-model/AdPredictor"><code>linear_model.AdPredictor</code></a>).</li>
 <li><a href="../../api/utils/Rolling"><code>utils.Rolling</code></a> and <a href="../../api/utils/TimeRolling"><code>utils.TimeRolling</code></a> now accept a class as their first argument and forward extra keyword arguments to its constructor, e.g. <a href="../../api/utils/Rolling"><code>utils.Rolling</code></a>(<a href="../../api/stats/Mean">stats.Mean</a>, window_size=3)<code>or [</code>utils.Rolling<code>](../api/utils/Rolling)([stats.Var](../api/stats/Var), window_size=3, ddof=0)</code>. This avoids a footgun when using these wrappers as <code>collections.defaultdict</code> factories, where the previous instance form silently shared state across keys. Passing a pre-built instance still works but now emits a <code>DeprecationWarning</code> and will be removed in a future release.</li>
 </ul>
 <h2 id="rules">rules<a class="headerlink" href="#rules" title="Permanent link">&para;</a></h2>
