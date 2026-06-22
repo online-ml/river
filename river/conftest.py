@@ -72,9 +72,41 @@ class FrameBackend(typing.NamedTuple):
 
 
 def _pandas() -> FrameBackend:
-    pd = pytest.importorskip("pandas")
+    pytest.importorskip("pandas")
+
+    import pandas as pd
+
     return FrameBackend(
         "pandas", pd.DataFrame, lambda values, name="y": pd.Series(values, name=name)
+    )
+
+
+def _pandas_nullable() -> FrameBackend:
+    pytest.importorskip("pandas")
+
+    import pandas as pd
+
+    return FrameBackend(
+        "pandas[nullable]",
+        lambda data: pd.DataFrame(data).convert_dtypes(dtype_backend="numpy_nullable"),
+        lambda values, name="y": pd.Series(values, name=name).convert_dtypes(
+            dtype_backend="numpy_nullable"
+        ),
+    )
+
+
+def _pandas_pyarrow() -> FrameBackend:
+    pytest.importorskip("pandas")
+    pytest.importorskip("pyarrow")
+
+    import pandas as pd
+
+    return FrameBackend(
+        "pandas[pyarrow]",
+        lambda data: pd.DataFrame(data).convert_dtypes(dtype_backend="pyarrow"),
+        lambda values, name="y": pd.Series(values, name=name).convert_dtypes(
+            dtype_backend="pyarrow"
+        ),
     )
 
 
@@ -91,6 +123,8 @@ def _pyarrow() -> FrameBackend:
 
 FRAME_BACKENDS: dict[str, Callable[[], FrameBackend]] = {
     "pandas": _pandas,
+    "pandas[nullable]": _pandas_nullable,
+    "pandas[pyarrow]": _pandas_pyarrow,
     "polars": _polars,
     "pyarrow": _pyarrow,
 }

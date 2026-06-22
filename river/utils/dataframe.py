@@ -15,6 +15,7 @@ from __future__ import annotations
 import typing
 
 import narwhals.stable.v2 as nw
+import numpy as np
 
 if typing.TYPE_CHECKING:
     from collections.abc import Mapping, Sequence
@@ -28,7 +29,18 @@ if typing.TYPE_CHECKING:
     )
     from numpy.typing import NDArray
 
-__all__ = ["into_frame", "into_series", "to_native_frame", "to_native_series"]
+__all__ = ["into_frame", "into_series", "to_native_frame", "to_native_series", "to_numpy"]
+
+
+def to_numpy(frame: nw.DataFrame[Any]) -> NDArray[np.float64]:
+    """Extract a `float64` numpy matrix from a narwhals dataframe for the numpy compute core.
+
+    A pandas frame backed by pyarrow (`ArrowDtype`) columns returns an ``object`` array from
+    ``.to_numpy()``, which breaks downstream ufuncs (e.g. ``np.exp`` raises *"loop of ufunc does
+    not support argument 0 of type float"*). Coercing to ``float64`` at the boundary keeps the
+    core backend-agnostic; ``np.asarray`` is a no-op when the frame already yields ``float64``.
+    """
+    return np.asarray(frame.to_numpy(), dtype=np.float64)
 
 
 def into_frame(X: IntoDataFrameT) -> nw.DataFrame[IntoDataFrameT]:
@@ -85,6 +97,7 @@ def to_native_frame(
     like
         The narwhals dataframe the call received as input. Its backend determines the
         return type, and its index (pandas only) is carried over to the result.
+
     """
     impl = like.implementation
     if not impl.is_pandas_like():

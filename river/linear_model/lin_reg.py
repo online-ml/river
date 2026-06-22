@@ -139,7 +139,7 @@ class LinearRegression(linear_model.base.GLM, base.MiniBatchRegressor):
     def predict_many(self, X: IntoDataFrame) -> IntoSeries:
         X = utils.dataframe.into_frame(X)
         y_pred: NDArray[np.float64] = self.loss.mean_func(
-            self._raw_dot_many(X.to_numpy(), X.columns)
+            self._raw_dot_many(utils.dataframe.to_numpy(X), X.columns)
         )
         return utils.dataframe.to_native_series(y_pred, name=self._y_name, like=X)
 

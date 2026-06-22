@@ -571,12 +571,13 @@ def test_predict_many_returns_native_backend(
 
     data, targets, feats = reg_batch
     X = frame_backend.frame(data)
+    y = frame_backend.series(targets)
 
     model = lm.LinearRegression()
-    model.learn_many(X, frame_backend.series(targets))
+    model.learn_many(X, y)
 
     y_pred = model.predict_many(X)
-    assert type(y_pred).__module__.split(".")[0] == frame_backend.name
+    assert type(y_pred) is type(y)
 
     expected = [model.predict_one(x) for x in feats]
     got = nw.from_native(y_pred, series_only=True).to_list()
@@ -590,12 +591,12 @@ def test_logreg_predict_many_matches_predict_one(
 
     data, targets, feats = clf_batch
     X = frame_backend.frame(data)
-
+    y = frame_backend.series(targets)
     model = lm.LogisticRegression()
-    model.learn_many(X, frame_backend.series(targets))
+    model.learn_many(X, y)
 
     y_pred = model.predict_many(X)
-    assert type(y_pred).__module__.split(".")[0] == frame_backend.name
+    assert type(y_pred) is type(y)
 
     expected = [model.predict_one(x) for x in feats]
     got = nw.from_native(y_pred, series_only=True).to_list()
@@ -618,10 +619,10 @@ def test_logreg_predict_proba_many_matches_predict_proba_one(
     model.learn_many(X, frame_backend.series(targets))
 
     proba = model.predict_proba_many(X)
-    assert type(proba).__module__.split(".")[0] == frame_backend.name
+    assert type(proba) is type(X)
 
     expected_labels: list[bool | str] = (
-        [False, True] if frame_backend.name == "pandas" else ["False", "True"]
+        [False, True] if frame_backend.name.startswith("pandas") else ["False", "True"]
     )
     proba_nw = nw.from_native(proba, eager_only=True)
     assert list(proba_nw.columns) == expected_labels

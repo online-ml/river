@@ -101,7 +101,7 @@ class LogisticRegression(linear_model.base.GLM, base.MiniBatchClassifier):
     def predict_proba_many(self, X: IntoDataFrame) -> IntoDataFrame:
         X_nw = utils.dataframe.into_frame(X)
         p: NDArray[np.float64] = self.loss.mean_func(
-            self._raw_dot_many(X_nw.to_numpy(), X_nw.columns)
+            self._raw_dot_many(utils.dataframe.to_numpy(X_nw), X_nw.columns)
         )  # logits to probas
         # pandas keeps the boolean column labels; other backends require string names.
         return utils.dataframe.to_native_frame({False: 1.0 - p, True: p}, like=X_nw)
@@ -111,6 +111,7 @@ class LogisticRegression(linear_model.base.GLM, base.MiniBatchClassifier):
         # replaced by a numpy threshold that returns the actual booleans on every backend.
         X_nw = utils.dataframe.into_frame(X)
         values: NDArray[np.bool_] = (
-            self.loss.mean_func(self._raw_dot_many(X_nw.to_numpy(), X_nw.columns)) > 0.5
+            self.loss.mean_func(self._raw_dot_many(utils.dataframe.to_numpy(X_nw), X_nw.columns))
+            > 0.5
         )
         return utils.dataframe.to_native_series(values, name=self._y_name, like=X_nw)

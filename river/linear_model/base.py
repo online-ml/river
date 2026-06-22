@@ -201,7 +201,7 @@ class GLM:
         self._y_name = ynw.name
 
         cols = Xnw.columns
-        X_np = Xnw.to_numpy()
+        X_np = utils.dataframe.to_numpy(Xnw)
         y_np = ynw.to_numpy()
 
         # A scalar weight stays a scalar; a per-sample weight series is converted to numpy.
