@@ -85,9 +85,8 @@ class Gaussian(base.ContinuousDistribution):
             if variance > 0.0:
                 mu = var.mean._mean
                 try:
-                    return math.exp((x - mu) ** 2 / (-2.0 * variance)) / math.sqrt(
-                        math.tau * variance
-                    )
+                    sigma = math.sqrt(variance)
+                    return utils.math.norm_pdf((x - mu) / sigma) / sigma
                 except (ValueError, OverflowError):
                     return 0.0
         return 0.0
@@ -109,7 +108,7 @@ class Gaussian(base.ContinuousDistribution):
 
     def cdf(self, x) -> float:
         try:
-            return 0.5 * (1.0 + math.erf((x - self.mu) / (self.sigma * math.sqrt(2.0))))
+            return utils.math.norm_cdf((x - self.mu) / self.sigma)
         except ZeroDivisionError:
             return 0.0
 

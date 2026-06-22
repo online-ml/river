@@ -9,8 +9,13 @@
 - Restructured `EmpiricalPrecision` to use NumPy-backed dense state indexed by a feature → integer map, eliminating the dict ↔ numpy marshalling on every `update`/`update_many`. ~7× faster on 2000 × 20 sample streams.
 - Fixed a latent asymmetry in `EmpiricalPrecision` under emerging features: the per-feature `w` scaling left the stored matrix skewed (e.g. `prec[a, b]` ≠ `prec[b, a]`) when features were introduced at different times.
 
+## datasets
+
+- Added `datasets.CriteoAds`, a 100,000-row sample of the Criteo Display Advertising Challenge (binary click prediction with 13 integer and 26 high-cardinality categorical features). A natural fit for one-hot models such as `linear_model.AdPredictor`.
+
 ## linear_model
 
+- Added `linear_model.AdPredictor`, the Bayesian online probit-regression classifier Microsoft used for click-through-rate prediction in Bing's sponsored search (Graepel et al., 2010). It keeps a Gaussian belief over each feature weight, yields well-calibrated probabilities, and its per-example cost scales only with the number of active features.
 - Restructured `BayesianLinearRegression` to use the same NumPy-backed storage as `EmpiricalPrecision`. ~11× faster `learn_one` at 20 features, ~24× at 50 features. Speeds up `bandit.LinUCB` as a side effect.
 - `BayesianLinearRegression` now passes `check_emerging_features` and `check_shuffle_features_no_impact` (the two checks previously skipped via `_unit_test_skips`). It now handles features arriving and disappearing after training begins.
 - Fixed `BayesianLinearRegression` coefficient blow-up under emerging/disappearing features. The previous submatrix-only update broke the `_ss_inv ≈ inv(_ss)` invariant once different feature subsets were touched across calls (the submatrix of an inverse is generally not the inverse of the submatrix), causing coefficients to diverge to `inf`/`nan` on `check_emerging_features`-style streams. `learn_one` now updates the full state with a zero-padded `x`. Behavior change: features absent from `learn_one`'s `x` are now treated as observed values of 0 (matching `LinearRegression` and the rest of the online-learning estimators), rather than being silently skipped. Identical to the previous behavior to floating-point roundoff when every call sees the same feature set.
@@ -35,6 +40,7 @@
 
 ## utils
 
+- Added `utils.math.norm_cdf` and `utils.math.norm_pdf`, the CDF and PDF of the standard normal distribution (used by `linear_model.AdPredictor`).
 - `utils.Rolling` and `utils.TimeRolling` now accept a class as their first argument and forward extra keyword arguments to its constructor, e.g. `utils.Rolling(stats.Mean, window_size=3)` or `utils.Rolling(stats.Var, window_size=3, ddof=0)`. This avoids a footgun when using these wrappers as `collections.defaultdict` factories, where the previous instance form silently shared state across keys. Passing a pre-built instance still works but now emits a `DeprecationWarning` and will be removed in a future release.
 
 ## rules
