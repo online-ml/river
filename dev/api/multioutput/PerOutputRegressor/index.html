@@ -12,13 +12,13 @@
         <meta name="author" content="The Fellowship of Online Machine Learning">
       
       
-        <link rel="canonical" href="https://riverml.xyz/dev/api/optim/Adam/">
+        <link rel="canonical" href="https://riverml.xyz/dev/api/multioutput/PerOutputRegressor/">
       
       
-        <link rel="prev" href="../AdaMax/">
+        <link rel="prev" href="../MultiClassEncoder/">
       
       
-        <link rel="next" href="../Averager/">
+        <link rel="next" href="../ProbabilisticClassifierChain/">
       
       
         
@@ -29,7 +29,7 @@
     
     
       
-        <title>Adam - River</title>
+        <title>PerOutputRegressor - River</title>
       
     
     
@@ -79,14 +79,14 @@
   <!-- Open Graph -->
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="River" />
-  <meta property="og:title" content="Adam - River" />
+  <meta property="og:title" content="PerOutputRegressor - River" />
   <meta property="og:description" content="Online machine learning in Python" />
-  <meta property="og:url" content="https://riverml.xyz/dev/api/optim/Adam/" />
+  <meta property="og:url" content="https://riverml.xyz/dev/api/multioutput/PerOutputRegressor/" />
   <meta property="og:image" content="https://riverml.xyz/img/icon.png" />
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Adam - River" />
+  <meta name="twitter:title" content="PerOutputRegressor - River" />
   <meta name="twitter:description" content="Online machine learning in Python" />
   <meta name="twitter:image" content="https://riverml.xyz/img/icon.png" />
 
@@ -109,7 +109,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#adam" class="md-skip">
+        <a href="#peroutputregressor" class="md-skip">
           Skip to content
         </a>
       
@@ -146,7 +146,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Adam
+              PerOutputRegressor
             
           </span>
         </div>
@@ -3607,282 +3607,12 @@
                 
   
   
-  
-  
-    
-    
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-    
-    
-    
-      
-      
-    
-    
-      
-        
-        
-      
-    
-    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
-      
-        
-  
-  
-  
-    <a href="../../multioutput/ClassifierChain/" class="md-nav__link">
-      
-  
-  
-  <span class="md-ellipsis">
-    
-  
-  multioutput
-
-    
-  </span>
-  
-  
-
-      
-        <span class="md-nav__icon md-icon"></span>
-      
-    </a>
-  
-
-      
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    
-    
-      
-        
-      
-        
-      
-        
-      
-        
-      
-    
-    
-    
-      
-      
-    
-    
-      
-        
-        
-      
-    
-    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
-      
-        
-  
-  
-  
-    <a href="../../naive-bayes/BernoulliNB/" class="md-nav__link">
-      
-  
-  
-  <span class="md-ellipsis">
-    
-  
-  naive_bayes
-
-    
-  </span>
-  
-  
-
-      
-        <span class="md-nav__icon md-icon"></span>
-      
-    </a>
-  
-
-      
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    
-    
-      
-        
-      
-        
-      
-        
-      
-        
-      
-    
-    
-    
-      
-      
-    
-    
-      
-        
-        
-      
-    
-    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
-      
-        
-  
-  
-  
-    <a href="../../neighbors/KNNClassifier/" class="md-nav__link">
-      
-  
-  
-  <span class="md-ellipsis">
-    
-  
-  neighbors
-
-    
-  </span>
-  
-  
-
-      
-        <span class="md-nav__icon md-icon"></span>
-      
-    </a>
-  
-
-      
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    
-    
-      
-        
-      
-        
-      
-    
-    
-    
-      
-      
-    
-    
-      
-        
-        
-      
-    
-    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
-      
-        
-  
-  
-  
-    <a href="../../neural-net/MLPRegressor/" class="md-nav__link">
-      
-  
-  
-  <span class="md-ellipsis">
-    
-  
-  neural_net
-
-    
-  </span>
-  
-  
-
-      
-        <span class="md-nav__icon md-icon"></span>
-      
-    </a>
-  
-
-      
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
     
   
   
   
     
     
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
       
         
       
@@ -3909,17 +3639,17 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_30" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_26" checked>
         
           
-          <label class="md-nav__link" for="__nav_3_30" id="__nav_3_30_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_3_26" id="__nav_3_26_label" tabindex="0">
             
   
   
   <span class="md-ellipsis">
     
   
-  optim
+  multioutput
 
     
   </span>
@@ -3929,12 +3659,12 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_30_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_3_30">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_26_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3_26">
             <span class="md-nav__icon md-icon"></span>
             
   
-  optim
+  multioutput
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -3946,14 +3676,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../AMSGrad/" class="md-nav__link">
+      <a href="../ClassifierChain/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-  AMSGrad
+  ClassifierChain
 
     
   </span>
@@ -3973,14 +3703,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../AdaBound/" class="md-nav__link">
+      <a href="../MonteCarloClassifierChain/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-  AdaBound
+  MonteCarloClassifierChain
 
     
   </span>
@@ -4000,68 +3730,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../AdaDelta/" class="md-nav__link">
+      <a href="../MultiClassEncoder/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-  AdaDelta
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../AdaGrad/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-  AdaGrad
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../AdaMax/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-  AdaMax
+  MultiClassEncoder
 
     
   </span>
@@ -4099,7 +3775,7 @@
   <span class="md-ellipsis">
     
   
-  Adam
+  PerOutputRegressor
 
     
   </span>
@@ -4116,7 +3792,7 @@
   <span class="md-ellipsis">
     
   
-  Adam
+  PerOutputRegressor
 
     
   </span>
@@ -4153,17 +3829,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#attributes" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Attributes
-      </span>
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#examples" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -4179,17 +3844,6 @@
     <span class="md-ellipsis">
       <span class="md-typeset">
         Methods
-      </span>
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#references" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        References
       </span>
     </span>
   </a>
@@ -4212,14 +3866,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../Averager/" class="md-nav__link">
+      <a href="../ProbabilisticClassifierChain/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-  Averager
+  ProbabilisticClassifierChain
 
     
   </span>
@@ -4239,14 +3893,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../FTRLProximal/" class="md-nav__link">
+      <a href="../RegressorChain/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-  FTRLProximal
+  RegressorChain
 
     
   </span>
@@ -4254,455 +3908,6 @@
   
 
       </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../Momentum/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-  Momentum
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../Nadam/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-  Nadam
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../NesterovMomentum/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-  NesterovMomentum
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../Newton/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-  Newton
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../Optimizer/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-  Optimizer
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../RMSProp/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-  RMSProp
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../SGD/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-  SGD
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    
-    
-      
-        
-      
-        
-      
-        
-      
-        
-      
-    
-    
-    
-      
-      
-    
-    
-      
-        
-        
-      
-    
-    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
-      
-        
-  
-  
-  
-    <a href="../base/Initializer/" class="md-nav__link">
-      
-  
-  
-  <span class="md-ellipsis">
-    
-  
-  base
-
-    
-  </span>
-  
-  
-
-      
-        <span class="md-nav__icon md-icon"></span>
-      
-    </a>
-  
-
-      
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    
-    
-      
-        
-      
-        
-      
-        
-      
-    
-    
-    
-      
-      
-    
-    
-      
-        
-        
-      
-    
-    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
-      
-        
-  
-  
-  
-    <a href="../initializers/Constant/" class="md-nav__link">
-      
-  
-  
-  <span class="md-ellipsis">
-    
-  
-  initializers
-
-    
-  </span>
-  
-  
-
-      
-        <span class="md-nav__icon md-icon"></span>
-      
-    </a>
-  
-
-      
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    
-    
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-    
-    
-    
-      
-      
-    
-    
-      
-        
-        
-      
-    
-    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
-      
-        
-  
-  
-  
-    <a href="../losses/Absolute/" class="md-nav__link">
-      
-  
-  
-  <span class="md-ellipsis">
-    
-  
-  losses
-
-    
-  </span>
-  
-  
-
-      
-        <span class="md-nav__icon md-icon"></span>
-      
-    </a>
-  
-
-      
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    
-    
-      
-        
-      
-        
-      
-        
-      
-    
-    
-    
-      
-      
-    
-    
-      
-        
-        
-      
-    
-    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
-      
-        
-  
-  
-  
-    <a href="../schedulers/Constant/" class="md-nav__link">
-      
-  
-  
-  <span class="md-ellipsis">
-    
-  
-  schedulers
-
-    
-  </span>
-  
-  
-
-      
-        <span class="md-nav__icon md-icon"></span>
-      
-    </a>
-  
-
-      
     </li>
   
 
@@ -4733,6 +3938,276 @@
       
         
       
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../naive-bayes/BernoulliNB/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  naive_bayes
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../neighbors/KNNClassifier/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  neighbors
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../neural-net/MLPRegressor/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  neural_net
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../optim/AMSGrad/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  optim
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
         
       
         
@@ -7198,7 +6673,7 @@
   
   
   
-    <a href="../../multioutput/ClassifierChain/" class="md-nav__link">
+    <a href="../ClassifierChain/" class="md-nav__link">
       
   
   
@@ -7464,7 +6939,7 @@
   
   
   
-    <a href="../AMSGrad/" class="md-nav__link">
+    <a href="../../optim/AMSGrad/" class="md-nav__link">
       
   
   
@@ -9968,7 +9443,7 @@
   
   
   
-    <a href="../../multioutput/ClassifierChain/" class="md-nav__link">
+    <a href="../ClassifierChain/" class="md-nav__link">
       
   
   
@@ -10234,7 +9709,7 @@
   
   
   
-    <a href="../AMSGrad/" class="md-nav__link">
+    <a href="../../optim/AMSGrad/" class="md-nav__link">
       
   
   
@@ -12738,7 +12213,7 @@
   
   
   
-    <a href="../../multioutput/ClassifierChain/" class="md-nav__link">
+    <a href="../ClassifierChain/" class="md-nav__link">
       
   
   
@@ -13004,7 +12479,7 @@
   
   
   
-    <a href="../AMSGrad/" class="md-nav__link">
+    <a href="../../optim/AMSGrad/" class="md-nav__link">
       
   
   
@@ -15508,7 +14983,7 @@
   
   
   
-    <a href="../../multioutput/ClassifierChain/" class="md-nav__link">
+    <a href="../ClassifierChain/" class="md-nav__link">
       
   
   
@@ -15774,7 +15249,7 @@
   
   
   
-    <a href="../AMSGrad/" class="md-nav__link">
+    <a href="../../optim/AMSGrad/" class="md-nav__link">
       
   
   
@@ -18278,7 +17753,7 @@
   
   
   
-    <a href="../../multioutput/ClassifierChain/" class="md-nav__link">
+    <a href="../ClassifierChain/" class="md-nav__link">
       
   
   
@@ -18544,7 +18019,7 @@
   
   
   
-    <a href="../AMSGrad/" class="md-nav__link">
+    <a href="../../optim/AMSGrad/" class="md-nav__link">
       
   
   
@@ -21048,7 +20523,7 @@
   
   
   
-    <a href="../../multioutput/ClassifierChain/" class="md-nav__link">
+    <a href="../ClassifierChain/" class="md-nav__link">
       
   
   
@@ -21314,7 +20789,7 @@
   
   
   
-    <a href="../AMSGrad/" class="md-nav__link">
+    <a href="../../optim/AMSGrad/" class="md-nav__link">
       
   
   
@@ -23818,7 +23293,7 @@
   
   
   
-    <a href="../../multioutput/ClassifierChain/" class="md-nav__link">
+    <a href="../ClassifierChain/" class="md-nav__link">
       
   
   
@@ -24084,7 +23559,7 @@
   
   
   
-    <a href="../AMSGrad/" class="md-nav__link">
+    <a href="../../optim/AMSGrad/" class="md-nav__link">
       
   
   
@@ -26588,7 +26063,7 @@
   
   
   
-    <a href="../../multioutput/ClassifierChain/" class="md-nav__link">
+    <a href="../ClassifierChain/" class="md-nav__link">
       
   
   
@@ -26854,7 +26329,7 @@
   
   
   
-    <a href="../AMSGrad/" class="md-nav__link">
+    <a href="../../optim/AMSGrad/" class="md-nav__link">
       
   
   
@@ -29356,7 +28831,7 @@
   
   
   
-    <a href="../../multioutput/ClassifierChain/" class="md-nav__link">
+    <a href="../ClassifierChain/" class="md-nav__link">
       
   
   
@@ -29622,7 +29097,7 @@
   
   
   
-    <a href="../AMSGrad/" class="md-nav__link">
+    <a href="../../optim/AMSGrad/" class="md-nav__link">
       
   
   
@@ -32124,7 +31599,7 @@
   
   
   
-    <a href="../../multioutput/ClassifierChain/" class="md-nav__link">
+    <a href="../ClassifierChain/" class="md-nav__link">
       
   
   
@@ -32390,7 +31865,7 @@
   
   
   
-    <a href="../AMSGrad/" class="md-nav__link">
+    <a href="../../optim/AMSGrad/" class="md-nav__link">
       
   
   
@@ -34892,7 +34367,7 @@
   
   
   
-    <a href="../../multioutput/ClassifierChain/" class="md-nav__link">
+    <a href="../ClassifierChain/" class="md-nav__link">
       
   
   
@@ -35158,7 +34633,7 @@
   
   
   
-    <a href="../AMSGrad/" class="md-nav__link">
+    <a href="../../optim/AMSGrad/" class="md-nav__link">
       
   
   
@@ -37660,7 +37135,7 @@
   
   
   
-    <a href="../../multioutput/ClassifierChain/" class="md-nav__link">
+    <a href="../ClassifierChain/" class="md-nav__link">
       
   
   
@@ -37926,7 +37401,7 @@
   
   
   
-    <a href="../AMSGrad/" class="md-nav__link">
+    <a href="../../optim/AMSGrad/" class="md-nav__link">
       
   
   
@@ -40428,7 +39903,7 @@
   
   
   
-    <a href="../../multioutput/ClassifierChain/" class="md-nav__link">
+    <a href="../ClassifierChain/" class="md-nav__link">
       
   
   
@@ -40694,7 +40169,7 @@
   
   
   
-    <a href="../AMSGrad/" class="md-nav__link">
+    <a href="../../optim/AMSGrad/" class="md-nav__link">
       
   
   
@@ -43196,7 +42671,7 @@
   
   
   
-    <a href="../../multioutput/ClassifierChain/" class="md-nav__link">
+    <a href="../ClassifierChain/" class="md-nav__link">
       
   
   
@@ -43462,7 +42937,7 @@
   
   
   
-    <a href="../AMSGrad/" class="md-nav__link">
+    <a href="../../optim/AMSGrad/" class="md-nav__link">
       
   
   
@@ -45964,7 +45439,7 @@
   
   
   
-    <a href="../../multioutput/ClassifierChain/" class="md-nav__link">
+    <a href="../ClassifierChain/" class="md-nav__link">
       
   
   
@@ -46230,7 +45705,7 @@
   
   
   
-    <a href="../AMSGrad/" class="md-nav__link">
+    <a href="../../optim/AMSGrad/" class="md-nav__link">
       
   
   
@@ -47337,17 +46812,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#attributes" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Attributes
-      </span>
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#examples" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -47363,17 +46827,6 @@
     <span class="md-ellipsis">
       <span class="md-typeset">
         Methods
-      </span>
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#references" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        References
       </span>
     </span>
   </a>
@@ -47398,83 +46851,71 @@
   
 
 
-<h1 id="adam">Adam<a class="headerlink" href="#adam" title="Permanent link">&para;</a></h1>
-<p>Adam optimizer.</p>
+<h1 id="peroutputregressor">PerOutputRegressor<a class="headerlink" href="#peroutputregressor" title="Permanent link">&para;</a></h1>
+<p>A multi-output model that trains one independent regressor per output.</p>
+<p>This model does not use the prediction of one output as a feature for the next. Each output is modelled by its own copy of the base regressor, trained independently. (This is the streaming equivalent of scikit-learn's <code>MultiOutputRegressor</code>). </p>
+<p>The set of outputs isn't known from the start in a streaming setting, new regressors are instantiated on the fly, one per output key encountered in <code>y</code>.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
-<p><strong>lr</strong> <em>(mutable)</em></p>
-<p><em>Default</em> → <code>0.1</code></p>
-</li>
-<li>
-<p><strong>beta_1</strong></p>
-<p><em>Default</em> → <code>0.9</code></p>
-</li>
-<li>
-<p><strong>beta_2</strong></p>
-<p><em>Default</em> → <code>0.999</code></p>
-</li>
-<li>
-<p><strong>eps</strong></p>
-<p><em>Default</em> → <code>1e-08</code></p>
-</li>
-</ul>
-<h2 id="attributes">Attributes<a class="headerlink" href="#attributes" title="Permanent link">&para;</a></h2>
-<ul>
-<li>
-<p><strong>m</strong> (<code>collections.defaultdict</code>)</p>
-</li>
-<li>
-<p><strong>v</strong> (<code>collections.defaultdict</code>)</p>
+<p><strong>model</strong></p>
+<p><em>Type</em> → <code>base.Regressor</code></p>
+<p>The regression model used to make predictions for each target.</p>
 </li>
 </ul>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
-<p><div class="language-python highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">river</span><span class="w"> </span><span class="kn">import</span> <span class="n">datasets</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">river</span><span class="w"> </span><span class="kn">import</span> <span class="n">evaluate</span>
+<p><div class="language-python highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">river</span><span class="w"> </span><span class="kn">import</span> <span class="n">evaluate</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">river</span><span class="w"> </span><span class="kn">import</span> <span class="n">linear_model</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">river</span><span class="w"> </span><span class="kn">import</span> <span class="n">metrics</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">river</span><span class="w"> </span><span class="kn">import</span> <span class="n">optim</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">river</span><span class="w"> </span><span class="kn">import</span> <span class="n">multioutput</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">river</span><span class="w"> </span><span class="kn">import</span> <span class="n">preprocessing</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">river</span><span class="w"> </span><span class="kn">import</span> <span class="n">stream</span>
 
-<span class="n">dataset</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">Phishing</span><span class="p">()</span>
-<span class="n">optimizer</span> <span class="o">=</span> <span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">()</span>
-<span class="n">model</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="n">preprocessing</span><span class="o">.</span><span class="n">StandardScaler</span><span class="p">()</span> <span class="o">|</span>
-    <span class="n">linear_model</span><span class="o">.</span><span class="n">LogisticRegression</span><span class="p">(</span><span class="n">optimizer</span><span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn</span><span class="w"> </span><span class="kn">import</span> <span class="n">datasets</span>
+
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">stream</span><span class="o">.</span><span class="n">iter_sklearn_dataset</span><span class="p">(</span>
+    <span class="n">dataset</span><span class="o">=</span><span class="n">datasets</span><span class="o">.</span><span class="n">load_linnerud</span><span class="p">(),</span>
+    <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">seed</span><span class="o">=</span><span class="mi">42</span>
 <span class="p">)</span>
-<span class="n">metric</span> <span class="o">=</span> <span class="n">metrics</span><span class="o">.</span><span class="n">F1</span><span class="p">()</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">multioutput</span><span class="o">.</span><span class="n">PerOutputRegressor</span><span class="p">(</span>
+    <span class="n">model</span><span class="o">=</span><span class="p">(</span>
+        <span class="n">preprocessing</span><span class="o">.</span><span class="n">StandardScaler</span><span class="p">()</span> <span class="o">|</span>
+        <span class="n">linear_model</span><span class="o">.</span><span class="n">LinearRegression</span><span class="p">(</span><span class="n">intercept_lr</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+
+<span class="n">metric</span> <span class="o">=</span> <span class="n">metrics</span><span class="o">.</span><span class="n">multioutput</span><span class="o">.</span><span class="n">MicroAverage</span><span class="p">(</span><span class="n">metrics</span><span class="o">.</span><span class="n">MAE</span><span class="p">())</span>
 
 <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">metric</span><span class="p">)</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>F1: 86.52%
+<div class="language-text highlight"><pre><span></span><code>MicroAverage(MAE): 12.68377
 </code></pre></div></p>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <details class="- abstract">
-<summary>look_ahead</summary>
-<p>Updates a weight vector before a prediction is made.</p>
-<p>Parameters:     w (dict): A dictionary of weight parameters. The weights are modified in-place.  Returns:     The updated weights.</p>
+<summary>learn_one</summary>
+<p>Fits to a set of features <code>x</code> and a real-valued target <code>y</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>w</strong>     — <code>dict</code>    </li>
+<li><strong>x</strong>    </li>
+<li><strong>y</strong>    </li>
+<li><strong>kwargs</strong>    </li>
 </ul>
 </details>
 <p><span /></p>
 <details class="- abstract">
-<summary>step</summary>
-<p>Updates a weight vector given a gradient.</p>
+<summary>predict_one</summary>
+<p>Predict the outputs of features <code>x</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>w</strong>     — <code>dict | VectorLike</code>    </li>
-<li><strong>g</strong>     — <code>dict | VectorLike</code>    </li>
+<li><strong>x</strong>    </li>
+<li><strong>kwargs</strong>    </li>
 </ul>
 <p><strong>Returns</strong></p>
-<p><code>dict | VectorLike</code>:     The updated weights.</p>
+<p>The predictions.</p>
 </details>
 <p><span /></p>
-<h2 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h2>
-<ul>
-<li><a href="https://arxiv.org/pdf/1412.6980.pdf">Kingma, D.P. and Ba, J., 2014. Adam: A method for stochastic optimization. arXiv preprint arXiv:1412.6980.</a></li>
-</ul>
 
 
 
