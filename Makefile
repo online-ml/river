@@ -1,7 +1,7 @@
 COMMIT_HASH := $(shell eval git rev-parse HEAD)
 
 download-datasets:
-	python -c "from river import datasets, bandit; datasets.Elec2().download(); datasets.SMSSpam().download(); datasets.CreditCard().download(); datasets.Music().download(); bandit.datasets.NewsArticles().download()"
+	python -c "from river import datasets, bandit; datasets.Elec2().download(); datasets.SMSSpam().download(); datasets.CreditCard().download(); datasets.Music().download(); datasets.CriteoAds().download(); bandit.datasets.NewsArticles().download()"
 
 format:
 	pre-commit run --all-files
