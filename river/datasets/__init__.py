@@ -16,6 +16,7 @@ from .beth import BETH
 from .bikes import Bikes
 from .chick_weights import ChickWeights
 from .credit_card import CreditCard
+from .criteo import CriteoAds
 from .elec2 import Elec2
 from .higgs import Higgs
 from .http import HTTP
@@ -45,6 +46,7 @@ __all__ = [
     "Bikes",
     "ChickWeights",
     "CreditCard",
+    "CriteoAds",
     "Elec2",
     "Higgs",
     "HTTP",
