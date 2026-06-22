@@ -1,0 +1,54 @@
+name: test-for-pyodide
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Build Python ${{ matrix.python-version }} ~ pyodide
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # CPython 3.13 -> Pyodide 0.29.x (pyemscripten_2025_0). Pyodide pins a
+          # Rust nightly there, and the stock Emscripten target std is built
+          # without the emscripten-wasm-eh ABI, so std is rebuilt from source
+          # with -Zbuild-std (needs the rust-src component).
+          - python-version: "313"
+            rust_toolchain: "nightly-2025-02-01"
+            rust_component: "--component rust-src"
+            cargo_build_std: "panic_abort,std"
+            cibw_enable: ""
+          # CPython 3.14 -> Pyodide 314.x (pyemscripten_2026_0). Builds on stable
+          # Rust, where emscripten-wasm-eh is the default and the stock std is
+          # usable as-is, so no -Zbuild-std is needed.
+          - python-version: "314"
+            rust_toolchain: "1.93.0"
+            rust_component: ""
+            cargo_build_std: ""
+            cibw_enable: "pyodide-prerelease"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+      - name: Install Rust ${{ matrix.rust_toolchain }} with the Emscripten target
+        run: |
+          rustup toolchain install "${{ matrix.rust_toolchain }}" \
+            --profile minimal --target wasm32-unknown-emscripten ${{ matrix.rust_component }}
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v4.1.0
+        timeout-minutes: 720
+        env:
+          CIBW_PLATFORM: pyodide
+          CIBW_BUILD: "cp${{ matrix.python-version }}-*"
+          CIBW_ENABLE: ${{ matrix.cibw_enable }}
+          RUSTUP_TOOLCHAIN: ${{ matrix.rust_toolchain }}
+          CARGO_UNSTABLE_BUILD_STD: ${{ matrix.cargo_build_std }}
+      - uses: actions/upload-artifact@v5
+        with:
+          name: pyodide-wheel-${{ matrix.python-version }}
+          path: ./wheelhouse/*.whl
