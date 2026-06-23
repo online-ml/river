@@ -946,6 +946,9 @@
         <loc>https://riverml.xyz/dev/api/multioutput/MultiClassEncoder/</loc>
       </url>
       <url>
+        <loc>https://riverml.xyz/dev/api/multioutput/PerOutputClassifier/</loc>
+      </url>
+      <url>
         <loc>https://riverml.xyz/dev/api/multioutput/PerOutputRegressor/</loc>
       </url>
       <url>
