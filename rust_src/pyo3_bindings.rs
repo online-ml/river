@@ -5,6 +5,7 @@ use serde::{Deserialize, Serialize};
 use crate::{
     adwin::AdaptiveWindowing, ewmean::EWMean, ewvariance::EWVariance,
     expected_mutual_info::expected_mutual_info as compute_expected_mutual_info,
+    feature_hashing::feature_hash,
     iqr::RollingIQR, iqr::IQR, kurtosis::Kurtosis,
     mondrian::{
         go_downwards_classifier, go_downwards_regressor, go_upwards, log_sum_2_exp,
@@ -523,6 +524,7 @@ fn _river_rust(py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
     register_submodule(py, m, "drift", register_drift)?;
     register_submodule(py, m, "tree", register_tree)?;
     register_submodule(py, m, "vectordict", register_vectordict)?;
+    register_submodule(py, m, "feature_hashing", register_feature_hashing)?;
     Ok(())
 }
 
@@ -588,5 +590,11 @@ fn register_vectordict(_py: Python, m: &Bound<PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(euclidean_distance_dict, m)?)?;
     m.add_function(wrap_pyfunction!(euclidean_distance_tuple, m)?)?;
     m.add_function(wrap_pyfunction!(lazy_search_euclidean, m)?)?;
+    Ok(())
+}
+
+
+fn register_feature_hashing(_py: Python, m: &Bound<PyModule>) -> PyResult<()> {
+    m.add_function(wrap_pyfunction!(feature_hash, m)?)?;
     Ok(())
 }

@@ -1,14 +1,14 @@
 # Unreleased
 
-* Add `ppc64le` architecture to Linux wheel builds.
-* Dropped `altair` from River's runtime dependencies. It was never imported by the package itself (it is only used to draw plots in the documentation notebooks), so it has been moved to the `docs`/`dev` dependency groups. Installing River no longer pulls in `altair` and its transitive dependencies.
-* Publish Pyodide/WebAssembly wheels (CPython 3.13 and 3.14) so River can be installed in the browser, e.g. via [JupyterLite](https://jupyterlite.readthedocs.io/) or `micropip`. The minimum `numpy` and `scipy` versions were lowered to `2.2.5` and `1.14.1` to match the versions bundled with Pyodide.
+- Add `ppc64le` architecture to Linux wheel builds.
+- Moved `altair` from the runtime dependencies to the `docs`/`dev` groups; it was only used to draw plots in the docs, so installing River no longer pulls it in.
+- Publish Pyodide/WebAssembly wheels (CPython 3.13 and 3.14) so River can run in the browser, e.g. via [JupyterLite](https://jupyterlite.readthedocs.io/) or `micropip`. The minimum `numpy` and `scipy` versions were lowered to `2.2.5` and `1.14.1` to match Pyodide.
 
 ## covariance
 
-- Sped up `EmpiricalCovariance.update`/`revert` by caching the sorted feature list and pair iteration and by removing the `__getitem__`/`matrix` indirection in the hot path. ~40% faster at 30 features, no semantic change (pairwise-deletion semantics preserved).
-- Restructured `EmpiricalPrecision` to use NumPy-backed dense state indexed by a feature → integer map, eliminating the dict ↔ numpy marshalling on every `update`/`update_many`. ~7× faster on 2000 × 20 sample streams.
-- Fixed a latent asymmetry in `EmpiricalPrecision` under emerging features: the per-feature `w` scaling left the stored matrix skewed (e.g. `prec[a, b]` ≠ `prec[b, a]`) when features were introduced at different times.
+- Sped up `EmpiricalCovariance.update`/`revert` (~40% faster at 30 features) by caching the sorted feature list and pair iteration in the hot path. No semantic change.
+- Restructured `EmpiricalPrecision` around NumPy-backed dense state, removing the per-update dict ↔ numpy marshalling. ~7× faster on 2000 × 20 sample streams.
+- Fixed an `EmpiricalPrecision` asymmetry where features introduced at different times left the stored matrix skewed (e.g. `prec[a, b]` ≠ `prec[b, a]`).
 
 ## datasets
 
@@ -16,12 +16,13 @@
 
 ## linear_model
 
-- Added `linear_model.AdPredictor`, the Bayesian online probit-regression classifier Microsoft used for click-through-rate prediction in Bing's sponsored search (Graepel et al., 2010). It keeps a Gaussian belief over each feature weight, yields well-calibrated probabilities, and its per-example cost scales only with the number of active features.
-- Restructured `BayesianLinearRegression` to use the same NumPy-backed storage as `EmpiricalPrecision`. ~11× faster `learn_one` at 20 features, ~24× at 50 features. Speeds up `bandit.LinUCB` as a side effect.
-- `BayesianLinearRegression` now passes `check_emerging_features` and `check_shuffle_features_no_impact` (the two checks previously skipped via `_unit_test_skips`). It now handles features arriving and disappearing after training begins.
-- Fixed `BayesianLinearRegression` coefficient blow-up under emerging/disappearing features. The previous submatrix-only update broke the `_ss_inv ≈ inv(_ss)` invariant once different feature subsets were touched across calls (the submatrix of an inverse is generally not the inverse of the submatrix), causing coefficients to diverge to `inf`/`nan` on `check_emerging_features`-style streams. `learn_one` now updates the full state with a zero-padded `x`. Behavior change: features absent from `learn_one`'s `x` are now treated as observed values of 0 (matching `LinearRegression` and the rest of the online-learning estimators), rather than being silently skipped. Identical to the previous behavior to floating-point roundoff when every call sees the same feature set.
-- Sped up the mini-batch gradient in `LinearRegression`/`LogisticRegression.learn_many` by contracting the sample axis directly inside the `np.einsum` call instead of building the intermediate `(n, p)` matrix and averaging it afterwards. ~2-3× faster on that step, no semantic change.
-- Stabilised `BayesianLinearRegression` across BLAS implementations and sped it up further. `learn_one` now accumulates an exact natural mean `_eta_arr = beta * sum_i(y_i * x_i)` alongside the existing Sherman-Morrison rank-1 update of `_ss_inv_arr`, and the posterior mean is recovered lazily as `_ss_inv_arr @ _eta_arr` (cached and invalidated on `learn_one`). Previously the posterior mean was propagated through `m_new = ss_inv @ (ss_old @ m_old + bx*y)`, which compounded BLAS rounding multiplicatively across rank-1 updates and caused a ~0.6% relative drift between macOS Accelerate and Linux OpenBLAS on `TrumpApproval` with imputation. The new path keeps `learn_one` ~20% faster than before and the full `predict`+`learn` cycle ~10% faster.
+- Added `linear_model.AdPredictor`, the Bayesian online probit-regression classifier Microsoft used for click-through-rate prediction in Bing's sponsored search (Graepel et al., 2010). It keeps a Gaussian belief over each feature weight and yields well-calibrated probabilities.
+- Restructured `BayesianLinearRegression` around NumPy-backed storage. ~11× faster `learn_one` at 20 features, ~24× at 50 features. Speeds up `bandit.LinUCB` too.
+- `BayesianLinearRegression` now handles features arriving and disappearing after training begins (it passes `check_emerging_features` and `check_shuffle_features_no_impact`, previously skipped).
+- Fixed `BayesianLinearRegression` coefficients diverging to `inf`/`nan` under emerging/disappearing features; `learn_one` now updates the full state with a zero-padded `x`. Behavior change: features absent from `x` are treated as observed 0s (matching the other linear models) rather than skipped — identical to before when every call sees the same features.
+- Sped up the `LinearRegression`/`LogisticRegression.learn_many` mini-batch gradient (~2-3×) by contracting the sample axis inside the `np.einsum`. No semantic change.
+- Sped up `learn_one` for the linear models (`LinearRegression`, `LogisticRegression`, `Perceptron`, ...): updates now scale with the number of active features instead of the total number of features ever seen. Outputs are unchanged.
+- Stabilised `BayesianLinearRegression` across BLAS implementations and sped it up (~10-20%) by accumulating an exact natural mean and recovering the posterior mean lazily, instead of propagating it through compounding rank-1 updates (which drifted ~0.6% between macOS Accelerate and Linux OpenBLAS).
 
 ## multioutput
 
@@ -29,25 +30,27 @@
 
 ## optim
 
-- Exposed `optim.Newton`, the Online Newton Step optimizer, which was previously implemented but never exported. Fixed a correctness bug whereby the inverse Hessian was initialized to `eps * I` instead of `(1 / eps) * I`, which crippled learning (the maintained inverse could only ever shrink from a tiny starting value). Reworked the internals to use NumPy-backed dense state and `utils.math.sherman_morrison` (the same BLAS rank-1 update used by `BayesianLinearRegression`) instead of a bespoke dict-based reimplementation.
+- Exposed `optim.Newton` (Online Newton Step), which was implemented but never exported, and fixed an initialisation bug (the inverse Hessian started at `eps * I` instead of `(1 / eps) * I`) that crippled learning. Reworked around NumPy-backed dense state.
+
 ## preprocessing
 
-- Added `window_size` parameter to `preprocessing.StandardScaler`, `preprocessing.MinMaxScaler`, and `preprocessing.MaxAbsScaler`. When set, the scaler tracks its statistics over the last `window_size` observations instead of the entire stream.
-- Added `_from_state` classmethod to `preprocessing.MinMaxScaler`, `preprocessing.MaxAbsScaler`, and `preprocessing.StandardScaler` so a scaler can be warm-started from offline-computed statistics or resumed from a checkpoint without replaying past observations.
+- Added a `window_size` parameter to `preprocessing.StandardScaler`, `preprocessing.MinMaxScaler`, and `preprocessing.MaxAbsScaler`. When set, the scaler tracks its statistics over the last `window_size` observations instead of the whole stream.
+- Added a `_from_state` classmethod to `preprocessing.MinMaxScaler`, `preprocessing.MaxAbsScaler`, and `preprocessing.StandardScaler` so a scaler can be warm-started from precomputed statistics without replaying past observations.
+- `preprocessing.FeatureHasher` now hashes with MurmurHash3 in Rust, making it much faster. It gains an `alternate_sign` parameter (default `True`, matching scikit-learn) and returns a plain `dict`. Hashed feature indices differ from previous versions.
 
 ## reco
 
-- Corrected the type annotations of the weight/latent `defaultdict`s in `BiasedMF`, `Baseline`, and `FunkMF`: their values are floats/arrays (not `Initializer` objects), and their keys are hashable IDs. Removed the bespoke `reco.base.ID` alias in favour of the built-in `typing.Hashable` (matching `base.typing.FeatureName`). Typing-only; no behavioral change.
+- Corrected the type annotations of the weight/latent `defaultdict`s in `BiasedMF`, `Baseline`, and `FunkMF`, and dropped the bespoke `reco.base.ID` alias in favour of `typing.Hashable`. Typing-only; no behavioral change.
 
 ## utils
 
 - Added `utils.math.norm_cdf` and `utils.math.norm_pdf`, the CDF and PDF of the standard normal distribution (used by `linear_model.AdPredictor`).
-- `utils.Rolling` and `utils.TimeRolling` now accept a class as their first argument and forward extra keyword arguments to its constructor, e.g. `utils.Rolling(stats.Mean, window_size=3)` or `utils.Rolling(stats.Var, window_size=3, ddof=0)`. This avoids a footgun when using these wrappers as `collections.defaultdict` factories, where the previous instance form silently shared state across keys. Passing a pre-built instance still works but now emits a `DeprecationWarning` and will be removed in a future release.
+- `utils.Rolling` and `utils.TimeRolling` now accept a class plus constructor keyword arguments, e.g. `utils.Rolling(stats.Mean, window_size=3)`. This avoids silently sharing state when they are used as `collections.defaultdict` factories. Passing a pre-built instance still works but is deprecated and will be removed in a future release.
 
 ## rules
 
-- Fixed `RecursionError` in `AMRules` on long streams: `tree.splitter.EBSTSplitter` (and `TEBSTSplitter`) now traverses its binary search tree iteratively and the BST nodes carry a custom iterative `__deepcopy__`, so deeply-skewed trees no longer blow Python's recursion limit when rules are cloned during expansion. `tree.splitter.ExhaustiveSplitter` received the same treatment (iterative split-search, iterative node insertion, and iterative `__deepcopy__`).
-- Fixed an `AMRules` memory leak where `HoeffdingRule.expand` appended a redundant `NumericLiteral` whenever a new split shared the feature and direction of an existing literal but did not tighten the threshold.
+- Fixed `RecursionError` in `AMRules` on long streams: the `EBSTSplitter`, `TEBSTSplitter`, and `ExhaustiveSplitter` now traverse and deep-copy their search trees iteratively, so deeply-skewed trees no longer blow Python's recursion limit.
+- Fixed an `AMRules` memory leak where `HoeffdingRule.expand` appended a redundant `NumericLiteral` when a new split shared a feature and direction with an existing literal without tightening the threshold.
 
 ## stats
 
