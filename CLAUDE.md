@@ -70,5 +70,9 @@ All estimators inherit from `base.Estimator` (which inherits from `base.Base`). 
 
 ### Making changes
 
-- When you're done, add a entry to `unreleased.md` if its relevant to end users.
+- When you're done, add an entry to `docs/releases/unreleased.md` if it's relevant to end users, under the section for the relevant module (alphabetical).
+  - Use `-` for list items, not `*`.
+  - Keep entries concise: one to three sentences. Lead with what changed and its user-facing effect.
+  - Include performance numbers (e.g. "~7× faster") and call out behavior changes explicitly, but omit deep implementation mechanics (internal variable names, algebra, marshalling details) — those belong in the code/PR, not the changelog.
+  - Example: "Sped up `learn_one` for the linear models: updates now scale with the number of active features instead of the total number of features ever seen. Outputs are unchanged."
 - Performance matters: if you make a significant change, run a benchmark.

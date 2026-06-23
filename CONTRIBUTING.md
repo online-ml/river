@@ -106,11 +106,21 @@ From the root of the repository, you can then run the `make livedoc` command to 
 
 All classes and function are automatically picked up and added to the documentation. The only thing you have to do is to add an entry to the relevant file in the [`docs/releases` directory](docs/releases).
 
-## Build Cython and Rust extensions
+## Build the Rust extensions
+
+River's Rust extensions (under `rust_src/`) are built automatically by `uv sync`:
 
 ```sh
 uv sync
 ```
+
+When iterating on the Rust code, rebuilding the whole project with `uv sync` is slower than necessary. Use `maturin develop` for a tighter inner loop. Note that `maturin` is not installed in the environment, so run it through `uv run --with`:
+
+```sh
+uv run --with maturin maturin develop --release
+```
+
+(Plain `uv run maturin ...` fails with "Failed to spawn: maturin" because the binary isn't on the environment's path.)
 
 ## Testing
 
