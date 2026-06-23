@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import functools
 
 from river.stats import Var
@@ -87,31 +88,38 @@ class EBSTSplitter(Splitter):
         return best_split
 
     def _find_best_split(self, node, candidate):
-        if node._left is not None:
-            candidate = self._find_best_split(node._left, candidate)
-        # Left post split distribution
-        left_dist = node.estimator + self._aux_estimator
-
-        # The right split distribution is calculated as the difference between the total
-        # distribution (pre split distribution) and the left distribution
-        right_dist = self._pre_split_dist - left_dist
-
-        post_split_dists = [left_dist, right_dist]
-
-        merit = self._criterion.merit_of_split(self._pre_split_dist, post_split_dists)
-        if merit > candidate.merit:
-            candidate = BranchFactory(merit, self._att_idx, node.att_val, post_split_dists)
-
-        if node._right is not None:
-            self._aux_estimator += node.estimator
-
-            right_candidate = self._find_best_split(node._right, candidate)
-
-            if right_candidate.merit > candidate.merit:
-                candidate = right_candidate
-
-            self._aux_estimator -= node.estimator
-
+        # Iterative in-order traversal. The recursive form blows Python's
+        # recursion limit on long streams (the BST can be degenerate or deep).
+        # We use an operation stack so we can run code after a node's right
+        # subtree finishes — needed to undo `_aux_estimator += node.estimator`.
+        ops: list[tuple[str, object]] = [("descend", node)]
+        while ops:
+            action, n = ops.pop()
+            if action == "descend":
+                # Push in reverse of execution order; the stack pops in LIFO order.
+                if n._right is not None:  # type: ignore[union-attr]
+                    ops.append(("sub_aux", n))
+                    ops.append(("descend", n._right))  # type: ignore[union-attr]
+                    ops.append(("add_aux", n))
+                ops.append(("process", n))
+                if n._left is not None:  # type: ignore[union-attr]
+                    ops.append(("descend", n._left))  # type: ignore[union-attr]
+            elif action == "add_aux":
+                self._aux_estimator += n.estimator  # type: ignore[union-attr]
+            elif action == "sub_aux":
+                self._aux_estimator -= n.estimator  # type: ignore[union-attr]
+            else:  # "process"
+                left_dist = n.estimator + self._aux_estimator  # type: ignore[union-attr]
+                right_dist = self._pre_split_dist - left_dist
+                post_split_dists = [left_dist, right_dist]
+                merit = self._criterion.merit_of_split(self._pre_split_dist, post_split_dists)
+                if merit > candidate.merit:
+                    candidate = BranchFactory(
+                        merit,
+                        self._att_idx,
+                        n.att_val,  # type: ignore[union-attr]
+                        post_split_dists,
+                    )
         return candidate
 
     def remove_bad_splits(
@@ -124,7 +132,7 @@ class EBSTSplitter(Splitter):
     ):
         """Remove bad splits.
 
-        Based on FIMT-DD's [^1] procedure to remove bad split candidates from the E-BST. This
+        Based on FIMT-DD's procedure to remove bad split candidates from the E-BST. This
         mechanism is triggered every time a split attempt fails. The rationale is to remove
         points whose split merit is much worse than the best candidate overall (for which the
         growth decision already failed).
@@ -138,7 +146,7 @@ class EBSTSplitter(Splitter):
         split relative to the best one is small. Hence, this candidate can be safely removed.
 
         To avoid excessive and costly manipulations of the E-BST to update the stored statistics,
-        only the nodes whose children are all bad split points are pruned, as defined in [^1].
+        only the nodes whose children are all bad split points are pruned, as defined in the original paper.
 
         Parameters
         ----------
@@ -191,50 +199,82 @@ class EBSTSplitter(Splitter):
         del self._aux_estimator
 
     def _remove_bad_split_nodes(self, current_node, parent=None, is_left_child=True):
-        is_bad = False
+        # Iterative post-order traversal: we need both children's `is_bad`
+        # before we can evaluate the current node, and we must undo
+        # `_aux_estimator += node.estimator` after each right subtree.
+        PHASE_LEFT, PHASE_RIGHT, PHASE_EVAL = 0, 1, 2
 
-        if current_node._left is not None:
-            is_bad = self._remove_bad_split_nodes(current_node._left, current_node, True)
-        else:  # Every leaf node is potentially a bad candidate
-            is_bad = True
+        # Frame: [node, parent, is_left_child, phase, aux_added]
+        # `aux_added` tracks whether this frame added node.estimator to
+        # `_aux_estimator` when descending right — needed because the right
+        # child may prune itself (setting node._right = None) before this
+        # frame reaches PHASE_EVAL, so we can't rely on `node._right` to
+        # decide whether to undo the addition.
+        stack: list[list] = [[current_node, parent, is_left_child, PHASE_LEFT, False]]
+        # Carries the most recently completed child's return value.
+        child_is_bad = False
 
-        if is_bad:
-            if current_node._right is not None:
-                self._aux_estimator += current_node.estimator
+        while stack:
+            frame = stack[-1]
+            node, p, ilc, phase, _ = frame
 
-                is_bad = self._remove_bad_split_nodes(current_node._right, current_node, False)
+            if phase == PHASE_LEFT:
+                if node._left is not None:
+                    frame[3] = PHASE_RIGHT
+                    stack.append([node._left, node, True, PHASE_LEFT, False])
+                    continue
+                # Leaf on the left side → treated as bad in the original.
+                child_is_bad = True
+                frame[3] = PHASE_RIGHT
+                continue
 
-                self._aux_estimator -= current_node.estimator
-            else:  # Every leaf node is potentially a bad candidate
-                is_bad = True
+            if phase == PHASE_RIGHT:
+                if not child_is_bad:
+                    # Left subtree was clean → this subtree is clean too;
+                    # short-circuit without evaluating right or self.
+                    stack.pop()
+                    child_is_bad = False
+                    continue
+                if node._right is not None:
+                    self._aux_estimator += node.estimator
+                    frame[3] = PHASE_EVAL
+                    frame[4] = True
+                    stack.append([node._right, node, False, PHASE_LEFT, False])
+                    continue
+                # Leaf on the right side → still bad.
+                child_is_bad = True
+                frame[3] = PHASE_EVAL
+                continue
 
-        if is_bad:
-            # Left post split distribution
-            left_dist = current_node.estimator + self._aux_estimator
+            # PHASE_EVAL: both subtrees have been processed (or were absent).
+            if frame[4]:
+                self._aux_estimator -= node.estimator
 
-            # The right split distribution is calculated as the difference between the total
-            # distribution (pre split distribution) and the left distribution
-            right_dist = self._pre_split_dist - left_dist
+            is_bad = child_is_bad
+            stack.pop()
 
-            post_split_dists = [left_dist, right_dist]
-            merit = self._criterion.merit_of_split(self._pre_split_dist, post_split_dists)
-            if (merit / self._last_check_vr) < (self._last_check_ratio - 2 * self._last_check_e):
-                # Remove children nodes
-                current_node._left = None
-                current_node._right = None
-
-                # Root node
-                if parent is None:
-                    self._root = None
-                else:  # Root node
-                    # Remove bad candidate
-                    if is_left_child:
-                        parent._left = None
+            if is_bad:
+                left_dist = node.estimator + self._aux_estimator
+                right_dist = self._pre_split_dist - left_dist
+                post_split_dists = [left_dist, right_dist]
+                merit = self._criterion.merit_of_split(self._pre_split_dist, post_split_dists)
+                if (merit / self._last_check_vr) < (
+                    self._last_check_ratio - 2 * self._last_check_e
+                ):
+                    node._left = None
+                    node._right = None
+                    if p is None:
+                        self._root = None
+                    elif ilc:
+                        p._left = None
                     else:
-                        parent._right = None
-                return True
+                        p._right = None
+                    child_is_bad = True
+                    continue
 
-        return False
+            child_is_bad = False
+
+        return child_is_bad
 
 
 class EBSTNode:
@@ -264,6 +304,34 @@ class EBSTNode:
     def _update_estimator_multivariate(node, target, w):
         for t in target:
             node.estimator[t].update(target[t], w)
+
+    def __deepcopy__(self, memo):
+        # Iterative copy: the BST can be deep enough on long streams that the
+        # default recursive deepcopy (parent -> _left -> deepcopy(child) -> ...)
+        # blows Python's recursion limit.
+        cls = type(self)
+        new_root = cls.__new__(cls)
+        memo[id(self)] = new_root
+        stack = [(self, new_root)]
+        while stack:
+            src, dst = stack.pop()
+            dst.att_val = copy.deepcopy(src.att_val, memo)
+            dst.estimator = copy.deepcopy(src.estimator, memo)
+            # The dispatch method is a static reference; rebinding is fine.
+            dst._update_estimator = src._update_estimator
+            dst._left = None
+            dst._right = None
+            if src._left is not None:
+                child = cls.__new__(cls)
+                memo[id(src._left)] = child
+                dst._left = child
+                stack.append((src._left, child))
+            if src._right is not None:
+                child = cls.__new__(cls)
+                memo[id(src._right)] = child
+                dst._right = child
+                stack.append((src._right, child))
+        return new_root
 
     # Incremental implementation of the insert method. Avoiding unnecessary
     # stack tracing must decrease memory costs

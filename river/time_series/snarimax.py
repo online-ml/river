@@ -271,6 +271,10 @@ class SNARIMAX(time_series.base.Forecaster):
 
     """
 
+    @classmethod
+    def _unit_test_params(cls):
+        yield {"p": 1, "d": 0, "q": 0}
+
     def __init__(
         self,
         p: int,
@@ -300,34 +304,33 @@ class SNARIMAX(time_series.base.Forecaster):
         self.errors: collections.deque[float] = collections.deque(maxlen=max(q, m * sq))
 
     def _add_lag_features(self, x, Y, errors):
-        if x is None:
-            x = {}
+        x = {} if x is None else x.copy()
 
         # AR
         for t in range(self.p):
             try:
-                x[f"y-{t+1}"] = Y[t]
+                x[f"y-{t + 1}"] = Y[t]
             except IndexError:
                 break
 
         # Seasonal AR
         for t in range(self.m - 1, self.m * self.sp, self.m):
             try:
-                x[f"sy-{t+1}"] = Y[t]
+                x[f"sy-{t + 1}"] = Y[t]
             except IndexError:
                 break
 
         # MA
         for t in range(self.q):
             try:
-                x[f"e-{t+1}"] = errors[t]
+                x[f"e-{t + 1}"] = errors[t]
             except IndexError:
                 break
 
         # Seasonal MA
         for t in range(self.m - 1, self.m * self.sq, self.m):
             try:
-                x[f"se-{t+1}"] = errors[t]
+                x[f"se-{t + 1}"] = errors[t]
             except IndexError:
                 break
 

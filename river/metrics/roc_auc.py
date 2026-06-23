@@ -2,13 +2,14 @@ from __future__ import annotations
 
 from scipy import integrate
 
-from river import metrics, utils
+from river import metrics
+from river.anomaly.base import AnomalyDetector, AnomalyFilter
 
 __all__ = ["ROCAUC"]
 
 
 class ROCAUC(metrics.base.BinaryMetric):
-    """Receiving Operating Characteristic Area Under the Curve.
+    """Receiver Operating Characteristic Area Under the Curve.
 
     This metric is an approximation of the true ROC AUC. Computing the true ROC AUC would
     require storing all the predictions and ground truths, which isn't desirable. The approximation
@@ -63,8 +64,8 @@ class ROCAUC(metrics.base.BinaryMetric):
     def works_with(self, model) -> bool:
         return (
             super().works_with(model)
-            or utils.inspect.isanomalydetector(model)
-            or utils.inspect.isanomalyfilter(model)
+            or isinstance(model, AnomalyDetector)
+            or isinstance(model, AnomalyFilter)
         )
 
     def update(self, y_true, y_pred, w=1.0):

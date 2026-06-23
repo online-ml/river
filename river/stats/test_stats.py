@@ -55,8 +55,6 @@ def test_pickling_value(stat):
     for i in range(10):
         if isinstance(stat, stats.base.Bivariate):
             stat.update(i, i)
-        elif isinstance(stat, stats.NUnique):  # takes string in input
-            stat.update(str(i))
         else:
             stat.update(i)
 
@@ -136,11 +134,10 @@ def test_univariate_reliability_weights(stat, func):
 @pytest.mark.parametrize(
     "stat, func",
     [
-        # TODO: we shouldn't ignore these types
-        (utils.Rolling(stats.Mean(), 3), statistics.mean),  # type: ignore
-        (utils.Rolling(stats.Mean(), 10), statistics.mean),  # type: ignore
-        (utils.Rolling(stats.Var(ddof=0), 3), np.var),  # type: ignore
-        (utils.Rolling(stats.Var(ddof=0), 10), np.var),  # type: ignore
+        (utils.Rolling(stats.Mean, 3), statistics.mean),
+        (utils.Rolling(stats.Mean, 10), statistics.mean),
+        (utils.Rolling(stats.Var, 3, ddof=0), np.var),
+        (utils.Rolling(stats.Var, 10, ddof=0), np.var),
         (
             stats.RollingQuantile(0.0, 10),
             functools.partial(np.quantile, q=0.0, method="linear"),
@@ -179,9 +176,8 @@ def test_rolling_univariate(stat, func):
 @pytest.mark.parametrize(
     "stat, func",
     [
-        # TODO: we shouldn't ignore these types
-        (utils.Rolling(stats.Mean(), 3), lambda x, w: np.average(x, weights=w)),  # type: ignore
-        (utils.Rolling(stats.Mean(), 10), lambda x, w: np.average(x, weights=w)),  # type: ignore
+        (utils.Rolling(stats.Mean, 3), lambda x, w: np.average(x, weights=w)),
+        (utils.Rolling(stats.Mean, 10), lambda x, w: np.average(x, weights=w)),
     ],
 )
 def test_rolling_univariate_sample_weights(stat, func):
@@ -203,9 +199,8 @@ def test_rolling_univariate_sample_weights(stat, func):
 @pytest.mark.parametrize(
     "stat, func",
     [
-        # TODO: we shouldn't ignore these types
-        (utils.Rolling(stats.Mean(), 3), lambda x, w: np.average(x, weights=w)),  # type: ignore
-        (utils.Rolling(stats.Mean(), 10), lambda x, w: np.average(x, weights=w)),  # type: ignore
+        (utils.Rolling(stats.Mean, 3), lambda x, w: np.average(x, weights=w)),
+        (utils.Rolling(stats.Mean, 10), lambda x, w: np.average(x, weights=w)),
     ],
 )
 def test_rolling_univariate_reliability_weights(stat, func):
@@ -241,13 +236,38 @@ def test_bivariate(stat, func):
             assert math.isclose(stat.get(), func(X[: i + 1], Y[: i + 1]), abs_tol=1e-10)
 
 
+def _chi2_stat(x, y):
+    # This is a bit slow but correct for testing
+
+    import scipy.stats
+
+    # Get unique values to build contingency table
+    x_vals = sorted(set(x))
+    y_vals = sorted(set(y))
+    if len(x_vals) <= 1 or len(y_vals) <= 1:
+        return 0.0
+
+    table = []
+    for xv in x_vals:
+        row = []
+        for yv in y_vals:
+            count = sum(1 for xi, yi in zip(x, y) if xi == xv and yi == yv)
+            row.append(count)
+        table.append(row)
+
+    chi2 = float(scipy.stats.chi2_contingency(table, correction=False)[0])  # type: ignore[arg-type]
+    return 0.0 if math.isnan(chi2) else chi2
+
+
 @pytest.mark.parametrize(
     "stat, func",
     [
-        (utils.Rolling(stats.PearsonCorr(), 3), lambda x, y: sp_stats.pearsonr(x, y)[0]),  # type: ignore
-        (utils.Rolling(stats.PearsonCorr(), 10), lambda x, y: sp_stats.pearsonr(x, y)[0]),  # type: ignore
-        (utils.Rolling(stats.Cov(), 3), lambda x, y: np.cov(x, y)[0, 1]),  # type: ignore
-        (utils.Rolling(stats.Cov(), 10), lambda x, y: np.cov(x, y)[0, 1]),  # type: ignore
+        (utils.Rolling(stats.PearsonCorr, 3), lambda x, y: sp_stats.pearsonr(x, y)[0]),
+        (utils.Rolling(stats.PearsonCorr, 10), lambda x, y: sp_stats.pearsonr(x, y)[0]),
+        (utils.Rolling(stats.Cov, 3), lambda x, y: np.cov(x, y)[0, 1]),
+        (utils.Rolling(stats.Cov, 10), lambda x, y: np.cov(x, y)[0, 1]),
+        (utils.Rolling(stats.ChiSquared, 3), _chi2_stat),
+        (utils.Rolling(stats.ChiSquared, 10), _chi2_stat),
     ],
 )
 def test_rolling_bivariate(stat, func):
@@ -271,8 +291,9 @@ def test_rolling_bivariate(stat, func):
 @pytest.mark.parametrize(
     "stat",
     filter(
-        lambda stat: hasattr(stat, "update_many")
-        and issubclass(stat.__class__, stats.base.Univariate),
+        lambda stat: (
+            hasattr(stat, "update_many") and issubclass(stat.__class__, stats.base.Univariate)
+        ),
         load_stats(),
     ),
     ids=lambda stat: stat.__class__.__name__,
@@ -292,8 +313,9 @@ def test_update_many_univariate(stat):
 @pytest.mark.parametrize(
     "stat",
     filter(
-        lambda stat: hasattr(stat, "update_many")
-        and issubclass(stat.__class__, stats.base.Bivariate),
+        lambda stat: (
+            hasattr(stat, "update_many") and issubclass(stat.__class__, stats.base.Bivariate)
+        ),
         load_stats(),
     ),
     ids=lambda stat: stat.__class__.__name__,

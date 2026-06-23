@@ -12,9 +12,11 @@ from __future__ import annotations
 from . import base, synth
 from .airline_passengers import AirlinePassengers
 from .bananas import Bananas
+from .beth import BETH
 from .bikes import Bikes
 from .chick_weights import ChickWeights
 from .credit_card import CreditCard
+from .criteo import CriteoAds
 from .elec2 import Elec2
 from .higgs import Higgs
 from .http import HTTP
@@ -34,14 +36,17 @@ from .trec07 import TREC07
 from .trump_approval import TrumpApproval
 from .water_flow import WaterFlow
 from .web_traffic import WebTraffic
+from .yeast import Yeast
 
 __all__ = [
     "AirlinePassengers",
     "Bananas",
+    "BETH",
     "base",
     "Bikes",
     "ChickWeights",
     "CreditCard",
+    "CriteoAds",
     "Elec2",
     "Higgs",
     "HTTP",
@@ -62,6 +67,7 @@ __all__ = [
     "TrumpApproval",
     "WaterFlow",
     "WebTraffic",
+    "Yeast",
 ]
 
 
@@ -80,7 +86,7 @@ def _docs_overview(print):
         dataset = eval(dataset_name)()
 
         details = {
-            "Name": f"[{dataset_name}](../datasets/{dataset_name})",
+            "Name": f"[{dataset_name}](datasets/{dataset_name})",
             "Samples": dataset.n_samples,
             "Features": dataset.n_features,
             "Sparse": "✔️" if dataset.sparse else "",

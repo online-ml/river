@@ -3,6 +3,7 @@ from __future__ import annotations
 import collections
 
 from river import optim
+from river.optim.base import DictLike
 
 __all__ = ["AMSGrad"]
 
@@ -69,7 +70,7 @@ class AMSGrad(optim.base.Optimizer):
         self.v: dict[str, float] = collections.defaultdict(float)
         self.v_hat: dict[str, float] = collections.defaultdict(float)
 
-    def _step_with_dict(self, w, g):
+    def _step_with_dict(self, w: DictLike, g: DictLike) -> DictLike:
         lr = self.learning_rate
 
         if self.correct_bias:

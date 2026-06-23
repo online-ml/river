@@ -108,7 +108,7 @@ class Cache:
 
         if key is None:
             raise ValueError(
-                "No default key could be guessed for the given stream, " "please provide one"
+                "No default key could be guessed for the given stream, please provide one"
             )
 
         path = self._get_path(key)

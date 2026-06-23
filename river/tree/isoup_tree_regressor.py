@@ -10,7 +10,7 @@ from .split_criterion import IntraClusterVarianceReductionSplitCriterion
 from .splitter import Splitter
 
 
-class iSOUPTreeRegressor(tree.HoeffdingTreeRegressor, base.MultiTargetRegressor):
+class ISOUPTreeRegressor(tree.HoeffdingTreeRegressor, base.MultiTargetRegressor):
     """Incremental Structured Output Prediction Tree (iSOUP-Tree) for multi-target regression.
 
     This is an implementation of the iSOUP-Tree proposed by A. Osojnik, P. Panov, and
@@ -95,7 +95,7 @@ class iSOUPTreeRegressor(tree.HoeffdingTreeRegressor, base.MultiTargetRegressor)
     >>> num = compose.SelectType(numbers.Number) | preprocessing.MinMaxScaler()
     >>> cat = compose.SelectType(str) | preprocessing.OneHotEncoder()
 
-    >>> model = tree.iSOUPTreeRegressor(
+    >>> model = tree.ISOUPTreeRegressor(
     ...     grace_period=100,
     ...     leaf_prediction='model',
     ...     leaf_model={

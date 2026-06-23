@@ -117,7 +117,7 @@ class Vertex(base.Base):
         return res if len(res) > 0 else ([], [])  # type: ignore
 
     def all_neighbors(self) -> set[int]:
-        return set.union(set(self.edges.keys()), set(self.r_edges.keys()))
+        return self.edges.keys() | self.r_edges.keys()
 
     def is_isolated(self):
         return len(self.edges) == 0 and len(self.r_edges) == 0

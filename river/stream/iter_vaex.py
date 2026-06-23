@@ -33,18 +33,18 @@ def iter_vaex(
         y = _ensure_list(y)
         feature_names = [feat for feat in feature_names if feat not in y]
 
-    multioutput = len(y) > 1
+    multioutput = len(y) > 1  # type: ignore[arg-type]
 
     if multioutput:
         for i in range(len(X)):
             yield (
                 {key: X.evaluate(key, i, i + 1)[0] for key in feature_names},
-                {key: X.evaluate(key, i, i + 1)[0] for key in y},
+                {key: X.evaluate(key, i, i + 1)[0] for key in y},  # type: ignore[union-attr]
             )
 
     else:
         for i in range(len(X)):
             yield (
                 {key: X.evaluate(key, i, i + 1)[0] for key in feature_names},
-                X.evaluate(y[0], i, i + 1)[0],
+                X.evaluate(y[0], i, i + 1)[0],  # type: ignore[index]
             )

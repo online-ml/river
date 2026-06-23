@@ -9,7 +9,8 @@ on:
       - main
 
 jobs:
-  ubuntu:
+  tests:
+    name: Tests + prek
     runs-on: ubuntu-latest
     steps:
       - name: Clone repository
@@ -21,17 +22,70 @@ jobs:
       - name: Install the project
         run: uv sync --locked --all-extras --dev
 
+      - name: Cache datasets
+        uses: actions/cache@v5
+        with:
+          path: ~/river_data
+          key: river-data-${{ hashFiles('river/datasets/**/*.py', 'river/bandit/datasets/**/*.py', 'Makefile') }}
+          restore-keys: |
+            river-data-
+
       - name: Download datasets
         run: uv run make download-datasets
 
+      # prek runs while pandas is still installed (mypy etc. type-check against it).
+      - name: Run prek
+        uses: j178/prek-action@v2
+
+      # The bulk of the suite runs without pandas, which also guards the
+      # optional-dependency contract. The pandas subset runs in the companion
+      # job below, so nothing is tested twice.
+      - name: Uninstall pandas
+        run: uv pip uninstall pandas
+
       - name: Run tests
+        run: uv run --no-sync pytest
+
+  pandas:
+    name: Tests with pandas
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+
+      - name: Install the project
+        run: uv sync --locked --all-extras --dev
+
+      - name: Cache datasets
+        uses: actions/cache@v5
+        with:
+          path: ~/river_data
+          key: river-data-${{ hashFiles('river/datasets/**/*.py', 'river/bandit/datasets/**/*.py', 'Makefile') }}
+          restore-keys: |
+            river-data-
+
+      - name: Download datasets
+        run: uv run make download-datasets
+
+      # RIVER_PANDAS_ONLY restricts collection to the pandas-dependent modules
+      # (see river/conftest.py).
+      - name: Run pandas tests
+        env:
+          RIVER_PANDAS_ONLY: "1"
         run: uv run pytest
 
-      - name: Install pre-commit
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/pre-commit/
-          key: pre-commit|${{ hashFiles('.pre-commit-config.yaml') }}
+  build-sdist:
+    name: Build sdist and wheel from sdist
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
 
-      - name: Run pre-commit
-        run: uv run pre-commit run --all-files
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          python-version: "3.13"
+
+      - name: Build sdist and wheel from sdist
+        run: uv build

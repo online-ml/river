@@ -4,6 +4,7 @@ import collections
 import math
 
 from river import optim
+from river.optim.base import DictLike
 
 __all__ = ["Nadam"]
 
@@ -53,7 +54,7 @@ class Nadam(optim.base.Optimizer):
         self.m = collections.defaultdict(float)
         self.v = collections.defaultdict(float)
 
-    def _step_with_dict(self, w, g):
+    def _step_with_dict(self, w: DictLike, g: DictLike) -> DictLike:
         for i, gi in g.items():
             self.m[i] = self.beta_1 * self.m[i] + (1 - self.beta_1) * gi
             m_hat = self.m[i] / (1 - math.pow(self.beta_1, self.n_iterations + 1))

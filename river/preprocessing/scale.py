@@ -4,11 +4,14 @@ import collections
 import functools
 import itertools
 import numbers
+import typing
 
 import numpy as np
-import pandas as pd
 
 from river import base, stats, utils
+
+if typing.TYPE_CHECKING:
+    import pandas as pd
 
 __all__ = [
     "AdaptiveStandardScaler",
@@ -22,7 +25,7 @@ __all__ = [
 
 
 def safe_div(a, b):
-    """Returns a if b is nil, else divides a by b.
+    """Return a if b is nil, else divides a by b.
 
     When scaling, sometimes a denominator might be nil. For instance, during standard scaling
     the denominator can be nil if a feature has no variance.
@@ -32,7 +35,7 @@ def safe_div(a, b):
 
 
 class Binarizer(base.Transformer):
-    """Binarizes the data to 0 or 1 according to a threshold.
+    """Binarize the data to 0 or 1 according to a threshold.
 
     Parameters
     ----------
@@ -43,7 +46,6 @@ class Binarizer(base.Transformer):
 
     Examples
     --------
-
     >>> import river
     >>> import numpy as np
 
@@ -90,14 +92,21 @@ class StandardScaler(base.MiniBatchTransformer):
     calls. In other words, this transformer will keep working even if you add and/or remove
     features every time you call `learn_many` and `transform_many`.
 
+    When ``window_size`` is set, the running mean and variance are replaced by rolling versions
+    computed over the last ``window_size`` observations via `utils.Rolling` wrapping `stats.Mean`
+    and `stats.Var`. In this mode, `learn_many` is processed row by row because the mini-batch
+    merge formula for variance does not yield a correct rolling estimate.
+
     Parameters
     ----------
     with_std
         Whether or not each feature should be divided by its standard deviation.
+    window_size
+        Size of the rolling window used to compute the mean and variance. If ``None``, the
+        running mean and variance over the entire stream are used.
 
     Examples
     --------
-
     >>> import random
     >>> from river import preprocessing
 
@@ -124,6 +133,21 @@ class StandardScaler(base.MiniBatchTransformer):
     {'x': -0.776, 'y': -0.729}
     {'x': -1.274, 'y': 0.992}
 
+    A rolling window can be used to scale relative to the most recent observations only.
+    The variance is the population variance (``ddof=0``), matching the running estimator
+    used in the default mode:
+
+    >>> scaler = preprocessing.StandardScaler(window_size=3)
+    >>> for x in X:
+    ...     scaler.learn_one(x)
+    ...     print(scaler.transform_one(x))
+    {'x': 0.0, 'y': 0.0}
+    {'x': -1.0, 'y': 1.0}
+    {'x': 0.937, 'y': 1.351}
+    {'x': 0.983, 'y': -0.960}
+    {'x': -1.337, 'y': -0.803}
+    {'x': -1.036, 'y': 1.406}
+
     This transformer also supports mini-batch updates. You can call `learn_many` and provide a
     `pandas.DataFrame`:
 
@@ -145,6 +169,17 @@ class StandardScaler(base.MiniBatchTransformer):
     4 -0.444084 -0.914195
     5 -1.274664  0.992296
 
+    A scaler can also be warm-started from previously computed statistics, e.g. to
+    resume from a checkpoint or to seed the stream with an offline estimate:
+
+    >>> scaler = preprocessing.StandardScaler._from_state(
+    ...     counts={'x': 100},
+    ...     means={'x': 10.0},
+    ...     vars={'x': 4.0},
+    ... )
+    >>> scaler.transform_one({'x': 12.0})
+    {'x': 1.0}
+
     References
     ----------
     [^1]: [Welford's Method (and Friends)](https://www.embeddedrelated.com/showarticle/785.php)
@@ -152,39 +187,137 @@ class StandardScaler(base.MiniBatchTransformer):
 
     """
 
-    def __init__(self, with_std=True) -> None:
+    def __init__(self, with_std=True, window_size: int | None = None) -> None:
         self.with_std = with_std
+        self.window_size = window_size
         self.counts: collections.Counter = collections.Counter()
-        self.means: collections.defaultdict = collections.defaultdict(float)
-        self.vars: collections.defaultdict = collections.defaultdict(float)
+        if window_size is None:
+            self.means: collections.defaultdict = collections.defaultdict(float)
+            self.vars: collections.defaultdict = collections.defaultdict(float)
+        else:
+            self.means = collections.defaultdict(
+                functools.partial(utils.Rolling, stats.Mean, window_size=window_size)
+            )
+            # Use ddof=0 (population variance) to match the Welford estimator used in the
+            # non-windowed branch; otherwise the two modes would disagree.
+            self.vars = collections.defaultdict(
+                functools.partial(utils.Rolling, stats.Var, window_size=window_size, ddof=0)
+            )
+
+    def __setstate__(self, state: dict) -> None:
+        # Default `window_size` to None so pickles written before this attribute was
+        # introduced keep working without re-running __init__.
+        state.setdefault("window_size", None)
+        self.__dict__.update(state)
+
+    @classmethod
+    def _from_state(
+        cls,
+        counts: dict,
+        means: dict,
+        vars: dict | None = None,
+        *,
+        with_std: bool = True,
+    ) -> StandardScaler:
+        """Create a new instance with pre-populated running statistics.
+
+        Useful to warm-start a scaler from offline-computed statistics or to resume
+        from a checkpoint without replaying past observations.
+
+        Note that warm-starting a windowed scaler from scalar statistics is not
+        supported because a single mean/variance cannot reconstruct the underlying
+        window of observations; replay the recent observations through ``learn_one``
+        instead.
+
+        Parameters
+        ----------
+        counts
+            Mapping between features and the number of observations they have been
+            updated with.
+        means
+            Mapping between features and their running mean.
+        vars
+            Mapping between features and their running variance. Required when
+            ``with_std`` is ``True``; ignored otherwise.
+        with_std
+            Whether or not each feature should be divided by its standard deviation.
+
+        """
+        new = cls(with_std=with_std)
+        new.counts.update(counts)
+        new.means.update(means)
+        if with_std and vars is not None:
+            new.vars.update(vars)
+        return new
 
     def learn_one(self, x):
-        for i, xi in x.items():
-            self.counts[i] += 1
-            old_mean = self.means[i]
-            self.means[i] += (xi - old_mean) / self.counts[i]
+        counts = self.counts
+        means = self.means
+        vars_ = self.vars
+        if self.window_size is not None:
+            # Rolling Mean/Var: delegate eviction logic to the underlying stats objects.
             if self.with_std:
-                self.vars[i] += (
-                    (xi - old_mean) * (xi - self.means[i]) - self.vars[i]
-                ) / self.counts[i]
+                for i, xi in x.items():
+                    counts[i] += 1
+                    means[i].update(xi)
+                    vars_[i].update(xi)
+            else:
+                for i, xi in x.items():
+                    counts[i] += 1
+                    means[i].update(xi)
+            return
+        if self.with_std:
+            for i, xi in x.items():
+                counts[i] += 1
+                old_mean = means[i]
+                means[i] += (xi - old_mean) / counts[i]
+                vars_[i] += ((xi - old_mean) * (xi - means[i]) - vars_[i]) / counts[i]
+        else:
+            for i, xi in x.items():
+                counts[i] += 1
+                old_mean = means[i]
+                means[i] += (xi - old_mean) / counts[i]
 
     def transform_one(self, x):
+        means = self.means
+        if self.window_size is not None:
+            if self.with_std:
+                vars_ = self.vars
+                result = {}
+                for i, xi in x.items():
+                    m = means[i].get()
+                    v = vars_[i].get()
+                    result[i] = (xi - m) / v**0.5 if v else 0.0
+                return result
+            return {i: xi - means[i].get() for i, xi in x.items()}
         if self.with_std:
-            return {i: safe_div(xi - self.means[i], self.vars[i] ** 0.5) for i, xi in x.items()}
-        return {i: xi - self.means[i] for i, xi in x.items()}
+            vars_ = self.vars
+            result = {}
+            for i, xi in x.items():
+                v = vars_[i]
+                result[i] = (xi - means[i]) / v**0.5 if v else 0.0
+            return result
+        return {i: xi - means[i] for i, xi in x.items()}
 
     def learn_many(self, X: pd.DataFrame):
         """Update with a mini-batch of features.
 
         Note that the update formulas for mean and variance are slightly different than in the
-        single instance case, but they produce exactly the same result.
+        single instance case, but they produce exactly the same result. When ``window_size``
+        is set, the rows are processed sequentially because the batched merge formula is not
+        compatible with rolling-window eviction.
 
         Parameters
         ----------
         X
             A dataframe where each column is a feature.
-
         """
+        if self.window_size is not None:
+            # Row-by-row to preserve correct rolling-window semantics.
+            columns = X.columns
+            for row in X.values:
+                self.learn_one(dict(zip(columns, row)))
+            return
 
         # Operating on X.values, which is a view to the underlying numpy array, is slightly faster
         # than operating on X
@@ -229,7 +362,7 @@ class StandardScaler(base.MiniBatchTransformer):
             the features has not been seen during a previous call to `learn_many`.
 
         """
-
+        pd = utils.pandas.import_pandas()
         # Determine dtype of input
         dtypes = X.dtypes.unique()
         dtype = dtypes[0] if len(dtypes) == 1 else np.float64
@@ -239,11 +372,17 @@ class StandardScaler(base.MiniBatchTransformer):
             bytes_size = dtype.itemsize
             dtype = np.dtype(f"float{bytes_size * 8}")  # type: ignore[operator]
 
-        means = np.array([self.means[c] for c in X.columns], dtype=dtype)
+        if self.window_size is None:
+            means = np.array([self.means[c] for c in X.columns], dtype=dtype)
+        else:
+            means = np.array([self.means[c].get() for c in X.columns], dtype=dtype)
         Xt = X.values - means
 
         if self.with_std:
-            stds = np.array([self.vars[c] ** 0.5 for c in X.columns], dtype=dtype)
+            if self.window_size is None:
+                stds = np.array([self.vars[c] ** 0.5 for c in X.columns], dtype=dtype)
+            else:
+                stds = np.array([self.vars[c].get() ** 0.5 for c in X.columns], dtype=dtype)
             np.divide(Xt, stds, where=stds > 0, out=Xt)
 
         return pd.DataFrame(Xt, index=X.index, columns=X.columns, copy=False)
@@ -253,17 +392,26 @@ class MinMaxScaler(base.Transformer):
     """Scales the data to a fixed range from 0 to 1.
 
     Under the hood a running min and a running peak to peak (max - min) are maintained.
+    When ``window_size`` is set, the scaler tracks the min and max over the last
+    ``window_size`` observations via `stats.RollingMin` and `stats.RollingMax` instead.
+
+    Parameters
+    ----------
+    window_size
+        Size of the rolling window used to compute the min and max. If ``None``, the
+        running min and max over the entire stream are used.
 
     Attributes
     ----------
     min : dict
-        Mapping between features and instances of `stats.Min`.
+        Mapping between features and instances of `stats.Min` (or `stats.RollingMin`
+        when ``window_size`` is set).
     max : dict
-        Mapping between features and instances of `stats.Max`.
+        Mapping between features and instances of `stats.Max` (or `stats.RollingMax`
+        when ``window_size`` is set).
 
     Examples
     --------
-
     >>> import random
     >>> from river import preprocessing
 
@@ -288,22 +436,91 @@ class MinMaxScaler(base.Transformer):
     {'x': 0.322582}
     {'x': 1.0}
 
+    A rolling window can be used to scale relative to the most recent observations
+    only:
+
+    >>> scaler = preprocessing.MinMaxScaler(window_size=3)
+    >>> for x in X:
+    ...     scaler.learn_one(x)
+    ...     print(scaler.transform_one(x))
+    {'x': 0.0}
+    {'x': 0.0}
+    {'x': 0.406920}
+    {'x': 0.792741}
+    {'x': 1.0}
+
+    A scaler can also be warm-started from previously computed statistics, e.g. to
+    resume from a checkpoint or to seed the stream with an offline estimate:
+
+    >>> scaler = preprocessing.MinMaxScaler._from_state(min={'x': 8.0}, max={'x': 12.0})
+    >>> scaler.transform_one({'x': 10.0})
+    {'x': 0.5}
+
     """
 
-    def __init__(self):
-        self.min = collections.defaultdict(stats.Min)
-        self.max = collections.defaultdict(stats.Max)
+    def __init__(self, window_size: int | None = None) -> None:
+        self.window_size = window_size
+        if window_size is None:
+            self.min: collections.defaultdict = collections.defaultdict(stats.Min)
+            self.max: collections.defaultdict = collections.defaultdict(stats.Max)
+        else:
+            self.min = collections.defaultdict(functools.partial(stats.RollingMin, window_size))
+            self.max = collections.defaultdict(functools.partial(stats.RollingMax, window_size))
+
+    def __setstate__(self, state: dict) -> None:
+        # Default `window_size` to None so pickles written before this attribute was
+        # introduced keep working without re-running __init__.
+        state.setdefault("window_size", None)
+        self.__dict__.update(state)
+
+    @classmethod
+    def _from_state(
+        cls,
+        min: dict,
+        max: dict,
+        window_size: int | None = None,
+    ) -> MinMaxScaler:
+        """Create a new instance with pre-populated running min and max.
+
+        Useful to warm-start a scaler from offline-computed statistics or to resume
+        from a checkpoint without replaying past observations.
+
+        Parameters
+        ----------
+        min
+            Mapping between features and their initial min.
+        max
+            Mapping between features and their initial max.
+        window_size
+            Size of the rolling window, forwarded to ``__init__``. When set, each
+            initial value seeds one slot of the rolling window and will eventually be
+            evicted as fresh observations arrive.
+
+        """
+        new = cls(window_size=window_size)
+        for k, v in min.items():
+            new.min[k].update(v)
+        for k, v in max.items():
+            new.max[k].update(v)
+        return new
 
     def learn_one(self, x):
+        min_ = self.min
+        max_ = self.max
         for i, xi in x.items():
-            self.min[i].update(xi)
-            self.max[i].update(xi)
+            min_[i].update(xi)
+            max_[i].update(xi)
 
     def transform_one(self, x):
-        return {
-            i: safe_div(xi - self.min[i].get(), self.max[i].get() - self.min[i].get())
-            for i, xi in x.items()
-        }
+        min_ = self.min
+        max_ = self.max
+        result = {}
+        for i, xi in x.items():
+            lo = min_[i].get()
+            hi = max_[i].get()
+            d = hi - lo
+            result[i] = (xi - lo) / d if d else 0.0
+        return result
 
 
 class MaxAbsScaler(base.Transformer):
@@ -313,14 +530,24 @@ class MaxAbsScaler(base.Transformer):
     data that is already centered at zero or sparse data. It does not shift/center
     the data, and thus does not destroy any sparsity.
 
+    When ``window_size`` is set, the scaler tracks the absolute max over the last
+    ``window_size`` observations via `stats.RollingAbsMax` instead of the entire
+    stream.
+
+    Parameters
+    ----------
+    window_size
+        Size of the rolling window used to compute the absolute max. If ``None``,
+        the running absolute max over the entire stream is used.
+
     Attributes
     ----------
     abs_max : dict
-        Mapping between features and instances of `stats.AbsMax`.
+        Mapping between features and instances of `stats.AbsMax` (or
+        `stats.RollingAbsMax` when ``window_size`` is set).
 
     Examples
     --------
-
     >>> import random
     >>> from river import preprocessing
 
@@ -345,17 +572,67 @@ class MaxAbsScaler(base.Transformer):
     {'x': 0.842308}
     {'x': 1.0}
 
+    A scaler can also be warm-started from a previously computed absolute max:
+
+    >>> scaler = preprocessing.MaxAbsScaler._from_state(abs_max={'x': 12.0})
+    >>> scaler.transform_one({'x': 6.0})
+    {'x': 0.5}
+
     """
 
-    def __init__(self):
-        self.abs_max = collections.defaultdict(stats.AbsMax)
+    def __init__(self, window_size: int | None = None) -> None:
+        self.window_size = window_size
+        if window_size is None:
+            self.abs_max: collections.defaultdict = collections.defaultdict(stats.AbsMax)
+        else:
+            self.abs_max = collections.defaultdict(
+                functools.partial(stats.RollingAbsMax, window_size)
+            )
+
+    def __setstate__(self, state: dict) -> None:
+        # Default `window_size` to None so pickles written before this attribute was
+        # introduced keep working without re-running __init__.
+        state.setdefault("window_size", None)
+        self.__dict__.update(state)
+
+    @classmethod
+    def _from_state(
+        cls,
+        abs_max: dict,
+        window_size: int | None = None,
+    ) -> MaxAbsScaler:
+        """Create a new instance with a pre-populated running absolute max.
+
+        Useful to warm-start a scaler from an offline-computed statistic or to resume
+        from a checkpoint without replaying past observations.
+
+        Parameters
+        ----------
+        abs_max
+            Mapping between features and their initial absolute max.
+        window_size
+            Size of the rolling window, forwarded to ``__init__``. When set, each
+            initial value seeds one slot of the rolling window and will eventually
+            be evicted as fresh observations arrive.
+
+        """
+        new = cls(window_size=window_size)
+        for k, v in abs_max.items():
+            new.abs_max[k].update(v)
+        return new
 
     def learn_one(self, x):
+        abs_max = self.abs_max
         for i, xi in x.items():
-            self.abs_max[i].update(xi)
+            abs_max[i].update(xi)
 
     def transform_one(self, x):
-        return {i: safe_div(xi, self.abs_max[i].get()) for i, xi in x.items()}
+        abs_max = self.abs_max
+        result = {}
+        for i, xi in x.items():
+            m = abs_max[i].get()
+            result[i] = xi / m if m else 0.0
+        return result
 
 
 class RobustScaler(base.Transformer):
@@ -384,7 +661,6 @@ class RobustScaler(base.Transformer):
 
     Examples
     --------
-
     >>> from pprint import pprint
     >>> import random
     >>> from river import preprocessing
@@ -432,7 +708,9 @@ class RobustScaler(base.Transformer):
         for i, xi in x.items():
             x_tf[i] = xi
             if self.with_centering:
-                x_tf[i] -= self.median[i].get()
+                median = self.median[i].get()
+                if median is not None:
+                    x_tf[i] -= median
             if self.with_scaling:
                 x_tf[i] = safe_div(x_tf[i], self.iqr[i].get())
 
@@ -451,7 +729,6 @@ class Normalizer(base.Transformer):
 
     Examples
     --------
-
     >>> from river import preprocessing
     >>> from river import stream
 
@@ -493,7 +770,6 @@ class AdaptiveStandardScaler(base.Transformer):
 
     Examples
     --------
-
     Consider the following series which contains a positive trend.
 
     >>> import random

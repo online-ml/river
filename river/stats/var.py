@@ -49,7 +49,7 @@ class Var(stats.base.Univariate):
     >>> from river import utils
 
     >>> X = [1, 4, 2, -4, -8, 0]
-    >>> rvar = utils.Rolling(stats.Var(ddof=1), window_size=3)
+    >>> rvar = utils.Rolling(stats.Var, window_size=3, ddof=1)
     >>> for x in X:
     ...     rvar.update(x)
     ...     print(rvar.get())
@@ -80,15 +80,15 @@ class Var(stats.base.Univariate):
         return self.mean.n
 
     def update(self, x, w=1.0) -> None:
-        mean_old = self.mean.get()
+        mean_old = self.mean._mean
         self.mean.update(x, w)
-        mean_new = self.mean.get()
+        mean_new = self.mean._mean
         self._S += w * (x - mean_old) * (x - mean_new)
 
     def revert(self, x, w=1.0):
-        mean_old = self.mean.get()
+        mean_old = self.mean._mean
         self.mean.revert(x, w)
-        mean_new = self.mean.get()
+        mean_new = self.mean._mean
         self._S -= w * (x - mean_old) * (x - mean_new)
 
     def update_many(self, X: np.ndarray):

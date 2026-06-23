@@ -9,10 +9,12 @@ import re
 import typing
 import unicodedata
 
-import pandas as pd
 from scipy import sparse
 
-from river import base
+from river import base, utils
+
+if typing.TYPE_CHECKING:
+    import pandas as pd
 
 __all__ = ["BagOfWords", "TFIDF"]
 
@@ -341,6 +343,7 @@ class BagOfWords(base.Transformer, VectorizerMixin):
 
     def transform_many(self, X: pd.Series) -> pd.DataFrame:
         """Transform pandas series of string into term-frequency pandas sparse dataframe."""
+        pd = utils.pandas.import_pandas()
         indptr, indices, data = [0], [], []
         index: dict[int, int] = {}
 

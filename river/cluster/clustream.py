@@ -3,7 +3,8 @@ from __future__ import annotations
 import math
 from collections import defaultdict
 
-from river import base, cluster, stats, utils
+from river import base, cluster, stats
+from river.utils.vectordict import euclidean_distance_dict
 
 
 class CluStream(base.Clusterer):
@@ -164,19 +165,24 @@ class CluStream(base.Clusterer):
             )
             return
 
-        # Merge the two closest micro-clusters
-        closest_a = 0
-        closest_b = 0
+        # Merge the two closest micro-clusters. Materialize centers once —
+        # `mc.center` is cached but iterating it n² times is still wasteful.
+        # Iterate `b < a` so the higher-index micro-cluster is kept as the
+        # merge target (preserves the original i>j convention).
+        ids = list(self.micro_clusters)
+        centers = [self.micro_clusters[i].center for i in ids]
+
+        closest_a = ids[0]
+        closest_b = ids[0]
         min_distance = math.inf
-        for i, mc_a in self.micro_clusters.items():
-            for j, mc_b in self.micro_clusters.items():
-                if i <= j:
-                    continue
-                dist = self._distance(mc_a.center, mc_b.center)
+        for a in range(len(ids)):
+            center_a = centers[a]
+            for b in range(a):
+                dist = self._distance(center_a, centers[b])
                 if dist < min_distance:
                     min_distance = dist
-                    closest_a = i
-                    closest_b = j
+                    closest_a = ids[a]
+                    closest_b = ids[b]
 
         self.micro_clusters[closest_a] += self.micro_clusters[closest_b]
         self.micro_clusters[closest_b] = CluStreamMicroCluster(
@@ -198,7 +204,7 @@ class CluStream(base.Clusterer):
 
     @staticmethod
     def _distance(point_a, point_b):
-        return utils.math.minkowski_distance(point_a, point_b, 2)
+        return euclidean_distance_dict(point_a, point_b)
 
     def learn_one(self, x, w=1.0):
         self._timestamp += 1
@@ -284,10 +290,13 @@ class CluStreamMicroCluster(base.Base):
             self.var_x[k] = v
         self.var_time = stats.Var()
         self.var_time.update(timestamp, w)
+        self._center: dict | None = None
 
     @property
     def center(self):
-        return {k: var.mean.get() for k, var in self.var_x.items()}
+        if self._center is None:
+            self._center = {k: var.mean.get() for k, var in self.var_x.items()}
+        return self._center
 
     def radius(self, r_factor):
         if self.weight == 1:
@@ -308,6 +317,7 @@ class CluStreamMicroCluster(base.Base):
         self.var_time.update(timestamp, w)
         for x_idx, x_val in x.items():
             self.var_x[x_idx].update(x_val, w)
+        self._center = None
 
     def relevance_stamp(self, max_mc):
         mu_time = self.var_time.mean.get()
@@ -348,5 +358,9 @@ class CluStreamMicroCluster(base.Base):
 
     def __iadd__(self, other: CluStreamMicroCluster):
         self.var_time += other.var_time
-        self.var_x = {k: self.var_x[k] + other.var_x.get(k, stats.Var()) for k in self.var_x}
+        for k, var in self.var_x.items():
+            other_var = other.var_x.get(k)
+            if other_var is not None:
+                var += other_var
+        self._center = None
         return self

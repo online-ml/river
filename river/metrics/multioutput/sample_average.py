@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from river import metrics, stats, utils
+from river import base, metrics, stats
 from river.metrics.multioutput.base import MultiOutputMetric
 
 __all__ = ["SampleAverage"]
@@ -51,8 +51,8 @@ class SampleAverage(MultiOutputMetric, metrics.base.WrapperMetric):
 
     def works_with(self, model) -> bool:
         if isinstance(self.metric, metrics.base.ClassificationMetric):
-            return utils.inspect.ismoclassifier(model)
-        return utils.inspect.ismoregressor(model)
+            return isinstance(model, base.MultiLabelClassifier)
+        return isinstance(model, base.MultiTargetRegressor)
 
     def update(self, y_true, y_pred, w=1.0):
         metric = self.metric.clone()

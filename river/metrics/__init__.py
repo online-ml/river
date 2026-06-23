@@ -12,7 +12,7 @@ from river import metrics, utils
 y_true = [True, False, True, True]
 y_pred = [False, False, True, True]
 
-metric = utils.Rolling(metrics.Accuracy(), window_size=3)
+metric = utils.Rolling(metrics.Accuracy, window_size=3)
 
 for yt, yp in zip(y_true, y_pred):
     print(metric.update(yt, yp))
@@ -61,6 +61,7 @@ from .rand import AdjustedRand, Rand
 from .recall import MacroRecall, MicroRecall, Recall, WeightedRecall
 from .report import ClassificationReport
 from .roc_auc import ROCAUC
+from .rolling_pr_auc import RollingPRAUC
 from .rolling_roc_auc import RollingROCAUC
 from .silhouette import Silhouette
 from .smape import SMAPE
@@ -109,6 +110,7 @@ __all__ = [
     "FowlkesMallows",
     "RMSLE",
     "ROCAUC",
+    "RollingPRAUC",
     "RollingROCAUC",
     "R2",
     "Precision",

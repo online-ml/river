@@ -38,7 +38,7 @@ class Mean(stats.base.Univariate):
     >>> from river import utils
 
     >>> X = [1, 2, 3, 4, 5, 6]
-    >>> rmean = utils.Rolling(stats.Mean(), window_size=2)
+    >>> rmean = utils.Rolling(stats.Mean, window_size=2)
 
     >>> for x in X:
     ...     rmean.update(x)
@@ -58,7 +58,7 @@ class Mean(stats.base.Univariate):
 
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.n = 0
         self._mean = 0.0
 

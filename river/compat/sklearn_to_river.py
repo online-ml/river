@@ -2,12 +2,16 @@ from __future__ import annotations
 
 import copy
 import functools
+import typing
 
-import pandas as pd
 from sklearn import base as sklearn_base
 from sklearn import exceptions as sklearn_exceptions
+from sklearn import linear_model as sklearn_linear_model
 
-from river import base
+from river import base, utils
+
+if typing.TYPE_CHECKING:
+    import pandas as pd
 
 __all__ = ["convert_sklearn_to_river", "SKL2RiverClassifier", "SKL2RiverRegressor"]
 
@@ -116,10 +120,15 @@ class SKL2RiverRegressor(SKL2RiverBase, base.Regressor):
             return 0
 
     def predict_many(self, X):
+        pd = utils.pandas.import_pandas()
         try:
             return pd.Series(self.estimator.predict(self._align_df(X)))
         except sklearn_exceptions.NotFittedError:
             return pd.Series([0] * len(X), index=X.index)
+
+    @classmethod
+    def _unit_test_params(cls):
+        yield {"estimator": sklearn_linear_model.SGDRegressor()}
 
 
 class SKL2RiverClassifier(SKL2RiverBase, base.Classifier):
@@ -171,7 +180,7 @@ class SKL2RiverClassifier(SKL2RiverBase, base.Classifier):
 
     @property
     def _multiclass(self):
-        return True
+        return len(self.classes) > 2
 
     def learn_one(self, x, y):
         self.estimator.partial_fit(X=[self._align_dict(x)], y=[y], classes=self.classes)
@@ -187,8 +196,13 @@ class SKL2RiverClassifier(SKL2RiverBase, base.Classifier):
             return {c: 1 / len(self.classes) for c in self.classes}
 
     def predict_proba_many(self, X):
+        pd = utils.pandas.import_pandas()
         try:
-            return pd.Series(self.estimator.predict_proba(self._align_df(X)), columns=self.classes)
+            return pd.DataFrame(
+                self.estimator.predict_proba(self._align_df(X)),
+                columns=self.classes,
+                index=X.index,
+            )
         except sklearn_exceptions.NotFittedError:
             return pd.DataFrame(
                 [[1 / len(self.classes)] * len(self.classes)] * len(X),
@@ -204,7 +218,15 @@ class SKL2RiverClassifier(SKL2RiverBase, base.Classifier):
             return self.classes[0]
 
     def predict_many(self, X):
+        pd = utils.pandas.import_pandas()
         try:
             return pd.Series(self.estimator.predict(self._align_df(X)))
         except sklearn_exceptions.NotFittedError:
             return pd.Series([self.classes[0]] * len(X), index=X.index)
+
+    @classmethod
+    def _unit_test_params(cls):
+        yield {
+            "estimator": sklearn_linear_model.SGDClassifier(loss="log_loss"),
+            "classes": [False, True],
+        }

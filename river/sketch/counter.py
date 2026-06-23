@@ -183,7 +183,7 @@ class Counter(base.Base):
 
     def total(self) -> int:
         """Return the total count."""
-        return sum(self._cms[0, :]).item()
+        return sum(self._cms[0, :]).item()  # type: ignore[attr-defined] # The resulting type is a numpy integer, but the type checkers think it's a regular int.
 
     @property
     def n_slots(self) -> int:

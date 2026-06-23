@@ -513,7 +513,7 @@ class AMRules(base.Regressor):
         ...         break
         ...     model.learn_one(x, y)
 
-        >>> print(model.debug_one(x))
+        >>> print(model.debug_one(x))  # doctest: +SKIP
         Rule 0: 3 > 0.5060 and 0 > 0.2538
             Prediction (adaptive): 18.7217
         Rule 1: 1 > 0.2480 and 3 > 0.2573

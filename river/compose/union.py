@@ -1,11 +1,12 @@
 from __future__ import annotations
 
-import collections
 import types
+import typing
 
-import pandas as pd
+from river import base, utils
 
-from river import base
+if typing.TYPE_CHECKING:
+    import pandas as pd
 
 from . import func
 
@@ -48,6 +49,7 @@ class TransformerUnion(base.MiniBatchTransformer):
     As an example, let's assume we want to compute two aggregates of a dataset. We therefore
     define two `feature_extraction.Agg`s and initialize a `TransformerUnion` with them:
 
+    >>> import pandas as pd
     >>> from river import compose
     >>> from river import feature_extraction
     >>> from river import stats
@@ -224,7 +226,7 @@ class TransformerUnion(base.MiniBatchTransformer):
             transformer = func.FuncTransformer(transformer)
 
         def infer_name(transformer):
-            if isinstance(transformer, func.FuncTransformer):
+            if type(transformer) is func.FuncTransformer:
                 return infer_name(transformer.func)
             elif isinstance(transformer, types.FunctionType) or isinstance(
                 transformer, types.LambdaType
@@ -264,15 +266,21 @@ class TransformerUnion(base.MiniBatchTransformer):
             is supervised (i.e. it inherits from `base.SupervisedTransformer`).
 
         """
+        SupervisedT = base.SupervisedTransformer
         for t in self.transformers.values():
-            if isinstance(t, base.SupervisedTransformer):
+            if isinstance(t, SupervisedT):
                 t.learn_one(x, y)
             else:
                 t.learn_one(x)
 
     def transform_one(self, x):
         """Passes the data through each transformer and packs the results together."""
-        return dict(collections.ChainMap(*(t.transform_one(x) for t in self.transformers.values())))
+        # Equivalent to `dict(ChainMap(*outputs))` (first-occurrence wins for duplicate
+        # keys) but avoids the ChainMap construction overhead.
+        result: dict = {}
+        for t in reversed(self.transformers.values()):
+            result.update(t.transform_one(x))
+        return result
 
     # Mini-batch methods
 
@@ -296,7 +304,7 @@ class TransformerUnion(base.MiniBatchTransformer):
 
     def transform_many(self, X):
         """Passes the data through each transformer and packs the results together."""
-
+        pd = utils.pandas.import_pandas()
         return pd.concat(
             (t.transform_many(X) for t in self.transformers.values()),
             copy=False,

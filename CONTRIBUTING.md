@@ -21,8 +21,10 @@ The typical workflow for contributing to River is:
 Start by cloning the repository:
 
 ```sh
-git clone https://github.com/online-ml/river
+git clone --single-branch https://github.com/online-ml/river
 ```
+
+> **Note:** The `--single-branch` flag is important. Without it, Git will also fetch the `gh-pages` branch which contains the generated documentation site, adding several hundred MiB to the clone.
 
 Next, you'll need a Python environment. A nice way to manage your Python versions is to use pyenv, which can installed [here](https://github.com/pyenv/pyenv-installer). Once you have pyenv, you can install the latest Python version River supports:
 
@@ -42,16 +44,16 @@ Now you're set to install River:
 uv sync
 ```
 
-Finally, install the [pre-commit](https://pre-commit.com/) push hooks. This will run some code quality checks every time you push to GitHub.
+Finally, install the [prek](https://github.com/j178/prek) push hooks. This will run some code quality checks every time you push to GitHub.
 
 ```sh
-uv run pre-commit install --hook-type pre-push
+uv run prek install --hook-type pre-push
 ```
 
-You can optionally run `pre-commit` at any time as so:
+You can optionally run `prek` at any time as so:
 
 ```sh
-uv run pre-commit run --all-files
+uv run prek run --all-files
 ```
 
 ## Making changes
@@ -148,11 +150,13 @@ uv run make execute-notebooks
 
 1. Checkout `main`
 2. Run `uv run make execute-notebooks` just to be safe
-3. Run the [benchmarks](benchmarks)
-4. Bump the version in `river/__version__.py`
-5. Bump the version in `pyproject.toml`
-6. Tag and date the `docs/releases/unreleased.md` file
+3. Bump the version in `river/__version__.py`
+4. Bump the version in `pyproject.toml` (then run `uv lock`)
+5. Rename `docs/releases/unreleased.md` to `docs/releases/X.Y.Z.md` and add the release date to its top heading. If no `unreleased.md` exists (no changes were accumulated), create `X.Y.Z.md` directly.
+6. Update the Releases nav in `mkdocs.yml`: add the new version entry at the top of the list.
 7. Commit and push
+
+> Note: `docs/releases/unreleased.md` is created on demand by contributors when the first change worth noting lands after a release. When created, it must also be added to the Releases nav in `mkdocs.yml`. Do not pre-create an empty `unreleased.md` — an empty page will 404 in the docs.
 8. Wait for CI to [run the unit tests](https://github.com/online-ml/river/actions/workflows/ci.yml)
 9. Push the tag:
 
@@ -162,12 +166,13 @@ echo $RIVER_VERSION
 ```
 
 ```sh
-git tag $RIVER_VERSION
+git tag $RIVER_VERSION -m "Release $RIVER_VERSION"
 git push origin $RIVER_VERSION
 ```
 
-9. Wait for CI to [ship to PyPI](https://github.com/online-ml/river/actions/workflows/pypi.yml) and [publish the new docs](https://github.com/online-ml/river/actions/workflows/release-docs.yml)
-10. Create a [release](https://github.com/online-ml/river/releases):
+10. Wait for CI to [ship to PyPI](https://github.com/online-ml/river/actions/workflows/pypi.yml)
+11. Check the [new docs have been published](https://github.com/online-ml/river/actions/workflows/release-docs.yml)
+12. Create a [release](https://github.com/online-ml/river/releases):
 
 ```sh
 RELEASE_NOTES=$(cat <<-END
@@ -179,4 +184,4 @@ brew update && brew install gh
 gh release create $RIVER_VERSION --notes $RELEASE_NOTES
 ```
 
-11. Pyodide needs to be told there is a new release. This can done by updating [`packages/river`](https://github.com/online-ml/pyodide/tree/main/packages/river) in [online-ml/pyodide](https://github.com/online-ml/pyodide)
+13. Pyodide needs to be told there is a new release. This can done by updating [`packages/river`](https://github.com/online-ml/pyodide/tree/main/packages/river) in [online-ml/pyodide](https://github.com/online-ml/pyodide)

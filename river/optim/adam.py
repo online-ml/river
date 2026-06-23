@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 import collections
+import typing
 
 import numpy as np
 
 from river import optim, utils
+from river.optim.base import DictLike
 
 __all__ = ["Adam"]
 
@@ -56,10 +58,14 @@ class Adam(optim.base.Optimizer):
         self.beta_1 = beta_1
         self.beta_2 = beta_2
         self.eps = eps
-        self.m = None
-        self.v = None
+        # `m`/`v` are dual-mode: a `defaultdict` of floats on the `learn_one` path, or an
+        # array-like (`np.ndarray`/`VectorDict`) on the `learn_many` path. The two modes support
+        # disjoint operations (keyed access vs. elementwise arithmetic), so there is no single
+        # static type that fits both — these are genuinely dynamic, hence `Any`.
+        self.m: typing.Any = None
+        self.v: typing.Any = None
 
-    def _step_with_dict(self, w, g):
+    def _step_with_dict(self, w: DictLike, g: DictLike) -> DictLike:
         if self.m is None:
             self.m = collections.defaultdict(float)
             self.v = collections.defaultdict(float)

@@ -1,0 +1,25 @@
+{% extends 'markdown/index.md.j2' %}
+
+{% block stream %}
+```
+{{ output.text | trim }}
+```
+{% endblock stream %}
+
+{% block data_text scoped %}
+```
+{{ output.data['text/plain'] | trim }}
+```
+{% endblock data_text %}
+
+{% block error %}
+```
+{% for line in output.traceback %}
+{{ line | strip_ansi }}
+{% endfor %}
+```
+{% endblock error %}
+
+{% block data_html scoped %}
+{{ output.data['text/html'] | replace("[", "&#91;") | replace("]", "&#93;") }}
+{% endblock data_html %}

@@ -4,7 +4,7 @@ from collections import defaultdict
 from copy import deepcopy
 from functools import partial
 
-from river import metrics, utils
+from river import base, metrics
 from river.metrics.multioutput.base import MultiOutputMetric
 
 __all__ = ["PerOutput"]
@@ -32,8 +32,8 @@ class PerOutput(MultiOutputMetric, metrics.base.WrapperMetric):
 
     def works_with(self, model) -> bool:
         if isinstance(self.metric, metrics.base.ClassificationMetric):
-            return utils.inspect.ismoclassifier(model)
-        return utils.inspect.ismoregressor(model)
+            return isinstance(model, base.MultiLabelClassifier)
+        return isinstance(model, base.MultiTargetRegressor)
 
     def update(self, y_true, y_pred, w=1.0):
         for i in y_true:

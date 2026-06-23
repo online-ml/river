@@ -9,11 +9,13 @@ from .chain import (
     RegressorChain,
 )
 from .encoder import MultiClassEncoder
+from .per_output import PerOutputRegressor
 
 __all__ = [
     "ClassifierChain",
     "MonteCarloClassifierChain",
     "MultiClassEncoder",
+    "PerOutputRegressor",
     "ProbabilisticClassifierChain",
     "RegressorChain",
 ]

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from . import base
 from .auto_corr import AutoCorr
+from .chi_squared import ChiSquared
 from .count import Count
 from .cov import Cov
 from .entropy import Entropy
@@ -18,7 +19,6 @@ from .maximum import AbsMax, Max, RollingAbsMax, RollingMax
 from .mean import BayesianMean, Mean
 from .minimum import Min, RollingMin
 from .mode import Mode, RollingMode
-from .n_unique import NUnique
 from .pearson import PearsonCorr
 from .ptp import PeakToPeak, RollingPeakToPeak
 from .quantile import Quantile, RollingQuantile
@@ -35,6 +35,7 @@ __all__ = [
     "BayesianMean",
     "Count",
     "Cov",
+    "ChiSquared",
     "Entropy",
     "EWMean",
     "EWVar",
@@ -47,7 +48,6 @@ __all__ = [
     "Mean",
     "Min",
     "Mode",
-    "NUnique",
     "PeakToPeak",
     "PearsonCorr",
     "Quantile",
