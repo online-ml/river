@@ -9,6 +9,7 @@ import re
 import typing
 import unicodedata
 
+import numpy as np
 from scipy import sparse
 
 from river import base, utils
@@ -520,29 +521,27 @@ class TFIDF(BagOfWords):
         indptr, indices, data = [0], [], []
         index: dict[int, int] = {}
 
+        # Build the document-term count matrix in a single pass.
         for terms in self.process_many(X):
-            term_counts = collections.Counter(terms)
-            n_terms = sum(term_counts.values())
-
-            if n_terms:
-                weights = {}
-                for term, count in term_counts.items():
-                    tf = count / n_terms
-                    idf = math.log((1 + self.n) / (1 + self.dfs[term])) + 1
-                    weights[term] = tf * idf
-
-                if self.normalize:
-                    norm = math.sqrt(sum(weight**2 for weight in weights.values()))
-                    weights = {term: weight / norm for term, weight in weights.items()}
-
-                for term, weight in weights.items():
-                    indices.append(index.setdefault(term, len(index)))
-                    data.append(weight)
-
+            for term, count in collections.Counter(terms).items():
+                indices.append(index.setdefault(term, len(index)))
+                data.append(count)
             indptr.append(len(data))
+        counts = sparse.csr_matrix((data, indices, indptr), shape=(len(indptr) - 1, len(index)))
 
-        return pd.DataFrame.sparse.from_spmatrix(
-            sparse.csr_matrix((data, indices, indptr), shape=(len(indptr) - 1, len(index))),
-            index=X.index,
-            columns=index.keys(),
-        )
+        # Term frequency: scale each document (row) by its total token count.
+        n_terms = np.asarray(counts.sum(axis=1)).ravel().astype(float)
+        inv_n_terms = np.divide(1.0, n_terms, out=np.zeros_like(n_terms), where=n_terms != 0)
+        tfidf = sparse.diags(inv_n_terms) @ counts
+
+        # Inverse document frequency from the current online state.
+        dfs = np.array([self.dfs[term] for term in index], dtype=float)
+        idf = np.log((1 + self.n) / (1 + dfs)) + 1
+        tfidf = tfidf @ sparse.diags(idf)
+
+        if self.normalize:
+            norms = np.sqrt(np.asarray(tfidf.multiply(tfidf).sum(axis=1)).ravel())
+            inv_norms = np.divide(1.0, norms, out=np.zeros_like(norms), where=norms != 0)
+            tfidf = sparse.diags(inv_norms) @ tfidf
+
+        return pd.DataFrame.sparse.from_spmatrix(tfidf.tocsr(), index=X.index, columns=list(index))
