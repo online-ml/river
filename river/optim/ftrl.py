@@ -74,9 +74,12 @@ class FTRLProximal(optim.base.Optimizer):
             if abs(z[i]) > l1:
                 w[i] = -(((beta + n[i] ** 0.5) / alpha + l2) ** -1) * (z[i] - np.sign(z[i]) * l1)
 
+        # `w` may be a dict-like (use `.get`) or a NumPy array, in which case every index in `g`
+        # is a valid position and can be read directly.
+        w_is_array = isinstance(w, np.ndarray)
         for i, gi in g.items():
             s = ((self.n[i] + gi**2) ** 0.5 - self.n[i] ** 0.5) / self.alpha
-            self.z[i] += gi - s * w.get(i, 0)
+            self.z[i] += gi - s * (w[i] if w_is_array else w.get(i, 0))
             self.n[i] += gi**2
 
         return w

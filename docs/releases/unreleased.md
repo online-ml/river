@@ -37,6 +37,9 @@
 ## optim
 
 - Exposed `optim.Newton` (Online Newton Step), which was implemented but never exported, and fixed an initialisation bug (the inverse Hessian started at `eps * I` instead of `(1 / eps) * I`) that crippled learning. Reworked around NumPy-backed dense state.
+- Fixed `optim.AdaBound` raising `TypeError` after being cloned (its base learning rate was captured as a scheduler instead of a number), which broke it inside `evaluate`, ensembles, model selection, and anywhere else estimators are cloned.
+- Fixed `optim.NesterovMomentum` and `optim.FTRLProximal` raising when used to optimise estimators whose weights are stored as NumPy arrays, such as the factorization machines (`facto`).
+- Added a test covering every optimizer against every estimator that accepts one, so optimizer/estimator incompatibilities are caught going forward.
 
 ## preprocessing
 
