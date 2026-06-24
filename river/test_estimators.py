@@ -45,6 +45,12 @@ def iter_estimators():
 def iter_estimators_which_can_be_tested():
     ignored = (
         River2SKLBase,
+        # base.Transformer / base.SupervisedTransformer are not marked abstract
+        # by Python (their abstract `transform_one` sits on the BaseTransformer
+        # mixin, which is not an ABC), but they are not meant to be tested
+        # directly.
+        base.Transformer,
+        base.SupervisedTransformer,
         anomaly.LocalOutlierFactor,  # needs warm-start to work correctly
         compose.FuncTransformer,
         compose.Grouper,
@@ -80,18 +86,8 @@ def iter_estimators_which_can_be_tested():
         # misc.ZstdClassifier requires Python 3.14 (compression.zstd); skip on older.
         ignored = (*ignored, misc.ZstdClassifier)
 
-    # `base.Transformer` / `base.SupervisedTransformer` are not flagged by `inspect.isabstract`
-    # (their abstract `transform_one` lives on the non-ABC `BaseTransformer` mixin), so they are
-    # excluded by identity. Excluding them via `issubclass` would wrongly drop every concrete
-    # transformer along with them.
-    abstract_bases = (base.Transformer, base.SupervisedTransformer)
-
     def can_be_tested(estimator):
-        return (
-            not inspect.isabstract(estimator)
-            and estimator not in abstract_bases
-            and not issubclass(estimator, ignored)
-        )
+        return not inspect.isabstract(estimator) and not issubclass(estimator, ignored)
 
     for estimator in filter(can_be_tested, iter_estimators()):
         for params in estimator._unit_test_params():
