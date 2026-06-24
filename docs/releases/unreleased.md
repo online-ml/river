@@ -4,6 +4,10 @@
 - Moved `altair` from the runtime dependencies to the `docs`/`dev` groups; it was only used to draw plots in the docs, so installing River no longer pulls it in.
 - Publish Pyodide/WebAssembly wheels (CPython 3.13 and 3.14) so River can run in the browser, e.g. via [JupyterLite](https://jupyterlite.readthedocs.io/) or `micropip`. The minimum `numpy` and `scipy` versions were lowered to `2.2.5` and `1.14.1` to match Pyodide.
 
+## base
+
+- `base.Transformer` and `base.SupervisedTransformer` are now properly abstract: their `transform_one` abstract method is registered with `abc`, so a subclass that forgets to implement it raises `TypeError` at instantiation instead of failing later. This also restores estimator-check coverage for all concrete transformers, which were unintentionally excluded from the automated test suite.
+
 ## covariance
 
 - Sped up `EmpiricalCovariance.update`/`revert` (~40% faster at 30 features) by caching the sorted feature list and pair iteration in the hot path. No semantic change.
