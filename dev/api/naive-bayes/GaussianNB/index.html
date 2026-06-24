@@ -46801,13 +46801,49 @@
 </code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>1
 </code></pre></div></p>
+<p>You can also train the model and make predictions in mini-batch mode.</p>
+<p><div class="language-python highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">naive_bayes</span><span class="o">.</span><span class="n">GaussianNB</span><span class="p">()</span>
+<span class="n">model</span><span class="o">.</span><span class="n">learn_many</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">X</span><span class="p">),</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">Y</span><span class="p">))</span>
+<span class="n">model</span><span class="o">.</span><span class="n">predict_many</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([[</span><span class="o">-</span><span class="mf">0.8</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mf">2.8</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">]]))</span>
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>0    1
+1    2
+dtype: int64
+</code></pre></div></p>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <details class="- abstract">
 <summary>joint_log_likelihood</summary>
+<p>Compute the unnormalized posterior log-likelihood of x.</p>
+<p>The log-likelihood is <code>log P(c) + log P(x|c)</code>.</p>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><strong>x</strong>     — <code>dict</code>    </li>
+</ul>
 </details>
+<p><span /></p>
 <details class="- abstract">
 <summary>joint_log_likelihood_many</summary>
+<p>Compute the joint log-likelihoods for a batch of feature vectors.</p>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><strong>X</strong>     — <code>pd.DataFrame</code>    </li>
+</ul>
+<p><strong>Returns</strong></p>
+<p><code>pd.DataFrame</code>:     Input samples joint log-likelihoods.</p>
 </details>
+<p><span /></p>
+<details class="- abstract">
+<summary>learn_many</summary>
+<p>Learn from a batch of feature vectors.</p>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><strong>X</strong>     — <code>pd.DataFrame</code>    </li>
+<li><strong>y</strong>     — <code>pd.Series</code>    </li>
+</ul>
+</details>
+<p><span /></p>
 <details class="- abstract">
 <summary>learn_one</summary>
 <p>Update the model with a set of features <code>x</code> and a label <code>y</code>.</p>
@@ -46822,6 +46858,17 @@
 <summary>p_class</summary>
 </details>
 <details class="- abstract">
+<summary>predict_many</summary>
+<p>Predict the outcome for each given sample.</p>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><strong>X</strong>     — <code>pd.DataFrame</code>    </li>
+</ul>
+<p><strong>Returns</strong></p>
+<p><code>pd.Series</code>:     The predicted labels.</p>
+</details>
+<p><span /></p>
+<details class="- abstract">
 <summary>predict_one</summary>
 <p>Predict the label of a set of features <code>x</code>.</p>
 <p><strong>Parameters</strong></p>
@@ -46831,6 +46878,15 @@
 </ul>
 <p><strong>Returns</strong></p>
 <p><code>base.typing.ClfTarget | None</code>:     The predicted label.</p>
+</details>
+<p><span /></p>
+<details class="- abstract">
+<summary>predict_proba_many</summary>
+<p>Return probabilities using the log-likelihoods in mini-batchs setting.</p>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><strong>X</strong>     — <code>pd.DataFrame</code>    </li>
+</ul>
 </details>
 <p><span /></p>
 <details class="- abstract">
