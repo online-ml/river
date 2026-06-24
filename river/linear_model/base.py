@@ -218,3 +218,8 @@ class GLM:
             self._fit(x=cols, y=y_np, w=w_np, get_grad=get_grad)
         finally:
             self._exit_learn_mode(saved)
+
+    def _unit_test_skips(self):
+        # `learn_many` takes a single mean-gradient step over the whole batch, which is
+        # deliberately not equivalent to one SGD step per row as `learn_one` would do.
+        return {"check_learn_many_matches_learn_one"}

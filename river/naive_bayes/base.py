@@ -58,9 +58,13 @@ class BaseNB(base.MiniBatchClassifier):
         # when the model has been trained via learn_one (rather than learn_many),
         # so predict_many/predict_proba_many disagree with their one-at-a-time
         # counterparts. Tracked separately.
+        # `learn_many` also consumes sparse count matrices rather than a dense feature
+        # frame, so the generic dense equivalence check does not apply; the learn_many vs
+        # learn_one equivalence is covered by the dedicated naive Bayes test suite.
         return {
             "check_predict_many_matches_predict_one",
             "check_predict_proba_many_matches_predict_proba_one",
+            "check_learn_many_matches_learn_one",
         }
 
 

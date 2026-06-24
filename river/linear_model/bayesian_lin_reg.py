@@ -7,10 +7,10 @@ import numpy as np
 from river import base, proba, utils
 
 if typing.TYPE_CHECKING:
-    pass
+    from narwhals.stable.v2.typing import IntoDataFrame, IntoSeries
 
 
-class BayesianLinearRegression(base.Regressor):
+class BayesianLinearRegression(base.MiniBatchRegressor):
     """Bayesian linear regression.
 
     An advantage of Bayesian linear regression over standard linear regression is that features
@@ -226,6 +226,46 @@ class BayesianLinearRegression(base.Regressor):
 
         self._m_dirty = True
 
+    def learn_many(self, X: IntoDataFrame, y: IntoSeries) -> None:
+        # A mini-batch is exactly the sequence of rank-1 `learn_one` updates applied in row
+        # order, collapsed into a handful of matrix products. narwhals stays at the boundary:
+        # the input is wrapped, then a float64 matrix + column names drive the numpy core.
+        Xnw = utils.dataframe.into_frame(X)
+        cols = Xnw.columns
+        self._ensure_features(cols)
+        idx = np.fromiter((self._idx[f] for f in cols), dtype=np.intp, count=len(cols))
+
+        X_arr = utils.dataframe.to_numpy(Xnw)  # (n_samples, n_features)
+        y_arr = np.asarray(utils.dataframe.into_series(y).to_numpy(), dtype=np.float64)
+        n = len(self._idx)
+
+        if self.smoothing is None:
+            # Bishop equations 3.50/3.51 in batch form. Summing the per-row rank-1 outer
+            # products into a single Gram matrix is identical to the `learn_one` loop:
+            #   precision    += beta * sum_i x_i x_i^T = beta * X^T X
+            #   natural mean += beta * sum_i y_i x_i   = beta * X^T y
+            self._ss_arr[np.ix_(idx, idx)] += self.beta * (X_arr.T @ X_arr)
+            self._eta_arr[idx] += self.beta * (X_arr.T @ y_arr)
+        else:
+            # With smoothing each row applies an EMA step `S <- s*S + (1-s)*beta*x x^T`, so
+            # after N rows (oldest first) the prior is decayed by s^N and row k (0-based)
+            # carries weight (1-s)*s^(N-1-k). This is the exact closed form of the loop.
+            s = self.smoothing
+            n_samples = len(X_arr)
+            weights = (1 - s) * s ** np.arange(n_samples - 1, -1, -1)
+            decay = s**n_samples
+            self._ss_arr[:n, :n] *= decay
+            self._eta_arr[:n] *= decay
+            self._ss_arr[np.ix_(idx, idx)] += self.beta * (X_arr.T * weights) @ X_arr
+            self._eta_arr[idx] += self.beta * (X_arr.T @ (weights * y_arr))
+
+        # `learn_one` keeps `_ss_inv_arr = inv(_ss_arr)` (via Sherman-Morrison without smoothing,
+        # a full inverse with it). Refresh the active block in one inverse so subsequent
+        # `learn_one` updates and `predict_one(..., with_dist=True)` see a consistent covariance.
+        if n:
+            self._ss_inv_arr[:n, :n] = np.linalg.inv(self._ss_arr[:n, :n])
+        self._m_dirty = True
+
     def predict_one(self, x, with_dist=False):
         """Predict the output of features `x`.
 
@@ -274,8 +314,8 @@ class BayesianLinearRegression(base.Regressor):
 
         return proba.Gaussian._from_state(n=1, m=y_pred_mean, sig=y_pred_var**0.5, ddof=0)
 
-    def predict_many(self, X):
-        pd = utils.pandas.import_pandas()
+    def predict_many(self, X: IntoDataFrame) -> IntoSeries:
+        X = utils.dataframe.into_frame(X)
         self._ensure_m()
         m_full = self._m_arr
         m = np.zeros(len(X.columns), dtype=np.float64)
@@ -283,4 +323,5 @@ class BayesianLinearRegression(base.Regressor):
             i = self._idx.get(f)
             if i is not None:
                 m[k] = m_full[i]
-        return pd.Series(X.values @ m, index=X.index)
+        y_pred = utils.dataframe.to_numpy(X) @ m
+        return utils.dataframe.to_native_series(y_pred, name=None, like=X)

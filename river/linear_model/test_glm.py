@@ -584,6 +584,77 @@ def test_predict_many_returns_native_backend(
     assert all(math.isclose(g, e, rel_tol=1e-9) for g, e in zip(got, expected))
 
 
+def test_bayesian_predict_many_returns_native_backend(
+    frame_backend: FrameBackend, reg_batch: Columnar
+) -> None:
+    """`BayesianLinearRegression.predict_many` returns the input backend's native type."""
+
+    data, targets, feats = reg_batch
+    X = frame_backend.frame(data)
+
+    model = lm.BayesianLinearRegression()
+    model.learn_many(X, frame_backend.series(targets))
+
+    y_pred = model.predict_many(X)
+    assert type(y_pred) is type(frame_backend.series(targets))
+
+    expected = [model.predict_one(x) for x in feats]
+    got = nw.from_native(y_pred, series_only=True).to_list()
+    assert all(math.isclose(g, e, rel_tol=1e-9) for g, e in zip(got, expected))
+
+
+@pytest.mark.parametrize("smoothing", [None, 0.8])
+def test_bayesian_learn_many_matches_learn_one(
+    frame_backend: FrameBackend, reg_batch: Columnar, smoothing: float | None
+) -> None:
+    """A single `learn_many` must reproduce the row-by-row `learn_one` loop on every backend."""
+
+    data, targets, feats = reg_batch
+
+    one = lm.BayesianLinearRegression(smoothing=smoothing)
+    for x, y in zip(feats, targets):
+        one.learn_one(x, y)
+
+    many = lm.BayesianLinearRegression(smoothing=smoothing)
+    many.learn_many(frame_backend.frame(data), frame_backend.series(targets))
+
+    # `learn_many` and the `learn_one` loop accumulate the same precision/natural-mean state;
+    # they agree up to floating point only, since the online no-smoothing path maintains the
+    # covariance through chained Sherman-Morrison rank-1 updates that drift slightly from the
+    # single inverse `learn_many` computes.
+    for x in feats:
+        got = many.predict_one(x, with_dist=True)
+        want = one.predict_one(x, with_dist=True)
+        assert math.isclose(got.mu, want.mu, rel_tol=1e-5, abs_tol=1e-6)
+        assert math.isclose(got.sigma, want.sigma, rel_tol=1e-5, abs_tol=1e-6)
+
+
+@pytest.mark.parametrize("smoothing", [None, 0.8])
+def test_bayesian_learn_many_chunks_match_single_batch(
+    reg_batch: Columnar, smoothing: float | None
+) -> None:
+    """Splitting a batch into chunks must give the same model as one `learn_many` call.
+
+    With smoothing this also pins the geometric per-row weighting: chunk boundaries must not
+    shift the decay applied to earlier rows.
+    """
+
+    data, targets, feats = reg_batch
+    pandas = FRAME_BACKENDS["pandas"]()
+
+    whole = lm.BayesianLinearRegression(smoothing=smoothing)
+    whole.learn_many(pandas.frame(data), pandas.series(targets))
+
+    chunked = lm.BayesianLinearRegression(smoothing=smoothing)
+    for lo in range(0, len(targets), 7):
+        hi = lo + 7
+        chunk = {c: data[c][lo:hi] for c in data}
+        chunked.learn_many(pandas.frame(chunk), pandas.series(targets[lo:hi]))
+
+    for x in feats:
+        assert math.isclose(chunked.predict_one(x), whole.predict_one(x), rel_tol=1e-9)
+
+
 def test_logreg_predict_many_matches_predict_one(
     frame_backend: FrameBackend, clf_batch: Columnar
 ) -> None:

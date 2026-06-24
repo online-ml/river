@@ -201,6 +201,7 @@ def yield_checks(model: Estimator) -> typing.Iterator[typing.Callable]:
     if utils.pandas.PANDAS_INSTALLED:
         if isinstance(model, (base.MiniBatchClassifier, base.MiniBatchRegressor)):
             dataset_checks.append(common.check_predict_many_matches_predict_one)
+            dataset_checks.append(common.check_learn_many_matches_learn_one)
         if isinstance(model, base.MiniBatchClassifier):
             dataset_checks.append(common.check_predict_proba_many_matches_predict_proba_one)
         if isinstance(model, (base.MiniBatchTransformer, base.MiniBatchSupervisedTransformer)):
