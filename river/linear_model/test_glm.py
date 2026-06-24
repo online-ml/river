@@ -4,7 +4,9 @@ import copy
 import itertools
 import math
 import random
+import typing
 
+import narwhals.stable.v2 as nw
 import numpy as np
 import pandas as pd
 import pytest
@@ -14,6 +16,18 @@ from sklearn.metrics import log_loss
 
 from river import datasets, optim, preprocessing, stream, utils
 from river import linear_model as lm
+from river.conftest import FRAME_BACKENDS
+
+if typing.TYPE_CHECKING:
+    from collections.abc import Callable
+    from typing import Any
+
+    from river.base.typing import FeatureName
+    from river.conftest import FrameBackend
+    from river.datasets.base import Dataset
+
+    # ({column: values}, [targets], [feature dicts]) as produced by `_columnar`.
+    Columnar = tuple[dict[FeatureName, list[Any]], list[Any], list[dict[FeatureName, Any]]]
 
 
 def _pd_split(df, n):
@@ -483,3 +497,160 @@ def test_log_reg_sklearn_l1_non_regression():
 
     # since we can't access true coefficients from sklearn.make_classification, we compare losses
     assert math.isclose(log_loss(y, rv_pred), log_loss(y, sk_pred))
+
+
+# Dataframe-agnostic mini-batching (narwhals): pandas, polars and pyarrow
+
+
+def _columnar(dataset: Dataset, n: int = 80, cast: Callable[[Any], Any] | None = None) -> Columnar:
+    """Materialise a dataset into ({column: values}, [targets], [feature dicts])."""
+    rows = list(dataset.take(n))
+    feats = [x for x, _ in rows]
+    targets = [y if cast is None else cast(y) for _, y in rows]
+    cols = list(feats[0])
+    data = {c: [f[c] for f in feats] for c in cols}
+    return data, targets, feats
+
+
+@pytest.fixture(scope="module")
+def reg_batch() -> Columnar:
+    return _columnar(datasets.TrumpApproval(), cast=float)
+
+
+@pytest.fixture(scope="module")
+def clf_batch() -> Columnar:
+    return _columnar(datasets.Bananas(), cast=bool)
+
+
+@pytest.mark.parametrize("Model", [lm.LinearRegression, lm.LogisticRegression])
+def test_learn_many_is_backend_agnostic(
+    frame_backend: FrameBackend,
+    Model: type[lm.LinearRegression | lm.LogisticRegression],
+    reg_batch: Columnar,
+    clf_batch: Columnar,
+) -> None:
+    """`learn_many` must produce identical weights regardless of the input backend."""
+
+    data, targets, _ = reg_batch if Model is lm.LinearRegression else clf_batch
+
+    pandas = FRAME_BACKENDS["pandas"]()
+    reference = Model()
+    reference.learn_many(pandas.frame(data), pandas.series(targets))
+
+    model = Model()
+    model.learn_many(frame_backend.frame(data), frame_backend.series(targets))
+
+    assert model.weights.keys() == reference.weights.keys()
+    for key, weight in reference.weights.items():
+        assert math.isclose(model.weights[key], weight, rel_tol=1e-12, abs_tol=1e-12)
+    assert math.isclose(model.intercept, reference.intercept, rel_tol=1e-12, abs_tol=1e-12)
+
+
+def test_learn_many_matches_learn_one(frame_backend: FrameBackend, reg_batch: Columnar) -> None:
+    """Row-by-row `learn_many` must match `learn_one` on every backend."""
+
+    data, targets, feats = reg_batch
+
+    one = lm.LinearRegression()
+    for x, y in zip(feats, targets):
+        one.learn_one(x, y)
+
+    many = lm.LinearRegression()
+    for i, y in enumerate(targets):
+        X = frame_backend.frame({c: [data[c][i]] for c in data})
+        many.learn_many(X, frame_backend.series([y]))
+
+    for key in one.weights:
+        assert math.isclose(many.weights[key], one.weights[key], rel_tol=1e-9)
+
+
+def test_predict_many_returns_native_backend(
+    frame_backend: FrameBackend, reg_batch: Columnar
+) -> None:
+    """`predict_many` returns the input backend's native type, with matching values."""
+
+    data, targets, feats = reg_batch
+    X = frame_backend.frame(data)
+    y = frame_backend.series(targets)
+
+    model = lm.LinearRegression()
+    model.learn_many(X, y)
+
+    y_pred = model.predict_many(X)
+    assert type(y_pred) is type(y)
+
+    expected = [model.predict_one(x) for x in feats]
+    got = nw.from_native(y_pred, series_only=True).to_list()
+    assert all(math.isclose(g, e, rel_tol=1e-9) for g, e in zip(got, expected))
+
+
+def test_logreg_predict_many_matches_predict_one(
+    frame_backend: FrameBackend, clf_batch: Columnar
+) -> None:
+    """Logistic `predict_many` labels must match `predict_one` on every backend."""
+
+    data, targets, feats = clf_batch
+    X = frame_backend.frame(data)
+    y = frame_backend.series(targets)
+    model = lm.LogisticRegression()
+    model.learn_many(X, y)
+
+    y_pred = model.predict_many(X)
+    assert type(y_pred) is type(y)
+
+    expected = [model.predict_one(x) for x in feats]
+    got = nw.from_native(y_pred, series_only=True).to_list()
+    assert [bool(g) for g in got] == [bool(e) for e in expected]
+
+
+def test_logreg_predict_proba_many_matches_predict_proba_one(
+    frame_backend: FrameBackend, clf_batch: Columnar
+) -> None:
+    """Logistic `predict_proba_many` must agree column-wise with `predict_proba_one`.
+
+    Column order is always (False, True); only the labels differ across backends
+    (booleans for pandas, their string form elsewhere).
+    """
+
+    data, targets, feats = clf_batch
+    X = frame_backend.frame(data)
+
+    model = lm.LogisticRegression()
+    model.learn_many(X, frame_backend.series(targets))
+
+    proba = model.predict_proba_many(X)
+    assert type(proba) is type(X)
+
+    expected_labels: list[bool | str] = (
+        [False, True] if frame_backend.name.startswith("pandas") else ["False", "True"]
+    )
+    proba_nw = nw.from_native(proba, eager_only=True)
+    assert list(proba_nw.columns) == expected_labels
+
+    got = proba_nw.to_numpy()
+    for i, x in enumerate(feats):
+        one = model.predict_proba_one(x)
+        assert math.isclose(got[i, 0], one[False], rel_tol=1e-9)
+        assert math.isclose(got[i, 1], one[True], rel_tol=1e-9)
+
+
+def test_predict_many_preserves_pandas_index() -> None:
+    """The pandas index contract is kept for series and frame outputs."""
+
+    index = [100, 200, 300, 400]
+    X = pd.DataFrame({"a": [1.0, 2, 3, 4], "b": [4.0, 3, 2, 1]}, index=index)
+
+    reg = lm.LinearRegression()
+    reg.learn_many(X, pd.Series([1.0, 2, 3, 4], index=index, name="target"))
+    pred_reg: pd.Series[Any] = reg.predict_many(X)
+    assert list(pred_reg.index) == index
+    assert pred_reg.name == "target"
+
+    clf = lm.LogisticRegression()
+    clf.learn_many(X, pd.Series([False, True, False, True], index=index, name="label"))
+    proba: pd.DataFrame = clf.predict_proba_many(X)
+    assert list(proba.index) == index
+    assert list(proba.columns) == [False, True]
+
+    pred_clf: pd.Series[Any] = clf.predict_many(X)
+    assert list(pred_clf.index) == index
