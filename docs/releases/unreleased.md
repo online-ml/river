@@ -30,6 +30,10 @@
 - Added `multioutput.PerOutputClassifier`, the streaming equivalent of scikit-learn's `MultiOutputClassifier`. Trains one independent classifier per target output.
 - Added `multioutput.PerOutputRegressor`, the streaming equivalent of scikit-learn's `MultiOutputRegressor`. Trains one independent regressor per target output, with no inter-output dependencies.
 
+## naive_bayes
+
+- Added mini-batch support to `GaussianNB` via `learn_many`, `predict_many`, and `predict_proba_many`.
+
 ## optim
 
 - Exposed `optim.Newton` (Online Newton Step), which was implemented but never exported, and fixed an initialisation bug (the inverse Hessian started at `eps * I` instead of `(1 / eps) * I`) that crippled learning. Reworked around NumPy-backed dense state.
