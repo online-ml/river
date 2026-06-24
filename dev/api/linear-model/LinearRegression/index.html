@@ -47151,9 +47151,9 @@ Prediction: 32.54607
 <p>Update the model with a mini-batch of features <code>X</code> and real-valued targets <code>y</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>X</strong>     — <code>pd.DataFrame</code>    </li>
-<li><strong>y</strong>     — <code>pd.Series</code>    </li>
-<li><strong>w</strong>     — <code>float | pd.Series</code>     — defaults to <code>1</code>    </li>
+<li><strong>X</strong>     — <code>IntoDataFrame</code>    </li>
+<li><strong>y</strong>     — <code>IntoSeries</code>    </li>
+<li><strong>w</strong>     — <code>float | IntoSeries</code>     — defaults to <code>1</code>    </li>
 </ul>
 </details>
 <p><span /></p>
@@ -47173,10 +47173,10 @@ Prediction: 32.54607
 <p>Predict the outcome for each given sample.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>X</strong>    </li>
+<li><strong>X</strong>     — <code>IntoDataFrame</code>    </li>
 </ul>
 <p><strong>Returns</strong></p>
-<p>The predicted outcomes.</p>
+<p><code>IntoSeries</code>:     The predicted outcomes.</p>
 </details>
 <p><span /></p>
 <details class="- abstract">

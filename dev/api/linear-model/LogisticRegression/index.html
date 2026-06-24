@@ -47100,9 +47100,9 @@
 <p>Update the model with a mini-batch of features <code>X</code> and boolean targets <code>y</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>X</strong>     — <code>pd.DataFrame</code>    </li>
-<li><strong>y</strong>     — <code>pd.Series</code>    </li>
-<li><strong>w</strong>     — <code>float | pd.Series</code>     — defaults to <code>1</code>    </li>
+<li><strong>X</strong>     — <code>IntoDataFrame</code>    </li>
+<li><strong>y</strong>     — <code>IntoSeries</code>    </li>
+<li><strong>w</strong>     — <code>float | IntoSeries</code>     — defaults to <code>1</code>    </li>
 </ul>
 </details>
 <p><span /></p>
@@ -47122,10 +47122,10 @@
 <p>Predict the outcome for each given sample.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>X</strong>     — <code>pd.DataFrame</code>    </li>
+<li><strong>X</strong>     — <code>IntoDataFrame</code>    </li>
 </ul>
 <p><strong>Returns</strong></p>
-<p><code>pd.Series</code>:     The predicted labels.</p>
+<p><code>IntoSeries</code>:     The predicted labels.</p>
 </details>
 <p><span /></p>
 <details class="- abstract">
@@ -47145,10 +47145,10 @@
 <p>Predict the outcome probabilities for each given sample.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>X</strong>     — <code>pd.DataFrame</code>    </li>
+<li><strong>X</strong>     — <code>IntoDataFrame</code>    </li>
 </ul>
 <p><strong>Returns</strong></p>
-<p><code>pd.DataFrame</code>:     A dataframe with probabilities of <code>True</code> and <code>False</code> for each sample.</p>
+<p><code>IntoDataFrame</code>:     A dataframe with probabilities of <code>True</code> and <code>False</code> for each sample.</p>
 </details>
 <p><span /></p>
 <details class="- abstract">

@@ -3588,6 +3588,7 @@
 <li>Sped up the <code>LinearRegression</code>/<code>LogisticRegression.learn_many</code> mini-batch gradient (~2-3×) by contracting the sample axis inside the <code>np.einsum</code>. No semantic change.</li>
 <li>Sped up <code>learn_one</code> for the linear models (<code>LinearRegression</code>, <code>LogisticRegression</code>, <code>Perceptron</code>, ...): updates now scale with the number of active features instead of the total number of features ever seen. Outputs are unchanged.</li>
 <li>Stabilised <code>BayesianLinearRegression</code> across BLAS implementations and sped it up (~10-20%) by accumulating an exact natural mean and recovering the posterior mean lazily, instead of propagating it through compounding rank-1 updates (which drifted ~0.6% between macOS Accelerate and Linux OpenBLAS).</li>
+<li><a href="../../api/linear-model/LinearRegression"><code>linear_model.LinearRegression</code></a> and <a href="../../api/linear-model/LogisticRegression"><code>linear_model.LogisticRegression</code></a> mini-batch methods (<code>learn_many</code>, <code>predict_many</code>, <code>predict_proba_many</code>) now accept and return any <a href="https://github.com/narwhals-dev/narwhals">narwhals</a>-supported eager backend (pandas, polars, pyarrow, ...) instead of being pandas-only. The input backend is preserved on output, including the pandas index. These methods no longer require <code>pandas</code> to be installed.</li>
 </ul>
 <h2 id="multioutput">multioutput<a class="headerlink" href="#multioutput" title="Permanent link">&para;</a></h2>
 <ul>
