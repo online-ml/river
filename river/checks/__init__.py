@@ -206,6 +206,7 @@ def yield_checks(model: Estimator) -> typing.Iterator[typing.Callable]:
             dataset_checks.append(common.check_predict_proba_many_matches_predict_proba_one)
         if isinstance(model, (base.MiniBatchTransformer, base.MiniBatchSupervisedTransformer)):
             dataset_checks.append(common.check_transform_many_matches_transform_one)
+            dataset_checks.append(common.check_learn_many_matches_learn_one)
 
     if hasattr(model, "debug_one"):
         dataset_checks.append(common.check_debug_one)

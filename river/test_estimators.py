@@ -104,6 +104,9 @@ def iter_estimators_which_can_be_tested():
         )
         for estimator in list(iter_estimators_which_can_be_tested())
         + [
+            # A standalone mini-batch transformer (plain transformers are otherwise excluded
+            # from the auto-discovered set), so the mini-batch checks cover that branch too.
+            preprocessing.StandardScaler(),
             preprocessing.StandardScaler() | linear_model.LinearRegression(),
             preprocessing.StandardScaler() | linear_model.PAClassifier(),
             (
