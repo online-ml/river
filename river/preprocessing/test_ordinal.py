@@ -11,8 +11,6 @@ from river import preprocessing
 from river.conftest import FRAME_BACKENDS
 
 if typing.TYPE_CHECKING:
-    from typing import Any
-
     from narwhals.stable.v2.typing import IntoDataFrame
 
     from river.conftest import FrameBackend
@@ -78,7 +76,7 @@ def _read_rows(native: IntoDataFrame) -> list[dict[str, int | None]]:
 
 @pytest.mark.parametrize("params", list(ENCODER_PARAMS))
 def test_learn_many_codes_match_across_backends(
-    frame_backend: FrameBackend, params: dict[str, Any]
+    frame_backend: FrameBackend, params: dict[str, typing.Any]
 ) -> None:
     """Category codes are assigned identically regardless of the input backend."""
     data, _ = _categorical_batch()
@@ -93,7 +91,9 @@ def test_learn_many_codes_match_across_backends(
 
 
 @pytest.mark.parametrize("params", list(ENCODER_PARAMS))
-def test_learn_many_matches_learn_one(frame_backend: FrameBackend, params: dict[str, Any]) -> None:
+def test_learn_many_matches_learn_one(
+    frame_backend: FrameBackend, params: dict[str, typing.Any]
+) -> None:
     """`learn_many` assigns the same codes as row-by-row `learn_one`."""
     data, rows = _categorical_batch()
 
@@ -117,7 +117,7 @@ def test_learn_many_matches_learn_one(frame_backend: FrameBackend, params: dict[
     ],
 )
 def test_learn_many_skips_reserved_codes(
-    frame_backend: FrameBackend, params: dict[str, Any], expected: dict[str, int]
+    frame_backend: FrameBackend, params: dict[str, typing.Any], expected: dict[str, int]
 ) -> None:
     """Non-negative `unknown_value`/`none_value` are reserved and never assigned to a category."""
     encoder = preprocessing.OrdinalEncoder(**params)
@@ -128,7 +128,7 @@ def test_learn_many_skips_reserved_codes(
 
 @pytest.mark.parametrize("params", list(ENCODER_PARAMS))
 def test_transform_many_is_backend_agnostic(
-    frame_backend: FrameBackend, params: dict[str, Any]
+    frame_backend: FrameBackend, params: dict[str, typing.Any]
 ) -> None:
     """`transform_many` yields identical codes regardless of the input backend."""
     learn, trans, _ = _unknowns_batch()
@@ -146,7 +146,7 @@ def test_transform_many_is_backend_agnostic(
 
 @pytest.mark.parametrize("params", list(ENCODER_PARAMS))
 def test_transform_many_matches_transform_one(
-    frame_backend: FrameBackend, params: dict[str, Any]
+    frame_backend: FrameBackend, params: dict[str, typing.Any]
 ) -> None:
     """Each row of `transform_many` agrees with `transform_one`, including unknowns and nulls."""
     learn, trans, rows = _unknowns_batch()

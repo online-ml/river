@@ -182,8 +182,9 @@ class OrdinalEncoder(base.MiniBatchTransformer):
 
         """
         X_nw = utils.dataframe.into_frame(X)
+        schema = X_nw.schema
         exprs: list[nw.Expr] = []
-        for col in X_nw.columns:
+        for col, dtype in schema.items():
             mapping = self.values[col]
             # `replace_strict` maps each known category to its code and everything else to
             # `unknown_value` in one vectorised pass. An empty mapping (a column never seen during
@@ -198,10 +199,16 @@ class OrdinalEncoder(base.MiniBatchTransformer):
                 )
             else:
                 encoded = nw.lit(self.unknown_value, dtype=nw.Int64)
-            # Nulls (Python ``None`` / ``pd.NA`` / float ``NaN``) are mapped to ``none_value``
-            # separately, since `replace_strict` leaves unmatched nulls untouched.
+            # Missing cells map to `none_value` separately, since `replace_strict` leaves them
+            # untouched. A numeric `NaN` is missing too, but polars/pyarrow keep it distinct from
+            # null, so it is folded in explicitly (mirroring `learn_many`, which also skips it).
+            # `is_nan` errors on non-numeric dtypes, hence the guard.
+            is_missing = nw.col(col).is_null()
+            if dtype.is_numeric():
+                is_missing = is_missing | nw.col(col).is_nan()
+
             exprs.append(
-                nw.when(nw.col(col).is_null())  # type:ignore[arg-type]
+                nw.when(is_missing)  # type:ignore[arg-type]
                 .then(nw.lit(self.none_value, dtype=nw.Int64))
                 .otherwise(encoded)
                 .alias(col)
