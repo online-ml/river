@@ -3,6 +3,7 @@
 - Add `ppc64le` architecture to Linux wheel builds.
 - Moved `altair` from the runtime dependencies to the `docs`/`dev` groups; it was only used to draw plots in the docs, so installing River no longer pulls it in.
 - Publish Pyodide/WebAssembly wheels (CPython 3.13 and 3.14) so River can run in the browser, e.g. via [JupyterLite](https://jupyterlite.readthedocs.io/) or `micropip`. The minimum `numpy` and `scipy` versions were lowered to `2.2.5` and `1.14.1` to match Pyodide.
+- Display `compose.TransformerUnion` elements vertically in HTML representations.
 
 ## base
 
@@ -10,9 +11,10 @@
 
 ## covariance
 
+- Added weighted sample support to `EmpiricalCovariance.update` and `EmpiricalCovariance.revert` by accepting an optional `w` parameter and propagating it to the underlying `stats.Cov` and `stats.Var` statistics.
 - Sped up `EmpiricalCovariance.update`/`revert` (~40% faster at 30 features) by caching the sorted feature list and pair iteration in the hot path. No semantic change.
 - Restructured `EmpiricalPrecision` around NumPy-backed dense state, removing the per-update dict ↔ numpy marshalling. ~7× faster on 2000 × 20 sample streams.
-- Fixed an `EmpiricalPrecision` asymmetry where features introduced at different times left the stored matrix skewed (e.g. `prec[a, b]` ≠ `prec[b, a]`).
+- Fixed an `EmpiricalPrecision` asymmetry where features introduced at different times left the stored matrix skewed (e.g. `prec[a, b]` ≠ `prec[b, a]`).      
 
 ## datasets
 
@@ -25,7 +27,7 @@
 - `BayesianLinearRegression` now handles features arriving and disappearing after training begins (it passes `check_emerging_features` and `check_shuffle_features_no_impact`, previously skipped).
 - Fixed `BayesianLinearRegression` coefficients diverging to `inf`/`nan` under emerging/disappearing features; `learn_one` now updates the full state with a zero-padded `x`. Behavior change: features absent from `x` are treated as observed 0s (matching the other linear models) rather than skipped — identical to before when every call sees the same features.
 - Sped up the `LinearRegression`/`LogisticRegression.learn_many` mini-batch gradient (~2-3×) by contracting the sample axis inside the `np.einsum`. No semantic change.
-- Sped up `learn_one` for the linear models (`LinearRegression`, `LogisticRegression`, `Perceptron`, ...): updates now scale with the number of active features instead of the total number of features ever seen. Outputs are unchanged.
+- Sped up `learn_one` for the linear models (`LinearRegression`, `LogisticRegression`, `Perceptron`, ...): updates now scale with the number of active features instead of the total number of features ever seen. Outputs are unchanged.       
 - Stabilised `BayesianLinearRegression` across BLAS implementations and sped it up (~10-20%) by accumulating an exact natural mean and recovering the posterior mean lazily, instead of propagating it through compounding rank-1 updates (which drifted ~0.6% between macOS Accelerate and Linux OpenBLAS).
 - `linear_model.LinearRegression` and `linear_model.LogisticRegression` mini-batch methods (`learn_many`, `predict_many`, `predict_proba_many`) now accept and return any [narwhals](https://github.com/narwhals-dev/narwhals)-supported eager backend (pandas, polars, pyarrow, ...) instead of being pandas-only. The input backend is preserved on output, including the pandas index. These methods no longer require `pandas` to be installed.
 
@@ -33,6 +35,10 @@
 
 - Added `multioutput.PerOutputClassifier`, the streaming equivalent of scikit-learn's `MultiOutputClassifier`. Trains one independent classifier per target output.
 - Added `multioutput.PerOutputRegressor`, the streaming equivalent of scikit-learn's `MultiOutputRegressor`. Trains one independent regressor per target output, with no inter-output dependencies.
+
+## naive_bayes
+
+- Added mini-batch support to `GaussianNB` via `learn_many`, `predict_many`, and `predict_proba_many`.
 
 ## optim
 
@@ -43,6 +49,10 @@
 - Added a `window_size` parameter to `preprocessing.StandardScaler`, `preprocessing.MinMaxScaler`, and `preprocessing.MaxAbsScaler`. When set, the scaler tracks its statistics over the last `window_size` observations instead of the whole stream.
 - Added a `_from_state` classmethod to `preprocessing.MinMaxScaler`, `preprocessing.MaxAbsScaler`, and `preprocessing.StandardScaler` so a scaler can be warm-started from precomputed statistics without replaying past observations.
 - `preprocessing.FeatureHasher` now hashes with MurmurHash3 in Rust, making it much faster. It gains an `alternate_sign` parameter (default `True`, matching scikit-learn) and returns a plain `dict`. Hashed feature indices differ from previous versions.
+
+## proba
+
+- Added weighted sample support to `MultivariateGaussian.update` and `MultivariateGaussian.revert` by accepting an optional `w` parameter and propagating it to the underlying `EmpiricalCovariance` instance.
 
 ## reco
 
@@ -55,7 +65,7 @@
 
 ## rules
 
-- Fixed `RecursionError` in `AMRules` on long streams: the `EBSTSplitter`, `TEBSTSplitter`, and `ExhaustiveSplitter` now traverse and deep-copy their search trees iteratively, so deeply-skewed trees no longer blow Python's recursion limit.
+- Fixed `RecursionError` in `AMRules` on long streams: the `EBSTSplitter`, `TEBSTSplitter`, and `ExhaustiveSplitter` now traverse and deep-copy their search trees iteratively, so deeply-skewed trees no longer blow Python's recursion limit. 
 - Fixed an `AMRules` memory leak where `HoeffdingRule.expand` appended a redundant `NumericLiteral` when a new split shared a feature and direction with an existing literal without tightening the threshold.
 
 ## stats
