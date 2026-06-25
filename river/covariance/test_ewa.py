@@ -7,15 +7,15 @@ import pytest
 from river import covariance, stats, stream
 
 
+def _value(entry):
+    # EmpiricalCovariance stores stats.Cov/Var objects; EWA stores plain floats.
+    return entry.get() if isinstance(entry, stats.base.Statistic) else entry
+
+
 def _dense(cov):
     """Materialize a SymmetricMatrix into a dense numpy array (public-API only)."""
     names = sorted({i for i, _ in cov.matrix})
-
-    def value(entry):
-        # EmpiricalCovariance stores stats.Cov/Var objects; EWA stores plain floats.
-        return entry.get() if isinstance(entry, stats.base.Statistic) else entry
-
-    return np.array([[value(cov[i, j]) for j in names] for i in names], dtype=float)
+    return np.array([[_value(cov[i, j]) for j in names] for i in names], dtype=float)
 
 
 def _ewa_reference(X, fading_factor):
@@ -310,14 +310,14 @@ def test_pickle_round_trip(returns, estimator):
 
 
 def test_empirical_covariance_matches_sklearn(returns):
-    # sklearn's EmpiricalCovariance is the maximum-likelihood estimate, i.e. ddof=0.
-    sklearn_cov = pytest.importorskip("sklearn.covariance")
+    from sklearn.covariance import EmpiricalCovariance as SklearnEmpiricalCovariance
 
+    # sklearn uses the maximum-likelihood estimate, i.e. ddof=0.
     cov = covariance.EmpiricalCovariance(ddof=0)
     for x, _ in stream.iter_array(returns):
         cov.update(x)
 
-    expected = sklearn_cov.EmpiricalCovariance().fit(returns).covariance_
+    expected = SklearnEmpiricalCovariance().fit(returns).covariance_
     np.testing.assert_allclose(_dense(cov), expected)
 
 
@@ -325,10 +325,8 @@ def test_empirical_covariance_matches_sklearn(returns):
 
 
 def test_ewcov_matches_pandas():
-    # pandas computes the exponentially weighted covariance with its own routine rather than
-    # via the E[xy] - E[x]E[y] identity used by stats.EWCov, so this is an independent check.
-    # adjust=False matches the recursive stats.EWMean convention; bias=True matches the
-    # population (uncorrected) covariance that the identity yields.
+    # pandas computes the EW covariance independently of the E[xy] - E[x]E[y] identity used by
+    # stats.EWCov. adjust=False / bias=True match its recursive, uncorrected convention.
     f = 0.3
     x = [1.0, 3.0, 5.0, 4.0, 6.0]
     y = [2.0, 4.0, 3.0, 6.0, 5.0]
