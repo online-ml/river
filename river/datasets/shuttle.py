@@ -35,13 +35,13 @@ class Shuttle(base.FileDataset):
     ...     ("LODA", anomaly.LODA(seed=42)),
     ... ]:
     ...     model = preprocessing.MinMaxScaler() | detector
-    ...     auc = metrics.RollingROCAUC(window_size=50_000)
-    ...     for x, y in dataset:
+    ...     auc = metrics.RollingROCAUC(window_size=10_000)
+    ...     for x, y in dataset.take(10_000):
     ...         auc.update(y, model.score_one(x))
     ...         model.learn_one(x)
     ...     print(name, auc)
-    HalfSpaceTrees RollingROCAUC: 96.08%
-    LODA RollingROCAUC: 97.19%
+    HalfSpaceTrees RollingROCAUC: 90.07%
+    LODA RollingROCAUC: 96.46%
 
     References
     ----------
