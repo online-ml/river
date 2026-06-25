@@ -3,6 +3,7 @@
 - Add `ppc64le` architecture to Linux wheel builds.
 - Moved `altair` from the runtime dependencies to the `docs`/`dev` groups; it was only used to draw plots in the docs, so installing River no longer pulls it in.
 - Publish Pyodide/WebAssembly wheels (CPython 3.13 and 3.14) so River can run in the browser, e.g. via [JupyterLite](https://jupyterlite.readthedocs.io/) or `micropip`. The minimum `numpy` and `scipy` versions were lowered to `2.2.5` and `1.14.1` to match Pyodide.
+- Display `compose.TransformerUnion` elements vertically in HTML representations.
 
 ## covariance
 
