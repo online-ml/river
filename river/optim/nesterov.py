@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import collections
 
+import numpy as np
+
 from river import optim
 from river.optim.base import DictLike
 
@@ -45,14 +47,15 @@ class NesterovMomentum(optim.base.Optimizer):
         self.s = collections.defaultdict(float)
 
     def look_ahead(self, w):
-        for i in w:
+        # `w` may be a dict-like (iterating yields keys) or a NumPy array (iterate its indices).
+        for i in range(len(w)) if isinstance(w, np.ndarray) else w:
             w[i] -= self.rho * self.s[i]
 
         return w
 
     def _step_with_dict(self, w: DictLike, g: DictLike) -> DictLike:
         # Move w back to it's initial position
-        for i in w:
+        for i in range(len(w)) if isinstance(w, np.ndarray) else w:
             w[i] += self.rho * self.s[i]
 
         for i, gi in g.items():
