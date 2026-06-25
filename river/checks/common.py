@@ -4,6 +4,7 @@ import copy
 import gc
 import inspect
 import itertools
+import math
 import pickle
 import random
 
@@ -524,6 +525,71 @@ def check_predict_many_matches_predict_one(model, dataset):
             assert_predictions_are_close(float(m), float(o))
         else:
             assert m == o, f"predict_many vs predict_one disagree: {m!r} != {o!r}"
+
+
+def check_learn_many_matches_learn_one(model, dataset):
+    """`learn_many` over a batch must match a `learn_one` loop, even as features come and go.
+
+    Applies to every mini-batch estimator — regressors, classifiers and transformers — and
+    compares whatever the model produces per row (`predict_one`, `predict_proba_one` or
+    `transform_one`). Estimators whose mini-batch update is not equivalent to the per-row update
+    declare this check in `_unit_test_skips`: the gradient-descent linear models (one
+    mean-gradient step per batch rather than one step per row) and naive Bayes (whose
+    `learn_many` consumes sparse count matrices, covered by its own test).
+    """
+
+    import pandas as pd
+
+    params = seed_params(model._get_params(), seed=42)
+    model = model.clone(params)
+
+    rows = list(itertools.islice(dataset, 60))
+    features = list(rows[0][0]) if rows else []
+    if len(rows) < 25 or len(features) < 2:
+        return
+
+    # Feature subsets that emerge, disappear, reappear, and radically shrink across batches, so
+    # the equivalence is exercised under a changing feature space rather than a fixed schema.
+    half = len(features) // 2
+    subsets = [
+        features[:half],  # first half only
+        features,  # second half emerges
+        features[half:],  # first half disappears
+        features[:1],  # all but one disappear
+        features,  # everything reappears
+    ]
+    per = len(rows) // len(subsets)
+
+    supervised = model._supervised
+    one, many = model.clone(), model.clone()
+    queries = []
+    for i, cols in enumerate(subsets):
+        chunk = rows[i * per : (i + 1) * per]
+        batch = [{c: float(x[c]) for c in cols} for x, _ in chunk]
+        targets = [y for _, y in chunk]
+        for x, y in zip(batch, targets):
+            _learn(one, x, y)
+        X = pd.DataFrame(batch, columns=cols)
+        try:
+            many.learn_many(X, pd.Series(targets)) if supervised else many.learn_many(X)
+        except (AttributeError, NotImplementedError):
+            # A pipeline/union may declare itself mini-batch yet wrap a step without learn_many.
+            return
+        queries.extend(batch)
+
+    # `learn_one` and `learn_many` accumulate the same state but may differ at the floating-point
+    # level (e.g. a chained rank-1 inverse update versus a single inverse), so this is looser than
+    # `assert_predictions_are_close`; a real discrepancy is far larger.
+    def assert_close(a, b):
+        if isinstance(a, dict):  # predict_proba_one / transform_one
+            _assert_dict_predictions_match(a, b, tolerance=1e-4)
+        elif isinstance(a, float):  # predict_one for a regressor
+            assert math.isclose(a, b, rel_tol=1e-4, abs_tol=1e-6)
+        else:  # a class label
+            assert a == b
+
+    for x in queries:
+        assert_close(_infer(one, x), _infer(many, x))
 
 
 def check_predict_proba_many_matches_predict_proba_one(model, dataset):

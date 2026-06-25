@@ -129,7 +129,7 @@ class EmpiricalCovariance(SymmetricMatrix):
             self._cached_pairs = list(itertools.combinations(keys, 2))
         return self._cached_keys, self._cached_pairs
 
-    def update(self, x: dict):
+    def update(self, x: dict, w: float = 1.0):
         """Update with a single sample.
 
         Parameters
@@ -148,7 +148,7 @@ class EmpiricalCovariance(SymmetricMatrix):
                 cov = stats.Cov(ddof)
                 cov_dict[key] = cov
             i, j = key
-            cov.update(x[i], x[j])
+            cov.update(x[i], x[j], w)
 
         for i in keys:
             key = (i, i)
@@ -156,9 +156,9 @@ class EmpiricalCovariance(SymmetricMatrix):
             if var is None:
                 var = stats.Var(ddof)
                 cov_dict[key] = var
-            var.update(x[i])
+            var.update(x[i], w)
 
-    def revert(self, x: dict):
+    def revert(self, x: dict, w: float = 1.0):
         """Downdate with a single sample.
 
         Parameters
@@ -172,10 +172,10 @@ class EmpiricalCovariance(SymmetricMatrix):
 
         for key in pairs:
             i, j = key
-            cov_dict[key].revert(x[i], x[j])
+            cov_dict[key].revert(x[i], x[j], w)
 
         for i in keys:
-            cov_dict[i, i].revert(x[i])
+            cov_dict[i, i].revert(x[i], w)
 
     def update_many(self, X: pd.DataFrame):
         """Update with a dataframe of samples.

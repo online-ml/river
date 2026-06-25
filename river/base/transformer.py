@@ -12,7 +12,7 @@ if typing.TYPE_CHECKING:
     from river import compose
 
 
-class BaseTransformer:
+class BaseTransformer(abc.ABC):
     def __add__(self, other: BaseTransformer) -> compose.TransformerUnion:
         """Fuses with another Transformer into a TransformerUnion."""
         from river import compose
