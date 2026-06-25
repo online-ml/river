@@ -47210,7 +47210,7 @@
 <ul>
 <li>
 <p><strong>categories</strong></p>
-<p><em>Type</em> → <code>dict | None</code></p>
+<p><em>Type</em> → <code>dict[base.typing.FeatureName, dict[typing.Hashable, int]] | None</code></p>
 <p><em>Default</em> → <code>None</code></p>
 <p>Categories (unique values) per feature:     <code>None</code> : Determine categories automatically from the training data.      dict of dicts : Expected categories for each feature. The outer dict maps each feature to its inner dict.     The inner dict maps each category to its code.  The used categories can be found in the <code>values</code> attribute.</p>
 </li>
@@ -47310,8 +47310,8 @@ to e.g. top 20% most popular category values you've picked in advance.</p>
 <p>A lot of transformers don't actually have to do anything during the <code>learn_many</code> step because they are stateless. For this reason the default behavior of this function is to do nothing. Transformers that however do something during the <code>learn_many</code> can override this method.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>X</strong>     — <code>pd.DataFrame</code>    </li>
-<li><strong>y</strong>     — defaults to <code>None</code>    </li>
+<li><strong>X</strong>     — <code>IntoDataFrame</code>    </li>
+<li><strong>y</strong>     — <code>IntoSeries | None</code>     — defaults to <code>None</code>    </li>
 </ul>
 </details>
 <p><span /></p>
@@ -47327,13 +47327,12 @@ to e.g. top 20% most popular category values you've picked in advance.</p>
 <p><span /></p>
 <details class="- abstract">
 <summary>transform_many</summary>
-<p>Transform a mini-batch of features.</p>
+<p>Encode a mini-batch of features into integer codes.</p>
+<p>Missing cells (<code>None</code>/<code>NaN</code>/<code>pd.NA</code>) are mapped to <code>none_value</code> consistently across backends; values absent from the learned categories map to <code>unknown_value</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>X</strong>     — <code>pd.DataFrame</code>    </li>
+<li><strong>X</strong>     — <code>IntoDataFrameT</code>    </li>
 </ul>
-<p><strong>Returns</strong></p>
-<p><code>pd.DataFrame</code>:     A new DataFrame.</p>
 </details>
 <p><span /></p>
 <details class="- abstract">

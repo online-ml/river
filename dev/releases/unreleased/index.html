@@ -2128,6 +2128,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#base" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        base
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#covariance" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -2143,6 +2154,17 @@
     <span class="md-ellipsis">
       <span class="md-typeset">
         datasets
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#facto" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        facto
       </span>
     </span>
   </a>
@@ -2198,6 +2220,17 @@
     <span class="md-ellipsis">
       <span class="md-typeset">
         preprocessing
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#proba" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        proba
       </span>
     </span>
   </a>
@@ -3436,6 +3469,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#base" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        base
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#covariance" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -3451,6 +3495,17 @@
     <span class="md-ellipsis">
       <span class="md-typeset">
         datasets
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#facto" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        facto
       </span>
     </span>
   </a>
@@ -3506,6 +3561,17 @@
     <span class="md-ellipsis">
       <span class="md-typeset">
         preprocessing
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#proba" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        proba
       </span>
     </span>
   </a>
@@ -3590,16 +3656,27 @@
 <li>Add <code>ppc64le</code> architecture to Linux wheel builds.</li>
 <li>Moved <code>altair</code> from the runtime dependencies to the <code>docs</code>/<code>dev</code> groups; it was only used to draw plots in the docs, so installing River no longer pulls it in.</li>
 <li>Publish Pyodide/WebAssembly wheels (CPython 3.13 and 3.14) so River can run in the browser, e.g. via <a href="https://jupyterlite.readthedocs.io/">JupyterLite</a> or <code>micropip</code>. The minimum <code>numpy</code> and <code>scipy</code> versions were lowered to <code>2.2.5</code> and <code>1.14.1</code> to match Pyodide.</li>
+<li>Display <a href="../../api/compose/TransformerUnion"><code>compose.TransformerUnion</code></a> elements vertically in HTML representations.</li>
+</ul>
+<h2 id="base">base<a class="headerlink" href="#base" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../../api/base/Transformer"><code>base.Transformer</code></a> and <a href="../../api/base/SupervisedTransformer"><code>base.SupervisedTransformer</code></a> are now properly abstract: their <code>transform_one</code> abstract method is registered with <code>abc</code>, so a subclass that forgets to implement it raises <code>TypeError</code> at instantiation instead of failing later. This also restores estimator-check coverage for all concrete transformers, which were unintentionally excluded from the automated test suite.</li>
 </ul>
 <h2 id="covariance">covariance<a class="headerlink" href="#covariance" title="Permanent link">&para;</a></h2>
 <ul>
+<li>Added weighted sample support to <code>EmpiricalCovariance.update</code> and <code>EmpiricalCovariance.revert</code> by accepting an optional <code>w</code> parameter and propagating it to the underlying <a href="../../api/stats/Cov"><code>stats.Cov</code></a> and <a href="../../api/stats/Var"><code>stats.Var</code></a> statistics.</li>
 <li>Sped up <code>EmpiricalCovariance.update</code>/<code>revert</code> (~40% faster at 30 features) by caching the sorted feature list and pair iteration in the hot path. No semantic change.</li>
 <li>Restructured <code>EmpiricalPrecision</code> around NumPy-backed dense state, removing the per-update dict ↔ numpy marshalling. ~7× faster on 2000 × 20 sample streams.</li>
-<li>Fixed an <code>EmpiricalPrecision</code> asymmetry where features introduced at different times left the stored matrix skewed (e.g. <code>prec[a, b]</code> ≠ <code>prec[b, a]</code>).</li>
+<li>Fixed an <code>EmpiricalPrecision</code> asymmetry where features introduced at different times left the stored matrix skewed (e.g. <code>prec[a, b]</code> ≠ <code>prec[b, a]</code>).      </li>
 </ul>
 <h2 id="datasets">datasets<a class="headerlink" href="#datasets" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Added <a href="../../api/datasets/CriteoAds"><code>datasets.CriteoAds</code></a>, a 100,000-row sample of the Criteo Display Advertising Challenge (binary click prediction with 13 integer and 26 high-cardinality categorical features). A natural fit for one-hot models such as <a href="../../api/linear-model/AdPredictor"><code>linear_model.AdPredictor</code></a>.</li>
+</ul>
+<h2 id="facto">facto<a class="headerlink" href="#facto" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Sped up <code>learn_one</code> for all factorization-machine models by vectorizing the per-factor latent updates with NumPy instead of looping in Python. On MovieLens 100K: ~1.4× faster for <code>FFMRegressor</code>/<code>FFMClassifier</code>, ~1.8× for <code>FwFMRegressor</code>/<code>FwFMClassifier</code> and <code>HOFMRegressor</code>/<code>HOFMClassifier</code>. Outputs are unchanged.</li>
+<li>The factorization-machine models are now covered by the automated estimator checks (<code>utils.check_estimator</code>).</li>
 </ul>
 <h2 id="linear_model">linear_model<a class="headerlink" href="#linear_model" title="Permanent link">&para;</a></h2>
 <ul>
@@ -3608,9 +3685,10 @@
 <li><code>BayesianLinearRegression</code> now handles features arriving and disappearing after training begins (it passes <code>check_emerging_features</code> and <code>check_shuffle_features_no_impact</code>, previously skipped).</li>
 <li>Fixed <code>BayesianLinearRegression</code> coefficients diverging to <code>inf</code>/<code>nan</code> under emerging/disappearing features; <code>learn_one</code> now updates the full state with a zero-padded <code>x</code>. Behavior change: features absent from <code>x</code> are treated as observed 0s (matching the other linear models) rather than skipped — identical to before when every call sees the same features.</li>
 <li>Sped up the <code>LinearRegression</code>/<code>LogisticRegression.learn_many</code> mini-batch gradient (~2-3×) by contracting the sample axis inside the <code>np.einsum</code>. No semantic change.</li>
-<li>Sped up <code>learn_one</code> for the linear models (<code>LinearRegression</code>, <code>LogisticRegression</code>, <code>Perceptron</code>, ...): updates now scale with the number of active features instead of the total number of features ever seen. Outputs are unchanged.</li>
+<li>Sped up <code>learn_one</code> for the linear models (<code>LinearRegression</code>, <code>LogisticRegression</code>, <code>Perceptron</code>, ...): updates now scale with the number of active features instead of the total number of features ever seen. Outputs are unchanged.       </li>
 <li>Stabilised <code>BayesianLinearRegression</code> across BLAS implementations and sped it up (~10-20%) by accumulating an exact natural mean and recovering the posterior mean lazily, instead of propagating it through compounding rank-1 updates (which drifted ~0.6% between macOS Accelerate and Linux OpenBLAS).</li>
 <li><a href="../../api/linear-model/LinearRegression"><code>linear_model.LinearRegression</code></a> and <a href="../../api/linear-model/LogisticRegression"><code>linear_model.LogisticRegression</code></a> mini-batch methods (<code>learn_many</code>, <code>predict_many</code>, <code>predict_proba_many</code>) now accept and return any <a href="https://github.com/narwhals-dev/narwhals">narwhals</a>-supported eager backend (pandas, polars, pyarrow, ...) instead of being pandas-only. The input backend is preserved on output, including the pandas index. These methods no longer require <code>pandas</code> to be installed.</li>
+<li><a href="../../api/linear-model/BayesianLinearRegression"><code>linear_model.BayesianLinearRegression</code></a> is now a <code>MiniBatchRegressor</code>: it gained a <code>learn_many</code> method, equivalent to looping <code>learn_one</code> over the rows (exact without smoothing, and the matching closed-form geometric weighting with smoothing). Its <code>learn_many</code>/<code>predict_many</code> accept and return any <a href="https://github.com/narwhals-dev/narwhals">narwhals</a>-supported eager backend (pandas, polars, pyarrow, ...), preserving the input backend and pandas index, and no longer require <code>pandas</code>.</li>
 </ul>
 <h2 id="multioutput">multioutput<a class="headerlink" href="#multioutput" title="Permanent link">&para;</a></h2>
 <ul>
@@ -3624,12 +3702,20 @@
 <h2 id="optim">optim<a class="headerlink" href="#optim" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Exposed <a href="../../api/optim/Newton"><code>optim.Newton</code></a> (Online Newton Step), which was implemented but never exported, and fixed an initialisation bug (the inverse Hessian started at <code>eps * I</code> instead of <code>(1 / eps) * I</code>) that crippled learning. Reworked around NumPy-backed dense state.</li>
+<li>Fixed <a href="../../api/optim/AdaBound"><code>optim.AdaBound</code></a> raising <code>TypeError</code> after being cloned (its base learning rate was captured as a scheduler instead of a number), which broke it inside <code>evaluate</code>, ensembles, model selection, and anywhere else estimators are cloned.</li>
+<li>Fixed <a href="../../api/optim/NesterovMomentum"><code>optim.NesterovMomentum</code></a> and <a href="../../api/optim/FTRLProximal"><code>optim.FTRLProximal</code></a> raising when used to optimise estimators whose weights are stored as NumPy arrays, such as the factorization machines (<code>facto</code>).</li>
+<li>Added a test covering every optimizer against every estimator that accepts one, so optimizer/estimator incompatibilities are caught going forward.</li>
 </ul>
 <h2 id="preprocessing">preprocessing<a class="headerlink" href="#preprocessing" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Added a <code>window_size</code> parameter to <a href="../../api/preprocessing/StandardScaler"><code>preprocessing.StandardScaler</code></a>, <a href="../../api/preprocessing/MinMaxScaler"><code>preprocessing.MinMaxScaler</code></a>, and <a href="../../api/preprocessing/MaxAbsScaler"><code>preprocessing.MaxAbsScaler</code></a>. When set, the scaler tracks its statistics over the last <code>window_size</code> observations instead of the whole stream.</li>
 <li>Added a <code>_from_state</code> classmethod to <a href="../../api/preprocessing/MinMaxScaler"><code>preprocessing.MinMaxScaler</code></a>, <a href="../../api/preprocessing/MaxAbsScaler"><code>preprocessing.MaxAbsScaler</code></a>, and <a href="../../api/preprocessing/StandardScaler"><code>preprocessing.StandardScaler</code></a> so a scaler can be warm-started from precomputed statistics without replaying past observations.</li>
 <li><a href="../../api/preprocessing/FeatureHasher"><code>preprocessing.FeatureHasher</code></a> now hashes with MurmurHash3 in Rust, making it much faster. It gains an <code>alternate_sign</code> parameter (default <code>True</code>, matching scikit-learn) and returns a plain <code>dict</code>. Hashed feature indices differ from previous versions.</li>
+<li><a href="../../api/preprocessing/OrdinalEncoder"><code>preprocessing.OrdinalEncoder</code></a> mini-batch methods (<code>learn_many</code>, <code>predict_many</code>, <code>predict_proba_many</code>) now accept and return any <a href="https://github.com/narwhals-dev/narwhals">narwhals</a>-supported eager backend (pandas, polars, pyarrow, ...) instead of being pandas-only. The input backend is preserved on output, including the pandas index. These methods no longer require <code>pandas</code> to be installed.</li>
+</ul>
+<h2 id="proba">proba<a class="headerlink" href="#proba" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Added weighted sample support to <code>MultivariateGaussian.update</code> and <code>MultivariateGaussian.revert</code> by accepting an optional <code>w</code> parameter and propagating it to the underlying <code>EmpiricalCovariance</code> instance.</li>
 </ul>
 <h2 id="reco">reco<a class="headerlink" href="#reco" title="Permanent link">&para;</a></h2>
 <ul>
@@ -3642,7 +3728,7 @@
 </ul>
 <h2 id="rules">rules<a class="headerlink" href="#rules" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Fixed <code>RecursionError</code> in <code>AMRules</code> on long streams: the <code>EBSTSplitter</code>, <code>TEBSTSplitter</code>, and <code>ExhaustiveSplitter</code> now traverse and deep-copy their search trees iteratively, so deeply-skewed trees no longer blow Python's recursion limit.</li>
+<li>Fixed <code>RecursionError</code> in <code>AMRules</code> on long streams: the <code>EBSTSplitter</code>, <code>TEBSTSplitter</code>, and <code>ExhaustiveSplitter</code> now traverse and deep-copy their search trees iteratively, so deeply-skewed trees no longer blow Python's recursion limit. </li>
 <li>Fixed an <code>AMRules</code> memory leak where <code>HoeffdingRule.expand</code> appended a redundant <code>NumericLiteral</code> when a new split shared a feature and direction with an existing literal without tightening the threshold.</li>
 </ul>
 <h2 id="stats">stats<a class="headerlink" href="#stats" title="Permanent link">&para;</a></h2>
