@@ -10,6 +10,12 @@ name = "river"
 path = "rust_src/lib.rs"
 crate-type = ["cdylib", "rlib"]
 
+[features]
+# Build against CPython's stable ABI (limited API) for 3.11+. Enabled only for
+# the abi3 fallback wheel in CI (see .github/workflows/pypi.yml); the default
+# per-version wheels are built without it for full-speed native code.
+abi3 = ["pyo3/abi3-py311"]
+
 [dependencies]
 pyo3 = "0.29.0"
 bincode = "1.3.3"
