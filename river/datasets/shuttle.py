@@ -16,6 +16,33 @@ class Shuttle(base.FileDataset):
 
     The target `anomaly` is `1` for an anomaly and `0` otherwise.
 
+    Examples
+    --------
+
+    We can compare two anomaly detectors on this dataset. The features are min-max scaled online,
+    and performance is measured with a scale-invariant rolling ROC AUC (anomaly scores are unbounded,
+    so a plain `metrics.ROCAUC` would not be appropriate).
+
+    >>> from river import anomaly
+    >>> from river import datasets
+    >>> from river import metrics
+    >>> from river import preprocessing
+
+    >>> dataset = datasets.Shuttle()
+
+    >>> for name, detector in [
+    ...     ("HalfSpaceTrees", anomaly.HalfSpaceTrees(seed=42)),
+    ...     ("LODA", anomaly.LODA(seed=42)),
+    ... ]:
+    ...     model = preprocessing.MinMaxScaler() | detector
+    ...     auc = metrics.RollingROCAUC(window_size=50_000)
+    ...     for x, y in dataset:
+    ...         auc.update(y, model.score_one(x))
+    ...         model.learn_one(x)
+    ...     print(name, auc)
+    HalfSpaceTrees RollingROCAUC: 96.08%
+    LODA RollingROCAUC: 97.19%
+
     References
     ----------
     [^1]: [UCI page](https://archive.ics.uci.edu/dataset/148/statlog+shuttle)
