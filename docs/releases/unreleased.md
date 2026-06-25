@@ -13,6 +13,10 @@
 
 - Added `anomaly.LODA`, an online implementation of Pevný's *Lightweight on-line detector of anomalies*. It maintains an ensemble of one-dimensional `sketch.Histogram`s over sparse random projections and scores samples by their average negative log-likelihood.
 
+## compose
+
+- `compose.Pipeline` now forwards extra keyword arguments (such as the timestamp `t` used by `utils.TimeRolling`, or a sample weight `w`) to each step whose method declares them, and drops them for steps that don't. This makes `feature_extraction.Agg`/`TargetAgg` backed by `utils.TimeRolling` work inside a pipeline via `model.learn_one(x, y, t=t)`. Routing applies to `learn_one` and to the predict-time methods (`predict_one`, `predict_proba_one`, `score_one`, `transform_one`), so it also works under `compose.learn_during_predict` where unsupervised steps learn during `predict_one(x, t=t)`. Fixes [#1600](https://github.com/online-ml/river/issues/1600). The accepted arguments are determined once when the pipeline plan is built, so pipelines with no extra arguments keep their previous speed.
+
 ## covariance
 
 - Added weighted sample support to `EmpiricalCovariance.update` and `EmpiricalCovariance.revert` by accepting an optional `w` parameter and propagating it to the underlying `stats.Cov` and `stats.Var` statistics.
@@ -29,6 +33,10 @@
 
 - Sped up `learn_one` for all factorization-machine models by vectorizing the per-factor latent updates with NumPy instead of looping in Python. On MovieLens 100K: ~1.4× faster for `FFMRegressor`/`FFMClassifier`, ~1.8× for `FwFMRegressor`/`FwFMClassifier` and `HOFMRegressor`/`HOFMClassifier`. Outputs are unchanged.
 - The factorization-machine models are now covered by the automated estimator checks (`utils.check_estimator`).
+
+## feature_extraction
+
+- Added proper mini-batch support to `feature_extraction.TFIDF`: `learn_many` now updates document frequencies, and `transform_many` now returns TF-IDF weights for both `Series` input and `DataFrame` input when `on` is set. Fixes [#1576](https://github.com/online-ml/river/issues/1576).
 
 ## linear_model
 
