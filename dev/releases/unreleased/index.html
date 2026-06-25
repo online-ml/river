@@ -2139,6 +2139,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#anomaly" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        anomaly
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#covariance" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -2253,6 +2264,17 @@
     <span class="md-ellipsis">
       <span class="md-typeset">
         utils
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sketch" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        sketch
       </span>
     </span>
   </a>
@@ -3480,6 +3502,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#anomaly" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        anomaly
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#covariance" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -3601,6 +3634,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#sketch" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        sketch
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#rules" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -3662,6 +3706,10 @@
 <ul>
 <li><a href="../../api/base/Transformer"><code>base.Transformer</code></a> and <a href="../../api/base/SupervisedTransformer"><code>base.SupervisedTransformer</code></a> are now properly abstract: their <code>transform_one</code> abstract method is registered with <code>abc</code>, so a subclass that forgets to implement it raises <code>TypeError</code> at instantiation instead of failing later. This also restores estimator-check coverage for all concrete transformers, which were unintentionally excluded from the automated test suite.</li>
 </ul>
+<h2 id="anomaly">anomaly<a class="headerlink" href="#anomaly" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Added <a href="../../api/api/anomaly/LODA"><code>api.anomaly.LODA</code></a>, an online implementation of Pevný's <em>Lightweight on-line detector of anomalies</em>. It maintains an ensemble of one-dimensional <a href="../../api/sketch/Histogram"><code>sketch.Histogram</code></a>s over sparse random projections and scores samples by their average negative log-likelihood.</li>
+</ul>
 <h2 id="covariance">covariance<a class="headerlink" href="#covariance" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Added weighted sample support to <code>EmpiricalCovariance.update</code> and <code>EmpiricalCovariance.revert</code> by accepting an optional <code>w</code> parameter and propagating it to the underlying <a href="../../api/stats/Cov"><code>stats.Cov</code></a> and <a href="../../api/stats/Var"><code>stats.Var</code></a> statistics.</li>
@@ -3672,6 +3720,7 @@
 <h2 id="datasets">datasets<a class="headerlink" href="#datasets" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Added <a href="../../api/datasets/CriteoAds"><code>datasets.CriteoAds</code></a>, a 100,000-row sample of the Criteo Display Advertising Challenge (binary click prediction with 13 integer and 26 high-cardinality categorical features). A natural fit for one-hot models such as <a href="../../api/linear-model/AdPredictor"><code>linear_model.AdPredictor</code></a>.</li>
+<li>Added <a href="../../api/datasets/Shuttle"><code>datasets.Shuttle</code></a>, the UCI Statlog (Shuttle) dataset cast as a binary anomaly-detection task following the ODDS benchmark (49,097 observations, 9 numerical features, ~7% anomalies). Ships bundled with River.</li>
 </ul>
 <h2 id="facto">facto<a class="headerlink" href="#facto" title="Permanent link">&para;</a></h2>
 <ul>
@@ -3725,6 +3774,12 @@
 <ul>
 <li>Added <a href="../../api/utils/math/norm-cdf"><code>utils.math.norm_cdf</code></a> and <a href="../../api/utils/math/norm-pdf"><code>utils.math.norm_pdf</code></a>, the CDF and PDF of the standard normal distribution (used by <a href="../../api/linear-model/AdPredictor"><code>linear_model.AdPredictor</code></a>).</li>
 <li><a href="../../api/utils/Rolling"><code>utils.Rolling</code></a> and <a href="../../api/utils/TimeRolling"><code>utils.TimeRolling</code></a> now accept a class plus constructor keyword arguments, e.g. <a href="../../api/utils/Rolling"><code>utils.Rolling</code></a>(<a href="../../api/stats/Mean">stats.Mean</a>, window_size=3)<code>. This avoids silently sharing state when they are used as</code>collections.defaultdict` factories. Passing a pre-built instance still works but is deprecated and will be removed in a future release.</li>
+</ul>
+<h2 id="sketch">sketch<a class="headerlink" href="#sketch" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Sped up <code>sketch.Histogram.update</code> by roughly 2× on typical data by operating on the underlying list directly and inlining the bin search, instead of going through <code>collections.UserList</code>. Outputs are unchanged.</li>
+<li>Fixed <code>sketch.Histogram.__add__</code>: merging two histograms now conserves the total count (point bins were previously double-counted) and sets <code>n</code> on the result, so <code>cdf</code> no longer raises on merged histograms. Merging with an empty histogram also works now.</li>
+<li><code>sketch.Histogram.cdf</code> and <code>iter_cdf</code> now return <code>0.0</code> on an empty histogram instead of raising.</li>
 </ul>
 <h2 id="rules">rules<a class="headerlink" href="#rules" title="Permanent link">&para;</a></h2>
 <ul>

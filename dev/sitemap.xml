@@ -76,6 +76,9 @@
         <loc>https://riverml.xyz/dev/api/anomaly/HalfSpaceTrees/</loc>
       </url>
       <url>
+        <loc>https://riverml.xyz/dev/api/anomaly/LODA/</loc>
+      </url>
+      <url>
         <loc>https://riverml.xyz/dev/api/anomaly/LocalOutlierFactor/</loc>
       </url>
       <url>
@@ -365,6 +368,9 @@
       </url>
       <url>
         <loc>https://riverml.xyz/dev/api/datasets/SMTP/</loc>
+      </url>
+      <url>
+        <loc>https://riverml.xyz/dev/api/datasets/Shuttle/</loc>
       </url>
       <url>
         <loc>https://riverml.xyz/dev/api/datasets/SolarFlare/</loc>

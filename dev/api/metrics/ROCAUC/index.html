@@ -1937,6 +1937,8 @@
       
         
       
+        
+      
     
     
     
@@ -2490,6 +2492,8 @@
   
     
     
+      
+        
       
         
       
@@ -48203,7 +48207,8 @@
 
 <h1 id="rocauc">ROCAUC<a class="headerlink" href="#rocauc" title="Permanent link">&para;</a></h1>
 <p>Receiver Operating Characteristic Area Under the Curve.</p>
-<p>This metric is an approximation of the true ROC AUC. Computing the true ROC AUC would require storing all the predictions and ground truths, which isn't desirable. The approximation error is not significant as long as the predicted probabilities are well calibrated. In any case, this metric can still be used to reliably compare models between each other.</p>
+<p>This metric is an approximation of the true ROC AUC. Computing the true ROC AUC would require storing all the predictions and ground truths, which isn't desirable. The approximation error is not significant as long as the predicted probabilities are well calibrated. In any case, this metric can still be used to reliably compare models between each other. </p>
+<p>The ROC curve is discretized over thresholds spanning the <code>\[0, 1\]</code> interval, so this metric assumes <code>y_pred</code> lies in <code>\[0, 1\]</code> (e.g. a calibrated probability). If <code>y_pred</code> is on an arbitrary scale — as with most anomaly detectors, whose scores are only meaningful relative to each estimator — the thresholds miss the score range entirely and the metric degenerates (often to <code>0</code>). In that case, either normalize the scores to <code>\[0, 1\]</code> beforehand (for instance with a streaming min-max scaler, or <a href="../../preprocessing/TargetMinMaxScaler"><code>preprocessing.TargetMinMaxScaler</code></a> when the scored value is a regression prediction), or use <a href="../../metrics/RollingROCAUC"><code>metrics.RollingROCAUC</code></a>, which ranks scores within a window and is therefore scale-invariant.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
