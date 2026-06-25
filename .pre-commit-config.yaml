@@ -29,5 +29,5 @@ repos:
           - "--implicit-optional"
         additional_dependencies:
           - "narwhals"
-          - "numpy"
+          - "numpy==2.4.3" # keep in sync with uv.lock; newer stubs use 3.12 `type` syntax mypy rejects at --python-version=3.11
           - "pytest"
