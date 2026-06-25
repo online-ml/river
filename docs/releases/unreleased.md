@@ -5,6 +5,10 @@
 - Publish Pyodide/WebAssembly wheels (CPython 3.13 and 3.14) so River can run in the browser, e.g. via [JupyterLite](https://jupyterlite.readthedocs.io/) or `micropip`. The minimum `numpy` and `scipy` versions were lowered to `2.2.5` and `1.14.1` to match Pyodide.
 - Display `compose.TransformerUnion` elements vertically in HTML representations.
 
+## base
+
+- `base.Transformer` and `base.SupervisedTransformer` are now properly abstract: their `transform_one` abstract method is registered with `abc`, so a subclass that forgets to implement it raises `TypeError` at instantiation instead of failing later. This also restores estimator-check coverage for all concrete transformers, which were unintentionally excluded from the automated test suite.
+
 ## covariance
 
 - Added weighted sample support to `EmpiricalCovariance.update` and `EmpiricalCovariance.revert` by accepting an optional `w` parameter and propagating it to the underlying `stats.Cov` and `stats.Var` statistics.
