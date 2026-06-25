@@ -1,13 +1,11 @@
-// VectorDict — port of river/utils/vectordict.pyx.
+// VectorDict — a dict-like container with element-wise arithmetic.
 //
-// A dict-like container with element-wise arithmetic that supports an optional
-// `mask` (treat keys outside the mask as missing) and an optional
-// `default_factory` (insert + return a factory value when an unmasked key is
-// looked up).
+// Supports an optional `mask` (treat keys outside the mask as missing) and an
+// optional `default_factory` (insert + return a factory value when an unmasked
+// key is looked up).
 //
-// Storage is `Py<PyDict>` so keys/values stay arbitrary Python objects, exactly
-// matching the Cython interface. Hot inner loops use `pyo3::ffi` directly so
-// per-element overhead stays at the same level as Cython's compiled output.
+// Storage is `Py<PyDict>` so keys/values stay arbitrary Python objects. Hot
+// inner loops use `pyo3::ffi` directly to keep per-element overhead minimal.
 
 use pyo3::exceptions::{PyKeyError, PyTypeError, PyValueError};
 use pyo3::ffi;
@@ -133,36 +131,63 @@ impl VectorDict {
         Ok(res)
     }
 
-    /// Iterate keys (masked or not) — caller must drive the loop.
-    fn iter_keys<'py>(
-        &self,
-        py: Python<'py>,
-        f: &mut dyn FnMut(&Bound<'py, PyAny>) -> PyResult<()>,
-    ) -> PyResult<()> {
+    /// Iterate keys (masked or not) — caller must drive the loop. Generic over
+    /// the callback so it monomorphizes and inlines (no `dyn` vtable per key).
+    fn iter_keys<'py, F>(&self, py: Python<'py>, mut f: F) -> PyResult<()>
+    where
+        F: FnMut(&Bound<'py, PyAny>) -> PyResult<()>,
+    {
         let data = self.data.bind(py);
-        if self.lazy_mask {
-            let mask = self.mask.as_ref().unwrap().bind(py);
+        if !self.lazy_mask {
             for (k, _) in data.iter() {
-                if mask.contains(&k)? {
+                f(&k)?;
+            }
+            return Ok(());
+        }
+        let mask = self.mask.as_ref().unwrap().bind(py);
+        // The masked key set is `data ∩ mask`, and which side we scan to produce
+        // it is purely a cost decision — the yielded set is identical either way.
+        // During learning a model masks its full weight vector down to the
+        // handful of features in the current example, so `mask` is tiny while
+        // `data` holds every weight ever seen; scanning the mask then turns an
+        // O(|data|) walk into O(|mask|). We only switch when the mask is the
+        // smaller side (and exposes a length); otherwise we keep scanning data.
+        // Only the iteration order changes, which downstream key-wise writes
+        // ignore and scalar accumulations (the dot product) treat as a no-op up
+        // to floating-point rounding.
+        let scan_mask = matches!(mask.len(), Ok(mask_len) if mask_len < data.len());
+        if scan_mask {
+            // `data` is always a PyDict, so test membership with the raw
+            // `PyDict_Contains` (no Bound/err-path overhead per key).
+            let data_ptr = data.as_ptr();
+            for k in mask.try_iter()? {
+                let k = k?;
+                let present = unsafe { ffi::PyDict_Contains(data_ptr, k.as_ptr()) };
+                if present < 0 {
+                    return Err(PyErr::fetch(py));
+                }
+                if present == 1 {
                     f(&k)?;
                 }
             }
         } else {
             for (k, _) in data.iter() {
-                f(&k)?;
+                if mask.contains(&k)? {
+                    f(&k)?;
+                }
             }
         }
         Ok(())
     }
 
-    /// `get_union_keys` from the Cython code, returned as a fresh Vec for simplicity.
+    /// Union of both operands' (masked) keys, returned as a fresh Vec for simplicity.
     fn union_keys<'py>(
         &self,
         py: Python<'py>,
         other: &VectorDict,
     ) -> PyResult<Vec<Bound<'py, PyAny>>> {
         let mut out = Vec::new();
-        self.iter_keys(py, &mut |k| {
+        self.iter_keys(py, |k| {
             out.push(k.clone());
             Ok(())
         })?;
@@ -191,7 +216,7 @@ impl VectorDict {
         Ok(out)
     }
 
-    /// `get_intersection_keys` from the Cython code.
+    /// Intersection of both operands' (masked) keys.
     fn intersection_keys<'py>(
         &self,
         py: Python<'py>,
@@ -607,7 +632,7 @@ impl VectorDict {
             // 2) apply update
             data.as_any().call_method("update", &args, kwargs.as_ref())?;
             // 3) snapshot masked-out items (newly inserted ones we shouldn't keep visible —
-            // but the original Cython actually keeps them in _data; we mirror that)
+            // but they are intentionally retained in _data to preserve mask semantics)
             let keep2 = PyDict::new(py);
             for (k, v) in data.iter() {
                 if !mask.contains(&k)? {
@@ -1165,11 +1190,10 @@ unsafe fn dict_iop_scalar(
 
 type UnaryOp = unsafe extern "C" fn(*mut ffi::PyObject) -> *mut ffi::PyObject;
 
-// Build a fresh PyDict. The previous implementation called the private
-// CPython _PyDict_NewPresized to preallocate `n` slots, but pyo3 0.28
-// stopped re-exporting that symbol. PyDict::new() falls back to the public
-// PyDict_New, which doesn't preallocate; the amortised rehash cost is
-// O(n) and dominated by the per-key set_item work the caller does next.
+// Build a fresh PyDict. PyDict::new() doesn't preallocate, so the dict grows
+// and rehashes as keys are inserted; the amortised rehash cost is O(n) and
+// dominated by the per-key set_item work the caller does next. The `_n` size
+// hint is accepted for call-site clarity but currently unused.
 unsafe fn fresh_dict_for<'py>(py: Python<'py>, _n: usize) -> PyResult<Bound<'py, PyDict>> {
     Ok(PyDict::new(py))
 }
@@ -1214,10 +1238,9 @@ fn unary_into_new<'py>(
 
 // Convenience: read self's data (filtered by mask if any), apply `value OP scalar`
 // (or `scalar OP value` when `REV=true`), write into a fresh PyDict. Single-pass
-// — avoids the dict.copy()+overwrite that the Cython baseline does. The result
-// dict is pre-sized via `_PyDict_NewPresized` so large outputs don't pay the
-// resize/rehash cost. Direction is a const generic so monomorphization gives
-// each direction its own specialized loop body.
+// — avoids a dict.copy()+overwrite double pass by reading the source and
+// writing a fresh dict in one go. Direction is a const generic so
+// monomorphization gives each direction its own specialized loop body.
 fn scalar_op_into_new<'py, const REV: bool>(
     py: Python<'py>,
     left: &VectorDict,
@@ -1233,23 +1256,48 @@ fn scalar_op_into_new<'py, const REV: bool>(
         }
     } else {
         let mask = left.mask.as_ref().unwrap().bind(py);
-        unsafe {
-            let mut pos: ffi::Py_ssize_t = 0;
-            let mut key: *mut ffi::PyObject = std::ptr::null_mut();
-            let mut val: *mut ffi::PyObject = std::ptr::null_mut();
-            while ffi::PyDict_Next(src.as_ptr(), &mut pos, &mut key, &mut val) != 0 {
-                let in_mask = ffi::PySequence_Contains(mask.as_ptr(), key);
-                if in_mask < 0 {
-                    return Err(PyErr::fetch(py));
+        // Same mask/data scan choice as `iter_keys`: when the mask is the
+        // smaller side (e.g. a model's active features vs. its full weight
+        // vector), walk the mask and look each key up in `data` instead of
+        // scanning every stored entry. The result dict is bit-identical either
+        // way — its keys are `data ∩ mask` and each value `op(data[k], scalar)`
+        // is computed independently per key, so only insertion order (which is
+        // numerically irrelevant) differs.
+        let scan_mask = matches!(mask.len(), Ok(mask_len) if mask_len < src.len());
+        if scan_mask {
+            for k in mask.try_iter()? {
+                let k = k?;
+                unsafe {
+                    let val = dict_get_or_null(src.as_ptr(), k.as_ptr());
+                    if val.is_null() {
+                        continue;
+                    }
+                    let raw = if REV { op(scalar, val) } else { op(val, scalar) };
+                    let new_val = ffi_check(py, raw)?;
+                    let r = ffi::PyDict_SetItem(res.as_ptr(), k.as_ptr(), new_val);
+                    ffi::Py_DECREF(new_val);
+                    ffi_status(py, r)?;
                 }
-                if in_mask == 0 {
-                    continue;
+            }
+        } else {
+            unsafe {
+                let mut pos: ffi::Py_ssize_t = 0;
+                let mut key: *mut ffi::PyObject = std::ptr::null_mut();
+                let mut val: *mut ffi::PyObject = std::ptr::null_mut();
+                while ffi::PyDict_Next(src.as_ptr(), &mut pos, &mut key, &mut val) != 0 {
+                    let in_mask = ffi::PySequence_Contains(mask.as_ptr(), key);
+                    if in_mask < 0 {
+                        return Err(PyErr::fetch(py));
+                    }
+                    if in_mask == 0 {
+                        continue;
+                    }
+                    let raw = if REV { op(scalar, val) } else { op(val, scalar) };
+                    let new_val = ffi_check(py, raw)?;
+                    let r = ffi::PyDict_SetItem(res.as_ptr(), key, new_val);
+                    ffi::Py_DECREF(new_val);
+                    ffi_status(py, r)?;
                 }
-                let raw = if REV { op(scalar, val) } else { op(val, scalar) };
-                let new_val = ffi_check(py, raw)?;
-                let r = ffi::PyDict_SetItem(res.as_ptr(), key, new_val);
-                ffi::Py_DECREF(new_val);
-                ffi_status(py, r)?;
             }
         }
     }
@@ -1272,8 +1320,8 @@ fn binop_add<'py>(
             VectorDict::from_dict(add_dict_dict(py, left, &right_inner)?),
         );
     }
-    // vec + scalar — single-pass: read source, write fresh result. Saves the
-    // dict.copy()+overwrite double-pass that the Cython does.
+    // vec + scalar — single-pass: read source, write fresh result, avoiding a
+    // dict.copy()+overwrite double pass.
     let res = scalar_op_into_new::<false>(py, left, right.as_ptr(), ffi::PyNumber_Add)?;
     Py::new(py, VectorDict::from_dict(res))
 }
@@ -1665,7 +1713,7 @@ fn div_dict_dict<'py>(
                 let new_val = if !right_val.is_null() {
                     ffi_check(py, ffi::PyNumber_TrueDivide(left_val, right_val))?
                 } else {
-                    // matches Cython: `left_value / 0` raises ZeroDivisionError
+                    // matches Python semantics: `left_value / 0` raises ZeroDivisionError
                     ffi_check(py, ffi::PyNumber_TrueDivide(left_val, zero.as_ptr()))?
                 };
                 let r = ffi::PyDict_SetItem(res.as_ptr(), key, new_val);
@@ -1777,6 +1825,28 @@ fn matmul<'py>(
 ) -> PyResult<Bound<'py, PyAny>> {
     let mut acc: Bound<'py, PyAny> = 0i64.into_bound_py_any(py)?;
     if left.use_factory || right.use_factory {
+        // Fast path: when one operand is "simple" (no mask, no factory), iterate
+        // its data and pull the other operand's value via `get_value`. Keys
+        // absent from the simple side contribute 0 to the dot and are skipped,
+        // which avoids materialising the union and re-looking-up every key. This
+        // is the GLM learn path (`weights_masked_factory @ VectorDict(x)`). The
+        // factory initialisation on the non-simple side is preserved: `get_value`
+        // touches exactly the keys the union path would have.
+        if right.is_simple() {
+            for (k, rv) in right.data.bind(py).iter() {
+                let lv = left.get_value(py, &k)?;
+                acc = acc.add(lv.mul(rv)?)?;
+            }
+            return Ok(acc);
+        }
+        if left.is_simple() {
+            for (k, lv) in left.data.bind(py).iter() {
+                let rv = right.get_value(py, &k)?;
+                acc = acc.add(lv.mul(rv)?)?;
+            }
+            return Ok(acc);
+        }
+        // Both operands carry a mask/factory: fall back to the full union.
         for k in left.union_keys(py, right)? {
             let lv = left.get_value(py, &k)?;
             let rv = right.get_value(py, &k)?;
@@ -1962,8 +2032,8 @@ pub fn lazy_search_euclidean<'py>(
     let qx = qx.cast::<PyDict>()?;
     let k = n_neighbors.max(0) as usize;
 
-    // The Cython path uses the C-level `_heapify_max` / `_heapreplace_max` from
-    // `heapq`. We mirror that exactly for byte-identical behavior on ties.
+    // Use the C-level `_heapify_max` / `_heapreplace_max` from `heapq` so tie
+    // behavior is byte-identical to the equivalent pure-Python implementation.
     let heapq = py.import("heapq")?;
     let heapify_max = heapq.getattr("_heapify_max")?;
     let heapreplace_max = heapq.getattr("_heapreplace_max")?;

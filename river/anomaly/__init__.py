@@ -18,6 +18,7 @@ from . import base
 from .filter import QuantileFilter, ThresholdFilter
 from .gaussian import GaussianScorer
 from .hst import HalfSpaceTrees
+from .loda import LODA
 from .lof import LocalOutlierFactor
 from .pad import PredictiveAnomalyDetection
 from .sad import StandardAbsoluteDeviation
@@ -28,6 +29,7 @@ __all__ = [
     "AnomalyDetector",
     "GaussianScorer",
     "HalfSpaceTrees",
+    "LODA",
     "OneClassSVM",
     "QuantileFilter",
     "StandardAbsoluteDeviation",

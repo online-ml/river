@@ -35,9 +35,9 @@ class AdPredictor(base.Classifier):
     [^1], keeps a Gaussian belief over each feature weight rather than a point estimate. It
     predicts via a probit link and learns in a single pass, scaling each weight's step size by its
     own uncertainty. It shines on the sparse, high-cardinality, categorical data of ad logs: it
-    yields well-calibrated probabilities, exposes uncertainty for exploration, and its cost per
-    example depends only on the number of active features. Plain logistic regression is simpler and
-    just as good on dense, low-dimensional numeric data.
+    yields well-calibrated probabilities and exposes uncertainty for exploration. Like the other
+    linear models, its cost per example scales only with the number of active features. Plain
+    logistic regression is simpler and just as good on dense, low-dimensional numeric data.
 
     Features are expected to be a sparse active set: a key in `x` is active when its value is
     truthy (its magnitude is otherwise ignored), so one-hot encode or bucket

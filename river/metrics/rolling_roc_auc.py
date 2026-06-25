@@ -25,6 +25,11 @@ class RollingROCAUC(metrics.base.BinaryMetric):
     calculating the metric using the entire stream may hide the current
     performance of the classifier.
 
+    Because the AUC is computed by ranking the scores within the window, this metric is invariant to
+    the scale of `y_pred` and needs no normalization. This makes it convenient for anomaly-detector
+    scores, which are unbounded — unlike `metrics.ROCAUC`, whose thresholds assume `y_pred` lies in
+    `[0, 1]`.
+
     Parameters
     ----------
     window_size

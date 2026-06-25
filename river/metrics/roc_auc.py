@@ -16,6 +16,15 @@ class ROCAUC(metrics.base.BinaryMetric):
     error is not significant as long as the predicted probabilities are well calibrated. In any
     case, this metric can still be used to reliably compare models between each other.
 
+    The ROC curve is discretized over thresholds spanning the `[0, 1]` interval, so this metric
+    assumes `y_pred` lies in `[0, 1]` (e.g. a calibrated probability). If `y_pred` is on an
+    arbitrary scale — as with most anomaly detectors, whose scores are only meaningful relative to
+    each estimator — the thresholds miss the score range entirely and the metric degenerates (often
+    to `0`). In that case, either normalize the scores to `[0, 1]` beforehand (for instance with a
+    streaming min-max scaler, or `preprocessing.TargetMinMaxScaler` when the scored value is a
+    regression prediction), or use `metrics.RollingROCAUC`, which ranks scores within a window and
+    is therefore scale-invariant.
+
     Parameters
     ----------
     n_thresholds

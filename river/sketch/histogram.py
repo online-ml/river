@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import bisect
 import collections
 import heapq
 import itertools
@@ -135,64 +136,74 @@ class Histogram(collections.UserList, base.Base):
 
     def update(self, x):
         self.n += 1
-        b = Bin(x, x, 1)
+        # Operate on the underlying list directly: going through UserList's
+        # __getitem__/__len__ (with their isinstance checks) dominates the cost
+        # of this hot path.
+        data = self.data
 
         # Insert the bin if the histogram is empty
-        if not self:
-            self.append(b)
+        if not data:
+            data.append(Bin(x, x, 1))
             return
 
-        # Use bisection to find where to insert
-        # We don't use the bisect module in order to save some CPU cycles
+        # Bisect to find the left-most bin whose right edge is >= x. We inline
+        # the comparison (rather than using the bisect module or Bin.__lt__) to
+        # avoid per-iteration function-call overhead.
         lo = 0
-        hi = len(self)
-        i = (lo + hi) // 2
+        hi = len(data)
         while lo < hi:
-            if self[i] < b:
-                lo = i + 1
+            mid = (lo + hi) // 2
+            if data[mid].right < x:
+                lo = mid + 1
             else:
-                hi = i
-            i = (lo + hi) // 2
+                hi = mid
 
-        if i == len(self):
+        if lo == len(data):
             # x is past the right-most bin
-            self.append(b)
+            data.append(Bin(x, x, 1))
+        # Increment the bin counter if x is part of the lo-th bin
+        elif x >= data[lo].left:
+            data[lo].count += 1
+        # Insert the bin if it is between bin lo-1 and bin lo
         else:
-            # Increment the bin counter if x is part of the ith bin
-            if x >= self[i].left:
-                self[i].count += 1
-            # Insert the bin if it is between bin i-1 and bin i
-            else:
-                self.insert(i, b)
+            data.insert(lo, Bin(x, x, 1))
 
         # Bins have to be merged if there are more than max_bins
-        if len(self) > self.max_bins:
+        if len(data) > self.max_bins:
             self._shrink(1)
 
     def _shrink(self, k):
-        """Shrinks the histogram by merging the two closest bins."""
+        """Shrinks the histogram by merging the k closest pairs of bins."""
+
+        data = self.data
 
         if k == 1:
-            # Find the closest pair of bins
+            # Find the closest pair of bins in a single pass over the right edges
             min_diff = math.inf
-            min_idx = None
-            for idx, (b1, b2) in enumerate(zip(self.data[:-1], self.data[1:])):
-                diff = b2.right - b1.right
+            min_idx = 0
+            prev_right = data[0].right
+            for idx in range(1, len(data)):
+                right = data[idx].right
+                diff = right - prev_right
                 if diff < min_diff:
                     min_diff = diff
-                    min_idx = idx
+                    min_idx = idx - 1
+                prev_right = right
 
             # Merge the bins
-            self[min_idx] += self.pop(min_idx + 1)
+            data[min_idx] += data.pop(min_idx + 1)  # Calls Bin.__iadd__
             return
 
-        indexes = range(len(self) - 1)
+        if k < 1:
+            return
+
+        indexes = range(len(data) - 1)
 
         def bin_distance(i):
-            return self[i + 1].right - self[i].right
+            return data[i + 1].right - data[i].right
 
         for i in sorted(heapq.nsmallest(n=k, iterable=indexes, key=bin_distance), reverse=True):
-            self[i] += self.pop(i + 1)  # Calls Bin.__iadd__
+            data[i] += data.pop(i + 1)  # Calls Bin.__iadd__
 
     def iter_cdf(self, X, verbose=False):
         """Yields CDF values for a sorted iterable of values.
@@ -224,7 +235,17 @@ class Histogram(collections.UserList, base.Base):
         2.5 0.75
         3.5 1.0
 
+        >>> empty = sketch.Histogram()
+        >>> list(empty.iter_cdf([0, 1]))
+        [0.0, 0.0]
+
         """
+
+        # Nothing has been seen yet: the CDF is identically zero.
+        if not self.n:
+            for _ in X:
+                yield 0.0
+            return
 
         bins = iter(self)
         b = next(bins)
@@ -283,61 +304,82 @@ class Histogram(collections.UserList, base.Base):
         return next(self.iter_cdf([x]))
 
     def __add__(self, other):
+        """Merge two histograms, conserving the total count.
+
+        Interval bins are spread proportionally over the tiles defined by the
+        union of both histograms' edges, while point bins (``left == right``)
+        contribute their whole count to a single tile. The result is then shrunk
+        back down to ``max_bins``.
+
+        Examples
+        --------
+
+        >>> h1 = Histogram()
+        >>> for b in [Bin(0, 2, 4), Bin(4, 5, 9)]:
+        ...     h1.append(b)
+
+        >>> h2 = Histogram()
+        >>> for b in [Bin(1, 3, 8), Bin(3, 4, 5)]:
+        ...     h2.append(b)
+
+        >>> h1 + h2
+        [0.00000, 1.00000]: 2.0
+        [1.00000, 2.00000]: 6.0
+        [2.00000, 3.00000]: 4.0
+        [3.00000, 4.00000]: 5.0
+        [4.00000, 5.00000]: 9.0
+
+        Counts are conserved, including for point-valued histograms:
+
+        >>> a, b = Histogram(), Histogram()
+        >>> for x in range(5):
+        ...     a.update(x)
+        >>> for x in range(2, 7):
+        ...     b.update(x)
+        >>> merged = a + b
+        >>> merged.n
+        10
+        >>> sum(bin.count for bin in merged)
+        10.0
+        >>> merged.cdf(10)
+        1.0
+
         """
 
-        Example:
+        merged = Histogram(max_bins=max(self.max_bins, other.max_bins))
+        merged.n = self.n + other.n
 
-            >>> h1 = Histogram()
-            >>> for b in [Bin(0, 2, 4), Bin(4, 5, 9)]:
-            ...     h1.append(b)
+        bins = list(itertools.chain(self, other))
+        if not bins:
+            return merged
 
-            >>> h2 = Histogram()
-            >>> for b in [Bin(1, 3, 8), Bin(3, 4, 5)]:
-            ...     h2.append(b)
+        # The output bins tile the union of both edge sets without overlapping.
+        edges = sorted({e for b in bins for e in (b.left, b.right)})
+        if len(edges) == 1:
+            merged.append(Bin(edges[0], edges[0], sum(b.count for b in bins)))
+            return merged
 
-            >>> h1 + h2
-            [0.00000, 1.00000]: 2.0
-            [1.00000, 2.00000]: 6.0
-            [2.00000, 3.00000]: 4.0
-            [3.00000, 4.00000]: 5.0
-            [4.00000, 5.00000]: 9.0
+        tiles = [Bin(lo, hi, 0.0) for lo, hi in zip(edges, edges[1:])]
 
-        """
+        for b in bins:
+            if b.left == b.right:
+                # Point mass: assign the whole count to a single tile so that it
+                # is never counted twice on a shared edge.
+                j = bisect.bisect_left(edges, b.left)
+                j = 0 if j == 0 else j - 1
+                tiles[j].count += b.count
+            else:
+                # Spread the count proportionally over the overlapping tiles.
+                start = bisect.bisect_left(edges, b.left)
+                for tile in itertools.islice(tiles, start, None):
+                    if tile.left >= b.right:
+                        break
+                    tile.count += b.count * coverage_ratio(tile, b)
 
-        xs = iter(self)
-        ys = iter(other)
-        rights = heapq.merge(
-            itertools.chain.from_iterable((b.left, b.right) for b in self),
-            itertools.chain.from_iterable((b.left, b.right) for b in other),
-        )
+        merged.data.extend(tile for tile in tiles if tile.count)
+        merged._shrink(k=len(merged) - merged.max_bins)
 
-        b = Bin(next(rights), next(rights), 0)
-
-        x = next(xs)
-        y = next(ys)
-
-        hist = Histogram(max_bins=max(self.max_bins, other.max_bins))
-
-        while True:
-            b.count += coverage_ratio(b, x) * x.count
-            b.count += coverage_ratio(b, y) * y.count
-
-            if b.count:
-                hist.append(b)
-
-            try:
-                b = Bin(b.right, next(rights), 0)
-            except StopIteration:
-                break
-
-            if b.left >= x.right:
-                x = next(xs, x)
-            if b.left >= y.right:
-                y = next(ys, y)
-
-        hist._shrink(k=len(hist) - hist.max_bins)
-
-        return hist
+        return merged
 
     def __repr__(self):
         return "\n".join(str(b) for b in self)

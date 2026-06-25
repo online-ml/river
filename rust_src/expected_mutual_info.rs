@@ -1,6 +1,5 @@
-// Expected Mutual Information between two clusterings, ported from the Cython
-// implementation in `river/metrics/expected_mutual_info.pyx` (which itself
-// follows scikit-learn's `expected_mutual_information`).
+// Expected Mutual Information between two clusterings, following
+// scikit-learn's `expected_mutual_information`.
 //
 // Inputs are the contingency table's row sums (`a`) and column sums (`b`)
 // after dropping zero entries, plus the sample count `n_samples`. EMI is
