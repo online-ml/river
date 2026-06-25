@@ -28,6 +28,7 @@ from .music import Music
 from .phishing import Phishing
 from .restaurants import Restaurants
 from .segment import ImageSegments
+from .shuttle import Shuttle
 from .sms_spam import SMSSpam
 from .smtp import SMTP
 from .solar_flare import SolarFlare
@@ -58,6 +59,7 @@ __all__ = [
     "Music",
     "Phishing",
     "Restaurants",
+    "Shuttle",
     "SMSSpam",
     "SMTP",
     "SolarFlare",
