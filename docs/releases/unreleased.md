@@ -73,6 +73,12 @@
 - Added `utils.math.norm_cdf` and `utils.math.norm_pdf`, the CDF and PDF of the standard normal distribution (used by `linear_model.AdPredictor`).
 - `utils.Rolling` and `utils.TimeRolling` now accept a class plus constructor keyword arguments, e.g. `utils.Rolling(stats.Mean, window_size=3)`. This avoids silently sharing state when they are used as `collections.defaultdict` factories. Passing a pre-built instance still works but is deprecated and will be removed in a future release.
 
+## sketch
+
+- Sped up `sketch.Histogram.update` by roughly 2× on typical data by operating on the underlying list directly and inlining the bin search, instead of going through `collections.UserList`. Outputs are unchanged.
+- Fixed `sketch.Histogram.__add__`: merging two histograms now conserves the total count (point bins were previously double-counted) and sets `n` on the result, so `cdf` no longer raises on merged histograms. Merging with an empty histogram also works now.
+- `sketch.Histogram.cdf` and `iter_cdf` now return `0.0` on an empty histogram instead of raising.
+
 ## rules
 
 - Fixed `RecursionError` in `AMRules` on long streams: the `EBSTSplitter`, `TEBSTSplitter`, and `ExhaustiveSplitter` now traverse and deep-copy their search trees iteratively, so deeply-skewed trees no longer blow Python's recursion limit. 
