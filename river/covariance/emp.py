@@ -33,6 +33,8 @@ class SymmetricMatrix(abc.ABC):
 
     def __repr__(self):
         names = sorted({i for i, _ in self.matrix})
+        if not names:
+            return f"{type(self).__name__} (empty)"
 
         headers = [""] + list(map(str, names))
         columns = [headers[1:]]
@@ -215,6 +217,7 @@ class EmpiricalCovariance(SymmetricMatrix):
         Raises
         ----------
             KeyError: If an element in `mean` or `cov` is missing.
+
         """
         for i, j in itertools.combinations(sorted(mean.keys()), r=2):
             try:
@@ -264,6 +267,7 @@ class EmpiricalCovariance(SymmetricMatrix):
         Returns
         ----------
             cls: A new instance of the class with updated covariance matrix.
+
         """
         new = cls(ddof=ddof)
         new._update_from_state(n=n, mean=mean, cov=cov)

@@ -15,6 +15,8 @@
 
 ## covariance
 
+- Added `EwaCovariance`, `LedoitWolfCovariance`, `OASCovariance`, and `ShrunkCovariance`: online covariance estimators for non-stationary streams (exponentially weighted, recency-biased) and high-dimensional / few-sample regimes (shrinkage towards a well-conditioned target). They are dict-native like `EmpiricalCovariance` and support mini-batches via `update_many` on any [narwhals](https://github.com/narwhals-dev/narwhals)-supported eager backend.
+- Added `EwaPrecision`, an exponentially weighted precision (inverse covariance) matrix maintained online via a forgetting-factor Sherman-Morrison update. The recency-weighted counterpart of `EmpiricalPrecision`, useful for tracking Mahalanobis distances and Gaussian likelihoods on non-stationary streams.
 - Added weighted sample support to `EmpiricalCovariance.update` and `EmpiricalCovariance.revert` by accepting an optional `w` parameter and propagating it to the underlying `stats.Cov` and `stats.Var` statistics.
 - Sped up `EmpiricalCovariance.update`/`revert` (~40% faster at 30 features) by caching the sorted feature list and pair iteration in the hot path. No semantic change.
 - Restructured `EmpiricalPrecision` around NumPy-backed dense state, removing the per-update dict ↔ numpy marshalling. ~7× faster on 2000 × 20 sample streams.
@@ -24,6 +26,7 @@
 
 - Added `datasets.CriteoAds`, a 100,000-row sample of the Criteo Display Advertising Challenge (binary click prediction with 13 integer and 26 high-cardinality categorical features). A natural fit for one-hot models such as `linear_model.AdPredictor`.
 - Added `datasets.Shuttle`, the UCI Statlog (Shuttle) dataset cast as a binary anomaly-detection task following the ODDS benchmark (49,097 observations, 9 numerical features, ~7% anomalies). Ships bundled with River.
+- Added `datasets.SP500Stocks`, daily returns (1,257 trading days, 2013-2018) for ten large-cap S&P 500 stocks across diverse sectors. A natural fit for the online covariance estimators in `river.covariance`.
 
 ## facto
 
@@ -91,6 +94,7 @@
 
 ## stats
 
+- Added `stats.EWCov`, an exponentially weighted covariance between two variables (the bivariate counterpart of `stats.EWVar`).
 - Added `stats.ChiSquared`, a streaming Chi-squared statistic between two categorical variables. Wrap it with `utils.Rolling` for a rolling version.
 
 ## stream
