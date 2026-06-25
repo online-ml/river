@@ -1,13 +1,12 @@
-// Mondrian tree numerical helpers — port of river/tree/mondrian/_mondrian_ops.pyx.
+// Mondrian tree numerical helpers.
 //
 // All exported functions are PyO3 wrappers that operate on plain Python objects
 // (dicts, lists, MondrianNode instances) so they're a drop-in replacement for
-// the Cython entry points the Python code already imports.
+// the entry points the Python code already imports.
 //
 // The hot inner loops touch Python objects through the standard PyO3 attribute
-// and dict APIs. Cython compiles `node.attr` on a `cdef object` to the same
-// `PyObject_GetAttr` call, so per-attribute cost lines up — the win comes from
-// avoiding the Cython glue plus structural simplifications:
+// and dict APIs. The win over a pure-Python implementation comes from doing the
+// traversal in Rust plus structural simplifications:
 //   - the leaf-to-root `_go_upwards` walk is now a single Rust call instead of
 //     N Python frame setups;
 //   - prediction descends + aggregates entirely in Rust (no Python loop);
@@ -307,17 +306,16 @@ fn update_downwards_regressor_inner<'py>(
     Ok(())
 }
 
-/// Sample a feature from `extensions` weighted by extension size. Mirrors
-/// the deterministic Cython path: keys are sorted, then `rng.choices` is
-/// invoked with the corresponding weights.
+/// Sample a feature from `extensions` weighted by extension size. Deterministic:
+/// keys are sorted, then `rng.choices` is invoked with the corresponding weights.
 fn weighted_choice<'py>(
     py: Python<'py>,
     extensions: &Bound<'py, PyDict>,
     rng_choices: &Bound<'py, PyAny>,
 ) -> PyResult<Bound<'py, PyAny>> {
     // `extensions.keys()` already returns an owned PyList we can sort in place,
-    // matching `sorted(extensions.keys())` from the original Cython without
-    // re-importing `builtins.sorted` on every call.
+    // matching `sorted(extensions.keys())` without re-importing `builtins.sorted`
+    // on every call.
     let keys = extensions.keys();
     keys.sort()?;
 
@@ -398,7 +396,7 @@ pub fn go_downwards_classifier<'py>(
         let mut range_bounds: Option<(Bound<'py, PyDict>, Bound<'py, PyDict>)> = None;
 
         // Skip the (expensive) range_extension call for pure non-split nodes
-        // (matches the Cython optimisation introduced in #1841).
+        // (optimisation introduced in #1841).
         let mut do_split_check = split_pure;
         if !do_split_check {
             let counts = current

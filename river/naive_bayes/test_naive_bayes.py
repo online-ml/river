@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import numpy as np
 import pandas as pd
 import pytest
 from sklearn import naive_bayes as sk_naive_bayes
@@ -238,3 +239,124 @@ def test_river_vs_sklearn(model, sk_model, bag):
     ):
         for sk_pred, river_pred in zip(sk_preds, river_preds):
             assert river_pred == pytest.approx(1 - sk_pred) or river_pred == pytest.approx(sk_pred)
+
+
+def test_gaussian_learn_many_vs_learn_one():
+    X = pd.DataFrame(
+        [
+            {-1: -1.0, 1: -1.0},
+            {-1: -2.0, 1: -1.0},
+            {-1: -3.0},
+            {-1: 1.0, 1: 1.0},
+            {-1: 2.0, 1: 1.0},
+            {-1: 3.0, 1: 2.0},
+        ]
+    )
+    y = pd.Series([1, 1, 1, 2, 2, 2])
+
+    model = naive_bayes.GaussianNB()
+    batch_model = naive_bayes.GaussianNB()
+
+    for _, row in X.iterrows():
+        x = row.dropna().to_dict()
+        model.learn_one(x, y.loc[row.name])
+
+    batch_model.learn_many(X, y)
+
+    assert batch_model.class_counts == model.class_counts
+    assert batch_model.gaussians.keys() == model.gaussians.keys()
+
+    for c, gaussians in model.gaussians.items():
+        assert batch_model.gaussians[c].keys() == gaussians.keys()
+        for i, gaussian in gaussians.items():
+            batch_gaussian = batch_model.gaussians[c][i]
+            assert batch_gaussian.n_samples == gaussian.n_samples
+            assert batch_gaussian.mu == pytest.approx(gaussian.mu)
+            assert batch_gaussian.sigma == pytest.approx(gaussian.sigma)
+
+    X_unseen = pd.DataFrame(
+        [
+            {-1: -0.8, 1: -1.0},
+            {-1: 2.8, 1: 1.5},
+            {1: -1.0},
+            {-1: 4.0, 2: 10.0},
+        ],
+        index=["a", "b", "c", "d"],
+    )
+
+    batch_proba = batch_model.predict_proba_many(X_unseen)
+
+    assert batch_proba.index.tolist() == X_unseen.index.tolist()
+    assert batch_proba.columns.tolist() == [1, 2]
+    assert batch_model.predict_many(X_unseen).tolist() == [
+        batch_model.predict_one(row.dropna().to_dict()) for _, row in X_unseen.iterrows()
+    ]
+
+    for i, row in X_unseen.iterrows():
+        proba_one = model.predict_proba_one(row.dropna().to_dict())
+        assert batch_proba.loc[i, 1] == pytest.approx(proba_one[1])
+        assert batch_proba.loc[i, 2] == pytest.approx(proba_one[2])
+
+
+def test_gaussian_learn_many_sparse():
+    X = pd.DataFrame({0: [-1.0, -2.0, 1.0, 2.0], 1: [-1.0, -1.0, 1.0, 1.0]}).astype(
+        pd.SparseDtype(float, 0.0)
+    )
+    y = pd.Series(["a", "a", "b", "b"])
+
+    model = naive_bayes.GaussianNB()
+    batch_model = naive_bayes.GaussianNB()
+
+    for x, yi in zip(X.sparse.to_dense().to_dict(orient="records"), y):
+        model.learn_one(x, yi)
+
+    batch_model.learn_many(X, y)
+
+    assert batch_model.predict_proba_many(X).equals(model.predict_proba_many(X.sparse.to_dense()))
+
+
+def test_gaussian_learn_many_sklearn_partial_fit():
+    rng = np.random.default_rng(42)
+    X = pd.DataFrame(
+        np.vstack(
+            [
+                rng.normal(loc=[-1.0, 0.0], scale=[1.2, 0.8], size=(200, 2)),
+                rng.normal(loc=[1.0, 0.5], scale=[1.2, 0.8], size=(200, 2)),
+            ]
+        )
+    )
+    y = pd.Series(["a"] * 200 + ["b"] * 200)
+    classes = np.array(["a", "b"])
+    order = rng.permutation(len(X))
+    X = X.iloc[order].reset_index(drop=True)
+    y = y.iloc[order].reset_index(drop=True)
+    X_test = pd.DataFrame([[-1.0, 0.0], [1.0, 0.5], [0.0, 0.25], [-0.2, 0.1], [0.2, 0.3]])
+
+    model = naive_bayes.GaussianNB()
+    sk_model = sk_naive_bayes.GaussianNB(var_smoothing=0.0)
+
+    for start in range(0, len(X), 50):
+        X_batch = X.iloc[start : start + 50]
+        y_batch = y.iloc[start : start + 50]
+        model.learn_many(X_batch, y_batch)
+        sk_model.partial_fit(X_batch, y_batch, classes=classes)
+
+        river_means = np.array([[model.gaussians[c][i].mu for i in X.columns] for c in classes])
+        river_priors = np.array([model.p_class(c) for c in classes])
+
+        np.testing.assert_allclose(river_means, sk_model.theta_)
+        np.testing.assert_allclose(river_priors, sk_model.class_prior_)
+        assert model.predict_many(X_test).tolist() == sk_model.predict(X_test).tolist()
+        np.testing.assert_allclose(
+            model.predict_proba_many(X_test)[classes].to_numpy(),
+            sk_model.predict_proba(X_test),
+            atol=2e-2,
+        )
+
+
+def test_gaussian_learn_many_not_fit():
+    model = naive_bayes.GaussianNB()
+    X = pd.DataFrame([{0: 1.0}, {0: 2.0}], index=["river", "rocks"])
+
+    assert model.predict_proba_many(X).equals(pd.DataFrame(index=["river", "rocks"]))
+    assert model.predict_many(X).equals(pd.DataFrame(index=["river", "rocks"]))
