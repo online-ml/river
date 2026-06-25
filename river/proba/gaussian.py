@@ -295,13 +295,11 @@ class MultivariateGaussian(base.MultivariateContinuousDistribution):
         var_str = "        [" + var_str.replace("\n", "]\n        [") + "]"
         return f"𝒩(\n    μ=({mu_str}),\n    σ^2=(\n{var_str}\n    )\n)"
 
-    def update(self, x):
-        # TODO: add support for weighted samples
-        self._var.update(x)
+    def update(self, x, w=1.0):
+        self._var.update(x, w)
 
-    def revert(self, x):
-        # TODO: add support for weighted samples
-        self._var.revert(x)
+    def revert(self, x, w=1.0):
+        self._var.revert(x, w)
 
     def __call__(self, x: dict[str, float]):
         """PDF(x) method."""
