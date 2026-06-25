@@ -10,7 +10,12 @@ from river import covariance, stats, stream
 def _dense(cov):
     """Materialize a SymmetricMatrix into a dense numpy array (public-API only)."""
     names = sorted({i for i, _ in cov.matrix})
-    return np.array([[cov[i, j] for j in names] for i in names], dtype=float)
+
+    def value(entry):
+        # EmpiricalCovariance stores stats.Cov/Var objects; EWA stores plain floats.
+        return entry.get() if isinstance(entry, stats.base.Statistic) else entry
+
+    return np.array([[value(cov[i, j]) for j in names] for i in names], dtype=float)
 
 
 def _ewa_reference(X, fading_factor):
@@ -301,22 +306,39 @@ def test_pickle_round_trip(returns, estimator):
     np.testing.assert_allclose(_dense(restored), _dense(cov))
 
 
+# --------------------------------------------------------------------- EmpiricalCovariance
+
+
+def test_empirical_covariance_matches_sklearn(returns):
+    # sklearn's EmpiricalCovariance is the maximum-likelihood estimate, i.e. ddof=0.
+    sklearn_cov = pytest.importorskip("sklearn.covariance")
+
+    cov = covariance.EmpiricalCovariance(ddof=0)
+    for x, _ in stream.iter_array(returns):
+        cov.update(x)
+
+    expected = sklearn_cov.EmpiricalCovariance().fit(returns).covariance_
+    np.testing.assert_allclose(_dense(cov), expected)
+
+
 # --------------------------------------------------------------------- stats.EWCov
 
 
-def test_ewcov_matches_manual():
+def test_ewcov_matches_pandas():
+    # pandas computes the exponentially weighted covariance with its own routine rather than
+    # via the E[xy] - E[x]E[y] identity used by stats.EWCov, so this is an independent check.
+    # adjust=False matches the recursive stats.EWMean convention; bias=True matches the
+    # population (uncorrected) covariance that the identity yields.
     f = 0.3
     x = [1.0, 3.0, 5.0, 4.0, 6.0]
     y = [2.0, 4.0, 3.0, 6.0, 5.0]
     ewcov = stats.EWCov(fading_factor=f)
 
-    mx = my = mxy = None
+    values = []
     for xi, yi in zip(x, y):
         ewcov.update(xi, yi)
-        if mx is None:
-            mx, my, mxy = xi, yi, xi * yi
-        else:
-            mx = (1 - f) * mx + f * xi
-            my = (1 - f) * my + f * yi
-            mxy = (1 - f) * mxy + f * xi * yi
-        assert ewcov.get() == pytest.approx(mxy - mx * my)
+        values.append(ewcov.get())
+
+    df = pd.DataFrame({"x": x, "y": y})
+    expected = df["x"].ewm(alpha=f, adjust=False).cov(df["y"], bias=True)
+    np.testing.assert_allclose(values, expected.to_numpy())
