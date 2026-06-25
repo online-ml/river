@@ -78,6 +78,82 @@ jobs:
           name: cibw-wheels-${{ matrix.os }}-${{ matrix.python-version }}-${{ strategy.job-index }}
           path: ./wheelhouse/*.whl
 
+  # In addition to the per-version native wheels above, build a single abi3
+  # ("limited API") wheel per platform, tagged cp311-abi3 so it runs on any
+  # CPython >= 3.11. pip/uv always prefer the more specific native wheel when one
+  # matches the running interpreter, so these are only used as a fallback — e.g.
+  # on a new CPython release before its native wheels are published. The toggle
+  # is the `abi3` Cargo feature, forwarded to maturin via MATURIN_PEP517_ARGS.
+  build_linux_abi3_wheels:
+    name: Build abi3 (3.11+) ~ ${{ matrix.linux_tag }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        linux_tag: ["manylinux", "musllinux"]
+    env:
+      MATURIN_PEP517_ARGS: "--features abi3"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: all
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v3.4.1
+        timeout-minutes: 720
+        env:
+          CIBW_BUILD: "cp311-${{ matrix.linux_tag }}_*"
+          CIBW_ARCHS_LINUX: "x86_64 aarch64 ppc64le"
+          # The build runs inside a container, so forward the host env var in.
+          CIBW_ENVIRONMENT_PASS_LINUX: MATURIN_PEP517_ARGS
+      - uses: actions/upload-artifact@v5
+        with:
+          name: cibw-wheels-abi3-${{ matrix.linux_tag }}
+          path: ./wheelhouse/*.whl
+
+  build_macos_abi3_wheels:
+    name: Build abi3 (3.11+) ~ macos-15
+    runs-on: macos-15
+    env:
+      MATURIN_PEP517_ARGS: "--features abi3"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v3.4.1
+        timeout-minutes: 720
+        env:
+          CIBW_BUILD: "cp311-*"
+          CIBW_ARCHS_MACOS: "universal2"
+      - uses: actions/upload-artifact@v5
+        with:
+          name: cibw-wheels-abi3-macos
+          path: ./wheelhouse/*.whl
+
+  build_windows_abi3_wheels:
+    name: Build abi3 (3.11+) ~ windows-2025
+    runs-on: windows-2025
+    env:
+      MATURIN_PEP517_ARGS: "--features abi3"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v3.4.1
+        timeout-minutes: 720
+        env:
+          CIBW_BUILD: "cp311-*"
+          CIBW_ARCHS_WINDOWS: "AMD64"
+          CIBW_ENVIRONMENT_WINDOWS: 'PATH="$UserProfile\.cargo\bin;$PATH"'
+      - uses: actions/upload-artifact@v5
+        with:
+          name: cibw-wheels-abi3-windows
+          path: ./wheelhouse/*.whl
+
   build_sdist:
     name: Build source distribution
     runs-on: ubuntu-latest
@@ -149,7 +225,7 @@ jobs:
   upload_to_pypi:
     name: Upload all wheels to PyPI
     runs-on: ubuntu-latest
-    needs: [build_linux_wheels, build_macos_wheels, build_windows_wheels, build_sdist, build_pyodide_wheels]
+    needs: [build_linux_wheels, build_macos_wheels, build_windows_wheels, build_linux_abi3_wheels, build_macos_abi3_wheels, build_windows_abi3_wheels, build_sdist, build_pyodide_wheels]
     permissions:
       id-token: write
     steps:
