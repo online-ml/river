@@ -3720,6 +3720,7 @@
 <h1 id="unreleased">Unreleased<a class="headerlink" href="#unreleased" title="Permanent link">&para;</a></h1>
 <ul>
 <li>Add <code>ppc64le</code> architecture to Linux wheel builds.</li>
+<li>Publish <code>abi3</code> (stable-ABI, <code>cp311-abi3</code>) wheels alongside the per-version native wheels. pip/uv keep using the faster native wheel whenever one matches your interpreter; the <code>abi3</code> wheel is a fallback so River still installs as a wheel on CPython versions that don't yet have native builds (e.g. a brand-new release).</li>
 <li>Moved <code>altair</code> from the runtime dependencies to the <code>docs</code>/<code>dev</code> groups; it was only used to draw plots in the docs, so installing River no longer pulls it in.</li>
 <li>Publish Pyodide/WebAssembly wheels (CPython 3.13 and 3.14) so River can run in the browser, e.g. via <a href="https://jupyterlite.readthedocs.io/">JupyterLite</a> or <code>micropip</code>. The minimum <code>numpy</code> and <code>scipy</code> versions were lowered to <code>2.2.5</code> and <code>1.14.1</code> to match Pyodide.</li>
 <li>Display <a href="../../api/compose/TransformerUnion"><code>compose.TransformerUnion</code></a> elements vertically in HTML representations.</li>
