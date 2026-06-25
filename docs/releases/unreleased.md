@@ -34,10 +34,6 @@
 - Sped up `learn_one` for all factorization-machine models by vectorizing the per-factor latent updates with NumPy instead of looping in Python. On MovieLens 100K: ~1.4× faster for `FFMRegressor`/`FFMClassifier`, ~1.8× for `FwFMRegressor`/`FwFMClassifier` and `HOFMRegressor`/`HOFMClassifier`. Outputs are unchanged.
 - The factorization-machine models are now covered by the automated estimator checks (`utils.check_estimator`).
 
-## feature_extraction
-
-- Added proper mini-batch support to `feature_extraction.TFIDF`: `learn_many` now updates document frequencies, and `transform_many` now returns TF-IDF weights for both `Series` input and `DataFrame` input when `on` is set. Fixes [#1576](https://github.com/online-ml/river/issues/1576).
-
 ## linear_model
 
 - Added `linear_model.AdPredictor`, the Bayesian online probit-regression classifier Microsoft used for click-through-rate prediction in Bing's sponsored search (Graepel et al., 2010). It keeps a Gaussian belief over each feature weight and yields well-calibrated probabilities.
