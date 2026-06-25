@@ -2150,6 +2150,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#compose" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        compose
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#covariance" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -3513,6 +3524,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#compose" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        compose
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#covariance" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -3709,6 +3731,10 @@
 <h2 id="anomaly">anomaly<a class="headerlink" href="#anomaly" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Added <a href="../../api/api/anomaly/LODA"><code>api.anomaly.LODA</code></a>, an online implementation of Pevný's <em>Lightweight on-line detector of anomalies</em>. It maintains an ensemble of one-dimensional <a href="../../api/sketch/Histogram"><code>sketch.Histogram</code></a>s over sparse random projections and scores samples by their average negative log-likelihood.</li>
+</ul>
+<h2 id="compose">compose<a class="headerlink" href="#compose" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../../api/compose/Pipeline"><code>compose.Pipeline</code></a> now forwards extra keyword arguments (such as the timestamp <code>t</code> used by <a href="../../api/utils/TimeRolling"><code>utils.TimeRolling</code></a>, or a sample weight <code>w</code>) to each step whose method declares them, and drops them for steps that don't. This makes <a href="../../api/feature-extraction/Agg"><code>feature_extraction.Agg</code></a>/<code>TargetAgg</code> backed by <a href="../../api/utils/TimeRolling"><code>utils.TimeRolling</code></a> work inside a pipeline via <code>model.learn_one(x, y, t=t)</code>. Routing applies to <code>learn_one</code> and to the predict-time methods (<code>predict_one</code>, <code>predict_proba_one</code>, <code>score_one</code>, <code>transform_one</code>), so it also works under <a href="../../api/compose/learn-during-predict"><code>compose.learn_during_predict</code></a> where unsupervised steps learn during <code>predict_one(x, t=t)</code>. Fixes <a href="https://github.com/online-ml/river/issues/1600">#1600</a>. The accepted arguments are determined once when the pipeline plan is built, so pipelines with no extra arguments keep their previous speed.</li>
 </ul>
 <h2 id="covariance">covariance<a class="headerlink" href="#covariance" title="Permanent link">&para;</a></h2>
 <ul>
