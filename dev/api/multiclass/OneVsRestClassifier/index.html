@@ -46784,12 +46784,29 @@
 </code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>MacroF1: 77.46%
 </code></pre></div></p>
-<p>This estimator also also supports mini-batching.</p>
-<div class="language-python highlight"><pre><span></span><code><span class="k">for</span> <span class="n">X</span> <span class="ow">in</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">chunksize</span><span class="o">=</span><span class="mi">64</span><span class="p">):</span>
+<p>This estimator also supports mini-batching. The whole pipeline — the <code>StandardScaler</code> and the
+one-vs-rest <code>LogisticRegression</code>s — is trained and queried on mini-batches of a dataframe:</p>
+<p><div class="language-python highlight"><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">StandardScaler</span><span class="p">()</span> <span class="o">|</span> <span class="n">multiclass</span><span class="o">.</span><span class="n">OneVsRestClassifier</span><span class="p">(</span>
+    <span class="n">linear_model</span><span class="o">.</span><span class="n">LogisticRegression</span><span class="p">()</span>
+<span class="p">)</span>
+
+<span class="n">metric</span> <span class="o">=</span> <span class="n">metrics</span><span class="o">.</span><span class="n">MacroF1</span><span class="p">()</span>
+
+<span class="k">for</span> <span class="n">X</span> <span class="ow">in</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">chunksize</span><span class="o">=</span><span class="mi">64</span><span class="p">):</span>
     <span class="n">y</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;category&#39;</span><span class="p">)</span>
     <span class="n">y_pred</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict_many</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
     <span class="n">model</span><span class="o">.</span><span class="n">learn_many</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">y_true</span><span class="p">,</span> <span class="n">y_p</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">y_p</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">metric</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_p</span><span class="p">)</span>
+
+<span class="n">metric</span>
 </code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>MacroF1: 59.77%
+</code></pre></div></p>
+<p>The mini-batch methods are dataframe-agnostic: any narwhals-supported eager backend
+(pandas, polars, pyarrow, ...) can be passed to <code>learn_many</code>/<code>predict_many</code>, and the
+predictions are returned in that same backend.</p>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <details class="- abstract">
 <summary>learn_many</summary>
