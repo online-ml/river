@@ -5,16 +5,15 @@ import functools
 import math
 import typing
 
-import numpy as np
 import narwhals as nw
+import numpy as np
 
-from river import proba, utils
+from river import proba
 from river.utils.dataframe import into_frame, to_native_frame
 
 from . import base
 
 if typing.TYPE_CHECKING:
-    import pandas as pd
     from narwhals.stable.v2.typing import IntoDataFrame, IntoSeries
 
 __all__ = ["GaussianNB"]
@@ -109,19 +108,18 @@ class GaussianNB(base.BaseNB):
         if hasattr(X, "sparse"):
             X = X.sparse.to_dense()
 
-        
         X = nw.from_native(X, eager_only=True)
         y = nw.from_native(y, series_only=True)
 
         self.class_counts.update(y.to_list())
 
         for c in y.unique().to_list():
-            mask = (y == c).rename('mask')
+            mask = (y == c).rename("mask")
             X_c = X.filter(mask)
 
             for i in X_c.columns:
                 values = X_c[i].drop_nulls()
-                if len(values)==0:
+                if len(values) == 0:
                     continue
                 self.gaussians[c][i]._var.update_many(values.to_numpy().astype(float))
 
@@ -160,13 +158,13 @@ class GaussianNB(base.BaseNB):
 
         if hasattr(X, "sparse"):
             X = X.sparse.to_dense()
-        
+
         X = nw.from_native(X, eager_only=True)
         x_nw = into_frame(X)
 
         if not self.class_counts:
             return X.select([]).to_native()
-        
+
         jll = {}
 
         for c in self.class_counts:
@@ -185,7 +183,7 @@ class GaussianNB(base.BaseNB):
                 )
 
             jll[c] = ll
-        
+
         return to_native_frame(jll, like=x_nw)
 
     def _unit_test_skips(self):
