@@ -17,6 +17,7 @@
 
 - Added `EwaCovariance`, `LedoitWolfCovariance`, `OASCovariance`, and `ShrunkCovariance`: online covariance estimators for non-stationary streams (exponentially weighted, recency-biased) and high-dimensional / few-sample regimes (shrinkage towards a well-conditioned target). They are dict-native like `EmpiricalCovariance` and support mini-batches via `update_many` on any [narwhals](https://github.com/narwhals-dev/narwhals)-supported eager backend.
 - Added `EwaPrecision`, an exponentially weighted precision (inverse covariance) matrix maintained online via a forgetting-factor Sherman-Morrison update. The recency-weighted counterpart of `EmpiricalPrecision`, useful for tracking Mahalanobis distances and Gaussian likelihoods on non-stationary streams.
+- `EmpiricalCovariance.update_many` and `EmpiricalPrecision.update_many` now accept any [narwhals](https://github.com/narwhals-dev/narwhals)-supported eager dataframe (pandas, polars, pyarrow, ...) instead of pandas only. Outputs are unchanged for the pandas path.
 - Added weighted sample support to `EmpiricalCovariance.update` and `EmpiricalCovariance.revert` by accepting an optional `w` parameter and propagating it to the underlying `stats.Cov` and `stats.Var` statistics.
 - Sped up `EmpiricalCovariance.update`/`revert` (~40% faster at 30 features) by caching the sorted feature list and pair iteration in the hot path. No semantic change.
 - Restructured `EmpiricalPrecision` around NumPy-backed dense state, removing the per-update dict ↔ numpy marshalling. ~7× faster on 2000 × 20 sample streams.

@@ -164,6 +164,37 @@ def test_covariance_update_many_sampled():
             assert math.isclose(cov[i, j].get(), pd_cov.loc[i, j])
 
 
+def test_covariance_update_many_backend_agnostic(frame_backend):
+    """`update_many` yields identical covariances across every dataframe backend."""
+    np.random.seed(0)
+    data = {col: np.random.random(40).tolist() for col in ["a", "b", "c"]}
+
+    reference = covariance.EmpiricalCovariance()
+    reference.update_many(pd.DataFrame(data))
+
+    cov = covariance.EmpiricalCovariance()
+    cov.update_many(frame_backend.frame(data))
+
+    assert cov.matrix.keys() == reference.matrix.keys()
+    for key in reference.matrix:
+        assert math.isclose(cov[key].get(), reference[key].get(), rel_tol=1e-9, abs_tol=1e-12)
+
+
+def test_precision_update_many_backend_agnostic(frame_backend):
+    """`update_many` yields identical precisions across every dataframe backend."""
+    np.random.seed(0)
+    data = {col: np.random.random(60).tolist() for col in ["a", "b", "c"]}
+
+    reference = covariance.EmpiricalPrecision()
+    reference.update_many(pd.DataFrame(data))
+
+    prec = covariance.EmpiricalPrecision()
+    prec.update_many(frame_backend.frame(data))
+
+    for i, j in reference.matrix:
+        assert math.isclose(prec[i, j], reference[i, j], rel_tol=1e-9, abs_tol=1e-12)
+
+
 def test_precision_update_shuffled():
     C1 = covariance.EmpiricalPrecision()
     C2 = covariance.EmpiricalPrecision()

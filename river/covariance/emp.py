@@ -9,7 +9,7 @@ import numpy as np
 from river import stats, utils
 
 if typing.TYPE_CHECKING:
-    import pandas as pd
+    from narwhals.stable.v2.typing import IntoDataFrame
 
 
 class SymmetricMatrix(abc.ABC):
@@ -179,8 +179,11 @@ class EmpiricalCovariance(SymmetricMatrix):
         for i in keys:
             cov_dict[i, i].revert(x[i], w)
 
-    def update_many(self, X: pd.DataFrame):
+    def update_many(self, X: IntoDataFrame):
         """Update with a dataframe of samples.
+
+        Any [narwhals](https://github.com/narwhals-dev/narwhals)-compatible eager dataframe
+        (pandas, polars, pyarrow, ...) is accepted.
 
         Parameters
         ----------
@@ -189,15 +192,17 @@ class EmpiricalCovariance(SymmetricMatrix):
 
         """
 
-        X_arr = X.values
+        frame = utils.dataframe.into_frame(X)
+        columns = list(frame.columns)
+        X_arr = utils.dataframe.to_numpy(frame)
         mean_arr = X_arr.mean(axis=0)
         cov_arr = np.cov(X_arr.T, ddof=self.ddof)
 
-        n = len(X)
-        mean = dict(zip(X.columns, mean_arr))
+        n = len(frame)
+        mean = dict(zip(columns, mean_arr))
         cov = {
             (i, j): cov_arr[r, c]
-            for (r, i), (c, j) in itertools.combinations_with_replacement(enumerate(X.columns), r=2)
+            for (r, i), (c, j) in itertools.combinations_with_replacement(enumerate(columns), r=2)
         }
 
         self._update_from_state(n=n, mean=mean, cov=cov)
@@ -409,8 +414,11 @@ class EmpiricalPrecision(SymmetricMatrix):
         self._w_arr[ids] = w
         self._inv_cov_mat[ix] = 0.5 * (block + block.T)
 
-    def update_many(self, X: pd.DataFrame):
+    def update_many(self, X: IntoDataFrame):
         """Update with a dataframe of samples.
+
+        Any [narwhals](https://github.com/narwhals-dev/narwhals)-compatible eager dataframe
+        (pandas, polars, pyarrow, ...) is accepted.
 
         Parameters
         ----------
@@ -418,8 +426,9 @@ class EmpiricalPrecision(SymmetricMatrix):
             A dataframe of samples.
 
         """
-        ids = self._ensure_features(X.columns)
-        X_arr = np.asarray(X.values, dtype=np.float64)
+        frame = utils.dataframe.into_frame(X)
+        ids = self._ensure_features(frame.columns)
+        X_arr = utils.dataframe.to_numpy(frame)
 
         loc = self._loc_arr[ids].copy()
         w = self._w_arr[ids].copy()
@@ -427,7 +436,7 @@ class EmpiricalPrecision(SymmetricMatrix):
         inv_cov = np.asfortranarray(self._inv_cov_mat[ix]) / np.maximum(w, 1)
 
         # update formulas
-        n_batch = len(X)
+        n_batch = len(frame)
         diff = X_arr - loc
         loc = (w * loc + n_batch * X_arr.mean(axis=0)) / (w + n_batch)
         w += n_batch
