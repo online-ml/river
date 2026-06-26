@@ -2424,6 +2424,23 @@
   
 </li>
         
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#boundary-convention" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Boundary convention
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Boundary convention">
+      <ul class="md-nav__list">
+        
           <li class="md-nav__item">
   <a href="#schedulers" class="md-nav__link">
     <span class="md-ellipsis">
@@ -47885,6 +47902,23 @@
   
 </li>
         
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#boundary-convention" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Boundary convention
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Boundary convention">
+      <ul class="md-nav__list">
+        
           <li class="md-nav__item">
   <a href="#schedulers" class="md-nav__link">
     <span class="md-ellipsis">
@@ -49074,6 +49108,11 @@ until a query is received.</p>
 <h3 id="losses">losses<a class="headerlink" href="#losses" title="Permanent link">&para;</a></h3>
 <p>Loss functions.</p>
 <p>Each loss function is intended to work with both single values as well as numpy vectors.</p>
+<h2 id="boundary-convention">Boundary convention<a class="headerlink" href="#boundary-convention" title="Permanent link">&para;</a></h2>
+<p>Several losses are piecewise (<code>Hinge</code>, <code>Absolute</code>, <code>EpsilonInsensitiveHinge</code>, <code>Huber</code>, ...), so
+their gradient is discontinuous at a kink. The invariant we hold everywhere is that the scalar and
+vectorised branches of a loss <strong>must</strong> resolve such a boundary point identically; otherwise looping
+<code>learn_one</code> and a single <code>learn_many</code> call would disagree on inputs that land exactly on the kink.</p>
 <ul>
 <li><a href="../optim/losses/Absolute">Absolute</a></li>
 <li><a href="../optim/losses/BinaryFocalLoss">BinaryFocalLoss</a></li>

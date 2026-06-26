@@ -3773,7 +3773,12 @@
 </ul>
 <h2 id="anomaly">anomaly<a class="headerlink" href="#anomaly" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Added <a href="../../api/api/anomaly/LODA"><code>api.anomaly.LODA</code></a>, an online implementation of Pevný's <em>Lightweight on-line detector of anomalies</em>. It maintains an ensemble of one-dimensional <a href="../../api/sketch/Histogram"><code>sketch.Histogram</code></a>s over sparse random projections and scores samples by their average negative log-likelihood.</li>
+<li>
+<p>Added <a href="../../api/api/anomaly/LODA"><code>api.anomaly.LODA</code></a>, an online implementation of Pevný's <em>Lightweight on-line detector of anomalies</em>. It maintains an ensemble of one-dimensional <a href="../../api/sketch/Histogram"><code>sketch.Histogram</code></a>s over sparse random projections and scores samples by their average negative log-likelihood.</p>
+</li>
+<li>
+<p>Made <code>anomaly.OneClassSVM.learn_many</code> dataframe-agnostic via narwhals: it now accepts any narwhals-supported eager backend (pandas, polars, pyarrow, ...) instead of only pandas. Outputs are unchanged.</p>
+</li>
 </ul>
 <h2 id="compose">compose<a class="headerlink" href="#compose" title="Permanent link">&para;</a></h2>
 <ul>
@@ -3831,6 +3836,7 @@
 <li>Fixed <a href="../../api/optim/AdaBound"><code>optim.AdaBound</code></a> raising <code>TypeError</code> after being cloned (its base learning rate was captured as a scheduler instead of a number), which broke it inside <code>evaluate</code>, ensembles, model selection, and anywhere else estimators are cloned.</li>
 <li>Fixed <a href="../../api/optim/NesterovMomentum"><code>optim.NesterovMomentum</code></a> and <a href="../../api/optim/FTRLProximal"><code>optim.FTRLProximal</code></a> raising when used to optimise estimators whose weights are stored as NumPy arrays, such as the factorization machines (<code>facto</code>).</li>
 <li>Added a test covering every optimizer against every estimator that accepts one, so optimizer/estimator incompatibilities are caught going forward.</li>
+<li>Fixed <code>optim.losses.Hinge.gradient</code> returning different values for single samples and numpy batches at the exact margin (<code>y * p == threshold</code>): the batch path used a strict <code>&lt;</code> while the single-sample path used <code>&lt;=</code>. Both now use <code>&lt;=</code> (matching scikit-learn), so a point on the margin is treated as a violation and <code>learn_one</code>/<code>learn_many</code> agree. This only affects samples lying exactly on the margin.</li>
 </ul>
 <h2 id="preprocessing">preprocessing<a class="headerlink" href="#preprocessing" title="Permanent link">&para;</a></h2>
 <ul>
