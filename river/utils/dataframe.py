@@ -27,7 +27,7 @@ if typing.TYPE_CHECKING:
         IntoSeries,
         IntoSeriesT,
     )
-    from numpy.typing import NDArray
+    from numpy.typing import DTypeLike, NDArray
     from scipy import sparse
 
 __all__ = [
@@ -40,13 +40,14 @@ __all__ = [
 ]
 
 
-def to_numpy(frame: nw.DataFrame[Any], dtype: np.number = np.float64) -> NDArray[np.number]:
-    """Extract a `float64` numpy matrix from a narwhals dataframe for the numpy compute core.
+def to_numpy(frame: nw.DataFrame[Any], dtype: DTypeLike = np.float64) -> NDArray[Any]:
+    """Extract a numpy matrix from a narwhals dataframe for the numpy compute core.
 
     A pandas frame backed by pyarrow (`ArrowDtype`) columns returns an ``object`` array from
     ``.to_numpy()``, which breaks downstream ufuncs (e.g. ``np.exp`` raises *"loop of ufunc does
-    not support argument 0 of type float"*). Coercing to ``float64`` at the boundary keeps the
-    core backend-agnostic; ``np.asarray`` is a no-op when the frame already yields ``float64``.
+    not support argument 0 of type float"*). Coercing to a floating ``dtype`` (``float64`` by
+    default) at the boundary keeps the core backend-agnostic; ``np.asarray`` is a no-op when the
+    frame already yields that dtype.
     """
     return np.asarray(frame.to_numpy(), dtype=dtype)
 
@@ -136,7 +137,16 @@ def to_native_frame(
         # narwhals requires string column names for non-pandas backends; pandas keeps the
         # original labels (mirroring the mapping path above).
         names = list(columns) if impl.is_pandas_like() else [str(col) for col in columns]
-        frame = nw.from_numpy(data, schema=names, backend=impl).to_native()
+        # `nw.from_numpy` does not expose `orient`, so polars infers row/column orientation.
+        # For a square array with column names pinned (as here), it breaks the tie from the
+        # memory layout and reads a Fortran-contiguous array column-major: a silent transpose.
+        # `to_numpy` returns exactly such an F-contiguous array for a polars frame, and
+        # arithmetic on it (e.g. the centering/scaling in `StandardScaler`) keeps that layout.
+        # Forcing C-contiguity pins the read to row-major. Cost: a no-op (returns `data`
+        # unchanged) when `data` is already C-contiguous; otherwise a single O(rows * cols)
+        # memcpy, on the same order as building the frame, so negligible relative to the
+        # conversion itself.
+        frame = nw.from_numpy(np.ascontiguousarray(data), schema=names, backend=impl).to_native()
     else:
         if not impl.is_pandas_like():
             data = {str(key): value for key, value in data.items()}
