@@ -188,25 +188,51 @@ files = "river"
 strict = true
 
 [[tool.mypy.overrides]]
+# Both the bare top-level name and the `.*` submodule glob are listed: under the uv dev env
+# (where prek now runs mypy) these libraries are installed without a py.typed marker, so a bare
+# `import pandas` reports `import-untyped` unless the top-level name is ignored too.
 module = [
+    "mmh3",
     "mmh3.*",
+    "numpy",
     "numpy.*",
+    "sklearn",
     "sklearn.*",
+    "pytest",
     "pytest.*",
+    "pandas",
     "pandas.*",
+    "scipy",
     "scipy.*",
+    "graphviz",
     "graphviz.*",
+    "vaex",
     "vaex.*",
+    "torch",
     "torch.*",
+    "sqlalchemy",
     "sqlalchemy.*",
+    "requests",
     "requests.*",
+    "gymnasium",
     "gymnasium.*",
+    "sympy",
     "sympy.*",
+    "polars",
     "polars.*",
+    "pyarrow",
     "pyarrow.*",
     "river._river_rust",
     "river._river_rust.*",
 ]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+# `numpydoc` (used by docs/parse for docstring scraping) hard-depends on Sphinx, whose source
+# uses 3.12 `type` syntax that mypy rejects under `--python-version=3.11`. We build docs with
+# mkdocs/zensical, never Sphinx, and never type-check it, so don't follow imports into it.
+module = ["sphinx.*", "numpydoc.*"]
+follow_imports = "skip"
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
