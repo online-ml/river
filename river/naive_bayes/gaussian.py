@@ -185,8 +185,8 @@ class GaussianNB(base.BaseNB):
                 ll += col_ll
     
             jll[c] = ll
-
-    return to_native_frame(jll, like=X)
+        
+        return to_native_frame(jll, like=X)
 
     def _unit_test_skips(self):
         return set()
