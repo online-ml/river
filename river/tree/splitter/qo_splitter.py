@@ -136,6 +136,8 @@ class Slot:
 
     """
 
+    __slots__ = ("x_stats", "y_stats", "_update_estimator", "is_single_target")
+
     def __init__(
         self,
         x: float,

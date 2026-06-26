@@ -437,6 +437,8 @@ class DBSTREAM(base.Clusterer):
 class DBSTREAMMicroCluster(metaclass=ABCMeta):
     """DBStream Micro-cluster class"""
 
+    __slots__ = ("center", "last_update", "weight")
+
     def __init__(self, x=None, last_update=None, weight=None):
         self.center = x
         self.last_update = last_update

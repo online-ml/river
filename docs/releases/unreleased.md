@@ -14,6 +14,13 @@
 
 - Added `anomaly.LODA`, an online implementation of Pevný's *Lightweight on-line detector of anomalies*. It maintains an ensemble of one-dimensional `sketch.Histogram`s over sparse random projections and scores samples by their average negative log-likelihood.
 
+- Made `anomaly.OneClassSVM.learn_many` dataframe-agnostic via narwhals: it now accepts any narwhals-supported eager backend (pandas, polars, pyarrow, ...) instead of only pandas. Outputs are unchanged.
+
+## cluster
+
+- Gave the `CluStream`, `DenStream`, and `DBSTREAM` micro-cluster objects `__slots__`. These are created in large numbers on long streams, so dropping their per-instance `__dict__` trims memory (~40 bytes per micro-cluster). Behavior is unchanged.
+- `CluStreamMicroCluster` no longer inherits from `base.Base`; it is an internal data structure, not an estimator, so the estimator machinery (cloning, parameter introspection, `repr`) never applied to it. This matches the `DenStream`/`DBSTREAM` micro-clusters and is what lets it use `__slots__`.
+
 ## compose
 
 - `compose.Pipeline` now forwards extra keyword arguments (such as the timestamp `t` used by `utils.TimeRolling`, or a sample weight `w`) to each step whose method declares them, and drops them for steps that don't. This makes `feature_extraction.Agg`/`TargetAgg` backed by `utils.TimeRolling` work inside a pipeline via `model.learn_one(x, y, t=t)`. Routing applies to `learn_one` and to the predict-time methods (`predict_one`, `predict_proba_one`, `score_one`, `transform_one`), so it also works under `compose.learn_during_predict` where unsupervised steps learn during `predict_one(x, t=t)`. Fixes [#1600](https://github.com/online-ml/river/issues/1600). The accepted arguments are determined once when the pipeline plan is built, so pipelines with no extra arguments keep their previous speed.
@@ -51,6 +58,10 @@
 - `linear_model.LinearRegression` and `linear_model.LogisticRegression` mini-batch methods (`learn_many`, `predict_many`, `predict_proba_many`) now accept and return any [narwhals](https://github.com/narwhals-dev/narwhals)-supported eager backend (pandas, polars, pyarrow, ...) instead of being pandas-only. The input backend is preserved on output, including the pandas index. These methods no longer require `pandas` to be installed.
 - `linear_model.BayesianLinearRegression` is now a `MiniBatchRegressor`: it gained a `learn_many` method, equivalent to looping `learn_one` over the rows (exact without smoothing, and the matching closed-form geometric weighting with smoothing). Its `learn_many`/`predict_many` accept and return any [narwhals](https://github.com/narwhals-dev/narwhals)-supported eager backend (pandas, polars, pyarrow, ...), preserving the input backend and pandas index, and no longer require `pandas`.
 
+## multiclass
+
+- `multiclass.OneVsRestClassifier` mini-batch methods (`learn_many`, `predict_many`, `predict_proba_many`) now accept and return any [narwhals](https://github.com/narwhals-dev/narwhals)-supported eager backend (pandas, polars, pyarrow, ...) instead of being pandas-only. The input backend is preserved on output, including the pandas index, and these methods no longer require `pandas` to be installed. Outputs are unchanged on the pandas path.
+
 ## multioutput
 
 - Added `multioutput.PerOutputClassifier`, the streaming equivalent of scikit-learn's `MultiOutputClassifier`. Trains one independent classifier per target output.
@@ -59,6 +70,10 @@
 ## naive_bayes
 
 - Added mini-batch support to `GaussianNB` via `learn_many`, `predict_many`, and `predict_proba_many`.
+
+## neighbors
+
+- Gave the SWINN graph `Vertex` `__slots__` and dropped its `base.Base` inheritance (it is an internal graph node, not an estimator). One vertex is created per buffered sample, so this trims memory on large `neighbors.SWINN` indexes; behavior is unchanged.
 
 ## neural_net
 
@@ -70,6 +85,7 @@
 - Fixed `optim.AdaBound` raising `TypeError` after being cloned (its base learning rate was captured as a scheduler instead of a number), which broke it inside `evaluate`, ensembles, model selection, and anywhere else estimators are cloned.
 - Fixed `optim.NesterovMomentum` and `optim.FTRLProximal` raising when used to optimise estimators whose weights are stored as NumPy arrays, such as the factorization machines (`facto`).
 - Added a test covering every optimizer against every estimator that accepts one, so optimizer/estimator incompatibilities are caught going forward.
+- Fixed `optim.losses.Hinge.gradient` returning different values for single samples and numpy batches at the exact margin (`y * p == threshold`): the batch path used a strict `<` while the single-sample path used `<=`. Both now use `<=` (matching scikit-learn), so a point on the margin is treated as a violation and `learn_one`/`learn_many` agree. This only affects samples lying exactly on the margin.
 
 ## preprocessing
 
@@ -102,10 +118,16 @@
 
 - Fixed `RecursionError` in `AMRules` on long streams: the `EBSTSplitter`, `TEBSTSplitter`, and `ExhaustiveSplitter` now traverse and deep-copy their search trees iteratively, so deeply-skewed trees no longer blow Python's recursion limit.
 - Fixed an `AMRules` memory leak where `HoeffdingRule.expand` appended a redundant `NumericLiteral` when a new split shared a feature and direction with an existing literal without tightening the threshold.
+- `Literal` (and its `NumericLiteral`/`NominalLiteral` subclasses) no longer inherits from `base.Base`, so its existing `__slots__` now actually takes effect — previously every literal still carried a `__dict__` because `base.Base` defines no slots. Literals are internal rule components, not estimators, so the estimator machinery never applied. Trims memory on rule sets with many literals; behavior is unchanged.
 
 ## stats
 
 - Added `stats.ChiSquared`, a streaming Chi-squared statistic between two categorical variables. Wrap it with `utils.Rolling` for a rolling version.
+
+## tree
+
+- Gave the binary-search-tree nodes of the numeric splitters (`EBSTSplitter`/`TEBSTSplitter`, `ExhaustiveSplitter`, `QOSplitter`) `__slots__`. One node is created per distinct observed feature value, so on high-cardinality numeric streams these can number in the millions; dropping their per-instance `__dict__` trims memory (~40 bytes per node) with no change in behavior or throughput.
+- Slotted the `GradHessMerit` split-candidate record used by the Stochastic Gradient Trees (`tree.SGTClassifier`/`SGTRegressor`) via `@dataclass(slots=True)`, trimming its per-instance memory. Behavior is unchanged.
 
 ## stream
 

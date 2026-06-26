@@ -125,6 +125,8 @@ class ExhaustiveSplitter(Splitter):
 
 
 class ExhaustiveNode:
+    __slots__ = ("class_count_left", "class_count_right", "_left", "_right", "cut_point")
+
     def __init__(self, att_val, target_val, w):
         self.class_count_left = defaultdict(float)
         self.class_count_right = defaultdict(float)
