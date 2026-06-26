@@ -44,7 +44,6 @@ class BaseNB(base.MiniBatchClassifier):
 
     def predict_proba_many(self, X: IntoDataFrame) -> IntoDataFrame:
         """Return probabilities using the log-likelihoods in mini-batchs setting."""
-        pd = utils.pandas.import_pandas()
         jll = self.joint_log_likelihood_many(X)
         jll_nw = into_frame(jll)
         if jll_nw.is_empty():
