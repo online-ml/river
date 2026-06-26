@@ -47012,16 +47012,29 @@ field to access if the string is stored in a dictionary:</p>
 {&#39;and&#39;: 0.497, &#39;this&#39;: 0.293, &#39;is&#39;: 0.293, &#39;the&#39;: 0.293, &#39;third&#39;: 0.497, &#39;one&#39;: 0.497}
 {&#39;is&#39;: 0.384, &#39;this&#39;: 0.384, &#39;the&#39;: 0.384, &#39;first&#39;: 0.580, &#39;document&#39;: 0.469}
 </code></pre></div></p>
+<p>In a mini-batch setting, <code>learn_many</code> updates the document frequencies from a column of text,
+and <code>transform_many</code> builds a TF-IDF dataframe. The input may be a series of documents, or a
+dataframe together with the <code>on</code> parameter, and any narwhals-supported backend works (pandas,
+polars, pyarrow, ...). The output matches the input's backend; for pandas it is a memory-
+efficient sparse dataframe, shown densified here for readability:</p>
+<p><div class="language-python highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
+    <span class="p">[</span><span class="s1">&#39;This is the first document&#39;</span><span class="p">,</span> <span class="s1">&#39;This document is the second document&#39;</span><span class="p">],</span>
+    <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;doc1&#39;</span><span class="p">,</span> <span class="s1">&#39;doc2&#39;</span><span class="p">],</span>
+<span class="p">)</span>
+
+<span class="n">tfidf</span> <span class="o">=</span> <span class="n">feature_extraction</span><span class="o">.</span><span class="n">TFIDF</span><span class="p">()</span>
+<span class="n">tfidf</span><span class="o">.</span><span class="n">learn_many</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+<span class="n">tfidf</span><span class="o">.</span><span class="n">transform_many</span><span class="p">(</span><span class="n">X</span><span class="p">)</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">to_dense</span><span class="p">()</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>       this     is    the  first  document  second
+doc1  0.409  0.409  0.409  0.575     0.409   0.000
+doc2  0.334  0.334  0.334  0.000     0.668   0.469
+</code></pre></div></p>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <details class="- abstract">
 <summary>learn_many</summary>
-<p>Not available, will raise an exception.</p>
-<p><strong>Parameters</strong></p>
-<ul>
-<li><strong>X</strong>    </li>
-</ul>
 </details>
-<p><span /></p>
 <details class="- abstract">
 <summary>learn_one</summary>
 <p>Update with a set of features <code>x</code>.</p>
@@ -47033,14 +47046,18 @@ field to access if the string is stored in a dictionary:</p>
 </details>
 <p><span /></p>
 <details class="- abstract">
+<summary>process_many</summary>
+</details>
+<details class="- abstract">
 <summary>process_text</summary>
 </details>
 <details class="- abstract">
 <summary>transform_many</summary>
-<p>Not available, will raise an exception.</p>
+<p>Transform a column of text into a TF-IDF dataframe.</p>
+<p>Accepts any narwhals-supported eager backend (pandas, polars, pyarrow, ...), either as a series of strings or as a dataframe whose <code>on</code> column holds the text. The output matches the input backend: a sparse dataframe for pandas, a dense one otherwise.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>X</strong>     — <code>pd.Series</code>    </li>
+<li><strong>X</strong>     — <code>IntoSeries | IntoDataFrame</code>    </li>
 </ul>
 </details>
 <p><span /></p>

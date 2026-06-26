@@ -47024,14 +47024,18 @@ rocks      1      0      1
 </details>
 <p><span /></p>
 <details class="- abstract">
+<summary>process_many</summary>
+</details>
+<details class="- abstract">
 <summary>process_text</summary>
 </details>
 <details class="- abstract">
 <summary>transform_many</summary>
-<p>Transform pandas series of string into term-frequency pandas sparse dataframe.</p>
+<p>Transform a column of text into a term-frequency dataframe.</p>
+<p>Accepts any narwhals-supported eager backend (pandas, polars, pyarrow, ...), either as a series of strings or as a dataframe whose <code>on</code> column holds the text. The output matches the input backend: a sparse dataframe for pandas, a dense one otherwise.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>X</strong>     — <code>pd.Series</code>    </li>
+<li><strong>X</strong>     — <code>IntoSeries | IntoDataFrame</code>    </li>
 </ul>
 </details>
 <p><span /></p>

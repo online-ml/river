@@ -2194,6 +2194,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#feature_extraction" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        feature_extraction
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#linear_model" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -3568,6 +3579,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#feature_extraction" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        feature_extraction
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#linear_model" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -3742,7 +3764,7 @@
 <li>Added weighted sample support to <code>EmpiricalCovariance.update</code> and <code>EmpiricalCovariance.revert</code> by accepting an optional <code>w</code> parameter and propagating it to the underlying <a href="../../api/stats/Cov"><code>stats.Cov</code></a> and <a href="../../api/stats/Var"><code>stats.Var</code></a> statistics.</li>
 <li>Sped up <code>EmpiricalCovariance.update</code>/<code>revert</code> (~40% faster at 30 features) by caching the sorted feature list and pair iteration in the hot path. No semantic change.</li>
 <li>Restructured <code>EmpiricalPrecision</code> around NumPy-backed dense state, removing the per-update dict ↔ numpy marshalling. ~7× faster on 2000 × 20 sample streams.</li>
-<li>Fixed an <code>EmpiricalPrecision</code> asymmetry where features introduced at different times left the stored matrix skewed (e.g. <code>prec[a, b]</code> ≠ <code>prec[b, a]</code>).      </li>
+<li>Fixed an <code>EmpiricalPrecision</code> asymmetry where features introduced at different times left the stored matrix skewed (e.g. <code>prec[a, b]</code> ≠ <code>prec[b, a]</code>).</li>
 </ul>
 <h2 id="datasets">datasets<a class="headerlink" href="#datasets" title="Permanent link">&para;</a></h2>
 <ul>
@@ -3754,6 +3776,10 @@
 <li>Sped up <code>learn_one</code> for all factorization-machine models by vectorizing the per-factor latent updates with NumPy instead of looping in Python. On MovieLens 100K: ~1.4× faster for <code>FFMRegressor</code>/<code>FFMClassifier</code>, ~1.8× for <code>FwFMRegressor</code>/<code>FwFMClassifier</code> and <code>HOFMRegressor</code>/<code>HOFMClassifier</code>. Outputs are unchanged.</li>
 <li>The factorization-machine models are now covered by the automated estimator checks (<code>utils.check_estimator</code>).</li>
 </ul>
+<h2 id="feature_extraction">feature_extraction<a class="headerlink" href="#feature_extraction" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Added proper mini-batch support to <a href="../../api/feature-extraction/TFIDF"><code>feature_extraction.TFIDF</code></a>: <code>learn_many</code> now updates document frequencies, and <code>transform_many</code> returns TF-IDF weights. Both <code>feature_extraction.BagOfWords.transform_many</code> and <code>TFIDF.transform_many</code> now accept any narwhals-supported dataframe backend (pandas, polars, pyarrow, ...), as either a series of documents or a dataframe with the <code>on</code> parameter, and return the same backend (a sparse dataframe for pandas).</li>
+</ul>
 <h2 id="linear_model">linear_model<a class="headerlink" href="#linear_model" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Added <a href="../../api/linear-model/AdPredictor"><code>linear_model.AdPredictor</code></a>, the Bayesian online probit-regression classifier Microsoft used for click-through-rate prediction in Bing's sponsored search (Graepel et al., 2010). It keeps a Gaussian belief over each feature weight and yields well-calibrated probabilities.</li>
@@ -3761,7 +3787,7 @@
 <li><code>BayesianLinearRegression</code> now handles features arriving and disappearing after training begins (it passes <code>check_emerging_features</code> and <code>check_shuffle_features_no_impact</code>, previously skipped).</li>
 <li>Fixed <code>BayesianLinearRegression</code> coefficients diverging to <code>inf</code>/<code>nan</code> under emerging/disappearing features; <code>learn_one</code> now updates the full state with a zero-padded <code>x</code>. Behavior change: features absent from <code>x</code> are treated as observed 0s (matching the other linear models) rather than skipped — identical to before when every call sees the same features.</li>
 <li>Sped up the <code>LinearRegression</code>/<code>LogisticRegression.learn_many</code> mini-batch gradient (~2-3×) by contracting the sample axis inside the <code>np.einsum</code>. No semantic change.</li>
-<li>Sped up <code>learn_one</code> for the linear models (<code>LinearRegression</code>, <code>LogisticRegression</code>, <code>Perceptron</code>, ...): updates now scale with the number of active features instead of the total number of features ever seen. Outputs are unchanged.       </li>
+<li>Sped up <code>learn_one</code> for the linear models (<code>LinearRegression</code>, <code>LogisticRegression</code>, <code>Perceptron</code>, ...): updates now scale with the number of active features instead of the total number of features ever seen. Outputs are unchanged.</li>
 <li>Stabilised <code>BayesianLinearRegression</code> across BLAS implementations and sped it up (~10-20%) by accumulating an exact natural mean and recovering the posterior mean lazily, instead of propagating it through compounding rank-1 updates (which drifted ~0.6% between macOS Accelerate and Linux OpenBLAS).</li>
 <li><a href="../../api/linear-model/LinearRegression"><code>linear_model.LinearRegression</code></a> and <a href="../../api/linear-model/LogisticRegression"><code>linear_model.LogisticRegression</code></a> mini-batch methods (<code>learn_many</code>, <code>predict_many</code>, <code>predict_proba_many</code>) now accept and return any <a href="https://github.com/narwhals-dev/narwhals">narwhals</a>-supported eager backend (pandas, polars, pyarrow, ...) instead of being pandas-only. The input backend is preserved on output, including the pandas index. These methods no longer require <code>pandas</code> to be installed.</li>
 <li><a href="../../api/linear-model/BayesianLinearRegression"><code>linear_model.BayesianLinearRegression</code></a> is now a <code>MiniBatchRegressor</code>: it gained a <code>learn_many</code> method, equivalent to looping <code>learn_one</code> over the rows (exact without smoothing, and the matching closed-form geometric weighting with smoothing). Its <code>learn_many</code>/<code>predict_many</code> accept and return any <a href="https://github.com/narwhals-dev/narwhals">narwhals</a>-supported eager backend (pandas, polars, pyarrow, ...), preserving the input backend and pandas index, and no longer require <code>pandas</code>.</li>
@@ -3810,7 +3836,7 @@
 </ul>
 <h2 id="rules">rules<a class="headerlink" href="#rules" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Fixed <code>RecursionError</code> in <code>AMRules</code> on long streams: the <code>EBSTSplitter</code>, <code>TEBSTSplitter</code>, and <code>ExhaustiveSplitter</code> now traverse and deep-copy their search trees iteratively, so deeply-skewed trees no longer blow Python's recursion limit. </li>
+<li>Fixed <code>RecursionError</code> in <code>AMRules</code> on long streams: the <code>EBSTSplitter</code>, <code>TEBSTSplitter</code>, and <code>ExhaustiveSplitter</code> now traverse and deep-copy their search trees iteratively, so deeply-skewed trees no longer blow Python's recursion limit.</li>
 <li>Fixed an <code>AMRules</code> memory leak where <code>HoeffdingRule.expand</code> appended a redundant <code>NumericLiteral</code> when a new split shared a feature and direction with an existing literal without tightening the threshold.</li>
 </ul>
 <h2 id="stats">stats<a class="headerlink" href="#stats" title="Permanent link">&para;</a></h2>
