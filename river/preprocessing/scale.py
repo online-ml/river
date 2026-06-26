@@ -6,12 +6,14 @@ import itertools
 import numbers
 import typing
 
+import narwhals.stable.v2 as nw
 import numpy as np
 
 from river import base, stats, utils
 
 if typing.TYPE_CHECKING:
     import pandas as pd
+    from narwhals.stable.v2.typing import IntoDataFrame, IntoDataFrameT
 
 __all__ = [
     "AdaptiveStandardScaler",
@@ -299,7 +301,7 @@ class StandardScaler(base.MiniBatchTransformer):
             return result
         return {i: xi - means[i] for i, xi in x.items()}
 
-    def learn_many(self, X: pd.DataFrame):
+    def learn_many(self, X: IntoDataFrame) -> None:
         """Update with a mini-batch of features.
 
         Note that the update formulas for mean and variance are slightly different than in the
@@ -310,30 +312,32 @@ class StandardScaler(base.MiniBatchTransformer):
         Parameters
         ----------
         X
-            A dataframe where each column is a feature.
+            A dataframe where each column is a feature. Any narwhals-supported eager backend
+            (pandas, polars, pyarrow, ...) is accepted.
         """
+        Xnw = utils.dataframe.into_frame(X)
+
         if self.window_size is not None:
             # Row-by-row to preserve correct rolling-window semantics.
-            columns = X.columns
-            for row in X.values:
-                self.learn_one(dict(zip(columns, row)))
+            for row in Xnw.iter_rows(named=True):
+                self.learn_one(row)
             return
 
-        # Operating on X.values, which is a view to the underlying numpy array, is slightly faster
-        # than operating on X
-        columns = X.columns
-        X = X.values
+        # Drop to a float64 numpy matrix for the compute core; the column labels drive the
+        # per-feature statistics, so the batch may add/drop/reorder columns between calls.
+        columns = Xnw.columns
+        X_np = utils.dataframe.to_numpy(Xnw)
 
         # In the rest of this method, old_* refers to the existing statistics, whilst new_* refers
         # to the statistics of the current mini-batch.
 
-        new_means = np.nanmean(X, axis=0)
+        new_means = np.nanmean(X_np, axis=0)
         # We could call np.var, but we already have the mean so we can be smart
         if self.with_std:
-            new_vars = np.einsum("ij,ij->j", X, X) / len(X) - new_means**2
+            new_vars = np.einsum("ij,ij->j", X_np, X_np) / len(X_np) - new_means**2
         else:
             new_vars = []
-        new_counts = np.sum(~np.isnan(X), axis=0)
+        new_counts = np.sum(~np.isnan(X_np), axis=0)
 
         for col, new_mean, new_var, new_count in itertools.zip_longest(
             columns, new_means, new_vars, new_counts
@@ -352,8 +356,13 @@ class StandardScaler(base.MiniBatchTransformer):
                 ).item()
             self.counts[col] += new_count.item()
 
-    def transform_many(self, X: pd.DataFrame):
+    def transform_many(self, X: IntoDataFrameT) -> IntoDataFrameT:
         """Scale a mini-batch of features.
+
+        Classic numpy-backed pandas keeps the historical fast path, which preserves the input's
+        float dtype (e.g. ``float32`` stays ``float32``). Every other narwhals-supported backend
+        (polars, pyarrow, nullable/arrow-backed pandas, ...) is scaled through a backend-agnostic
+        path whose compute runs in ``float64``.
 
         Parameters
         ----------
@@ -362,6 +371,19 @@ class StandardScaler(base.MiniBatchTransformer):
             the features has not been seen during a previous call to `learn_many`.
 
         """
+        Xnw = utils.dataframe.into_frame(X)
+        # The fast path relies on `.values` yielding a numeric numpy view, which only holds for
+        # classic numpy-backed pandas; nullable/arrow-backed pandas return object arrays and so
+        # take the agnostic path alongside polars/pyarrow.
+        if Xnw.implementation.is_pandas() and all(
+            isinstance(dtype, np.dtype) for dtype in typing.cast("pd.DataFrame", X).dtypes
+        ):
+            native = self._transform_many_pandas(typing.cast("pd.DataFrame", X))
+        else:
+            native = self._transform_many_narwhals(Xnw)
+        return typing.cast("IntoDataFrameT", native)
+
+    def _transform_many_pandas(self, X: pd.DataFrame) -> pd.DataFrame:
         pd = utils.pandas.import_pandas()
         # Determine dtype of input
         dtypes = X.dtypes.unique()
@@ -386,6 +408,27 @@ class StandardScaler(base.MiniBatchTransformer):
             np.divide(Xt, stds, where=stds > 0, out=Xt)
 
         return pd.DataFrame(Xt, index=X.index, columns=X.columns, copy=False)
+
+    def _transform_many_narwhals(self, Xnw: nw.DataFrame[IntoDataFrameT]) -> IntoDataFrameT:
+        columns = Xnw.columns
+
+        if self.window_size is None:
+            means = np.array([self.means[c] for c in columns], dtype=np.float64)
+        else:
+            means = np.array([self.means[c].get() for c in columns], dtype=np.float64)
+        Xt = utils.dataframe.to_numpy(Xnw) - means
+
+        if self.with_std:
+            if self.window_size is None:
+                stds = np.array([self.vars[c] ** 0.5 for c in columns], dtype=np.float64)
+            else:
+                stds = np.array([self.vars[c].get() ** 0.5 for c in columns], dtype=np.float64)
+            np.divide(Xt, stds, where=stds > 0, out=Xt)
+
+        native = utils.dataframe.to_native_frame(
+            {col: Xt[:, j] for j, col in enumerate(columns)}, like=Xnw
+        )
+        return typing.cast("IntoDataFrameT", native)
 
 
 class MinMaxScaler(base.Transformer):

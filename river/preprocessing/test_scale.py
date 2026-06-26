@@ -3,11 +3,17 @@ from __future__ import annotations
 import math
 import pickle
 import random
+import typing
 
+import narwhals.stable.v2 as nw
 import numpy as np
 import pandas as pd
+import pytest
 
 from river import datasets, preprocessing, stats, stream, utils
+
+if typing.TYPE_CHECKING:
+    from river.conftest import FrameBackend
 
 
 def _pd_split(df, n):
@@ -530,3 +536,199 @@ def test_issue_1313():
     dtype: object
 
     """
+
+
+# `StandardScaler`'s mini-batch path is routed through narwhals: classic numpy-backed pandas keeps
+# the historical fast path (preserving its float dtype), while every other backend is scaled
+# through a backend-agnostic float64 path. These tests pin the cross-backend behaviour, using the
+# pandas path as the oracle.
+
+
+def _numeric_batch(n: int = 40) -> dict[str, list[float]]:
+    """Build a reproducible batch of two numeric columns."""
+    rng = random.Random(42)
+    return {
+        "x": [rng.uniform(8, 12) for _ in range(n)],
+        "y": [rng.uniform(-5, 5) for _ in range(n)],
+    }
+
+
+def _trump_columns() -> dict[str, list[float]]:
+    """The TrumpApproval dataset as a column dict (mixed int64/float64 features)."""
+    return pd.read_csv(datasets.TrumpApproval().path).to_dict(orient="list")
+
+
+def _chunk_dict(data: dict[str, list], n: int) -> list[dict[str, list]]:
+    """Split a column dict into `n` row-wise chunks, preserving column order."""
+    length = len(next(iter(data.values())))
+    bounds = np.array_split(range(length), n)
+    return [{col: [values[i] for i in idx] for col, values in data.items()} for idx in bounds]
+
+
+# Mini-batches with a shifting column set: ``a`` disappears then reappears, ``c`` emerges, and the
+# column order is permuted between calls. `StandardScaler` advertises support for this, so it must
+# behave identically on every backend.
+EMERGING_BATCHES: list[dict[str, list[float]]] = [
+    {"a": [1.0, 2.0, 3.0, 4.0], "b": [10.0, 20.0, 30.0, 40.0]},
+    {"c": [-1.0, -2.0, -3.0], "b": [50.0, 60.0, 70.0]},
+    {"b": [80.0, 90.0], "a": [5.0, 6.0], "c": [-4.0, -5.0]},
+]
+# A frame whose columns were all seen during the batches above, used to probe `transform_many`.
+EMERGING_TRANSFORM: dict[str, list[float]] = {
+    "a": [1.5, 6.5, 3.0],
+    "b": [15.0, 95.0, 45.0],
+    "c": [-1.5, -4.5, -2.0],
+}
+
+
+def _frame_to_numpy(native) -> np.ndarray:
+    """Read a native frame back into a float64 numpy matrix via narwhals."""
+    return np.asarray(nw.from_native(native, eager_only=True).to_numpy(), dtype=np.float64)
+
+
+@pytest.mark.parametrize("with_std", [True, False])
+@pytest.mark.parametrize("window_size", [None, 7])
+def test_standard_scaler_transform_many_backend_agnostic(
+    frame_backend: FrameBackend, with_std: bool, window_size: int | None
+) -> None:
+    """`transform_many` yields the same values on every backend as the pandas reference."""
+    data = _numeric_batch()
+
+    reference = preprocessing.StandardScaler(with_std=with_std, window_size=window_size)
+    reference.learn_many(pd.DataFrame(data))
+    expected = reference.transform_many(pd.DataFrame(data)).to_numpy()
+
+    scaler = preprocessing.StandardScaler(with_std=with_std, window_size=window_size)
+    scaler.learn_many(frame_backend.frame(data))
+    got = _frame_to_numpy(scaler.transform_many(frame_backend.frame(data)))
+
+    np.testing.assert_allclose(got, expected, atol=1e-9)
+
+
+@pytest.mark.parametrize("window_size", [None, 7])
+def test_standard_scaler_learn_many_backend_agnostic(
+    frame_backend: FrameBackend, window_size: int | None
+) -> None:
+    """`learn_many` accumulates identical running statistics across backends."""
+    data = _numeric_batch()
+
+    reference = preprocessing.StandardScaler(window_size=window_size)
+    reference.learn_many(pd.DataFrame(data))
+
+    scaler = preprocessing.StandardScaler(window_size=window_size)
+    scaler.learn_many(frame_backend.frame(data))
+
+    for col in data:
+        ref_mean = reference.means[col].get() if window_size else reference.means[col]
+        got_mean = scaler.means[col].get() if window_size else scaler.means[col]
+        ref_var = reference.vars[col].get() if window_size else reference.vars[col]
+        got_var = scaler.vars[col].get() if window_size else scaler.vars[col]
+        assert scaler.counts[col] == reference.counts[col]
+        assert math.isclose(got_mean, ref_mean, abs_tol=1e-9)
+        assert math.isclose(got_var, ref_var, abs_tol=1e-9)
+
+
+def test_standard_scaler_transform_many_returns_native_backend(
+    frame_backend: FrameBackend,
+) -> None:
+    """The output frame is rebuilt in the caller's own backend."""
+    data = _numeric_batch()
+    native = frame_backend.frame(data)
+
+    scaler = preprocessing.StandardScaler()
+    scaler.learn_many(native)
+    out = scaler.transform_many(native)
+
+    assert type(out) is type(native)
+
+
+def test_standard_scaler_transform_many_chunked_backend_agnostic(
+    frame_backend: FrameBackend,
+) -> None:
+    """Learning in mini-batches then transforming matches the pandas reference."""
+    data = _numeric_batch(60)
+    pdf = pd.DataFrame(data)
+
+    reference = preprocessing.StandardScaler()
+    for chunk in _pd_split(pdf, 5):
+        reference.learn_many(chunk)
+    expected = reference.transform_many(pdf).to_numpy()
+
+    scaler = preprocessing.StandardScaler()
+    native = frame_backend.frame(data)
+    # Slice the native frame into the same row ranges via narwhals.
+    nw_frame = nw.from_native(native, eager_only=True)
+    bounds = np.array_split(range(len(pdf)), 5)
+    for idx in bounds:
+        scaler.learn_many(nw_frame[int(idx[0]) : int(idx[-1]) + 1].to_native())
+    got = _frame_to_numpy(scaler.transform_many(native))
+
+    np.testing.assert_allclose(got, expected, atol=1e-9)
+
+
+@pytest.mark.parametrize("with_std", [True, False])
+def test_standard_scaler_real_dataset_backend_agnostic(
+    frame_backend: FrameBackend, with_std: bool
+) -> None:
+    """A real, mixed-dtype dataset (TrumpApproval) scales identically on every backend.
+
+    The frame mixes an ``int64`` column with several ``float64`` ones and is learned in chunks,
+    exercising both the running-statistics merge and the integer-to-float promotion path.
+    """
+    data = _trump_columns()
+    chunks = _chunk_dict(data, 8)
+
+    reference = preprocessing.StandardScaler(with_std=with_std)
+    for chunk in chunks:
+        reference.learn_many(pd.DataFrame(chunk))
+    expected = reference.transform_many(pd.DataFrame(data)).to_numpy()
+
+    scaler = preprocessing.StandardScaler(with_std=with_std)
+    for chunk in chunks:
+        scaler.learn_many(frame_backend.frame(chunk))
+    got = _frame_to_numpy(scaler.transform_many(frame_backend.frame(data)))
+
+    np.testing.assert_allclose(got, expected, atol=1e-9)
+
+
+@pytest.mark.parametrize("with_std", [True, False])
+@pytest.mark.parametrize("window_size", [None, 5])
+def test_standard_scaler_emerging_features_learn_backend_agnostic(
+    frame_backend: FrameBackend, with_std: bool, window_size: int | None
+) -> None:
+    """Adding/removing/reordering columns between `learn_many` calls is backend-agnostic.
+
+    Each feature's running statistics must depend only on the rows in which it actually appears,
+    identically across backends, even as the column set and order change between mini-batches.
+    """
+    reference = preprocessing.StandardScaler(with_std=with_std, window_size=window_size)
+    scaler = preprocessing.StandardScaler(with_std=with_std, window_size=window_size)
+    for batch in EMERGING_BATCHES:
+        reference.learn_many(pd.DataFrame(batch))
+        scaler.learn_many(frame_backend.frame(batch))
+
+    for col in ("a", "b", "c"):
+        ref_mean = reference.means[col].get() if window_size else reference.means[col]
+        got_mean = scaler.means[col].get() if window_size else scaler.means[col]
+        assert scaler.counts[col] == reference.counts[col]
+        assert math.isclose(got_mean, ref_mean, abs_tol=1e-9)
+        if with_std:
+            ref_var = reference.vars[col].get() if window_size else reference.vars[col]
+            got_var = scaler.vars[col].get() if window_size else scaler.vars[col]
+            assert math.isclose(got_var, ref_var, abs_tol=1e-9)
+
+
+def test_standard_scaler_emerging_features_transform_backend_agnostic(
+    frame_backend: FrameBackend,
+) -> None:
+    """After learning on a shifting column set, `transform_many` matches the pandas oracle."""
+    reference = preprocessing.StandardScaler()
+    scaler = preprocessing.StandardScaler()
+    for batch in EMERGING_BATCHES:
+        reference.learn_many(pd.DataFrame(batch))
+        scaler.learn_many(frame_backend.frame(batch))
+
+    expected = reference.transform_many(pd.DataFrame(EMERGING_TRANSFORM)).to_numpy()
+    got = _frame_to_numpy(scaler.transform_many(frame_backend.frame(EMERGING_TRANSFORM)))
+
+    np.testing.assert_allclose(got, expected, atol=1e-9)

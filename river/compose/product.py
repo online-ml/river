@@ -2,14 +2,11 @@ from __future__ import annotations
 
 import functools
 import itertools
-import typing
 
+import narwhals.stable.v2 as nw
 import numpy as np
 
 from river import utils
-
-if typing.TYPE_CHECKING:
-    pass
 
 from . import union
 
@@ -89,8 +86,29 @@ class TransformerProduct(union.TransformerUnion):
         }
 
     def transform_many(self, X):
-        pd = utils.pandas.import_pandas()
         outputs = [t.transform_many(X) for t in self.transformers.values()]
+        # Classic pandas keeps the sparse-aware fast path (preserving the memory savings when
+        # crossing one-hot encoded features); every other backend takes the agnostic path.
+        if utils.dataframe.into_frame(outputs[0]).implementation.is_pandas():
+            return self._transform_many_pandas(X, outputs)
+        return self._transform_many_narwhals(outputs)
+
+    def _transform_many_narwhals(self, outputs):
+        # Cross every column of each output with every column of the others, multiplying them
+        # element-wise. Series share the input's backend, so the products do too.
+        frames = [utils.dataframe.into_frame(output) for output in outputs]
+        crossed = []
+        for combo in itertools.product(*(frame.columns for frame in frames)):
+            name = "*".join(combo)
+            product = functools.reduce(
+                lambda a, b: a * b,
+                (frame[col] for frame, col in zip(frames, combo)),
+            )
+            crossed.append(product.rename(name).to_frame())
+        return nw.concat(crossed, how="horizontal").to_native()
+
+    def _transform_many_pandas(self, X, outputs):
+        pd = utils.pandas.import_pandas()
 
         def multiply(a, b):
             # Fast-track for sparse[uint8] * sparse[uint8]
