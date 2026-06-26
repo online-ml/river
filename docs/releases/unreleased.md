@@ -60,6 +60,10 @@
 
 - Added mini-batch support to `GaussianNB` via `learn_many`, `predict_many`, and `predict_proba_many`.
 
+## neural_net
+
+- Removed the deprecated `river.neural_net` module (and its `MLPRegressor`), which had emitted a `DeprecationWarning` since 0.25.0. Use [`deep-river`](https://github.com/online-ml/deep-river) or a dedicated deep-learning library such as PyTorch for neural networks.
+
 ## optim
 
 - Exposed `optim.Newton` (Online Newton Step), which was implemented but never exported, and fixed an initialisation bug (the inverse Hessian started at `eps * I` instead of `(1 / eps) * I`) that crippled learning. Reworked around NumPy-backed dense state.
