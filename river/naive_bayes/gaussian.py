@@ -160,7 +160,6 @@ class GaussianNB(base.BaseNB):
             X = X.sparse.to_dense()
 
         X = nw.from_native(X, eager_only=True)
-        x_nw = into_frame(X)
 
         if not self.class_counts:
             return X.select([]).to_native()
@@ -187,7 +186,7 @@ class GaussianNB(base.BaseNB):
     
             jll[c] = ll
 
-    return to_native_frame(jll, like=x_nw)
+    return to_native_frame(jll, like=X)
 
     def _unit_test_skips(self):
         return set()
