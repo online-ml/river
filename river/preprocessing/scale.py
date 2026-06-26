@@ -12,7 +12,8 @@ import numpy as np
 from river import base, stats, utils
 
 if typing.TYPE_CHECKING:
-    import pandas as pd
+    from collections.abc import Mapping
+
     from narwhals.stable.v2.typing import IntoDataFrame, IntoDataFrameT
 
 __all__ = [
@@ -24,6 +25,17 @@ __all__ = [
     "RobustScaler",
     "StandardScaler",
 ]
+
+NW_TO_NP_DTYPES: Mapping[nw.dtypes.DType, np.number] = {
+    nw.Int8(): np.float16(),
+    nw.Int16(): np.float32(),
+    nw.Int32(): np.float64(),
+    nw.UInt8(): np.float16(),
+    nw.UInt16(): np.float32(),
+    nw.UInt32(): np.float64(),
+    nw.Float32(): np.float32(),
+    nw.Float64(): np.float64(),
+}
 
 
 def safe_div(a, b):
@@ -359,10 +371,11 @@ class StandardScaler(base.MiniBatchTransformer):
     def transform_many(self, X: IntoDataFrameT) -> IntoDataFrameT:
         """Scale a mini-batch of features.
 
-        Classic numpy-backed pandas keeps the historical fast path, which preserves the input's
-        float dtype (e.g. ``float32`` stays ``float32``). Every other narwhals-supported backend
-        (polars, pyarrow, nullable/arrow-backed pandas, ...) is scaled through a backend-agnostic
-        path whose compute runs in ``float64``.
+        Every narwhals-supported backend (pandas, polars, pyarrow, nullable/arrow-backed
+        pandas, ...) takes the same backend-agnostic path. The compute dtype is inferred from
+        the input schema, so a feature's float dtype is preserved (e.g. ``float32`` stays
+        ``float32``); integer columns are widened to the matching float and anything else falls
+        back to ``float64``.
 
         Parameters
         ----------
@@ -372,62 +385,26 @@ class StandardScaler(base.MiniBatchTransformer):
 
         """
         Xnw = utils.dataframe.into_frame(X)
-        # The fast path relies on `.values` yielding a numeric numpy view, which only holds for
-        # classic numpy-backed pandas; nullable/arrow-backed pandas return object arrays and so
-        # take the agnostic path alongside polars/pyarrow.
-        if Xnw.implementation.is_pandas() and all(
-            isinstance(dtype, np.dtype) for dtype in typing.cast("pd.DataFrame", X).dtypes
-        ):
-            native = self._transform_many_pandas(typing.cast("pd.DataFrame", X))
-        else:
-            native = self._transform_many_narwhals(Xnw)
-        return typing.cast("IntoDataFrameT", native)
-
-    def _transform_many_pandas(self, X: pd.DataFrame) -> pd.DataFrame:
-        pd = utils.pandas.import_pandas()
-        # Determine dtype of input
-        dtypes = X.dtypes.unique()
-        dtype = dtypes[0] if len(dtypes) == 1 else np.float64
-
-        # Check if the dtype is integer type and convert to corresponding float type
-        if np.issubdtype(dtype, np.integer):
-            bytes_size = dtype.itemsize
-            dtype = np.dtype(f"float{bytes_size * 8}")  # type: ignore[operator]
+        schema = Xnw.schema
+        columns = schema.names()
+        dtypes = {NW_TO_NP_DTYPES.get(dtype, np.float64()) for dtype in schema.dtypes()}
+        dtype = np.result_type(*dtypes)
 
         if self.window_size is None:
-            means = np.array([self.means[c] for c in X.columns], dtype=dtype)
+            means = np.array([self.means[c] for c in columns], dtype=dtype)
         else:
-            means = np.array([self.means[c].get() for c in X.columns], dtype=dtype)
-        Xt = X.values - means
+            means = np.array([self.means[c].get() for c in columns], dtype=dtype)
+
+        Xt = utils.dataframe.to_numpy(Xnw, dtype=dtype) - means
 
         if self.with_std:
             if self.window_size is None:
-                stds = np.array([self.vars[c] ** 0.5 for c in X.columns], dtype=dtype)
+                stds = np.array([self.vars[c] ** 0.5 for c in columns], dtype=dtype)
             else:
-                stds = np.array([self.vars[c].get() ** 0.5 for c in X.columns], dtype=dtype)
+                stds = np.array([self.vars[c].get() ** 0.5 for c in columns], dtype=dtype)
             np.divide(Xt, stds, where=stds > 0, out=Xt)
 
-        return pd.DataFrame(Xt, index=X.index, columns=X.columns, copy=False)
-
-    def _transform_many_narwhals(self, Xnw: nw.DataFrame[IntoDataFrameT]) -> IntoDataFrameT:
-        columns = Xnw.columns
-
-        if self.window_size is None:
-            means = np.array([self.means[c] for c in columns], dtype=np.float64)
-        else:
-            means = np.array([self.means[c].get() for c in columns], dtype=np.float64)
-        Xt = utils.dataframe.to_numpy(Xnw) - means
-
-        if self.with_std:
-            if self.window_size is None:
-                stds = np.array([self.vars[c] ** 0.5 for c in columns], dtype=np.float64)
-            else:
-                stds = np.array([self.vars[c].get() ** 0.5 for c in columns], dtype=np.float64)
-            np.divide(Xt, stds, where=stds > 0, out=Xt)
-
-        native = utils.dataframe.to_native_frame(
-            {col: Xt[:, j] for j, col in enumerate(columns)}, like=Xnw
-        )
+        native = utils.dataframe.to_native_frame(Xt, columns=columns, like=Xnw)
         return typing.cast("IntoDataFrameT", native)
 
 

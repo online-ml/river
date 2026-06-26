@@ -538,10 +538,10 @@ def test_issue_1313():
     """
 
 
-# `StandardScaler`'s mini-batch path is routed through narwhals: classic numpy-backed pandas keeps
-# the historical fast path (preserving its float dtype), while every other backend is scaled
-# through a backend-agnostic float64 path. These tests pin the cross-backend behaviour, using the
-# pandas path as the oracle.
+# `StandardScaler`'s mini-batch path is routed through narwhals: every backend takes the same
+# backend-agnostic path, which infers the compute dtype from the input schema and so preserves the
+# input's float dtype. These tests pin the cross-backend behaviour, using the pandas path as the
+# oracle.
 
 
 def _numeric_batch(n: int = 40) -> dict[str, list[float]]:
