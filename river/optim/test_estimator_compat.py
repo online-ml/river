@@ -58,9 +58,6 @@ def iter_optimizer_estimators():
                 continue
             if cls in seen:
                 continue
-            # MLPRegressor is deprecated and requires an explicit architecture; skip it.
-            if cls.__name__ == "MLPRegressor":
-                continue
             try:
                 params = set(inspect.signature(cls.__init__).parameters)
             except (TypeError, ValueError):

@@ -10,7 +10,6 @@ from river import (
     metrics,
     naive_bayes,
     neighbors,
-    neural_net,
     optim,
     preprocessing,
     rules,
@@ -149,19 +148,6 @@ _REGRESSION_MODEL_REGISTRY = {
                 neighbors.KNNRegressor(),
                 rules.AMRules(),
             ],
-        )
-    ),
-    "River MLP": lambda: (
-        preprocessing.StandardScaler()
-        | neural_net.MLPRegressor(
-            hidden_dims=(5,),
-            activations=(
-                neural_net.activations.ReLU,
-                neural_net.activations.ReLU,
-                neural_net.activations.Identity,
-            ),
-            optimizer=optim.SGD(1e-3),
-            seed=42,
         )
     ),
     "[baseline] Mean predictor": lambda: dummy.StatisticRegressor(stats.Mean()),
