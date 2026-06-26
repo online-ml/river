@@ -28,8 +28,8 @@ class OneHotEncoder(base.MiniBatchTransformer):
         Categories (unique values) per feature:
             `None` : Determine categories automatically from the training data.
 
-            dict of dicts : Expected categories for each feature. The outer dict maps each feature to its inner dict.
-            The inner dict maps each category to its code.
+            dict of sets : Expected categories for each feature. The outer dict maps each feature
+            to the set of category values to encode.
 
         The used categories can be found in the `values` attribute.
     drop_zeros
@@ -42,8 +42,8 @@ class OneHotEncoder(base.MiniBatchTransformer):
     Attributes
     ----------
     values
-        A dict of dicts. The outer dict maps each feature to its inner dict. The inner dict maps
-        each category to its code.
+        A dict of sets. Maps each feature to the set of category values seen during training
+        (or the categories provided explicitly).
 
     Examples
     --------
@@ -249,12 +249,22 @@ class OneHotEncoder(base.MiniBatchTransformer):
 
     """
 
-    def __init__(self, categories: dict | None = None, drop_zeros=False, drop_first=False):
+    def __init__(
+        self,
+        categories: dict[base.typing.FeatureName, set[typing.Hashable]] | None = None,
+        drop_zeros: bool = False,
+        drop_first: bool = False,
+    ) -> None:
         self.drop_zeros = drop_zeros
         self.drop_first = drop_first
         self.categories = categories
-        self.values: collections.defaultdict | dict
-        self._zero_dict: dict = {}
+        self.values: (
+            collections.defaultdict[base.typing.FeatureName, set[typing.Hashable]]
+            | dict[base.typing.FeatureName, set[typing.Hashable]]
+        )
+        # `Any` keys (the names are strings) keep `transform_one`'s output assignable to the
+        # base `dict[FeatureName, Any]` return despite `dict`'s invariant key parameter.
+        self._zero_dict: dict[typing.Any, int] = {}
 
         if self.categories is None:
             self.values = collections.defaultdict(set)
@@ -351,19 +361,22 @@ class OneHotEncoder(base.MiniBatchTransformer):
         )
         return typing.cast("IntoDataFrameT", native)
 
+    def _seen_columns(self) -> set[str]:
+        """The `<feature>_<value>` dummy names for every category learned or configured so far."""
+        return {f"{col}_{val}" for col, vals in self.values.items() for val in vals}
+
     def _transform_many_pandas(self, X: pd.DataFrame) -> pd.DataFrame:
         pd = utils.pandas.import_pandas()
         oh = pd.get_dummies(X, columns=X.columns, sparse=True, dtype="uint8")
+        seen_in_the_past = self._seen_columns()
 
         # NOTE: assume if category mappings are explicitly provided,
         # no other category values are allowed for output. Aligns with `sklearn` behavior.
         if self.categories is not None:
-            seen_in_the_past = {f"{col}_{val}" for col, vals in self.values.items() for val in vals}
             to_remove = set(oh.columns) - seen_in_the_past
             oh.drop(columns=list(to_remove), inplace=True)
 
         if not self.drop_zeros:
-            seen_in_the_past = {f"{col}_{val}" for col, vals in self.values.items() for val in vals}
             to_add = seen_in_the_past - set(oh.columns)
             for col in to_add:
                 oh[col] = pd.arrays.SparseArray([0] * len(oh), dtype="uint8")
@@ -392,8 +405,8 @@ class OneHotEncoder(base.MiniBatchTransformer):
             how="horizontal",
         )
         null_cols = {f"{col}_null" for col in columns}
-        present = {col for col in dummies.columns if col not in null_cols}
-        seen_in_the_past = {f"{col}_{val}" for col, vals in self.values.items() for val in vals}
+        present = set(dummies.columns) - null_cols
+        seen_in_the_past = self._seen_columns()
 
         # NOTE: assume if category mappings are explicitly provided, no other category values are
         # allowed for output. Aligns with `sklearn` behavior.
