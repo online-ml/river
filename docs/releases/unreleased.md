@@ -16,6 +16,11 @@
 
 - Made `anomaly.OneClassSVM.learn_many` dataframe-agnostic via narwhals: it now accepts any narwhals-supported eager backend (pandas, polars, pyarrow, ...) instead of only pandas. Outputs are unchanged.
 
+## cluster
+
+- Gave the `CluStream`, `DenStream`, and `DBSTREAM` micro-cluster objects `__slots__`. These are created in large numbers on long streams, so dropping their per-instance `__dict__` trims memory (~40 bytes per micro-cluster). Behavior is unchanged.
+- `CluStreamMicroCluster` no longer inherits from `base.Base`; it is an internal data structure, not an estimator, so the estimator machinery (cloning, parameter introspection, `repr`) never applied to it. This matches the `DenStream`/`DBSTREAM` micro-clusters and is what lets it use `__slots__`.
+
 ## compose
 
 - `compose.Pipeline` now forwards extra keyword arguments (such as the timestamp `t` used by `utils.TimeRolling`, or a sample weight `w`) to each step whose method declares them, and drops them for steps that don't. This makes `feature_extraction.Agg`/`TargetAgg` backed by `utils.TimeRolling` work inside a pipeline via `model.learn_one(x, y, t=t)`. Routing applies to `learn_one` and to the predict-time methods (`predict_one`, `predict_proba_one`, `score_one`, `transform_one`), so it also works under `compose.learn_during_predict` where unsupervised steps learn during `predict_one(x, t=t)`. Fixes [#1600](https://github.com/online-ml/river/issues/1600). The accepted arguments are determined once when the pipeline plan is built, so pipelines with no extra arguments keep their previous speed.
@@ -109,6 +114,11 @@
 ## stats
 
 - Added `stats.ChiSquared`, a streaming Chi-squared statistic between two categorical variables. Wrap it with `utils.Rolling` for a rolling version.
+
+## tree
+
+- Gave the binary-search-tree nodes of the numeric splitters (`EBSTSplitter`/`TEBSTSplitter`, `ExhaustiveSplitter`, `QOSplitter`) `__slots__`. One node is created per distinct observed feature value, so on high-cardinality numeric streams these can number in the millions; dropping their per-instance `__dict__` trims memory (~40 bytes per node) with no change in behavior or throughput.
+- Slotted the `GradHessMerit` split-candidate record used by the Stochastic Gradient Trees (`tree.SGTClassifier`/`SGTRegressor`) via `@dataclass(slots=True)`, trimming its per-instance memory. Behavior is unchanged.
 
 ## stream
 
