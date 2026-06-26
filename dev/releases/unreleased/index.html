@@ -2148,6 +2148,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#cluster" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        cluster
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#compose" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -2247,6 +2258,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#neighbors" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        neighbors
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#neural_net" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -2339,6 +2361,17 @@
     <span class="md-ellipsis">
       <span class="md-typeset">
         stats
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tree" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        tree
       </span>
     </span>
   </a>
@@ -3555,6 +3588,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#cluster" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        cluster
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#compose" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -3647,6 +3691,17 @@
     <span class="md-ellipsis">
       <span class="md-typeset">
         naive_bayes
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#neighbors" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        neighbors
       </span>
     </span>
   </a>
@@ -3753,6 +3808,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#tree" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        tree
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#stream" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -3801,6 +3867,11 @@
 <li>
 <p>Made <code>anomaly.OneClassSVM.learn_many</code> dataframe-agnostic via narwhals: it now accepts any narwhals-supported eager backend (pandas, polars, pyarrow, ...) instead of only pandas. Outputs are unchanged.</p>
 </li>
+</ul>
+<h2 id="cluster">cluster<a class="headerlink" href="#cluster" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Gave the <code>CluStream</code>, <code>DenStream</code>, and <code>DBSTREAM</code> micro-cluster objects <code>__slots__</code>. These are created in large numbers on long streams, so dropping their per-instance <code>__dict__</code> trims memory (~40 bytes per micro-cluster). Behavior is unchanged.</li>
+<li><code>CluStreamMicroCluster</code> no longer inherits from <a href="../../api/base/Base"><code>base.Base</code></a>; it is an internal data structure, not an estimator, so the estimator machinery (cloning, parameter introspection, <code>repr</code>) never applied to it. This matches the <code>DenStream</code>/<code>DBSTREAM</code> micro-clusters and is what lets it use <code>__slots__</code>.</li>
 </ul>
 <h2 id="compose">compose<a class="headerlink" href="#compose" title="Permanent link">&para;</a></h2>
 <ul>
@@ -3852,6 +3923,10 @@
 <ul>
 <li>Added mini-batch support to <code>GaussianNB</code> via <code>learn_many</code>, <code>predict_many</code>, and <code>predict_proba_many</code>.</li>
 </ul>
+<h2 id="neighbors">neighbors<a class="headerlink" href="#neighbors" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Gave the SWINN graph <code>Vertex</code> <code>__slots__</code> and dropped its <a href="../../api/base/Base"><code>base.Base</code></a> inheritance (it is an internal graph node, not an estimator). One vertex is created per buffered sample, so this trims memory on large <a href="../../api/neighbors/SWINN"><code>neighbors.SWINN</code></a> indexes; behavior is unchanged.</li>
+</ul>
 <h2 id="neural_net">neural_net<a class="headerlink" href="#neural_net" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Removed the deprecated <code>river.neural_net</code> module (and its <code>MLPRegressor</code>), which had emitted a <code>DeprecationWarning</code> since 0.25.0. Use <a href="https://github.com/online-ml/deep-river"><code>deep-river</code></a> or a dedicated deep-learning library such as PyTorch for neural networks.</li>
@@ -3895,10 +3970,16 @@
 <ul>
 <li>Fixed <code>RecursionError</code> in <code>AMRules</code> on long streams: the <code>EBSTSplitter</code>, <code>TEBSTSplitter</code>, and <code>ExhaustiveSplitter</code> now traverse and deep-copy their search trees iteratively, so deeply-skewed trees no longer blow Python's recursion limit.</li>
 <li>Fixed an <code>AMRules</code> memory leak where <code>HoeffdingRule.expand</code> appended a redundant <code>NumericLiteral</code> when a new split shared a feature and direction with an existing literal without tightening the threshold.</li>
+<li><code>Literal</code> (and its <code>NumericLiteral</code>/<code>NominalLiteral</code> subclasses) no longer inherits from <a href="../../api/base/Base"><code>base.Base</code></a>, so its existing <code>__slots__</code> now actually takes effect — previously every literal still carried a <code>__dict__</code> because <a href="../../api/base/Base"><code>base.Base</code></a> defines no slots. Literals are internal rule components, not estimators, so the estimator machinery never applied. Trims memory on rule sets with many literals; behavior is unchanged.</li>
 </ul>
 <h2 id="stats">stats<a class="headerlink" href="#stats" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Added <a href="../../api/stats/ChiSquared"><code>stats.ChiSquared</code></a>, a streaming Chi-squared statistic between two categorical variables. Wrap it with <a href="../../api/utils/Rolling"><code>utils.Rolling</code></a> for a rolling version.</li>
+</ul>
+<h2 id="tree">tree<a class="headerlink" href="#tree" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Gave the binary-search-tree nodes of the numeric splitters (<code>EBSTSplitter</code>/<code>TEBSTSplitter</code>, <code>ExhaustiveSplitter</code>, <code>QOSplitter</code>) <code>__slots__</code>. One node is created per distinct observed feature value, so on high-cardinality numeric streams these can number in the millions; dropping their per-instance <code>__dict__</code> trims memory (~40 bytes per node) with no change in behavior or throughput.</li>
+<li>Slotted the <code>GradHessMerit</code> split-candidate record used by the Stochastic Gradient Trees (<a href="../../api/tree/SGTClassifier"><code>tree.SGTClassifier</code></a>/<code>SGTRegressor</code>) via <code>@dataclass(slots=True)</code>, trimming its per-instance memory. Behavior is unchanged.</li>
 </ul>
 <h2 id="stream">stream<a class="headerlink" href="#stream" title="Permanent link">&para;</a></h2>
 <ul>
