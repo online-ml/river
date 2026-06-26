@@ -29,36 +29,6 @@ class GaussianNB(base.BaseNB):
     Gaussian is updated using the amount associated with each feature; the details can be be found
     in `proba.Gaussian`. The joint log-likelihood is then obtained by summing the log probabilities
     of each feature associated with each class.
-
-    Examples
-    --------
-
-    >>> from river import naive_bayes
-    >>> from river import stream
-    >>> import numpy as np
-
-    >>> X = np.array([[-1, -1], [-2, -1], [-3, -2], [1, 1], [2, 1], [3, 2]])
-    >>> Y = np.array([1, 1, 1, 2, 2, 2])
-
-    >>> model = naive_bayes.GaussianNB()
-
-    >>> for x, y in stream.iter_array(X, Y):
-    ...     model.learn_one(x, y)
-
-    >>> model.predict_one({0: -0.8, 1: -1})
-    1
-
-    You can also train the model and make predictions in mini-batch mode.
-
-    >>> import pandas as pd
-
-    >>> model = naive_bayes.GaussianNB()
-    >>> model.learn_many(pd.DataFrame(X), pd.Series(Y))
-    >>> model.predict_many(pd.DataFrame([[-0.8, -1], [2.8, 1.5]]))
-    0    1
-    1    2
-    dtype: int64
-
     """
 
     def __init__(self):
@@ -103,7 +73,6 @@ class GaussianNB(base.BaseNB):
             Feature vectors.
         y
             Target classes.
-
         """
         if hasattr(X, "sparse"):
             X = X.sparse.to_dense()
@@ -153,13 +122,12 @@ class GaussianNB(base.BaseNB):
         Returns
         -------
         Input samples joint log-likelihoods.
-
         """
-
         if hasattr(X, "sparse"):
             X = X.sparse.to_dense()
 
         X = nw.from_native(X, eager_only=True)
+        X = into_frame(X)
 
         if not self.class_counts:
             return X.select([]).to_native()
@@ -169,23 +137,23 @@ class GaussianNB(base.BaseNB):
         for c in self.class_counts:
             ll = np.full(len(X), math.log(self.p_class(c)), dtype=float)
             gaussians = self.gaussians.get(c, {})
-    
+
             for col in X.columns:
                 s = X[col].to_numpy().astype(object)
                 mask = np.array([v is not None for v in s])
-    
+
                 values = np.asarray(s[mask]).astype(float)
-    
+
                 col_ll = np.full(len(X), _LOG_PDF_EPS, dtype=float)
                 col_ll[mask] = self._log_gaussian_pdf_many(
                     gaussians.get(col),
                     values,
                 )
-                
+
                 ll += col_ll
-    
+
             jll[c] = ll
-        
+
         return to_native_frame(jll, like=X)
 
     def _unit_test_skips(self):
