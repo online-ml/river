@@ -676,29 +676,6 @@
         "version": "1106f9e9f212f84a6aff70f130eddfac13301f7b49483deb875d0b600e3db87d",
         "warmup_time": 0
     },
-    "bench_regression.RiverMLP.time_progressive_val": {
-        "code": "class <locals>:\n    def time_progressive_val(self, dataset_name):\n        for _ in evaluate.iter_progressive_val_score(\n            dataset=self.dataset,\n            model=self.model,\n            metric=metric_fn(),\n            measure_time=False,\n            measure_memory=False,\n        ):\n            pass\n\n    def setup(self, dataset_name):\n        self.model = get_model(track, model_name)\n        dataset = get_dataset(track, dataset_name)\n        next(iter(dataset))\n        self.dataset = get_dataset(track, dataset_name)",
-        "min_run_count": 1,
-        "name": "bench_regression.RiverMLP.time_progressive_val",
-        "number": 1,
-        "param_names": [
-            "dataset"
-        ],
-        "params": [
-            [
-                "'ChickWeights'",
-                "'TrumpApproval'"
-            ]
-        ],
-        "repeat": 1,
-        "rounds": 1,
-        "sample_time": 0.01,
-        "timeout": 600,
-        "type": "time",
-        "unit": "seconds",
-        "version": "1106f9e9f212f84a6aff70f130eddfac13301f7b49483deb875d0b600e3db87d",
-        "warmup_time": 0
-    },
     "bench_regression.StochasticGradientTree.time_progressive_val": {
         "code": "class <locals>:\n    def time_progressive_val(self, dataset_name):\n        for _ in evaluate.iter_progressive_val_score(\n            dataset=self.dataset,\n            model=self.model,\n            metric=metric_fn(),\n            measure_time=False,\n            measure_memory=False,\n        ):\n            pass\n\n    def setup(self, dataset_name):\n        self.model = get_model(track, model_name)\n        dataset = get_dataset(track, dataset_name)\n        next(iter(dataset))\n        self.dataset = get_dataset(track, dataset_name)",
         "min_run_count": 1,
