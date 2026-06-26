@@ -63,8 +63,6 @@ def test_predict_proba_many_matches_sklearn(dataset):
         columns=skl_model.classes_,
     )
     river_probs.columns = list(skl_probs.columns)
-    print(river_probs.columns)
-    print(skl_probs.columns)
     assert np.allclose(
         river_probs.to_numpy(),
         skl_probs.to_numpy(),
