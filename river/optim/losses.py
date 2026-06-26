@@ -8,10 +8,6 @@ Several losses are piecewise (`Hinge`, `Absolute`, `EpsilonInsensitiveHinge`, `H
 their gradient is discontinuous at a kink. The invariant we hold everywhere is that the scalar and
 vectorised branches of a loss **must** resolve such a boundary point identically; otherwise looping
 `learn_one` and a single `learn_many` call would disagree on inputs that land exactly on the kink.
-The tie itself is broken following each loss's standard (scikit-learn) definition: in particular
-`Hinge` treats a point sitting exactly on the margin as a violation (active piece, gradient `-y`),
-matching scikit-learn's `dloss`, so both branches use ``<=``. `test_loss_boundary_scalar_array_agree`
-guards this agreement at the exact kinks.
 
 """
 
