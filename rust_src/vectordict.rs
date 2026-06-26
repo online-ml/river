@@ -82,10 +82,6 @@ impl VectorDict {
         !self.use_mask && !self.use_factory
     }
 
-    fn data_bound<'py>(&self, py: Python<'py>) -> Bound<'py, PyDict> {
-        self.data.bind(py).clone()
-    }
-
     /// `_get`: 0 (or default_factory()) for missing or masked keys.
     fn get_value<'py>(
         &self,

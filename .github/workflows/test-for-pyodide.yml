@@ -1,10 +1,11 @@
 name: test-for-pyodide
 
+# Building the Pyodide (Emscripten) wheels is slow and rarely breaks, so we
+# don't run it on every PR/push. Trigger it manually before cutting a release
+# to confirm the wasm build still works. The release pipeline (pypi.yml) also
+# builds these wheels on tag push.
 on:
-  pull_request:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
 
 jobs:
   build:
