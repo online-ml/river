@@ -8,13 +8,11 @@ import numpy as np
 from scipy import sparse, special
 
 from river import base, utils
-from river.utils.dataframe import into_frame, to_numpy, to_native_frame
-
-import narwhals as nw
+from river.utils.dataframe import into_frame, to_native_frame, to_numpy
 
 if typing.TYPE_CHECKING:
     import pandas as pd
-    from narwhals.stable.v2.typing import IntoDataFrame, IntoDataFrameT, IntoSeries
+    from narwhals.stable.v2.typing import IntoDataFrame
 
 
 class BaseNB(base.MiniBatchClassifier):
@@ -55,7 +53,7 @@ class BaseNB(base.MiniBatchClassifier):
         jll_np = to_numpy(jll_nw)
         lse = special.logsumexp(jll_np, axis=1)
         result = np.exp(jll_np - lse[:, np.newaxis])
-        return to_native_frame({col:result[:, i] for i, col in enumerate(columns)}, like=jll_nw)
+        return to_native_frame({col: result[:, i] for i, col in enumerate(columns)}, like=jll_nw)
 
     @property
     def _multiclass(self):
