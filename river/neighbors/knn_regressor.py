@@ -92,6 +92,12 @@ class KNNRegressor(base.Regressor):
             ),
         }
 
+    def _unit_test_skips(self):
+        # Predictions are a distance-weighted average over the neighbor set, and the Euclidean
+        # distance sums over features in dict order, so reordering features can perturb distances
+        # at the float level and flip near-tied neighbors. (KNNClassifier's argmax absorbs this.)
+        return {"check_shuffle_features_no_impact"}
+
     def _check_aggregation_method(self, method):
         """Ensure validation method is known to the model.
 

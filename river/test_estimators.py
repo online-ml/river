@@ -43,7 +43,6 @@ def iter_estimators():
 def iter_estimators_which_can_be_tested():
     ignored = (
         River2SKLBase,
-        anomaly.LocalOutlierFactor,  # needs warm-start to work correctly
         compose.FuncTransformer,
         compose.Grouper,
         compose.Pipeline,
