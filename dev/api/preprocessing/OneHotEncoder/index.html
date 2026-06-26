@@ -47155,17 +47155,19 @@
 <ul>
 <li>
 <p><strong>categories</strong></p>
-<p><em>Type</em> → <code>dict | None</code></p>
+<p><em>Type</em> → <code>dict[base.typing.FeatureName, set[typing.Hashable]] | None</code></p>
 <p><em>Default</em> → <code>None</code></p>
-<p>Categories (unique values) per feature:     <code>None</code> : Determine categories automatically from the training data.      dict of dicts : Expected categories for each feature. The outer dict maps each feature to its inner dict.     The inner dict maps each category to its code.  The used categories can be found in the <code>values</code> attribute.</p>
+<p>Categories (unique values) per feature:     <code>None</code> : Determine categories automatically from the training data.      dict of sets : Expected categories for each feature. The outer dict maps each feature     to the set of category values to encode.  The used categories can be found in the <code>values</code> attribute.</p>
 </li>
 <li>
 <p><strong>drop_zeros</strong></p>
+<p><em>Type</em> → <code>bool</code></p>
 <p><em>Default</em> → <code>False</code></p>
 <p>Whether or not 0s should be made explicit or not.</p>
 </li>
 <li>
 <p><strong>drop_first</strong></p>
+<p><em>Type</em> → <code>bool</code></p>
 <p><em>Default</em> → <code>False</code></p>
 <p>Whether to get <code>k - 1</code> dummies out of <code>k</code> categorical levels by removing the first key. This is useful in some statistical models where perfectly collinear features cause problems.</p>
 </li>
@@ -47174,7 +47176,7 @@
 <ul>
 <li>
 <p><strong>values</strong></p>
-<p>A dict of dicts. The outer dict maps each feature to its inner dict. The inner dict maps each category to its code.</p>
+<p>A dict of sets. Maps each feature to the set of category values seen during training (or the categories provided explicitly).</p>
 </li>
 </ul>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
@@ -47387,7 +47389,7 @@ dtype: object
 <p>A lot of transformers don't actually have to do anything during the <code>learn_many</code> step because they are stateless. For this reason the default behavior of this function is to do nothing. Transformers that however do something during the <code>learn_many</code> can override this method.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>X</strong>     — <code>pd.DataFrame</code>    </li>
+<li><strong>X</strong>     — <code>IntoDataFrame</code>    </li>
 </ul>
 </details>
 <p><span /></p>
@@ -47403,13 +47405,12 @@ dtype: object
 <p><span /></p>
 <details class="- abstract">
 <summary>transform_many</summary>
-<p>Transform a mini-batch of features.</p>
+<p>One-hot encode a mini-batch of features.</p>
+<p>Pandas keeps the historical fast path returning <code>Sparse\[uint8\]</code> columns. Every other narwhals-supported backend (polars, pyarrow, ...) is encoded via <code>narwhals.Series.to_dummies</code> and returns <strong>dense</strong> integer columns, since those backends have no sparse-array equivalent.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>X</strong>     — <code>pd.DataFrame</code>    </li>
+<li><strong>X</strong>     — <code>IntoDataFrameT</code>    </li>
 </ul>
-<p><strong>Returns</strong></p>
-<p><code>pd.DataFrame</code>:     A new DataFrame.</p>
 </details>
 <p><span /></p>
 <details class="- abstract">
