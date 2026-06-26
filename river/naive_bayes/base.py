@@ -51,6 +51,7 @@ class BaseNB(base.MiniBatchClassifier):
         columns = jll_nw.columns
         jll_np = to_numpy(jll_nw)
         lse = special.logsumexp(jll_np, axis=1)
+        lse = np.asarray(lse).ravel()
         result = np.exp(jll_np - lse[:, np.newaxis])
         return to_native_frame({col: result[:, i] for i, col in enumerate(columns)}, like=jll_nw)
 
