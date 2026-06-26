@@ -170,21 +170,24 @@ class GaussianNB(base.BaseNB):
         for c in self.class_counts:
             ll = np.full(len(X), math.log(self.p_class(c)), dtype=float)
             gaussians = self.gaussians.get(c, {})
-
+    
             for col in X.columns:
                 s = X[col].to_numpy().astype(object)
                 mask = np.array([v is not None for v in s])
-
+    
                 values = np.asarray(s[mask]).astype(float)
-
-                ll[mask] += self._log_gaussian_pdf_many(
+    
+                col_ll = np.full(len(X), _LOG_PDF_EPS, dtype=float)
+                col_ll[mask] = self._log_gaussian_pdf_many(
                     gaussians.get(col),
                     values,
                 )
-
+                
+                ll += col_ll
+    
             jll[c] = ll
 
-        return to_native_frame(jll, like=x_nw)
+    return to_native_frame(jll, like=x_nw)
 
     def _unit_test_skips(self):
         return set()
