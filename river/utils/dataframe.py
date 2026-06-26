@@ -40,7 +40,7 @@ __all__ = [
 ]
 
 
-def to_numpy(frame: nw.DataFrame[Any]) -> NDArray[np.float64]:
+def to_numpy(frame: nw.DataFrame[Any], dtype: np.number = np.float64) -> NDArray[np.number]:
     """Extract a `float64` numpy matrix from a narwhals dataframe for the numpy compute core.
 
     A pandas frame backed by pyarrow (`ArrowDtype`) columns returns an ``object`` array from
@@ -48,7 +48,7 @@ def to_numpy(frame: nw.DataFrame[Any]) -> NDArray[np.float64]:
     not support argument 0 of type float"*). Coercing to ``float64`` at the boundary keeps the
     core backend-agnostic; ``np.asarray`` is a no-op when the frame already yields ``float64``.
     """
-    return np.asarray(frame.to_numpy(), dtype=np.float64)
+    return np.asarray(frame.to_numpy(), dtype=dtype)
 
 
 def into_frame(X: IntoDataFrameT) -> nw.DataFrame[IntoDataFrameT]:
@@ -89,8 +89,26 @@ def to_native_series(
     return typing.cast("IntoSeries", native)
 
 
+@typing.overload
 def to_native_frame(
-    data: Mapping[Any, NDArray[Any] | Sequence[Any]], *, like: nw.DataFrame[Any]
+    data: Mapping[Any, NDArray[Any] | Sequence[Any]],
+    *,
+    like: nw.DataFrame[Any],
+    columns: None = None,
+) -> IntoDataFrame: ...
+
+
+@typing.overload
+def to_native_frame(
+    data: NDArray[Any], *, like: nw.DataFrame[Any], columns: Sequence[Any]
+) -> IntoDataFrame: ...
+
+
+def to_native_frame(
+    data: Mapping[Any, NDArray[Any] | Sequence[Any]] | NDArray[Any],
+    *,
+    like: nw.DataFrame[Any],
+    columns: Sequence[Any] | None = None,
 ) -> IntoDataFrame:
     """Build a native dataframe matching the backend (and pandas index) of `like`.
 
@@ -101,16 +119,28 @@ def to_native_frame(
     Parameters
     ----------
     data
-        A mapping from column label to column values (numpy arrays from the numpy core).
+        Either a mapping from column label to column values, or a single 2D numpy array. The
+        array form takes the fast `narwhals.from_numpy` path (no per-column slicing) and
+        requires `columns` to name its columns.
     like
         The narwhals dataframe the call received as input. Its backend determines the
         return type, and its index (pandas only) is carried over to the result.
+    columns
+        Column labels for the array form of `data`. Ignored when `data` is a mapping.
 
     """
     impl = like.implementation
-    if not impl.is_pandas_like():
-        data = {str(key): value for key, value in data.items()}
-    frame = nw.from_dict(data, backend=impl).to_native()
+    if isinstance(data, np.ndarray):
+        if columns is None:
+            raise ValueError("`columns` must be provided when `data` is a numpy array.")
+        # narwhals requires string column names for non-pandas backends; pandas keeps the
+        # original labels (mirroring the mapping path above).
+        names = list(columns) if impl.is_pandas_like() else [str(col) for col in columns]
+        frame = nw.from_numpy(data, schema=names, backend=impl).to_native()
+    else:
+        if not impl.is_pandas_like():
+            data = {str(key): value for key, value in data.items()}
+        frame = nw.from_dict(data, backend=impl).to_native()
     # Carry over the pandas index; no-op for non-pandas backends (maybe_get_index -> None).
     if (index := nw.maybe_get_index(like)) is not None:
         frame.index = index
@@ -146,9 +176,9 @@ def sparse_to_native_frame(
         ns = nw.get_native_namespace(like)
         frame = ns.DataFrame.sparse.from_spmatrix(matrix, columns=list(columns))
     else:
-        dense = matrix.toarray()
-        data = {str(col): dense[:, j] for j, col in enumerate(columns)}
-        frame = nw.from_dict(data, backend=impl).to_native()
+        dense = typing.cast("NDArray[Any]", matrix.toarray())
+        schema = [str(col) for col in columns]
+        frame = nw.from_numpy(dense, schema=schema, backend=impl).to_native()
     # Carry over the pandas index; no-op for non-pandas backends (maybe_get_index -> None).
     if (index := nw.maybe_get_index(like)) is not None:
         frame.index = index
