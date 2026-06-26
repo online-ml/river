@@ -11,15 +11,31 @@ from river import preprocessing
 from river.conftest import FRAME_BACKENDS
 
 if typing.TYPE_CHECKING:
-    from typing import Any
-
     from narwhals.stable.v2.typing import IntoDataFrame
 
     from river.conftest import FrameBackend
 
 # `transform_many` mini-batching is routed through narwhals: pandas keeps the historical sparse
 # fast path, while every other backend is encoded densely via `narwhals.Series.to_dummies`. These
-# tests pin the cross-backend behaviour (values, native return type, pandas index).
+# tests pin the cross-backend behaviour (values, native return type, pandas index), using the
+# pandas path as the oracle.
+
+CONFIGS: list[dict[str, typing.Any]] = [
+    {},
+    {"drop_zeros": True},
+    {"drop_first": True},
+    {"drop_zeros": True, "drop_first": True},
+    {"categories": {"c1": {"a", "b"}, "c2": {"c", "d"}}},
+    {"categories": {"c1": {"a", "b"}, "c2": {"c", "d"}}, "drop_zeros": True},
+    {"categories": {"c1": {"a", "b"}, "c2": {"c", "d"}}, "drop_first": True},
+    {"categories": {"c1": {"a", "b"}, "c2": {"c", "d"}}, "drop_zeros": True, "drop_first": True},
+]
+
+# Backends whose dtypes round-trip the input unchanged, so their encoded output must equal the
+# pandas `get_dummies` reference exactly (including missing values). The `pandas[nullable]` /
+# `pandas[pyarrow]` variants are excluded on purpose: `convert_dtypes` re-represents the data
+# (`1.0` -> `1`, `None` -> `pd.NA`), which legitimately changes value-derived column names.
+NATIVE_NON_PANDAS_BACKENDS = ["polars", "pyarrow"]
 
 
 def _categorical_batch(n: int = 40) -> tuple[dict[str, list[str]], list[dict[str, str]]]:
@@ -37,35 +53,42 @@ def _rows(native: IntoDataFrame) -> list[dict[str, int]]:
     return [{col: int(row[col]) for col in frame.columns} for row in frame.iter_rows(named=True)]
 
 
-CONFIGS: list[dict[str, Any]] = [
-    {},
-    {"drop_zeros": True},
-    {"drop_first": True},
-    {"drop_zeros": True, "drop_first": True},
-    {"categories": {"c1": {"a", "b"}, "c2": {"c", "d"}}},
-    {"categories": {"c1": {"a", "b"}, "c2": {"c", "d"}}, "drop_zeros": True},
-    {"categories": {"c1": {"a", "b"}, "c2": {"c", "d"}}, "drop_first": True},
-    {"categories": {"c1": {"a", "b"}, "c2": {"c", "d"}}, "drop_zeros": True, "drop_first": True},
-]
+def _assert_pandas_parity(
+    backend: FrameBackend,
+    config: dict[str, typing.Any],
+    learn: dict[str, list[typing.Any]],
+    transform: dict[str, list[typing.Any]] | None = None,
+) -> list[dict[str, int]]:
+    """Encode on `backend` and assert it matches the pandas reference; return the encoded rows.
 
+    Both encoders run the same `config`: they learn on `learn`, then encode `transform`
+    (defaulting to `learn`). The pandas path is the oracle, so any divergence is a backend bug.
+    """
+    transform = learn if transform is None else transform
 
-@pytest.mark.parametrize("config", CONFIGS, ids=lambda c: str(c))
-def test_transform_many_is_backend_agnostic(
-    frame_backend: FrameBackend, config: dict[str, Any]
-) -> None:
-    """`transform_many` must yield identical values regardless of the input backend."""
-    data, _ = _categorical_batch()
-
-    pandas = FRAME_BACKENDS["pandas"]()
     reference = preprocessing.OneHotEncoder(**config)
-    reference.learn_many(pandas.frame(data))
-    expected = _rows(reference.transform_many(pandas.frame(data)))
+    reference.learn_many(FRAME_BACKENDS["pandas"]().frame(learn))
+    expected = _rows(reference.transform_many(FRAME_BACKENDS["pandas"]().frame(transform)))
 
     encoder = preprocessing.OneHotEncoder(**config)
-    encoder.learn_many(frame_backend.frame(data))
-    got = _rows(encoder.transform_many(frame_backend.frame(data)))
+    encoder.learn_many(backend.frame(learn))
+    got = _rows(encoder.transform_many(backend.frame(transform)))
 
     assert got == expected
+    return got
+
+
+@pytest.mark.parametrize("config", CONFIGS, ids=str)
+def test_transform_many_is_backend_agnostic(
+    frame_backend: FrameBackend, config: dict[str, typing.Any]
+) -> None:
+    """`transform_many` yields identical values on every backend (column set included).
+
+    Reading rows back via `_rows` keys on each frame's column set, so this also pins that explicit
+    `categories` restrict the output columns identically across backends, like scikit-learn.
+    """
+    data, _ = _categorical_batch()
+    _assert_pandas_parity(frame_backend, config, data)
 
 
 @pytest.mark.parametrize(
@@ -79,17 +102,14 @@ def test_transform_many_is_backend_agnostic(
     ids=str,
 )
 def test_transform_many_matches_transform_one(
-    frame_backend: FrameBackend, config: dict[str, Any]
+    frame_backend: FrameBackend, config: dict[str, typing.Any]
 ) -> None:
-    """Each row of `transform_many` must agree with `transform_one` on every backend.
+    """Each row of `transform_many` agrees with `transform_one` on every backend.
 
-    Pinned with ``drop_zeros=False`` so both paths materialise the full column set: every learned
-    (or explicitly configured) category is a key in every row. That makes ``transform_one``'s
-    per-row ``min`` (used by ``drop_first``) equal to the single global column ``transform_many``
-    drops. With ``drop_zeros=True`` the present-only key set varies per row, so the two paths
-    legitimately diverge for ``drop_first``; that combination is intentionally out of scope here.
-    The ``categories`` variants extend the oracle to the explicit-categories branch, which the
-    backend-agnostic test only checks against the pandas reference, not against ``transform_one``.
+    Pinned with ``drop_zeros=False`` so both paths materialise the full column set, which makes
+    ``transform_one``'s per-row ``min`` (used by ``drop_first``) equal the single global column
+    ``transform_many`` drops. With ``drop_zeros=True`` the present-only keys vary per row, so the
+    two paths legitimately diverge for ``drop_first``; that combination is out of scope here.
     """
     data, rows = _categorical_batch()
 
@@ -99,16 +119,8 @@ def test_transform_many_matches_transform_one(
     many = _rows(encoder.transform_many(frame_backend.frame(data)))
     for row, many_row in zip(rows, many):
         one = encoder.transform_one(row)
-        keys = set(one) | set(many_row)
-        for key in keys:
+        for key in set(one) | set(many_row):
             assert one.get(key, 0) == many_row.get(key, 0), key
-
-
-# Backends whose dtypes round-trip the input unchanged, so their encoded output must equal the
-# pandas `get_dummies` reference exactly (including missing values). The `pandas[nullable]` /
-# `pandas[pyarrow]` variants are excluded on purpose: `convert_dtypes` re-represents the data
-# (`1.0` -> `1`, `None` -> `pd.NA`), which legitimately changes the names of value-derived columns.
-NATIVE_NON_PANDAS_BACKENDS = ["polars", "pyarrow"]
 
 
 @pytest.mark.parametrize("backend_name", NATIVE_NON_PANDAS_BACKENDS)
@@ -117,29 +129,20 @@ NATIVE_NON_PANDAS_BACKENDS = ["polars", "pyarrow"]
     [{}, {"drop_zeros": True}, {"drop_first": True}, {"drop_zeros": True, "drop_first": True}],
     ids=str,
 )
-def test_transform_many_missing_matches_pandas(backend_name: str, config: dict[str, Any]) -> None:
+def test_transform_many_missing_matches_pandas(
+    backend_name: str, config: dict[str, typing.Any]
+) -> None:
     """Missing values (string ``None``, numeric ``NaN``) encode identically to the pandas path.
 
-    ``get_dummies`` omits both ``NaN`` and ``None`` from the encoded ``1``s; polars/pyarrow keep
-    ``NaN`` distinct from null, so the encoder folds ``NaN`` into null to match pandas exactly.
+    ``get_dummies`` omits both from the encoded ``1``s; polars/pyarrow keep ``NaN`` distinct from
+    null, so the encoder folds ``NaN`` into null to match pandas exactly.
     """
     pytest.importorskip(backend_name)
-    data: dict[str, list[Any]] = {
+    data: dict[str, list[typing.Any]] = {
         "c1": ["a", None, "b", "a"],
         "c2": [1.0, 2.0, float("nan"), 1.0],
     }
-
-    pandas = FRAME_BACKENDS["pandas"]()
-    reference = preprocessing.OneHotEncoder(**config)
-    reference.learn_many(pandas.frame(data))
-    expected = _rows(reference.transform_many(pandas.frame(data)))
-
-    backend = FRAME_BACKENDS[backend_name]()
-    encoder = preprocessing.OneHotEncoder(**config)
-    encoder.learn_many(backend.frame(data))
-    got = _rows(encoder.transform_many(backend.frame(data)))
-
-    assert got == expected
+    _assert_pandas_parity(FRAME_BACKENDS[backend_name](), config, data)
 
 
 def test_transform_many_missing_is_all_zeros_pandas() -> None:
@@ -161,17 +164,32 @@ def test_transform_many_missing_is_all_zeros_pandas() -> None:
     ]
 
 
+def test_transform_many_pads_categories_from_earlier_batches(frame_backend: FrameBackend) -> None:
+    """Categories seen in an earlier `learn_many` but absent from the transform batch are padded.
+
+    With ``drop_zeros=False`` the encoder re-emits every previously-seen category as an all-zero
+    column. The agnostic tests learn and transform the same batch (nothing needs padding); this one
+    grows the vocabulary first to exercise zero-column padding against a larger prior vocabulary.
+    """
+    learn = {"c1": ["a", "b", "c"], "c2": ["x", "y", "z"]}
+    trans = {"c1": ["a", "a", "b"], "c2": ["x", "y", "x"]}  # "c" and "z" never appear here
+
+    got = _assert_pandas_parity(frame_backend, {"drop_zeros": False}, learn, trans)
+    # The categories unseen in this batch are re-emitted as all-zero columns on every backend.
+    assert all(row["c1_c"] == 0 and row["c2_z"] == 0 for row in got)
+
+
 def test_transform_many_returns_native_backend(frame_backend: FrameBackend) -> None:
     """`transform_many` returns the input backend's native frame type."""
     data, _ = _categorical_batch()
-
+    X = frame_backend.frame(data)
     encoder = preprocessing.OneHotEncoder(drop_zeros=True)
-    encoder.learn_many(frame_backend.frame(data))
-    out = encoder.transform_many(frame_backend.frame(data))
+    encoder.learn_many(X)
+    out = encoder.transform_many(X)
 
-    # The pandas fast path always returns a classic pandas frame, regardless of the input's
-    # pandas dtype backend (numpy / nullable / pyarrow), so compare the top-level module only.
-    assert type(out).__module__.split(".")[0] == frame_backend.name.split("[")[0]
+    # The pandas fast path always returns a classic pandas frame, regardless of the input's pandas
+    # dtype backend (numpy / nullable / pyarrow), so compare the top-level module only.
+    assert type(out) is type(X)
 
 
 def test_transform_many_pandas_is_sparse_others_dense() -> None:
@@ -197,46 +215,8 @@ def test_transform_many_preserves_pandas_index() -> None:
 
     encoder = preprocessing.OneHotEncoder(drop_zeros=False)
     encoder.learn_many(X)
-    out = encoder.transform_many(X)
 
-    assert list(out.index) == index
-
-
-def test_transform_many_explicit_categories_restrict_columns(frame_backend: FrameBackend) -> None:
-    """Explicit categories bound the output columns to the provided ones, like scikit-learn."""
-    data, _ = _categorical_batch()
-    categories = {"c1": {"a", "b"}, "c2": {"c", "d"}}
-
-    encoder = preprocessing.OneHotEncoder(categories=categories)
-    encoder.learn_many(frame_backend.frame(data))
-    out = nw.from_native(encoder.transform_many(frame_backend.frame(data)), eager_only=True)
-
-    assert set(out.columns) == {"c1_a", "c1_b", "c2_c", "c2_d"}
-
-
-def test_transform_many_pads_categories_from_earlier_batches(frame_backend: FrameBackend) -> None:
-    """Categories seen in an earlier `learn_many` but absent from the transform batch are padded.
-
-    With ``drop_zeros=False`` the encoder must re-emit every previously-seen category as an
-    all-zero column, identically across backends. The other agnostic tests learn and transform the
-    same batch (so nothing needs padding); this one grows the vocabulary first to exercise the
-    zero-column padding against a genuinely larger prior vocabulary.
-    """
-    learn = {"c1": ["a", "b", "c"], "c2": ["x", "y", "z"]}
-    trans = {"c1": ["a", "a", "b"], "c2": ["x", "y", "x"]}  # "c" and "z" never appear here
-
-    pandas = FRAME_BACKENDS["pandas"]()
-    reference = preprocessing.OneHotEncoder(drop_zeros=False)
-    reference.learn_many(pandas.frame(learn))
-    expected = _rows(reference.transform_many(pandas.frame(trans)))
-
-    encoder = preprocessing.OneHotEncoder(drop_zeros=False)
-    encoder.learn_many(frame_backend.frame(learn))
-    got = _rows(encoder.transform_many(frame_backend.frame(trans)))
-
-    assert got == expected
-    # The categories unseen in this batch are re-emitted as all-zero columns on every backend.
-    assert all(row["c1_c"] == 0 and row["c2_z"] == 0 for row in got)
+    assert list(encoder.transform_many(X).index) == index
 
 
 @pytest.mark.parametrize(
@@ -248,15 +228,13 @@ def test_transform_many_pads_categories_from_earlier_batches(frame_backend: Fram
     ids=str,
 )
 def test_transform_many_empty_result_has_no_columns(
-    frame_backend: FrameBackend, config: dict[str, Any]
+    frame_backend: FrameBackend, config: dict[str, typing.Any]
 ) -> None:
     """A config that encodes nothing returns a column-less frame on every backend, without raising.
 
     polars/pyarrow cannot represent an N-row, 0-column frame, so they collapse to 0 rows while
-    pandas keeps the input rows; "no columns" is the invariant every backend can honour. Reaching
-    the assertion also pins that the trailing empty ``select`` does not raise. The encoded result
-    is genuinely empty here (nothing matches / the only dummy is dropped), so this is a backend
-    representation difference, not dropped data.
+    pandas keeps the input rows; "no columns" is the invariant every backend can honour, and
+    reaching the assertion pins that the trailing empty ``select`` does not raise.
     """
     data = {"c1": ["a", "a", "a"]}
     encoder = preprocessing.OneHotEncoder(**config)
