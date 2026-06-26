@@ -18,7 +18,7 @@ import narwhals.stable.v2 as nw
 import numpy as np
 
 if typing.TYPE_CHECKING:
-    from collections.abc import Mapping, Sequence
+    from collections.abc import Iterable, Mapping, Sequence
     from typing import Any
 
     from narwhals.stable.v2.typing import (
@@ -28,8 +28,16 @@ if typing.TYPE_CHECKING:
         IntoSeriesT,
     )
     from numpy.typing import NDArray
+    from scipy import sparse
 
-__all__ = ["into_frame", "into_series", "to_native_frame", "to_native_series", "to_numpy"]
+__all__ = [
+    "into_frame",
+    "into_series",
+    "sparse_to_native_frame",
+    "to_native_frame",
+    "to_native_series",
+    "to_numpy",
+]
 
 
 def to_numpy(frame: nw.DataFrame[Any]) -> NDArray[np.float64]:
@@ -103,6 +111,44 @@ def to_native_frame(
     if not impl.is_pandas_like():
         data = {str(key): value for key, value in data.items()}
     frame = nw.from_dict(data, backend=impl).to_native()
+    # Carry over the pandas index; no-op for non-pandas backends (maybe_get_index -> None).
+    if (index := nw.maybe_get_index(like)) is not None:
+        frame.index = index
+    return typing.cast("IntoDataFrame", frame)
+
+
+def sparse_to_native_frame(
+    matrix: sparse.spmatrix, *, columns: Iterable[Any], like: nw.DataFrame[Any] | nw.Series[Any]
+) -> IntoDataFrame:
+    """Build a native frame from a scipy sparse matrix, matching the backend of `like`.
+
+    Term-document matrices (e.g. from `feature_extraction.BagOfWords`/`TFIDF`) are very
+    sparse, but only pandas exposes a per-column sparse dtype: Arrow's sparse types are
+    standalone tensors rather than table columns, and polars has no sparse encoding. So
+    pandas-like backends keep the memory-efficient sparse representation, while every other
+    backend is densified.
+
+    Parameters
+    ----------
+    matrix
+        A `scipy.sparse` matrix (typically CSR) produced by the numpy core, shaped
+        `(n_documents, n_terms)`.
+    columns
+        The term labels, in column order. May contain n-gram tuples; non-pandas backends
+        require string column names, so labels are stringified for them.
+    like
+        The narwhals frame or series the call received as input. Its backend determines the
+        return type, and its index (pandas only) is carried over to the result.
+    """
+    impl = like.implementation
+    if impl.is_pandas_like():
+        # Use the input's own pandas namespace so pandas[nullable]/pandas[pyarrow] are honoured.
+        ns = nw.get_native_namespace(like)
+        frame = ns.DataFrame.sparse.from_spmatrix(matrix, columns=list(columns))
+    else:
+        dense = matrix.toarray()
+        data = {str(col): dense[:, j] for j, col in enumerate(columns)}
+        frame = nw.from_dict(data, backend=impl).to_native()
     # Carry over the pandas index; no-op for non-pandas backends (maybe_get_index -> None).
     if (index := nw.maybe_get_index(like)) is not None:
         frame.index = index
