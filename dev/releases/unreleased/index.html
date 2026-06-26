@@ -1776,8 +1776,6 @@
       
         
       
-        
-      
     
     
     
@@ -2231,6 +2229,17 @@
     <span class="md-ellipsis">
       <span class="md-typeset">
         naive_bayes
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#neural_net" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        neural_net
       </span>
     </span>
   </a>
@@ -3623,6 +3632,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#neural_net" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        neural_net
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#optim" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -3800,6 +3820,10 @@
 <h2 id="naive_bayes">naive_bayes<a class="headerlink" href="#naive_bayes" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Added mini-batch support to <code>GaussianNB</code> via <code>learn_many</code>, <code>predict_many</code>, and <code>predict_proba_many</code>.</li>
+</ul>
+<h2 id="neural_net">neural_net<a class="headerlink" href="#neural_net" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Removed the deprecated <code>river.neural_net</code> module (and its <code>MLPRegressor</code>), which had emitted a <code>DeprecationWarning</code> since 0.25.0. Use <a href="https://github.com/online-ml/deep-river"><code>deep-river</code></a> or a dedicated deep-learning library such as PyTorch for neural networks.</li>
 </ul>
 <h2 id="optim">optim<a class="headerlink" href="#optim" title="Permanent link">&para;</a></h2>
 <ul>
