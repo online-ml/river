@@ -155,7 +155,7 @@ class GradHess:
 
 
 @functools.total_ordering
-@dataclasses.dataclass
+@dataclasses.dataclass(slots=True)
 class GradHessMerit:
     """Class used to keep the split merit of each split candidate, accordingly to its
     gradient and hessian information.

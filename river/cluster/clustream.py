@@ -270,8 +270,10 @@ class CluStream(base.Clusterer):
             return 0
 
 
-class CluStreamMicroCluster(base.Base):
+class CluStreamMicroCluster:
     """Micro-cluster class."""
+
+    __slots__ = ("x", "w", "timestamp", "var_x", "var_time", "_center")
 
     def __init__(
         self,

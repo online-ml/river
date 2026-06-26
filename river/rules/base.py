@@ -9,7 +9,7 @@ import typing
 from river import base, tree
 
 
-class Literal(base.Base):
+class Literal:
     __slots__ = "on", "at", "neg"
 
     def __init__(self, on, at, neg=False):
@@ -27,6 +27,8 @@ class Literal(base.Base):
 
 
 class NumericLiteral(Literal):
+    __slots__ = ()
+
     def __init__(self, on, at, neg):
         super().__init__(on, at, neg)
 
@@ -47,6 +49,8 @@ class NumericLiteral(Literal):
 
 
 class NominalLiteral(Literal):
+    __slots__ = ()
+
     def __init__(self, on, at, neg):
         super().__init__(on, at, neg)
 

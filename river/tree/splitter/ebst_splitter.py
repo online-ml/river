@@ -278,6 +278,8 @@ class EBSTSplitter(Splitter):
 
 
 class EBSTNode:
+    __slots__ = ("att_val", "estimator", "_update_estimator", "_left", "_right")
+
     def __init__(self, att_val, target_val, w):
         self.att_val = att_val
 

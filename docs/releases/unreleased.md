@@ -16,6 +16,11 @@
 
 - Made `anomaly.OneClassSVM.learn_many` dataframe-agnostic via narwhals: it now accepts any narwhals-supported eager backend (pandas, polars, pyarrow, ...) instead of only pandas. Outputs are unchanged.
 
+## cluster
+
+- Gave the `CluStream`, `DenStream`, and `DBSTREAM` micro-cluster objects `__slots__`. These are created in large numbers on long streams, so dropping their per-instance `__dict__` trims memory (~40 bytes per micro-cluster). Behavior is unchanged.
+- `CluStreamMicroCluster` no longer inherits from `base.Base`; it is an internal data structure, not an estimator, so the estimator machinery (cloning, parameter introspection, `repr`) never applied to it. This matches the `DenStream`/`DBSTREAM` micro-clusters and is what lets it use `__slots__`.
+
 ## compose
 
 - `compose.Pipeline` now forwards extra keyword arguments (such as the timestamp `t` used by `utils.TimeRolling`, or a sample weight `w`) to each step whose method declares them, and drops them for steps that don't. This makes `feature_extraction.Agg`/`TargetAgg` backed by `utils.TimeRolling` work inside a pipeline via `model.learn_one(x, y, t=t)`. Routing applies to `learn_one` and to the predict-time methods (`predict_one`, `predict_proba_one`, `score_one`, `transform_one`), so it also works under `compose.learn_during_predict` where unsupervised steps learn during `predict_one(x, t=t)`. Fixes [#1600](https://github.com/online-ml/river/issues/1600). The accepted arguments are determined once when the pipeline plan is built, so pipelines with no extra arguments keep their previous speed.
@@ -66,6 +71,10 @@
 
 - Added mini-batch support to `GaussianNB` via `learn_many`, `predict_many`, and `predict_proba_many`.
 
+## neighbors
+
+- Gave the SWINN graph `Vertex` `__slots__` and dropped its `base.Base` inheritance (it is an internal graph node, not an estimator). One vertex is created per buffered sample, so this trims memory on large `neighbors.SWINN` indexes; behavior is unchanged.
+
 ## neural_net
 
 - Removed the deprecated `river.neural_net` module (and its `MLPRegressor`), which had emitted a `DeprecationWarning` since 0.25.0. Use [`deep-river`](https://github.com/online-ml/deep-river) or a dedicated deep-learning library such as PyTorch for neural networks.
@@ -109,10 +118,16 @@
 
 - Fixed `RecursionError` in `AMRules` on long streams: the `EBSTSplitter`, `TEBSTSplitter`, and `ExhaustiveSplitter` now traverse and deep-copy their search trees iteratively, so deeply-skewed trees no longer blow Python's recursion limit.
 - Fixed an `AMRules` memory leak where `HoeffdingRule.expand` appended a redundant `NumericLiteral` when a new split shared a feature and direction with an existing literal without tightening the threshold.
+- `Literal` (and its `NumericLiteral`/`NominalLiteral` subclasses) no longer inherits from `base.Base`, so its existing `__slots__` now actually takes effect — previously every literal still carried a `__dict__` because `base.Base` defines no slots. Literals are internal rule components, not estimators, so the estimator machinery never applied. Trims memory on rule sets with many literals; behavior is unchanged.
 
 ## stats
 
 - Added `stats.ChiSquared`, a streaming Chi-squared statistic between two categorical variables. Wrap it with `utils.Rolling` for a rolling version.
+
+## tree
+
+- Gave the binary-search-tree nodes of the numeric splitters (`EBSTSplitter`/`TEBSTSplitter`, `ExhaustiveSplitter`, `QOSplitter`) `__slots__`. One node is created per distinct observed feature value, so on high-cardinality numeric streams these can number in the millions; dropping their per-instance `__dict__` trims memory (~40 bytes per node) with no change in behavior or throughput.
+- Slotted the `GradHessMerit` split-candidate record used by the Stochastic Gradient Trees (`tree.SGTClassifier`/`SGTRegressor`) via `@dataclass(slots=True)`, trimming its per-instance memory. Behavior is unchanged.
 
 ## stream
 
