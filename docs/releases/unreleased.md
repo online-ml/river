@@ -13,6 +13,7 @@
 ## anomaly
 
 - Added `anomaly.LODA`, an online implementation of Pevný's *Lightweight on-line detector of anomalies*. It maintains an ensemble of one-dimensional `sketch.Histogram`s over sparse random projections and scores samples by their average negative log-likelihood.
+- Rewrote `anomaly.LocalOutlierFactor`. It now stores samples in a bounded sliding window via a `river.neighbors` search engine (`LazySearch` by default, `SWINN` for approximate search) and computes the LOF of a sample against the window on demand. `learn_one` is now constant-time and memory is bounded by the window size, and `score_one` no longer mutates the model. Scores match scikit-learn over the same window: an unseen point reproduces `LocalOutlierFactor(novelty=True)`, and a stored point reproduces the in-sample `negative_outlier_factor_` (a point is never its own neighbor). `learn_many` now accepts any [narwhals](https://github.com/narwhals-dev/narwhals)-supported eager dataframe (pandas, polars, pyarrow, ...). Behavior changes: scores now reflect the most recent `window_size` samples rather than the entire history, scoring an already-seen point returns its LOF instead of `0.0`, and the `distance_func` parameter is replaced by the engine's distance function.
 
 ## compose
 
@@ -23,7 +24,7 @@
 - Added weighted sample support to `EmpiricalCovariance.update` and `EmpiricalCovariance.revert` by accepting an optional `w` parameter and propagating it to the underlying `stats.Cov` and `stats.Var` statistics.
 - Sped up `EmpiricalCovariance.update`/`revert` (~40% faster at 30 features) by caching the sorted feature list and pair iteration in the hot path. No semantic change.
 - Restructured `EmpiricalPrecision` around NumPy-backed dense state, removing the per-update dict ↔ numpy marshalling. ~7× faster on 2000 × 20 sample streams.
-- Fixed an `EmpiricalPrecision` asymmetry where features introduced at different times left the stored matrix skewed (e.g. `prec[a, b]` ≠ `prec[b, a]`).      
+- Fixed an `EmpiricalPrecision` asymmetry where features introduced at different times left the stored matrix skewed (e.g. `prec[a, b]` ≠ `prec[b, a]`).
 
 ## datasets
 
@@ -42,7 +43,7 @@
 - `BayesianLinearRegression` now handles features arriving and disappearing after training begins (it passes `check_emerging_features` and `check_shuffle_features_no_impact`, previously skipped).
 - Fixed `BayesianLinearRegression` coefficients diverging to `inf`/`nan` under emerging/disappearing features; `learn_one` now updates the full state with a zero-padded `x`. Behavior change: features absent from `x` are treated as observed 0s (matching the other linear models) rather than skipped — identical to before when every call sees the same features.
 - Sped up the `LinearRegression`/`LogisticRegression.learn_many` mini-batch gradient (~2-3×) by contracting the sample axis inside the `np.einsum`. No semantic change.
-- Sped up `learn_one` for the linear models (`LinearRegression`, `LogisticRegression`, `Perceptron`, ...): updates now scale with the number of active features instead of the total number of features ever seen. Outputs are unchanged.       
+- Sped up `learn_one` for the linear models (`LinearRegression`, `LogisticRegression`, `Perceptron`, ...): updates now scale with the number of active features instead of the total number of features ever seen. Outputs are unchanged.
 - Stabilised `BayesianLinearRegression` across BLAS implementations and sped it up (~10-20%) by accumulating an exact natural mean and recovering the posterior mean lazily, instead of propagating it through compounding rank-1 updates (which drifted ~0.6% between macOS Accelerate and Linux OpenBLAS).
 - `linear_model.LinearRegression` and `linear_model.LogisticRegression` mini-batch methods (`learn_many`, `predict_many`, `predict_proba_many`) now accept and return any [narwhals](https://github.com/narwhals-dev/narwhals)-supported eager backend (pandas, polars, pyarrow, ...) instead of being pandas-only. The input backend is preserved on output, including the pandas index. These methods no longer require `pandas` to be installed.
 - `linear_model.BayesianLinearRegression` is now a `MiniBatchRegressor`: it gained a `learn_many` method, equivalent to looping `learn_one` over the rows (exact without smoothing, and the matching closed-form geometric weighting with smoothing). Its `learn_many`/`predict_many` accept and return any [narwhals](https://github.com/narwhals-dev/narwhals)-supported eager backend (pandas, polars, pyarrow, ...), preserving the input backend and pandas index, and no longer require `pandas`.
@@ -55,6 +56,10 @@
 ## naive_bayes
 
 - Added mini-batch support to `GaussianNB` via `learn_many`, `predict_many`, and `predict_proba_many`.
+
+## neighbors
+
+- Fixed the Euclidean fast path of `neighbors.LazySearch`, which returned the *farthest* candidates instead of the nearest because its search heap was keyed on the negated distance. This affected `KNNClassifier`, `KNNRegressor`, and `LocalOutlierFactor` whenever they ran over a `LazySearch` engine with the default Euclidean distance.
 
 ## optim
 
@@ -91,7 +96,7 @@
 
 ## rules
 
-- Fixed `RecursionError` in `AMRules` on long streams: the `EBSTSplitter`, `TEBSTSplitter`, and `ExhaustiveSplitter` now traverse and deep-copy their search trees iteratively, so deeply-skewed trees no longer blow Python's recursion limit. 
+- Fixed `RecursionError` in `AMRules` on long streams: the `EBSTSplitter`, `TEBSTSplitter`, and `ExhaustiveSplitter` now traverse and deep-copy their search trees iteratively, so deeply-skewed trees no longer blow Python's recursion limit.
 - Fixed an `AMRules` memory leak where `HoeffdingRule.expand` appended a redundant `NumericLiteral` when a new split shared a feature and direction with an existing literal without tightening the threshold.
 
 ## stats

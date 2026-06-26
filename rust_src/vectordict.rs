@@ -2048,9 +2048,10 @@ pub fn lazy_search_euclidean<'py>(
         let px = item_tuple.get_item(0)?;
         let px = px.cast::<PyDict>()?;
         let dist_sq = squared_euclid(py, qx, px)?;
-        let neg = -dist_sq;
+        // Keep the k *smallest* distances via a max-heap keyed on the (squared) distance:
+        // heap[0] is the farthest kept neighbor, which a closer candidate evicts.
         let triple = PyTuple::new(py, [
-            neg.into_bound_py_any(py)?,
+            dist_sq.into_bound_py_any(py)?,
             i.into_bound_py_any(py)?,
             entry.clone(),
         ])?;
@@ -2060,28 +2061,27 @@ pub fn lazy_search_euclidean<'py>(
                 heapify_max.call1((&heap,))?;
             }
         } else {
-            // Compare against current max (heap[0])
+            // Compare against the current farthest kept neighbor (heap[0]).
             let top = heap.get_item(0)?;
-            let top_neg = top.get_item(0)?.extract::<f64>()?;
-            if dist_sq < -top_neg {
+            let top_dist_sq = top.get_item(0)?.extract::<f64>()?;
+            if dist_sq < top_dist_sq {
                 heapreplace_max.call1((&heap, triple))?;
             }
         }
         i += 1;
     }
 
-    // Sort by neg-distance descending so the smallest distance is last popped
+    // Sort ascending by (squared distance, insertion index) to match `heapq.nsmallest`.
     heap.sort()?;
-    heap.reverse()?;
 
     let items = pyo3::types::PyList::empty(py);
     let distances = pyo3::types::PyList::empty(py);
     for triple in heap.iter() {
-        let neg = triple.get_item(0)?.extract::<f64>()?;
+        let dist_sq = triple.get_item(0)?.extract::<f64>()?;
         let entry = triple.get_item(2)?;
         let item = entry.get_item(0)?;
         items.append(item)?;
-        distances.append((-neg).sqrt())?;
+        distances.append(dist_sq.sqrt())?;
     }
     Ok((items.unbind().into_any(), distances.unbind().into_any()))
 }
