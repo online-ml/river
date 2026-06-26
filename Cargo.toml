@@ -16,6 +16,12 @@ crate-type = ["cdylib", "rlib"]
 # per-version wheels are built without it for full-speed native code.
 abi3 = ["pyo3/abi3-py311"]
 
+# Treat warnings as hard errors so dead code, unused imports, etc. block the
+# build instead of scrolling past in CI logs. Applies to local `uv sync` /
+# `maturin develop` too, so issues surface before they reach CI.
+[lints.rust]
+warnings = "deny"
+
 [dependencies]
 pyo3 = "0.29.0"
 bincode = "1.3.3"

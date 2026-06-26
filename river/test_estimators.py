@@ -23,7 +23,6 @@ from river import (
     model_selection,
     multiclass,
     neighbors,
-    neural_net,
     preprocessing,
 )
 from river.compat.river_to_sklearn import River2SKLBase
@@ -61,7 +60,6 @@ def iter_estimators_which_can_be_tested():
         imblearn.RandomSampler,
         model_selection.SuccessiveHalvingClassifier,
         neighbors.LazySearch,
-        neural_net.MLPRegressor,
         preprocessing.PreviousImputer,
         preprocessing.OneHotEncoder,
         preprocessing.StatImputer,
