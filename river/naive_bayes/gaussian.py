@@ -82,15 +82,19 @@ class GaussianNB(base.BaseNB):
 
         self.class_counts.update(y.to_list())
 
-        for c in y.unique().to_list():
-            mask = (y == c).rename("mask")
-            X_c = X.filter(mask)
+        X_np = np.asarray(X.to_numpy(), dtype=float)
+        y_np = np.asarray(y.to_numpy())
 
-            for i in X_c.columns:
-                values = X_c[i].drop_nulls()
-                if len(values) == 0:
-                    continue
-                self.gaussians[c][i]._var.update_many(values.to_numpy().astype(float))
+        for c in np.unique(y_np):
+            rows = y_np == c
+
+            for j, col in enumerate(X.columns):
+                values = X_np[rows, j]
+
+                values = values[~np.isnan(values)]
+
+                if len(values):
+                    self.gaussians[c][col]._var.update_many(values)
 
     @staticmethod
     def _log_gaussian_pdf_many(gaussian: proba.Gaussian | None, values: np.ndarray) -> np.ndarray:
@@ -99,17 +103,21 @@ class GaussianNB(base.BaseNB):
 
         var = gaussian._var
         n = var.mean.n
-        if n > var.ddof:
-            variance = var._S / (n - var.ddof)
-            if variance > 0.0:
-                mu = var.mean._mean
-                with np.errstate(over="ignore", under="ignore", invalid="ignore"):
-                    pdf = np.exp((values - mu) ** 2 / (-2.0 * variance)) / math.sqrt(
-                        math.tau * variance
-                    )
-                return np.log(_PDF_EPS + pdf)
+        if n <= var.ddof:
+            return np.full(values.shape, _LOG_PDF_EPS)
 
-        return np.full(values.shape, _LOG_PDF_EPS)
+        variance = var._S / (n - var.ddof)
+
+        if variance <= 0:
+            return np.full(values.shape, _LOG_PDF_EPS)
+
+        mu = var.mean._mean
+
+        with np.errstate(over="ignore", under="ignore", invalid="ignore"):
+            pdf = np.exp(-((values - mu) ** 2) / (2 * variance))
+            pdf /= math.sqrt(math.tau * variance)
+
+        return np.log(_PDF_EPS + pdf)
 
     def joint_log_likelihood_many(self, X: IntoDataFrame) -> IntoDataFrame:
         """Compute the joint log-likelihoods for a batch of feature vectors.
@@ -130,30 +138,35 @@ class GaussianNB(base.BaseNB):
         X = into_frame(X)
 
         if not self.class_counts:
-            return X.select([]).to_native()
+            native = X.to_native()
+            return native.iloc[:, 0:0]
 
         jll = {}
 
         for c in self.class_counts:
             ll = np.full(len(X), math.log(self.p_class(c)), dtype=float)
+
             gaussians = self.gaussians.get(c, {})
 
             for col in X.columns:
-                s = X[col].to_numpy().astype(object)
-                mask = np.array([v is not None for v in s])
+                values = np.asarray(
+                    X.select(nw.col(col)).to_numpy(),
+                    dtype=float,
+                ).ravel()
 
-                values = np.asarray(s[mask]).astype(float)
+                mask = ~np.isnan(values)
 
-                col_ll = np.full(len(X), _LOG_PDF_EPS, dtype=float)
-                col_ll[mask] = self._log_gaussian_pdf_many(
-                    gaussians.get(col),
-                    values,
-                )
+                col_ll = np.full(len(values), _LOG_PDF_EPS, dtype=float)
+
+                if mask.any():
+                    col_ll[mask] = self._log_gaussian_pdf_many(
+                        gaussians.get(col),
+                        values[mask],
+                    )
 
                 ll += col_ll
 
             jll[c] = ll
-
         return to_native_frame(jll, like=X)
 
     def _unit_test_skips(self):
