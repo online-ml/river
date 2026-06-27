@@ -29,6 +29,35 @@ class GaussianNB(base.BaseNB):
     Gaussian is updated using the amount associated with each feature; the details can be be found
     in `proba.Gaussian`. The joint log-likelihood is then obtained by summing the log probabilities
     of each feature associated with each class.
+
+    Examples
+    --------
+
+    >>> from river import naive_bayes
+    >>> from river import stream
+    >>> import numpy as np
+
+    >>> X = np.array([[-1, -1], [-2, -1], [-3, -2], [1, 1], [2, 1], [3, 2]])
+    >>> Y = np.array([1, 1, 1, 2, 2, 2])
+
+    >>> model = naive_bayes.GaussianNB()
+
+    >>> for x, y in stream.iter_array(X, Y):
+    ...     model.learn_one(x, y)
+
+    >>> model.predict_one({0: -0.8, 1: -1})
+    1
+
+    You can also train the model and make predictions in mini-batch mode.
+
+    >>> import pandas as pd
+
+    >>> model = naive_bayes.GaussianNB()
+    >>> model.learn_many(pd.DataFrame(X), pd.Series(Y))
+    >>> model.predict_many(pd.DataFrame([[-0.8, -1], [2.8, 1.5]]))
+    0    1
+    1    2
+    dtype: int64
     """
 
     def __init__(self):
