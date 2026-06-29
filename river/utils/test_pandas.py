@@ -10,19 +10,22 @@ def _raise_missing_pandas() -> None:
     raise ImportError("`pandas` is required for this operation.")
 
 
-def test_transform_many_requires_pandas_only_for_pandas_input(
+def test_transform_many_does_not_require_pandas_helper_for_pandas_input(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    # `StandardScaler.transform_many` keeps a pandas fast path, so a pandas input still needs
-    # pandas. `learn_many` is routed through narwhals and never imports pandas.
+    # `StandardScaler` mini-batching is fully routed through narwhals: there is no longer a
+    # pandas-specific fast path, so neither `learn_many` nor `transform_many` go through the
+    # `import_pandas` helper, even for pandas input.
     import pandas as pd
 
     monkeypatch.setattr(pandas_utils, "import_pandas", _raise_missing_pandas)
 
     scaler = preprocessing.StandardScaler()
     scaler.learn_many(pd.DataFrame({"x": [1.0, 2.0, 3.0]}))
-    with pytest.raises(ImportError, match="pandas"):
-        scaler.transform_many(pd.DataFrame({"x": [1.0, 2.0, 3.0]}))
+    out = scaler.transform_many(pd.DataFrame({"x": [1.0, 2.0, 3.0]}))
+
+    assert isinstance(out, pd.DataFrame)
+    assert len(out) == 3
 
 
 def test_transform_many_does_not_require_pandas_for_polars(
