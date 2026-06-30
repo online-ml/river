@@ -2,9 +2,45 @@
 
 ## What to work on?
 
-We have a [public roadmap](https://github.com/orgs/online-ml/projects/3) that lists what has been done, what we're currently doing, and what needs doing. There's also an icebox with high level ideas that need framing. You're welcome to pick anything that takes your fancy and that you deem important. Feel free to [open a discussion](https://github.com/online-ml/river/discussions/new) if you want to clarify a topic and/or want to be formally assigned a task in the board.
+Take a look at our [GitHub issues](https://github.com/online-ml/river/issues). The labelling scheme should be self-explanatory. You're welcome to pick anything that takes your fancy and that you deem important. We encourage you to discuss with us your approach before you start the implementation, to avoid wasting time on out-of-scope work.
 
-Of course, you're welcome to propose and contribute new ideas. We encourage you to [open a discussion](https://github.com/online-ml/river/discussions/new) so that we can align on the work to be done. It's generally a good idea to have a quick discussion before opening a pull request that is potentially out-of-scope.
+We do not assign issues to people. If you want to indicate you're working on something, just start a draft pull request, indicating the issue you're targeting.
+
+Of course, you're welcome to propose and contribute new ideas. We encourage you to [open a discussion](https://github.com/online-ml/river/discussions/new) so that we can have a chat and align.
+
+## Rules for coding agents
+
+We are not against coding agents. But River was made by humans who enjoy working with each other, and we want to preserve that human touch. Here are our rules:
+
+> 1. Coding agents can write code, but not comments.
+
+We have a codebase that is of good quality, with enough examples for coding agents to write idiomatic code. Therefore, AI generated code is not a problem per say. But using an AI to write comments is worrying, because it's a sign we did not put in the effort to understand the generated code.
+
+> 2. Prose is written by humans. This covers issues, pull request descriptions, commit messages, docstrings, release notes, and any kind of discussion.
+
+We don't want coding agents to do the high-level thinking for us. Therefore, we should force ourselves to write all our discussions with our own words. AI generated prose almost always reads like slop, and too much of it is off-putting. We believe using our own words is more polite, friendly, and enjoyable for everyone. Docstrings and release notes count too: they're how we talk to our users, so they deserve the same care.
+
+Of course, you can use a coding agent to run a benchmark and produce a summary table. But you should editorialize and insert it into a message you've written yourself.
+
+> 3. Code written by agents should be disclosed as such.
+
+We should not deceive each other by asking an AI to generate code, and merging it into the codebase without indicating its source. We want to be able to differentiate between the two. A `Co-authored-by:` trailer on the commit is a simple way to do this.
+
+> 4. Be thorough on tests.
+
+Good tests usually span more lines that implementations themselves. They can be tedious to write. Access to coding agents means there is no more excuse for not writing tests.
+
+> 5. Align before you build.
+
+Don't let an agent open a drive-by pull request. As above, discuss your approach with us first, and start from a draft pull request. This matters all the more when an agent makes it cheap to produce a lot of code quickly.
+
+> 6. You are accountable for what your agent submits.
+
+An agent acting on your behalf is still you. You own its output, and our [Code of Conduct](CODE_OF_CONDUCT.md) applies to it just as it does to anything you write yourself.
+
+> 7. Any infringement of the rules above allows the maintainers to close any associated discussion or pull request.
+
+*These rules are enforced in `AGENTS.md`.*
 
 ## Fork/clone/pull
 
