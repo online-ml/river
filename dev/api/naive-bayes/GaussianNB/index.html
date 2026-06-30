@@ -46773,10 +46773,10 @@ dtype: int64
 <p>Compute the joint log-likelihoods for a batch of feature vectors.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>X</strong>     — <code>pd.DataFrame</code>    </li>
+<li><strong>X</strong>     — <code>IntoDataFrame</code>    </li>
 </ul>
 <p><strong>Returns</strong></p>
-<p><code>pd.DataFrame</code>:     Input samples joint log-likelihoods.</p>
+<p><code>IntoDataFrame</code>:     Input samples joint log-likelihoods.</p>
 </details>
 <p><span /></p>
 <details class="- abstract">
@@ -46784,8 +46784,8 @@ dtype: int64
 <p>Learn from a batch of feature vectors.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>X</strong>     — <code>pd.DataFrame</code>    </li>
-<li><strong>y</strong>     — <code>pd.Series</code>    </li>
+<li><strong>X</strong>     — <code>IntoDataFrame</code>    </li>
+<li><strong>y</strong>     — <code>IntoSeries</code>    </li>
 </ul>
 </details>
 <p><span /></p>
@@ -46830,7 +46830,7 @@ dtype: int64
 <p>Return probabilities using the log-likelihoods in mini-batchs setting.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>X</strong>     — <code>pd.DataFrame</code>    </li>
+<li><strong>X</strong>     — <code>IntoDataFrame</code>    </li>
 </ul>
 </details>
 <p><span /></p>
