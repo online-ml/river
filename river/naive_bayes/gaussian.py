@@ -63,7 +63,7 @@ class GaussianNB(base.BaseNB):
     def __init__(self):
         self.class_counts = collections.Counter()
         self.gaussians = collections.defaultdict(
-            functools.partial(collections.defaultdict, proba.Gaussian)
+            functools.partial(collections.defaultdict, self._make_gaussian)
         )
 
     def learn_one(self, x, y):
@@ -197,6 +197,12 @@ class GaussianNB(base.BaseNB):
 
             jll[c] = ll
         return to_native_frame(jll, like=X)
+
+    @staticmethod
+    def _make_gaussian():
+        g = proba.Gaussian()
+        g._var.ddof = 0
+        return g
 
     def _unit_test_skips(self):
         return set()
