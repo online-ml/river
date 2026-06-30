@@ -66,5 +66,5 @@ def test_predict_proba_many_matches_sklearn(dataset):
     assert np.allclose(
         river_probs.to_numpy(),
         skl_probs.to_numpy(),
-        atol=1e-2,
+        atol=1e-10,
     )
