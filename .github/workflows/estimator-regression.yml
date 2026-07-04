@@ -88,6 +88,7 @@ jobs:
             --details comparison.yml
 
       - name: Upload artifacts
+        id: upload-artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -97,6 +98,18 @@ jobs:
             metrics.head.yml
             report.md
             comparison.yml
+
+      - name: Add artifact link to report
+        if: always()
+        env:
+          ARTIFACT_URL: ${{ steps.upload-artifacts.outputs.artifact-url }}
+        run: |
+          if [ -n "$ARTIFACT_URL" ]; then
+            {
+              echo "- [Download artifact]($ARTIFACT_URL)"
+              echo "- Contains \`metrics.base.yml\`, \`metrics.head.yml\`, \`comparison.yml\`, and \`report.md\`"
+            } >> report.md
+          fi
 
       - name: Comment on PR
         if: github.event_name == 'pull_request' && always()
