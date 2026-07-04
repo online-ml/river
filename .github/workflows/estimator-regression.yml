@@ -70,6 +70,8 @@ jobs:
         run: |
           BASE_SHA="${{ github.event.pull_request.base.sha || github.event.before }}"
           git worktree add /tmp/base "${BASE_SHA:-origin/main}"
+          mkdir -p /tmp/base/benchmarks
+          cp -R benchmarks/estimator_regression /tmp/base/benchmarks/
           cd /tmp/base
           uv sync --locked --all-extras --dev
           PYTHONHASHSEED=0 uv run python -m benchmarks.estimator_regression.cli run \
