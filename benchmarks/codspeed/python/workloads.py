@@ -22,7 +22,7 @@ def binary_stream(n: int = N_LEARN) -> list[tuple[dict[str, float], bool]]:
 
 @functools.cache
 def scalar_series(n: int = 10_000) -> list[float]:
-    """Deterministic univariate series; mirrors benches/stats_bench.rs exactly."""
+    """Deterministic univariate series; mirrors benchmarks/codspeed/rust/stats_bench.rs."""
     return [math.sin(i * 0.7) for i in range(n)]
 
 

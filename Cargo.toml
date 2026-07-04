@@ -3,6 +3,7 @@ name = "river"
 version = "0.1.0"
 authors = ["Adil Zouitine <adilzouitinegm@gmail.com>"]
 edition = "2021"
+autobenches = false
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [lib]
@@ -37,26 +38,32 @@ criterion = { package = "codspeed-criterion-compat", version = "5.0.1" }
 
 [[bench]]
 name = "stats_bench"
+path = "benchmarks/codspeed/rust/stats_bench.rs"
 harness = false
 
 [[bench]]
 name = "adwin_bench"
+path = "benchmarks/codspeed/rust/adwin_bench.rs"
 harness = false
 
 [[bench]]
 name = "rolling_metrics_bench"
+path = "benchmarks/codspeed/rust/rolling_metrics_bench.rs"
 harness = false
 
 [[bench]]
 name = "sorted_window_bench"
+path = "benchmarks/codspeed/rust/sorted_window_bench.rs"
 harness = false
 
 [[bench]]
 name = "covariance_bench"
+path = "benchmarks/codspeed/rust/covariance_bench.rs"
 harness = false
 
 [[bench]]
 name = "expected_mutual_info_bench"
+path = "benchmarks/codspeed/rust/expected_mutual_info_bench.rs"
 harness = false
 
 [profile.release]
