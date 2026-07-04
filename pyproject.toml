@@ -55,6 +55,7 @@ dev = [
     "mike @ git+https://github.com/squidfunk/mike.git",
     "polars>=1.1.0",
     "pyarrow>=11.0.0",
+    "pyyaml>=6.0",
 ]
 compat = [
     "scikit-learn>=1.5.1,<2",

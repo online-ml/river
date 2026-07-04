@@ -30,3 +30,18 @@ rebase:
 
 fomo:
 	git fetch && git rebase origin/main
+
+estimator-regression:
+	uv run python -m benchmarks.estimator_regression.cli run --output benchmarks/estimator_regression/metrics.head.yml $(if $(K),-k $(K),)
+
+estimator-regression-compare:
+	uv run python -m benchmarks.estimator_regression.cli compare \
+	  --base benchmarks/estimator_regression/metrics.base.yml \
+	  --head benchmarks/estimator_regression/metrics.head.yml \
+	  --output benchmarks/estimator_regression/report.md
+
+estimator-regression-discover:
+	uv run python -m benchmarks.estimator_regression.cli discover -v
+
+estimator-regression-audit:
+	uv run python -m benchmarks.estimator_regression.cli audit

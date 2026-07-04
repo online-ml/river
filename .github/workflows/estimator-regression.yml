@@ -1,0 +1,104 @@
+name: Estimator regression
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/estimator-regression.yml"
+      - "benchmarks/estimator_regression/**"
+      - "pyproject.toml"
+      - "river/**"
+      - "rust_src/**"
+      - "uv.lock"
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/estimator-regression.yml"
+      - "benchmarks/estimator_regression/**"
+      - "pyproject.toml"
+      - "river/**"
+      - "rust_src/**"
+      - "uv.lock"
+  workflow_dispatch:
+
+env:
+  PYTHONHASHSEED: "0"
+
+concurrency:
+  group: estimator-regression-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+jobs:
+  inventory:
+    name: Inventory audit
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v7
+        with:
+          python-version: "3.13"
+          enable-cache: true
+      - name: Install the project
+        run: uv sync --locked --all-extras --dev
+      - name: Audit estimator inventory
+        run: uv run python -m benchmarks.estimator_regression.cli audit
+
+  run:
+    name: Run and compare
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: astral-sh/setup-uv@v7
+        with:
+          python-version: "3.13"
+          enable-cache: true
+
+      - name: Install the project (PR branch)
+        run: uv sync --locked --all-extras --dev
+
+      - name: Run suite on PR branch
+        run: |
+          uv run python -m benchmarks.estimator_regression.cli run \
+            --output metrics.head.yml
+
+      - name: Run suite on base branch
+        run: |
+          BASE_SHA="${{ github.event.pull_request.base.sha || github.event.before }}"
+          git worktree add /tmp/base "${BASE_SHA:-origin/main}"
+          cd /tmp/base
+          uv sync --locked --all-extras --dev
+          PYTHONHASHSEED=0 uv run python -m benchmarks.estimator_regression.cli run \
+            --output /tmp/metrics.base.yml
+          cd -
+          cp /tmp/metrics.base.yml metrics.base.yml
+
+      - name: Compare base vs head
+        run: |
+          uv run python -m benchmarks.estimator_regression.cli compare \
+            --base metrics.base.yml \
+            --head metrics.head.yml \
+            --output report.md \
+            --details comparison.yml
+
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: estimator-regression
+          path: |
+            metrics.base.yml
+            metrics.head.yml
+            report.md
+            comparison.yml
+
+      - name: Comment on PR
+        if: github.event_name == 'pull_request' && always()
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body-path: report.md
