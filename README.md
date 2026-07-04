@@ -23,6 +23,10 @@
   <a href="http://mypy-lang.org/">
     <img src="http://www.mypy-lang.org/static/mypy_badge.svg" alt="mypy">
   </a>
+  <!-- CodSpeed -->
+  <a href="https://app.codspeed.io/online-ml/river?utm_source=badge">
+    <img src="https://img.shields.io/endpoint?url=https://codspeed.io/badge.json" alt="CodSpeed">
+  </a>
   <!-- License -->
   <a href="https://opensource.org/licenses/BSD-3-Clause">
     <img src="https://img.shields.io/badge/License-BSD%203--Clause-blue.svg?style=flat-square" alt="bsd_3_license">

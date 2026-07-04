@@ -32,7 +32,11 @@ ordered-float = { version = "3.9", features = ["serde"] }
 libm = "0.2"
 
 [dev-dependencies]
-criterion = "0.5"
+criterion = { package = "codspeed-criterion-compat", version = "5.0.1" }
+
+[[bench]]
+name = "stats_bench"
+harness = false
 
 [profile.release]
 lto = "thin"
