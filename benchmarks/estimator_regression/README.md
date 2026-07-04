@@ -29,22 +29,6 @@ branches, runs the suite on each, and posts a Markdown summary as a PR comment.
 The suite is a development tool and expects the same dependency set as CI,
 including extras such as `compat` for the sklearn-backed scenarios.
 
-## Layout
-
-```text
-benchmarks/estimator_regression/
-├── cli.py        # entry point: run / compare / discover / audit
-├── compare.py    # tolerances, base/head comparison, Markdown rendering
-├── discovery.py  # walks river.api.__all__ for concrete estimators
-├── run.py        # estimator protocols and metric collection
-├── scenarios.py  # Python scenario inventory and exclusions
-└── workloads.py  # deterministic, materialized data streams
-```
-
-There is no generated inventory. To add coverage for an estimator, add one
-entry to `SCENARIOS` in `scenarios.py` using normal River constructors. If an
-estimator should not be run, add its qualified name and reason to `EXCLUSIONS`.
-
 ## Coverage model
 
 Every concrete public `base.Estimator` subclass must appear in `SCENARIOS` or
