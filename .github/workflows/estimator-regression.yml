@@ -104,16 +104,29 @@ jobs:
         env:
           ARTIFACT_URL: ${{ steps.upload-artifacts.outputs.artifact-url }}
         run: |
-          if [ -n "$ARTIFACT_URL" ]; then
-            {
+          {
+            echo "<!-- estimator-regression-report -->"
+            cat report.md
+            if [ -n "$ARTIFACT_URL" ]; then
               echo "- [Download artifact]($ARTIFACT_URL)"
-              echo "- Contains \`metrics.base.yml\`, \`metrics.head.yml\`, \`comparison.yml\`, and \`report.md\`"
-            } >> report.md
-          fi
+            fi
+          } > report.tmp.md
+          mv report.tmp.md report.md
+
+      - name: Find previous PR comment
+        id: find-comment
+        if: github.event_name == 'pull_request' && always()
+        uses: peter-evans/find-comment@v3
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: github-actions[bot]
+          body-includes: "<!-- estimator-regression-report -->"
 
       - name: Comment on PR
         if: github.event_name == 'pull_request' && always()
         uses: peter-evans/create-or-update-comment@v4
         with:
+          comment-id: ${{ steps.find-comment.outputs.comment-id }}
           issue-number: ${{ github.event.pull_request.number }}
           body-path: report.md
+          edit-mode: replace
