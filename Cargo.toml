@@ -39,6 +39,26 @@ criterion = { package = "codspeed-criterion-compat", version = "5.0.1" }
 name = "stats_bench"
 harness = false
 
+[[bench]]
+name = "adwin_bench"
+harness = false
+
+[[bench]]
+name = "rolling_metrics_bench"
+harness = false
+
+[[bench]]
+name = "sorted_window_bench"
+harness = false
+
+[[bench]]
+name = "covariance_bench"
+harness = false
+
+[[bench]]
+name = "expected_mutual_info_bench"
+harness = false
+
 [profile.release]
 lto = "thin"
 codegen-units = 1
