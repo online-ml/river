@@ -1,10 +1,10 @@
-from marks import benchmark
+from marks import heavy
 from workloads import scalar_series
 
 from river import drift
 
 
-@benchmark("drift")
+@heavy("drift")
 def test_adwin_update(benchmark) -> None:
     series = scalar_series()
 
@@ -16,9 +16,11 @@ def test_adwin_update(benchmark) -> None:
     benchmark(run)
 
 
-@benchmark("drift")
+@heavy("drift")
 def test_kswin_update(benchmark) -> None:
-    series = scalar_series(5_000)
+    # KSWIN runs a KS test per sample; 1,000 samples still exercise ~900 tests
+    # after the window fills, at a fifth of the CPU-simulation cost.
+    series = scalar_series(1_000)
 
     def run() -> None:
         detector = drift.KSWIN(seed=42)
@@ -28,7 +30,7 @@ def test_kswin_update(benchmark) -> None:
     benchmark(run)
 
 
-@benchmark("drift")
+@heavy("drift")
 def test_page_hinkley_update(benchmark) -> None:
     series = scalar_series()
 

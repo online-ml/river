@@ -1,10 +1,10 @@
-from marks import benchmark
+from marks import heavy
 from workloads import N_PREDICT, binary_stream, regression_stream
 
 from river import forest
 
 
-@benchmark("forest")
+@heavy("forest")
 def test_arf_classifier_learn(benchmark) -> None:
     stream = binary_stream(500)
 
@@ -16,7 +16,7 @@ def test_arf_classifier_learn(benchmark) -> None:
     benchmark(run)
 
 
-@benchmark("forest")
+@heavy("forest")
 def test_arf_classifier_predict(benchmark) -> None:
     stream = binary_stream(500)
     model = forest.ARFClassifier(n_models=3, seed=42)
@@ -31,7 +31,7 @@ def test_arf_classifier_predict(benchmark) -> None:
     benchmark(run)
 
 
-@benchmark("forest")
+@heavy("forest")
 def test_amf_classifier_learn(benchmark) -> None:
     stream = binary_stream(500)
 
@@ -43,7 +43,7 @@ def test_amf_classifier_learn(benchmark) -> None:
     benchmark(run)
 
 
-@benchmark("forest")
+@heavy("forest")
 def test_amf_classifier_predict(benchmark) -> None:
     stream = binary_stream(500)
     model = forest.AMFClassifier(n_estimators=3, seed=42)
@@ -58,7 +58,7 @@ def test_amf_classifier_predict(benchmark) -> None:
     benchmark(run)
 
 
-@benchmark("forest")
+@heavy("forest")
 def test_arf_regressor_learn(benchmark) -> None:
     stream = regression_stream(500)
 

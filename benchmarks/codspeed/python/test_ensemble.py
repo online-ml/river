@@ -1,10 +1,10 @@
-from marks import benchmark
+from marks import heavy
 from workloads import binary_stream
 
 from river import ensemble, tree
 
 
-@benchmark("ensemble")
+@heavy("ensemble")
 def test_bagging_learn(benchmark) -> None:
     stream = binary_stream(500)
 
@@ -16,7 +16,7 @@ def test_bagging_learn(benchmark) -> None:
     benchmark(run)
 
 
-@benchmark("ensemble")
+@heavy("ensemble")
 def test_srp_learn(benchmark) -> None:
     stream = binary_stream(300)
 
@@ -28,7 +28,7 @@ def test_srp_learn(benchmark) -> None:
     benchmark(run)
 
 
-@benchmark("ensemble")
+@heavy("ensemble")
 def test_adwin_bagging_learn(benchmark) -> None:
     stream = binary_stream(500)
 

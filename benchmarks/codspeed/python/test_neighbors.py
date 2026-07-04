@@ -3,6 +3,10 @@ from workloads import binary_stream
 
 from river import neighbors
 
+# Keep 500 samples: SWINN only builds its search graph once it holds n=500
+# items, so a shorter stream would degenerate into buffer appends and measure
+# nothing.
+
 
 @benchmark("neighbors")
 def test_knn_classifier_learn(benchmark) -> None:

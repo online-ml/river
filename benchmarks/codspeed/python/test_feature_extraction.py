@@ -1,10 +1,10 @@
-from marks import benchmark
+from marks import heavy
 from workloads import high_dim_stream, text_stream
 
 from river import feature_extraction
 
 
-@benchmark("feature_extraction")
+@heavy("feature_extraction")
 def test_bag_of_words_transform(benchmark) -> None:
     stream = text_stream()
     model = feature_extraction.BagOfWords()
@@ -16,7 +16,7 @@ def test_bag_of_words_transform(benchmark) -> None:
     benchmark(run)
 
 
-@benchmark("feature_extraction")
+@heavy("feature_extraction")
 def test_tfidf_transform(benchmark) -> None:
     stream = text_stream()
 
@@ -29,9 +29,11 @@ def test_tfidf_transform(benchmark) -> None:
     benchmark(run)
 
 
-@benchmark("feature_extraction")
+@heavy("feature_extraction")
 def test_polynomial_extender_transform(benchmark) -> None:
-    stream = [x for x, _ in high_dim_stream()]
+    # Degree-2 expansion of 50 features yields 1,275 terms per sample: 200
+    # samples are plenty of signal while keeping the CPU-simulation run short.
+    stream = [x for x, _ in high_dim_stream(200)]
     model = feature_extraction.PolynomialExtender(degree=2)
 
     def run() -> None:
