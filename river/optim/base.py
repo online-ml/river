@@ -124,15 +124,22 @@ class Optimizer(base.Base):
         if (isinstance(w, utils.VectorDict) or isinstance(w, np.ndarray)) and (
             isinstance(g, utils.VectorDict) or isinstance(g, np.ndarray)
         ):
-            w = self._step_with_vector(w, g)
-            self.n_iterations += 1
-            return w
-        elif isinstance(w, dict) and isinstance(g, dict):
-            w = self._step_with_dict(w, g)
-            self.n_iterations += 1
-            return w
-        else:
-            raise ValueError("Weights and gradients have incompatible types")
+            try:
+                w = self._step_with_vector(w, g)
+                self.n_iterations += 1
+                return w
+            except NotImplementedError:
+                pass
+        if (isinstance(w, utils.VectorDict) or isinstance(w, dict)) and (
+            isinstance(g, utils.VectorDict) or isinstance(g, dict)
+        ):
+            try:
+                w = self._step_with_dict(w, g)
+                self.n_iterations += 1
+                return w
+            except NotImplementedError:
+                pass
+        raise ValueError("Weights and gradients have incompatible types")
 
     def __repr__(self):
         return f"{self.__class__.__name__}({vars(self)})"
