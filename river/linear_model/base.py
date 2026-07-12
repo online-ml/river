@@ -156,7 +156,9 @@ class GLM:
         )
 
         # Build gradient VectorDict in one pass instead of VectorDict(x) * scalar
-        gradient: VectorDict[typing.Any, typing.Any] = utils.VectorDict({key: value * loss_gradient for key, value in x.items()})
+        gradient: VectorDict[typing.Any, typing.Any] = utils.VectorDict(
+            {key: value * loss_gradient for key, value in x.items()}
+        )
 
         if self.l2:
             gradient.iadd_scaled(self._weights, self.l2)
