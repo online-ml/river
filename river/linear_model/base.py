@@ -7,6 +7,7 @@ import typing
 import numpy as np
 
 from river import optim, utils
+from river.utils.vectordict import VectorDict
 
 if typing.TYPE_CHECKING:
     from collections.abc import Sequence
@@ -155,7 +156,7 @@ class GLM:
         )
 
         # Build gradient VectorDict in one pass instead of VectorDict(x) * scalar
-        gradient = utils.VectorDict({key: value * loss_gradient for key, value in x.items()})
+        gradient: VectorDict[typing.Any, typing.Any] = utils.VectorDict({key: value * loss_gradient for key, value in x.items()})
 
         if self.l2:
             gradient.iadd_scaled(self._weights, self.l2)
