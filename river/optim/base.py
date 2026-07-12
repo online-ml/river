@@ -130,16 +130,9 @@ class Optimizer(base.Base):
                 return w
             except NotImplementedError:
                 pass
-        if (isinstance(w, utils.VectorDict) or isinstance(w, dict)) and (
-            isinstance(g, utils.VectorDict) or isinstance(g, dict)
-        ):
-            try:
-                w = self._step_with_dict(w, g)
-                self.n_iterations += 1
-                return w
-            except NotImplementedError:
-                pass
-        raise ValueError("Weights and gradients have incompatible types")
+        w = self._step_with_dict(w, g)  # type: ignore[arg-type]
+        self.n_iterations += 1
+        return w
 
     def __repr__(self):
         return f"{self.__class__.__name__}({vars(self)})"
