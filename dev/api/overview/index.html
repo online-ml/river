@@ -3309,6 +3309,16 @@
       
         
       
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
     
     
     
@@ -3361,6 +3371,8 @@
   
     
     
+      
+        
       
         
       
@@ -5101,6 +5113,8 @@
   
     
     
+      
+        
       
         
       
@@ -48376,9 +48390,22 @@ regressor or classifier.</p>
 </ul>
 <h2 id="covariance">covariance<a class="headerlink" href="#covariance" title="Permanent link">&para;</a></h2>
 <p>Online estimation of covariance and precision matrices.</p>
+<p>A covariance matrix summarises how a set of variables move together. It is the engine behind
+portfolio risk, anomaly detection (via the Mahalanobis distance), Gaussian models, and many
+dimensionality-reduction methods. This module estimates it (and its inverse, the precision
+matrix) incrementally from a stream, without storing the data. See each estimator's docstring for
+what it does and when to reach for it.</p>
+<p>The estimators are dict-native: <code>update(x)</code> takes a mapping and the <code>matrix</code> is a dict of pairwise
+values. Most also expose an <code>update_many</code> method for mini-batches of any narwhals-compatible
+dataframe.</p>
 <ul>
 <li><a href="../covariance/EmpiricalCovariance">EmpiricalCovariance</a></li>
 <li><a href="../covariance/EmpiricalPrecision">EmpiricalPrecision</a></li>
+<li><a href="../covariance/EwaCovariance">EwaCovariance</a></li>
+<li><a href="../covariance/EwaPrecision">EwaPrecision</a></li>
+<li><a href="../covariance/LedoitWolfCovariance">LedoitWolfCovariance</a></li>
+<li><a href="../covariance/OASCovariance">OASCovariance</a></li>
+<li><a href="../covariance/ShrunkCovariance">ShrunkCovariance</a></li>
 </ul>
 <h2 id="datasets_1">datasets<a class="headerlink" href="#datasets_1" title="Permanent link">&para;</a></h2>
 <p>Datasets.</p>
@@ -48420,6 +48447,11 @@ are interested in infinite synthetic data generators.</p>
 <td style="text-align: left;"><a href="../datasets/Restaurants">Restaurants</a></td>
 <td style="text-align: right;">252,108</td>
 <td style="text-align: right;">7</td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="../datasets/SP500Stocks">SP500Stocks</a></td>
+<td style="text-align: right;">1,257</td>
+<td style="text-align: right;">10</td>
 </tr>
 <tr>
 <td style="text-align: left;"><a href="../datasets/Taxis">Taxis</a></td>
@@ -49225,6 +49257,7 @@ of memory and processing time.</p>
 <li><a href="../stats/ChiSquared">ChiSquared</a></li>
 <li><a href="../stats/Count">Count</a></li>
 <li><a href="../stats/Cov">Cov</a></li>
+<li><a href="../stats/EWCov">EWCov</a></li>
 <li><a href="../stats/EWMean">EWMean</a></li>
 <li><a href="../stats/EWVar">EWVar</a></li>
 <li><a href="../stats/Entropy">Entropy</a></li>

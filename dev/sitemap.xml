@@ -310,6 +310,21 @@
         <loc>https://riverml.xyz/dev/api/covariance/EmpiricalPrecision/</loc>
       </url>
       <url>
+        <loc>https://riverml.xyz/dev/api/covariance/EwaCovariance/</loc>
+      </url>
+      <url>
+        <loc>https://riverml.xyz/dev/api/covariance/EwaPrecision/</loc>
+      </url>
+      <url>
+        <loc>https://riverml.xyz/dev/api/covariance/LedoitWolfCovariance/</loc>
+      </url>
+      <url>
+        <loc>https://riverml.xyz/dev/api/covariance/OASCovariance/</loc>
+      </url>
+      <url>
+        <loc>https://riverml.xyz/dev/api/covariance/ShrunkCovariance/</loc>
+      </url>
+      <url>
         <loc>https://riverml.xyz/dev/api/datasets/AirlinePassengers/</loc>
       </url>
       <url>
@@ -368,6 +383,9 @@
       </url>
       <url>
         <loc>https://riverml.xyz/dev/api/datasets/SMTP/</loc>
+      </url>
+      <url>
+        <loc>https://riverml.xyz/dev/api/datasets/SP500Stocks/</loc>
       </url>
       <url>
         <loc>https://riverml.xyz/dev/api/datasets/Shuttle/</loc>
@@ -1232,6 +1250,9 @@
       </url>
       <url>
         <loc>https://riverml.xyz/dev/api/stats/Cov/</loc>
+      </url>
+      <url>
+        <loc>https://riverml.xyz/dev/api/stats/EWCov/</loc>
       </url>
       <url>
         <loc>https://riverml.xyz/dev/api/stats/EWMean/</loc>

@@ -3883,8 +3883,9 @@
 </ul>
 <h2 id="anomaly">anomaly<a class="headerlink" href="#anomaly" title="Permanent link">&para;</a></h2>
 <ul>
+<li>Added <a href="../../api/api/anomaly/LODA"><code>api.anomaly.LODA</code></a>, an online implementation of Pevný's <em>Lightweight on-line detector of anomalies</em>. It maintains an ensemble of one-dimensional <a href="../../api/sketch/Histogram"><code>sketch.Histogram</code></a>s over sparse random projections and scores samples by their average negative log-likelihood.</li>
 <li>
-<p>Added <a href="../../api/api/anomaly/LODA"><code>api.anomaly.LODA</code></a>, an online implementation of Pevný's <em>Lightweight on-line detector of anomalies</em>. It maintains an ensemble of one-dimensional <a href="../../api/sketch/Histogram"><code>sketch.Histogram</code></a>s over sparse random projections and scores samples by their average negative log-likelihood.</p>
+<p>Rewrote <a href="../../api/api/anomaly/LocalOutlierFactor"><code>api.anomaly.LocalOutlierFactor</code></a>. It now stores samples in a bounded sliding window via a <code>river.neighbors</code> search engine (<code>LazySearch</code> by default, <code>SWINN</code> for approximate search) and computes the LOF of a sample against the window on demand. <code>learn_one</code> is now constant-time and memory is bounded by the window size, and <code>score_one</code> no longer mutates the model. Scores match scikit-learn over the same window: an unseen point reproduces <code>LocalOutlierFactor(novelty=True)</code>, and a stored point reproduces the in-sample <code>negative_outlier_factor_</code> (a point is never its own neighbor). <code>learn_many</code> now accepts any <a href="https://github.com/narwhals-dev/narwhals">narwhals</a>-supported eager dataframe (pandas, polars, pyarrow, ...). Behavior changes: scores now reflect the most recent <code>window_size</code> samples rather than the entire history, scoring an already-seen point returns its LOF instead of <code>0.0</code>, and the <code>distance_func</code> parameter is replaced by the engine's distance function.</p>
 </li>
 <li>
 <p>Made <code>anomaly.OneClassSVM.learn_many</code> dataframe-agnostic via narwhals: it now accepts any narwhals-supported eager backend (pandas, polars, pyarrow, ...) instead of only pandas. Outputs are unchanged.</p>
@@ -3901,6 +3902,9 @@
 </ul>
 <h2 id="covariance">covariance<a class="headerlink" href="#covariance" title="Permanent link">&para;</a></h2>
 <ul>
+<li>Added <code>EwaCovariance</code>, <code>LedoitWolfCovariance</code>, <code>OASCovariance</code>, and <code>ShrunkCovariance</code>: online covariance estimators for non-stationary streams (exponentially weighted, recency-biased) and high-dimensional / few-sample regimes (shrinkage towards a well-conditioned target). They are dict-native like <code>EmpiricalCovariance</code> and support mini-batches via <code>update_many</code> on any <a href="https://github.com/narwhals-dev/narwhals">narwhals</a>-supported eager backend.</li>
+<li>Added <code>EwaPrecision</code>, an exponentially weighted precision (inverse covariance) matrix maintained online via a forgetting-factor Sherman-Morrison update. The recency-weighted counterpart of <code>EmpiricalPrecision</code>, useful for tracking Mahalanobis distances and Gaussian likelihoods on non-stationary streams.</li>
+<li><code>EmpiricalCovariance.update_many</code> and <code>EmpiricalPrecision.update_many</code> now accept any <a href="https://github.com/narwhals-dev/narwhals">narwhals</a>-supported eager dataframe (pandas, polars, pyarrow, ...) instead of pandas only. Outputs are unchanged for the pandas path.</li>
 <li>Added weighted sample support to <code>EmpiricalCovariance.update</code> and <code>EmpiricalCovariance.revert</code> by accepting an optional <code>w</code> parameter and propagating it to the underlying <a href="../../api/stats/Cov"><code>stats.Cov</code></a> and <a href="../../api/stats/Var"><code>stats.Var</code></a> statistics.</li>
 <li>Sped up <code>EmpiricalCovariance.update</code>/<code>revert</code> (~40% faster at 30 features) by caching the sorted feature list and pair iteration in the hot path. No semantic change.</li>
 <li>Restructured <code>EmpiricalPrecision</code> around NumPy-backed dense state, removing the per-update dict ↔ numpy marshalling. ~7× faster on 2000 × 20 sample streams.</li>
@@ -3910,6 +3914,7 @@
 <ul>
 <li>Added <a href="../../api/datasets/CriteoAds"><code>datasets.CriteoAds</code></a>, a 100,000-row sample of the Criteo Display Advertising Challenge (binary click prediction with 13 integer and 26 high-cardinality categorical features). A natural fit for one-hot models such as <a href="../../api/linear-model/AdPredictor"><code>linear_model.AdPredictor</code></a>.</li>
 <li>Added <a href="../../api/datasets/Shuttle"><code>datasets.Shuttle</code></a>, the UCI Statlog (Shuttle) dataset cast as a binary anomaly-detection task following the ODDS benchmark (49,097 observations, 9 numerical features, ~7% anomalies). Ships bundled with River.</li>
+<li>Added <a href="../../api/datasets/SP500Stocks"><code>datasets.SP500Stocks</code></a>, daily returns (1,257 trading days, 2013-2018) for ten large-cap S&amp;P 500 stocks across diverse sectors. A natural fit for the online covariance estimators in <code>river.covariance</code>.</li>
 </ul>
 <h2 id="facto">facto<a class="headerlink" href="#facto" title="Permanent link">&para;</a></h2>
 <ul>
@@ -3951,6 +3956,7 @@
 </ul>
 <h2 id="neighbors">neighbors<a class="headerlink" href="#neighbors" title="Permanent link">&para;</a></h2>
 <ul>
+<li>Fixed the Euclidean fast path of <a href="../../api/neighbors/LazySearch"><code>neighbors.LazySearch</code></a>, which returned the <em>farthest</em> candidates instead of the nearest because its search heap was keyed on the negated distance. This affected <code>KNNClassifier</code>, <code>KNNRegressor</code>, and <code>LocalOutlierFactor</code> whenever they ran over a <code>LazySearch</code> engine with the default Euclidean distance.</li>
 <li>Gave the SWINN graph <code>Vertex</code> <code>__slots__</code> and dropped its <a href="../../api/base/Base"><code>base.Base</code></a> inheritance (it is an internal graph node, not an estimator). One vertex is created per buffered sample, so this trims memory on large <a href="../../api/neighbors/SWINN"><code>neighbors.SWINN</code></a> indexes; behavior is unchanged.</li>
 </ul>
 <h2 id="neural_net">neural_net<a class="headerlink" href="#neural_net" title="Permanent link">&para;</a></h2>
@@ -4000,6 +4006,7 @@
 </ul>
 <h2 id="stats">stats<a class="headerlink" href="#stats" title="Permanent link">&para;</a></h2>
 <ul>
+<li>Added <a href="../../api/stats/EWCov"><code>stats.EWCov</code></a>, an exponentially weighted covariance between two variables (the bivariate counterpart of <a href="../../api/stats/EWVar"><code>stats.EWVar</code></a>).</li>
 <li>Added <a href="../../api/stats/ChiSquared"><code>stats.ChiSquared</code></a>, a streaming Chi-squared statistic between two categorical variables. Wrap it with <a href="../../api/utils/Rolling"><code>utils.Rolling</code></a> for a rolling version.</li>
 </ul>
 <h2 id="tree">tree<a class="headerlink" href="#tree" title="Permanent link">&para;</a></h2>

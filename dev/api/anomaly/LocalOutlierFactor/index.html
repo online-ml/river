@@ -2142,17 +2142,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#attributes" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Attributes
-      </span>
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#examples" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -2853,6 +2842,16 @@
       
         
       
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
     
     
     
@@ -2905,6 +2904,8 @@
   
     
     
+      
+        
       
         
       
@@ -4645,6 +4646,8 @@
   
     
     
+      
+        
       
         
       
@@ -46925,17 +46928,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#attributes" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Attributes
-      </span>
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#examples" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -46987,126 +46979,71 @@
 
 
 <h1 id="localoutlierfactor">LocalOutlierFactor<a class="headerlink" href="#localoutlierfactor" title="Permanent link">&para;</a></h1>
-<p>Incremental Local Outlier Factor (Incremental LOF).</p>
-<p>The Incremental Local Outlier Factor (ILOF) is an online version of the Local Outlier Factor (LOF), proposed by Pokrajac et al. (2017),  and is used to identify outliers based on density of local neighbors. </p>
-<p>The algorithm take into account the following elements:     - <code>NewPoints</code>: new points;</p>
-<div class="language-text highlight"><pre><span></span><code>- `kNN(p)`: the k-nearest neighbors of `p` (the k-closest points to `p`);
-
-- `RkNN(p)`: the reverse-k-nearest neighbors of `p` (points that have `p` as one of their neighbors);
-
-- `set_upd_lrd`: Set of points that need to have the local reachability distance updated;
-
-- `set_upd_lof`: Set of points that need to have the local outlier factor updated.
-</code></pre></div>
-<p>This current implementation within <code>River</code>, based on the original one in the paper, follows the following steps:     1) Insert new data points (<code>NewPoints</code>) and calculate its distance to existing points;     2) Update the nearest neighbors and reverse nearest neighbors of all the points;     3) Define sets of affected points that required updates;     4) Calculate the reachability-distance from new point to neighbors (<code>NewPoints</code> -&gt; <code>kNN(NewPoints)</code>)        and from rev-neighbors to new point (<code>RkNN(NewPoints)</code> -&gt; <code>NewPoints</code>);     5) Update the reachability-distance for affected points: <code>RkNN(RkNN(NewPoints))</code> -&gt; <code>RkNN(NewPoints)</code>     6) Update local reachability distance of affected points: <code>lrd(set_upd_lrd)</code>;     7) Update local outlier factor: <code>lof(set_upd_lof)</code>. </p>
-<p>The incremental LOF algorithm is expected to provide equivalent detection performance as the iterated static LOF algroithm (applied after insertion of each data record), while requiring significantly less computational time. Moreover, the insertion of a new data point as well as deletion of an old data point influence only a limited number of their closest neighbors, which means that the number of updates per such insertion/deletion does not depend on the total number of instances learned/in the data set.</p>
+<p>Local Outlier Factor (LOF).</p>
+<p>The LOF of a sample measures how isolated it is relative to the density of its neighbors: a value around 1 means the sample lies in a region as dense as its neighborhood, while a value substantially above 1 flags an outlier sitting in a comparatively sparse region (Breunig et al., 2000). </p>
+<p>Samples are stored in a fixed-size sliding window managed by a nearest-neighbor <code>engine</code> (see <code>river.neighbors</code>). <code>learn_one</code> simply adds a sample to the window, so it runs in constant time and the memory footprint is bounded by the window size. <code>score_one</code> computes the LOF of a sample against the current window on demand, without modifying it. The natural streaming pattern is therefore to call <code>score_one</code> and then <code>learn_one</code> on each sample. </p>
+<p>Because scoring is done against the window only, the result matches the static LOF computed on those samples (e.g. scikit-learn's <code>LocalOutlierFactor(novelty=True)</code> fitted on the same window).</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
 <p><strong>n_neighbors</strong></p>
 <p><em>Type</em> → <code>int</code></p>
 <p><em>Default</em> → <code>10</code></p>
-<p>The number of nearest neighbors to use for density estimation.</p>
+<p>The number of nearest neighbors used to define the local neighborhood.</p>
 </li>
 <li>
-<p><strong>distance_func</strong></p>
-<p><em>Type</em> → <code>DistanceFunc | None</code></p>
+<p><strong>engine</strong></p>
+<p><em>Type</em> → <code>BaseNN | None</code></p>
 <p><em>Default</em> → <code>None</code></p>
-<p>Distance function to be used. By default, the Euclidean distance is used.</p>
-</li>
-</ul>
-<h2 id="attributes">Attributes<a class="headerlink" href="#attributes" title="Permanent link">&para;</a></h2>
-<ul>
-<li>
-<p><strong>x_list</strong></p>
-<p>A list of stored observations.</p>
-</li>
-<li>
-<p><strong>x_batch</strong></p>
-<p>A buffer to hold incoming observations until it's time to update the model.</p>
-</li>
-<li>
-<p><strong>x_scores</strong></p>
-<p>A buffer to hold incoming observations until it's time to score them.</p>
-</li>
-<li>
-<p><strong>dist_dict</strong></p>
-<p>A dictionary to hold distances between observations.</p>
-</li>
-<li>
-<p><strong>neighborhoods</strong></p>
-<p>A dictionary to hold neighborhoods for each observation.</p>
-</li>
-<li>
-<p><strong>rev_neighborhoods</strong></p>
-<p>A dictionary to hold reverse neighborhoods for each observation.</p>
-</li>
-<li>
-<p><strong>k_dist</strong></p>
-<p>A dictionary to hold k-distances for each observation.</p>
-</li>
-<li>
-<p><strong>reach_dist</strong></p>
-<p>A dictionary to hold reachability distances for each observation.</p>
-</li>
-<li>
-<p><strong>lof</strong></p>
-<p>A dictionary to hold Local Outlier Factors for each observation.</p>
-</li>
-<li>
-<p><strong>local_reach</strong></p>
-<p>A dictionary to hold local reachability distances for each observation.</p>
+<p>The nearest-neighbor search engine, which stores the samples in a sliding window and answers neighbor queries. Defaults to <code>neighbors.LazySearch</code>, an exact brute-force search over the window. Pass <code>neighbors.SWINN</code> for approximate search, or a configured engine to control the <code>window_size</code> and the distance function.</p>
 </li>
 </ul>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
-<p><div class="language-python highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">river</span><span class="w"> </span><span class="kn">import</span> <span class="n">anomaly</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">river</span><span class="w"> </span><span class="kn">import</span> <span class="n">datasets</span>
+<p><div class="language-python highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">river</span><span class="w"> </span><span class="kn">import</span> <span class="n">anomaly</span>
 
-<span class="n">cc_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">datasets</span><span class="o">.</span><span class="n">CreditCard</span><span class="p">())</span>
-
-<span class="n">lof</span> <span class="o">=</span> <span class="n">anomaly</span><span class="o">.</span><span class="n">LocalOutlierFactor</span><span class="p">(</span><span class="n">n_neighbors</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
-
-<span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">datasets</span><span class="o">.</span><span class="n">CreditCard</span><span class="p">()</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="mi">200</span><span class="p">):</span>
-    <span class="n">lof</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-
-<span class="n">lof</span><span class="o">.</span><span class="n">learn_many</span><span class="p">(</span><span class="n">cc_df</span><span class="p">[</span><span class="mi">201</span><span class="p">:</span><span class="mi">401</span><span class="p">])</span>
-
-<span class="n">scores</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">cc_df</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">401</span><span class="p">:</span><span class="mi">406</span><span class="p">]:</span>
-    <span class="n">scores</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">lof</span><span class="o">.</span><span class="n">score_one</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
-
-<span class="p">[</span><span class="nb">round</span><span class="p">(</span><span class="n">score</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span> <span class="k">for</span> <span class="n">score</span> <span class="ow">in</span> <span class="n">scores</span><span class="p">]</span>
-</code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>[1.802, 1.936, 1.566, 1.181, 1.272]
-</code></pre></div></p>
-<p><div class="language-python highlight"><pre><span></span><code><span class="n">X</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.45</span><span class="p">,</span> <span class="mf">0.43</span><span class="p">,</span> <span class="mf">0.44</span><span class="p">,</span> <span class="mf">0.445</span><span class="p">,</span> <span class="mf">0.45</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span>
-<span class="n">lof</span> <span class="o">=</span> <span class="n">anomaly</span><span class="o">.</span><span class="n">LocalOutlierFactor</span><span class="p">()</span>
+<span class="n">X</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.45</span><span class="p">,</span> <span class="mf">0.43</span><span class="p">,</span> <span class="mf">0.44</span><span class="p">,</span> <span class="mf">0.445</span><span class="p">,</span> <span class="mf">0.45</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span>
+<span class="n">lof</span> <span class="o">=</span> <span class="n">anomaly</span><span class="o">.</span><span class="n">LocalOutlierFactor</span><span class="p">(</span><span class="n">n_neighbors</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 
 <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">X</span><span class="p">[:</span><span class="mi">3</span><span class="p">]:</span>
-    <span class="n">lof</span><span class="o">.</span><span class="n">learn_one</span><span class="p">({</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="n">x</span><span class="p">})</span>  <span class="c1"># Warming up</span>
+    <span class="n">lof</span><span class="o">.</span><span class="n">learn_one</span><span class="p">({</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">x</span><span class="p">})</span>  <span class="c1"># warming up</span>
 
 <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">X</span><span class="p">:</span>
-    <span class="n">features</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="n">x</span><span class="p">}</span>
-    <span class="nb">print</span><span class="p">(</span>
-        <span class="sa">f</span><span class="s1">&#39;Anomaly score for x=</span><span class="si">{</span><span class="n">x</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">lof</span><span class="o">.</span><span class="n">score_one</span><span class="p">(</span><span class="n">features</span><span class="p">)</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">features</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">x</span><span class="p">}</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Anomaly score for x=</span><span class="si">{</span><span class="n">x</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">lof</span><span class="o">.</span><span class="n">score_one</span><span class="p">(</span><span class="n">features</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="n">lof</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">features</span><span class="p">)</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>Anomaly score for x=0.500: 0.000
-Anomaly score for x=0.450: 0.000
-Anomaly score for x=0.430: 0.000
-Anomaly score for x=0.440: 1.020
-Anomaly score for x=0.445: 1.032
-Anomaly score for x=0.450: 0.000
-Anomaly score for x=0.000: 0.980
+<div class="language-text highlight"><pre><span></span><code>Anomaly score for x=0.500: 0.929
+Anomaly score for x=0.450: 1.105
+Anomaly score for x=0.430: 1.044
+Anomaly score for x=0.440: 1.000
+Anomaly score for x=0.445: 0.944
+Anomaly score for x=0.450: 0.889
+Anomaly score for x=0.000: 36.111
+</code></pre></div></p>
+<p>A mini-batch of samples can be learned at once from any
+<a href="https://github.com/narwhals-dev/narwhals">narwhals</a>-compatible eager dataframe (pandas,
+polars, pyarrow, ...) with <code>learn_many</code>:</p>
+<p><div class="language-python highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">river</span><span class="w"> </span><span class="kn">import</span> <span class="n">datasets</span>
+
+<span class="n">rows</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">datasets</span><span class="o">.</span><span class="n">CreditCard</span><span class="p">()</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="mi">500</span><span class="p">)]</span>
+<span class="n">lof</span> <span class="o">=</span> <span class="n">anomaly</span><span class="o">.</span><span class="n">LocalOutlierFactor</span><span class="p">(</span><span class="n">n_neighbors</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+<span class="n">lof</span><span class="o">.</span><span class="n">learn_many</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">rows</span><span class="p">))</span>
+<span class="p">[</span><span class="nb">round</span><span class="p">(</span><span class="n">lof</span><span class="o">.</span><span class="n">score_one</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="mi">3</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">[:</span><span class="mi">5</span><span class="p">]]</span>
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>[1.51, 1.355, 1.987, 1.566, 1.837]
 </code></pre></div></p>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <details class="- abstract">
-<summary>learn</summary>
-</details>
-<details class="- abstract">
 <summary>learn_many</summary>
+<p>Update with a mini-batch of samples held in a dataframe.</p>
+<p>Any <a href="https://github.com/narwhals-dev/narwhals">narwhals</a>-compatible eager dataframe (pandas, polars, pyarrow, ...) is accepted. Each row is added to the window in turn.</p>
+<p><strong>Parameters</strong></p>
+<ul>
+<li><strong>X</strong>     — <code>IntoDataFrame</code>    </li>
+</ul>
 </details>
+<p><span /></p>
 <details class="- abstract">
 <summary>learn_one</summary>
 <p>Update the model.</p>
@@ -47131,13 +47068,10 @@ Anomaly score for x=0.000: 0.980
 <h2 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
-<p>David Pokrajac, Aleksandar Lazarevic, and Longin Jan Latecki (2007). Incremental Local Outlier Detection for Data</p>
+<p>Markus M. Breunig, Hans-Peter Kriegel, Raymond T. Ng, and Jörg Sander (2000). LOF: Identifying Density-Based Local Outliers. In: Proceedings of the 2000 ACM SIGMOD International Conference on Management of Data. 93-104. DOI: 10.1145/342009.335388.</p>
 </li>
 <li>
-<p>Streams. In: Proceedings of the 2007 IEEE Symposium on Computational Intelligence and Data Mining (CIDM 2007). 504-515.</p>
-</li>
-<li>
-<p>DOI: 10.1109/CIDM.2007.368917.</p>
+<p>David Pokrajac, Aleksandar Lazarevic, and Longin Jan Latecki (2007). Incremental Local Outlier Detection for Data Streams. In: Proceedings of the 2007 IEEE Symposium on Computational Intelligence and Data Mining (CIDM 2007). 504-515. DOI: 10.1109/CIDM.2007.368917.</p>
 </li>
 </ul>
 
