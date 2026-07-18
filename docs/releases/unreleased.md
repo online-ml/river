@@ -13,6 +13,7 @@
 ## anomaly
 
 - Added `anomaly.LODA`, an online implementation of Pevný's *Lightweight on-line detector of anomalies*. It maintains an ensemble of one-dimensional `sketch.Histogram`s over sparse random projections and scores samples by their average negative log-likelihood.
+- Rewrote `anomaly.LocalOutlierFactor`. It now stores samples in a bounded sliding window via a `river.neighbors` search engine (`LazySearch` by default, `SWINN` for approximate search) and computes the LOF of a sample against the window on demand. `learn_one` is now constant-time and memory is bounded by the window size, and `score_one` no longer mutates the model. Scores match scikit-learn over the same window: an unseen point reproduces `LocalOutlierFactor(novelty=True)`, and a stored point reproduces the in-sample `negative_outlier_factor_` (a point is never its own neighbor). `learn_many` now accepts any [narwhals](https://github.com/narwhals-dev/narwhals)-supported eager dataframe (pandas, polars, pyarrow, ...). Behavior changes: scores now reflect the most recent `window_size` samples rather than the entire history, scoring an already-seen point returns its LOF instead of `0.0`, and the `distance_func` parameter is replaced by the engine's distance function.
 
 - Made `anomaly.OneClassSVM.learn_many` dataframe-agnostic via narwhals: it now accepts any narwhals-supported eager backend (pandas, polars, pyarrow, ...) instead of only pandas. Outputs are unchanged.
 
@@ -81,6 +82,7 @@
 
 ## neighbors
 
+- Fixed the Euclidean fast path of `neighbors.LazySearch`, which returned the *farthest* candidates instead of the nearest because its search heap was keyed on the negated distance. This affected `KNNClassifier`, `KNNRegressor`, and `LocalOutlierFactor` whenever they ran over a `LazySearch` engine with the default Euclidean distance.
 - Gave the SWINN graph `Vertex` `__slots__` and dropped its `base.Base` inheritance (it is an internal graph node, not an estimator). One vertex is created per buffered sample, so this trims memory on large `neighbors.SWINN` indexes; behavior is unchanged.
 
 ## neural_net
