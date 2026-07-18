@@ -32,6 +32,7 @@ from .shuttle import Shuttle
 from .sms_spam import SMSSpam
 from .smtp import SMTP
 from .solar_flare import SolarFlare
+from .sp500 import SP500Stocks
 from .taxis import Taxis
 from .trec07 import TREC07
 from .trump_approval import TrumpApproval
@@ -63,6 +64,7 @@ __all__ = [
     "SMSSpam",
     "SMTP",
     "SolarFlare",
+    "SP500Stocks",
     "synth",
     "Taxis",
     "TREC07",
