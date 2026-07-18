@@ -35,7 +35,7 @@ def test_vectordict() -> None:
     x = {"a": 1, "b": -5, "c": -3}
     y = {"a": 2, "b": 0.5, "d": 4}
     vx = VectorDict(x)
-    vy = VectorDict(y)
+    vy: VectorDict[Any, Any] = VectorDict(y)
     assert vx == vx == x
     assert +vx == vx == x
     assert -vx == {"a": -1, "b": 5, "c": 3}
@@ -53,7 +53,7 @@ def test_vectordict() -> None:
     with pytest.raises(ZeroDivisionError):
         vx / vy
     assert vx @ vy == vy @ vx == -0.5
-    vz = VectorDict(x, copy=True)
+    vz: VectorDict[Any, Any] = VectorDict(x, copy=True)
     vz += 2
     assert vz == vx + 2
     vz = VectorDict(x, copy=True)

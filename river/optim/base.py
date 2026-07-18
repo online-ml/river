@@ -99,7 +99,7 @@ class Optimizer(base.Base):
         """
         return w
 
-    def _step_with_dict(self, w: dict | VectorLike, g: dict | VectorLike) -> dict | VectorLike:
+    def _step_with_dict(self, w: DictLike, g: DictLike) -> DictLike:
         raise NotImplementedError
 
     def _step_with_vector(self, w: VectorLike, g: VectorLike) -> VectorLike:
@@ -130,8 +130,7 @@ class Optimizer(base.Base):
                 return w
             except NotImplementedError:
                 pass
-
-        w = self._step_with_dict(w, g)
+        w = self._step_with_dict(w, g)  # type: ignore[arg-type]
         self.n_iterations += 1
         return w
 

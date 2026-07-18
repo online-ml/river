@@ -230,8 +230,6 @@ module = [
     "polars.*",
     "pyarrow",
     "pyarrow.*",
-    "river._river_rust",
-    "river._river_rust.*",
 ]
 ignore_missing_imports = true
 
