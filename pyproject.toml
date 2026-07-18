@@ -149,6 +149,7 @@ norecursedirs = [
     "benchmarks",
 ]
 markers = [
+    "codspeed_heavy: CodSpeed benchmarks assigned to the heavy CI shard",
     "datasets: tests that pertain to the datasets module",
     "slow: tests that take a long time to run",
 ]
@@ -182,6 +183,9 @@ fixable = ["ALL"]
 
 [tool.ruff.lint.isort]
 required-imports = ["from __future__ import annotations"]
+
+[tool.ruff.lint.per-file-ignores]
+"benchmarks/codspeed/python/*.py" = ["I002"]
 
 [tool.ruff.format]
 quote-style = "double"

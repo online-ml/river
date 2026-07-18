@@ -21,11 +21,24 @@ concurrency:
 
 jobs:
   python:
-    name: Python benchmarks
+    name: Python benchmarks (${{ matrix.shard }})
     runs-on: ubuntu-24.04
     permissions:
       contents: read
       id-token: write
+    strategy:
+      fail-fast: false
+      # Two shards balanced by measured run time under CPU simulation. CodSpeed
+      # aggregates uploads from all jobs of the same workflow into one report,
+      # and benchmark identity is the file path, so sharding is invisible to
+      # the dashboard. New benchmark files land in the "rest" shard by default;
+      # use marks.heavy if the shards drift out of balance.
+      matrix:
+        include:
+          - shard: heavy
+            args: benchmarks/codspeed/python -m codspeed_heavy
+          - shard: rest
+            args: benchmarks/codspeed/python -m "not codspeed_heavy"
     steps:
       - uses: actions/checkout@v5
         with:
@@ -57,7 +70,7 @@ jobs:
           mode: simulation
           # Drop the root pytest addopts so this run is decoupled from the main
           # suite config, including --ignore=benchmarks.
-          run: uv run --no-sync pytest benchmarks/codspeed --codspeed -o addopts=""
+          run: uv run --no-sync pytest ${{ matrix.args }} --codspeed -o addopts=""
 
   rust:
     name: Rust benchmarks

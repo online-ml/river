@@ -75,11 +75,21 @@ Benchmarks run automatically on push to `main` via GitHub Actions. Results are s
 
 ## CodSpeed
 
-CodSpeed runs the small pytest benchmark suite in `benchmarks/codspeed/` and the Rust
-criterion benchmarks in `benches/` on every pull request and every push to `main`. Both
-jobs use CodSpeed's CPU simulation mode, which produces deterministic instruction-count
-measurements and flamegraphs. Pull requests get a CodSpeed comment plus status checks for
-the Python benchmarks, Rust benchmarks, and the aggregate performance analysis.
+CodSpeed runs the small pytest benchmark suite in `benchmarks/codspeed/python/` and the
+Rust criterion benchmarks in `benchmarks/codspeed/rust/` on every pull request and every
+push to `main`. Both jobs use CodSpeed's CPU simulation mode, which produces deterministic
+instruction-count measurements and flamegraphs. Pull requests get a CodSpeed comment plus
+status checks for the Python benchmarks, Rust benchmarks, and the aggregate performance
+analysis.
+
+To keep CI fast, the Python job is split into two parallel shards (see the matrix in
+`.github/workflows/codspeed.yml`): a "heavy" shard listing the most expensive files
+explicitly, and a "rest" shard running everything else. New benchmark files land in the
+"rest" shard automatically; if the two shards drift far apart in duration, move files
+between them. Sharding does not affect benchmark identity or the CodSpeed report — all
+uploads for a commit are aggregated. Keep each benchmark body around 100 ms of real time
+or less: the CPU simulator runs it once at roughly 30–100× overhead, so oversized
+workloads slow every PR without adding signal.
 
 ### Run CodSpeed benchmarks locally
 
@@ -103,7 +113,7 @@ codspeed run -m simulation -- uv run --no-sync pytest benchmarks/codspeed --cods
 
 ### Add a CodSpeed benchmark
 
-Copy this template into `benchmarks/codspeed/test_<module>.py` and keep the benchmark
+Copy this template into `benchmarks/codspeed/python/test_<module>.py` and keep the benchmark
 name stable after it lands; renaming a benchmark loses its CodSpeed history.
 
 ```python
@@ -127,6 +137,16 @@ def test_<estimator>_learn(benchmark) -> None:
             model.learn_one(x, y)
 
     benchmark(run)
+```
+
+Rust benchmarks live in `benchmarks/codspeed/rust/`. Add each new Rust bench target to
+`Cargo.toml` explicitly:
+
+```toml
+[[bench]]
+name = "<module>_bench"
+path = "benchmarks/codspeed/rust/<module>_bench.rs"
+harness = false
 ```
 
 Use deterministic workloads only:

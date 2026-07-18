@@ -154,7 +154,7 @@ Performance-sensitive changes should come with a benchmark. Run `make benchmark`
 CI posts exact measured results on your pull request via CodSpeed. See
 [`benchmarks/README.md`](benchmarks/README.md) for the local commands, determinism rules,
 and the benchmark template. New estimators that are expected to be hot paths should add a
-benchmark under `benchmarks/codspeed/` in the same pull request.
+benchmark under `benchmarks/codspeed/python/` in the same pull request.
 
 **Notebook tests**
 
