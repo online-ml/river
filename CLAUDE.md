@@ -32,6 +32,12 @@ uv run prek run --all-files
 # Type checking
 uv run mypy river
 
+# Run Python CodSpeed benchmarks locally
+make benchmark
+
+# Run Rust criterion benchmarks locally
+make benchmark-rust
+
 # Build and serve docs locally
 uv sync --group docs
 make livedoc
@@ -76,3 +82,4 @@ All estimators inherit from `base.Estimator` (which inherits from `base.Base`). 
   - Include performance numbers (e.g. "~7× faster") and call out behavior changes explicitly, but omit deep implementation mechanics (internal variable names, algebra, marshalling details) — those belong in the code/PR, not the changelog.
   - Example: "Sped up `learn_one` for the linear models: updates now scale with the number of active features instead of the total number of features ever seen. Outputs are unchanged."
 - Performance matters: if you make a significant change, run a benchmark.
+- If you touch a hot path, check the CodSpeed report on your PR before merging.

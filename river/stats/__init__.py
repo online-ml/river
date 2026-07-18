@@ -8,6 +8,7 @@ from .chi_squared import ChiSquared
 from .count import Count
 from .cov import Cov
 from .entropy import Entropy
+from .ewcov import EWCov
 from .ewmean import EWMean
 from .ewvar import EWVar
 from .iqr import IQR, RollingIQR
@@ -37,6 +38,7 @@ __all__ = [
     "Cov",
     "ChiSquared",
     "Entropy",
+    "EWCov",
     "EWMean",
     "EWVar",
     "IQR",

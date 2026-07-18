@@ -135,6 +135,8 @@ class DenStream(base.Clusterer):
     """
 
     class BufferItem:
+        __slots__ = ("x", "timestamp", "covered")
+
         def __init__(self, x, timestamp, covered):
             self.x = x
             self.timestamp = (timestamp,)
@@ -389,6 +391,17 @@ class DenStream(base.Clusterer):
 
 class DenStreamMicroCluster(metaclass=ABCMeta):
     """DenStream Micro-cluster class"""
+
+    __slots__ = (
+        "x",
+        "last_edit_time",
+        "creation_time",
+        "decaying_factor",
+        "N",
+        "linear_sum",
+        "squared_sum",
+        "_center",
+    )
 
     def __init__(self, x, timestamp, decaying_factor):
         self.x = x

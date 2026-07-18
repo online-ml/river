@@ -36,6 +36,47 @@ def test_loss_batch_online_equivalence(loss):
         assert math.isclose(loss.gradient(yt, yp), g, abs_tol=1e-9)
 
 
+# Each tuple is (loss, y_true, y_pred) with y_pred sitting *exactly* on one of the loss's kinks.
+# The scalar and vectorised gradient branches must agree there (see the boundary convention in
+# `river/optim/losses.py`). These values are all exactly representable in float64, so the `==`
+# comparisons inside the losses really do fire on the boundary.
+LOSS_BOUNDARY_CASES = [
+    # Hinge margin: y_true is remapped to {-1, 1}; the kink is at y_true' * y_pred == threshold.
+    (optim.losses.Hinge(), 1, 1.0),  # y_true' = +1, kink at p = 1
+    (optim.losses.Hinge(), 0, -1.0),  # y_true' = -1, kink at p = -1
+    (optim.losses.Hinge(threshold=0.0), 1, 0.0),  # Perceptron-style margin at 0
+    # Absolute value: kink at y_pred == y_true.
+    (optim.losses.Absolute(), 1, 1.0),
+    (optim.losses.Absolute(), 0, 0.0),
+    # Epsilon-insensitive tube edges (y_true remapped to {-1, 1}): p == y_true' ± eps.
+    (optim.losses.EpsilonInsensitiveHinge(eps=0.5), 1, 1.5),
+    (optim.losses.EpsilonInsensitiveHinge(eps=0.5), 1, 0.5),
+    # Huber transition: |y_pred - y_true| == epsilon.
+    (optim.losses.Huber(epsilon=0.5), 1, 1.5),
+    (optim.losses.Huber(epsilon=0.5), 1, 0.5),
+    # Quantile pinball kink at y_pred == y_true.
+    (optim.losses.Quantile(0.5), 1, 1.0),
+]
+
+
+@pytest.mark.parametrize(
+    "loss, y_true, y_pred",
+    [
+        pytest.param(loss, yt, yp, id=f"{loss.__class__.__name__}-{yt}-{yp}")
+        for loss, yt, yp in LOSS_BOUNDARY_CASES
+    ],
+)
+def test_loss_boundary_scalar_array_agree(loss, y_true, y_pred):
+    """A point exactly on a kink must get the same gradient from both code paths.
+
+    Random sweeps (see `test_loss_batch_online_equivalence`) practically never land on a
+    boundary, so this pins the convention that makes `learn_one` and `learn_many` identical.
+    """
+    scalar = loss.gradient(y_true, y_pred)
+    array = loss.gradient(np.array([y_true], dtype=float), np.array([y_pred], dtype=float))[0]
+    assert math.isclose(scalar, array, abs_tol=1e-12)
+
+
 def optimizers() -> typing.Iterable[optim.base.Optimizer]:
     for _, optimizer in inspect.getmembers(
         importlib.import_module("river.optim"),

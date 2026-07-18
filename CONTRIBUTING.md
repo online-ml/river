@@ -148,6 +148,14 @@ This involves tests that need an internet connection, such as those in the `data
 uv run pytest -m web
 ```
 
+### Benchmarks
+
+Performance-sensitive changes should come with a benchmark. Run `make benchmark` locally;
+CI posts exact measured results on your pull request via CodSpeed. See
+[`benchmarks/README.md`](benchmarks/README.md) for the local commands, determinism rules,
+and the benchmark template. New estimators that are expected to be hot paths should add a
+benchmark under `benchmarks/codspeed/python/` in the same pull request.
+
 **Notebook tests**
 
 You don't have to worry too much about these, as we only check them before each release. If you break them because you changed some code, then it's probably because the notebooks have to be modified, not the other way around.

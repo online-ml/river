@@ -5,14 +5,16 @@ import functools
 import math
 import typing
 
+import narwhals as nw
 import numpy as np
 
-from river import proba, utils
+from river import proba
+from river.utils.dataframe import into_frame, to_native_frame
 
 from . import base
 
 if typing.TYPE_CHECKING:
-    import pandas as pd
+    from narwhals.stable.v2.typing import IntoDataFrame, IntoSeries
 
 __all__ = ["GaussianNB"]
 
@@ -56,13 +58,12 @@ class GaussianNB(base.BaseNB):
     0    1
     1    2
     dtype: int64
-
     """
 
     def __init__(self):
         self.class_counts = collections.Counter()
         self.gaussians = collections.defaultdict(
-            functools.partial(collections.defaultdict, proba.Gaussian)
+            functools.partial(collections.defaultdict, self._make_gaussian)
         )
 
     def learn_one(self, x, y):
@@ -92,7 +93,7 @@ class GaussianNB(base.BaseNB):
             for c in self.class_counts
         }
 
-    def learn_many(self, X: pd.DataFrame, y: pd.Series):
+    def learn_many(self, X: IntoDataFrame, y: IntoSeries):
         """Learn from a batch of feature vectors.
 
         Parameters
@@ -101,21 +102,28 @@ class GaussianNB(base.BaseNB):
             Feature vectors.
         y
             Target classes.
-
         """
         if hasattr(X, "sparse"):
             X = X.sparse.to_dense()
 
-        self.class_counts.update(y)
+        X = nw.from_native(X, eager_only=True)
+        y = nw.from_native(y, series_only=True)
 
-        for c in y.unique():
-            X_c = X.iloc[(y == c).to_numpy()]
+        self.class_counts.update(y.to_list())
 
-            for i in X_c.columns:
-                values = X_c[i].dropna()
-                if values.empty:
-                    continue
-                self.gaussians[c][i]._var.update_many(values.to_numpy(dtype=float))
+        X_np = np.asarray(X.to_numpy(), dtype=float)
+        y_np = np.asarray(y.to_numpy())
+
+        for c in np.unique(y_np):
+            rows = y_np == c
+
+            for j, col in enumerate(X.columns):
+                values = X_np[rows, j]
+
+                values = values[~np.isnan(values)]
+
+                if len(values):
+                    self.gaussians[c][col]._var.update_many(values)
 
     @staticmethod
     def _log_gaussian_pdf_many(gaussian: proba.Gaussian | None, values: np.ndarray) -> np.ndarray:
@@ -124,19 +132,23 @@ class GaussianNB(base.BaseNB):
 
         var = gaussian._var
         n = var.mean.n
-        if n > var.ddof:
-            variance = var._S / (n - var.ddof)
-            if variance > 0.0:
-                mu = var.mean._mean
-                with np.errstate(over="ignore", under="ignore", invalid="ignore"):
-                    pdf = np.exp((values - mu) ** 2 / (-2.0 * variance)) / math.sqrt(
-                        math.tau * variance
-                    )
-                return np.log(_PDF_EPS + pdf)
+        if n <= var.ddof:
+            return np.full(values.shape, _LOG_PDF_EPS)
 
-        return np.full(values.shape, _LOG_PDF_EPS)
+        variance = var._S / (n - var.ddof)
 
-    def joint_log_likelihood_many(self, X: pd.DataFrame) -> pd.DataFrame:
+        if variance <= 0:
+            return np.full(values.shape, _LOG_PDF_EPS)
+
+        mu = var.mean._mean
+
+        with np.errstate(over="ignore", under="ignore", invalid="ignore"):
+            pdf = np.exp(-((values - mu) ** 2) / (2 * variance))
+            pdf /= math.sqrt(math.tau * variance)
+
+        return np.log(_PDF_EPS + pdf)
+
+    def joint_log_likelihood_many(self, X: IntoDataFrame) -> IntoDataFrame:
         """Compute the joint log-likelihoods for a batch of feature vectors.
 
         Parameters
@@ -147,34 +159,50 @@ class GaussianNB(base.BaseNB):
         Returns
         -------
         Input samples joint log-likelihoods.
-
         """
-        pd = utils.pandas.import_pandas()
-        index = X.index
-
-        if not self.class_counts:
-            return pd.DataFrame(index=index)
-
         if hasattr(X, "sparse"):
             X = X.sparse.to_dense()
 
-        jll = pd.DataFrame(index=index)
+        X = nw.from_native(X, eager_only=True)
+        X = into_frame(X)
+
+        if not self.class_counts:
+            native = X.to_native()
+            return native.iloc[:, 0:0]
+
+        jll = {}
 
         for c in self.class_counts:
-            ll = pd.Series(math.log(self.p_class(c)), index=index, dtype=float)
+            ll = np.full(len(X), math.log(self.p_class(c)), dtype=float)
+
             gaussians = self.gaussians.get(c, {})
 
-            for i in X.columns:
-                values = X[i].dropna()
-                if values.empty:
-                    continue
-                ll.loc[values.index] += self._log_gaussian_pdf_many(
-                    gaussians.get(i), values.to_numpy(dtype=float)
-                )
+            for col in X.columns:
+                values = np.asarray(
+                    X.select(nw.col(col)).to_numpy(),
+                    dtype=float,
+                ).ravel()
+
+                mask = ~np.isnan(values)
+
+                col_ll = np.full(len(values), _LOG_PDF_EPS, dtype=float)
+
+                if mask.any():
+                    col_ll[mask] = self._log_gaussian_pdf_many(
+                        gaussians.get(col),
+                        values[mask],
+                    )
+
+                ll += col_ll
 
             jll[c] = ll
+        return to_native_frame(jll, like=X)
 
-        return jll
+    @staticmethod
+    def _make_gaussian():
+        g = proba.Gaussian()
+        g._var.ddof = 0
+        return g
 
     def _unit_test_skips(self):
         return set()

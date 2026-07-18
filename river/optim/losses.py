@@ -2,6 +2,13 @@
 
 Each loss function is intended to work with both single values as well as numpy vectors.
 
+Boundary convention
+-------------------
+Several losses are piecewise (`Hinge`, `Absolute`, `EpsilonInsensitiveHinge`, `Huber`, ...), so
+their gradient is discontinuous at a kink. The invariant we hold everywhere is that the scalar and
+vectorised branches of a loss **must** resolve such a boundary point identically; otherwise looping
+`learn_one` and a single `learn_many` call would disagree on inputs that land exactly on the kink.
+
 """
 
 from __future__ import annotations
@@ -249,8 +256,12 @@ class Hinge(BinaryLoss):
     def gradient(self, y_true, y_pred):
         y_true = y_true * 2 - 1  # [0, 1] -> [-1, 1]
 
+        # Boundary convention (see module docstring): a point sitting exactly on the margin
+        # (`y_true * y_pred == threshold`) is treated as a violation, so both branches use `<=`.
+        # This matches scikit-learn's hinge `dloss` and keeps the scalar and vectorised paths
+        # identical, so `learn_one` and `learn_many` agree.
         if isinstance(y_true, np.ndarray):
-            return np.where(y_true * y_pred < self.threshold, -y_true, 0)
+            return np.where(y_true * y_pred <= self.threshold, -y_true, 0)
 
         if y_true * y_pred <= self.threshold:
             return -y_true
