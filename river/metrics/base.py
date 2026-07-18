@@ -225,13 +225,13 @@ class Metrics(Metric, collections.UserList):
         if hasattr(self, "requires_labels") and not self.requires_labels:
             for m in self:
                 if m.requires_labels:
-                    m.update(y_true, max(y_pred, key=y_pred.get))
+                    m.update(y_true, max(y_pred, key=y_pred.get), w)
                 else:
-                    m.update(y_true, y_pred)
+                    m.update(y_true, y_pred, w)
             return
 
         for m in self:
-            m.update(y_true, y_pred)
+            m.update(y_true, y_pred, w)
 
     def revert(self, y_true, y_pred, w=1.0) -> None:
         # If the metrics are classification metrics, then we have to handle the case where some

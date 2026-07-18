@@ -313,3 +313,19 @@ def test_compose():
 
     with pytest.raises(ValueError):
         _ = metrics.MSE() + metrics.MAE() + metrics.LogLoss()
+
+
+def test_metrics_collection_forwards_sample_weight():
+    # A Metrics collection must forward the sample weight to its children, just
+    # like a standalone metric does (and like Metrics.revert already does).
+    coll = metrics.MAE() + metrics.MSE()
+    standalone = metrics.MAE()
+    for y_true, y_pred, w in [(0, 0, 1.0), (0, 10, 99.0)]:
+        coll.update(y_true, y_pred, w)
+        standalone.update(y_true, y_pred, w)
+    assert coll[0].get() == standalone.get() == pytest.approx(9.9)
+
+    # update(w) and revert(w) must cancel exactly, leaving empty-state values.
+    coll.revert(0, 0, 1.0)
+    coll.revert(0, 10, 99.0)
+    assert coll[0].get() == pytest.approx(0.0)
