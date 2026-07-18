@@ -2225,6 +2225,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        metrics
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#multiclass" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -3665,6 +3676,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        metrics
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#multiclass" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -3909,6 +3931,10 @@
 <li>Stabilised <code>BayesianLinearRegression</code> across BLAS implementations and sped it up (~10-20%) by accumulating an exact natural mean and recovering the posterior mean lazily, instead of propagating it through compounding rank-1 updates (which drifted ~0.6% between macOS Accelerate and Linux OpenBLAS).</li>
 <li><a href="../../api/linear-model/LinearRegression"><code>linear_model.LinearRegression</code></a> and <a href="../../api/linear-model/LogisticRegression"><code>linear_model.LogisticRegression</code></a> mini-batch methods (<code>learn_many</code>, <code>predict_many</code>, <code>predict_proba_many</code>) now accept and return any <a href="https://github.com/narwhals-dev/narwhals">narwhals</a>-supported eager backend (pandas, polars, pyarrow, ...) instead of being pandas-only. The input backend is preserved on output, including the pandas index. These methods no longer require <code>pandas</code> to be installed.</li>
 <li><a href="../../api/linear-model/BayesianLinearRegression"><code>linear_model.BayesianLinearRegression</code></a> is now a <code>MiniBatchRegressor</code>: it gained a <code>learn_many</code> method, equivalent to looping <code>learn_one</code> over the rows (exact without smoothing, and the matching closed-form geometric weighting with smoothing). Its <code>learn_many</code>/<code>predict_many</code> accept and return any <a href="https://github.com/narwhals-dev/narwhals">narwhals</a>-supported eager backend (pandas, polars, pyarrow, ...), preserving the input backend and pandas index, and no longer require <code>pandas</code>.</li>
+</ul>
+<h2 id="metrics">metrics<a class="headerlink" href="#metrics" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Fixed <a href="../../api/metrics/base/Metrics"><code>metrics.base.Metrics</code></a> (a metrics collection, built via <code>metric_a + metric_b</code>) dropping the sample weight <code>w</code>: <code>update</code> now forwards <code>w</code> to each child metric, so weighted metrics report correct values inside a collection and <code>update</code>/<code>revert</code> cancel exactly. Previously <code>revert</code> applied the weight but <code>update</code> ignored it.</li>
 </ul>
 <h2 id="multiclass">multiclass<a class="headerlink" href="#multiclass" title="Permanent link">&para;</a></h2>
 <ul>
