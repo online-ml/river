@@ -66,6 +66,7 @@
 ## metrics
 
 - Fixed `metrics.base.Metrics` (a metrics collection, built via `metric_a + metric_b`) dropping the sample weight `w`: `update` now forwards `w` to each child metric, so weighted metrics report correct values inside a collection and `update`/`revert` cancel exactly. Previously `revert` applied the weight but `update` ignored it.
+- Fixed `metrics.BalancedAccuracy` deflating its score when a label appears in the predictions but never as a ground-truth label. Such a class has no support, so its recall is undefined and must be excluded from the per-class average; previously it was counted as `0` and inflated the denominator, disagreeing with `sklearn.metrics.balanced_accuracy_score`. `BalancedAccuracy` is now covered by the scikit-learn equivalence test.
 
 ## multiclass
 
