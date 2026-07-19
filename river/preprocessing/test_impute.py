@@ -4,12 +4,6 @@ from river import preprocessing
 
 
 def test_previous_imputer_does_not_mutate_input():
-    """transform_one must be pure: it should not modify the caller's dict.
-
-    The purity check in river.checks uses a dataset without missing values, so
-    it never exercises the branch that fills a None, which is exactly where the
-    mutation happened.
-    """
     imputer = preprocessing.PreviousImputer()
     imputer.learn_one({"x": 5})
 

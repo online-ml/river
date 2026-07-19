@@ -60,7 +60,6 @@ def iter_estimators_which_can_be_tested():
         imblearn.RandomSampler,
         model_selection.SuccessiveHalvingClassifier,
         neighbors.LazySearch,
-        preprocessing.PreviousImputer,
         preprocessing.OneHotEncoder,
         preprocessing.StatImputer,
     )
