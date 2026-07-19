@@ -47139,8 +47139,8 @@ True: 0.80779
 <p>Fit to a mini-batch.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>X</strong>     — <code>pd.DataFrame</code>    </li>
-<li><strong>y</strong>     — <code>pd.Series | None</code>     — defaults to <code>None</code>    </li>
+<li><strong>X</strong>     — <code>IntoDataFrame</code>    </li>
+<li><strong>y</strong>     — <code>IntoSeries | None</code>     — defaults to <code>None</code>    </li>
 <li><strong>params</strong>    </li>
 </ul>
 </details>
@@ -47161,7 +47161,7 @@ True: 0.80779
 <p>Call transform_many, and then predict_many on the final step.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>X</strong>     — <code>pd.DataFrame</code>    </li>
+<li><strong>X</strong>     — <code>IntoDataFrame</code>    </li>
 </ul>
 </details>
 <p><span /></p>
@@ -47180,7 +47180,7 @@ True: 0.80779
 <p>Call transform_many, and then predict_proba_many on the final step.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>X</strong>     — <code>pd.DataFrame</code>    </li>
+<li><strong>X</strong>     — <code>IntoDataFrame</code>    </li>
 </ul>
 </details>
 <p><span /></p>
@@ -47210,7 +47210,7 @@ True: 0.80779
 <p>The final step in the pipeline will be applied if it is a transformer. If not, then it will be ignored and the output from the penultimate step will be returned. Note that the steps that precede the final step are assumed to all be transformers.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>X</strong>     — <code>pd.DataFrame</code>    </li>
+<li><strong>X</strong>     — <code>IntoDataFrame</code>    </li>
 </ul>
 </details>
 <p><span /></p>

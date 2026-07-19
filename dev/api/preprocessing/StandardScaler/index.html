@@ -47263,7 +47263,7 @@ resume from a checkpoint or to seed the stream with an offline estimate:</p>
 <p>Note that the update formulas for mean and variance are slightly different than in the single instance case, but they produce exactly the same result. When <code>window_size</code> is set, the rows are processed sequentially because the batched merge formula is not compatible with rolling-window eviction.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>X</strong>     — <code>pd.DataFrame</code>    </li>
+<li><strong>X</strong>     — <code>IntoDataFrame</code>    </li>
 </ul>
 </details>
 <p><span /></p>
@@ -47280,9 +47280,10 @@ resume from a checkpoint or to seed the stream with an offline estimate:</p>
 <details class="- abstract">
 <summary>transform_many</summary>
 <p>Scale a mini-batch of features.</p>
+<p>Every narwhals-supported backend (pandas, polars, pyarrow, nullable/arrow-backed pandas, ...) takes the same backend-agnostic path. The compute dtype is inferred from the input schema, so a feature's float dtype is preserved (e.g. <code>float32</code> stays <code>float32</code>); integer columns are widened to the matching float and anything else falls back to <code>float64</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>X</strong>     — <code>pd.DataFrame</code>    </li>
+<li><strong>X</strong>     — <code>IntoDataFrameT</code>    </li>
 </ul>
 </details>
 <p><span /></p>

@@ -47026,8 +47026,8 @@ namespaces, such one for items and the other for users.</p>
 <p>Update each transformer.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>X</strong>     — <code>pd.DataFrame</code>    </li>
-<li><strong>y</strong>     — <code>pd.Series | None</code>     — defaults to <code>None</code>    </li>
+<li><strong>X</strong>     — <code>IntoDataFrame</code>    </li>
+<li><strong>y</strong>     — <code>IntoSeries | None</code>     — defaults to <code>None</code>    </li>
 </ul>
 </details>
 <p><span /></p>
@@ -47044,6 +47044,7 @@ namespaces, such one for items and the other for users.</p>
 <details class="- abstract">
 <summary>transform_many</summary>
 <p>Passes the data through each transformer and packs the results together.</p>
+<p>The per-transformer outputs are concatenated column-wise via narwhals, so the result is rebuilt in the caller's own backend (pandas, polars, pyarrow, ...). All transformers see the same rows in the same order, so a positional horizontal concat matches the historical index-aligned <code>pandas.concat(axis=1)</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>X</strong>     — <code>pd.DataFrame</code>    </li>
