@@ -12,7 +12,7 @@ import typing
 from river import base
 
 if typing.TYPE_CHECKING:
-    import pandas as pd
+    from narwhals.stable.v2.typing import IntoDataFrame, IntoSeries
 
 from . import func, union
 
@@ -779,7 +779,7 @@ class Pipeline(base.Estimator):
 
     # Mini-batch methods
 
-    def learn_many(self, X: pd.DataFrame, y: pd.Series | None = None, **params):
+    def learn_many(self, X: IntoDataFrame, y: IntoSeries | None = None, **params):
         """Fit to a mini-batch.
 
         Parameters
@@ -822,7 +822,7 @@ class Pipeline(base.Estimator):
         else:
             last_step.learn_many(X=X, **params)
 
-    def _transform_many(self, X: pd.DataFrame):
+    def _transform_many(self, X: IntoDataFrame):
         """This methods takes care of applying the first n - 1 steps of the pipeline, which are
         supposedly transformers. It also returns the final step so that other functions can do
         something with it.
@@ -846,7 +846,7 @@ class Pipeline(base.Estimator):
         last_step = next(steps)
         return X, last_step
 
-    def transform_many(self, X: pd.DataFrame):
+    def transform_many(self, X: IntoDataFrame):
         """Apply each transformer in the pipeline to some features.
 
         The final step in the pipeline will be applied if it is a transformer. If not, then it will
@@ -861,12 +861,12 @@ class Pipeline(base.Estimator):
             return last_step.transform_many(X)
         return X
 
-    def predict_many(self, X: pd.DataFrame):
+    def predict_many(self, X: IntoDataFrame):
         """Call transform_many, and then predict_many on the final step."""
         X, last_step = self._transform_many(X=X)
         return last_step.predict_many(X=X)
 
-    def predict_proba_many(self, X: pd.DataFrame):
+    def predict_proba_many(self, X: IntoDataFrame):
         """Call transform_many, and then predict_proba_many on the final step."""
         X, last_step = self._transform_many(X=X)
         return last_step.predict_proba_many(X=X)
