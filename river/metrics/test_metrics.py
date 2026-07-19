@@ -136,6 +136,7 @@ def pr_auc_score(y_true, y_score):
 
 TEST_CASES = [
     (metrics.Accuracy(), sk_metrics.accuracy_score),
+    (metrics.BalancedAccuracy(), sk_metrics.balanced_accuracy_score),
     (metrics.Precision(), partial(sk_metrics.precision_score, zero_division=0)),
     (
         metrics.MacroPrecision(),
@@ -329,3 +330,20 @@ def test_metrics_collection_forwards_sample_weight():
     coll.revert(0, 0, 1.0)
     coll.revert(0, 10, 99.0)
     assert coll[0].get() == pytest.approx(0.0)
+
+
+def test_balanced_accuracy_ignores_unseen_predicted_classes():
+    # A class that only shows up in the predictions has no support, so its recall is
+    # undefined and must be excluded from the average, exactly like
+    # sklearn.metrics.balanced_accuracy_score. Otherwise the score is deflated by
+    # dividing over too many classes.
+    y_true = [0, 0, 1, 1]
+    y_pred = [0, 2, 1, 1]  # class 2 never appears as a true label
+
+    metric = metrics.BalancedAccuracy()
+    for yt, yp in zip(y_true, y_pred):
+        metric.update(yt, yp)
+
+    # recall(0) = 1/2, recall(1) = 2/2, class 2 dropped -> (0.5 + 1.0) / 2
+    assert metric.get() == pytest.approx(sk_metrics.balanced_accuracy_score(y_true, y_pred))
+    assert metric.get() == pytest.approx(0.75)

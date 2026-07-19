@@ -45,13 +45,18 @@ class BalancedAccuracy(metrics.base.MultiClassMetric):
 
     def get(self):
         total = 0
+        n_classes = 0
         for c in self.cm.classes:
             try:
                 total += self.cm[c][c] / self.cm.sum_row[c]
             except ZeroDivisionError:
+                # A class that only appears in the predictions has no support, so its
+                # recall is undefined and it must not be counted in the average (this
+                # matches sklearn.metrics.balanced_accuracy_score).
                 continue
+            n_classes += 1
         try:
-            score = total / len(self.cm.classes)
+            score = total / n_classes
 
             return score
 
