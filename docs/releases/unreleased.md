@@ -108,6 +108,7 @@
 ## proba
 
 - Added weighted sample support to `MultivariateGaussian.update` and `MultivariateGaussian.revert` by accepting an optional `w` parameter and propagating it to the underlying `EmpiricalCovariance` instance.
+- Fixed `Beta.n_samples` returning the negative of the observed-sample count (the two operands of the difference were transposed), so it now returns a non-negative count consistent with the other `proba` distributions.
 
 ## reco
 
