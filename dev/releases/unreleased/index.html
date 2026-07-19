@@ -3982,6 +3982,7 @@
 <h2 id="proba">proba<a class="headerlink" href="#proba" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Added weighted sample support to <code>MultivariateGaussian.update</code> and <code>MultivariateGaussian.revert</code> by accepting an optional <code>w</code> parameter and propagating it to the underlying <code>EmpiricalCovariance</code> instance.</li>
+<li>Fixed <code>Beta.n_samples</code> returning the negative of the observed-sample count (the two operands of the difference were transposed), so it now returns a non-negative count consistent with the other <code>proba</code> distributions.</li>
 </ul>
 <h2 id="reco">reco<a class="headerlink" href="#reco" title="Permanent link">&para;</a></h2>
 <ul>
