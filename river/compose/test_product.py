@@ -106,6 +106,7 @@ def test_issue_1253():
     ...     compat.convert_sklearn_to_river(linear_model.SGDRegressor(max_iter=3))
     ... )
     >>> _ = model.predict_many(X)
+    >>> model.learn_many(X, y)
     >>> model.transform_many(X)
        cat_1*feat_2  cat_2*feat_2  cat_1  cat_2
     0     -1.196841             0      1      0

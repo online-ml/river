@@ -25,6 +25,7 @@
 ## compose
 
 - `compose.Pipeline` now forwards extra keyword arguments (such as the timestamp `t` used by `utils.TimeRolling`, or a sample weight `w`) to each step whose method declares them, and drops them for steps that don't. This makes `feature_extraction.Agg`/`TargetAgg` backed by `utils.TimeRolling` work inside a pipeline via `model.learn_one(x, y, t=t)`. Routing applies to `learn_one` and to the predict-time methods (`predict_one`, `predict_proba_one`, `score_one`, `transform_one`), so it also works under `compose.learn_during_predict` where unsupervised steps learn during `predict_one(x, t=t)`. Fixes [#1600](https://github.com/online-ml/river/issues/1600). The accepted arguments are determined once when the pipeline plan is built, so pipelines with no extra arguments keep their previous speed.
+- Fixed `compose.Pipeline.transform_many` fitting the final unsupervised transformer on the data being transformed when `learn_during_predict` is off (a `not` was inverted relative to the single-instance `transform_one` and to the intermediate steps). `transform_many` no longer mutates the model outside `learn_during_predict`, and it now agrees with `transform_one` instead of double-learning the final step.
 
 ## covariance
 
