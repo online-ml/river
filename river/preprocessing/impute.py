@@ -35,6 +35,8 @@ class PreviousImputer(base.Transformer):
                 self._latest[i] = v
 
     def transform_one(self, x):
+        # Transformers are supposed to be pure, therefore we make a copy of the features
+        x = x.copy()
         for i, v in x.items():
             if v is None:
                 x[i] = self._latest.get(i)
