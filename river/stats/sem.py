@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from river import stats
+from . import errors, var
 
 
-class SEM(stats.Var):
+class SEM(var.Var):
     """Running standard error of the mean using Welford's algorithm.
 
     Parameters
@@ -60,4 +60,4 @@ class SEM(stats.Var):
         try:
             return float((super().get() / self.mean.n) ** 0.5)
         except ZeroDivisionError:
-            raise stats.NotEnoughSamples
+            raise errors.NotEnoughSamples
