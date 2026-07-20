@@ -237,7 +237,7 @@ class EmpiricalCovariance(SymmetricMatrix):
                 n=n,
                 mean_x=mean[i],
                 mean_y=mean[j],
-                cov=cov_,
+                cov=cov_,  # type: ignore[arg-type]
                 ddof=self.ddof,
             )
 
