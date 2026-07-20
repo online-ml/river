@@ -59,20 +59,20 @@ class Mean(stats.base.Univariate):
     """
 
     def __init__(self) -> None:
-        self.n = 0
-        self._mean = 0.0
+        self.n: float = 0
+        self._mean: float = 0.0
 
-    def update(self, x, w=1.0):
+    def update(self, x: float, w: float = 1.0) -> None:
         self.n += w
         self._mean += (w / self.n) * (x - self._mean)
 
-    def update_many(self, X: np.ndarray):
+    def update_many(self, X: np.ndarray) -> None:
         a = self.n / (self.n + len(X))
         b = len(X) / (self.n + len(X))
         self._mean = a * self._mean + b * np.mean(X).item()
         self.n += len(X)
 
-    def revert(self, x, w=1.0):
+    def revert(self, x: float, w: float = 1.0) -> None:
         self.n -= w
         if self.n < 0:
             raise ValueError("Cannot go below 0")
@@ -81,29 +81,29 @@ class Mean(stats.base.Univariate):
         else:
             self._mean -= (w / self.n) * (x - self._mean)
 
-    def get(self):
+    def get(self) -> float:
         return self._mean
 
     @classmethod
-    def _from_state(cls, n, mean):
+    def _from_state(cls, n: float, mean: float) -> Mean:
         new = cls()
         new.n = n
         new._mean = mean
 
         return new
 
-    def __iadd__(self, other):
+    def __iadd__(self, other: Mean) -> Mean:
         old_n = self.n
         self.n += other.n
         self._mean = (old_n * self._mean + other.n * other.get()) / self.n
         return self
 
-    def __add__(self, other):
+    def __add__(self, other: Mean) -> Mean:
         result = copy.deepcopy(self)
         result += other
         return result
 
-    def __isub__(self, other):
+    def __isub__(self, other: Mean) -> Mean:
         old_n = self.n
         self.n -= other.n
 
@@ -114,7 +114,7 @@ class Mean(stats.base.Univariate):
             self._mean = 0.0
         return self
 
-    def __sub__(self, other):
+    def __sub__(self, other: Mean) -> Mean:
         result = copy.deepcopy(self)
         result -= other
         return result
@@ -136,22 +136,22 @@ class BayesianMean(stats.base.Univariate):
 
     """
 
-    def __init__(self, prior: float, prior_weight: float):
-        self.prior = prior
-        self.prior_weight = prior_weight
-        self._mean = Mean()
+    def __init__(self, prior: float, prior_weight: float) -> None:
+        self.prior: float = prior
+        self.prior_weight: float = prior_weight
+        self._mean: Mean = Mean()
 
     @property
-    def name(self):
+    def name(self) -> str:
         return "bayes_mean"
 
-    def update(self, x):
+    def update(self, x: float) -> None:
         self._mean.update(x)
 
-    def revert(self, x):
+    def revert(self, x: float) -> None:
         self._mean.revert(x)
 
-    def get(self):
+    def get(self) -> float:
         # Uses the notation from https://www.wikiwand.com/en/Bayes_estimator#/Practical_example_of_Bayes_estimators
         R = self._mean.get()
         v = self._mean.n

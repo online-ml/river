@@ -56,8 +56,9 @@ class SEM(var.Var):
 
     """
 
-    def get(self):
+    # TODO
+    def get(self) -> float:
         try:
-            return (super().get() / self.mean.n) ** 0.5
+            return float((super().get() / self.mean.n) ** 0.5)
         except ZeroDivisionError:
             return None

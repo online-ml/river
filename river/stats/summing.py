@@ -44,14 +44,14 @@ class Sum(stats.base.Univariate):
 
     """
 
-    def __init__(self):
-        self.sum = 0.0
+    def __init__(self) -> None:
+        self.sum: float = 0.0
 
-    def update(self, x):
+    def update(self, x: float) -> None:
         self.sum += x
 
-    def revert(self, x):
+    def revert(self, x: float) -> None:
         self.sum -= x
 
-    def get(self):
+    def get(self) -> float:
         return self.sum

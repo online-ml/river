@@ -43,10 +43,11 @@ class MAD(quantile.Quantile):
     """
 
     #
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(q=0.5)
-        self.median = quantile.Quantile(q=0.5)
+        self.median: quantile.Quantile = quantile.Quantile(q=0.5)
 
-    def update(self, x):
+    def update(self, x: float) -> None:
         self.median.update(x)
+        # TODO
         super().update(abs(x - self.median.get()))

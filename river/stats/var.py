@@ -70,40 +70,40 @@ class Var(stats.base.Univariate):
 
     """
 
-    def __init__(self, ddof=1) -> None:
-        self.ddof = ddof
-        self.mean = stats.Mean()
-        self._S = 0
+    def __init__(self, ddof: float = 1) -> None:
+        self.ddof: float = ddof
+        self.mean: stats.Mean = stats.Mean()
+        self._S: float = 0
 
     @property
-    def n(self):
+    def n(self) -> float:
         return self.mean.n
 
-    def update(self, x, w=1.0) -> None:
+    def update(self, x: float, w: float = 1.0) -> None:
         mean_old = self.mean._mean
         self.mean.update(x, w)
         mean_new = self.mean._mean
         self._S += w * (x - mean_old) * (x - mean_new)
 
-    def revert(self, x, w=1.0):
+    def revert(self, x: float, w: float = 1.0) -> None:
         mean_old = self.mean._mean
         self.mean.revert(x, w)
         mean_new = self.mean._mean
         self._S -= w * (x - mean_old) * (x - mean_new)
 
-    def update_many(self, X: np.ndarray):
+    def update_many(self, X: np.ndarray) -> None:
         mean_old = self.mean.get()
         self.mean.update_many(X)
         mean_new = self.mean.get()
         self._S += np.sum(np.multiply(np.subtract(X, mean_old), np.subtract(X, mean_new))).item()
 
-    def get(self):
+    def get(self) -> float:
         if self.n > self.ddof:
             return self._S / (self.n - self.ddof)
         return 0.0
 
     @classmethod
-    def _from_state(cls, n, m, sig, *, ddof=1):
+    def _from_state(cls, n: float, m: float, sig: float, *, ddof: float = 1) -> Var:
         new = cls(ddof=ddof)
         new.mean = stats.Mean._from_state(n, m)  # noqa
         # scale the second order statistic
@@ -111,7 +111,7 @@ class Var(stats.base.Univariate):
 
         return new
 
-    def __iadd__(self, other):
+    def __iadd__(self, other: Var) -> Var:
         S = (
             self._S
             + other._S
@@ -121,12 +121,12 @@ class Var(stats.base.Univariate):
         self._S = S
         return self
 
-    def __add__(self, other):
+    def __add__(self, other: Var) -> Var:
         result = copy.deepcopy(self)
         result += other
         return result
 
-    def __isub__(self, other):
+    def __isub__(self, other: Var) -> Var:
         self.mean -= other.mean
 
         S = (
@@ -141,7 +141,7 @@ class Var(stats.base.Univariate):
 
         return self
 
-    def __sub__(self, other):
+    def __sub__(self, other: Var) -> Var:
         result = copy.deepcopy(self)
         result -= other
         return result

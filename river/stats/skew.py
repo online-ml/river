@@ -57,17 +57,17 @@ class Skew(stats.base.Univariate):
 
     """
 
-    def __init__(self, bias=False):
+    def __init__(self, bias: bool = False) -> None:
         super().__init__()
-        self.bias = bias
-        self._skew = _rust_stats.RsSkew(bias)
+        self.bias: bool = bias
+        self._skew: _rust_stats.RsSkew = _rust_stats.RsSkew(bias)
 
     @property
-    def name(self):
+    def name(self) -> str:
         return "skew"
 
-    def update(self, x):
+    def update(self, x: float) -> None:
         self._skew.update(x)
 
-    def get(self):
+    def get(self) -> float:
         return self._skew.get()

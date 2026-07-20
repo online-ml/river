@@ -2,11 +2,13 @@ from __future__ import annotations
 
 import collections
 import math
+import typing
 
 from river import stats
 
 
-class Entropy(stats.base.Univariate):
+# TODO
+class Entropy(stats.base.Univariate[typing.Any, float]):
     """Running entropy.
 
     Parameters
@@ -62,21 +64,21 @@ class Entropy(stats.base.Univariate):
 
     """
 
-    def __init__(self, fading_factor=1, eps=1e-8):
+    def __init__(self, fading_factor: float = 1, eps: float = 1e-8) -> None:
         if 0 < fading_factor <= 1:
-            self.fading_factor = fading_factor
+            self.fading_factor: float = fading_factor
         else:
             raise ValueError("fading_factor must be between 0 excluded and 1")
-        self.eps = eps
-        self.entropy = 0
-        self.n = 0
-        self.counter = collections.Counter()
+        self.eps: float = eps
+        self.entropy: float = 0
+        self.n: int = 0
+        self.counter: collections.Counter[typing.Any] = collections.Counter()
 
     @property
-    def name(self):
+    def name(self) -> str:
         return "entropy"
 
-    def update(self, x):
+    def update(self, x: typing.Any) -> None:
         cx = self.counter.get(x, 0)
         n = self.n
         eps = self.eps
@@ -91,5 +93,5 @@ class Entropy(stats.base.Univariate):
         self.n += 1
         self.counter.update([x])
 
-    def get(self):
+    def get(self) -> float:
         return self.entropy
