@@ -27,6 +27,10 @@
   <a href="https://opensource.org/licenses/BSD-3-Clause">
     <img src="https://img.shields.io/badge/License-BSD%203--Clause-blue.svg?style=flat-square" alt="bsd_3_license">
   </a>
+  <!-- Discord -->
+  <a href="https://discord.gg/qNmrKEZMAn">
+    <img src="https://img.shields.io/badge/Discord-join%20chat-5865F2?style=flat-square&logo=discord&logoColor=white" alt="discord">
+  </a>
 </p>
 
 </br>
