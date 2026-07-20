@@ -5,6 +5,8 @@ from typing import Generic, TypeVar
 
 from river import base
 
+from . import errors
+
 __all__ = ["Bivariate", "Link", "RollingUnivariate", "Statistic", "Univariate"]
 
 # The type of the values a statistic produces. Defaults to float so that existing
@@ -28,9 +30,15 @@ class Statistic(abc.ABC, base.Base, Generic[R]):
     def get(self) -> R:
         """Return the current value of the statistic."""
 
+    def get_or_none(self) -> R | None:
+        try:
+            return self.get()
+        except errors.NotEnoughSamples:
+            return None
+
     def __repr__(self) -> str:
         try:
-            value = self.get()
+            value = self.get_or_none()
         except NotImplementedError:
             value = None
         fmt_value = None if value is None else f"{value:{self._fmt}}".rstrip("0")
@@ -72,8 +80,8 @@ class Link(Univariate[X, S], Generic[X, R, S]):
     ----------
     left
     right
-        The output from `left`'s `get` method is passed to `right`'s `update` method if `left`'s
-        `get` method doesn't produce `None.`
+        The output from `left`'s `get` method is passed to `right`'s `update` method, unless
+        `left`'s `get` method raises `stats.NotEnoughSamples`.
 
     Examples
     --------
@@ -85,14 +93,14 @@ class Link(Univariate[X, S], Generic[X, R, S]):
     which is 0.
 
     >>> stat.get()
-    0.
+    0.0
 
     Let us now call `update`.
 
     >>> stat.update(1)
 
     The output from `get` will still be 0. The reason is that `stats.Shift` has not enough
-    values, and therefore outputs its default value, which is `None`. The `stats.Mean`
+    values, and therefore raises `stats.NotEnoughSamples`. The `stats.Mean`
     instance is therefore not updated.
 
     >>> stat.get()
@@ -125,7 +133,10 @@ class Link(Univariate[X, S], Generic[X, R, S]):
 
     def update(self, x: X) -> None:
         self.left.update(x)
-        y = self.left.get()
+        try:
+            y = self.left.get()
+        except errors.NotEnoughSamples:
+            return
         self.right.update(y)
 
     def get(self) -> S:
