@@ -1,15 +1,14 @@
 from __future__ import annotations
 
 import collections
-import typing
+from collections.abc import Hashable
 
 from river import stats
 
 __all__ = ["Mode"]
 
 
-# TODO
-class Mode(stats.base.Univariate[typing.Any, typing.Any]):
+class Mode(stats.base.Univariate[Hashable, Hashable]):
     """Running mode.
 
     The mode is simply the most common value. An approximate mode can be computed by setting the
@@ -53,21 +52,21 @@ class Mode(stats.base.Univariate[typing.Any, typing.Any]):
 
     def __init__(self, k: int = 25) -> None:
         self.k: int = k
-        self.counts: collections.defaultdict[typing.Any, int] = collections.defaultdict(int)
+        self.counts: collections.defaultdict[Hashable, int] = collections.defaultdict(int)
 
     @property
     def name(self) -> str:
         return "mode"
 
-    def update(self, x: typing.Any) -> None:
+    def update(self, x: Hashable) -> None:
         if self.k == -1 or x in self.counts or len(self.counts) < self.k:
             self.counts[x] += 1
 
-    def get(self) -> typing.Any:
+    def get(self) -> Hashable:
         return max(self.counts, key=lambda key: self.counts[key], default=None)
 
 
-class RollingMode(stats.base.RollingUnivariate[typing.Any, typing.Any]):
+class RollingMode(stats.base.RollingUnivariate[Hashable, Hashable]):
     """Running mode over a window.
 
     The mode is the most common value.
@@ -115,15 +114,15 @@ class RollingMode(stats.base.RollingUnivariate[typing.Any, typing.Any]):
     """
 
     def __init__(self, window_size: int) -> None:
-        self.window: collections.deque[typing.Any] = collections.deque(maxlen=window_size)
-        self.counts: collections.defaultdict[typing.Any, int] = collections.defaultdict(int)
+        self.window: collections.deque[Hashable] = collections.deque(maxlen=window_size)
+        self.counts: collections.defaultdict[Hashable, int] = collections.defaultdict(int)
         self.window_size_value: int = window_size
 
     @property
     def window_size(self) -> int:
         return self.window_size_value
 
-    def update(self, x: typing.Any) -> None:
+    def update(self, x: Hashable) -> None:
         if len(self.window) >= self.window_size:
             # Subtract the counter of the last element
             first_in = self.window[0]
@@ -136,5 +135,5 @@ class RollingMode(stats.base.RollingUnivariate[typing.Any, typing.Any]):
         self.counts[x] += 1
         self.window.append(x)
 
-    def get(self) -> typing.Any:
+    def get(self) -> Hashable:
         return max(self.counts, key=lambda key: self.counts[key], default=None)

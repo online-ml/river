@@ -12,7 +12,7 @@ __all__ = ["Bivariate", "Link", "RollingUnivariate", "Statistic", "Univariate"]
 R = TypeVar("R", default=float)
 # The type of the values a statistic observes.
 T = TypeVar("T", default=float)
-# The type produced by the right-hand statistic when two statistics are piped together.
+# A third type to represent consumed/produced values.
 S = TypeVar("S", default=float)
 
 
@@ -150,9 +150,9 @@ class RollingUnivariate(Univariate[T, R]):
         return f"{super().name}_{self.window_size}"
 
 
-class Bivariate(Statistic[float]):
+class Bivariate(Statistic[R], Generic[T, S, R]):
     """A bivariate statistic measures a relationship between two variables."""
 
     @abc.abstractmethod
-    def update(self, x: float, y: float) -> None:
+    def update(self, x: T, y: S) -> None:
         """Update the called instance."""

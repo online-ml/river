@@ -2,13 +2,12 @@ from __future__ import annotations
 
 import collections
 import math
-import typing
+from collections.abc import Hashable
 
 from river import stats
 
 
-# TODO
-class Entropy(stats.base.Univariate[typing.Any, float]):
+class Entropy(stats.base.Univariate[Hashable, float]):
     """Running entropy.
 
     Parameters
@@ -72,13 +71,13 @@ class Entropy(stats.base.Univariate[typing.Any, float]):
         self.eps: float = eps
         self.entropy: float = 0
         self.n: int = 0
-        self.counter: collections.Counter[typing.Any] = collections.Counter()
+        self.counter: collections.Counter[Hashable] = collections.Counter()
 
     @property
     def name(self) -> str:
         return "entropy"
 
-    def update(self, x: typing.Any) -> None:
+    def update(self, x: Hashable) -> None:
         cx = self.counter.get(x, 0)
         n = self.n
         eps = self.eps

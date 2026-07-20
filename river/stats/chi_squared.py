@@ -1,12 +1,12 @@
 from __future__ import annotations
 
 import collections
-import typing
+from collections.abc import Hashable
 
 from river import stats
 
 
-class ChiSquared(stats.base.Bivariate):
+class ChiSquared(stats.base.Bivariate[Hashable, Hashable, float]):
     """Streaming Chi-squared statistic.
 
     Maintains a contingency table between two variables `x` and `y` and computes the
@@ -55,26 +55,24 @@ class ChiSquared(stats.base.Bivariate):
     """
 
     def __init__(self) -> None:
-        self.counts: collections.defaultdict[typing.Any, collections.Counter[typing.Any]] = (
+        self.counts: collections.defaultdict[Hashable, collections.Counter[Hashable]] = (
             collections.defaultdict(collections.Counter)
         )
-        self.x_totals: collections.Counter[typing.Any] = collections.Counter()
-        self.y_totals: collections.Counter[typing.Any] = collections.Counter()
+        self.x_totals: collections.Counter[Hashable] = collections.Counter()
+        self.y_totals: collections.Counter[Hashable] = collections.Counter()
         self.n: int = 0
 
     @property
     def name(self) -> str:
         return "chi_squared"
 
-    # TODO
-    def update(self, x: typing.Any, y: typing.Any) -> None:
+    def update(self, x: Hashable, y: Hashable) -> None:
         self.counts[x][y] += 1
         self.x_totals[x] += 1
         self.y_totals[y] += 1
         self.n += 1
 
-    # TODO
-    def revert(self, x: typing.Any, y: typing.Any) -> None:
+    def revert(self, x: Hashable, y: Hashable) -> None:
         self.counts[x][y] -= 1
         if self.counts[x][y] <= 0:
             del self.counts[x][y]
