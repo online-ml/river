@@ -23,7 +23,7 @@ class Statistic(abc.ABC, base.Base, Generic[R]):
     _fmt = ",.6f"  # Use commas to separate big numbers and show 6 decimals
 
     @abc.abstractmethod
-    def get(self) -> R | None:
+    def get(self) -> R:
         """Return the current value of the statistic."""
 
     def __repr__(self) -> str:
@@ -37,8 +37,7 @@ class Statistic(abc.ABC, base.Base, Generic[R]):
     def __str__(self) -> str:
         return repr(self)
 
-    # TODO
-    def __gt__(self, other: Statistic[R]) -> bool:
+    def __gt__(self: Statistic[float], other: Statistic[float]) -> bool:
         return self.get() > other.get()
 
 
@@ -125,10 +124,9 @@ class Link(Univariate[T, S], Generic[T, R, S]):
     def update(self, x: T) -> None:
         self.left.update(x)
         y = self.left.get()
-        if y is not None:
-            self.right.update(y)
+        self.right.update(y)
 
-    def get(self) -> S | None:
+    def get(self) -> S:
         return self.right.get()
 
     @property

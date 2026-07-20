@@ -49,5 +49,4 @@ def test_ge() -> None:
         x = random.random()
         low.update(x)
         high.update(x)
-        # TODO
         assert high.get() >= low.get()

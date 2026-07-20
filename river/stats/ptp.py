@@ -91,11 +91,7 @@ class RollingPeakToPeak(stats.base.RollingUnivariate):
         self.max.update(x)
         self.min.update(x)
 
-    def get(self) -> float | None:
+    def get(self) -> float:
         maximum = self.max.get()
-        if maximum is None:
-            return None
         minimum = self.min.get()
-        if minimum is None:
-            return None
         return maximum - minimum

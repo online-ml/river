@@ -97,11 +97,14 @@ class Shift(stats.base.Univariate):
     def update(self, x: float) -> None:
         self.buffer.append(x)
 
-    def get(self) -> float | None:
+    def get(self) -> float:
         try:
             return self.buffer[-self.amount - 1]
         except IndexError:
-            return self.fill_value
+            if self.fill_value is not None:
+                return self.fill_value
+            else:
+                raise stats.NotEnoughSamples
 
     @property
     def name(self) -> str:

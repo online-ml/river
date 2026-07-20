@@ -49,5 +49,4 @@ class MAD(quantile.Quantile):
 
     def update(self, x: float) -> None:
         self.median.update(x)
-        # TODO
         super().update(abs(x - self.median.get()))

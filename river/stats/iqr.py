@@ -60,11 +60,11 @@ class IQR(stats.base.Univariate):
         if not self._is_updated:
             self._is_updated = True
 
-    def get(self) -> float | None:
+    def get(self) -> float:
         # HACK: Avoid crash if get is called before update
         # panicked at 'index out of bounds: the len is 0 but the index is 0'
         if not self._is_updated:
-            return None
+            raise stats.NotEnoughSamples
         return self._iqr.get()
 
     def __repr__(self) -> str:
@@ -136,11 +136,11 @@ class RollingIQR(stats.base.RollingUnivariate):
         if not self._is_updated:
             self._is_updated = True
 
-    def get(self) -> float | None:
+    def get(self) -> float:
         # HACK: Avoid crash if get is called before update
         # panicked at 'index out of bounds: the len is 0 but the index is 0'
         if not self._is_updated:
-            return None
+            raise stats.NotEnoughSamples
         return self._rolling_iqr.get()
 
     @property

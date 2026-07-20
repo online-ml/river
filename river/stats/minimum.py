@@ -63,8 +63,8 @@ class RollingMin(stats.base.RollingUnivariate):
     def update(self, x: float) -> None:
         self.window.append(x)
 
-    def get(self) -> float | None:
+    def get(self) -> float:
         try:
             return self.window[0]
         except IndexError:
-            return None
+            raise stats.NotEnoughSamples
