@@ -26,6 +26,8 @@ Of course, you can use a coding agent to run a benchmark and produce a summary t
 
 We should not deceive each other by asking an AI to generate code, and merging it into the codebase without indicating its source. We want to be able to differentiate between the two. A `Co-authored-by:` trailer on the commit is a simple way to do this.
 
+We also invite you to disclose your use of AI in the pull request message. There's no shame in it, and it is respectful of reviewers.
+
 > 4. Be thorough on tests.
 
 Good tests usually span more lines that implementations themselves. They can be tedious to write. Access to coding agents means there is no more excuse for not writing tests.
