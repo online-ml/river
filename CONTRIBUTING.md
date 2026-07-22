@@ -8,7 +8,7 @@ We do not assign issues to people. If you want to indicate you're working on som
 
 Of course, you're welcome to propose and contribute new ideas. We encourage you to [open a discussion](https://github.com/online-ml/river/discussions/new) so that we can have a chat and align.
 
-## Rules for coding agents
+## Rules about coding agents
 
 We are not against coding agents. But River was made by humans who enjoy working with each other, and we want to preserve that human touch. Here are our rules:
 
