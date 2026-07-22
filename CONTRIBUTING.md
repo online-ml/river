@@ -21,6 +21,7 @@ We have a codebase that is of good quality, with enough examples for coding agen
 We don't want coding agents to do the high-level thinking for us. Therefore, we should force ourselves to write all our discussions with our own words. AI generated prose almost always reads like slop, and too much of it is off-putting. We believe using our own words is more polite, friendly, and enjoyable for everyone. Docstrings and release notes count too: they're how we talk to our users, so they deserve the same care.
 
 Of course, you can use a coding agent to run a benchmark and produce a summary table. But you should editorialize and insert it into a message you've written yourself.
+Similarly, you are allowed to use spell-checking tools and similar software, including those that rely on generative AI, as long as you keep your own voice. We do not require you to have a perfect command of the English language.
 
 > 3. Code written by agents should be disclosed as such.
 
