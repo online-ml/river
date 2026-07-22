@@ -40,7 +40,7 @@ class GapEncoder(base.Transformer):
 
     The n-gram vocabulary is not fixed ahead of time; it grows as new strings show up, the same
     way `preprocessing.LDA` grows its word vocabulary. Topics are kept up to date through two
-    accumulators `A` and `B`, with a forgetting factor `rho` that lets old observations decay.
+    accumulators `A` and `B`, with a `half_life` (in samples) that lets old observations decay.
     `transform_one` is read-only: it only looks at n-grams it has already seen and never changes
     the model.
 
@@ -62,8 +62,13 @@ class GapEncoder(base.Transformer):
         Shape parameter of the Gamma prior on the activations.
     gamma_scale_prior
         Scale parameter of the Gamma prior on the activations.
-    rho
-        Forgetting factor for the topic accumulators. Lower values forget the past faster.
+    half_life
+        Forgetting horizon for the topics, in number of samples. A sample's influence on the
+        topic accumulators halves every `half_life` observations, i.e. the per-sample decay is
+        `0.5 ** (1 / half_life)`. Larger values keep a longer memory and let the topics build up
+        stable global structure; smaller values adapt faster to drift. Use `float('inf')` to
+        never forget. This replaces the batch implementation's `rho`, which is not meaningful
+        when updating one sample at a time (`rho = 0.5 ** (1 / half_life)`).
     max_iter_e_step
         Number of multiplicative iterations used to fit the activations of a sample during
         `learn_one`. `transform_one` always iterates until convergence (up to 100 iterations).
@@ -104,10 +109,10 @@ class GapEncoder(base.Transformer):
     >>> for x in ["London, UK", "Lndon", "Paris, France", "Pariss"]:
     ...     topics = enc.transform_one(x)
     ...     print(x, max(topics, key=topics.get), {k: round(v, 3) for k, v in topics.items()})
-    London, UK 1 {0: 0.052, 1: 12.048}
+    London, UK 1 {0: 0.053, 1: 12.047}
     Lndon 1 {0: 0.05, 1: 3.05}
-    Paris, France 0 {0: 16.548, 1: 0.052}
-    Pariss 0 {0: 4.55, 1: 0.05}
+    Paris, France 0 {0: 16.547, 1: 0.053}
+    Pariss 0 {0: 4.549, 1: 0.051}
 
     References
     ----------
@@ -125,7 +130,7 @@ class GapEncoder(base.Transformer):
         ngram_range: tuple[int, int] = (2, 4),
         gamma_shape_prior: float = 1.1,
         gamma_scale_prior: float = 1.0,
-        rho: float = 0.95,
+        half_life: float = 1000.0,
         max_iter_e_step: int = 10,
         seed: int | None = None,
     ):
@@ -136,7 +141,8 @@ class GapEncoder(base.Transformer):
         self.ngram_range = ngram_range
         self.gamma_shape_prior = gamma_shape_prior
         self.gamma_scale_prior = gamma_scale_prior
-        self.rho = rho
+        self.half_life = half_life
+        self.decay = 0.5 ** (1.0 / half_life)
         self.max_iter_e_step = max_iter_e_step
         self.seed = seed
         self.rng = np.random.RandomState(seed)
@@ -217,8 +223,8 @@ class GapEncoder(base.Transformer):
         h = self._fit_h(v, idx, max_iter=self.max_iter_e_step)
 
         # Topic update through the decayed accumulators.
-        self.A *= self.rho
-        self.B *= self.rho
+        self.A *= self.decay
+        self.B *= self.decay
         ratio = v / (h @ self.W[:, idx] + 1e-10)
         self.A[:, idx] += self.W[:, idx] * np.outer(h, ratio)
         self.B += h[:, None]
