@@ -102,6 +102,7 @@
 
 ## preprocessing
 
+- Added `preprocessing.GapEncoder`, an online Gamma-Poisson factorization of character n-gram counts for embedding fuzzy/dirty string categories (the streaming counterpart of skrub's `GapEncoder`). The vocabulary and topics grow as new strings arrive, and `transform_one` is read-only. Closes [#1439](https://github.com/online-ml/river/issues/1439).
 - Added a `window_size` parameter to `preprocessing.StandardScaler`, `preprocessing.MinMaxScaler`, and `preprocessing.MaxAbsScaler`. When set, the scaler tracks its statistics over the last `window_size` observations instead of the whole stream.
 - Added a `_from_state` classmethod to `preprocessing.MinMaxScaler`, `preprocessing.MaxAbsScaler`, and `preprocessing.StandardScaler` so a scaler can be warm-started from precomputed statistics without replaying past observations.
 - `preprocessing.FeatureHasher` now hashes with MurmurHash3 in Rust, making it much faster. It gains an `alternate_sign` parameter (default `True`, matching scikit-learn) and returns a plain `dict`. Hashed feature indices differ from previous versions.
