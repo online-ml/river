@@ -14,7 +14,7 @@ We are not against coding agents. But River was made by humans who enjoy working
 
 > 1. Coding agents can write code, but not comments.
 
-We have a codebase that is of good quality, with enough examples for coding agents to write idiomatic code. Therefore, AI generated code is not a problem per say. But using an AI to write comments is worrying, because it's a sign we did not put in the effort to understand the generated code.
+We have a codebase that is of good quality, with enough examples for coding agents to write idiomatic code. Therefore, AI generated code is not a problem per say. But using an AI to write comments is worrying, because it's a sign we did not put in the effort to understand the generated code. We instead encourage you, as a human, to write comments that help other humans understand the code.
 
 > 2. Prose is written by humans. This covers issues, pull request descriptions, commit messages, docstrings, release notes, and any kind of discussion.
 
