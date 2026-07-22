@@ -40,6 +40,7 @@ Don't let an agent open a drive-by pull request. As above, discuss your approach
 > 6. You are accountable for what your agent submits.
 
 An agent acting on your behalf is still you. You own its output, and our [Code of Conduct](CODE_OF_CONDUCT.md) applies to it just as it does to anything you write yourself.
+Because we require a human to direct the agent, fully-automated contributions are not accepted.
 
 > 7. Any infringement of the rules above allows the maintainers to close any associated discussion or pull request.
 
