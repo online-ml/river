@@ -8,7 +8,7 @@ from scipy.stats import ks_2samp
 from river import stats
 
 
-def test_incremental_ks_statistics():
+def test_incremental_ks_statistics() -> None:
     initial_a = np.random.normal(loc=0, scale=1, size=500)
     initial_b = np.random.normal(loc=1, scale=1, size=500)
 

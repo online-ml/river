@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import collections
-import numbers
 
 from river import stats
 
@@ -52,16 +51,16 @@ class AutoCorr(stats.base.Univariate):
 
     """
 
-    def __init__(self, lag: int):
-        self.window: collections.deque[numbers.Number] = collections.deque(maxlen=lag)
-        self.lag = lag
-        self.pearson = stats.PearsonCorr(ddof=1)
+    def __init__(self, lag: int) -> None:
+        self.window: collections.deque[float] = collections.deque(maxlen=lag)
+        self.lag: int = lag
+        self.pearson: stats.PearsonCorr = stats.PearsonCorr(ddof=1)
 
     @property
-    def name(self):
+    def name(self) -> str:
         return f"autocorr_{self.lag}"
 
-    def update(self, x):
+    def update(self, x: float) -> None:
         # The correlation can be update once enough elements have been seen
         if len(self.window) == self.lag:
             self.pearson.update(x, self.window[0])
@@ -69,5 +68,5 @@ class AutoCorr(stats.base.Univariate):
         # Add x to the window
         self.window.append(x)
 
-    def get(self):
+    def get(self) -> float:
         return self.pearson.get()

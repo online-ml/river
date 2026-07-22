@@ -82,13 +82,13 @@ class Kurtosis(stats.base.Univariate):
 
     """
 
-    def __init__(self, bias=False):
+    def __init__(self, bias: bool = False) -> None:
         super().__init__()
-        self.bias = bias
-        self._kurtosis = _rust_stats.RsKurtosis(bias)
+        self.bias: bool = bias
+        self._kurtosis: _rust_stats.RsKurtosis = _rust_stats.RsKurtosis(bias)
 
-    def update(self, x):
+    def update(self, x: float) -> None:
         self._kurtosis.update(x)
 
-    def get(self):
+    def get(self) -> float:
         return self._kurtosis.get()

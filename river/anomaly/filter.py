@@ -174,7 +174,7 @@ class QuantileFilter(anomaly.base.AnomalyFilter):
         return self.quantile.q
 
     def classify(self, score):
-        return score >= (self.quantile.get() or math.inf)
+        return score >= (self.quantile.get_or_none() or math.inf)
 
     def learn_one(self, *args, **learn_kwargs):
         score = self.score_one(*args)

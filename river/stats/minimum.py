@@ -15,14 +15,14 @@ class Min(stats.base.Univariate):
 
     """
 
-    def __init__(self):
-        self.min = math.inf
+    def __init__(self) -> None:
+        self.min: float = math.inf
 
-    def update(self, x):
+    def update(self, x: float) -> None:
         if x < self.min:
             self.min = x
 
-    def get(self):
+    def get(self) -> float:
         return self.min
 
 
@@ -53,18 +53,18 @@ class RollingMin(stats.base.RollingUnivariate):
 
     """
 
-    def __init__(self, window_size: int):
+    def __init__(self, window_size: int) -> None:
         self.window: utils.SortedWindow[float] = utils.SortedWindow(size=window_size)
 
     @property
-    def window_size(self):
+    def window_size(self) -> int:
         return self.window.size
 
-    def update(self, x):
+    def update(self, x: float) -> None:
         self.window.append(x)
 
-    def get(self):
+    def get(self) -> float:
         try:
             return self.window[0]
         except IndexError:
-            return None
+            raise stats.NotEnoughSamples

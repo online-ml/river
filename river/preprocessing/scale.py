@@ -650,7 +650,7 @@ class MaxAbsScaler(base.Transformer):
         abs_max = self.abs_max
         result = {}
         for i, xi in x.items():
-            m = abs_max[i].get()
+            m = abs_max[i].get_or_none()
             result[i] = xi / m if m else 0.0
         return result
 
@@ -728,11 +728,11 @@ class RobustScaler(base.Transformer):
         for i, xi in x.items():
             x_tf[i] = xi
             if self.with_centering:
-                median = self.median[i].get()
+                median = self.median[i].get_or_none()
                 if median is not None:
                     x_tf[i] -= median
             if self.with_scaling:
-                x_tf[i] = safe_div(x_tf[i], self.iqr[i].get())
+                x_tf[i] = safe_div(x_tf[i], self.iqr[i].get_or_none())
 
         return x_tf
 

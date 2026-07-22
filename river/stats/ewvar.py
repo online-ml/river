@@ -44,19 +44,19 @@ class EWVar(stats.base.Univariate):
 
     # Note for devs, if you want look the pure python implementation here:
     # https://github.com/online-ml/river/blob/40c3190c9d05671ae4c2dc8b76c163ea53a45fb0/river/stats/ewvar.py
-    def __init__(self, fading_factor=0.5):
+    def __init__(self, fading_factor: float = 0.5) -> None:
         if not 0 <= fading_factor <= 1:
             raise ValueError("q is not comprised between 0 and 1")
 
-        self.fading_factor = fading_factor
-        self._ewvar = _rust_stats.RsEWVar(fading_factor)
+        self.fading_factor: float = fading_factor
+        self._ewvar: _rust_stats.RsEWVar = _rust_stats.RsEWVar(fading_factor)
 
     @property
-    def name(self):
+    def name(self) -> str:
         return f"ewv_{self.fading_factor}"
 
-    def update(self, x):
+    def update(self, x: float) -> None:
         self._ewvar.update(x)
 
-    def get(self):
+    def get(self) -> float:
         return self._ewvar.get()

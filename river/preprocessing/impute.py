@@ -222,7 +222,7 @@ class StatImputer(base.Transformer):
 
         for i in self.stats:
             if x[i] is None:
-                x[i] = self.stats[i].get()
+                x[i] = self.stats[i].get_or_none()
 
         return x
 

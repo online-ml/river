@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from . import var
+from . import errors, var
 
 
 class SEM(var.Var):
@@ -56,8 +56,8 @@ class SEM(var.Var):
 
     """
 
-    def get(self):
+    def get(self) -> float:
         try:
-            return (super().get() / self.mean.n) ** 0.5
+            return float((super().get() / self.mean.n) ** 0.5)
         except ZeroDivisionError:
-            return None
+            raise errors.NotEnoughSamples

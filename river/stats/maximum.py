@@ -32,14 +32,14 @@ class Max(stats.base.Univariate):
 
     """
 
-    def __init__(self):
-        self.max = -math.inf
+    def __init__(self) -> None:
+        self.max: float = -math.inf
 
-    def update(self, x):
+    def update(self, x: float) -> None:
         if x > self.max:
             self.max = x
 
-    def get(self):
+    def get(self) -> float:
         return self.max
 
 
@@ -70,21 +70,21 @@ class RollingMax(stats.base.RollingUnivariate):
 
     """
 
-    def __init__(self, window_size: int):
+    def __init__(self, window_size: int) -> None:
         self.window: utils.SortedWindow[float] = utils.SortedWindow(size=window_size)
 
     @property
-    def window_size(self):
+    def window_size(self) -> int:
         return self.window.size
 
-    def update(self, x):
+    def update(self, x: float) -> None:
         self.window.append(x)
 
-    def get(self):
+    def get(self) -> float:
         try:
             return self.window[-1]
         except IndexError:
-            return None
+            raise stats.NotEnoughSamples
 
 
 class AbsMax(stats.base.Univariate):
@@ -114,14 +114,14 @@ class AbsMax(stats.base.Univariate):
 
     """
 
-    def __init__(self):
-        self.abs_max = 0.0
+    def __init__(self) -> None:
+        self.abs_max: float = 0.0
 
-    def update(self, x):
+    def update(self, x: float) -> None:
         if abs(x) > self.abs_max:
             self.abs_max = abs(x)
 
-    def get(self):
+    def get(self) -> float:
         return self.abs_max
 
 
@@ -152,18 +152,18 @@ class RollingAbsMax(stats.base.RollingUnivariate):
 
     """
 
-    def __init__(self, window_size: int):
+    def __init__(self, window_size: int) -> None:
         self.window: utils.SortedWindow[float] = utils.SortedWindow(size=window_size)
 
     @property
-    def window_size(self):
+    def window_size(self) -> int:
         return self.window.size
 
-    def update(self, x):
+    def update(self, x: float) -> None:
         self.window.append(abs(x))
 
-    def get(self):
+    def get(self) -> float:
         try:
             return self.window[-1]
         except IndexError:
-            return None
+            raise stats.NotEnoughSamples

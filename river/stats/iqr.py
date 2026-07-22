@@ -42,32 +42,32 @@ class IQR(stats.base.Univariate):
     # Note for devs, if you want look the pure python implementation here:
     # https://github.com/online-ml/river/blob/40c3190c9d05671ae4c2dc8b76c163ea53a45fb0/river/stats/iqr.py
 
-    def __init__(self, q_inf=0.25, q_sup=0.75):
+    def __init__(self, q_inf: float = 0.25, q_sup: float = 0.75) -> None:
         super().__init__()
         if q_inf >= q_sup:
             raise ValueError("q_inf must be strictly less than q_sup")
-        self.q_inf = q_inf
-        self.q_sup = q_sup
-        self._iqr = _rust_stats.RsIQR(self.q_inf, self.q_sup)
-        self._is_updated = False
+        self.q_inf: float = q_inf
+        self.q_sup: float = q_sup
+        self._iqr: _rust_stats.RsIQR = _rust_stats.RsIQR(self.q_inf, self.q_sup)
+        self._is_updated: bool = False
 
     @property
-    def name(self):
+    def name(self) -> str:
         return f"{self.__class__.__name__}_{self.q_inf}_{self.q_sup}"
 
-    def update(self, x):
+    def update(self, x: float) -> None:
         self._iqr.update(x)
         if not self._is_updated:
             self._is_updated = True
 
-    def get(self):
+    def get(self) -> float:
         # HACK: Avoid crash if get is called before update
         # panicked at 'index out of bounds: the len is 0 but the index is 0'
         if not self._is_updated:
-            return None
+            raise stats.NotEnoughSamples
         return self._iqr.get()
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         # We surcharge this method to avoid this error on rust side:
         # pyo3_runtime.PanicException: index out of bounds: the len is 0 but the index is 0
         # This error is caused by the `get()` use before the update in the super method.
@@ -120,32 +120,34 @@ class RollingIQR(stats.base.RollingUnivariate):
 
     # Note for devs, if you want look the pure python implementation here:
     # https://github.com/online-ml/river/blob/40c3190c9d05671ae4c2dc8b76c163ea53a45fb0/river/stats/iqr.py
-    def __init__(self, window_size: int, q_inf=0.25, q_sup=0.75):
+    def __init__(self, window_size: int, q_inf: float = 0.25, q_sup: float = 0.75) -> None:
         if q_inf >= q_sup:
             raise ValueError("q_inf must be strictly less than q_sup")
-        self.q_inf = q_inf
-        self.q_sup = q_sup
-        self._rolling_iqr = _rust_stats.RsRollingIQR(q_inf, q_sup, window_size)
-        self.window_size_value = window_size
-        self._is_updated = False
+        self.q_inf: float = q_inf
+        self.q_sup: float = q_sup
+        self._rolling_iqr: _rust_stats.RsRollingIQR = _rust_stats.RsRollingIQR(
+            q_inf, q_sup, window_size
+        )
+        self.window_size_value: int = window_size
+        self._is_updated: bool = False
 
-    def update(self, x):
+    def update(self, x: float) -> None:
         self._rolling_iqr.update(x)
         if not self._is_updated:
             self._is_updated = True
 
-    def get(self):
+    def get(self) -> float:
         # HACK: Avoid crash if get is called before update
         # panicked at 'index out of bounds: the len is 0 but the index is 0'
         if not self._is_updated:
-            return None
+            raise stats.NotEnoughSamples
         return self._rolling_iqr.get()
 
     @property
-    def window_size(self):
+    def window_size(self) -> int:
         return self.window_size_value
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         # We surcharge this method to avoid this error on rust side:
         # pyo3_runtime.PanicException: attempt to subtract with overflow
         # This error is caused by the `get()` use before the update in the super method.

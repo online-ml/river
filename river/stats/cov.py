@@ -66,17 +66,17 @@ class Cov(stats.base.Bivariate):
 
     """
 
-    def __init__(self, ddof=1):
-        self.ddof = ddof
-        self.mean_x = stats.Mean()
-        self.mean_y = stats.Mean()
-        self.cov = 0
+    def __init__(self, ddof: float = 1) -> None:
+        self.ddof: float = ddof
+        self.mean_x: stats.Mean = stats.Mean()
+        self.mean_y: stats.Mean = stats.Mean()
+        self.cov: float = 0
 
     @property
-    def n(self):
+    def n(self) -> float:
         return self.mean_x.n
 
-    def update(self, x, y, w=1.0):
+    def update(self, x: float, y: float, w: float = 1.0) -> None:
         dx = x - self.mean_x._mean
         self.mean_x.update(x, w)
         self.mean_y.update(y, w)
@@ -84,7 +84,7 @@ class Cov(stats.base.Bivariate):
         denom = n - self.ddof
         self.cov += w * (dx * (y - self.mean_y._mean) - self.cov) / (denom if denom > 1 else 1)
 
-    def revert(self, x, y, w=1.0):
+    def revert(self, x: float, y: float, w: float = 1.0) -> None:
         dx = x - self.mean_x._mean
         self.mean_x.revert(x, w)
         self.mean_y.revert(y, w)
@@ -92,24 +92,26 @@ class Cov(stats.base.Bivariate):
         denom = n - self.ddof
         self.cov -= w * (dx * (y - self.mean_y._mean) - self.cov) / (denom if denom > 1 else 1)
 
-    def update_many(self, X: np.ndarray, Y: np.ndarray):
+    def update_many(self, X: np.ndarray, Y: np.ndarray) -> None:
         dx = X - self.mean_x.get()
         self.mean_x.update_many(X)
         self.mean_y.update_many(Y)
         self.cov += (dx * (Y - self.mean_y.get()) - self.cov).sum() / max(self.n - self.ddof, 1)
 
-    def get(self):
+    def get(self) -> float:
         return self.cov
 
     @classmethod
-    def _from_state(cls, n, mean_x, mean_y, cov, *, ddof=1):
+    def _from_state(
+        cls, n: float, mean_x: float, mean_y: float, cov: float, *, ddof: float = 1
+    ) -> Cov:
         new = cls(ddof=ddof)
         new.mean_x = stats.Mean._from_state(n, mean_x)
         new.mean_y = stats.Mean._from_state(n, mean_y)
         new.cov = cov
         return new
 
-    def __iadd__(self, other):
+    def __iadd__(self, other: Cov) -> Cov:
         old_mean_x = self.mean_x.get()
         old_mean_y = self.mean_y.get()
         old_n = self.n
@@ -138,12 +140,12 @@ class Cov(stats.base.Bivariate):
 
         return self
 
-    def __add__(self, other):
+    def __add__(self, other: Cov) -> Cov:
         result = copy.deepcopy(self)
         result += other
         return result
 
-    def __isub__(self, other):
+    def __isub__(self, other: Cov) -> Cov:
         if self.n <= self.ddof:
             return self
 
@@ -174,7 +176,7 @@ class Cov(stats.base.Bivariate):
 
         return self
 
-    def __sub__(self, other):
+    def __sub__(self, other: Cov) -> Cov:
         result = copy.deepcopy(self)
         result -= other
         return result

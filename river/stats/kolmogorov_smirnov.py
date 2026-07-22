@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import math
 import random
+import typing
 
 from river import stats
 
@@ -26,20 +27,20 @@ class _Node:
         "right",
     )
 
-    def __init__(self, key, value=0):
-        self.key = key
-        self.value = value
-        self.priority = _random()
-        self.size = 1
-        self.height = 1
-        self.lazy = 0
-        self.max_value = value
-        self.min_value = value
-        self.left = None
-        self.right = None
+    def __init__(self, key: typing.Any, value: float = 0) -> None:
+        self.key: typing.Any = key
+        self.value: float = value
+        self.priority: float = _random()
+        self.size: int = 1
+        self.height: int = 1
+        self.lazy: float = 0
+        self.max_value: float = value
+        self.min_value: float = value
+        self.left: _Node | None = None
+        self.right: _Node | None = None
 
 
-def _push_down(node):
+def _push_down(node: _Node) -> None:
     """Push lazy value to children (inline unlazy + sum_all)."""
     lz = node.lazy
     if lz != 0:
@@ -58,7 +59,7 @@ def _push_down(node):
         node.lazy = 0
 
 
-def _pull_up(node):
+def _pull_up(node: _Node | None) -> None:
     """Recompute aggregate fields from children."""
     if node is None:
         return
@@ -96,10 +97,12 @@ def _pull_up(node):
     node.min_value = mn
 
 
-def _split_keep_right(node, key):
+def _split_keep_right(node: _Node | None, key: typing.Any) -> tuple[_Node | None, _Node | None]:
     if node is None:
         return None, None
     _push_down(node)
+    left: _Node | None
+    right: _Node | None
     if key <= node.key:
         left, node.left = _split_keep_right(node.left, key)
         right = node
@@ -111,7 +114,7 @@ def _split_keep_right(node, key):
     return left, right
 
 
-def _merge(left, right):
+def _merge(left: _Node | None, right: _Node | None) -> _Node | None:
     if left is None:
         return right
     if right is None:
@@ -128,10 +131,12 @@ def _merge(left, right):
         return right
 
 
-def _split_smallest(node):
+def _split_smallest(node: _Node | None) -> tuple[_Node | None, _Node | None]:
     if node is None:
         return None, None
     _push_down(node)
+    left: _Node | None
+    right: _Node | None
     if node.left is not None:
         left, node.left = _split_smallest(node.left)
         right = node
@@ -144,10 +149,12 @@ def _split_smallest(node):
     return left, right
 
 
-def _split_greatest(node):
+def _split_greatest(node: _Node | None) -> tuple[_Node | None, _Node | None]:
     if node is None:
         return None, None
     _push_down(node)
+    left: _Node | None
+    right: _Node | None
     if node.right is not None:
         node.right, right = _split_greatest(node.right)
         left = node
@@ -160,7 +167,7 @@ def _split_greatest(node):
     return left, right
 
 
-def _sum_all(node, value):
+def _sum_all(node: _Node | None, value: float) -> None:
     if node is not None:
         node.value += value
         node.max_value += value
@@ -233,12 +240,12 @@ class KolmogorovSmirnov(stats.base.Bivariate):
 
     """
 
-    def __init__(self, statistic="ks"):
-        self.treap = None
-        self.n_samples = 0
-        self.statistic = statistic
+    def __init__(self, statistic: str = "ks") -> None:
+        self.treap: _Node | None = None
+        self.n_samples: int = 0
+        self.statistic: str = statistic
 
-    def update(self, x, y):
+    def update(self, x: float, y: float) -> None:
         root = self.treap
         self.n_samples += 1
 
@@ -256,7 +263,7 @@ class KolmogorovSmirnov(stats.base.Bivariate):
 
         self.treap = root
 
-    def revert(self, x, y):
+    def revert(self, x: float, y: float) -> None:
         root = self.treap
         self.n_samples -= 1
 
@@ -273,11 +280,12 @@ class KolmogorovSmirnov(stats.base.Bivariate):
 
         self.treap = root
 
-    def get(self):
+    def get(self) -> float:
         assert self.statistic in ["ks", "kuiper"]
         if self.n_samples == 0:
             return 0
 
+        assert self.treap is not None
         if self.statistic == "ks":
             return max(self.treap.max_value, -self.treap.min_value) / self.n_samples
         elif self.statistic == "kuiper":
@@ -286,13 +294,13 @@ class KolmogorovSmirnov(stats.base.Bivariate):
             raise ValueError(f"Unknown statistic {self.statistic}, expected one of: ks, kuiper")
 
     @staticmethod
-    def _ca(p_value):
-        return (-0.5 * math.log(p_value)) ** 0.5
+    def _ca(p_value: float) -> float:
+        return float((-0.5 * math.log(p_value)) ** 0.5)
 
-    def _test_ks_threshold(self, ca):
+    def _test_ks_threshold(self, ca: float) -> bool:
         """
         Test whether the reference and sliding window follows the same or different probability distribution.
         This test will return `True` if we **reject** the null hypothesis that
         the two windows follow the same distribution.
         """
-        return self.get() > ca * (2 * self.n_samples / self.n_samples**2) ** 0.5
+        return self.get() > ca * float((2 * self.n_samples / self.n_samples**2) ** 0.5)

@@ -89,20 +89,23 @@ class Shift(stats.base.Univariate):
 
     """
 
-    def __init__(self, amount=1, fill_value=None):
-        self.amount = amount
-        self.fill_value = fill_value
-        self.buffer = collections.deque(maxlen=self.amount + 1)
+    def __init__(self, amount: int = 1, fill_value: float | None = None) -> None:
+        self.amount: int = amount
+        self.fill_value: float | None = fill_value
+        self.buffer: collections.deque[float] = collections.deque(maxlen=self.amount + 1)
 
-    def update(self, x):
+    def update(self, x: float) -> None:
         self.buffer.append(x)
 
-    def get(self):
+    def get(self) -> float:
         try:
             return self.buffer[-self.amount - 1]
         except IndexError:
-            return self.fill_value
+            if self.fill_value is not None:
+                return self.fill_value
+            else:
+                raise stats.NotEnoughSamples
 
     @property
-    def name(self):
+    def name(self) -> str:
         return f"shift_{self.amount}"
