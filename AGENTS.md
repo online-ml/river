@@ -1,6 +1,6 @@
 # AGENTS.md
 
-## What is River?
+## Architecture
 
 River is a Python library for online (streaming) machine learning. All estimators implement incremental `learn_one`/`predict_one`/`transform_one` methods (or `learn_many`/`predict_many/transform_many` for mini-batch).
 
