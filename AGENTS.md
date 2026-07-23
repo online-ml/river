@@ -4,9 +4,24 @@
 
 River is a Python library for online (streaming) machine learning. All estimators implement incremental `learn_one`/`predict_one`/`transform_one` methods (or `learn_many`/`predict_many/transform_many` for mini-batch).
 
-Speed matters a lot in online machine learning. Therefore, a golden rule for implementation is to not introduce significant slowdowns. We use CodSpeed to detect regressions in pull requests.
+### Base classes (`river/base/`)
 
-Likewise, model accuracy is paramount. When making any sort of modification to an estimator, you should thoroughly check accuracy across several datasets. Whether the accuracy goes up or down, you should be able to explain why.
+All estimators inherit from `base.Estimator` (which inherits from `base.Base`). Key interfaces:
+- `Classifier` / `MiniBatchClassifier` — classification
+- `Regressor` / `MiniBatchRegressor` — regression
+- `Transformer` / `SupervisedTransformer` — feature transformation
+- `Clusterer` — clustering
+- `DriftDetector` / `BinaryDriftDetector` — concept drift detection
+- `Ensemble` / `WrapperEnsemble` — ensemble methods
+- `Wrapper` — wrapping other estimators
+
+### Estimator conventions
+
+- `learn_one(x, y)` / `predict_one(x)` / `transform_one(x)` is the core online learning interface
+- `__init__` parameters need type hints; provide defaults or implement `_unit_test_params()`
+- `_unit_test_skips()` returns check names to skip in automated testing
+- `_supervised`, `_multiclass`, `_is_stochastic`, `_tags` are special class attributes
+- Pipeline composition: `scaler | model` (uses `__or__`), `+` for parallel union
 
 ## Rules for coding agents
 
@@ -39,30 +54,17 @@ uv sync --group docs
 make livedoc
 ```
 
-## Architecture
+## Checklists
 
-### Base classes (`river/base/`)
+### Adding a new estimator
 
-All estimators inherit from `base.Estimator` (which inherits from `base.Base`). Key interfaces:
-- `Classifier` / `MiniBatchClassifier` — classification
-- `Regressor` / `MiniBatchRegressor` — regression
-- `Transformer` / `SupervisedTransformer` — feature transformation
-- `Clusterer` — clustering
-- `DriftDetector` / `BinaryDriftDetector` — concept drift detection
-- `Ensemble` / `WrapperEnsemble` — ensemble methods
-- `Wrapper` — wrapping other estimators
+- Make sure `utils.checks.check_estimator(some_estimator)` passes. It automatically discovers and runs validation checks (repr, cloning, pickling, feature robustness, etc.).
+- Add a practical docstring that shows how to use the estimator. Pytest is configured with `--doctest-modules`, so that docstring examples are executed as tests. The underlying logic are in `river/checks/`.
+- Add a new CodSpeed benchmark entry, in order to detect future regressions.
+- Generally speaking, all estimators should be able to process at least 5000 records per second. Naturally this depends on the size of the samples and the estimator, but exceptions need to be justified.
 
-### Estimator conventions
+### Modifying an existing estimator
 
-- `learn_one(x, y)` / `predict_one(x)` / `transform_one(x)` is the core online learning interface
-- `__init__` parameters need type hints; provide defaults or implement `_unit_test_params()`
-- `_unit_test_skips()` returns check names to skip in automated testing
-- `_supervised`, `_multiclass`, `_is_stochastic`, `_tags` are special class attributes
-- Pipeline composition: `scaler | model` (uses `__or__`), `+` for parallel union
-
-### Estimator testing framework
-
-- There's a global test suite for all estimators in `river/test_estimators.py`. The underlying logic are in `river/checks/`.
 - When making a localized fix, it is worth considering whether a global check should be added to all relevant estimators.
-- `utils.checks.check_estimator(some_estimator)` automatically discovers and runs validation checks (repr, cloning, pickling, feature robustness, etc.) for the given estimator. New estimators must pass all checks.
-- Pytest is configured with `--doctest-modules`, so that docstring examples are executed as tests.
+- Speed matters a lot in online machine learning. Therefore, a golden rule for implementation is to not introduce significant slowdowns. We use CodSpeed to detect regressions in pull requests.
+- Likewise, model accuracy is paramount. When making any sort of modification to an estimator, you should thoroughly check accuracy across several datasets. Whether the accuracy goes up or down, you should be able to explain why.
