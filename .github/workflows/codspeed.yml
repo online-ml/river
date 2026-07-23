@@ -3,7 +3,11 @@ name: codspeed
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - "**/*.md"
   pull_request:
+    paths-ignore:
+      - "**/*.md"
   # Lets CodSpeed trigger backtest runs to build up baseline data.
   workflow_dispatch:
 
