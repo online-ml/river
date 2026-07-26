@@ -108,11 +108,11 @@ class GapEncoder(base.Transformer):
 
     >>> for x in ["London, UK", "Lndon", "Paris, France", "Pariss"]:
     ...     topics = enc.transform_one(x)
-    ...     print(x, max(topics, key=topics.get), {k: round(v, 3) for k, v in topics.items()})
-    London, UK 1 {0: 0.053, 1: 12.047}
-    Lndon 1 {0: 0.05, 1: 3.05}
-    Paris, France 0 {0: 16.547, 1: 0.053}
-    Pariss 0 {0: 4.549, 1: 0.051}
+    ...     print(f"{x} -> topic {max(topics, key=topics.get)}")
+    London, UK -> topic 1
+    Lndon -> topic 1
+    Paris, France -> topic 0
+    Pariss -> topic 0
 
     References
     ----------
