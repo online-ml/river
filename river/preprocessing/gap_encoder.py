@@ -114,6 +114,23 @@ class GapEncoder(base.Transformer):
     Paris, France -> topic 0
     Pariss -> topic 0
 
+    Because it outputs a numeric dict, a `GapEncoder` drops straight into a classification
+    pipeline. Here it learns to tell UK cities from French ones from their messy spellings,
+    scored prequentially (test-then-train):
+
+    >>> from river import evaluate, linear_model, metrics
+
+    >>> cities = [
+    ...     ("london", True), ("Londn", True), ("LONDON", True), ("londonn", True),
+    ...     ("manchester", True), ("manchestr", True), ("leeds", True), ("leedss", True),
+    ...     ("paris", False), ("Pariss", False), ("PARIS", False), ("pqris", False),
+    ...     ("lyon", False), ("lyonn", False), ("nice", False), ("niice", False),
+    ... ]
+
+    >>> model = preprocessing.GapEncoder(n_components=5, seed=42) | linear_model.LogisticRegression()
+    >>> evaluate.progressive_val_score(cities * 15, model, metrics.Accuracy())
+    Accuracy: 83.75%
+
     References
     ----------
     [^1]: [Cerda, P. and Varoquaux, G., 2020. Encoding high-cardinality string categorical variables. IEEE Transactions on Knowledge and Data Engineering.](https://inria.hal.science/hal-02171256v4)
