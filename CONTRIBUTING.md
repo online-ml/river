@@ -12,39 +12,41 @@ Of course, you're welcome to propose and contribute new ideas. We encourage you 
 
 We are not against coding agents. But River was made by humans who enjoy working with each other, and we want to preserve that human touch. Here are our rules:
 
-> 1. Coding agents can write code, but not comments.
+> Coding agents can write code, but not comments.
 
 We have a codebase that is of good quality, with enough examples for coding agents to write idiomatic code. Therefore, AI generated code is not a problem per say. But using an AI to write comments is worrying, because it's a sign we did not put in the effort to understand the generated code. We instead encourage you, as a human, to write comments that help other humans understand the code.
 
-> 2. Prose is written by humans. This covers issues, pull request descriptions, commit messages, docstrings, release notes, and any kind of discussion.
+> Prose is written by humans.
+
+This covers issues, pull request descriptions, commit messages, docstrings, release notes, and any kind of discussion.
 
 We don't want coding agents to do the high-level thinking for us. Therefore, we should force ourselves to write all our discussions with our own words. AI generated prose almost always reads like slop, and too much of it is off-putting. We believe using our own words is more polite, friendly, and enjoyable for everyone. Docstrings and release notes count too: they're how we talk to our users, so they deserve the same care.
 
 Of course, you can use a coding agent to run a benchmark and produce a summary table. But you should editorialize and insert it into a message you've written yourself. Similarly, you are allowed to use spell-checking tools and similar software, including those that rely on generative AI, as long as you keep your own voice. We do not require you to have a perfect command of the English language.
 
-> 3. Code written by agents should be disclosed as such.
+> Code written by agents should be disclosed as such.
 
 We should not deceive each other by asking an AI to generate code, and merging it into the codebase without indicating its source. We want to be able to differentiate between the two. A `Co-authored-by:` trailer on the commit is a simple way to do this. One way to do this is by asking the agent to make the commits.
 
 We also invite you to disclose your use of AI in the pull request message. There's no shame in being transparent, and it is respectful of reviewers.
 
-> 4. Be thorough on tests and benchmarks.
+> Be thorough on tests and benchmarks.
 
 Good tests usually span more lines that implementations themselves. They can be tedious to write. Access to coding agents means there is no more excuse for not writing tests. Same for accuracy and speed benchmarks.
 
-> 5. Align before you build.
+> Align before you build.
 
 Don't let an agent open a drive-by pull request. As above, discuss your approach with us first, and start from a draft pull request. This matters all the more when an agent makes it cheap to produce a lot of code quickly.
 
 If you have a small contribution to make, such as a bug fix, then we encourage you to open an issue instead of sending a drive-by pull request. There's more value in surfacing issues than fixing them. We can take care of the fix, or assign them to a new contributor that wishes to learn. We will still attribute you the contribution.
 
-> 6. You are accountable for what your agent submits.
+> You are accountable for what your agent submits.
 
 An agent acting on your behalf is still you. You own its output, and our [Code of Conduct](CODE_OF_CONDUCT.md) applies to it just as it does to anything you write yourself.
 
 Because we require a human to direct the agent, fully-automated contributions (e.g. from tools like OpenClaw) are not accepted.
 
-> 7. Any infringement of the rules above allows the maintainers to close any associated discussion or pull request.
+> Any infringement of the rules above allows the maintainers to close any associated discussion or pull request.
 
 *These rules are enforced in `AGENTS.md`.*
 
