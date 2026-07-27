@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import collections
 import math
 import typing
 
@@ -23,7 +22,21 @@ __all__ = [
 
 Drift = int | tuple[int, int]
 
-Matching = collections.namedtuple("Matching", ["hits", "false_alarms"])
+
+class Matching(typing.NamedTuple):
+    """The outcome of assigning alarms to drifts.
+
+    Parameters
+    ----------
+    hits
+        Maps the index of a drift to the alarms that landed in its window.
+    false_alarms
+        The alarms that landed in no window at all.
+
+    """
+
+    hits: dict[int, list[int]]
+    false_alarms: list[int]
 
 
 def _windows(drifts: list[Drift], delta_max: int, delta_pre: int) -> list[tuple[int, int, int]]:
@@ -102,6 +115,17 @@ def precision(
 
     Undefined, and therefore `nan`, when the detector never fired.
 
+    Parameters
+    ----------
+    alarms
+        The indices at which the detector fired.
+    drifts
+        The ground truth drifts, in chronological order.
+    delta_max
+        How late a detection may be and still count.
+    delta_pre
+        How early a detection may be and still count.
+
     Examples
     --------
 
@@ -132,6 +156,17 @@ def recall(
     Every alarm inside a window counts, so a detector that fires repeatedly inside one window is
     rewarded for it. Use `episode_recall` to count each window once.
 
+    Parameters
+    ----------
+    alarms
+        The indices at which the detector fired.
+    drifts
+        The ground truth drifts, in chronological order.
+    delta_max
+        How late a detection may be and still count.
+    delta_pre
+        How early a detection may be and still count.
+
     Examples
     --------
 
@@ -161,6 +196,17 @@ def episode_recall(
 ) -> float:
     """The share of drifts that got at least one alarm.
 
+    Parameters
+    ----------
+    alarms
+        The indices at which the detector fired.
+    drifts
+        The ground truth drifts, in chronological order.
+    delta_max
+        How late a detection may be and still count.
+    delta_pre
+        How early a detection may be and still count.
+
     Examples
     --------
 
@@ -187,6 +233,17 @@ def missed_detection_rate(
 ) -> float:
     """The share of drifts that went unnoticed.
 
+    Parameters
+    ----------
+    alarms
+        The indices at which the detector fired.
+    drifts
+        The ground truth drifts, in chronological order.
+    delta_max
+        How late a detection may be and still count.
+    delta_pre
+        How early a detection may be and still count.
+
     Examples
     --------
 
@@ -210,6 +267,17 @@ def f1(
     delta_pre: int = 0,
 ) -> float:
     """The harmonic mean of precision and episode recall.
+
+    Parameters
+    ----------
+    alarms
+        The indices at which the detector fired.
+    drifts
+        The ground truth drifts, in chronological order.
+    delta_max
+        How late a detection may be and still count.
+    delta_pre
+        How early a detection may be and still count.
 
     Examples
     --------
@@ -245,6 +313,17 @@ def detection_delay(
     Missed drifts are left out rather than charged a penalty, so this has to be read next to
     `missed_detection_rate`. Undefined, and therefore `nan`, when nothing was caught.
 
+    Parameters
+    ----------
+    alarms
+        The indices at which the detector fired.
+    drifts
+        The ground truth drifts, in chronological order.
+    delta_max
+        How late a detection may be and still count.
+    delta_pre
+        How early a detection may be and still count.
+
     Examples
     --------
 
@@ -275,6 +354,17 @@ def normalized_detection_time(
 
     This is what makes delays comparable between streams whose drifts are spaced differently.
 
+    Parameters
+    ----------
+    alarms
+        The indices at which the detector fired.
+    drifts
+        The ground truth drifts, in chronological order.
+    delta_max
+        How late a detection may be and still count.
+    delta_pre
+        How early a detection may be and still count.
+
     Examples
     --------
 
@@ -297,6 +387,21 @@ def false_alarm_rate(
     unit: int = 1,
 ) -> float:
     """How many false alarms were raised per `unit` samples.
+
+    Parameters
+    ----------
+    alarms
+        The indices at which the detector fired.
+    drifts
+        The ground truth drifts, in chronological order.
+    n_samples
+        The length of the stream the alarms came from.
+    delta_max
+        How late a detection may be and still count.
+    delta_pre
+        How early a detection may be and still count.
+    unit
+        The number of samples the rate is quoted per.
 
     Examples
     --------
@@ -326,6 +431,17 @@ def mean_time_between_false_alarms(
     """The average gap between consecutive false alarms.
 
     Undefined, and therefore `nan`, below two false alarms, because there is no gap to measure.
+
+    Parameters
+    ----------
+    alarms
+        The indices at which the detector fired.
+    drifts
+        The ground truth drifts, in chronological order.
+    delta_max
+        How late a detection may be and still count.
+    delta_pre
+        How early a detection may be and still count.
 
     Examples
     --------
@@ -360,6 +476,17 @@ def mean_time_ratio(
     It is the mean time between false alarms, divided by the detection delay, discounted by the
     share of drifts that were missed. Higher is better. It inherits the domain of its parts, so it
     is `nan` below two false alarms or when nothing was caught.
+
+    Parameters
+    ----------
+    alarms
+        The indices at which the detector fired.
+    drifts
+        The ground truth drifts, in chronological order.
+    delta_max
+        How late a detection may be and still count.
+    delta_pre
+        How early a detection may be and still count.
 
     Examples
     --------
@@ -397,6 +524,21 @@ def report(
     unit: int = 1,
 ) -> dict:
     """Every metric in this module, for one detector on one stream.
+
+    Parameters
+    ----------
+    alarms
+        The indices at which the detector fired.
+    drifts
+        The ground truth drifts, in chronological order.
+    n_samples
+        The length of the stream the alarms came from.
+    delta_max
+        How late a detection may be and still count.
+    delta_pre
+        How early a detection may be and still count.
+    unit
+        The number of samples the rate is quoted per.
 
     Examples
     --------
