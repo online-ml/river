@@ -1132,6 +1132,9 @@
         <loc>https://riverml.xyz/dev/api/preprocessing/FeatureHasher/</loc>
       </url>
       <url>
+        <loc>https://riverml.xyz/dev/api/preprocessing/GapEncoder/</loc>
+      </url>
+      <url>
         <loc>https://riverml.xyz/dev/api/preprocessing/GaussianRandomProjector/</loc>
       </url>
       <url>
