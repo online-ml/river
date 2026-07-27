@@ -74,6 +74,49 @@ def text_stream(n: int = 500) -> list[str]:
 
 
 @functools.cache
+def fuzzy_category_stream(n: int = 300) -> list[str]:
+    """Messy free-text categories with reproducible typos, suffixes, and casing.
+
+    A handful of base city names are corrupted with a single deterministic edit
+    (drop / swap / double a character), given an occasional suffix, and
+    sometimes upper-cased. This mirrors the hand-typed-category use case
+    ``GapEncoder`` targets: many fuzzy variants that should collapse onto a few
+    latent topics. No RNG, no clock, no network.
+    """
+    bases = [
+        "london",
+        "berlin",
+        "madrid",
+        "paris",
+        "rome",
+        "vienna",
+        "prague",
+        "warsaw",
+        "lisbon",
+        "dublin",
+    ]
+    suffixes = ["", ", uk", ", eu", " city", "!!", " metro"]
+    out: list[str] = []
+    for i in range(n):
+        s = bases[i % len(bases)]
+        edit = (i * 7) % 4
+        if edit == 0 and len(s) > 3:  # drop a character
+            j = (i * 3) % len(s)
+            s = s[:j] + s[j + 1 :]
+        elif edit == 1 and len(s) > 3:  # swap two adjacent characters
+            j = (i * 3) % (len(s) - 1)
+            s = s[:j] + s[j + 1] + s[j] + s[j + 2 :]
+        elif edit == 2:  # double a character
+            j = (i * 3) % len(s)
+            s = s[:j] + s[j] + s[j:]
+        s = s + suffixes[(i * 5) % len(suffixes)]
+        if i % 3 == 0:
+            s = s.upper()
+        out.append(s)
+    return out
+
+
+@functools.cache
 def user_item_stream(n: int = N_LEARN) -> list[tuple[dict, float]]:
     """Deterministic pseudo-ratings: 50 users x 200 items, ratings in [1, 5]."""
     return [
