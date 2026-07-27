@@ -8275,6 +8275,7 @@ nav:
     - examples/building-a-simple-nowcasting-model.md
     - examples/content-personalization.md
     - examples/debugging-a-pipeline.md
+    - examples/encoding-dirty-categories.md
     - examples/imbalanced-learning.md
     - Matrix factorization for recommender systems:
       - examples/matrix-factorization-for-recommender-systems/part-1.md

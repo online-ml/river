@@ -10,6 +10,7 @@ the latter extracts new information from the data
 from __future__ import annotations
 
 from .feature_hasher import FeatureHasher
+from .gap_encoder import GapEncoder
 from .impute import PreviousImputer, StatImputer
 from .lda import LDA
 from .one_hot import OneHotEncoder
@@ -31,6 +32,7 @@ __all__ = [
     "AdaptiveStandardScaler",
     "Binarizer",
     "FeatureHasher",
+    "GapEncoder",
     "GaussianRandomProjector",
     "LDA",
     "MaxAbsScaler",
