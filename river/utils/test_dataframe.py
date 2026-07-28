@@ -29,13 +29,15 @@ def test_to_numpy_casts_pandas_extension_floats_with_nulls(dtype: str) -> None:
     """Guards the `pandas[pyarrow]` case above against pandas' dtype inference changing."""
 
     # NOTE:`frame_backend` reaches these dtypes through `convert_dtypes`, so what it actually produces
-    # depends on the data. Here the dtype is pinned instead, keeping the coverage explicit.
-    
-    pd = pytest.importorskip("pandas")
+    # depends on the data. Here the dtype is pinned instead, keeping the coverage explicit.
+
+    pytest.importorskip("pandas")
 
     import pandas as pd
 
-    frame = pd.DataFrame({"a": [1.5, None, 3.25], "b": [4.5, 5.25, None]}).astype({"a": dtype, "b": dtype})
+    frame = pd.DataFrame({"a": [1.5, None, 3.25], "b": [4.5, 5.25, None]}).astype(
+        {"a": dtype, "b": dtype}
+    )
 
     values = utils.dataframe.to_numpy(utils.dataframe.into_frame(frame))
 
@@ -62,7 +64,9 @@ def test_to_native_frame_from_array(frame_backend: FrameBackend) -> None:
     frame = utils.dataframe.into_frame(frame_backend.frame(DATA))
     values = np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]])
 
-    out = utils.dataframe.into_frame(utils.dataframe.to_native_frame(values, like=frame, columns=["u", "v"]))
+    out = utils.dataframe.into_frame(
+        utils.dataframe.to_native_frame(values, like=frame, columns=["u", "v"])
+    )
 
     assert out.implementation == frame.implementation
     assert [str(col) for col in out.columns] == ["u", "v"]
