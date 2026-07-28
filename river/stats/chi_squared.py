@@ -108,9 +108,9 @@ class ChiSquared(stats.base.Bivariate):
             return 1.0
         return float(scipy.stats.chi2.sf(self.get(), df))
 
-    def get(self) -> float:
+    def get(self) -> float | None:
         if self.n == 0:
-            return 0.0
+            return None
 
         chi2 = 0.0
         for x in self.counts:

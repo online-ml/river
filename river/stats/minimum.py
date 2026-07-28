@@ -17,12 +17,17 @@ class Min(stats.base.Univariate):
 
     def __init__(self):
         self.min = math.inf
+        self._is_updated = False
 
     def update(self, x):
         if x < self.min:
             self.min = x
+        if not self._is_updated:
+            self._is_updated = True
 
     def get(self):
+        if not self._is_updated:
+            return None
         return self.min
 
 

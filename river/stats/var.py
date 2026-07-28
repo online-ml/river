@@ -100,7 +100,7 @@ class Var(stats.base.Univariate):
     def get(self):
         if self.n > self.ddof:
             return self._S / (self.n - self.ddof)
-        return 0.0
+        return None
 
     @classmethod
     def _from_state(cls, n, m, sig, *, ddof=1):

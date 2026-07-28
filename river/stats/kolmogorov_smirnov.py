@@ -276,7 +276,7 @@ class KolmogorovSmirnov(stats.base.Bivariate):
     def get(self):
         assert self.statistic in ["ks", "kuiper"]
         if self.n_samples == 0:
-            return 0
+            return None
 
         if self.statistic == "ks":
             return max(self.treap.max_value, -self.treap.min_value) / self.n_samples

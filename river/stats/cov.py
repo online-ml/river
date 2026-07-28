@@ -99,6 +99,8 @@ class Cov(stats.base.Bivariate):
         self.cov += (dx * (Y - self.mean_y.get()) - self.cov).sum() / max(self.n - self.ddof, 1)
 
     def get(self):
+        if self.n <= self.ddof:
+            return None
         return self.cov
 
     @classmethod

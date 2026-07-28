@@ -46,12 +46,17 @@ class Sum(stats.base.Univariate):
 
     def __init__(self):
         self.sum = 0.0
+        self._is_updated = False
 
     def update(self, x):
         self.sum += x
+        if not self._is_updated:
+            self._is_updated = True
 
     def revert(self, x):
         self.sum -= x
 
     def get(self):
+        if not self._is_updated:
+            return None
         return self.sum

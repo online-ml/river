@@ -20,4 +20,6 @@ class Count(stats.base.Univariate):
         self.n += 1
 
     def get(self):
+        if self.n == 0:
+            return None
         return self.n

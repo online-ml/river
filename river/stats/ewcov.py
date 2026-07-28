@@ -62,4 +62,9 @@ class EWCov(stats.base.Bivariate):
         self._mean_xy.update(x * y)
 
     def get(self):
-        return self._mean_xy.get() - self._mean_x.get() * self._mean_y.get()
+        mx = self._mean_x.get()
+        my = self._mean_y.get()
+        mxy = self._mean_xy.get()
+        if mx is None or my is None or mxy is None:
+            return None
+        return mxy - mx * my

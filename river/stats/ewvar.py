@@ -50,6 +50,7 @@ class EWVar(stats.base.Univariate):
 
         self.fading_factor = fading_factor
         self._ewvar = _rust_stats.RsEWVar(fading_factor)
+        self._is_updated = False
 
     @property
     def name(self):
@@ -57,6 +58,10 @@ class EWVar(stats.base.Univariate):
 
     def update(self, x):
         self._ewvar.update(x)
+        if not self._is_updated:
+            self._is_updated = True
 
     def get(self):
+        if not self._is_updated:
+            return None
         return self._ewvar.get()

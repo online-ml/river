@@ -46,6 +46,7 @@ class EWMean(stats.base.Univariate):
             raise ValueError("q is not comprised between 0 and 1")
         self.fading_factor = fading_factor
         self._ewmean = _rust_stats.RsEWMean(fading_factor)
+        self._is_updated = False
 
     @property
     def name(self):
@@ -53,6 +54,10 @@ class EWMean(stats.base.Univariate):
 
     def update(self, x):
         self._ewmean.update(x)
+        if not self._is_updated:
+            self._is_updated = True
 
     def get(self):
+        if not self._is_updated:
+            return None
         return self._ewmean.get()

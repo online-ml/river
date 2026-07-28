@@ -61,6 +61,7 @@ class Skew(stats.base.Univariate):
         super().__init__()
         self.bias = bias
         self._skew = _rust_stats.RsSkew(bias)
+        self._is_updated = False
 
     @property
     def name(self):
@@ -68,6 +69,10 @@ class Skew(stats.base.Univariate):
 
     def update(self, x):
         self._skew.update(x)
+        if not self._is_updated:
+            self._is_updated = True
 
     def get(self):
+        if not self._is_updated:
+            return None
         return self._skew.get()

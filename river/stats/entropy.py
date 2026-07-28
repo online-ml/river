@@ -92,4 +92,6 @@ class Entropy(stats.base.Univariate):
         self.counter.update([x])
 
     def get(self):
+        if self.n == 0:
+            return None
         return self.entropy

@@ -86,9 +86,14 @@ class Kurtosis(stats.base.Univariate):
         super().__init__()
         self.bias = bias
         self._kurtosis = _rust_stats.RsKurtosis(bias)
+        self._is_updated = False
 
     def update(self, x):
         self._kurtosis.update(x)
+        if not self._is_updated:
+            self._is_updated = True
 
     def get(self):
+        if not self._is_updated:
+            return None
         return self._kurtosis.get()

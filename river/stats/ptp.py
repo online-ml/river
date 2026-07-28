@@ -41,7 +41,7 @@ class PeakToPeak(stats.base.Univariate):
 
     def get(self):
         if not self._is_updated:
-            return 0.0
+            return None
         return self._ptp.get()
 
 

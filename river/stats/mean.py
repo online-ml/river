@@ -82,6 +82,8 @@ class Mean(stats.base.Univariate):
             self._mean -= (w / self.n) * (x - self._mean)
 
     def get(self):
+        if self.n == 0:
+            return None
         return self._mean
 
     @classmethod

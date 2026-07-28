@@ -34,12 +34,17 @@ class Max(stats.base.Univariate):
 
     def __init__(self):
         self.max = -math.inf
+        self._is_updated = False
 
     def update(self, x):
         if x > self.max:
             self.max = x
+        if not self._is_updated:
+            self._is_updated = True
 
     def get(self):
+        if not self._is_updated:
+            return None
         return self.max
 
 
@@ -116,12 +121,17 @@ class AbsMax(stats.base.Univariate):
 
     def __init__(self):
         self.abs_max = 0.0
+        self._is_updated = False
 
     def update(self, x):
         if abs(x) > self.abs_max:
             self.abs_max = abs(x)
+        if not self._is_updated:
+            self._is_updated = True
 
     def get(self):
+        if not self._is_updated:
+            return None
         return self.abs_max
 
 
