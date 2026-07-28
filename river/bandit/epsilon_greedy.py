@@ -86,9 +86,9 @@ class EpsilonGreedy(bandit.base.Policy):
 
     def _pull(self, arm_ids):
         return (
-            self._rng.choice(arm_ids)  # explore
+            self._rng.choice(arm_ids)
             if self._rng.uniform(0, 1) < self.current_epsilon
-            else max(arm_ids, key=lambda arm: self._rewards[arm].get())  # exploit
+            else max(arm_ids, key=lambda arm: self._rewards[arm].get() or float("-inf"))
         )
 
     @classmethod

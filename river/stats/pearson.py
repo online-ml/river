@@ -92,6 +92,7 @@ class PearsonCorr(stats.base.Bivariate):
     def get(self):
         var_x = self.var_x.get()
         var_y = self.var_y.get()
-        if var_x is None or var_y is None or not (var_x and var_y):
+        cov_xy = self.cov_xy.get()
+        if var_x is None or var_y is None or cov_xy is None or not (var_x and var_y):
             return None
-        return self.cov_xy.get() / (var_x * var_y) ** 0.5
+        return cov_xy / (var_x * var_y) ** 0.5

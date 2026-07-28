@@ -115,10 +115,9 @@ class Policy(base.Base, abc.ABC):
 
     @property
     def ranking(self) -> list[ArmID]:
-        """Return the list of arms in descending order of performance."""
         return sorted(
             self._rewards,
-            key=lambda arm_id: self._rewards[arm_id],
+            key=lambda arm_id: self._rewards[arm_id].get() or float("-inf"),
             reverse=True,
         )
 

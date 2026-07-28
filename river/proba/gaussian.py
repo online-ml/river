@@ -62,11 +62,14 @@ class Gaussian(base.ContinuousDistribution):
 
     @property
     def mu(self):
-        return self._var.mean.get()
+        return self._var.mean._mean
 
     @property
     def sigma(self):
-        return self._var.get() ** 0.5
+        var = self._var.get()
+        if var is None:
+            return 0.0
+        return var ** 0.5
 
     def __repr__(self):
         return f"𝒩(μ={self.mu:.3f}, σ={self.sigma:.3f})"

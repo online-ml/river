@@ -301,9 +301,14 @@ class StandardScaler(base.MiniBatchTransformer):
                 for i, xi in x.items():
                     m = means[i].get()
                     v = vars_[i].get()
-                    result[i] = (xi - m) / v**0.5 if v else 0.0
+                    if m is None:
+                        result[i] = 0.0
+                    elif v:
+                        result[i] = (xi - m) / v**0.5
+                    else:
+                        result[i] = 0.0
                 return result
-            return {i: xi - means[i].get() for i, xi in x.items()}
+            return {i: xi - (means[i].get() or 0.0) for i, xi in x.items()}
         if self.with_std:
             vars_ = self.vars
             result = {}
@@ -393,7 +398,7 @@ class StandardScaler(base.MiniBatchTransformer):
         if self.window_size is None:
             means = np.array([self.means[c] for c in columns], dtype=dtype)
         else:
-            means = np.array([self.means[c].get() for c in columns], dtype=dtype)
+            means = np.array([self.means[c].get() or 0.0 for c in columns], dtype=dtype)
 
         Xt = utils.dataframe.to_numpy(Xnw, dtype=dtype) - means
 
@@ -401,7 +406,7 @@ class StandardScaler(base.MiniBatchTransformer):
             if self.window_size is None:
                 stds = np.array([self.vars[c] ** 0.5 for c in columns], dtype=dtype)
             else:
-                stds = np.array([self.vars[c].get() ** 0.5 for c in columns], dtype=dtype)
+                stds = np.array([(self.vars[c].get() or 0.0) ** 0.5 for c in columns], dtype=dtype)
             np.divide(Xt, stds, where=stds > 0, out=Xt)
 
         native = utils.dataframe.to_native_frame(Xt, columns=columns, like=Xnw)
@@ -538,8 +543,11 @@ class MinMaxScaler(base.Transformer):
         for i, xi in x.items():
             lo = min_[i].get()
             hi = max_[i].get()
-            d = hi - lo
-            result[i] = (xi - lo) / d if d else 0.0
+            if lo is None or hi is None:
+                result[i] = 0.0
+            else:
+                d = hi - lo
+                result[i] = (xi - lo) / d if d else 0.0
         return result
 
 
@@ -732,7 +740,8 @@ class RobustScaler(base.Transformer):
                 if median is not None:
                     x_tf[i] -= median
             if self.with_scaling:
-                x_tf[i] = safe_div(x_tf[i], self.iqr[i].get())
+                iqr = self.iqr[i].get()
+                x_tf[i] = safe_div(x_tf[i], iqr) if iqr is not None else x_tf[i]
 
         return x_tf
 
@@ -843,6 +852,6 @@ class AdaptiveStandardScaler(base.Transformer):
 
     def transform_one(self, x):
         return {
-            i: safe_div(x[i] - m, s2**0.5 if s2 > 0 else 0)
-            for i, m, s2 in ((i, self.means[i].get(), self.vars[i].get()) for i in x)
+            i: safe_div(x[i] - m, s2**0.5 if s2 and s2 > 0 else 0)
+            for i, m, s2 in ((i, self.means[i].get() or 0.0, self.vars[i].get() or 0.0) for i in x)
         }

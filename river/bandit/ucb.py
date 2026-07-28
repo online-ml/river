@@ -83,17 +83,21 @@ class UCB(bandit.base.Policy):
         self._rng = random.Random(seed)
 
     def _pull(self, arm_ids):
-        upper_bounds = {
-            arm_id: (
-                reward.mode
-                if isinstance(reward, proba.base.Distribution)
-                else reward.get()
-                + self.delta * math.sqrt(2 * math.log(self._n) / self._counts[arm_id])
-            )
-            if (reward := self._rewards.get(arm_id)) is not None
-            else math.inf
-            for arm_id in arm_ids
-        }
+        upper_bounds = {}
+        for arm_id in arm_ids:
+            reward = self._rewards.get(arm_id)
+            if reward is None:
+                upper_bounds[arm_id] = math.inf
+            elif isinstance(reward, proba.base.Distribution):
+                upper_bounds[arm_id] = reward.mode
+            else:
+                r = reward.get()
+                if r is None:
+                    upper_bounds[arm_id] = math.inf
+                else:
+                    upper_bounds[arm_id] = (
+                        r + self.delta * math.sqrt(2 * math.log(self._n) / self._counts[arm_id])
+                    )
         biggest_upper_bound = max(upper_bounds.values())
         candidates = [
             arm_id

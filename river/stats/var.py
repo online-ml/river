@@ -92,15 +92,17 @@ class Var(stats.base.Univariate):
         self._S -= w * (x - mean_old) * (x - mean_new)
 
     def update_many(self, X: np.ndarray):
-        mean_old = self.mean.get()
+        mean_old = self.mean._mean
         self.mean.update_many(X)
-        mean_new = self.mean.get()
+        mean_new = self.mean._mean
         self._S += np.sum(np.multiply(np.subtract(X, mean_old), np.subtract(X, mean_new))).item()
 
     def get(self):
+        if self.n == 0:
+            return None
         if self.n > self.ddof:
             return self._S / (self.n - self.ddof)
-        return None
+        return 0.0
 
     @classmethod
     def _from_state(cls, n, m, sig, *, ddof=1):
@@ -115,7 +117,7 @@ class Var(stats.base.Univariate):
         S = (
             self._S
             + other._S
-            + (self.mean.get() - other.mean.get()) ** 2 * self.n * other.n / (self.n + other.n)
+            + (self.mean._mean - other.mean._mean) ** 2 * self.n * other.n / (self.n + other.n)
         )
         self.mean += other.mean
         self._S = S
@@ -132,7 +134,7 @@ class Var(stats.base.Univariate):
         S = (
             self._S
             - other._S
-            - (self.mean.get() - other.mean.get()) ** 2
+            - (self.mean._mean - other.mean._mean) ** 2
             * self.n
             * other.mean.n
             / (self.n + other.mean.n)

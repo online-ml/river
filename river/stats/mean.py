@@ -97,7 +97,7 @@ class Mean(stats.base.Univariate):
     def __iadd__(self, other):
         old_n = self.n
         self.n += other.n
-        self._mean = (old_n * self._mean + other.n * other.get()) / self.n
+        self._mean = (old_n * self._mean + other.n * other._mean) / self.n
         return self
 
     def __add__(self, other):
@@ -154,8 +154,7 @@ class BayesianMean(stats.base.Univariate):
         self._mean.revert(x)
 
     def get(self):
-        # Uses the notation from https://www.wikiwand.com/en/Bayes_estimator#/Practical_example_of_Bayes_estimators
-        R = self._mean.get()
+        R = self._mean._mean
         v = self._mean.n
         m = self.prior_weight
         C = self.prior
