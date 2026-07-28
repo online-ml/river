@@ -21,6 +21,7 @@ if typing.TYPE_CHECKING:
     from collections.abc import Iterable, Mapping, Sequence
     from typing import Any
 
+    import pandas as pd
     from narwhals.stable.v2.typing import (
         IntoDataFrame,
         IntoDataFrameT,
@@ -34,6 +35,7 @@ __all__ = [
     "into_frame",
     "into_series",
     "sparse_to_native_frame",
+    "to_native_empty_frame",
     "to_native_frame",
     "to_native_series",
     "to_numpy",
@@ -43,13 +45,30 @@ __all__ = [
 def to_numpy(frame: nw.DataFrame[Any], dtype: DTypeLike = np.float64) -> NDArray[Any]:
     """Extract a numpy matrix from a narwhals dataframe for the numpy compute core.
 
-    A pandas frame backed by pyarrow (`ArrowDtype`) columns returns an ``object`` array from
-    ``.to_numpy()``, which breaks downstream ufuncs (e.g. ``np.exp`` raises *"loop of ufunc does
-    not support argument 0 of type float"*). Coercing to a floating ``dtype`` (``float64`` by
-    default) at the boundary keeps the core backend-agnostic; ``np.asarray`` is a no-op when the
-    frame already yields that dtype.
+    Coercing to a floating ``dtype`` (``float64`` by default) at the boundary keeps the core
+    backend-agnostic, and missing values come out as ``NaN`` whatever the backend represents them
+    with.
+
+    Pandas-likes are asked to cast themselves rather than being cast after the fact. A pandas
+    frame with two or more extension columns (nullable or pyarrow-backed) has no common numpy
+    dtype to fall back on, so ``.to_numpy()`` returns an ``object`` array holding ``pd.NA`` for
+    the missing entries, and ``np.asarray(..., dtype=float64)`` then fails on those: ``float()``
+    does not accept ``NAType``. Passing ``dtype`` and ``na_value`` to pandas substitutes ``NaN``
+    during the cast, so the sentinel is never materialised. Every other backend hands out an
+    already-typed array, where ``np.asarray`` is a no-op.
     """
-    return np.asarray(frame.to_numpy(), dtype=dtype)
+    if frame.implementation.is_pandas_like():
+        native: pd.DataFrame = frame.to_native()
+        # `na_value` is only meaningful for a dtype that has a missing-value sentinel;
+        # asking for `NaN` in an integer array would raise.
+        arr = (
+            native.to_numpy(dtype=dtype, na_value=np.nan)
+            if np.issubdtype(np.dtype(dtype), np.floating)
+            else native.to_numpy(dtype=dtype)
+        )
+    else:
+        arr = np.asarray(frame.to_numpy(), dtype=dtype)
+    return arr  # type: ignore[no-any-return]
 
 
 def into_frame(X: IntoDataFrameT) -> nw.DataFrame[IntoDataFrameT]:
