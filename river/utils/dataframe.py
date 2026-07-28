@@ -35,7 +35,6 @@ __all__ = [
     "into_frame",
     "into_series",
     "sparse_to_native_frame",
-    "to_native_empty_frame",
     "to_native_frame",
     "to_native_series",
     "to_numpy",
