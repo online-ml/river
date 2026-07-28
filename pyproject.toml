@@ -194,11 +194,9 @@ indent-style = "space"
 [tool.mypy]
 files = "river"
 strict = true
+warn_unused_ignores = true
 
 [[tool.mypy.overrides]]
-# Both the bare top-level name and the `.*` submodule glob are listed: under the uv dev env
-# (where prek now runs mypy) these libraries are installed without a py.typed marker, so a bare
-# `import pandas` reports `import-untyped` unless the top-level name is ignored too.
 module = [
     "mmh3",
     "mmh3.*",
@@ -234,24 +232,17 @@ module = [
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
-# `numpydoc` (used by docs/parse for docstring scraping) hard-depends on Sphinx, whose source
-# uses 3.12 `type` syntax that mypy rejects under `--python-version=3.11`. We build docs with
-# mkdocs/zensical, never Sphinx, and never type-check it, so don't follow imports into it.
 module = ["sphinx.*", "numpydoc.*"]
 follow_imports = "skip"
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
-# Disable strict mode for all non fully-typed modules
 module = [
     "river.metrics.*",
-    "river.stats.*",
-    "river.optim.*",
     "river.datasets.*",
     "river.tree.*",
     "river.preprocessing.*",
     "river.stream.*",
-    "river.linear_model.*",
     "river.evaluate.*",
     "river.drift.*",
     "river.compose.*",
@@ -279,13 +270,13 @@ module = [
     "river.feature_selection.*",
     "river.active.*",
     "river.test_estimators",
+    "river.linear_model.*",
+    "river.optim.*",
 ]
-# The strict option is global, the checks must be disabled one by one
-warn_unused_ignores = false
 check_untyped_defs = false
-allow_subclassing_any = true
-allow_any_generics = true
-allow_untyped_calls = true
-allow_incomplete_defs = true
 allow_untyped_defs = true
+allow_incomplete_defs = true
+allow_untyped_calls = true
+allow_any_generics = true
+allow_subclassing_any = true
 warn_return_any = false
