@@ -22,6 +22,12 @@
 - Gave the `CluStream`, `DenStream`, and `DBSTREAM` micro-cluster objects `__slots__`. These are created in large numbers on long streams, so dropping their per-instance `__dict__` trims memory (~40 bytes per micro-cluster). Behavior is unchanged.
 - `CluStreamMicroCluster` no longer inherits from `base.Base`; it is an internal data structure, not an estimator, so the estimator machinery (cloning, parameter introspection, `repr`) never applied to it. This matches the `DenStream`/`DBSTREAM` micro-clusters and is what lets it use `__slots__`.
 
+## compat
+
+- The mini-batch methods of the scikit-learn wrappers (`compat.SKL2RiverRegressor`, `compat.SKL2RiverClassifier`) now accept and return any [narwhals](https://github.com/narwhals-dev/narwhals)-supported eager backend (pandas, polars, pyarrow, ...) instead of being pandas-only, preserving the input backend and pandas index on output. A mini-batch missing a learnt feature now raises a `ValueError` naming it.
+- `compat.convert_sklearn_to_river` is now overloaded on `classes`, so a type checker infers `SKL2RiverRegressor` when it is omitted and `SKL2RiverClassifier` when it is given. Behavior change: passing `classes` along with a regressor now raises a `ValueError` instead of being silently ignored.
+- `compat.SKL2RiverClassifier.predict_proba_one` now returns plain `float` probabilities instead of numpy scalars.
+
 ## compose
 
 - The mini-batch methods of `compose.Pipeline`, `compose.TransformerUnion`, `compose.Select`, and `compose.TransformerProduct` now accept and return any [narwhals](https://github.com/narwhals-dev/narwhals)-supported eager backend (pandas, polars, pyarrow, ...) instead of being pandas-only, so a whole pipeline can be mini-batched on a non-pandas backend. The input backend is preserved on output, including the pandas index, and `pandas` is no longer required unless the input is a pandas frame. `TransformerProduct` keeps the pandas `Sparse[uint8]` fast path when crossing one-hot encoded features.
