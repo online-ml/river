@@ -312,7 +312,7 @@ class BayesianLinearRegression(base.MiniBatchRegressor):
             y_pred_var = 1 / self.beta
         y_pred_var += diag * unknown_norm_sq
 
-        return proba.Gaussian._from_state(n=1, m=y_pred_mean, sig=y_pred_var, ddof=0)
+        return proba.Gaussian._from_state(n=1, m=y_pred_mean, var=y_pred_var, ddof=0)
 
     def predict_many(self, X: IntoDataFrame) -> IntoSeries:
         X = utils.dataframe.into_frame(X)

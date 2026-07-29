@@ -51,9 +51,9 @@ class Gaussian(base.ContinuousDistribution):
         self._var = stats.Var(ddof=1)
 
     @classmethod
-    def _from_state(cls, n, m, sig, ddof, seed=None):
+    def _from_state(cls, n, m, var, ddof, seed=None):
         new = cls(seed=seed)
-        new._var = stats.Var._from_state(n, m, sig, ddof=ddof)
+        new._var = stats.Var._from_state(n, m, var, ddof=ddof)
         return new
 
     @property
