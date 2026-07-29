@@ -10,23 +10,23 @@ __all__ = ["Bivariate", "Link", "RollingUnivariate", "Statistic", "Univariate"]
 if TYPE_CHECKING:
     from typing_extensions import TypeVar
 
-    R = TypeVar("R", default=float)
-    S = TypeVar("S", default=float)
+    _OutT = TypeVar("_OutT", default=float)
+    _ChainedOutT = TypeVar("_ChainedOutT", default=float)
 else:
     from typing import TypeVar
 
-    R = TypeVar("R")
-    S = TypeVar("S")
+    _OutT = TypeVar("_OutT")
+    _ChainedOutT = TypeVar("_ChainedOutT")
 
 
-class Statistic(abc.ABC, base.Base, Generic[R]):
+class Statistic(abc.ABC, base.Base, Generic[_OutT]):
     """A statistic."""
 
     # Define the format specification used for string representation.
     _fmt = ",.6f"  # Use commas to separate big numbers and show 6 decimals
 
     @abc.abstractmethod
-    def get(self) -> R | None:
+    def get(self) -> _OutT | None:
         """Return the current value of the statistic."""
 
     def __repr__(self) -> str:
@@ -45,7 +45,7 @@ class Statistic(abc.ABC, base.Base, Generic[R]):
         return cast(float, self.get()) > cast(float, other.get())
 
 
-class Univariate(Statistic[R]):
+class Univariate(Statistic[_OutT]):
     """A univariate statistic measures a property of a variable."""
 
     @abc.abstractmethod
@@ -56,11 +56,11 @@ class Univariate(Statistic[R]):
     def name(self) -> str:
         return self.__class__.__name__.lower()
 
-    def __or__(self, other: Univariate[S]) -> Univariate[S]:
+    def __or__(self, other: Univariate[_ChainedOutT]) -> Univariate[_ChainedOutT]:
         return Link(left=self, right=other)
 
 
-class Link(Univariate[S], Generic[R, S]):
+class Link(Univariate[_ChainedOutT], Generic[_OutT, _ChainedOutT]):
     """A link joins two univariate statistics as a sequence.
 
     This can be used to pipe the output of one statistic to the input of another. This can be used,
@@ -121,7 +121,7 @@ class Link(Univariate[S], Generic[R, S]):
 
     """
 
-    def __init__(self, left: Univariate[R], right: Univariate[S]) -> None:
+    def __init__(self, left: Univariate[_OutT], right: Univariate[_ChainedOutT]) -> None:
         self.left = left
         self.right = right
 
@@ -131,7 +131,7 @@ class Link(Univariate[S], Generic[R, S]):
         if y is not None:
             self.right.update(y)
 
-    def get(self) -> S | None:
+    def get(self) -> _ChainedOutT | None:
         return self.right.get()
 
     @property
@@ -142,7 +142,7 @@ class Link(Univariate[S], Generic[R, S]):
         return repr(self.right)
 
 
-class RollingUnivariate(Univariate[R]):
+class RollingUnivariate(Univariate[_OutT]):
     """A rolling univariate statistic measures a property of a variable over a window."""
 
     @property
@@ -155,7 +155,7 @@ class RollingUnivariate(Univariate[R]):
         return f"{super().name}_{self.window_size}"
 
 
-class Bivariate(Statistic[R]):
+class Bivariate(Statistic[_OutT]):
     """A bivariate statistic measures a relationship between two variables."""
 
     @abc.abstractmethod
