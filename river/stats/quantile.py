@@ -66,11 +66,11 @@ class Quantile(stats.base.Univariate):
         if not self._is_updated:
             self._is_updated = True
 
-    def get(self) -> float:
+    def get(self) -> float | None:
         # HACK: Avoid this following error in `QuantileFilter`
         # panicked at 'index out of bounds: the len is 0 but the index is 0'
         if not self._is_updated:
-            raise stats.NotEnoughSamples
+            return None
         return self._quantile.get()
 
     def __repr__(self) -> str:
@@ -144,9 +144,9 @@ class RollingQuantile(stats.base.RollingUnivariate):
         if not self._is_updated:
             self._is_updated = True
 
-    def get(self) -> float:
+    def get(self) -> float | None:
         if not self._is_updated:
-            raise stats.NotEnoughSamples
+            return None
         return self._rolling_quantile.get()
 
     @property

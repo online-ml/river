@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import cast
+
 from . import quantile
 
 
@@ -49,4 +51,5 @@ class MAD(quantile.Quantile):
 
     def update(self, x: float) -> None:
         self.median.update(x)
-        super().update(abs(x - self.median.get()))
+        # TODO: drop the cast once get() raises stats.NotEnoughSamples instead of returning None
+        super().update(abs(x - cast(float, self.median.get())))

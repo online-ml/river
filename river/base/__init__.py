@@ -25,7 +25,6 @@ from .drift_detector import (
     DriftDetector,
 )
 from .ensemble import Ensemble, WrapperEnsemble
-from .errors import RiverError
 from .estimator import Estimator
 from .multi_output import MultiLabelClassifier, MultiTargetRegressor
 from .regressor import MiniBatchRegressor, Regressor
@@ -56,7 +55,6 @@ __all__ = [
     "MultiLabelClassifier",
     "MultiTargetRegressor",
     "Regressor",
-    "RiverError",
     "SupervisedTransformer",
     "tags",
     "Transformer",

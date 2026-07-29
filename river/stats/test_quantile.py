@@ -49,4 +49,8 @@ def test_ge() -> None:
         x = random.random()
         low.update(x)
         high.update(x)
-        assert high.get() >= low.get()
+        # TODO: drop the None assertions once get() raises stats.NotEnoughSamples
+        low_value, high_value = low.get(), high.get()
+        assert low_value is not None
+        assert high_value is not None
+        assert high_value >= low_value

@@ -1,11 +1,9 @@
 from __future__ import annotations
 
 import abc
-from typing import TYPE_CHECKING, Any, Generic
+from typing import TYPE_CHECKING, Any, Generic, cast
 
 from river import base
-
-from . import errors
 
 __all__ = ["Bivariate", "Link", "RollingUnivariate", "Statistic", "Univariate"]
 
@@ -28,18 +26,12 @@ class Statistic(abc.ABC, base.Base, Generic[R]):
     _fmt = ",.6f"  # Use commas to separate big numbers and show 6 decimals
 
     @abc.abstractmethod
-    def get(self) -> R:
+    def get(self) -> R | None:
         """Return the current value of the statistic."""
-
-    def get_or_none(self) -> R | None:
-        try:
-            return self.get()
-        except errors.NotEnoughSamples:
-            return None
 
     def __repr__(self) -> str:
         try:
-            value = self.get_or_none()
+            value = self.get()
         except NotImplementedError:
             value = None
         fmt_value = None if value is None else f"{value:{self._fmt}}".rstrip("0")
@@ -48,8 +40,9 @@ class Statistic(abc.ABC, base.Base, Generic[R]):
     def __str__(self) -> str:
         return repr(self)
 
+    # TODO: drop the casts once get() raises stats.NotEnoughSamples instead of returning None
     def __gt__(self: Statistic[float], other: Statistic[float]) -> bool:
-        return self.get() > other.get()
+        return cast(float, self.get()) > cast(float, other.get())
 
 
 class Univariate(Statistic[R]):
@@ -81,8 +74,8 @@ class Link(Univariate[S], Generic[R, S]):
     ----------
     left
     right
-        The output from `left`'s `get` method is passed to `right`'s `update` method, unless
-        `left`'s `get` method raises `stats.NotEnoughSamples`.
+        The output from `left`'s `get` method is passed to `right`'s `update` method if `left`'s
+        `get` method doesn't produce `None.`
 
     Examples
     --------
@@ -101,7 +94,7 @@ class Link(Univariate[S], Generic[R, S]):
     >>> stat.update(1)
 
     The output from `get` will still be 0. The reason is that `stats.Shift` has not enough
-    values, and therefore raises `stats.NotEnoughSamples`. The `stats.Mean`
+    values, and therefore outputs its default value, which is `None`. The `stats.Mean`
     instance is therefore not updated.
 
     >>> stat.get()
@@ -134,13 +127,11 @@ class Link(Univariate[S], Generic[R, S]):
 
     def update(self, x: Any) -> None:
         self.left.update(x)
-        try:
-            y = self.left.get()
-        except errors.NotEnoughSamples:
-            return
-        self.right.update(y)
+        y = self.left.get()
+        if y is not None:
+            self.right.update(y)
 
-    def get(self) -> S:
+    def get(self) -> S | None:
         return self.right.get()
 
     @property

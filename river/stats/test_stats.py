@@ -24,9 +24,6 @@ def load_stats() -> typing.Iterator[stats.base.Statistic[typing.Any]]:
             if inspect.isabstract(obj):
                 continue
 
-            if not issubclass(obj, stats.base.Statistic):
-                continue
-
             if issubclass(obj, stats.Link):
                 yield obj(stats.Shift(1), stats.Mean())
                 continue

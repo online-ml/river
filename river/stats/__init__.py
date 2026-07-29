@@ -9,7 +9,6 @@ from .chi_squared import ChiSquared
 from .count import Count
 from .cov import Cov
 from .entropy import Entropy
-from .errors import NotEnoughSamples
 from .ewcov import EWCov
 from .ewmean import EWMean
 from .ewvar import EWVar
@@ -51,7 +50,6 @@ __all__ = [
     "Mean",
     "Min",
     "Mode",
-    "NotEnoughSamples",
     "PeakToPeak",
     "PearsonCorr",
     "Quantile",

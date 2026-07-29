@@ -197,7 +197,7 @@ class Agg(base.Transformer):
             self._groups[key].update(x[self.on])
 
     def transform_one(self, x):
-        return {self._feature_name: self._groups[self._make_key(x)].get_or_none()}
+        return {self._feature_name: self._groups[self._make_key(x)].get()}
 
     @property
     def state(self) -> pd.Series:
@@ -205,7 +205,7 @@ class Agg(base.Transformer):
         pd = utils.pandas.import_pandas()
 
         return pd.Series(
-            (stat.get_or_none() for stat in self._groups.values()),
+            (stat.get() for stat in self._groups.values()),
             index=(
                 pd.Index(key[0] for key in self._groups.keys())
                 if self.by and len(self.by) == 1

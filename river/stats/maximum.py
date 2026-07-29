@@ -80,11 +80,11 @@ class RollingMax(stats.base.RollingUnivariate):
     def update(self, x: float) -> None:
         self.window.append(x)
 
-    def get(self) -> float:
+    def get(self) -> float | None:
         try:
             return self.window[-1]
         except IndexError:
-            raise stats.NotEnoughSamples
+            return None
 
 
 class AbsMax(stats.base.Univariate):
@@ -162,8 +162,8 @@ class RollingAbsMax(stats.base.RollingUnivariate):
     def update(self, x: float) -> None:
         self.window.append(abs(x))
 
-    def get(self) -> float:
+    def get(self) -> float | None:
         try:
             return self.window[-1]
         except IndexError:
-            raise stats.NotEnoughSamples
+            return None

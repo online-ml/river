@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from . import errors, var
+from . import var
 
 
 class SEM(var.Var):
@@ -56,8 +56,9 @@ class SEM(var.Var):
 
     """
 
-    def get(self) -> float:
+    # TODO: drop the ignore once get() raises stats.NotEnoughSamples instead of returning None
+    def get(self) -> float | None:  # type: ignore[override]
         try:
             return float((super().get() / self.mean.n) ** 0.5)
         except ZeroDivisionError:
-            raise errors.NotEnoughSamples
+            return None
