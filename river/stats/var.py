@@ -71,9 +71,9 @@ class Var(stats.base.Univariate):
     """
 
     def __init__(self, ddof: float = 1) -> None:
-        self.ddof: float = ddof
-        self.mean: stats.Mean = stats.Mean()
-        self._S: float = 0
+        self.ddof = ddof
+        self.mean = stats.Mean()
+        self._S = 0.0
 
     @property
     def n(self) -> float:

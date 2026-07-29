@@ -60,7 +60,7 @@ class ChiSquared(stats.base.Bivariate):
         )
         self.x_totals: collections.Counter[Hashable] = collections.Counter()
         self.y_totals: collections.Counter[Hashable] = collections.Counter()
-        self.n: int = 0
+        self.n = 0
 
     @property
     def name(self) -> str:

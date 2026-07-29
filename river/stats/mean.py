@@ -59,8 +59,8 @@ class Mean(stats.base.Univariate):
     """
 
     def __init__(self) -> None:
-        self.n: float = 0
-        self._mean: float = 0.0
+        self.n = 0.0
+        self._mean = 0.0
 
     def update(self, x: float, w: float = 1.0) -> None:
         self.n += w
@@ -137,9 +137,9 @@ class BayesianMean(stats.base.Univariate):
     """
 
     def __init__(self, prior: float, prior_weight: float) -> None:
-        self.prior: float = prior
-        self.prior_weight: float = prior_weight
-        self._mean: Mean = Mean()
+        self.prior = prior
+        self.prior_weight = prior_weight
+        self._mean = Mean()
 
     @property
     def name(self) -> str:

@@ -33,7 +33,7 @@ class Max(stats.base.Univariate):
     """
 
     def __init__(self) -> None:
-        self.max: float = -math.inf
+        self.max = -math.inf
 
     def update(self, x: float) -> None:
         if x > self.max:
@@ -115,7 +115,7 @@ class AbsMax(stats.base.Univariate):
     """
 
     def __init__(self) -> None:
-        self.abs_max: float = 0.0
+        self.abs_max = 0.0
 
     def update(self, x: float) -> None:
         if abs(x) > self.abs_max:

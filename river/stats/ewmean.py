@@ -44,8 +44,8 @@ class EWMean(stats.base.Univariate):
     def __init__(self, fading_factor: float = 0.5) -> None:
         if not 0 <= fading_factor <= 1:
             raise ValueError("q is not comprised between 0 and 1")
-        self.fading_factor: float = fading_factor
-        self._ewmean: _rust_stats.RsEWMean = _rust_stats.RsEWMean(fading_factor)
+        self.fading_factor = fading_factor
+        self._ewmean = _rust_stats.RsEWMean(fading_factor)
 
     @property
     def name(self) -> str:

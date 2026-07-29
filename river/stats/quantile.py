@@ -57,9 +57,9 @@ class Quantile(stats.base.Univariate):
         super().__init__()
         if not 0 < q < 1:
             raise ValueError("q is not comprised between 0 and 1")
-        self._quantile: _rust_stats.RsQuantile = _rust_stats.RsQuantile(q)
-        self._is_updated: bool = False
-        self.q: float = q  # Used by anomaly.QuantileFilter
+        self._quantile = _rust_stats.RsQuantile(q)
+        self._is_updated = False
+        self.q = q  # Used by anomaly.QuantileFilter
 
     def update(self, x: float) -> None:
         self._quantile.update(x)
@@ -132,12 +132,10 @@ class RollingQuantile(stats.base.RollingUnivariate):
         super().__init__()
         if not 0 <= q <= 1:
             raise ValueError("q is not comprised between 0 and 1")
-        self._rolling_quantile: _rust_stats.RsRollingQuantile = _rust_stats.RsRollingQuantile(
-            q, window_size
-        )
-        self.q: float = q
-        self.window_size_value: int = window_size
-        self._is_updated: bool = False
+        self._rolling_quantile = _rust_stats.RsRollingQuantile(q, window_size)
+        self.q = q
+        self.window_size_value = window_size
+        self._is_updated = False
 
     def update(self, x: float) -> None:
         self._rolling_quantile.update(x)

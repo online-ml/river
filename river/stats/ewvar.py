@@ -48,8 +48,8 @@ class EWVar(stats.base.Univariate):
         if not 0 <= fading_factor <= 1:
             raise ValueError("q is not comprised between 0 and 1")
 
-        self.fading_factor: float = fading_factor
-        self._ewvar: _rust_stats.RsEWVar = _rust_stats.RsEWVar(fading_factor)
+        self.fading_factor = fading_factor
+        self._ewvar = _rust_stats.RsEWVar(fading_factor)
 
     @property
     def name(self) -> str:

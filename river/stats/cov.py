@@ -67,10 +67,10 @@ class Cov(stats.base.Bivariate):
     """
 
     def __init__(self, ddof: float = 1) -> None:
-        self.ddof: float = ddof
-        self.mean_x: stats.Mean = stats.Mean()
-        self.mean_y: stats.Mean = stats.Mean()
-        self.cov: float = 0
+        self.ddof = ddof
+        self.mean_x = stats.Mean()
+        self.mean_y = stats.Mean()
+        self.cov = 0.0
 
     @property
     def n(self) -> float:
@@ -156,7 +156,7 @@ class Cov(stats.base.Bivariate):
         self.mean_y -= other.mean_y
 
         if self.n <= self.ddof:
-            self.cov = 0
+            self.cov = 0.0
             return self
 
         # Scale factors

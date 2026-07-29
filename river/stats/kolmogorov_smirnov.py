@@ -28,14 +28,14 @@ class _Node:
     )
 
     def __init__(self, key: typing.Any, value: float = 0) -> None:
-        self.key: typing.Any = key
-        self.value: float = value
-        self.priority: float = _random()
-        self.size: int = 1
-        self.height: int = 1
-        self.lazy: float = 0
-        self.max_value: float = value
-        self.min_value: float = value
+        self.key = key
+        self.value = value
+        self.priority = _random()
+        self.size = 1
+        self.height = 1
+        self.lazy = 0.0
+        self.max_value = value
+        self.min_value = value
         self.left: _Node | None = None
         self.right: _Node | None = None
 
@@ -242,8 +242,8 @@ class KolmogorovSmirnov(stats.base.Bivariate):
 
     def __init__(self, statistic: str = "ks") -> None:
         self.treap: _Node | None = None
-        self.n_samples: int = 0
-        self.statistic: str = statistic
+        self.n_samples = 0
+        self.statistic = statistic
 
     def update(self, x: float, y: float) -> None:
         root = self.treap

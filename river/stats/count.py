@@ -16,7 +16,7 @@ class Count(stats.base.Univariate):
     """
 
     def __init__(self) -> None:
-        self.n: int = 0
+        self.n = 0
 
     def update(self, x: Any = None) -> None:
         self.n += 1

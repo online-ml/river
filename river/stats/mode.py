@@ -51,7 +51,7 @@ class Mode(stats.base.Univariate[Hashable]):
     """
 
     def __init__(self, k: int = 25) -> None:
-        self.k: int = k
+        self.k = k
         self.counts: collections.defaultdict[Hashable, int] = collections.defaultdict(int)
 
     @property
@@ -116,7 +116,7 @@ class RollingMode(stats.base.RollingUnivariate[Hashable]):
     def __init__(self, window_size: int) -> None:
         self.window: collections.deque[Hashable] = collections.deque(maxlen=window_size)
         self.counts: collections.defaultdict[Hashable, int] = collections.defaultdict(int)
-        self.window_size_value: int = window_size
+        self.window_size_value = window_size
 
     @property
     def window_size(self) -> int:

@@ -53,8 +53,8 @@ class AutoCorr(stats.base.Univariate):
 
     def __init__(self, lag: int) -> None:
         self.window: collections.deque[float] = collections.deque(maxlen=lag)
-        self.lag: int = lag
-        self.pearson: stats.PearsonCorr = stats.PearsonCorr(ddof=1)
+        self.lag = lag
+        self.pearson = stats.PearsonCorr(ddof=1)
 
     @property
     def name(self) -> str:

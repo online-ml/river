@@ -16,7 +16,7 @@ class Min(stats.base.Univariate):
     """
 
     def __init__(self) -> None:
-        self.min: float = math.inf
+        self.min = math.inf
 
     def update(self, x: float) -> None:
         if x < self.min:

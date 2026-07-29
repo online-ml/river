@@ -65,12 +65,12 @@ class Entropy(stats.base.Univariate):
 
     def __init__(self, fading_factor: float = 1, eps: float = 1e-8) -> None:
         if 0 < fading_factor <= 1:
-            self.fading_factor: float = fading_factor
+            self.fading_factor = fading_factor
         else:
             raise ValueError("fading_factor must be between 0 excluded and 1")
-        self.eps: float = eps
-        self.entropy: float = 0
-        self.n: int = 0
+        self.eps = eps
+        self.entropy = 0.0
+        self.n = 0
         self.counter: collections.Counter[Hashable] = collections.Counter()
 
     @property

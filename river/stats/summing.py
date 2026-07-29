@@ -45,7 +45,7 @@ class Sum(stats.base.Univariate):
     """
 
     def __init__(self) -> None:
-        self.sum: float = 0.0
+        self.sum = 0.0
 
     def update(self, x: float) -> None:
         self.sum += x

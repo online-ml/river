@@ -41,7 +41,7 @@ class Statistic(abc.ABC, base.Base, Generic[_OutT]):
         return repr(self)
 
     # TODO: drop the casts once get() raises stats.NotEnoughSamples instead of returning None
-    def __gt__(self: Statistic[float], other: Statistic[float]) -> bool:
+    def __gt__(self, other: Statistic) -> bool:
         return cast(float, self.get()) > cast(float, other.get())
 
 

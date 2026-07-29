@@ -90,8 +90,8 @@ class Shift(stats.base.Univariate):
     """
 
     def __init__(self, amount: int = 1, fill_value: float | None = None) -> None:
-        self.amount: int = amount
-        self.fill_value: float | None = fill_value
+        self.amount = amount
+        self.fill_value = fill_value
         self.buffer: collections.deque[float] = collections.deque(maxlen=self.amount + 1)
 
     def update(self, x: float) -> None:

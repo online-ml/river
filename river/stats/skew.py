@@ -59,8 +59,8 @@ class Skew(stats.base.Univariate):
 
     def __init__(self, bias: bool = False) -> None:
         super().__init__()
-        self.bias: bool = bias
-        self._skew: _rust_stats.RsSkew = _rust_stats.RsSkew(bias)
+        self.bias = bias
+        self._skew = _rust_stats.RsSkew(bias)
 
     @property
     def name(self) -> str:

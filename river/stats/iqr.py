@@ -46,10 +46,10 @@ class IQR(stats.base.Univariate):
         super().__init__()
         if q_inf >= q_sup:
             raise ValueError("q_inf must be strictly less than q_sup")
-        self.q_inf: float = q_inf
-        self.q_sup: float = q_sup
-        self._iqr: _rust_stats.RsIQR = _rust_stats.RsIQR(self.q_inf, self.q_sup)
-        self._is_updated: bool = False
+        self.q_inf = q_inf
+        self.q_sup = q_sup
+        self._iqr = _rust_stats.RsIQR(self.q_inf, self.q_sup)
+        self._is_updated = False
 
     @property
     def name(self) -> str:
@@ -123,13 +123,11 @@ class RollingIQR(stats.base.RollingUnivariate):
     def __init__(self, window_size: int, q_inf: float = 0.25, q_sup: float = 0.75) -> None:
         if q_inf >= q_sup:
             raise ValueError("q_inf must be strictly less than q_sup")
-        self.q_inf: float = q_inf
-        self.q_sup: float = q_sup
-        self._rolling_iqr: _rust_stats.RsRollingIQR = _rust_stats.RsRollingIQR(
-            q_inf, q_sup, window_size
-        )
-        self.window_size_value: int = window_size
-        self._is_updated: bool = False
+        self.q_inf = q_inf
+        self.q_sup = q_sup
+        self._rolling_iqr = _rust_stats.RsRollingIQR(q_inf, q_sup, window_size)
+        self.window_size_value = window_size
+        self._is_updated = False
 
     def update(self, x: float) -> None:
         self._rolling_iqr.update(x)

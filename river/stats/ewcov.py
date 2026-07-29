@@ -47,10 +47,10 @@ class EWCov(stats.base.Bivariate):
     def __init__(self, fading_factor: float = 0.5) -> None:
         if not 0 <= fading_factor <= 1:
             raise ValueError("fading_factor is not comprised between 0 and 1")
-        self.fading_factor: float = fading_factor
-        self._mean_x: stats.EWMean = stats.EWMean(fading_factor)
-        self._mean_y: stats.EWMean = stats.EWMean(fading_factor)
-        self._mean_xy: stats.EWMean = stats.EWMean(fading_factor)
+        self.fading_factor = fading_factor
+        self._mean_x = stats.EWMean(fading_factor)
+        self._mean_y = stats.EWMean(fading_factor)
+        self._mean_xy = stats.EWMean(fading_factor)
 
     @property
     def name(self) -> str:
