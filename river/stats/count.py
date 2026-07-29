@@ -5,7 +5,7 @@ from typing import Any
 from river import stats
 
 
-class Count(stats.base.Univariate[Any, int]):
+class Count(stats.base.Univariate):
     """A simple counter.
 
     Attributes

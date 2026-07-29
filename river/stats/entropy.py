@@ -7,7 +7,7 @@ from collections.abc import Hashable
 from river import stats
 
 
-class Entropy(stats.base.Univariate[Hashable, float]):
+class Entropy(stats.base.Univariate):
     """Running entropy.
 
     Parameters

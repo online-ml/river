@@ -6,7 +6,7 @@ from collections.abc import Hashable
 from river import stats
 
 
-class ChiSquared(stats.base.Bivariate[Hashable, Hashable, float]):
+class ChiSquared(stats.base.Bivariate):
     """Streaming Chi-squared statistic.
 
     Maintains a contingency table between two variables `x` and `y` and computes the

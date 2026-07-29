@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import abc
-from typing import Generic, TypeVar
+from typing import TYPE_CHECKING, Any, Generic
 
 from river import base
 
@@ -9,15 +9,16 @@ from . import errors
 
 __all__ = ["Bivariate", "Link", "RollingUnivariate", "Statistic", "Univariate"]
 
-# The type of the values a statistic produces. Defaults to float so that existing
-# annotations such as `stats.base.Statistic` keep meaning "a float statistic".
-R = TypeVar("R", default=float)
-# Another type for produced values, used for chaining statistics.
-S = TypeVar("S", default=float)
-# The type of the values a statistic observes.
-X = TypeVar("X", default=float)
-# Another type of the values a (bivariate) statistic observes.
-Y = TypeVar("Y", default=float)
+if TYPE_CHECKING:
+    from typing_extensions import TypeVar
+
+    R = TypeVar("R", default=float)
+    S = TypeVar("S", default=float)
+else:
+    from typing import TypeVar
+
+    R = TypeVar("R")
+    S = TypeVar("S")
 
 
 class Statistic(abc.ABC, base.Base, Generic[R]):
@@ -51,22 +52,22 @@ class Statistic(abc.ABC, base.Base, Generic[R]):
         return self.get() > other.get()
 
 
-class Univariate(Statistic[R], Generic[X, R]):
+class Univariate(Statistic[R]):
     """A univariate statistic measures a property of a variable."""
 
     @abc.abstractmethod
-    def update(self, x: X) -> None:
+    def update(self, x: Any) -> None:
         """Update the called instance."""
 
     @property
     def name(self) -> str:
         return self.__class__.__name__.lower()
 
-    def __or__(self, other: Univariate[R, S]) -> Univariate[X, S]:
+    def __or__(self, other: Univariate[S]) -> Univariate[S]:
         return Link(left=self, right=other)
 
 
-class Link(Univariate[X, S], Generic[X, R, S]):
+class Link(Univariate[S], Generic[R, S]):
     """A link joins two univariate statistics as a sequence.
 
     This can be used to pipe the output of one statistic to the input of another. This can be used,
@@ -127,11 +128,11 @@ class Link(Univariate[X, S], Generic[X, R, S]):
 
     """
 
-    def __init__(self, left: Univariate[X, R], right: Univariate[R, S]) -> None:
+    def __init__(self, left: Univariate[R], right: Univariate[S]) -> None:
         self.left = left
         self.right = right
 
-    def update(self, x: X) -> None:
+    def update(self, x: Any) -> None:
         self.left.update(x)
         try:
             y = self.left.get()
@@ -150,7 +151,7 @@ class Link(Univariate[X, S], Generic[X, R, S]):
         return repr(self.right)
 
 
-class RollingUnivariate(Univariate[X, R]):
+class RollingUnivariate(Univariate[R]):
     """A rolling univariate statistic measures a property of a variable over a window."""
 
     @property
@@ -163,9 +164,9 @@ class RollingUnivariate(Univariate[X, R]):
         return f"{super().name}_{self.window_size}"
 
 
-class Bivariate(Statistic[R], Generic[X, Y, R]):
+class Bivariate(Statistic[R]):
     """A bivariate statistic measures a relationship between two variables."""
 
     @abc.abstractmethod
-    def update(self, x: X, y: Y) -> None:
+    def update(self, x: Any, y: Any) -> None:
         """Update the called instance."""

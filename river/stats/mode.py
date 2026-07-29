@@ -8,7 +8,7 @@ from river import stats
 __all__ = ["Mode"]
 
 
-class Mode(stats.base.Univariate[Hashable, Hashable]):
+class Mode(stats.base.Univariate[Hashable]):
     """Running mode.
 
     The mode is simply the most common value. An approximate mode can be computed by setting the
@@ -66,7 +66,7 @@ class Mode(stats.base.Univariate[Hashable, Hashable]):
         return max(self.counts, key=lambda key: self.counts[key], default=None)
 
 
-class RollingMode(stats.base.RollingUnivariate[Hashable, Hashable]):
+class RollingMode(stats.base.RollingUnivariate[Hashable]):
     """Running mode over a window.
 
     The mode is the most common value.

@@ -18,7 +18,7 @@ from scipy import stats as sp_stats
 from river import stats, utils
 
 
-def load_stats() -> typing.Iterator[stats.base.Statistic]:
+def load_stats() -> typing.Iterator[stats.base.Statistic[typing.Any]]:
     for _, obj in inspect.getmembers(importlib.import_module("river.stats"), inspect.isclass):
         try:
             if inspect.isabstract(obj):
