@@ -170,7 +170,9 @@ def test_univariate_reliability_weights(
         ),
     ],
 )
-def test_rolling_univariate(stat: stats.base.RollingUnivariate, func: typing.Callable[..., typing.Any]) -> None:
+def test_rolling_univariate(
+    stat: stats.base.RollingUnivariate, func: typing.Callable[..., typing.Any]
+) -> None:
     def tail(iterable: typing.Iterable[typing.Any], n: int) -> collections.deque[typing.Any]:
         return collections.deque(iterable, maxlen=n)
 
@@ -204,7 +206,9 @@ def test_rolling_univariate_sample_weights(
         stat.update(x, w)  # type: ignore[call-arg]
         if i >= 1:
             assert math.isclose(
-                stat.get(), func(tail(X[: i + 1], n), tail(W[: i + 1], n)), abs_tol=1e-10  # type: ignore[arg-type]
+                stat.get(),  # type: ignore[arg-type]
+                func(tail(X[: i + 1], n), tail(W[: i + 1], n)),
+                abs_tol=1e-10,
             )
 
 
@@ -229,7 +233,9 @@ def test_rolling_univariate_reliability_weights(
         stat.update(x, w)  # type: ignore[call-arg]
         if i >= 1:
             assert math.isclose(
-                stat.get(), func(tail(X[: i + 1], n), tail(W[: i + 1], n)), abs_tol=1e-10  # type: ignore[arg-type]
+                stat.get(),  # type: ignore[arg-type]
+                func(tail(X[: i + 1], n), tail(W[: i + 1], n)),
+                abs_tol=1e-10,
             )
 
 
@@ -284,7 +290,9 @@ def _chi2_stat(x: typing.Sequence[typing.Any], y: typing.Sequence[typing.Any]) -
         (utils.Rolling(stats.ChiSquared, 10), _chi2_stat),
     ],
 )
-def test_rolling_bivariate(stat: utils.Rolling[stats.base.Bivariate], func: typing.Callable[..., typing.Any]) -> None:
+def test_rolling_bivariate(
+    stat: utils.Rolling[stats.base.Bivariate], func: typing.Callable[..., typing.Any]
+) -> None:
     # Enough already
 
     def tail(iterable: typing.Iterable[typing.Any], n: int) -> collections.deque[typing.Any]:

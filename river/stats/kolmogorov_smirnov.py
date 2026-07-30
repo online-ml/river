@@ -96,7 +96,9 @@ def _pull_up(node: _Node | None) -> None:
     node.min_value = mn
 
 
-def _split_keep_right(node: _Node | None, key: tuple[float, int]) -> tuple[_Node | None, _Node | None]:
+def _split_keep_right(
+    node: _Node | None, key: tuple[float, int]
+) -> tuple[_Node | None, _Node | None]:
     if node is None:
         return None, None
     _push_down(node)
