@@ -2159,6 +2159,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#compat" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        compat
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#compose" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -3610,6 +3621,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#compat" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        compat
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#compose" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -3895,6 +3917,12 @@
 <ul>
 <li>Gave the <code>CluStream</code>, <code>DenStream</code>, and <code>DBSTREAM</code> micro-cluster objects <code>__slots__</code>. These are created in large numbers on long streams, so dropping their per-instance <code>__dict__</code> trims memory (~40 bytes per micro-cluster). Behavior is unchanged.</li>
 <li><code>CluStreamMicroCluster</code> no longer inherits from <a href="../../api/base/Base"><code>base.Base</code></a>; it is an internal data structure, not an estimator, so the estimator machinery (cloning, parameter introspection, <code>repr</code>) never applied to it. This matches the <code>DenStream</code>/<code>DBSTREAM</code> micro-clusters and is what lets it use <code>__slots__</code>.</li>
+</ul>
+<h2 id="compat">compat<a class="headerlink" href="#compat" title="Permanent link">&para;</a></h2>
+<ul>
+<li>The mini-batch methods of the scikit-learn wrappers (<a href="../../api/compat/SKL2RiverRegressor"><code>compat.SKL2RiverRegressor</code></a>, <a href="../../api/compat/SKL2RiverClassifier"><code>compat.SKL2RiverClassifier</code></a>) now accept and return any <a href="https://github.com/narwhals-dev/narwhals">narwhals</a>-supported eager backend (pandas, polars, pyarrow, ...) instead of being pandas-only, preserving the input backend and pandas index on output. A mini-batch missing a learnt feature now raises a <code>ValueError</code> naming it.</li>
+<li><a href="../../api/compat/convert-sklearn-to-river"><code>compat.convert_sklearn_to_river</code></a> is now overloaded on <code>classes</code>, so a type checker infers <code>SKL2RiverRegressor</code> when it is omitted and <code>SKL2RiverClassifier</code> when it is given. Behavior change: passing <code>classes</code> along with a regressor now raises a <code>ValueError</code> instead of being silently ignored.</li>
+<li><code>compat.SKL2RiverClassifier.predict_proba_one</code> now returns plain <code>float</code> probabilities instead of numpy scalars.</li>
 </ul>
 <h2 id="compose">compose<a class="headerlink" href="#compose" title="Permanent link">&para;</a></h2>
 <ul>

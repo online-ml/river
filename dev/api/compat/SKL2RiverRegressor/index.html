@@ -46916,8 +46916,8 @@
 <p>Fits to a set of features <code>x</code> and a real-valued target <code>y</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>    </li>
-<li><strong>y</strong>    </li>
+<li><strong>x</strong>     — <code>dict[base.typing.FeatureName, typing.Any]</code>    </li>
+<li><strong>y</strong>     — <code>base.typing.RegTarget</code>    </li>
 </ul>
 </details>
 <p><span /></p>
@@ -46929,10 +46929,10 @@
 <p>Predict the output of features <code>x</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>    </li>
+<li><strong>x</strong>     — <code>dict[base.typing.FeatureName, typing.Any]</code>    </li>
 </ul>
 <p><strong>Returns</strong></p>
-<p>The prediction.</p>
+<p><code>base.typing.RegTarget</code>:     The prediction.</p>
 </details>
 <p><span /></p>
 
