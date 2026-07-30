@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import math
+import typing
 
 from river import base, linear_model, preprocessing, stats, time_series
 
@@ -117,8 +118,23 @@ class PredictiveAnomalyDetection(base.SupervisedAnomalyDetector):
         # Initialize necessary values for warm-up procedure
         self.iter: int = 0
 
+    def _predict(self, x: dict | None) -> typing.Any:
+        # Return the predicted value of x from the predictive model, first by checking whether
+        # it is a time-series forecaster.
+        if isinstance(self.predictive_model, time_series.base.Forecaster):
+            return self.predictive_model.forecast(self.horizon)[0]
+        return self.predictive_model.predict_one(x)  # type:ignore[attr-defined]
+
     # This method is called to make the predictive model learn one example
     def learn_one(self, x: dict | None, y: base.typing.Target | float):
+        # Update the dynamic threshold from the prediction error *before* the predictive model
+        # learns from the new observation. Tracking the error here rather than in score_one keeps
+        # score_one free of side effects, so scoring never mutates the model or the threshold.
+        if self.iter >= self.warmup_period:
+            squared_error = (self._predict(x) - y) ** 2
+            self.dynamic_mae.update(squared_error)
+            self.dynamic_se_variance.update(squared_error)
+
         self.iter += 1
 
         # Check whether the model is a time-series forecasting or regression/classification model
@@ -133,12 +149,9 @@ class PredictiveAnomalyDetection(base.SupervisedAnomalyDetector):
             self.predictive_model.learn_one(x=x, y=y)  # type:ignore[attr-defined]
 
     def score_one(self, x: dict, y: base.typing.Target):
-        # Return the predicted value of x from the predictive model, first by checking whether
-        # it is a time-series forecaster.
-        if isinstance(self.predictive_model, time_series.base.Forecaster):
-            y_pred = self.predictive_model.forecast(self.horizon)[0]
-        else:
-            y_pred = self.predictive_model.predict_one(x)  # type:ignore[attr-defined]
+        # score_one is side-effect free: it never updates the predictive model or the dynamic
+        # threshold. Those statistics are maintained by learn_one instead.
+        y_pred = self._predict(x)
 
         # Calculate the squared error
         squared_error = (y_pred - y) ** 2
@@ -152,10 +165,6 @@ class PredictiveAnomalyDetection(base.SupervisedAnomalyDetector):
         # When the warmup period has not passed, the default value of the anomaly score is 0.0
         if self.iter < self.warmup_period:
             return 0.0
-
-        # Update MAE and SEV when the warm-up parameter has passed.
-        self.dynamic_mae.update(squared_error)
-        self.dynamic_se_variance.update(squared_error)
 
         # An error above the threshold will result in a score of 1.0.
         # Else, the score will be linearly distributed within the interval (0.0, 1.0)
