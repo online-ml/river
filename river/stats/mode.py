@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import collections
 from collections.abc import Hashable
+from typing import cast
 
 from river import stats
 
@@ -116,11 +117,10 @@ class RollingMode(stats.base.RollingUnivariate[Hashable]):
     def __init__(self, window_size: int) -> None:
         self.window: collections.deque[Hashable] = collections.deque(maxlen=window_size)
         self.counts: collections.defaultdict[Hashable, int] = collections.defaultdict(int)
-        self.window_size_value = window_size
 
     @property
     def window_size(self) -> int:
-        return self.window_size_value
+        return cast(int, self.window.maxlen)
 
     def update(self, x: Hashable) -> None:
         if len(self.window) >= self.window_size:

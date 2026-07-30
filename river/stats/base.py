@@ -7,6 +7,9 @@ from river import base
 
 __all__ = ["Bivariate", "Link", "RollingUnivariate", "Statistic", "Univariate"]
 
+# TypeVar's `default` does not exist in Python 3.11
+# so we use typing_extensions for backward compatibility
+# at type checking time only.
 if TYPE_CHECKING:
     from typing_extensions import TypeVar
 
@@ -56,7 +59,7 @@ class Univariate(Statistic[_OutT]):
     def name(self) -> str:
         return self.__class__.__name__.lower()
 
-    def __or__(self, other: Univariate[_ChainedOutT]) -> Univariate[_ChainedOutT]:
+    def __or__(self, other: Univariate[_ChainedOutT]) -> Link[_OutT, _ChainedOutT]:
         return Link(left=self, right=other)
 
 
@@ -160,4 +163,8 @@ class Bivariate(Statistic[_OutT]):
 
     @abc.abstractmethod
     def update(self, x: Any, y: Any) -> None:
+        """Update the called instance."""
+
+    @abc.abstractmethod
+    def revert(self, x: Any, y: Any) -> None:
         """Update the called instance."""

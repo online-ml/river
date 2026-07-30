@@ -65,7 +65,7 @@ class PearsonCorr(stats.base.Bivariate):
 
     """
 
-    def __init__(self, ddof: float = 1) -> None:
+    def __init__(self, ddof: int = 1) -> None:
         self.var_x = stats.Var(ddof=ddof)
         self.var_y = stats.Var(ddof=ddof)
         self.cov_xy = stats.Cov(ddof=ddof)

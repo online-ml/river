@@ -17,6 +17,11 @@ from scipy import stats as sp_stats
 
 from river import stats, utils
 
+# TODO: there are many "type: ignore" comments in this file due to ill-defined interfaces:
+# - .get() may return None
+# - .update() accepts an extra "w" parameter for some univariate statistics
+# - .update_many() is not part of any base interface.
+
 
 def load_stats() -> typing.Iterator[stats.base.Statistic[typing.Any]]:
     for _, obj in inspect.getmembers(importlib.import_module("river.stats"), inspect.isclass):
@@ -40,7 +45,7 @@ def load_stats() -> typing.Iterator[stats.base.Statistic[typing.Any]]:
 
 
 @pytest.mark.parametrize("stat", load_stats(), ids=lambda stat: stat.__class__.__name__)
-def test_pickling(stat: typing.Any) -> None:
+def test_pickling(stat: stats.base.Statistic) -> None:
     assert isinstance(pickle.loads(pickle.dumps(stat)), stat.__class__)
     assert isinstance(copy.deepcopy(stat), stat.__class__)
 
@@ -52,21 +57,19 @@ def test_pickling(stat: typing.Any) -> None:
 
 
 @pytest.mark.parametrize("stat", load_stats(), ids=lambda stat: stat.__class__.__name__)
-def test_pickling_value(stat: typing.Any) -> None:
+def test_pickling_value(stat: stats.base.Statistic) -> None:
     for i in range(10):
         if isinstance(stat, stats.base.Bivariate):
             stat.update(i, i)
         elif isinstance(stat, stats.base.Univariate):
             stat.update(i)
-        else:
-            stat.update()
 
     assert stat.get() == pickle.loads(pickle.dumps(stat)).get()
     assert stat.get() == copy.deepcopy(stat).get()
 
 
 @pytest.mark.parametrize("stat", load_stats(), ids=lambda stat: stat.__class__.__name__)
-def test_repr_with_no_updates(stat: typing.Any) -> None:
+def test_repr_with_no_updates(stat: stats.base.Statistic) -> None:
     assert isinstance(repr(stat), str)
     assert isinstance(str(stat), str)
 
@@ -83,13 +86,13 @@ def test_repr_with_no_updates(stat: typing.Any) -> None:
         (stats.Var(), functools.partial(np.var, ddof=1)),
     ],
 )
-def test_univariate(stat: typing.Any, func: typing.Callable[..., typing.Any]) -> None:
+def test_univariate(stat: stats.base.Univariate, func: typing.Callable[..., typing.Any]) -> None:
     X = [random.random() for _ in range(30)]
 
     for i, x in enumerate(X):
         stat.update(x)
         if i >= 1:
-            assert math.isclose(stat.get(), func(X[: i + 1]), abs_tol=1e-10)
+            assert math.isclose(stat.get(), func(X[: i + 1]), abs_tol=1e-10)  # type: ignore[arg-type]
 
 
 # TODO
@@ -105,7 +108,7 @@ def test_univariate(stat: typing.Any, func: typing.Callable[..., typing.Any]) ->
     ],
 )
 def test_univariate_frequency_weights(
-    stat: typing.Any, func: typing.Callable[..., typing.Any]
+    stat: stats.base.Univariate, func: typing.Callable[..., typing.Any]
 ) -> None:
     """https://www.wikiwand.com/en/Weighted_arithmetic_mean"""
 
@@ -113,9 +116,9 @@ def test_univariate_frequency_weights(
     W = [random.randint(1, 5) for _ in range(30)]
 
     for i, (x, w) in enumerate(zip(X, W)):
-        stat.update(x, w)
+        stat.update(x, w)  # type: ignore[call-arg]
         if i >= 1:
-            assert math.isclose(stat.get(), func(X[: i + 1], W[: i + 1]), abs_tol=1e-10)
+            assert math.isclose(stat.get(), func(X[: i + 1], W[: i + 1]), abs_tol=1e-10)  # type: ignore[arg-type]
 
 
 @pytest.mark.parametrize(
@@ -125,7 +128,7 @@ def test_univariate_frequency_weights(
     ],
 )
 def test_univariate_reliability_weights(
-    stat: typing.Any, func: typing.Callable[..., typing.Any]
+    stat: stats.base.Univariate, func: typing.Callable[..., typing.Any]
 ) -> None:
     """https://www.wikiwand.com/en/Weighted_arithmetic_mean"""
 
@@ -133,9 +136,9 @@ def test_univariate_reliability_weights(
     W = [random.random() for _ in range(30)]
 
     for i, (x, w) in enumerate(zip(X, W)):
-        stat.update(x, w)
+        stat.update(x, w)  # type: ignore[call-arg]
         if i >= 1:
-            assert math.isclose(stat.get(), func(X[: i + 1], W[: i + 1]), abs_tol=1e-10)
+            assert math.isclose(stat.get(), func(X[: i + 1], W[: i + 1]), abs_tol=1e-10)  # type: ignore[arg-type]
 
 
 @pytest.mark.parametrize(
@@ -167,7 +170,7 @@ def test_univariate_reliability_weights(
         ),
     ],
 )
-def test_rolling_univariate(stat: typing.Any, func: typing.Callable[..., typing.Any]) -> None:
+def test_rolling_univariate(stat: stats.base.RollingUnivariate, func: typing.Callable[..., typing.Any]) -> None:
     def tail(iterable: typing.Iterable[typing.Any], n: int) -> collections.deque[typing.Any]:
         return collections.deque(iterable, maxlen=n)
 
@@ -177,7 +180,7 @@ def test_rolling_univariate(stat: typing.Any, func: typing.Callable[..., typing.
     for i, x in enumerate(X):
         stat.update(x)
         if i >= 1:
-            assert math.isclose(stat.get(), func(tail(X[: i + 1], n)), abs_tol=1e-10)
+            assert math.isclose(stat.get(), func(tail(X[: i + 1], n)), abs_tol=1e-10)  # type: ignore[arg-type]
 
 
 @pytest.mark.parametrize(
@@ -188,7 +191,7 @@ def test_rolling_univariate(stat: typing.Any, func: typing.Callable[..., typing.
     ],
 )
 def test_rolling_univariate_sample_weights(
-    stat: typing.Any, func: typing.Callable[..., typing.Any]
+    stat: stats.base.RollingUnivariate, func: typing.Callable[..., typing.Any]
 ) -> None:
     def tail(iterable: typing.Iterable[typing.Any], n: int) -> collections.deque[typing.Any]:
         return collections.deque(iterable, maxlen=n)
@@ -198,10 +201,10 @@ def test_rolling_univariate_sample_weights(
     W = [random.randint(1, 5) for _ in range(30)]
 
     for i, (x, w) in enumerate(zip(X, W)):
-        stat.update(x, w)
+        stat.update(x, w)  # type: ignore[call-arg]
         if i >= 1:
             assert math.isclose(
-                stat.get(), func(tail(X[: i + 1], n), tail(W[: i + 1], n)), abs_tol=1e-10
+                stat.get(), func(tail(X[: i + 1], n), tail(W[: i + 1], n)), abs_tol=1e-10  # type: ignore[arg-type]
             )
 
 
@@ -213,7 +216,7 @@ def test_rolling_univariate_sample_weights(
     ],
 )
 def test_rolling_univariate_reliability_weights(
-    stat: typing.Any, func: typing.Callable[..., typing.Any]
+    stat: stats.base.RollingUnivariate, func: typing.Callable[..., typing.Any]
 ) -> None:
     def tail(iterable: typing.Iterable[typing.Any], n: int) -> collections.deque[typing.Any]:
         return collections.deque(iterable, maxlen=n)
@@ -223,10 +226,10 @@ def test_rolling_univariate_reliability_weights(
     W = [random.random() for _ in range(30)]
 
     for i, (x, w) in enumerate(zip(X, W)):
-        stat.update(x, w)
+        stat.update(x, w)  # type: ignore[call-arg]
         if i >= 1:
             assert math.isclose(
-                stat.get(), func(tail(X[: i + 1], n), tail(W[: i + 1], n)), abs_tol=1e-10
+                stat.get(), func(tail(X[: i + 1], n), tail(W[: i + 1], n)), abs_tol=1e-10  # type: ignore[arg-type]
             )
 
 
@@ -237,14 +240,14 @@ def test_rolling_univariate_reliability_weights(
         (stats.PearsonCorr(), lambda x, y: sp_stats.pearsonr(x, y)[0]),
     ],
 )
-def test_bivariate(stat: typing.Any, func: typing.Callable[..., typing.Any]) -> None:
+def test_bivariate(stat: stats.base.Bivariate, func: typing.Callable[..., typing.Any]) -> None:
     X = [random.random() for _ in range(30)]
     Y = [random.random() * x for x in X]
 
     for i, (x, y) in enumerate(zip(X, Y)):
         stat.update(x, y)
         if i >= 1:
-            assert math.isclose(stat.get(), func(X[: i + 1], Y[: i + 1]), abs_tol=1e-10)
+            assert math.isclose(stat.get(), func(X[: i + 1], Y[: i + 1]), abs_tol=1e-10)  # type: ignore[arg-type]
 
 
 def _chi2_stat(x: typing.Sequence[typing.Any], y: typing.Sequence[typing.Any]) -> float:
@@ -281,7 +284,7 @@ def _chi2_stat(x: typing.Sequence[typing.Any], y: typing.Sequence[typing.Any]) -
         (utils.Rolling(stats.ChiSquared, 10), _chi2_stat),
     ],
 )
-def test_rolling_bivariate(stat: typing.Any, func: typing.Callable[..., typing.Any]) -> None:
+def test_rolling_bivariate(stat: utils.Rolling[stats.base.Bivariate], func: typing.Callable[..., typing.Any]) -> None:
     # Enough already
 
     def tail(iterable: typing.Iterable[typing.Any], n: int) -> collections.deque[typing.Any]:
@@ -296,7 +299,7 @@ def test_rolling_bivariate(stat: typing.Any, func: typing.Callable[..., typing.A
         if i >= 1:
             x_tail = tail(X[: i + 1], n)
             y_tail = tail(Y[: i + 1], n)
-            assert math.isclose(stat.get(), func(x_tail, y_tail), abs_tol=1e-10)
+            assert math.isclose(stat.get(), func(x_tail, y_tail), abs_tol=1e-10)  # type: ignore
 
 
 @pytest.mark.parametrize(
@@ -309,16 +312,16 @@ def test_rolling_bivariate(stat: typing.Any, func: typing.Callable[..., typing.A
     ),
     ids=lambda stat: stat.__class__.__name__,
 )
-def test_update_many_univariate(stat: typing.Any) -> None:
+def test_update_many_univariate(stat: stats.base.Univariate) -> None:
     batch_stat = stat.clone()
 
     for _ in range(5):
         X = np.random.random(10)
-        batch_stat.update_many(X)
+        batch_stat.update_many(X)  # type: ignore[attr-defined]
         for x in X:
             stat.update(x)
 
-    assert math.isclose(batch_stat.get(), stat.get())
+    assert math.isclose(batch_stat.get(), stat.get())  # type: ignore[arg-type]
 
 
 @pytest.mark.parametrize(
@@ -331,14 +334,14 @@ def test_update_many_univariate(stat: typing.Any) -> None:
     ),
     ids=lambda stat: stat.__class__.__name__,
 )
-def test_update_many_bivariate(stat: typing.Any) -> None:
+def test_update_many_bivariate(stat: stats.base.Bivariate) -> None:
     batch_stat = stat.clone()
 
     for _ in range(5):
         X = np.random.random(10)
         Y = np.random.random(10)
-        batch_stat.update_many(X, Y)
+        batch_stat.update_many(X, Y)  # type: ignore[attr-defined]
         for x, y in zip(X, Y):
             stat.update(x, y)
 
-    assert math.isclose(batch_stat.get(), stat.get())
+    assert math.isclose(batch_stat.get(), stat.get())  # type: ignore[arg-type]

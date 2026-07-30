@@ -143,7 +143,7 @@ def test_chi_squared_rolling() -> None:
         chi2.update(x, y)
     # `utils.Rolling` proxies attribute access via `__getattr__ -> object`, so mypy cannot
     # know that `get` is callable here.
-    assert math.isclose(chi2.get(), 4.0)  # type: ignore[operator]
+    assert math.isclose(chi2.obj.get(), 4.0)
 
     chi2.update(*data[4])
     # Now window is [("A", 0), ("B", 1), ("B", 1), ("C", 0)]
@@ -158,7 +158,7 @@ def test_chi_squared_rolling() -> None:
     #      + (0 - 1.0)^2 / 1.0 + (2 - 1.0)^2 / 1.0
     #      + (1 - 0.5)^2 / 0.5 + (0 - 0.5)^2 / 0.5
     #      = 0.5 + 0.5 + 1.0 + 1.0 + 0.5 + 0.5 = 4.0
-    assert math.isclose(chi2.get(), 4.0)  # type: ignore[operator]
+    assert math.isclose(chi2.obj.get(), 4.0)
 
 
 def test_chi_squared_scipy_comparison() -> None:

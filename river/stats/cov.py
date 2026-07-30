@@ -66,7 +66,7 @@ class Cov(stats.base.Bivariate):
 
     """
 
-    def __init__(self, ddof: float = 1) -> None:
+    def __init__(self, ddof: int = 1) -> None:
         self.ddof = ddof
         self.mean_x = stats.Mean()
         self.mean_y = stats.Mean()
@@ -103,7 +103,7 @@ class Cov(stats.base.Bivariate):
 
     @classmethod
     def _from_state(
-        cls, n: float, mean_x: float, mean_y: float, cov: float, *, ddof: float = 1
+        cls, n: float, mean_x: float, mean_y: float, cov: float, *, ddof: int = 1
     ) -> Cov:
         new = cls(ddof=ddof)
         new.mean_x = stats.Mean._from_state(n, mean_x)

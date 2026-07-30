@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import math
 import random
-import typing
 
 from river import stats
 
@@ -27,7 +26,7 @@ class _Node:
         "right",
     )
 
-    def __init__(self, key: typing.Any, value: float = 0) -> None:
+    def __init__(self, key: tuple[float, int], value: float = 0) -> None:
         self.key = key
         self.value = value
         self.priority = _random()
@@ -97,7 +96,7 @@ def _pull_up(node: _Node | None) -> None:
     node.min_value = mn
 
 
-def _split_keep_right(node: _Node | None, key: typing.Any) -> tuple[_Node | None, _Node | None]:
+def _split_keep_right(node: _Node | None, key: tuple[float, int]) -> tuple[_Node | None, _Node | None]:
     if node is None:
         return None, None
     _push_down(node)
@@ -295,7 +294,7 @@ class KolmogorovSmirnov(stats.base.Bivariate):
 
     @staticmethod
     def _ca(p_value: float) -> float:
-        return float((-0.5 * math.log(p_value)) ** 0.5)
+        return math.sqrt(-0.5 * math.log(p_value))
 
     def _test_ks_threshold(self, ca: float) -> bool:
         """

@@ -70,7 +70,7 @@ class Var(stats.base.Univariate):
 
     """
 
-    def __init__(self, ddof: float = 1) -> None:
+    def __init__(self, ddof: int = 1) -> None:
         self.ddof = ddof
         self.mean = stats.Mean()
         self._S = 0.0
@@ -103,7 +103,7 @@ class Var(stats.base.Univariate):
         return 0.0
 
     @classmethod
-    def _from_state(cls, n: float, m: float, sig: float, *, ddof: float = 1) -> Var:
+    def _from_state(cls, n: float, m: float, sig: float, *, ddof: int = 1) -> Var:
         new = cls(ddof=ddof)
         new.mean = stats.Mean._from_state(n, m)  # noqa
         # scale the second order statistic
