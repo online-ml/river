@@ -164,7 +164,3 @@ class Bivariate(Statistic[_OutT]):
     @abc.abstractmethod
     def update(self, x: Any, y: Any) -> None:
         """Update the called instance."""
-
-    @abc.abstractmethod
-    def revert(self, x: Any, y: Any) -> None:
-        """Update the called instance."""

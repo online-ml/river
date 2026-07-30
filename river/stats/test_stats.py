@@ -20,7 +20,8 @@ from river import stats, utils
 # TODO: there are many "type: ignore" comments in this file due to ill-defined interfaces:
 # - .get() may return None
 # - .update() accepts an extra "w" parameter for some univariate statistics
-# - .update_many() is not part of any base interface.
+# - .update_many() is not part of any base interface
+# - .revert() is not part of Bivariate's interface and some subclasses do not implement it
 
 
 def load_stats() -> typing.Iterator[stats.base.Statistic[typing.Any]]:
@@ -290,9 +291,7 @@ def _chi2_stat(x: typing.Sequence[typing.Any], y: typing.Sequence[typing.Any]) -
         (utils.Rolling(stats.ChiSquared, 10), _chi2_stat),
     ],
 )
-def test_rolling_bivariate(
-    stat: utils.Rolling[stats.base.Bivariate], func: typing.Callable[..., typing.Any]
-) -> None:
+def test_rolling_bivariate(stat: typing.Any, func: typing.Callable[..., typing.Any]) -> None:
     # Enough already
 
     def tail(iterable: typing.Iterable[typing.Any], n: int) -> collections.deque[typing.Any]:
@@ -307,7 +306,7 @@ def test_rolling_bivariate(
         if i >= 1:
             x_tail = tail(X[: i + 1], n)
             y_tail = tail(Y[: i + 1], n)
-            assert math.isclose(stat.get(), func(x_tail, y_tail), abs_tol=1e-10)  # type: ignore
+            assert math.isclose(stat.get(), func(x_tail, y_tail), abs_tol=1e-10)
 
 
 @pytest.mark.parametrize(
