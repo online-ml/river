@@ -52,7 +52,7 @@ class Univariate(Statistic[_OutT]):
     """A univariate statistic measures a property of a variable."""
 
     @abc.abstractmethod
-    def update(self, x: Any) -> None:
+    def update(self, x: float) -> None:
         """Update the called instance."""
 
     @property
@@ -132,7 +132,7 @@ class Link(Univariate[_ChainedOutT], Generic[_OutT, _ChainedOutT]):
         self.left.update(x)
         y = self.left.get()
         if y is not None:
-            self.right.update(y)
+            self.right.update(y)  # type: ignore[arg-type]
 
     def get(self) -> _ChainedOutT | None:
         return self.right.get()
@@ -162,5 +162,5 @@ class Bivariate(Statistic[_OutT]):
     """A bivariate statistic measures a relationship between two variables."""
 
     @abc.abstractmethod
-    def update(self, x: Any, y: Any) -> None:
+    def update(self, x: float, y: float) -> None:
         """Update the called instance."""
