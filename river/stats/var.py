@@ -103,11 +103,11 @@ class Var(stats.base.Univariate):
         return 0.0
 
     @classmethod
-    def _from_state(cls, n: float, m: float, sig: float, *, ddof: int = 1) -> Var:
+    def _from_state(cls, n: float, m: float, var: float, *, ddof: int = 1) -> Var:
         new = cls(ddof=ddof)
         new.mean = stats.Mean._from_state(n, m)  # noqa
         # scale the second order statistic
-        new._S = (n - ddof) * sig
+        new._S = (n - ddof) * var
 
         return new
 

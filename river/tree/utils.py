@@ -249,8 +249,8 @@ class GradHessStats:
 
         grad_term_var = delta_pred * delta_pred * variance.gradient
         hess_term_var = 0.25 * variance.hessian * (delta_pred**4.0)
-        sigma = max(0.0, grad_term_var + hess_term_var + (delta_pred**3) * covariance)
-        return Var._from_state(n, mean, sigma)  # noqa
+        loss_var = max(0.0, grad_term_var + hess_term_var + (delta_pred**3) * covariance)
+        return Var._from_state(n, mean, loss_var)  # noqa
 
 
 def calculate_object_size(obj: typing.Any, unit: str = "byte") -> int:

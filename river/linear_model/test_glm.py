@@ -603,6 +603,13 @@ def test_bayesian_predict_many_returns_native_backend(
     assert all(math.isclose(g, e, rel_tol=1e-9) for g, e in zip(got, expected))
 
 
+def test_bayesian_predict_one_distribution_uses_predictive_variance() -> None:
+    """The predictive distribution must expose the standard deviation, not its square root."""
+    model = lm.BayesianLinearRegression(beta=25)
+    prediction = model.predict_one({}, with_dist=True)
+    assert prediction.sigma == pytest.approx(1 / math.sqrt(model.beta))
+
+
 @pytest.mark.parametrize("smoothing", [None, 0.8])
 def test_bayesian_learn_many_matches_learn_one(
     frame_backend: FrameBackend, reg_batch: Columnar, smoothing: float | None

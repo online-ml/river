@@ -22,9 +22,17 @@
 - Gave the `CluStream`, `DenStream`, and `DBSTREAM` micro-cluster objects `__slots__`. These are created in large numbers on long streams, so dropping their per-instance `__dict__` trims memory (~40 bytes per micro-cluster). Behavior is unchanged.
 - `CluStreamMicroCluster` no longer inherits from `base.Base`; it is an internal data structure, not an estimator, so the estimator machinery (cloning, parameter introspection, `repr`) never applied to it. This matches the `DenStream`/`DBSTREAM` micro-clusters and is what lets it use `__slots__`.
 
+## compat
+
+- The mini-batch methods of the scikit-learn wrappers (`compat.SKL2RiverRegressor`, `compat.SKL2RiverClassifier`) now accept and return any [narwhals](https://github.com/narwhals-dev/narwhals)-supported eager backend (pandas, polars, pyarrow, ...) instead of being pandas-only, preserving the input backend and pandas index on output. A mini-batch missing a learnt feature now raises a `ValueError` naming it.
+- `compat.convert_sklearn_to_river` is now overloaded on `classes`, so a type checker infers `SKL2RiverRegressor` when it is omitted and `SKL2RiverClassifier` when it is given. Behavior change: passing `classes` along with a regressor now raises a `ValueError` instead of being silently ignored.
+- `compat.SKL2RiverClassifier.predict_proba_one` now returns plain `float` probabilities instead of numpy scalars.
+
 ## compose
 
+- The mini-batch methods of `compose.Pipeline`, `compose.TransformerUnion`, `compose.Select`, and `compose.TransformerProduct` now accept and return any [narwhals](https://github.com/narwhals-dev/narwhals)-supported eager backend (pandas, polars, pyarrow, ...) instead of being pandas-only, so a whole pipeline can be mini-batched on a non-pandas backend. The input backend is preserved on output, including the pandas index, and `pandas` is no longer required unless the input is a pandas frame. `TransformerProduct` keeps the pandas `Sparse[uint8]` fast path when crossing one-hot encoded features.
 - `compose.Pipeline` now forwards extra keyword arguments (such as the timestamp `t` used by `utils.TimeRolling`, or a sample weight `w`) to each step whose method declares them, and drops them for steps that don't. This makes `feature_extraction.Agg`/`TargetAgg` backed by `utils.TimeRolling` work inside a pipeline via `model.learn_one(x, y, t=t)`. Routing applies to `learn_one` and to the predict-time methods (`predict_one`, `predict_proba_one`, `score_one`, `transform_one`), so it also works under `compose.learn_during_predict` where unsupervised steps learn during `predict_one(x, t=t)`. Fixes [#1600](https://github.com/online-ml/river/issues/1600). The accepted arguments are determined once when the pipeline plan is built, so pipelines with no extra arguments keep their previous speed.
+- Fixed `compose.Pipeline.transform_many` fitting the final unsupervised transformer on the data being transformed when `learn_during_predict` is off (a `not` was inverted relative to the single-instance `transform_one` and to the intermediate steps). `transform_many` no longer mutates the model outside `learn_during_predict`, and it now agrees with `transform_one` instead of double-learning the final step.
 
 ## covariance
 
@@ -57,6 +65,7 @@
 - Restructured `BayesianLinearRegression` around NumPy-backed storage. ~11× faster `learn_one` at 20 features, ~24× at 50 features. Speeds up `bandit.LinUCB` too.
 - `BayesianLinearRegression` now handles features arriving and disappearing after training begins (it passes `check_emerging_features` and `check_shuffle_features_no_impact`, previously skipped).
 - Fixed `BayesianLinearRegression` coefficients diverging to `inf`/`nan` under emerging/disappearing features; `learn_one` now updates the full state with a zero-padded `x`. Behavior change: features absent from `x` are treated as observed 0s (matching the other linear models) rather than skipped — identical to before when every call sees the same features.
+- Fixed `BayesianLinearRegression.predict_one(..., with_dist=True)` which was not using the correct standard deviation.
 - Sped up the `LinearRegression`/`LogisticRegression.learn_many` mini-batch gradient (~2-3×) by contracting the sample axis inside the `np.einsum`. No semantic change.
 - Sped up `learn_one` for the linear models (`LinearRegression`, `LogisticRegression`, `Perceptron`, ...): updates now scale with the number of active features instead of the total number of features ever seen. Outputs are unchanged.
 - Stabilised `BayesianLinearRegression` across BLAS implementations and sped it up (~10-20%) by accumulating an exact natural mean and recovering the posterior mean lazily, instead of propagating it through compounding rank-1 updates (which drifted ~0.6% between macOS Accelerate and Linux OpenBLAS).
@@ -66,6 +75,7 @@
 ## metrics
 
 - Fixed `metrics.base.Metrics` (a metrics collection, built via `metric_a + metric_b`) dropping the sample weight `w`: `update` now forwards `w` to each child metric, so weighted metrics report correct values inside a collection and `update`/`revert` cancel exactly. Previously `revert` applied the weight but `update` ignored it.
+- Fixed `metrics.BalancedAccuracy` deflating its score when a label appears in the predictions but never as a ground-truth label. Such a class has no support, so its recall is undefined and must be excluded from the per-class average; previously it was counted as `0` and inflated the denominator, disagreeing with `sklearn.metrics.balanced_accuracy_score`. `BalancedAccuracy` is now covered by the scikit-learn equivalence test.
 
 ## multiclass
 
@@ -99,15 +109,19 @@
 
 ## preprocessing
 
+- Added `preprocessing.GapEncoder`, an online Gamma-Poisson factorization of character n-gram counts for embedding fuzzy/dirty string categories (the streaming counterpart of skrub's `GapEncoder`). The vocabulary and topics grow as new strings arrive, and `transform_one` is read-only. Closes [#1439](https://github.com/online-ml/river/issues/1439).
 - Added a `window_size` parameter to `preprocessing.StandardScaler`, `preprocessing.MinMaxScaler`, and `preprocessing.MaxAbsScaler`. When set, the scaler tracks its statistics over the last `window_size` observations instead of the whole stream.
 - Added a `_from_state` classmethod to `preprocessing.MinMaxScaler`, `preprocessing.MaxAbsScaler`, and `preprocessing.StandardScaler` so a scaler can be warm-started from precomputed statistics without replaying past observations.
 - `preprocessing.FeatureHasher` now hashes with MurmurHash3 in Rust, making it much faster. It gains an `alternate_sign` parameter (default `True`, matching scikit-learn) and returns a plain `dict`. Hashed feature indices differ from previous versions.
 - `preprocessing.OneHotEncoder` mini-batch methods (`learn_many`, `transform_many`) now accept and return any [narwhals](https://github.com/narwhals-dev/narwhals)-supported eager backend (pandas, polars, pyarrow, ...) instead of being pandas-only, preserving the input backend (including the pandas index) on output. The pandas path keeps returning `Sparse[uint8]` columns; other backends return dense integer columns, as they have no sparse-array equivalent. `transform_many` only requires `pandas` when the input is a pandas frame.
 - `preprocessing.OrdinalEncoder` mini-batch methods (`learn_many`, `predict_many`, `predict_proba_many`) now accept and return any [narwhals](https://github.com/narwhals-dev/narwhals)-supported eager backend (pandas, polars, pyarrow, ...) instead of being pandas-only. The input backend is preserved on output, including the pandas index. These methods no longer require `pandas` to be installed.
+- Fixed `preprocessing.PreviousImputer.transform_one` mutating the caller's dictionary in place: it now copies the features before filling missing values, like `StatImputer` does. Transformers are supposed to be pure, and the mutation was visible to other branches of a `compose.TransformerUnion` fed the same dict.
+- `preprocessing.StandardScaler` mini-batch methods (`learn_many`, `transform_many`) now accept and return any [narwhals](https://github.com/narwhals-dev/narwhals)-supported eager backend (pandas, polars, pyarrow, ...) instead of being pandas-only, preserving the input backend (including the pandas index) on output. Classic numpy-backed pandas keeps the historical fast path (and its float dtype, e.g. `float32`); other backends are scaled through a `float64` path. `transform_many` only requires `pandas` when the input is a pandas frame. Outputs are unchanged on the pandas path.
 
 ## proba
 
 - Added weighted sample support to `MultivariateGaussian.update` and `MultivariateGaussian.revert` by accepting an optional `w` parameter and propagating it to the underlying `EmpiricalCovariance` instance.
+- Fixed `Beta.n_samples` returning the negative of the observed-sample count (the two operands of the difference were transposed), so it now returns a non-negative count consistent with the other `proba` distributions.
 
 ## reco
 
