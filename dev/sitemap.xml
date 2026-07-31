@@ -1342,6 +1342,15 @@
         <loc>https://riverml.xyz/dev/api/stats/base/Bivariate/</loc>
       </url>
       <url>
+        <loc>https://riverml.xyz/dev/api/stats/base/Link/</loc>
+      </url>
+      <url>
+        <loc>https://riverml.xyz/dev/api/stats/base/RollingUnivariate/</loc>
+      </url>
+      <url>
+        <loc>https://riverml.xyz/dev/api/stats/base/Statistic/</loc>
+      </url>
+      <url>
         <loc>https://riverml.xyz/dev/api/stats/base/Univariate/</loc>
       </url>
       <url>

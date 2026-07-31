@@ -4044,6 +4044,7 @@
 <ul>
 <li>Added <a href="../../api/stats/EWCov"><code>stats.EWCov</code></a>, an exponentially weighted covariance between two variables (the bivariate counterpart of <a href="../../api/stats/EWVar"><code>stats.EWVar</code></a>).</li>
 <li>Added <a href="../../api/stats/ChiSquared"><code>stats.ChiSquared</code></a>, a streaming Chi-squared statistic between two categorical variables. Wrap it with <a href="../../api/utils/Rolling"><code>utils.Rolling</code></a> for a rolling version.</li>
+<li>Enabled strict typing in the entire <code>stats</code> package: added missing annotations and made the statistic classes generic in their output type (values produced by <code>.get()</code>).</li>
 </ul>
 <h2 id="tree">tree<a class="headerlink" href="#tree" title="Permanent link">&para;</a></h2>
 <ul>

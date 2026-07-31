@@ -5384,6 +5384,12 @@
       
         
       
+        
+      
+        
+      
+        
+      
     
     
     
@@ -47661,11 +47667,11 @@
 <ul>
 <li>
 <p><strong>left</strong></p>
-<p><em>Type</em> → <code>stats.base.Univariate</code></p>
+<p><em>Type</em> → <code>Univariate[_OutT]</code></p>
 </li>
 <li>
 <p><strong>right</strong></p>
-<p><em>Type</em> → <code>stats.base.Univariate</code></p>
+<p><em>Type</em> → <code>Univariate[_ChainedOutT]</code></p>
 <p>The output from <code>left</code>'s <code>get</code> method is passed to <code>right</code>'s <code>update</code> method if <code>left</code>'s <code>get</code> method doesn't produce <code>None.</code></p>
 </li>
 </ul>
@@ -47681,7 +47687,7 @@
 which is 0.</p>
 <p><div class="language-python highlight"><pre><span></span><code><span class="n">stat</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>0.
+<div class="language-text highlight"><pre><span></span><code>0.0
 </code></pre></div></p>
 <p>Let us now call <code>update</code>.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">stat</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
@@ -47723,7 +47729,7 @@ only value from the past.</p>
 <p>Update the called instance.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     — <code>numbers.Number</code>    </li>
+<li><strong>x</strong>     — <code>Any</code>    </li>
 </ul>
 </details>
 <p><span /></p>
