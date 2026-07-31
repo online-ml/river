@@ -157,7 +157,7 @@ def yield_checks(model: Estimator) -> typing.Iterator[typing.Callable]:
     """
 
     from river import base, utils
-    from river.anomaly.base import AnomalyDetector
+    from river.anomaly.base import AnomalyDetector, SupervisedAnomalyDetector
     from river.time_series.base import Forecaster
 
     # General checks
@@ -232,6 +232,19 @@ def yield_checks(model: Estimator) -> typing.Iterator[typing.Callable]:
 
     if isinstance(model, AnomalyDetector):
         dataset_checks.append(anomaly.check_roc_auc)
+
+    # score_one must never mutate an anomaly detector (supervised or not).
+    # Yielded directly with its own dataset rather than via dataset_checks:
+    # supervised anomaly detectors are not wired into the generic
+    # (predict_one-based) dataset_checks, but their score_one must be
+    # side-effect free too.
+    if isinstance(model, (AnomalyDetector, SupervisedAnomalyDetector)):
+        from river import datasets as _anomaly_datasets
+
+        yield _wrapped_partial(
+            anomaly.check_score_one_does_not_mutate,
+            dataset=list(_anomaly_datasets.CreditCard().take(500)),
+        )
 
     if isinstance(model, Forecaster):
         dataset_checks = [
