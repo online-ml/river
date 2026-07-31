@@ -5,7 +5,7 @@ import random
 from river import stats
 
 
-def test_issue_1178():
+def test_issue_1178() -> None:
     """
 
     https://github.com/online-ml/river/issues/1178
@@ -41,7 +41,7 @@ def test_issue_1178():
     """
 
 
-def test_ge():
+def test_ge() -> None:
     low = stats.Quantile(0.01)
     high = stats.Quantile(0.99)
 
@@ -49,4 +49,8 @@ def test_ge():
         x = random.random()
         low.update(x)
         high.update(x)
-        assert high.get() >= low.get()
+        # TODO: drop the None assertions once get() raises stats.NotEnoughSamples
+        low_value, high_value = low.get(), high.get()
+        assert low_value is not None
+        assert high_value is not None
+        assert high_value >= low_value

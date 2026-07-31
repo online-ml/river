@@ -245,7 +245,6 @@ ignore_missing_imports = true
 # Disable strict mode for all non fully-typed modules
 module = [
     "river.metrics.*",
-    "river.stats.*",
     "river.optim.*",
     "river.datasets.*",
     "river.tree.*",

@@ -172,7 +172,7 @@ class Agg(base.Transformer):
         self,
         on: str,
         by: str | list[str] | None,
-        how: stats.base.Univariate | utils.Rolling | utils.TimeRolling,
+        how: stats.base.Univariate[typing.Any] | utils.Rolling | utils.TimeRolling,
     ):
         self.on = on
         self.by = (by if isinstance(by, list) else [by]) if by is not None else by
@@ -203,6 +203,7 @@ class Agg(base.Transformer):
     def state(self) -> pd.Series:
         """Return the current values for each group as a series."""
         pd = utils.pandas.import_pandas()
+
         return pd.Series(
             (stat.get() for stat in self._groups.values()),
             index=(
@@ -341,7 +342,7 @@ class TargetAgg(base.SupervisedTransformer, Agg):
     def __init__(
         self,
         by: str | list[str] | None,
-        how: stats.base.Univariate | utils.Rolling | utils.TimeRolling,
+        how: stats.base.Univariate[typing.Any] | utils.Rolling | utils.TimeRolling,
         target_name="y",
     ):
         super().__init__(on=target_name, by=by, how=how)

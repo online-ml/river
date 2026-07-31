@@ -227,7 +227,7 @@ class StatImputer(base.Transformer):
         return x
 
 
-class Constant(stats.base.Univariate):
+class Constant(stats.base.Univariate[typing.Any]):
     """Implements the `stats.base.Univariate` interface but always returns the same value.
 
     Parameters

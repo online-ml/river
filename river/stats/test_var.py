@@ -6,7 +6,7 @@ import random
 from river import stats
 
 
-def test_weighted_variance_with_close_numbers():
+def test_weighted_variance_with_close_numbers() -> None:
     """
 
     Origin of this test: https://github.com/online-ml/river/issues/732
@@ -34,7 +34,7 @@ def test_weighted_variance_with_close_numbers():
     assert var.get() > 0 and math.isclose(var.get(), 4.648047194845607e-15)
 
 
-def test_revert():
+def test_revert() -> None:
     for _ in range(5):
         X = [random.random() for _ in range(20)]
 

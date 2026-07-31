@@ -53,7 +53,7 @@ class Quantile(stats.base.Univariate):
 
     # Note for devs, if you want look the pure python implementation here:
     # https://github.com/online-ml/river/blob/40c3190c9d05671ae4c2dc8b76c163ea53a45fb0/river/stats/quantile.py
-    def __init__(self, q: float = 0.5):
+    def __init__(self, q: float = 0.5) -> None:
         super().__init__()
         if not 0 < q < 1:
             raise ValueError("q is not comprised between 0 and 1")
@@ -61,19 +61,19 @@ class Quantile(stats.base.Univariate):
         self._is_updated = False
         self.q = q  # Used by anomaly.QuantileFilter
 
-    def update(self, x):
+    def update(self, x: float) -> None:
         self._quantile.update(x)
         if not self._is_updated:
             self._is_updated = True
 
-    def get(self):
+    def get(self) -> float | None:
         # HACK: Avoid this following error in `QuantileFilter`
         # panicked at 'index out of bounds: the len is 0 but the index is 0'
         if not self._is_updated:
             return None
         return self._quantile.get()
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         # We surcharge this method to avoid this error on rust side:
         # pyo3_runtime.PanicException: index out of bounds: the len is 0 but the index is 0
         # This error is caused by the `get()` use before the update in the super method.
@@ -128,7 +128,7 @@ class RollingQuantile(stats.base.RollingUnivariate):
 
     # Note for devs, if you want look the pure python implementation here:
     # https://github.com/online-ml/river/blob/40c3190c9d05671ae4c2dc8b76c163ea53a45fb0/river/stats/quantile.py
-    def __init__(self, q: float, window_size: int):
+    def __init__(self, q: float, window_size: int) -> None:
         super().__init__()
         if not 0 <= q <= 1:
             raise ValueError("q is not comprised between 0 and 1")
@@ -137,7 +137,7 @@ class RollingQuantile(stats.base.RollingUnivariate):
         self.window_size_value = window_size
         self._is_updated = False
 
-    def update(self, x) -> None:
+    def update(self, x: float) -> None:
         self._rolling_quantile.update(x)
         if not self._is_updated:
             self._is_updated = True
@@ -148,10 +148,10 @@ class RollingQuantile(stats.base.RollingUnivariate):
         return self._rolling_quantile.get()
 
     @property
-    def window_size(self):
+    def window_size(self) -> int:
         return self.window_size_value
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         # We surcharge this method to avoid this error on rust side:
         # pyo3_runtime.PanicException: attempt to subtract with overflow
         # This error is caused by the `get()` use before the update in the super method.
