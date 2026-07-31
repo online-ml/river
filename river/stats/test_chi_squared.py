@@ -141,8 +141,6 @@ def test_chi_squared_rolling() -> None:
 
     for x, y in data[:4]:
         chi2.update(x, y)
-    # `utils.Rolling` proxies attribute access via `__getattr__ -> object`, so mypy cannot
-    # know that `get` is callable here.
     assert math.isclose(chi2.obj.get(), 4.0)
 
     chi2.update(*data[4])

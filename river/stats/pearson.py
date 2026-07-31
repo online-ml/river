@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import math
+
 import numpy as np
 
 from river import stats
@@ -71,7 +73,7 @@ class PearsonCorr(stats.base.Bivariate):
         self.cov_xy = stats.Cov(ddof=ddof)
 
     @property
-    def ddof(self) -> float:
+    def ddof(self) -> int:
         return self.cov_xy.ddof
 
     def update(self, x: float, y: float) -> None:
@@ -93,5 +95,5 @@ class PearsonCorr(stats.base.Bivariate):
         var_x = self.var_x.get()
         var_y = self.var_y.get()
         if var_x and var_y:
-            return self.cov_xy.get() / float((var_x * var_y) ** 0.5)
+            return self.cov_xy.get() / math.sqrt(var_x * var_y)
         return 0
