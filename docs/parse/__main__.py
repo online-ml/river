@@ -770,7 +770,7 @@ def update_api_nav(library: str, config_path: pathlib.Path):
             lines.append(f"    - {mod_name}: {api_path}\n")
 
     config_text = config_path.read_text()
-    pattern = r"(  - API:\n(?:    - .*\n)*)"
+    pattern = r"(  - API:\n(?:    (?: )*- .*\n)*)"
     config_text = re.sub(pattern, "".join(lines), config_text)
     config_path.write_text(config_text)
 
