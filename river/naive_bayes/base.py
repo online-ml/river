@@ -8,7 +8,7 @@ import numpy as np
 from scipy import sparse, special
 
 from river import base, utils
-from river.utils.dataframe import into_frame, to_native_frame, to_numpy
+from river.utils.dataframe import into_frame, to_native_frame, to_native_series, to_numpy
 
 if typing.TYPE_CHECKING:
     import pandas as pd
@@ -54,6 +54,15 @@ class BaseNB(base.MiniBatchClassifier):
         lse = np.asarray(lse).ravel()
         result = np.exp(jll_np - lse[:, np.newaxis])
         return to_native_frame({col: result[:, i] for i, col in enumerate(columns)}, like=jll_nw)
+
+    def predict_many(self, X: IntoDataFrame):
+        y_pred = self.predict_proba_many(X)
+        y_pred_nw = into_frame(y_pred)
+        if y_pred_nw.is_empty() or not y_pred_nw.columns:
+            return y_pred
+        values = to_numpy(y_pred_nw)
+        labels = np.asarray(y_pred_nw.columns, dtype=object)
+        return to_native_series(labels[np.argmax(values, axis=1)], name=None, like=y_pred_nw)
 
     @property
     def _multiclass(self):
