@@ -360,3 +360,73 @@ def test_gaussian_learn_many_not_fit():
 
     assert model.predict_proba_many(X).equals(pd.DataFrame(index=["river", "rocks"]))
     assert model.predict_many(X).equals(pd.DataFrame(index=["river", "rocks"]))
+
+
+def _categorical_dataset(seed, n=80):
+    import random
+
+    rng = random.Random(seed)
+    weather = ["sunny", "overcast", "rainy"]
+    humidity = ["high", "normal"]
+    rows, ys = [], []
+    for _ in range(n):
+        w, h = rng.choice(weather), rng.choice(humidity)
+        rows.append({"weather": w, "humidity": h})
+        ys.append("yes" if (w == "overcast" or h == "normal") else "no")
+    return weather, humidity, rows, ys
+
+
+@pytest.mark.parametrize("alpha", [1.0, 2.0, 3.0])
+def test_categorical_vs_sklearn(alpha):
+    """river's CategoricalNB must match sklearn's CategoricalNB on categorical data."""
+    weather, humidity, rows, ys = _categorical_dataset(seed=42)
+    wmap = {c: i for i, c in enumerate(weather)}
+    hmap = {c: i for i, c in enumerate(humidity)}
+    ymap = {"no": 0, "yes": 1}
+    inv_y = {v: k for k, v in ymap.items()}
+    X = np.array([[wmap[r["weather"]], hmap[r["humidity"]]] for r in rows])
+    Y = np.array([ymap[y] for y in ys])
+
+    river_model = naive_bayes.CategoricalNB(alpha=alpha)
+    for r, y in zip(rows, ys):
+        river_model.learn_one(r, y)
+
+    sk = sk_naive_bayes.CategoricalNB(alpha=alpha).fit(X, Y)
+
+    for r, xrow in zip(rows, X):
+        river_proba = river_model.predict_proba_one(r)
+        sk_proba = sk.predict_proba(xrow.reshape(1, -1))[0]
+        for idx, cls in enumerate(sk.classes_):
+            assert river_proba[inv_y[cls]] == pytest.approx(sk_proba[idx])
+
+
+def test_categorical_learn_many_vs_learn_one():
+    """CategoricalNB.learn_many must yield the same model as repeated learn_one."""
+    _, _, rows, ys = _categorical_dataset(seed=7, n=40)
+
+    one = naive_bayes.CategoricalNB(alpha=1)
+    for r, y in zip(rows, ys):
+        one.learn_one(r, y)
+
+    many = naive_bayes.CategoricalNB(alpha=1)
+    many.learn_many(pd.DataFrame(rows), pd.Series(ys))
+
+    assert one.class_counts == many.class_counts
+    assert one.feature_counts == many.feature_counts
+
+    test_x = {"weather": "overcast", "humidity": "normal"}
+    assert one.predict_proba_one(test_x) == pytest.approx(many.predict_proba_one(test_x))
+
+
+def test_categorical_handles_unseen_feature_value():
+    """An unseen category at predict time must not raise and must stay normalized."""
+    model = naive_bayes.CategoricalNB(alpha=1)
+    for x, y in [
+        ({"weather": "sunny"}, "no"),
+        ({"weather": "rainy"}, "yes"),
+    ]:
+        model.learn_one(x, y)
+
+    proba = model.predict_proba_one({"weather": "snowy"})  # category never seen
+    assert set(proba) == {"no", "yes"}
+    assert sum(proba.values()) == pytest.approx(1.0)
