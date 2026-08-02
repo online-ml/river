@@ -1,5 +1,9 @@
 ﻿# Unreleased
 
+## anomaly
+
+- Added `anomaly.RobustRandomCutForest`, an online implementation of the Robust Random Cut Forest (Guha et al., 2016). It maintains an ensemble of robust random cut trees over a sliding window of the stream and scores points by their average collusive displacement (CoDisp); higher scores indicate anomalies. The tree logic is a faithful port of the reference `rrcf` package and `score_one` is side-effect-free.
+
 ## drift
 
 - The `river.drift` sub-package is now clean under strict mypy, and the `river.drift.*` entry was removed from the non-strict overrides in `pyproject.toml`. Public signatures and docstrings are unchanged.
