@@ -41,13 +41,13 @@ uv sync
 uv run pytest
 
 # Run a single test file
-uv run pytest river/linear_model/test_glm.py
+uv run pytest tests/linear_model/test_glm.py
 
 # Lint and format (via prek hooks)
 uv run prek run --all-files
 
 # Type checking
-uv run mypy river
+uv run mypy
 
 # Build and serve docs locally
 uv sync --group docs

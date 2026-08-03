@@ -70,7 +70,7 @@ jobs:
         run: uv run make download-datasets
 
       # RIVER_PANDAS_ONLY restricts collection to the pandas-dependent modules
-      # (see river/conftest.py).
+      # (see conftest.py).
       - name: Run pandas tests
         env:
           RIVER_PANDAS_ONLY: "1"

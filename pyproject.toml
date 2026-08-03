@@ -34,7 +34,6 @@ include = [
     { path = "river/datasets/*.gz",  format = ["sdist", "wheel"] },
     { path = "river/datasets/*.zip", format = ["sdist", "wheel"] },
     { path = "river/drift/datasets/*.csv", format = ["sdist", "wheel"] },
-    { path = "river/stream/*.zip", format = ["sdist", "wheel"] },
 ]
 
 [dependency-groups]
@@ -192,7 +191,7 @@ quote-style = "double"
 indent-style = "space"
 
 [tool.mypy]
-files = "river"
+files = ["river", "tests", "conftest.py"]
 strict = true
 
 [[tool.mypy.overrides]]
@@ -277,7 +276,7 @@ module = [
     "river.imblearn.*",
     "river.feature_selection.*",
     "river.active.*",
-    "river.test_estimators",
+    "tests.*",
 ]
 # The strict option is global, the checks must be disabled one by one
 warn_unused_ignores = false
