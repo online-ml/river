@@ -50,7 +50,7 @@ class Theta(time_series.base.Forecaster):
     def _unit_test_params(cls):
         yield {"alpha": 0.2}
 
-        def _trend(self, t: int) -> float:
+    def _trend(self, t: int) -> float:
         """OLS fit on (t, y) seen so far, evaluated at t."""
         level = self.level if self.level is not None else 0.0
         if self.n < 2:
@@ -74,4 +74,3 @@ class Theta(time_series.base.Forecaster):
     def forecast(self, horizon: int, xs: list[dict] | None = None) -> list:
         level = self.level if self.level is not None else 0.0
         return [0.5 * level + 0.5 * self._trend(self.n + h) for h in range(1, horizon + 1)]
-
