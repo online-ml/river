@@ -50,13 +50,14 @@ class Theta(time_series.base.Forecaster):
     def _unit_test_params(cls):
         yield {"alpha": 0.2}
 
-    def _trend(self, t: int) -> float:
+        def _trend(self, t: int) -> float:
         """OLS fit on (t, y) seen so far, evaluated at t."""
+        level = self.level if self.level is not None else 0.0
         if self.n < 2:
-            return self.level if self.level is not None else 0.0
+            return level
         denom = self.n * self.sum_tt - self.sum_t**2
         if denom == 0:
-            return self.level
+            return level
         slope = (self.n * self.sum_ty - self.sum_t * self.sum_y) / denom
         intercept = (self.sum_y - slope * self.sum_t) / self.n
         return intercept + slope * t
@@ -73,3 +74,4 @@ class Theta(time_series.base.Forecaster):
     def forecast(self, horizon: int, xs: list[dict] | None = None) -> list:
         level = self.level if self.level is not None else 0.0
         return [0.5 * level + 0.5 * self._trend(self.n + h) for h in range(1, horizon + 1)]
+
