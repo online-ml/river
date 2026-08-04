@@ -61,7 +61,7 @@ class BaseNB(base.MiniBatchClassifier):
         if y_pred_nw.is_empty() or not y_pred_nw.columns:
             return y_pred
         values = to_numpy(y_pred_nw)
-        labels = np.asarray(y_pred_nw.columns, dtype=object)
+        labels = np.asarray(y_pred_nw.columns)
         return to_native_series(labels[np.argmax(values, axis=1)], name=None, like=y_pred_nw)
 
     @property
