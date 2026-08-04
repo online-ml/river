@@ -13,6 +13,8 @@ from river.base import tags
 from . import base
 
 if typing.TYPE_CHECKING:
+    from typing import Any
+
     import pandas as pd
     from narwhals.stable.v2.typing import IntoDataFrame, IntoSeries
     from numpy.typing import NDArray
@@ -188,7 +190,7 @@ class MultinomialNB(base.BaseNB):
         }
 
     @staticmethod
-    def _one_hot_targets(y: IntoSeries):
+    def _one_hot_targets(y: IntoSeries) -> tuple[Any, NDArray[np.object_]]:
         y = utils.dataframe.into_series(y)
         y_np = np.asarray(y.to_numpy())
         raw_classes = np.unique(y_np)
@@ -217,14 +219,16 @@ class MultinomialNB(base.BaseNB):
 
         """
         X = utils.dataframe.into_frame(X)
-        y, classes = self._one_hot_targets(y)
+        y_one_hot, classes = self._one_hot_targets(y)
         columns = X.columns
 
-        self.class_counts.update({c: int(count.item()) for c, count in zip(classes, y.sum(axis=1))})
+        self.class_counts.update(
+            {c: int(count.item()) for c, count in zip(classes, y_one_hot.sum(axis=1))}
+        )
 
         X = self._as_sparse_matrix(X)
 
-        fc = y @ X
+        fc = y_one_hot @ X
 
         self.class_totals.update({c: count.item() for c, count in zip(classes, fc.sum(axis=1))})
 
