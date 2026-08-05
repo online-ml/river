@@ -161,3 +161,20 @@ def test_euclidean_distance_dict(left, right, expected) -> None:
 
 def test_from_scaled() -> None:
     assert VectorDict.from_scaled({"a": 2.0, "b": -3.0}, 0.5) == {"a": 1.0, "b": -1.5}
+
+
+def test_masked_in_place_writes() -> None:
+    data = {"a": 1.0, "b": 2.0}
+    values: VectorDict[str, float] = VectorDict(data, mask={"a"})
+    values += VectorDict({"a": 3.0, "b": 4.0})
+    assert data == {"a": 4.0, "b": 2.0}
+    values.isub_scaled(VectorDict({"a": 2.0, "b": 5.0}), 0.5)
+    assert data == {"a": 3.0, "b": 2.0}
+
+
+def test_update_ema() -> None:
+    values: VectorDict[str, float] = VectorDict({"a": 2.0, "b": 3.0})
+    values.update_ema(VectorDict({"a": 4.0, "c": 5.0}), 0.5)
+    assert values == {"a": 3.0, "b": 3.0, "c": 2.5}
+    values.update_ema(VectorDict({"a": 3.0}), 0.5, square=True)
+    assert values == {"a": 6.0, "b": 3.0, "c": 2.5}

@@ -77,6 +77,10 @@ impl VectorDict {
         if !self.visible(py, key)? {
             return Ok(0.0);
         }
+        self.value_unchecked(py, key)
+    }
+
+    fn value_unchecked<'py>(&self, py: Python<'py>, key: &Bound<'py, PyAny>) -> PyResult<f64> {
         if let Some(value) = self.data.bind(py).get_item(key)? {
             return number(&value);
         }
@@ -247,9 +251,13 @@ fn apply_in_place(
             return Ok(());
         }
         for key in this.union(py, &vd)? {
-            this.data
-                .bind(py)
-                .set_item(&key, op(this.value(py, &key)?, vd.value(py, &key)?)?)?;
+            if !this.visible(py, &key)? {
+                continue;
+            }
+            this.data.bind(py).set_item(
+                &key,
+                op(this.value_unchecked(py, &key)?, vd.value(py, &key)?)?,
+            )?;
         }
     } else {
         let rhs = scalar(other)?;
@@ -753,12 +761,18 @@ impl VectorDict {
                 let vd = vd.borrow();
                 if vd.is_simple() {
                     for (key, other_value) in vd.data.bind(py).iter() {
-                        let value = this.value(py, &key)? + s * number(&other_value)?;
+                        if !this.visible(py, &key)? {
+                            continue;
+                        }
+                        let value = this.value_unchecked(py, &key)? + s * number(&other_value)?;
                         this.data.bind(py).set_item(key, value)?;
                     }
                 } else {
                     for key in vd.keys_vec(py)? {
-                        let value = this.value(py, &key)? + s * vd.value(py, &key)?;
+                        if !this.visible(py, &key)? {
+                            continue;
+                        }
+                        let value = this.value_unchecked(py, &key)? + s * vd.value(py, &key)?;
                         this.data.bind(py).set_item(key, value)?;
                     }
                 }
@@ -781,17 +795,51 @@ impl VectorDict {
                 let vd = vd.borrow();
                 if vd.is_simple() {
                     for (key, other_value) in vd.data.bind(py).iter() {
-                        let value = this.value(py, &key)? - s * number(&other_value)?;
+                        if !this.visible(py, &key)? {
+                            continue;
+                        }
+                        let value = this.value_unchecked(py, &key)? - s * number(&other_value)?;
                         this.data.bind(py).set_item(key, value)?;
                     }
                 } else {
                     for key in vd.keys_vec(py)? {
-                        let value = this.value(py, &key)? - s * vd.value(py, &key)?;
+                        if !this.visible(py, &key)? {
+                            continue;
+                        }
+                        let value = this.value_unchecked(py, &key)? - s * vd.value(py, &key)?;
                         this.data.bind(py).set_item(key, value)?;
                     }
                 }
             } else {
                 return Err(PyTypeError::new_err("expected VectorDict"));
+            }
+        }
+        Ok(slf.unbind())
+    }
+
+    #[pyo3(signature = (other, decay, square=false))]
+    fn update_ema(
+        slf: Bound<'_, VectorDict>,
+        py: Python<'_>,
+        other: Bound<'_, VectorDict>,
+        decay: f64,
+        square: bool,
+    ) -> PyResult<Py<VectorDict>> {
+        {
+            let this = slf.borrow();
+            let other = other.borrow();
+            for key in other.keys_vec(py)? {
+                if !this.visible(py, &key)? {
+                    continue;
+                }
+                let incoming = other.value(py, &key)?;
+                let incoming = if square {
+                    incoming * incoming
+                } else {
+                    incoming
+                };
+                let value = decay * this.value_unchecked(py, &key)? + (1.0 - decay) * incoming;
+                this.data.bind(py).set_item(key, value)?;
             }
         }
         Ok(slf.unbind())
