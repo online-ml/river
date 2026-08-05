@@ -129,7 +129,7 @@ def test_vectordict() -> None:
 
 
 def test_values_are_normalized_to_float() -> None:
-    values = VectorDict({"int": 1, "float": 2.5, "numpy": np.float64(3.5)})
+    values: VectorDict[str, float] = VectorDict({"int": 1, "float": 2.5, "numpy": np.float64(3.5)})
     assert values.to_dict() == {"int": 1.0, "float": 2.5, "numpy": 3.5}
     assert all(isinstance(value, float) for value in values.values())
 
@@ -139,6 +139,6 @@ def test_non_real_values_are_rejected(value) -> None:
     with pytest.raises(TypeError, match="real numbers"):
         VectorDict({"value": value})
 
-    values = VectorDict()
+    values: VectorDict[str, float] = VectorDict()
     with pytest.raises(TypeError, match="real numbers"):
         values["value"] = value
