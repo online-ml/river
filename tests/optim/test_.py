@@ -111,6 +111,21 @@ def test_optimizer_step_with_dict_same_as_step_with_vector_dict(optimizer):
         assert math.isclose(w, w_dict[i])
 
 
+@pytest.mark.parametrize("optimizer_cls", [optim.Adam, optim.RMSProp])
+def test_optimizer_step_with_changing_vector_dict_keys(optimizer_cls):
+    dict_optimizer = optimizer_cls()
+    vector_optimizer = optimizer_cls()
+    w_dict = {"a": 0.0, "b": 0.0}
+    vector_data = w_dict.copy()
+
+    for g_dict in ({"a": 1.0}, {"b": 2.0}, {"a": 3.0}):
+        dict_optimizer.step(w_dict, g_dict)
+        vector_optimizer.step(utils.VectorDict(vector_data, mask=g_dict), utils.VectorDict(g_dict))
+
+    for key, weight in w_dict.items():
+        assert math.isclose(vector_data[key], weight)
+
+
 @pytest.mark.parametrize(
     "optimizer",
     [pytest.param(optimizer, id=optimizer.__class__.__name__) for optimizer in optimizers()],

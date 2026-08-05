@@ -73,7 +73,10 @@ class RMSProp(optim.base.Optimizer):
             else:
                 self.g2 = utils.VectorDict()
 
-        self.g2 = self.rho * self.g2 + (1 - self.rho) * g**2
+        if isinstance(g, utils.VectorDict):
+            self.g2.update_ema(g, self.rho, square=True)
+        else:
+            self.g2 = self.rho * self.g2 + (1 - self.rho) * g**2
         w -= self.learning_rate / (self.g2 + self.eps) ** 0.5 * g
 
         return w
