@@ -21,6 +21,7 @@ from .hst import HalfSpaceTrees
 from .loda import LODA
 from .lof import LocalOutlierFactor
 from .pad import PredictiveAnomalyDetection
+from .rrcf import RobustRandomCutForest
 from .sad import StandardAbsoluteDeviation
 from .svm import OneClassSVM
 
@@ -32,6 +33,7 @@ __all__ = [
     "LODA",
     "OneClassSVM",
     "QuantileFilter",
+    "RobustRandomCutForest",
     "StandardAbsoluteDeviation",
     "ThresholdFilter",
     "LocalOutlierFactor",
