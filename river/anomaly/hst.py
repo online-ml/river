@@ -4,7 +4,7 @@ import collections
 import functools
 import random
 
-from river import anomaly, base
+from river import base
 from river.tree.padded import PaddedBranch, make_padded_tree
 
 __all__ = ["HalfSpaceTrees"]
@@ -49,7 +49,7 @@ def _walk_score(root, x, height, size_limit):
     return score
 
 
-class HalfSpaceTrees(anomaly.base.AnomalyDetector):
+class HalfSpaceTrees(base.AnomalyDetector):
     """Half-Space Trees (HST).
 
     Half-space trees are an online variant of isolation forests. They work well when anomalies are

@@ -2,12 +2,12 @@ from __future__ import annotations
 
 import math
 
-from river import anomaly, base, linear_model, preprocessing, stats, time_series
+from river import base, linear_model, preprocessing, stats, time_series
 
 __all__ = ["PredictiveAnomalyDetection"]
 
 
-class PredictiveAnomalyDetection(anomaly.base.SupervisedAnomalyDetector):
+class PredictiveAnomalyDetection(base.SupervisedAnomalyDetector):
     """Predictive Anomaly Detection.
 
     This semi-supervised technique to anomaly detection employs a predictive model to learn the normal behavior

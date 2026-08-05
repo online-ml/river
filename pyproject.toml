@@ -313,8 +313,6 @@ ignore_imports = [
     "river.base.viz -> river.compose",
     "river.checks.clf -> river.active.base",
     "river.checks.common -> river.active.base",
-    "river.checks.common -> river.anomaly.base",
-    "river.compose.pipeline -> river.anomaly.base",
     "river.conf.jackknife -> river.linear_model",
     "river.conf.jackknife -> river.preprocessing",
     "river.drift.retrain -> river.linear_model",

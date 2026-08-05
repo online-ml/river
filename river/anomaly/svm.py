@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from river import anomaly, linear_model, optim, utils
+from river import base, linear_model, optim, utils
 
 
-class OneClassSVM(linear_model.base.GLM, anomaly.base.AnomalyDetector):
+class OneClassSVM(linear_model.base.GLM, base.AnomalyDetector):
     """One-class SVM for anomaly detection.
 
     This is a stochastic implementation of the one-class SVM algorithm, and will not exactly match
