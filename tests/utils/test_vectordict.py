@@ -6,6 +6,7 @@ import numpy as np
 import pytest
 
 from river.utils import VectorDict
+from river.utils.vectordict import euclidean_distance_dict
 
 
 def test_vectordict() -> None:
@@ -142,3 +143,17 @@ def test_non_real_values_are_rejected(value) -> None:
     values: VectorDict[str, float] = VectorDict()
     with pytest.raises(TypeError, match="real numbers"):
         values["value"] = value
+
+
+@pytest.mark.parametrize(
+    "left, right, expected",
+    [
+        ({"a": 1.0, "b": 2.0}, {"a": 4.0, "b": 6.0}, 5.0),
+        ({"a": 3.0}, {"a": 3.0, "b": 4.0}, 4.0),
+        ({"a": 3.0, "b": 4.0}, {"a": 3.0}, 4.0),
+        ({"a": 3.0}, {"b": 4.0}, 5.0),
+    ],
+)
+def test_euclidean_distance_dict(left, right, expected) -> None:
+    assert euclidean_distance_dict(left, right) == expected
+    assert euclidean_distance_dict(right, left) == expected

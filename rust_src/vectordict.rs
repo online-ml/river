@@ -828,19 +828,24 @@ impl VectorDict {
 
 fn euclidean_distance_dict_dict(a: &Bound<'_, PyDict>, b: &Bound<'_, PyDict>) -> PyResult<f64> {
     let mut total = 0.0;
+    let mut matched = 0;
     for (key, value) in a.iter() {
         let av = number(&value)?;
-        let bv = b
-            .get_item(&key)?
-            .map(|value| number(&value))
-            .transpose()?
-            .unwrap_or(0.0);
+        let bv = match b.get_item(&key)? {
+            Some(value) => {
+                matched += 1;
+                number(&value)?
+            }
+            None => 0.0,
+        };
         total += (av - bv) * (av - bv);
     }
-    for (key, value) in b.iter() {
-        if !a.contains(&key)? {
-            let value = number(&value)?;
-            total += value * value;
+    if matched < b.len() {
+        for (key, value) in b.iter() {
+            if !a.contains(&key)? {
+                let value = number(&value)?;
+                total += value * value;
+            }
         }
     }
     Ok(total.sqrt())
