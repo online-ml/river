@@ -234,14 +234,12 @@ fn apply_in_place(
         if this.is_simple() && vd.is_simple() {
             let data = this.data.bind(py);
             let other_data = vd.data.bind(py);
-            let keys: Vec<_> = data.iter().map(|(key, _)| key).collect();
-            for key in keys {
-                let left = number(&data.get_item(&key)?.unwrap())?;
+            for (key, value) in data.iter() {
                 let right = match other_data.get_item(&key)? {
                     Some(value) => number(&value)?,
                     None => 0.0,
                 };
-                data.set_item(key, op(left, right)?)?;
+                data.set_item(key, op(number(&value)?, right)?)?;
             }
             for (key, value) in other_data.iter() {
                 if !data.contains(&key)? {
@@ -263,9 +261,8 @@ fn apply_in_place(
         let rhs = scalar(other)?;
         if this.is_simple() {
             let data = this.data.bind(py);
-            let keys: Vec<_> = data.iter().map(|(key, _)| key).collect();
-            for key in keys {
-                let value = number(&data.get_item(&key)?.unwrap())?;
+            for (key, value) in data.iter() {
+                let value = number(&value)?;
                 data.set_item(key, op(value, rhs)?)?;
             }
             return Ok(());
@@ -697,8 +694,17 @@ impl VectorDict {
 
     fn dot(&self, py: Python<'_>, values: &Bound<'_, PyDict>) -> PyResult<f64> {
         let mut total = 0.0;
+        let mask_matches = self
+            .mask
+            .as_ref()
+            .is_some_and(|mask| mask.bind(py).is(values));
         for (key, value) in values.iter() {
-            total += self.value(py, &key)? * number(&value)?;
+            let weight = if !self.use_mask || mask_matches {
+                self.value_unchecked(py, &key)?
+            } else {
+                self.value(py, &key)?
+            };
+            total += weight * number(&value)?;
         }
         Ok(total)
     }
@@ -828,6 +834,22 @@ impl VectorDict {
         {
             let this = slf.borrow();
             let other = other.borrow();
+            if other.is_simple() {
+                for (key, incoming) in other.data.bind(py).iter() {
+                    if !this.visible(py, &key)? {
+                        continue;
+                    }
+                    let incoming = number(&incoming)?;
+                    let incoming = if square {
+                        incoming * incoming
+                    } else {
+                        incoming
+                    };
+                    let value = decay * this.value_unchecked(py, &key)? + (1.0 - decay) * incoming;
+                    this.data.bind(py).set_item(key, value)?;
+                }
+                return Ok(slf.unbind());
+            }
             for key in other.keys_vec(py)? {
                 if !this.visible(py, &key)? {
                     continue;
