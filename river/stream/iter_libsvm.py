@@ -72,7 +72,7 @@ def iter_libsvm(
 
         y, x_str = line.split(" ", maxsplit=1)
         y = target_type(y)
-        x = dict([split_pair(pair) for pair in x_str.split(" ")])
+        x = dict([_split_pair(pair) for pair in x_str.split(" ")])
         yield x, y
 
     # Close the file if we opened it
@@ -80,7 +80,6 @@ def iter_libsvm(
         buffer.close()
 
 
-def split_pair(pair: str) -> tuple[FeatureName, float]:
+def _split_pair(pair: str) -> tuple[FeatureName, float]:
     name, value = pair.split(":")
-    value = float(value)
-    return name, value
+    return name, float(value)

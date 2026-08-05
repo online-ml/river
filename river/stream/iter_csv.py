@@ -2,47 +2,57 @@ from __future__ import annotations
 
 import csv
 import datetime as dt
+import os
 import random
+import typing
 
-from .. import base
-from . import utils
+from river import base
+from river.stream import utils
+
+if typing.TYPE_CHECKING:
+    from collections.abc import Callable, Sequence
+
+    from river.base.typing import FeatureName
+    from river.stream.typing import Compression, FilePath
 
 __all__ = ["iter_csv"]
 
 
-class DictReader(csv.DictReader):
+class DictReader(csv.DictReader["FeatureName"]):
     """Overlay on top of `csv.DictReader` which allows sampling."""
 
-    def __init__(self, fraction, rng, *args, **kwargs):
+    def __init__(
+        self, fraction: float, rng: random.Random, *args: typing.Any, **kwargs: typing.Any
+    ) -> None:
         super().__init__(*args, **kwargs)
         self.fraction = fraction
         self.rng = rng
+        # NOTE: `fieldnames` reads the header row, and is `None` for an empty file,
+        # in which case the first `next(self.reader)` below stops the iteration anyway.
+        self.names: Sequence[FeatureName] = self.fieldnames or ()
 
-    def __next__(self):
-        if self.line_num == 0:
-            self.fieldnames
-
+    def __next__(self) -> dict[FeatureName, typing.Any]:
         row = next(self.reader)
 
         if self.fraction < 1:
             while self.rng.random() > self.fraction:
                 row = next(self.reader)
 
-        return dict(zip(self.fieldnames, row))
+        return dict(zip(self.names, row))
 
 
 def iter_csv(
-    filepath_or_buffer,
+    filepath_or_buffer: FilePath | typing.TextIO,
     target: str | list[str] | None = None,
-    converters: dict | None = None,
-    parse_dates: dict | None = None,
+    converters: dict[FeatureName, Callable[[typing.Any], typing.Any]] | None = None,
+    parse_dates: dict[FeatureName, str] | None = None,
     drop: list[str] | None = None,
-    drop_nones=False,
-    fraction=1.0,
-    compression="infer",
+    drop_nones: bool = False,
+    fraction: float = 1.0,
+    compression: Compression | None = "infer",
     seed: int | None = None,
     field_size_limit: int | None = None,
-    **kwargs,
+    **kwargs: typing.Any,
 ) -> base.typing.Stream:
     """Iterates over rows from a CSV file.
 
@@ -147,30 +157,33 @@ def iter_csv(
         csv.field_size_limit(field_size_limit)
 
     # If a file is not opened, then we open it
-    buffer = filepath_or_buffer
-    if not hasattr(buffer, "read"):
-        buffer = utils.open_filepath(buffer, compression)
+    if isinstance(filepath_or_buffer, (str, os.PathLike)):
+        buffer = utils.open_filepath(filepath_or_buffer, compression)
+        should_close = True
+    else:
+        buffer = filepath_or_buffer
+        should_close = False
 
     for x in DictReader(fraction=fraction, rng=random.Random(seed), f=buffer, **kwargs):
         if drop:
-            for i in drop:
-                del x[i]
+            for dropped in drop:
+                del x[dropped]
 
         # Cast the values to the given types
         if converters is not None:
-            for i, t in converters.items():
-                x[i] = t(x[i])
+            for name, convert in converters.items():
+                x[name] = convert(x[name])
 
         # Drop Nones
         if drop_nones:
-            for i in list(x):
-                if x[i] is None:
-                    del x[i]
+            for name in list(x):
+                if x[name] is None:
+                    del x[name]
 
         # Parse the dates
         if parse_dates is not None:
-            for i, fmt in parse_dates.items():
-                x[i] = dt.datetime.strptime(x[i], fmt)
+            for name, fmt in parse_dates.items():
+                x[name] = dt.datetime.strptime(x[name], fmt)
 
         # Separate the target from the features
         y = None
@@ -182,7 +195,7 @@ def iter_csv(
         yield x, y
 
     # Close the file if we opened it
-    if buffer is not filepath_or_buffer:
+    if should_close:
         buffer.close()
 
     # Reset the file size limit to it's original value
