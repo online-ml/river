@@ -54,6 +54,7 @@ dev = [
     "mike @ git+https://github.com/squidfunk/mike.git",
     "polars>=1.1.0",
     "pyarrow>=11.0.0",
+    "import-linter>=2.13",
 ]
 compat = [
     "scikit-learn>=1.5.1,<2",
@@ -287,3 +288,47 @@ allow_untyped_calls = true
 allow_incomplete_defs = true
 allow_untyped_defs = true
 warn_return_any = false
+
+[tool.importlinter]
+root_packages = ["river"]
+exclude_type_checking_imports = true
+
+[[tool.importlinter.contracts]]
+name = "River sub-packages form a DAG"
+type = "acyclic_siblings"
+ancestors = ["river"]
+# TODO: we ignore all these function-local imports for now
+# as refactoring them would require a lot of work.
+# import-linter has no "ignore function-local" setting
+# so we need to list them manually, which is brittle.
+# Long-term solution would be to prevent function-local imports
+# (enable ruff PLC0415) and solve all the cyclic dependencies
+# they create.
+ignore_imports = [
+    "river.active.entropy -> river.tree",
+    "river.anomaly.filter -> river.preprocessing",
+    "river.base.base -> river.utils",
+    "river.base.estimator -> river.compose",
+    "river.base.transformer -> river.compose",
+    "river.base.viz -> river.compose",
+    "river.checks.clf -> river.active.base",
+    "river.checks.common -> river.active.base",
+    "river.checks.common -> river.anomaly.base",
+    "river.compose.pipeline -> river.anomaly.base",
+    "river.conf.jackknife -> river.linear_model",
+    "river.conf.jackknife -> river.preprocessing",
+    "river.drift.retrain -> river.linear_model",
+    "river.drift.retrain -> river.naive_bayes",
+    "river.drift.retrain -> river.preprocessing",
+    "river.evaluate.forecasting -> river.time_series",
+    "river.evaluate.progressive_validation -> river.active.base",
+    "river.model_selection.base -> river.compose",
+    "river.model_selection.base -> river.linear_model",
+    "river.model_selection.base -> river.optim",
+    "river.model_selection.base -> river.preprocessing",
+    "river.multioutput.chain -> river.neighbors",
+    "river.multioutput.encoder -> river.tree",
+    "river.preprocessing.pred_clipper -> river.linear_model",
+    "river.time_series -> river.evaluate",
+    "river.tree.base -> river.tree.viz",
+]
