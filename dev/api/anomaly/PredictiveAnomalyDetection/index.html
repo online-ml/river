@@ -4328,8 +4328,8 @@
 
 <h1 id="predictiveanomalydetection">PredictiveAnomalyDetection<a class="headerlink" href="#predictiveanomalydetection" title="Permanent link">&para;</a></h1>
 <p>Predictive Anomaly Detection.</p>
-<p>This semi-supervised technique to anomaly detection employs a predictive model to learn the normal behavior of a dataset. It forecasts future data points and compares these predictions with actual values to determine anomalies. An anomaly score is calculated based on the deviation of the prediction from the actual value, with higher scores indicating a higher probability of an anomaly. </p>
-<p>The actual anomaly score is calculated by comparing the squared-error to a dynamic threshold. If the error is larger than this threshold, the score will be 1.0; else, the score will be linearly distributed within the range (0.0, 1.0), with a higher score indicating a higher squared error compared to the threshold.</p>
+<p>This semi-supervised technique to anomaly detection employs a predictive model to learn the normal behavior     of a dataset. It forecasts future data points and compares these predictions with actual values to determine     anomalies. An anomaly score is calculated based on the deviation of the prediction from the actual value, with higher     scores indicating a higher probability of an anomaly. </p>
+<p>The actual anomaly score is calculated by comparing the squared-error to a dynamic threshold. If the error is larger     than this threshold, the score will be 1.0; else, the score will be linearly distributed within the range (0.0, 1.0),     with a higher score indicating a higher squared error compared to the threshold.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
@@ -4411,7 +4411,7 @@
 
 <span class="nb">print</span><span class="p">(</span><span class="n">scores</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>0.05329236123455621
+<div class="language-text highlight"><pre><span></span><code>0.0532923612345562
 </code></pre></div></p>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <details class="- abstract">
