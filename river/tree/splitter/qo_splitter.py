@@ -1,16 +1,13 @@
 from __future__ import annotations
 
-import functools
+import collections
 import math
 import typing
 
 from river import stats
 
-from ..utils import BranchFactory
+from ..utils import BranchFactory, combine_stats, update_stats
 from .base import Splitter
-
-if typing.TYPE_CHECKING:
-    from river import utils
 
 
 class QOSplitter(Splitter):
@@ -105,7 +102,7 @@ class QOSplitter(Splitter):
                 prev_x = x
                 continue
 
-            right_dist = pre_split_dist - left_dist
+            right_dist = combine_stats(pre_split_dist, left_dist, subtract=True)
             post_split_dists = [left_dist, right_dist]
             merit = criterion.merit_of_split(pre_split_dist, post_split_dists)
 
@@ -141,15 +138,15 @@ class Slot:
     def __init__(
         self,
         x: float,
-        y=typing.Union[float, "utils.VectorDict"],
+        y: float | dict,
         weight: float = 1.0,
     ):
         self.x_stats = stats.Mean()
         self.x_stats.update(x, weight)
 
-        self.y_stats: stats.Var | utils.VectorDict
+        self.y_stats: stats.Var | dict
 
-        self._update_estimator: typing.Callable[[float | utils.VectorDict, float], None]
+        self._update_estimator: typing.Callable[[float | dict, float], None]
         self.is_single_target = True
 
         self._init_estimator(y)
@@ -158,7 +155,7 @@ class Slot:
     def _init_estimator(self, y):
         if isinstance(y, dict):
             self.is_single_target = False
-            self.y_stats = utils.VectorDict(default_factory=functools.partial(stats.Var))
+            self.y_stats = collections.defaultdict(stats.Var)
             self._update_estimator = self._update_estimator_multivariate
         else:
             self.y_stats = stats.Var()
@@ -203,7 +200,7 @@ class FeatureQuantizer:
     def __len__(self):
         return len(self.hash)
 
-    def update(self, x: float, y: float | utils.VectorDict, weight: float):
+    def update(self, x: float, y: float | dict, weight: float):
         index = math.floor(x / self.radius)
         try:
             self.hash[index].update(x, y, weight)
@@ -211,18 +208,15 @@ class FeatureQuantizer:
             self.hash[index] = Slot(x, y, weight)
 
     def __iter__(self):
-        # Import river.utils here to prevent circular import of river.utils
-        from river import utils
-
         aux_stats = (
             stats.Var()
             if next(iter(self.hash.values())).is_single_target
-            else utils.VectorDict(default_factory=functools.partial(stats.Var))
+            else collections.defaultdict(stats.Var)
         )
 
         for i in sorted(self.hash.keys()):
             x = self.hash[i].x_stats.get()
-            aux_stats += self.hash[i].y_stats
+            update_stats(aux_stats, self.hash[i].y_stats)
             yield x, aux_stats
 
     def all(self):

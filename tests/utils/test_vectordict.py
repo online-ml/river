@@ -126,3 +126,19 @@ def test_vectordict() -> None:
     vy = VectorDict(y)
     assert vx.minimum(vy) == vy.minimum(vx) == {"a": 0, "b": -5, "c": 0}
     assert vx.maximum(vy) == vy.maximum(vx) == {"a": 1, "b": 0.5, "c": 4}
+
+
+def test_values_are_normalized_to_float() -> None:
+    values = VectorDict({"int": 1, "float": 2.5, "numpy": np.float64(3.5)})
+    assert values.to_dict() == {"int": 1.0, "float": 2.5, "numpy": 3.5}
+    assert all(isinstance(value, float) for value in values.values())
+
+
+@pytest.mark.parametrize("value", ["1", 1 + 2j, object()])
+def test_non_real_values_are_rejected(value) -> None:
+    with pytest.raises(TypeError, match="real numbers"):
+        VectorDict({"value": value})
+
+    values = VectorDict()
+    with pytest.raises(TypeError, match="real numbers"):
+        values["value"] = value

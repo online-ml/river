@@ -22,6 +22,7 @@ abi3 = ["pyo3/abi3-py311"]
 # build instead of scrolling past in CI logs. Applies to local `uv sync` /
 # `maturin develop` too, so issues surface before they reach CI.
 [lints.rust]
+unsafe_code = "forbid"
 warnings = "deny"
 
 [dependencies]

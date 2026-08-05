@@ -146,7 +146,7 @@ class GLM:
     # Single instance methods
 
     def _raw_dot_one(self, x: dict) -> float:
-        return self._weights @ utils.VectorDict(x) + self.intercept
+        return self._weights.dot(x) + self.intercept
 
     def _eval_gradient_one(self, x: dict, y: float, w: float) -> tuple[utils.VectorDict, float]:
         loss_gradient = self.loss.gradient(y_true=y, y_pred=self._raw_dot_one(x))
