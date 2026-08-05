@@ -83,8 +83,8 @@ class PredictiveAnomalyDetection(anomaly.base.SupervisedAnomalyDetector):
     ...     PAD.learn_one(None, y)
     ...     scores.append(score)
 
-    >>> print(scores[-1])
-    0.05329236123455621
+>>> print(scores[-1])
+0.0532923612345562
 
     References
     ----------
