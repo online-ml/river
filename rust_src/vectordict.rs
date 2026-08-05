@@ -153,7 +153,9 @@ fn scalar(value: &Bound<'_, PyAny>) -> PyResult<f64> {
 fn normalized<'py>(source: &Bound<'py, PyDict>, copy: bool) -> PyResult<Bound<'py, PyDict>> {
     let out = if copy { source.copy()? } else { source.clone() };
     for (key, value) in out.iter() {
-        out.set_item(key, number(&value)?)?;
+        if value.cast::<PyFloat>().is_err() {
+            out.set_item(key, number(&value)?)?;
+        }
     }
     Ok(out)
 }
@@ -288,11 +290,11 @@ impl VectorDict {
         mask: Option<Bound<'py, PyAny>>,
         copy: bool,
     ) -> PyResult<Self> {
-        let source = match data {
+        let data = match data {
             None => PyDict::new(py),
             Some(value) => {
                 if let Ok(dict) = value.cast::<PyDict>() {
-                    dict.clone()
+                    normalized(dict, copy)?
                 } else if let Ok(vd) = value.cast::<VectorDict>() {
                     vd.borrow().dict(py, copy)?
                 } else {
@@ -303,7 +305,6 @@ impl VectorDict {
                 }
             }
         };
-        let data = normalized(&source, copy)?;
         let mask = if copy {
             match mask {
                 Some(value) => Some(py.import("builtins")?.getattr("set")?.call1((value,))?),
@@ -351,6 +352,19 @@ impl VectorDict {
             mask,
             copy,
         )
+    }
+
+    #[staticmethod]
+    fn from_scaled(
+        py: Python<'_>,
+        values: &Bound<'_, PyDict>,
+        scalar: f64,
+    ) -> PyResult<Py<VectorDict>> {
+        let out = PyDict::new(py);
+        for (key, value) in values.iter() {
+            out.set_item(key, number(&value)? * scalar)?;
+        }
+        new_result(py, out)
     }
 
     fn to_dict<'py>(&self, py: Python<'py>) -> PyResult<Bound<'py, PyDict>> {

@@ -155,9 +155,8 @@ class GLM:
             utils.math.clamp(loss_gradient, -self.clip_gradient, self.clip_gradient)
         )
 
-        # Build gradient VectorDict in one pass instead of VectorDict(x) * scalar
-        gradient: VectorDict[typing.Any, typing.Any] = utils.VectorDict(
-            {key: value * loss_gradient for key, value in x.items()}
+        gradient: VectorDict[typing.Any, typing.Any] = utils.VectorDict.from_scaled(
+            x, loss_gradient
         )
 
         if self.l2:

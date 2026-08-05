@@ -157,3 +157,7 @@ def test_non_real_values_are_rejected(value) -> None:
 def test_euclidean_distance_dict(left, right, expected) -> None:
     assert euclidean_distance_dict(left, right) == expected
     assert euclidean_distance_dict(right, left) == expected
+
+
+def test_from_scaled() -> None:
+    assert VectorDict.from_scaled({"a": 2.0, "b": -3.0}, 0.5) == {"a": 1.0, "b": -1.5}
