@@ -9,9 +9,7 @@ import zipfile
 if typing.TYPE_CHECKING:
     from collections.abc import Mapping
 
-    FilePath = str | os.PathLike[str]
-    Compression = typing.Literal["infer", "gzip", "zip"]
-    ResolvedCompression = typing.Literal["gzip", "zip"]
+    from river.stream.typing import Compression, FilePath, ResolvedCompression
 
 EXT_TO_COMPRESSION: typing.Final[Mapping[str, ResolvedCompression]] = {
     ".gz": "gzip",
