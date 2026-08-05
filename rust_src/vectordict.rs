@@ -191,16 +191,22 @@ fn vector_new(
     if left.is_simple() && right.is_simple() {
         let left_data = left.data.bind(py);
         let right_data = right.data.bind(py);
+        let mut matched = 0;
         for (key, left_value) in left_data.iter() {
             let right_value = match right_data.get_item(&key)? {
-                Some(value) => number(&value)?,
+                Some(value) => {
+                    matched += 1;
+                    number(&value)?
+                }
                 None => 0.0,
             };
             out.set_item(key, op(number(&left_value)?, right_value))?;
         }
-        for (key, right_value) in right_data.iter() {
-            if !left_data.contains(&key)? {
-                out.set_item(key, op(0.0, number(&right_value)?))?;
+        if matched < right_data.len() {
+            for (key, right_value) in right_data.iter() {
+                if !left_data.contains(&key)? {
+                    out.set_item(key, op(0.0, number(&right_value)?))?;
+                }
             }
         }
         return new_result(py, out);
@@ -881,10 +887,15 @@ pub fn lazy_search_euclidean<'py>(
         let px = point.cast::<PyDict>()?;
         found.push((euclidean_distance_dict_dict(qx, px)?, index, entry));
     }
+    let keep = n_neighbors.max(0) as usize;
+    if keep < found.len() {
+        found.select_nth_unstable_by(keep, |a, b| a.0.total_cmp(&b.0).then(a.1.cmp(&b.1)));
+        found.truncate(keep);
+    }
     found.sort_by(|a, b| a.0.total_cmp(&b.0).then(a.1.cmp(&b.1)));
     let items = PyList::empty(py);
     let distances = PyList::empty(py);
-    for (distance, _, entry) in found.into_iter().take(n_neighbors.max(0) as usize) {
+    for (distance, _, entry) in found {
         items.append(entry.get_item(0)?)?;
         distances.append(distance)?;
     }
