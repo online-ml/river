@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import copy
+import gc
 import inspect
 import itertools
+import math
 import pickle
 import random
 
@@ -183,6 +185,61 @@ def check_debug_one(model, dataset):
             model.learn_one(x)
         model.debug_one(x)
         break
+
+
+def check_bounded_memory_growth(model, dataset):
+    """A truly online model's memory should not grow unboundedly with samples.
+
+    The dataset is split in half: a warmup phase (during which the model is
+    allowed to grow freely as features are discovered, dicts rehash, buffers
+    fill, etc.) and an equally sized measurement phase. The measurement-phase
+    growth is then compared against the warmup-phase growth. A genuinely
+    online model's growth slows after warmup, so measurement-phase growth
+    should be at most comparable to warmup-phase growth. A model that retains
+    state per sample would keep growing at the same rate and blow past that.
+
+    This is intentionally lenient: the goal is to catch dramatic regressions
+    (e.g. accidentally storing every sample) on heterogeneous CI machines, not
+    to police every byte. Measurement is noisy in practice — Python's garbage
+    collector, dict capacity jumps, and bursty tree splits can all shift the
+    numbers by tens of percent between runs.
+    """
+
+    samples = list(dataset)
+    if len(samples) < 4:
+        return  # not enough data to split meaningfully
+
+    warmup_end = len(samples) // 2
+
+    for x, y in samples[:warmup_end]:
+        _learn(model, x, y)
+    gc.collect()
+    size_after_warmup = model._raw_memory_usage
+
+    for x, y in samples[warmup_end:]:
+        _learn(model, x, y)
+    gc.collect()
+    size_final = model._raw_memory_usage
+
+    warmup_growth = size_after_warmup  # baseline is an empty model (~0 B)
+    measurement_growth = size_final - size_after_warmup
+    # Allow the measurement phase to grow by up to 3× the warmup phase plus
+    # a 16 KiB absolute floor. Same number of samples in each phase, so a
+    # model growing at a constant per-sample rate would land near 1×; bursty
+    # tree-ensemble splits (whose timing depends on data order and may all
+    # land in the measurement phase) can push that ratio higher. 3× catches
+    # dramatic acceleration without flagging benign bursts.
+    tolerance = max(16 * 1024, warmup_growth // 4)
+    limit = 3 * max(warmup_growth, 0) + tolerance
+
+    assert measurement_growth <= limit, (
+        f"Model memory grew unboundedly: "
+        f"{size_after_warmup} B after {warmup_end} warmup samples -> "
+        f"{size_final} B after {len(samples)} samples. "
+        f"Measurement-phase growth {measurement_growth:+d} B exceeds "
+        f"the {limit} B limit (3× warmup growth {warmup_growth} B + "
+        f"{tolerance} B tolerance)."
+    )
 
 
 def check_pickling_supports_roundtrip(model):
@@ -468,6 +525,71 @@ def check_predict_many_matches_predict_one(model, dataset):
             assert_predictions_are_close(float(m), float(o))
         else:
             assert m == o, f"predict_many vs predict_one disagree: {m!r} != {o!r}"
+
+
+def check_learn_many_matches_learn_one(model, dataset):
+    """`learn_many` over a batch must match a `learn_one` loop, even as features come and go.
+
+    Applies to every mini-batch estimator — regressors, classifiers and transformers — and
+    compares whatever the model produces per row (`predict_one`, `predict_proba_one` or
+    `transform_one`). Estimators whose mini-batch update is not equivalent to the per-row update
+    declare this check in `_unit_test_skips`: the gradient-descent linear models (one
+    mean-gradient step per batch rather than one step per row) and naive Bayes (whose
+    `learn_many` consumes sparse count matrices, covered by its own test).
+    """
+
+    import pandas as pd
+
+    params = seed_params(model._get_params(), seed=42)
+    model = model.clone(params)
+
+    rows = list(itertools.islice(dataset, 60))
+    features = list(rows[0][0]) if rows else []
+    if len(rows) < 25 or len(features) < 2:
+        return
+
+    # Feature subsets that emerge, disappear, reappear, and radically shrink across batches, so
+    # the equivalence is exercised under a changing feature space rather than a fixed schema.
+    half = len(features) // 2
+    subsets = [
+        features[:half],  # first half only
+        features,  # second half emerges
+        features[half:],  # first half disappears
+        features[:1],  # all but one disappear
+        features,  # everything reappears
+    ]
+    per = len(rows) // len(subsets)
+
+    supervised = model._supervised
+    one, many = model.clone(), model.clone()
+    queries = []
+    for i, cols in enumerate(subsets):
+        chunk = rows[i * per : (i + 1) * per]
+        batch = [{c: float(x[c]) for c in cols} for x, _ in chunk]
+        targets = [y for _, y in chunk]
+        for x, y in zip(batch, targets):
+            _learn(one, x, y)
+        X = pd.DataFrame(batch, columns=cols)
+        try:
+            many.learn_many(X, pd.Series(targets)) if supervised else many.learn_many(X)
+        except (AttributeError, NotImplementedError):
+            # A pipeline/union may declare itself mini-batch yet wrap a step without learn_many.
+            return
+        queries.extend(batch)
+
+    # `learn_one` and `learn_many` accumulate the same state but may differ at the floating-point
+    # level (e.g. a chained rank-1 inverse update versus a single inverse), so this is looser than
+    # `assert_predictions_are_close`; a real discrepancy is far larger.
+    def assert_close(a, b):
+        if isinstance(a, dict):  # predict_proba_one / transform_one
+            _assert_dict_predictions_match(a, b, tolerance=1e-4)
+        elif isinstance(a, float):  # predict_one for a regressor
+            assert math.isclose(a, b, rel_tol=1e-4, abs_tol=1e-6)
+        else:  # a class label
+            assert a == b
+
+    for x in queries:
+        assert_close(_infer(one, x), _infer(many, x))
 
 
 def check_predict_proba_many_matches_predict_proba_one(model, dataset):

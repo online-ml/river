@@ -270,8 +270,10 @@ class CluStream(base.Clusterer):
             return 0
 
 
-class CluStreamMicroCluster(base.Base):
+class CluStreamMicroCluster:
     """Micro-cluster class."""
+
+    __slots__ = ("x", "w", "timestamp", "var_x", "var_time", "_center")
 
     def __init__(
         self,
@@ -286,10 +288,10 @@ class CluStreamMicroCluster(base.Base):
         self.var_x = {}
         for k in x:
             v = stats.Var()
-            v.update(x[k], w)
+            v.update(x[k], w)  # type: ignore[arg-type]
             self.var_x[k] = v
         self.var_time = stats.Var()
-        self.var_time.update(timestamp, w)
+        self.var_time.update(timestamp, w)  # type: ignore[arg-type]
         self._center: dict | None = None
 
     @property

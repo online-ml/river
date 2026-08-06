@@ -51,9 +51,9 @@ class Gaussian(base.ContinuousDistribution):
         self._var = stats.Var(ddof=1)
 
     @classmethod
-    def _from_state(cls, n, m, sig, ddof):
-        new = cls()
-        new._var = stats.Var._from_state(n, m, sig, ddof=ddof)
+    def _from_state(cls, n, m, var, ddof, seed=None):
+        new = cls(seed=seed)
+        new._var = stats.Var._from_state(n, m, var, ddof=ddof)
         return new
 
     @property
@@ -85,9 +85,8 @@ class Gaussian(base.ContinuousDistribution):
             if variance > 0.0:
                 mu = var.mean._mean
                 try:
-                    return math.exp((x - mu) ** 2 / (-2.0 * variance)) / math.sqrt(
-                        math.tau * variance
-                    )
+                    sigma = math.sqrt(variance)
+                    return utils.math.norm_pdf((x - mu) / sigma) / sigma
                 except (ValueError, OverflowError):
                     return 0.0
         return 0.0
@@ -109,7 +108,7 @@ class Gaussian(base.ContinuousDistribution):
 
     def cdf(self, x) -> float:
         try:
-            return 0.5 * (1.0 + math.erf((x - self.mu) / (self.sigma * math.sqrt(2.0))))
+            return utils.math.norm_cdf((x - self.mu) / self.sigma)
         except ZeroDivisionError:
             return 0.0
 
@@ -199,7 +198,7 @@ class MultivariateGaussian(base.MultivariateContinuousDistribution):
 
     >>> from river import utils
 
-    >>> p = utils.Rolling(MultivariateGaussian(), window_size=5)
+    >>> p = utils.Rolling(MultivariateGaussian, window_size=5)
     >>> for x in X.to_dict(orient="records"):
     ...     p.update(x)
     >>> p.var
@@ -212,7 +211,7 @@ class MultivariateGaussian(base.MultivariateContinuousDistribution):
 
     >>> from datetime import datetime as dt, timedelta as td
     >>> X.index = [dt(2023, 3, 28, 0, 0, 0) + td(seconds=x) for x in range(8)]
-    >>> p = utils.TimeRolling(MultivariateGaussian(), period=td(seconds=5))
+    >>> p = utils.TimeRolling(MultivariateGaussian, period=td(seconds=5))
     >>> for t, x in X.iterrows():
     ...     p.update(x.to_dict(), t=t)
     >>> p.var
@@ -296,13 +295,11 @@ class MultivariateGaussian(base.MultivariateContinuousDistribution):
         var_str = "        [" + var_str.replace("\n", "]\n        [") + "]"
         return f"𝒩(\n    μ=({mu_str}),\n    σ^2=(\n{var_str}\n    )\n)"
 
-    def update(self, x):
-        # TODO: add support for weighted samples
-        self._var.update(x)
+    def update(self, x, w=1.0):
+        self._var.update(x, w)
 
-    def revert(self, x):
-        # TODO: add support for weighted samples
-        self._var.revert(x)
+    def revert(self, x, w=1.0):
+        self._var.revert(x, w)
 
     def __call__(self, x: dict[str, float]):
         """PDF(x) method."""

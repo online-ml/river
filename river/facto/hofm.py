@@ -59,6 +59,16 @@ class HOFM(BaseFM):
         order_latents_dict = functools.partial(collections.defaultdict, random_latents)
         return collections.defaultdict(order_latents_dict)
 
+    @classmethod
+    def _unit_test_params(cls):
+        yield {"seed": 42}
+
+    def _unit_test_skips(self):
+        # Latent factors are initialised lazily, the first time each feature is encountered. Their
+        # values therefore depend on the order in which features are first seen, so reshuffling a
+        # sample's features yields a different (yet equally valid) model.
+        return {"check_shuffle_features_no_impact"}
+
     def _interaction_names(self, x):
         return [
             " - ".join(map(str, combination))
@@ -89,35 +99,30 @@ class HOFM(BaseFM):
 
     def _update_latents(self, x, g_loss):
         # For notational convenience
-        v, l1, l2, sign = self.latents, self.l1_latent, self.l2_latent, utils.math.sign
+        v, l1, l2 = self.latents, self.l1_latent, self.l2_latent
 
-        # Calculate each latent factor gradient before updating any
-        gradients = collections.defaultdict(
-            lambda: collections.defaultdict(lambda: collections.defaultdict(float))
+        # Accumulate each (feature, degree) latent gradient as a vector over the factors, letting
+        # NumPy handle the per-factor arithmetic in one shot rather than looping in Python.
+        gradients: collections.defaultdict = collections.defaultdict(
+            lambda: collections.defaultdict(lambda: np.zeros(self.n_factors))
         )
 
         for d in range(2, self.degree + 1):
             for combination in itertools.combinations(x.keys(), d):
                 feature_product = functools.reduce(lambda x, y: x * y, (x[j] for j in combination))
+                latent_product = functools.reduce(
+                    lambda x, y: x * y, (v[j][d] for j in combination)
+                )
 
-                for f in range(self.n_factors):
-                    latent_product = functools.reduce(
-                        lambda x, y: x * y, (v[j][d][f] for j in combination)
-                    )
-
-                    for j in combination:
-                        gradients[j][d][f] += feature_product * latent_product / v[j][d][f]
+                for j in combination:
+                    gradients[j][d] += feature_product * latent_product / v[j][d]
 
         # Finally update the latent weights
         for j in x.keys():
             for d in range(2, self.degree + 1):
-                self.latents[j][d] = self.latent_optimizer.step(
-                    w=v[j][d],
-                    g={
-                        f: g_loss * gradients[j][d][f] + l1 * sign(v[j][d][f]) + 2 * l2 * v[j][d][f]
-                        for f in range(self.n_factors)
-                    },
-                )
+                vjd = v[j][d]
+                gradient = g_loss * gradients[j][d] + l1 * np.sign(vjd) + 2 * l2 * vjd
+                self.latents[j][d] = self.latent_optimizer.step(w=vjd, g=dict(enumerate(gradient)))
 
 
 class HOFMRegressor(HOFM, base.Regressor):

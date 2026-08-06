@@ -27,7 +27,7 @@ jobs:
         timeout-minutes: 720
         env:
           CIBW_BUILD: "cp${{ matrix.python-version }}-${{ matrix.linux_tag }}_*"
-          CIBW_ARCHS_LINUX: "x86_64 aarch64"
+          CIBW_ARCHS_LINUX: "x86_64 aarch64 ppc64le"
       - uses: actions/upload-artifact@v5
         with:
           name: cibw-wheels-${{ matrix.linux_tag }}-${{ matrix.python-version }}-${{ strategy.job-index }}
@@ -78,6 +78,82 @@ jobs:
           name: cibw-wheels-${{ matrix.os }}-${{ matrix.python-version }}-${{ strategy.job-index }}
           path: ./wheelhouse/*.whl
 
+  # In addition to the per-version native wheels above, build a single abi3
+  # ("limited API") wheel per platform, tagged cp311-abi3 so it runs on any
+  # CPython >= 3.11. pip/uv always prefer the more specific native wheel when one
+  # matches the running interpreter, so these are only used as a fallback — e.g.
+  # on a new CPython release before its native wheels are published. The toggle
+  # is the `abi3` Cargo feature, forwarded to maturin via MATURIN_PEP517_ARGS.
+  build_linux_abi3_wheels:
+    name: Build abi3 (3.11+) ~ ${{ matrix.linux_tag }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        linux_tag: ["manylinux", "musllinux"]
+    env:
+      MATURIN_PEP517_ARGS: "--features abi3"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: all
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v3.4.1
+        timeout-minutes: 720
+        env:
+          CIBW_BUILD: "cp311-${{ matrix.linux_tag }}_*"
+          CIBW_ARCHS_LINUX: "x86_64 aarch64 ppc64le"
+          # The build runs inside a container, so forward the host env var in.
+          CIBW_ENVIRONMENT_PASS_LINUX: MATURIN_PEP517_ARGS
+      - uses: actions/upload-artifact@v5
+        with:
+          name: cibw-wheels-abi3-${{ matrix.linux_tag }}
+          path: ./wheelhouse/*.whl
+
+  build_macos_abi3_wheels:
+    name: Build abi3 (3.11+) ~ macos-15
+    runs-on: macos-15
+    env:
+      MATURIN_PEP517_ARGS: "--features abi3"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v3.4.1
+        timeout-minutes: 720
+        env:
+          CIBW_BUILD: "cp311-*"
+          CIBW_ARCHS_MACOS: "universal2"
+      - uses: actions/upload-artifact@v5
+        with:
+          name: cibw-wheels-abi3-macos
+          path: ./wheelhouse/*.whl
+
+  build_windows_abi3_wheels:
+    name: Build abi3 (3.11+) ~ windows-2025
+    runs-on: windows-2025
+    env:
+      MATURIN_PEP517_ARGS: "--features abi3"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v3.4.1
+        timeout-minutes: 720
+        env:
+          CIBW_BUILD: "cp311-*"
+          CIBW_ARCHS_WINDOWS: "AMD64"
+          CIBW_ENVIRONMENT_WINDOWS: 'PATH="$UserProfile\.cargo\bin;$PATH"'
+      - uses: actions/upload-artifact@v5
+        with:
+          name: cibw-wheels-abi3-windows
+          path: ./wheelhouse/*.whl
+
   build_sdist:
     name: Build source distribution
     runs-on: ubuntu-latest
@@ -97,10 +173,59 @@ jobs:
           name: cibw-sdist
           path: dist/*.tar.gz
 
+  build_pyodide_wheels:
+    name: Build Python ${{ matrix.python-version }} ~ pyodide
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # CPython 3.13 -> Pyodide 0.29.x (pyemscripten_2025_0). Pyodide pins a
+          # Rust nightly there, and the stock Emscripten target std is built
+          # without the emscripten-wasm-eh ABI, so std is rebuilt from source
+          # with -Zbuild-std (needs the rust-src component).
+          - python-version: "313"
+            rust_toolchain: "nightly-2025-02-01"
+            rust_component: "--component rust-src"
+            cargo_build_std: "panic_abort,std"
+            cibw_enable: ""
+          # CPython 3.14 -> Pyodide 314.x (pyemscripten_2026_0). Builds on stable
+          # Rust, where emscripten-wasm-eh is the default and the stock std is
+          # usable as-is, so no -Zbuild-std is needed.
+          - python-version: "314"
+            rust_toolchain: "1.93.0"
+            rust_component: ""
+            cargo_build_std: ""
+            cibw_enable: "pyodide-prerelease"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+      - name: Install Rust ${{ matrix.rust_toolchain }} with the Emscripten target
+        run: |
+          rustup toolchain install "${{ matrix.rust_toolchain }}" \
+            --profile minimal --target wasm32-unknown-emscripten ${{ matrix.rust_component }}
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v4.1.0
+        timeout-minutes: 720
+        env:
+          CIBW_PLATFORM: pyodide
+          CIBW_BUILD: "cp${{ matrix.python-version }}-*"
+          CIBW_ENABLE: ${{ matrix.cibw_enable }}
+          # Override the stable pin in rust-toolchain.toml with the wasm-capable
+          # toolchain installed above. CARGO_UNSTABLE_BUILD_STD is ignored on the
+          # stable (3.14) toolchain, so the same env block works for both.
+          RUSTUP_TOOLCHAIN: ${{ matrix.rust_toolchain }}
+          CARGO_UNSTABLE_BUILD_STD: ${{ matrix.cargo_build_std }}
+      - uses: actions/upload-artifact@v5
+        with:
+          name: cibw-wheels-pyodide-${{ matrix.python-version }}
+          path: ./wheelhouse/*.whl
+
   upload_to_pypi:
     name: Upload all wheels to PyPI
     runs-on: ubuntu-latest
-    needs: [build_linux_wheels, build_macos_wheels, build_windows_wheels, build_sdist]
+    needs: [build_linux_wheels, build_macos_wheels, build_windows_wheels, build_linux_abi3_wheels, build_macos_abi3_wheels, build_windows_abi3_wheels, build_sdist, build_pyodide_wheels]
     permissions:
       id-token: write
     steps:

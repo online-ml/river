@@ -51,7 +51,7 @@ class GaussianScorer(anomaly.base.SupervisedAnomalyDetector):
     def __init__(self, window_size=None, grace_period=100):
         self.window_size = window_size
         self.gaussian = (
-            utils.Rolling(proba.Gaussian(), window_size=self.window_size)
+            utils.Rolling(proba.Gaussian, window_size=window_size)
             if window_size
             else proba.Gaussian()
         )

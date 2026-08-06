@@ -4,10 +4,10 @@ import heapq
 import math
 import random
 
-from river import base
 
+class Vertex:
+    __slots__ = ("item", "uuid", "edges", "r_edges", "flags", "worst_edge")
 
-class Vertex(base.Base):
     _isolated: set[int] = set()
 
     def __init__(self, item, uuid: int) -> None:

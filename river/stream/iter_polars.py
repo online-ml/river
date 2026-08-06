@@ -1,14 +1,24 @@
 from __future__ import annotations
 
-import polars as pl
+import typing
+import warnings
+
+import narwhals.stable.v2 as nw
 
 from river import base, stream
 
+if typing.TYPE_CHECKING:
+    import polars as pl
+
 
 def iter_polars(
-    X: pl.DataFrame, y: pl.Series | pl.DataFrame | None = None, **kwargs
+    X: pl.DataFrame, y: pl.Series | pl.DataFrame | None = None, **kwargs: typing.Any
 ) -> base.typing.Stream:
     """Iterates over the rows of a `polars.DataFrame`.
+
+    .. deprecated::
+        Use `stream.iter_frame` instead, which works with any eager dataframe (pandas, polars,
+        PyArrow, ...). `stream.iter_polars` will be removed in a future release.
 
     Parameters
     ----------
@@ -17,7 +27,8 @@ def iter_polars(
     y
         A series or a dataframe with one column per target.
     kwargs
-        Extra keyword arguments are passed to the underlying call to `stream.iter_array`.
+        Extra keyword arguments are passed to the underlying call to `stream.iter_frame`
+        (e.g. `shuffle` and `seed`).
 
     Examples
     --------
@@ -31,7 +42,7 @@ def iter_polars(
     ...     'y': [True, False, False, True]
     ... })
     >>> y = X.get_column('y')
-    >>> X=X.drop("y")
+    >>> X = X.drop('y')
 
     >>> for xi, yi in stream.iter_polars(X, y):
     ...     print(xi, yi)
@@ -41,9 +52,18 @@ def iter_polars(
     {'x1': 4, 'x2': 'blue'} True
 
     """
+    warnings.warn(
+        "`stream.iter_polars` is deprecated; use `stream.iter_frame` instead. "
+        "It will be removed in a future release.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
 
-    kwargs["feature_names"] = X.columns
-    if isinstance(y, pl.DataFrame):
-        kwargs["target_names"] = y.columns
+    if not nw.dependencies.is_polars_dataframe(X):
+        raise TypeError(f"Expected a polars DataFrame, got {type(X)}")
+    if y is not None and not (
+        nw.dependencies.is_polars_dataframe(y) or nw.dependencies.is_polars_series(y)
+    ):
+        raise TypeError(f"Expected a polars DataFrame or Series, got {type(y)}")
 
-    yield from stream.iter_array(X=X.to_numpy(), y=y if y is None else y.to_numpy(), **kwargs)
+    yield from stream.iter_frame(X, y, **kwargs)

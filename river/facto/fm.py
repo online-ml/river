@@ -56,6 +56,16 @@ class FM(BaseFM):
         random_latents = functools.partial(self.latent_initializer, shape=self.n_factors)
         return collections.defaultdict(random_latents)
 
+    @classmethod
+    def _unit_test_params(cls):
+        yield {"seed": 42}
+
+    def _unit_test_skips(self):
+        # Latent factors are initialised lazily, the first time each feature is encountered. Their
+        # values therefore depend on the order in which features are first seen, so reshuffling a
+        # sample's features yields a different (yet equally valid) model.
+        return {"check_shuffle_features_no_impact"}
+
     def _interaction_names(self, x):
         return [f"{j1} - {j2}" for j1, j2 in itertools.combinations(x.keys(), 2)]
 
@@ -77,26 +87,20 @@ class FM(BaseFM):
 
     def _update_latents(self, x, g_loss):
         # For notational convenience
-        v, l1, l2, sign = self.latents, self.l1_latent, self.l2_latent, utils.math.sign
+        v, l1, l2 = self.latents, self.l1_latent, self.l2_latent
 
-        # Precompute feature independent sum for time efficiency
-        precomputed_sum = {
-            f: sum(v[j][f] * xj for j, xj in x.items()) for f in range(self.n_factors)
-        }
+        # Precompute the feature-independent sum once, as a vector over the latent factors:
+        # precomputed_sum[f] = sum_j v[j][f] * x[j]. Working on the whole latent vectors at
+        # once (rather than factor by factor) lets NumPy do the arithmetic in one shot.
+        precomputed_sum = sum(v[j] * xj for j, xj in x.items())
 
-        # Calculate each latent factor gradient before updating any
-        gradients = {}
+        # The gradient with respect to v[j] only depends on `precomputed_sum` (computed from the
+        # latents prior to this update) and v[j] itself, so latents can be updated in place as we
+        # go. The optimizer expects a per-factor mapping, hence the `dict(enumerate(...))`.
         for j, xj in x.items():
-            gradients[j] = {
-                f: g_loss * (xj * precomputed_sum[f] - v[j][f] * xj**2)
-                + l1 * sign(v[j][f])
-                + l2 * v[j][f]
-                for f in range(self.n_factors)
-            }
-
-        # Finally update the latent weights
-        for j in x.keys():
-            self.latents[j] = self.latent_optimizer.step(w=v[j], g=gradients[j])
+            vj = v[j]
+            gradient = g_loss * (xj * precomputed_sum - vj * xj**2) + l1 * np.sign(vj) + l2 * vj
+            self.latents[j] = self.latent_optimizer.step(w=vj, g=dict(enumerate(gradient)))
 
 
 class FMRegressor(FM, base.Regressor):

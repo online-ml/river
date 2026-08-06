@@ -1,6 +1,11 @@
 from __future__ import annotations
 
-from river import base
+import typing
+
+from river import base, utils
+
+if typing.TYPE_CHECKING:
+    from narwhals.stable.v2.typing import IntoDataFrameT
 
 __all__ = ["Discard", "Select", "SelectType"]
 
@@ -130,12 +135,11 @@ class Select(base.MiniBatchTransformer):
     def transform_one(self, x):
         return {i: x[i] for i in self.keys}
 
-    def transform_many(self, X):
-        # INFO: has either side-effects or doesn't have copy - choose your poison
-        # REFLECTION: worth adding `copy=True` parameter to the object constructor to allow both?
-        # << convention is to have pure methods/functions
-        return X.loc[:, list(self.keys)].copy()
-        # return X.loc[:, self.keys]
+    def transform_many(self, X: IntoDataFrameT) -> IntoDataFrameT:
+        # `select` returns a fresh frame in the caller's own backend (and keeps the pandas index),
+        # so the method stays pure — no view aliasing back onto the input.
+        keys = typing.cast("list[str]", list(self.keys))
+        return utils.dataframe.into_frame(X).select(keys).to_native()
 
     def __str__(self):
         return str(sorted(self.keys))

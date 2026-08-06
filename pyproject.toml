@@ -7,9 +7,9 @@ requires-python = ">=3.11"
 readme = "README.md"
 license = "BSD-3-Clause"
 dependencies = [
-    "scipy>=1.16,<2",
-    "numpy>=2.3.4,<3",
-    "altair>=5.0.0",
+    "scipy>=1.14.1,<2",
+    "numpy>=2.2.5,<3",
+    "narwhals>=2.0.0",
 ]
 
 [project.optional-dependencies]
@@ -34,7 +34,6 @@ include = [
     { path = "river/datasets/*.gz",  format = ["sdist", "wheel"] },
     { path = "river/datasets/*.zip", format = ["sdist", "wheel"] },
     { path = "river/drift/datasets/*.csv", format = ["sdist", "wheel"] },
-    { path = "river/stream/*.zip", format = ["sdist", "wheel"] },
 ]
 
 [dependency-groups]
@@ -54,6 +53,7 @@ dev = [
     "jupyter>=1.0.0",
     "mike @ git+https://github.com/squidfunk/mike.git",
     "polars>=1.1.0",
+    "pyarrow>=11.0.0",
 ]
 compat = [
     "scikit-learn>=1.5.1,<2",
@@ -65,6 +65,7 @@ docs = [
     "jupyter-client",
     "mike @ git+https://github.com/squidfunk/mike.git",
     "pygments",
+    "altair>=5.0.0",
     "TA-Lib",
     "zensical>=0.0.40",
     "nbconvert",
@@ -81,6 +82,10 @@ docs = [
 benchmark = [
     "asv",
     "virtualenv",
+]
+codspeed = [
+    "pytest>=9.0.3",
+    "pytest-codspeed>=5.0.3",
 ]
 
 
@@ -143,6 +148,7 @@ norecursedirs = [
     "benchmarks",
 ]
 markers = [
+    "codspeed_heavy: CodSpeed benchmarks assigned to the heavy CI shard",
     "datasets: tests that pertain to the datasets module",
     "slow: tests that take a long time to run",
 ]
@@ -177,40 +183,67 @@ fixable = ["ALL"]
 [tool.ruff.lint.isort]
 required-imports = ["from __future__ import annotations"]
 
+[tool.ruff.lint.per-file-ignores]
+"benchmarks/codspeed/python/*.py" = ["I002"]
+
 [tool.ruff.format]
 quote-style = "double"
 indent-style = "space"
 
 [tool.mypy]
-files = "river"
+files = ["river", "tests", "conftest.py"]
 strict = true
 
 [[tool.mypy.overrides]]
+# Both the bare top-level name and the `.*` submodule glob are listed: under the uv dev env
+# (where prek now runs mypy) these libraries are installed without a py.typed marker, so a bare
+# `import pandas` reports `import-untyped` unless the top-level name is ignored too.
 module = [
+    "mmh3",
     "mmh3.*",
+    "numpy",
     "numpy.*",
+    "sklearn",
     "sklearn.*",
+    "pytest",
     "pytest.*",
+    "pandas",
     "pandas.*",
+    "scipy",
     "scipy.*",
+    "graphviz",
     "graphviz.*",
+    "vaex",
     "vaex.*",
+    "torch",
     "torch.*",
+    "sqlalchemy",
     "sqlalchemy.*",
+    "requests",
     "requests.*",
+    "gymnasium",
     "gymnasium.*",
+    "sympy",
     "sympy.*",
+    "polars",
     "polars.*",
-    "river._river_rust",
-    "river._river_rust.*",
+    "pyarrow",
+    "pyarrow.*",
 ]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+# `numpydoc` (used by docs/parse for docstring scraping) hard-depends on Sphinx, whose source
+# uses 3.12 `type` syntax that mypy rejects under `--python-version=3.11`. We build docs with
+# mkdocs/zensical, never Sphinx, and never type-check it, so don't follow imports into it.
+module = ["sphinx.*", "numpydoc.*"]
+follow_imports = "skip"
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
 # Disable strict mode for all non fully-typed modules
 module = [
     "river.metrics.*",
-    "river.stats.*",
     "river.optim.*",
     "river.datasets.*",
     "river.tree.*",
@@ -237,14 +270,13 @@ module = [
     "river.sketch.*",
     "river.facto.*",
     "river.covariance.*",
-    "river.compat.*",
+    "river.compat.river_to_sklearn",
     "river.multiclass.*",
     "river.reco.*",
     "river.imblearn.*",
     "river.feature_selection.*",
     "river.active.*",
-    "river.neural_net.*",
-    "river.test_estimators",
+    "tests.*",
 ]
 # The strict option is global, the checks must be disabled one by one
 warn_unused_ignores = false

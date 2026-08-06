@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import collections
 import copy
+import typing
 
 from river import optim, reco, stats, utils
 
@@ -103,11 +104,11 @@ class Baseline(reco.base.Ranker):
 
         self.clip_gradient = clip_gradient
         self.global_mean = stats.Mean()
-        self.u_biases: collections.defaultdict[int, optim.initializers.Initializer] = (
-            collections.defaultdict(initializer)
+        self.u_biases: collections.defaultdict[typing.Hashable, float] = collections.defaultdict(
+            initializer
         )
-        self.i_biases: collections.defaultdict[int, optim.initializers.Initializer] = (
-            collections.defaultdict(initializer)
+        self.i_biases: collections.defaultdict[typing.Hashable, float] = collections.defaultdict(
+            initializer
         )
 
     def predict_one(self, user, item, x=None):

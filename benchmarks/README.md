@@ -72,3 +72,98 @@ This generates a static website and serves it locally. Open the printed URL in y
 ## CI
 
 Benchmarks run automatically on push to `main` via GitHub Actions. Results are stored on the `asv` branch and published to GitHub Pages.
+
+## CodSpeed
+
+CodSpeed runs the small pytest benchmark suite in `benchmarks/codspeed/python/` and the
+Rust criterion benchmarks in `benchmarks/codspeed/rust/` on every pull request and every
+push to `main`. Both jobs use CodSpeed's CPU simulation mode, which produces deterministic
+instruction-count measurements and flamegraphs. Pull requests get a CodSpeed comment plus
+status checks for the Python benchmarks, Rust benchmarks, and the aggregate performance
+analysis.
+
+To keep CI fast, the Python job is split into two parallel shards (see the matrix in
+`.github/workflows/codspeed.yml`): a "heavy" shard listing the most expensive files
+explicitly, and a "rest" shard running everything else. New benchmark files land in the
+"rest" shard automatically; if the two shards drift far apart in duration, move files
+between them. Sharding does not affect benchmark identity or the CodSpeed report — all
+uploads for a commit are aggregated. Keep each benchmark body around 100 ms of real time
+or less: the CPU simulator runs it once at roughly 30–100× overhead, so oversized
+workloads slow every PR without adding signal.
+
+### Run CodSpeed benchmarks locally
+
+```sh
+make benchmark                      # all Python benchmarks, local walltime table
+make benchmark K=logistic           # filter by pytest -k expression
+make benchmark-rust                 # all Rust criterion benches
+make benchmark-rust BENCH=stats_bench
+```
+
+Local Python runs are smoke tests, not the merge-gating measurement. Outside CodSpeed CI,
+`pytest-codspeed` falls back to a normal walltime table, so results depend on your
+machine. The PR comment is the source of truth for comparisons. On Linux, power users can
+run simulation locally with the CodSpeed CLI:
+
+```sh
+curl -fsSL https://codspeed.io/install.sh | bash
+codspeed auth login
+codspeed run -m simulation -- uv run --no-sync pytest benchmarks/codspeed --codspeed -o addopts=""
+```
+
+### Add a CodSpeed benchmark
+
+Copy this template into `benchmarks/codspeed/python/test_<module>.py` and keep the benchmark
+name stable after it lands; renaming a benchmark loses its CodSpeed history.
+
+```python
+from __future__ import annotations
+
+import pytest
+
+from river import <module>
+
+from workloads import binary_stream  # or regression_stream, scalar_series, ...
+
+pytestmark = pytest.mark.benchmark(group="<module>")
+
+
+def test_<estimator>_learn(benchmark) -> None:
+    stream = binary_stream()
+
+    def run() -> None:
+        model = <module>.<Estimator>(seed=42)
+        for x, y in stream:
+            model.learn_one(x, y)
+
+    benchmark(run)
+```
+
+Rust benchmarks live in `benchmarks/codspeed/rust/`. Add each new Rust bench target to
+`Cargo.toml` explicitly:
+
+```toml
+[[bench]]
+name = "<module>_bench"
+path = "benchmarks/codspeed/rust/<module>_bench.rs"
+harness = false
+```
+
+Use deterministic workloads only:
+
+- Seed every generator and every stochastic estimator.
+- Do not use network access or read the clock inside a benchmark.
+- Materialize data in `workloads.py`, outside the measured callable.
+- Treat cached workload lists as frozen; do not mutate shared data.
+- Build a fresh estimator inside each measured learning callable.
+
+### Reading CodSpeed results
+
+The PR comment links to each benchmark, its comparison against `main`, and the
+differential flamegraph. A red CodSpeed performance status means at least one benchmark
+regressed beyond the configured threshold. The default threshold is 10%; noisy benchmarks
+can get a per-benchmark threshold in CodSpeed instead of loosening the global one.
+
+Intentional regressions should be explained in the PR description and acknowledged by an
+admin in the CodSpeed UI. Do not bypass GitHub branch protection for performance
+regressions; acknowledgement keeps the dashboard and branch status consistent.

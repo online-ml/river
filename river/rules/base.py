@@ -9,7 +9,7 @@ import typing
 from river import base, tree
 
 
-class Literal(base.Base):
+class Literal:
     __slots__ = "on", "at", "neg"
 
     def __init__(self, on, at, neg=False):
@@ -27,6 +27,8 @@ class Literal(base.Base):
 
 
 class NumericLiteral(Literal):
+    __slots__ = ()
+
     def __init__(self, on, at, neg):
         super().__init__(on, at, neg)
 
@@ -47,6 +49,8 @@ class NumericLiteral(Literal):
 
 
 class NominalLiteral(Literal):
+    __slots__ = ()
+
     def __init__(self, on, at, neg):
         super().__init__(on, at, neg)
 
@@ -205,17 +209,17 @@ class HoeffdingRule(base.Estimator, metaclass=abc.ABCMeta):
                 literal_updated = False
                 for literal in self.literals:
                     if lit.on == literal.on and lit.neg == literal.neg:
-                        # Update thresholds rather than adding a new literal
+                        # Tighten the existing literal if the new threshold is
+                        # stricter; otherwise drop the new literal — the existing
+                        # one already implies it.
                         if not literal.neg and lit.at < literal.at:
                             literal.at = lit.at
-                            literal_updated = True
-                            break
                         elif literal.neg and lit.at > literal.at:
                             literal.at = lit.at
-                            literal_updated = True
-                            break
+                        literal_updated = True
+                        break
 
-                # No threshold was updated, thus a new literal is added
+                # No matching literal existed; add a new one
                 if not literal_updated:
                     self.literals.append(lit)
             else:

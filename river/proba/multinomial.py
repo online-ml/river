@@ -45,7 +45,7 @@ class Multinomial(base.DiscreteDistribution):
     >>> X = ['red', 'green', 'green', 'blue', 'blue']
 
     >>> dist = utils.Rolling(
-    ...     proba.Multinomial(),
+    ...     proba.Multinomial,
     ...     window_size=3
     ... )
 
@@ -78,7 +78,7 @@ class Multinomial(base.DiscreteDistribution):
     >>> days = [1, 2, 3, 4]
 
     >>> dist = utils.TimeRolling(
-    ...     proba.Multinomial(),
+    ...     proba.Multinomial,
     ...     period=dt.timedelta(days=2)
     ... )
 

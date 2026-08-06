@@ -3,6 +3,7 @@ from __future__ import annotations
 import collections
 
 from river import optim
+from river.optim.base import DictLike
 
 __all__ = ["Momentum"]
 
@@ -43,7 +44,7 @@ class Momentum(optim.base.Optimizer):
         self.rho = rho
         self.s = collections.defaultdict(float)
 
-    def _step_with_dict(self, w, g):
+    def _step_with_dict(self, w: DictLike, g: DictLike) -> DictLike:
         for i, gi in g.items():
             self.s[i] = self.rho * self.s[i] + self.learning_rate * gi
             w[i] -= self.s[i]

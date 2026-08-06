@@ -9,12 +9,13 @@ import re
 import typing
 import unicodedata
 
+import numpy as np
 from scipy import sparse
 
 from river import base, utils
 
 if typing.TYPE_CHECKING:
-    import pandas as pd
+    from narwhals.stable.v2.typing import IntoDataFrame, IntoSeries
 
 __all__ = ["BagOfWords", "TFIDF"]
 
@@ -222,6 +223,24 @@ class VectorizerMixin:
             x = step(x)
         return x
 
+    def process_many(self, X):
+        processing_steps = self.processing_steps
+
+        if self.on is not None:
+            # `X` is a dataframe: pull out the text column up front (handles any narwhals
+            # backend) so each document is a string, not a row. The leading itemgetter step is
+            # therefore already applied and is skipped below.
+            docs = utils.dataframe.into_frame(X)[self.on].to_list()
+            processing_steps = self.processing_steps[1:]
+        else:
+            # `X` is a series of documents.
+            docs = utils.dataframe.into_series(X).to_list()
+
+        for x in docs:
+            for step in processing_steps:
+                x = step(x)
+            yield x
+
     def _more_tags(self):
         if self.on is None:
             return {base.tags.TEXT_INPUT}
@@ -341,25 +360,31 @@ class BagOfWords(base.Transformer, VectorizerMixin):
     def transform_one(self, x):
         return dict(collections.Counter(self.process_text(x)))
 
-    def transform_many(self, X: pd.Series) -> pd.DataFrame:
-        """Transform pandas series of string into term-frequency pandas sparse dataframe."""
-        pd = utils.pandas.import_pandas()
+    def transform_many(self, X: IntoSeries | IntoDataFrame) -> IntoDataFrame:
+        """Transform a column of text into a term-frequency dataframe.
+
+        Accepts any narwhals-supported eager backend (pandas, polars, pyarrow, ...), either as
+        a series of strings or as a dataframe whose `on` column holds the text. The output
+        matches the input backend: a sparse dataframe for pandas, a dense one otherwise.
+        """
+        like = (
+            utils.dataframe.into_frame(typing.cast("IntoDataFrame", X))
+            if self.on is not None
+            else utils.dataframe.into_series(typing.cast("IntoSeries", X))
+        )
         indptr, indices, data = [0], [], []
         index: dict[int, int] = {}
 
-        for d in X:
+        for d in self.process_many(X):
             t: int
-            for t, f in collections.Counter(self.process_text(d)).items():
+            for t, f in collections.Counter(d).items():
                 indices.append(index.setdefault(t, len(index)))
                 data.append(f)
 
             indptr.append(len(data))
 
-        return pd.DataFrame.sparse.from_spmatrix(
-            sparse.csr_matrix((data, indices, indptr)),
-            index=X.index,
-            columns=index.keys(),
-        )
+        matrix = sparse.csr_matrix((data, indices, indptr), shape=(len(indptr) - 1, len(index)))
+        return utils.dataframe.sparse_to_native_frame(matrix, columns=index.keys(), like=like)
 
     def learn_many(self, X):
         return
@@ -445,6 +470,25 @@ class TFIDF(BagOfWords):
     {'and': 0.497, 'this': 0.293, 'is': 0.293, 'the': 0.293, 'third': 0.497, 'one': 0.497}
     {'is': 0.384, 'this': 0.384, 'the': 0.384, 'first': 0.580, 'document': 0.469}
 
+    In a mini-batch setting, `learn_many` updates the document frequencies from a column of text,
+    and `transform_many` builds a TF-IDF dataframe. The input may be a series of documents, or a
+    dataframe together with the `on` parameter, and any narwhals-supported backend works (pandas,
+    polars, pyarrow, ...). The output matches the input's backend; for pandas it is a memory-
+    efficient sparse dataframe, shown densified here for readability:
+
+    >>> import pandas as pd
+    >>> X = pd.Series(
+    ...     ['This is the first document', 'This document is the second document'],
+    ...     index=['doc1', 'doc2'],
+    ... )
+
+    >>> tfidf = feature_extraction.TFIDF()
+    >>> tfidf.learn_many(X)
+    >>> tfidf.transform_many(X).sparse.to_dense().round(3)
+           this     is    the  first  document  second
+    doc1  0.409  0.409  0.409  0.575     0.409   0.000
+    doc2  0.334  0.334  0.334  0.000     0.668   0.469
+
     """
 
     def __init__(
@@ -497,11 +541,49 @@ class TFIDF(BagOfWords):
             return {term: tfidf / norm for term, tfidf in tfidfs.items()}
         return tfidfs
 
-    # Mini-batch methods should be done well™ and not just be a loop over the *_one equivalent.
-    def learn_many(self, X):
-        "Not available, will raise an exception."
-        raise NotImplementedError
+    def learn_many(self, X: IntoSeries | IntoDataFrame) -> None:
+        for terms in self.process_many(X):
+            self.dfs.update(set(terms))
+            self.n += 1
 
-    def transform_many(self, X):
-        "Not available, will raise an exception."
-        raise NotImplementedError
+    def transform_many(self, X: IntoSeries | IntoDataFrame) -> IntoDataFrame:
+        """Transform a column of text into a TF-IDF dataframe.
+
+        Accepts any narwhals-supported eager backend (pandas, polars, pyarrow, ...), either as
+        a series of strings or as a dataframe whose `on` column holds the text. The output
+        matches the input backend: a sparse dataframe for pandas, a dense one otherwise.
+        """
+        like = (
+            utils.dataframe.into_frame(typing.cast("IntoDataFrame", X))
+            if self.on is not None
+            else utils.dataframe.into_series(typing.cast("IntoSeries", X))
+        )
+        indptr, indices, data = [0], [], []
+        index: dict[int, int] = {}
+
+        # Build the document-term count matrix in a single pass.
+        for terms in self.process_many(X):
+            for term, count in collections.Counter(terms).items():
+                indices.append(index.setdefault(term, len(index)))
+                data.append(count)
+            indptr.append(len(data))
+        counts = sparse.csr_matrix((data, indices, indptr), shape=(len(indptr) - 1, len(index)))
+
+        # Term frequency: scale each document (row) by its total token count.
+        n_terms = np.asarray(counts.sum(axis=1)).ravel().astype(float)
+        inv_n_terms = np.divide(1.0, n_terms, out=np.zeros_like(n_terms), where=n_terms != 0)
+        tfidf = sparse.diags(inv_n_terms) @ counts
+
+        # Inverse document frequency from the current online state.
+        dfs = np.array([self.dfs[term] for term in index], dtype=float)
+        idf = np.log((1 + self.n) / (1 + dfs)) + 1
+        tfidf = tfidf @ sparse.diags(idf)
+
+        if self.normalize:
+            norms = np.sqrt(np.asarray(tfidf.multiply(tfidf).sum(axis=1)).ravel())
+            inv_norms = np.divide(1.0, norms, out=np.zeros_like(norms), where=norms != 0)
+            tfidf = sparse.diags(inv_norms) @ tfidf
+
+        return utils.dataframe.sparse_to_native_frame(
+            tfidf.tocsr(), columns=index.keys(), like=like
+        )

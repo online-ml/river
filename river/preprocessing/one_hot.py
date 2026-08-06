@@ -3,10 +3,13 @@ from __future__ import annotations
 import collections
 import typing
 
+import narwhals.stable.v2 as nw
+
 from river import base, utils
 
 if typing.TYPE_CHECKING:
-    pass
+    import pandas as pd
+    from narwhals.stable.v2.typing import IntoDataFrame, IntoDataFrameT
 
 __all__ = ["OneHotEncoder"]
 
@@ -25,8 +28,8 @@ class OneHotEncoder(base.MiniBatchTransformer):
         Categories (unique values) per feature:
             `None` : Determine categories automatically from the training data.
 
-            dict of dicts : Expected categories for each feature. The outer dict maps each feature to its inner dict.
-            The inner dict maps each category to its code.
+            dict of sets : Expected categories for each feature. The outer dict maps each feature
+            to the set of category values to encode.
 
         The used categories can be found in the `values` attribute.
     drop_zeros
@@ -39,8 +42,8 @@ class OneHotEncoder(base.MiniBatchTransformer):
     Attributes
     ----------
     values
-        A dict of dicts. The outer dict maps each feature to its inner dict. The inner dict maps
-        each category to its code.
+        A dict of sets. Maps each feature to the set of category values seen during training
+        (or the categories provided explicitly).
 
     Examples
     --------
@@ -246,12 +249,22 @@ class OneHotEncoder(base.MiniBatchTransformer):
 
     """
 
-    def __init__(self, categories: dict | None = None, drop_zeros=False, drop_first=False):
+    def __init__(
+        self,
+        categories: dict[base.typing.FeatureName, set[typing.Hashable]] | None = None,
+        drop_zeros: bool = False,
+        drop_first: bool = False,
+    ) -> None:
         self.drop_zeros = drop_zeros
         self.drop_first = drop_first
         self.categories = categories
-        self.values: collections.defaultdict | dict | None = None
-        self._zero_dict: dict = {}
+        self.values: (
+            collections.defaultdict[base.typing.FeatureName, set[typing.Hashable]]
+            | dict[base.typing.FeatureName, set[typing.Hashable]]
+        )
+        # `Any` keys (the names are strings) keep `transform_one`'s output assignable to the
+        # base `dict[FeatureName, Any]` return despite `dict`'s invariant key parameter.
+        self._zero_dict: dict[typing.Any, int] = {}
 
         if self.categories is None:
             self.values = collections.defaultdict(set)
@@ -309,7 +322,7 @@ class OneHotEncoder(base.MiniBatchTransformer):
 
         return oh
 
-    def learn_many(self, X):
+    def learn_many(self, X: IntoDataFrame) -> None:
         if self.drop_zeros:
             return
 
@@ -318,26 +331,52 @@ class OneHotEncoder(base.MiniBatchTransformer):
         if self.categories is None:
             values = self.values
             zero_dict = self._zero_dict
-            for col in X.columns:
+            X_nw = utils.dataframe.into_frame(X)
+            for col in X_nw.columns:
                 vi = values[col]
-                for v in X[col].unique():
+                for v in X_nw[col].unique():
                     if v not in vi:
                         vi.add(v)
                         zero_dict[f"{col}_{v}"] = 0
 
-    def transform_many(self, X):
+    def transform_many(self, X: IntoDataFrameT) -> IntoDataFrameT:
+        """One-hot encode a mini-batch of features.
+
+        Pandas keeps the historical fast path returning ``Sparse[uint8]`` columns.
+        Every other narwhals-supported backend (polars, pyarrow, ...) is encoded via
+        ``narwhals.Series.to_dummies`` and returns **dense** integer columns,
+        since those backends have no sparse-array equivalent.
+
+        Parameters
+        ----------
+        X
+            A dataframe where each column is a categorical feature.
+
+        """
+        X_nw = utils.dataframe.into_frame(X)
+        native = (
+            self._transform_many_pandas(typing.cast("pd.DataFrame", X))
+            if X_nw.implementation.is_pandas()
+            else self._transform_many_narwhals(X_nw)
+        )
+        return typing.cast("IntoDataFrameT", native)
+
+    def _seen_columns(self) -> set[str]:
+        """The `<feature>_<value>` dummy names for every category learned or configured so far."""
+        return {f"{col}_{val}" for col, vals in self.values.items() for val in vals}
+
+    def _transform_many_pandas(self, X: pd.DataFrame) -> pd.DataFrame:
         pd = utils.pandas.import_pandas()
         oh = pd.get_dummies(X, columns=X.columns, sparse=True, dtype="uint8")
+        seen_in_the_past = self._seen_columns()
 
         # NOTE: assume if category mappings are explicitly provided,
         # no other category values are allowed for output. Aligns with `sklearn` behavior.
         if self.categories is not None:
-            seen_in_the_past = {f"{col}_{val}" for col, vals in self.values.items() for val in vals}
             to_remove = set(oh.columns) - seen_in_the_past
             oh.drop(columns=list(to_remove), inplace=True)
 
         if not self.drop_zeros:
-            seen_in_the_past = {f"{col}_{val}" for col, vals in self.values.items() for val in vals}
             to_add = seen_in_the_past - set(oh.columns)
             for col in to_add:
                 oh[col] = pd.arrays.SparseArray([0] * len(oh), dtype="uint8")
@@ -346,3 +385,48 @@ class OneHotEncoder(base.MiniBatchTransformer):
             oh = oh.drop(columns=min(oh.columns))
 
         return oh
+
+    def _transform_many_narwhals(self, X_nw: nw.DataFrame[IntoDataFrameT]) -> IntoDataFrameT:
+        columns = X_nw.columns
+        schema = X_nw.schema
+
+        # `to_dummies` names columns `<feature>_<value>`, matching `transform_one`'s `f"{i}_{xi}"`
+        # and the pandas `get_dummies` output. Null cells yield a `<feature>_null` column that
+        # `pandas.get_dummies` omits, so they are dropped below for parity. `get_dummies` also omits
+        # `NaN`; polars/pyarrow keep `NaN` distinct from null (it would otherwise leak a
+        # `<feature>_NaN` dummy), so float `NaN` is folded into null first to match pandas exactly.
+        dummies = nw.concat(
+            [
+                (X_nw[col].fill_nan(None) if schema[col].is_float() else X_nw[col]).to_dummies(
+                    separator="_"
+                )
+                for col in columns
+            ],
+            how="horizontal",
+        )
+        null_cols = {f"{col}_null" for col in columns}
+        present = set(dummies.columns) - null_cols
+        seen_in_the_past = self._seen_columns()
+
+        # NOTE: assume if category mappings are explicitly provided, no other category values are
+        # allowed for output. Aligns with `sklearn` behavior.
+        keep = (present & seen_in_the_past) if self.categories is not None else set(present)
+        if not self.drop_zeros:
+            # Pad with the categories seen during past `learn_many` calls (zero columns).
+            keep |= seen_in_the_past
+
+        # Materialise the padded/null columns as all-zeros. They are added to `dummies` (which
+        # still carries the row count) before any narrowing select, because selecting an empty set
+        # of columns collapses the row count to zero on some backends (e.g. polars).
+        to_add = keep - set(dummies.columns)
+        zero_dtype = dummies.schema[dummies.columns[0]] if dummies.columns else nw.Int64
+        oh = dummies.with_columns(
+            [nw.lit(0, dtype=zero_dtype).alias(col) for col in sorted(to_add)]
+        )
+
+        final_columns = sorted(keep)
+        if self.drop_first and final_columns:
+            # Mirror the pandas path, which drops the lexicographically smallest column.
+            final_columns = final_columns[1:]
+
+        return oh.select(final_columns).to_native()

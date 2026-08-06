@@ -1,0 +1,111 @@
+name: codspeed
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  # Lets CodSpeed trigger backtest runs to build up baseline data.
+  workflow_dispatch:
+
+env:
+  # River's results are hash-seed independent, but dict iteration order is not,
+  # and the CPU-simulation metric is an instruction count: pin it so every run
+  # executes the same instruction stream.
+  PYTHONHASHSEED: "0"
+
+concurrency:
+  group: codspeed-${{ github.ref }}
+  # Never cancel a main-branch run: every main commit must produce a baseline
+  # report, otherwise PR comparisons degrade to an older ancestor commit.
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+jobs:
+  python:
+    name: Python benchmarks (${{ matrix.shard }})
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      id-token: write
+    strategy:
+      fail-fast: false
+      # Two shards balanced by measured run time under CPU simulation. CodSpeed
+      # aggregates uploads from all jobs of the same workflow into one report,
+      # and benchmark identity is the file path, so sharding is invisible to
+      # the dashboard. New benchmark files land in the "rest" shard by default;
+      # use marks.heavy if the shards drift out of balance.
+      matrix:
+        include:
+          - shard: heavy
+            args: benchmarks/codspeed/python -m codspeed_heavy
+          - shard: rest
+            args: benchmarks/codspeed/python -m "not codspeed_heavy"
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+
+      # CodSpeed's Python tracing requires an interpreter from actions/setup-python;
+      # uv-managed interpreters break trace collection. Python >= 3.12 is required
+      # for flamegraphs; we use 3.13.
+      - uses: actions/setup-python@v6
+        id: setup-python
+        with:
+          python-version: "3.13"
+
+      - uses: astral-sh/setup-uv@v7
+
+      - name: Install the project
+        run: uv sync --locked --no-default-groups --group codspeed --reinstall-package river
+        env:
+          UV_PYTHON: ${{ steps.setup-python.outputs.python-path }}
+          # Maturin PEP 517 builds use the cargo release profile; keep line-level
+          # debug info and symbols so flamegraphs resolve frames inside
+          # river._river_rust instead of showing an opaque native blob.
+          CARGO_PROFILE_RELEASE_DEBUG: "line-tables-only"
+          CARGO_PROFILE_RELEASE_STRIP: "false"
+
+      - name: Run benchmarks
+        uses: CodSpeedHQ/action@v4
+        with:
+          mode: simulation
+          # Drop the root pytest addopts so this run is decoupled from the main
+          # suite config, including --ignore=benchmarks.
+          run: uv run --no-sync pytest ${{ matrix.args }} --codspeed -o addopts=""
+
+  rust:
+    name: Rust benchmarks
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+
+      # The bench executables link libpython (pyo3 without extension-module):
+      # give PyO3 an interpreter at build time and its lib dir at run time.
+      - uses: actions/setup-python@v6
+        id: setup-python
+        with:
+          python-version: "3.13"
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Install cargo-codspeed
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-codspeed
+
+      - name: Build benchmarks
+        run: cargo codspeed build -m simulation
+        env:
+          PYO3_PYTHON: ${{ steps.setup-python.outputs.python-path }}
+
+      - name: Run benchmarks
+        uses: CodSpeedHQ/action@v4
+        with:
+          mode: simulation
+          run: cargo codspeed run
+        env:
+          LD_LIBRARY_PATH: ${{ env.pythonLocation }}/lib

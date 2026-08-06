@@ -64,6 +64,16 @@ class FwFM(BaseFM):
         random_latents = functools.partial(self.latent_initializer, shape=self.n_factors)
         return collections.defaultdict(random_latents)
 
+    @classmethod
+    def _unit_test_params(cls):
+        yield {"seed": 42}
+
+    def _unit_test_skips(self):
+        # Latent factors are initialised lazily, the first time each feature is encountered. Their
+        # values therefore depend on the order in which features are first seen, so reshuffling a
+        # sample's features yields a different (yet equally valid) model.
+        return {"check_shuffle_features_no_impact"}
+
     def _interaction_names(self, x):
         return [
             f"{j1}({self._field(j2)}) - {j2}({self._field(j1)})"
@@ -94,28 +104,23 @@ class FwFM(BaseFM):
     ):  # also updates interaction weights as both updates depends of each other
         # For notational convenience
         v, w_int, field = self.latents, self.interaction_weights, self._field
-        l1, l2, sign = self.l1_latent, self.l2_latent, utils.math.sign
+        l1, l2 = self.l1_latent, self.l2_latent
 
-        # Precompute feature independent sum for time efficiency
+        # Precompute the feature-independent sum once per feature, as a vector over the factors:
+        # precomputed_sum[j1][f] = sum_j2 v[j2][f] * x[j2] * w_int[field(j1) + field(j2)].
         precomputed_sum = {
-            f"{j1}_{f}": sum(v[j2][f] * xj2 * w_int[field(j1) + field(j2)] for j2, xj2 in x.items())
-            for j1, xj1 in x.items()
-            for f in range(self.n_factors)
+            j1: sum(v[j2] * xj2 * w_int[field(j1) + field(j2)] for j2, xj2 in x.items()) for j1 in x
         }
 
         # Calculate each latent and interaction weights gradients before updating any of them
         latent_gradients = {}
         for j, xj in x.items():
-            latent_gradients[j] = {
-                f: g_loss
-                * (
-                    xj * precomputed_sum[f"{j}_{f}"]
-                    - v[j][f] * xj * w_int[field(j) + field(j)] ** 2
-                )
-                + l1 * sign(v[j][f])
-                + l2 * v[j][f]
-                for f in range(self.n_factors)
-            }
+            vj = v[j]
+            latent_gradients[j] = (
+                g_loss * (xj * precomputed_sum[j] - vj * xj * w_int[field(j) + field(j)] ** 2)
+                + l1 * np.sign(vj)
+                + l2 * vj
+            )
 
         int_gradients = {
             field(j1) + field(j2): g_loss * (x[j1] * x[j2] * np.dot(v[j1], v[j2]))
@@ -124,7 +129,9 @@ class FwFM(BaseFM):
 
         # Finally update the latent and interaction weights
         for j in x.keys():
-            self.latents[j] = self.latent_optimizer.step(w=v[j], g=latent_gradients[j])
+            self.latents[j] = self.latent_optimizer.step(
+                w=v[j], g=dict(enumerate(latent_gradients[j]))
+            )
 
         self.int_weights = self.int_weight_optimizer.step(w=w_int, g=int_gradients)
 

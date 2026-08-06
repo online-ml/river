@@ -172,7 +172,7 @@ def minkowski_distance(a: Mapping[Any, float], b: Mapping[Any, float], p: int) -
 
     """
     if p == 2:
-        return _euclidean_distance(a, b)  # type: ignore[no-any-return]
+        return _euclidean_distance(a, b)  # type: ignore[arg-type]
     if p == 1:
         return _manhattan_distance(a, b)
     return sum((abs(a.get(k, 0.0) - b.get(k, 0.0))) ** p for k in {*a.keys(), *b.keys()}) ** (1 / p)  # type: ignore[no-any-return] # If the values are numbers, the return value should always be a number
@@ -288,6 +288,40 @@ def sigmoid(x: float) -> float:
     if x > 30:
         return 1
     return 1 / (1 + math.exp(-x))
+
+
+def norm_cdf(x: float) -> float:
+    """Cumulative distribution function of the standard normal distribution.
+
+    Parameters
+    ----------
+    x
+
+    Examples
+    --------
+    >>> from river import utils
+    >>> utils.math.norm_cdf(0.0)
+    0.5
+
+    """
+    return 0.5 * (1.0 + math.erf(x / math.sqrt(2.0)))
+
+
+def norm_pdf(x: float) -> float:
+    """Probability density function of the standard normal distribution.
+
+    Parameters
+    ----------
+    x
+
+    Examples
+    --------
+    >>> from river import utils
+    >>> utils.math.norm_pdf(0.0)
+    0.3989422804014327
+
+    """
+    return math.exp(-0.5 * x * x) / math.sqrt(2.0 * math.pi)
 
 
 def clamp(x: float, minimum: float = 0.0, maximum: float = 1.0) -> float:

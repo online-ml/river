@@ -3,10 +3,12 @@ from __future__ import annotations
 import types
 import typing
 
+import narwhals.stable.v2 as nw
+
 from river import base, utils
 
 if typing.TYPE_CHECKING:
-    import pandas as pd
+    from narwhals.stable.v2.typing import IntoDataFrame, IntoSeries
 
 from . import func
 
@@ -284,7 +286,7 @@ class TransformerUnion(base.MiniBatchTransformer):
 
     # Mini-batch methods
 
-    def learn_many(self, X: pd.DataFrame, y: pd.Series | None = None):
+    def learn_many(self, X: IntoDataFrame, y: IntoSeries | None = None):
         """Update each transformer.
 
         Parameters
@@ -303,10 +305,14 @@ class TransformerUnion(base.MiniBatchTransformer):
                 t.learn_many(X)
 
     def transform_many(self, X):
-        """Passes the data through each transformer and packs the results together."""
-        pd = utils.pandas.import_pandas()
-        return pd.concat(
-            (t.transform_many(X) for t in self.transformers.values()),
-            copy=False,
-            axis=1,
-        )
+        """Passes the data through each transformer and packs the results together.
+
+        The per-transformer outputs are concatenated column-wise via narwhals, so the result is
+        rebuilt in the caller's own backend (pandas, polars, pyarrow, ...). All transformers see
+        the same rows in the same order, so a positional horizontal concat matches the historical
+        index-aligned `pandas.concat(axis=1)`.
+        """
+        frames = [
+            utils.dataframe.into_frame(t.transform_many(X)) for t in self.transformers.values()
+        ]
+        return nw.concat(frames, how="horizontal").to_native()

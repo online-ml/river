@@ -1,4 +1,4 @@
-// ADaptive WINdowing (ADWIN) drift detector. Port of river/drift/adwin_c.pyx.
+// ADaptive WINdowing (ADWIN) drift detector.
 //
 // The implementation follows Bifet & Gavaldà (2007) "Learning from time-changing
 // data with adaptive windowing" and Babcock et al. (2003) for the streaming
@@ -10,7 +10,7 @@
 // On every update (modulated by `clock`), all possible cut points of the window
 // are checked: if `|mean(W0) - mean(W1)| > epsilon_cut` the oldest bucket is
 // dropped and the algorithm reports drift. The exact arithmetic order matters
-// for parity with the Cython baseline, so the implementation is a near-line port.
+// for reproducibility, so the operation order is preserved precisely.
 
 use serde::{Deserialize, Serialize};
 
@@ -154,8 +154,8 @@ impl AdaptiveWindowing {
             self.max_n_buckets = self.n_buckets;
         }
 
-        // Welford-style streaming variance update. Order of operations mirrors
-        // the Cython code so f64 rounding lines up bit-for-bit.
+        // Welford-style streaming variance update. Order of operations is fixed
+        // so f64 rounding is deterministic across runs.
         self.width += 1.0;
         let mut incremental_variance = 0.0;
         if self.width > 1.0 {
@@ -198,7 +198,7 @@ impl AdaptiveWindowing {
         let mut idx = 0usize;
         loop {
             let k = self.bucket_list[idx].current_idx;
-            // Cython's loop-exit condition: stop when this bucket is not yet full
+            // loop-exit condition: stop when this bucket is not yet full
             if k != self.max_buckets + 1 {
                 break;
             }

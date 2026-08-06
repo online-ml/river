@@ -7,7 +7,6 @@ import typing
 
 from river import base
 
-ID = typing.Union[str, int]  # noqa: UP007
 Reward = typing.Union[numbers.Number, bool]  # noqa: UP007
 
 
@@ -33,7 +32,9 @@ class Ranker(base.Estimator):
         return False
 
     @abc.abstractmethod
-    def learn_one(self, user: ID, item: ID, y: Reward, x: dict | None = None) -> None:
+    def learn_one(
+        self, user: typing.Hashable, item: typing.Hashable, y: Reward, x: dict | None = None
+    ) -> None:
         """Fits a `user`-`item` pair and a real-valued target `y`.
 
         Parameters
@@ -50,7 +51,9 @@ class Ranker(base.Estimator):
         """
 
     @abc.abstractmethod
-    def predict_one(self, user: ID, item: ID, x: dict | None = None) -> Reward:
+    def predict_one(
+        self, user: typing.Hashable, item: typing.Hashable, x: dict | None = None
+    ) -> Reward:
         """Predicts the target value of a set of features `x`.
 
         Parameters
@@ -68,7 +71,9 @@ class Ranker(base.Estimator):
 
         """
 
-    def rank(self, user: ID, items: set[ID], x: dict | None = None) -> list[ID]:
+    def rank(
+        self, user: typing.Hashable, items: set[typing.Hashable], x: dict | None = None
+    ) -> list[typing.Hashable]:
         """Rank models by decreasing order of preference for a given user.
 
         Parameters
