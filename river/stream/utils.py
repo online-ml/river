@@ -7,14 +7,10 @@ import typing
 import zipfile
 
 if typing.TYPE_CHECKING:
-    from collections.abc import Mapping
-
     from river.stream.typing import Compression, FilePath, ResolvedCompression
 
-EXT_TO_COMPRESSION: typing.Final[Mapping[str, ResolvedCompression]] = {
-    ".gz": "gzip",
-    ".zip": "zip",
-}
+_EXT_TO_COMPRESSION: dict[str, ResolvedCompression] = {".gz": "gzip", ".zip": "zip"}
+"""File extensions that "infer" knows how to turn into a decompression method."""
 
 
 def open_filepath(filepath: FilePath, compression: Compression | None) -> typing.TextIO:
@@ -33,8 +29,8 @@ def open_filepath(filepath: FilePath, compression: Compression | None) -> typing
     A text-mode file object, which the caller is responsible for closing.
 
     """
-    resolved: ResolvedCompression | None = (
-        EXT_TO_COMPRESSION.get(os.path.splitext(filepath)[1])
+    resolved = (
+        _EXT_TO_COMPRESSION.get(os.path.splitext(filepath)[1])
         if compression == "infer"
         else compression
     )
