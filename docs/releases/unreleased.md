@@ -63,6 +63,7 @@
 ## linear_model
 
 - Added `linear_model.AdPredictor`, the Bayesian online probit-regression classifier Microsoft used for click-through-rate prediction in Bing's sponsored search (Graepel et al., 2010). It keeps a Gaussian belief over each feature weight and yields well-calibrated probabilities.
+- Added `linear_model.QuantileRegressor`, an online linear model for estimating conditional quantiles via the existing `optim.losses.Quantile` pinball loss.
 - Restructured `BayesianLinearRegression` around NumPy-backed storage. ~11× faster `learn_one` at 20 features, ~24× at 50 features. Speeds up `bandit.LinUCB` too.
 - `BayesianLinearRegression` now handles features arriving and disappearing after training begins (it passes `check_emerging_features` and `check_shuffle_features_no_impact`, previously skipped).
 - Fixed `BayesianLinearRegression` coefficients diverging to `inf`/`nan` under emerging/disappearing features; `learn_one` now updates the full state with a zero-padded `x`. Behavior change: features absent from `x` are treated as observed 0s (matching the other linear models) rather than skipped — identical to before when every call sees the same features.
