@@ -35,6 +35,7 @@ class Theta(time_series.base.Forecaster):
     Assimakopoulos, V., & Nikolopoulos, K. (2000). The theta model: a
     decomposition approach to forecasting. International Journal of
     Forecasting, 16(4), 521-530.
+    
     """
 
     def __init__(self, alpha: float = 0.2):
