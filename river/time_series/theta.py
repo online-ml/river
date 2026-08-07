@@ -23,6 +23,7 @@ class Theta(time_series.base.Forecaster):
 
     Examples
     --------
+    
     >>> from river import time_series
     >>> model = time_series.Theta(alpha=0.3)
     >>> for y in [1, 2, 3, 4, 5]:
