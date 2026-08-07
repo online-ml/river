@@ -4364,6 +4364,7 @@
 <ul>
 <li>
 <p><strong>filepath_or_buffer</strong></p>
+<p><em>Type</em> → <code>FilePath | typing.TextIO</code></p>
 <p>Either a string indicating the location of a file, or a buffer object that has a <code>read</code> method.</p>
 </li>
 <li>
@@ -4374,11 +4375,13 @@
 </li>
 <li>
 <p><strong>compression</strong></p>
+<p><em>Type</em> → <code>Compression | None</code></p>
 <p><em>Default</em> → <code>infer</code></p>
 <p>For on-the-fly decompression of on-disk data. If this is set to 'infer' and <code>filepath_or_buffer</code> is a path, then the decompression method is inferred for the following extensions: '.gz', '.zip'.</p>
 </li>
 <li>
 <p><strong>sparse</strong></p>
+<p><em>Type</em> → <code>bool</code></p>
 <p><em>Default</em> → <code>False</code></p>
 <p>Whether the data is sparse or not.</p>
 </li>

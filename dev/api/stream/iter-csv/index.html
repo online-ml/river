@@ -4343,6 +4343,7 @@
 <ul>
 <li>
 <p><strong>filepath_or_buffer</strong></p>
+<p><em>Type</em> → <code>FilePath | typing.TextIO</code></p>
 <p>Either a string indicating the location of a file, or a buffer object that has a <code>read</code> method.</p>
 </li>
 <li>
@@ -4353,13 +4354,13 @@
 </li>
 <li>
 <p><strong>converters</strong></p>
-<p><em>Type</em> → <code>dict | None</code></p>
+<p><em>Type</em> → <code>dict[FeatureName, Callable[[typing.Any], typing.Any]] | None</code></p>
 <p><em>Default</em> → <code>None</code></p>
 <p>All values in the CSV are interpreted as strings by default. You can use this parameter to cast values to the desired type. This should be a <code>dict</code> mapping feature names to callables used to parse their associated values. Note that a callable may be a type, such as <code>float</code> and <code>int</code>.</p>
 </li>
 <li>
 <p><strong>parse_dates</strong></p>
-<p><em>Type</em> → <code>dict | None</code></p>
+<p><em>Type</em> → <code>dict[FeatureName, str] | None</code></p>
 <p><em>Default</em> → <code>None</code></p>
 <p>A <code>dict</code> mapping feature names to a format passed to the <code>datetime.datetime.strptime</code> method.</p>
 </li>
@@ -4371,16 +4372,19 @@
 </li>
 <li>
 <p><strong>drop_nones</strong></p>
+<p><em>Type</em> → <code>bool</code></p>
 <p><em>Default</em> → <code>False</code></p>
 <p>Whether or not to drop fields where the value is a <code>None</code>.</p>
 </li>
 <li>
 <p><strong>fraction</strong></p>
+<p><em>Type</em> → <code>float</code></p>
 <p><em>Default</em> → <code>1.0</code></p>
 <p>Sampling fraction.</p>
 </li>
 <li>
 <p><strong>compression</strong></p>
+<p><em>Type</em> → <code>Compression | None</code></p>
 <p><em>Default</em> → <code>infer</code></p>
 <p>For on-the-fly decompression of on-disk data. If this is set to 'infer' and <code>filepath_or_buffer</code> is a path, then the decompression method is inferred for the following extensions: '.gz', '.zip'.</p>
 </li>

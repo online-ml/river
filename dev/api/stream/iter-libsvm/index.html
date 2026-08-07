@@ -4365,16 +4365,18 @@
 <ul>
 <li>
 <p><strong>filepath_or_buffer</strong></p>
-<p><em>Type</em> → <code>str</code></p>
+<p><em>Type</em> → <code>FilePath | typing.TextIO</code></p>
 <p>Either a string indicating the location of a file, or a buffer object that has a <code>read</code> method.</p>
 </li>
 <li>
 <p><strong>target_type</strong></p>
+<p><em>Type</em> → <code>type[typing.Any]</code></p>
 <p><em>Default</em> → <code>&lt;class 'float'&gt;</code></p>
 <p>The type of the target value.</p>
 </li>
 <li>
 <p><strong>compression</strong></p>
+<p><em>Type</em> → <code>Compression | None</code></p>
 <p><em>Default</em> → <code>infer</code></p>
 <p>For on-the-fly decompression of on-disk data. If this is set to 'infer' and <code>filepath_or_buffer</code> is a path, then the decompression method is inferred for the following extensions: '.gz', '.zip'.</p>
 </li>
