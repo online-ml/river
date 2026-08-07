@@ -77,6 +77,7 @@
 
 - Fixed `metrics.base.Metrics` (a metrics collection, built via `metric_a + metric_b`) dropping the sample weight `w`: `update` now forwards `w` to each child metric, so weighted metrics report correct values inside a collection and `update`/`revert` cancel exactly. Previously `revert` applied the weight but `update` ignored it.
 - Fixed `metrics.BalancedAccuracy` deflating its score when a label appears in the predictions but never as a ground-truth label. Such a class has no support, so its recall is undefined and must be excluded from the per-class average; previously it was counted as `0` and inflated the denominator, disagreeing with `sklearn.metrics.balanced_accuracy_score`. `BalancedAccuracy` is now covered by the scikit-learn equivalence test.
+- Fixed bug where `metrics.CohenKappa` did not take into account sample weights.
 
 ## multiclass
 
@@ -160,3 +161,6 @@
 
 - Added `stream.iter_frame`, a dataframe-agnostic row iterator powered by [Narwhals](https://narwhals-dev.github.io/narwhals/) that works with any eager dataframe (pandas, polars, PyArrow, Modin, cuDF, ...).
 - Deprecated `stream.iter_pandas` and `stream.iter_polars` in favour of `stream.iter_frame`. They now emit a `DeprecationWarning` and will be removed in a future release.
+- Fixed `stream.iter_libsvm` leaking the file it opens: the file is now closed once the stream is exhausted, as `stream.iter_csv` and `stream.iter_arff` already did. A buffer passed in by the caller is still left open, since the caller owns it.
+- Enabled strict typing for `stream.iter_arff`, `stream.iter_csv`, `stream.iter_libsvm`, and the `open_filepath` helper they share. The `compression` argument is now a literal (`"infer"`, `"gzip"`, `"zip"`, or `None`) instead of an untyped string, and paths are annotated as `str | os.PathLike[str]`, so `pathlib.Path` inputs type-check. The shared aliases live in the new `river.stream.typing` module. Typing-only, apart from the fix above.
+- Added dedicated tests for the three file readers and for `open_filepath`, covering compression inference, an explicit `compression` overriding a misleading extension, and which files each reader closes.

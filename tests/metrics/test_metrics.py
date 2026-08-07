@@ -332,6 +332,30 @@ def test_metrics_collection_forwards_sample_weight():
     assert coll[0].get() == pytest.approx(0.0)
 
 
+def test_cohen_kappa_supports_sample_weight():
+    # CohenKappa advertises works_with_weights (it does not override the default), so its
+    # score must honour the sample weight, exactly like sklearn.metrics.cohen_kappa_score.
+    # The observed agreement and the expected-agreement terms have to be divided by the
+    # total weight, not by the raw number of observations (which is what Accuracy does).
+    y_true = ["cat", "ant", "cat", "cat", "ant", "bird", "cat", "ant"]
+    y_pred = ["ant", "ant", "cat", "cat", "ant", "cat", "cat", "bird"]
+    weights = [1.0, 5.0, 1.0, 3.0, 1.0, 2.0, 4.0, 1.0]
+
+    metric = metrics.CohenKappa()
+    for yt, yp, w in zip(y_true, y_pred, weights):
+        metric.update(yt, yp, w)
+
+    assert metric.get() == pytest.approx(
+        sk_metrics.cohen_kappa_score(y_true, y_pred, sample_weight=weights)
+    )
+
+    # The weighted score must differ from the unweighted one, proving the weight is used.
+    unweighted = metrics.CohenKappa()
+    for yt, yp in zip(y_true, y_pred):
+        unweighted.update(yt, yp)
+    assert metric.get() != pytest.approx(unweighted.get())
+
+
 def test_balanced_accuracy_ignores_unseen_predicted_classes():
     # A class that only shows up in the predictions has no support, so its recall is
     # undefined and must be excluded from the average, exactly like
