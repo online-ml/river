@@ -8,6 +8,7 @@ from . import base
 from .holt_winters import HoltWinters
 from .metrics import ForecastingMetric, HorizonAggMetric, HorizonMetric
 from .snarimax import SNARIMAX
+from .theta import Theta
 
 
 def iter_evaluate(*args, **kwargs):
@@ -45,4 +46,5 @@ __all__ = [
     "HorizonMetric",
     "HoltWinters",
     "SNARIMAX",
+    "Theta",
 ]
