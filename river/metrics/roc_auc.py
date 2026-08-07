@@ -2,8 +2,7 @@ from __future__ import annotations
 
 from scipy import integrate
 
-from river import metrics
-from river.anomaly.base import AnomalyDetector, AnomalyFilter
+from river import base, metrics
 
 __all__ = ["ROCAUC"]
 
@@ -36,7 +35,7 @@ class ROCAUC(metrics.base.BinaryMetric):
     Examples
     --------
 
-    >>> from river import metrics
+    >>> from river import base, metrics
 
     >>> y_true = [ 0,  0,   1,  1]
     >>> y_pred = [.1, .4, .35, .8]
@@ -73,8 +72,8 @@ class ROCAUC(metrics.base.BinaryMetric):
     def works_with(self, model) -> bool:
         return (
             super().works_with(model)
-            or isinstance(model, AnomalyDetector)
-            or isinstance(model, AnomalyFilter)
+            or isinstance(model, base.AnomalyDetector)
+            or isinstance(model, base.AnomalyFilter)
         )
 
     def update(self, y_true, y_pred, w=1.0):

@@ -14,7 +14,6 @@ model.
 
 from __future__ import annotations
 
-from . import base
 from .filter import QuantileFilter, ThresholdFilter
 from .gaussian import GaussianScorer
 from .hst import HalfSpaceTrees
@@ -25,8 +24,6 @@ from .sad import StandardAbsoluteDeviation
 from .svm import OneClassSVM
 
 __all__ = [
-    "base",
-    "AnomalyDetector",
     "GaussianScorer",
     "HalfSpaceTrees",
     "LODA",

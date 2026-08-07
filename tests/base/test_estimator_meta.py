@@ -5,7 +5,7 @@ from __future__ import annotations
 import pytest
 
 from river import base, linear_model, preprocessing
-from river.anomaly.base import AnomalyDetector
+from river.base import AnomalyDetector
 
 
 class TestIsinstanceWithDirectModels:
