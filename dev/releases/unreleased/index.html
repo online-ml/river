@@ -2833,6 +2833,7 @@
 <ul>
 <li>Fixed <a href="../../api/metrics/base/Metrics"><code>metrics.base.Metrics</code></a> (a metrics collection, built via <code>metric_a + metric_b</code>) dropping the sample weight <code>w</code>: <code>update</code> now forwards <code>w</code> to each child metric, so weighted metrics report correct values inside a collection and <code>update</code>/<code>revert</code> cancel exactly. Previously <code>revert</code> applied the weight but <code>update</code> ignored it.</li>
 <li>Fixed <a href="../../api/metrics/BalancedAccuracy"><code>metrics.BalancedAccuracy</code></a> deflating its score when a label appears in the predictions but never as a ground-truth label. Such a class has no support, so its recall is undefined and must be excluded from the per-class average; previously it was counted as <code>0</code> and inflated the denominator, disagreeing with <code>sklearn.metrics.balanced_accuracy_score</code>. <code>BalancedAccuracy</code> is now covered by the scikit-learn equivalence test.</li>
+<li>Fixed bug where <a href="../../api/metrics/CohenKappa"><code>metrics.CohenKappa</code></a> did not take into account sample weights.</li>
 </ul>
 <h2 id="multiclass">multiclass<a class="headerlink" href="#multiclass" title="Permanent link">&para;</a></h2>
 <ul>
