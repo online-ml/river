@@ -20,56 +20,56 @@ __all__ = ["CategoricalNB"]
 class CategoricalNB(base.BaseNB):
     """Categorical Naive Bayes.
 
-        Categorical Naive Bayes is suitable for discrete-valued features where each
-        feature takes one of a finite set of categories. The model estimates the
-        conditional probability of each category given a class using frequency counts
-        with Laplace smoothing.
+    Categorical Naive Bayes is suitable for discrete-valued features where each
+    feature takes one of a finite set of categories. The model estimates the
+    conditional probability of each category given a class using frequency counts
+    with Laplace smoothing.
 
-        Parameters
-        ----------
-        alpha
-            Additive (Laplace/Lidstone) smoothing parameter (use 0 for no smoothing).
+    Parameters
+    ----------
+    alpha
+        Additive (Laplace/Lidstone) smoothing parameter (use 0 for no smoothing).
 
-        Attributes
-        ----------
-        class_counts : collections.Counter
-            Number of training samples observed for each class.
-        feature_counts : collections.defaultdict
-            Counts of each `(class, category)` pair for every feature.
-        feature_values : collections.defaultdict
-            Set of distinct categories observed for each feature.
+    Attributes
+    ----------
+    class_counts : collections.Counter
+        Number of training samples observed for each class.
+    feature_counts : collections.defaultdict
+        Counts of each `(class, category)` pair for every feature.
+    feature_values : collections.defaultdict
+        Set of distinct categories observed for each feature.
 
-        Examples
-        --------
+    Examples
+    --------
 
-        >>> from river import naive_bayes
-        >>>
-        >>> model = naive_bayes.CategoricalNB(alpha=1.0)
-        >>>
-        >>> model.learn_one(
-        ...     {"color": "red", "shape": "round"},
-        ...     "apple"
-        ... )
-        >>>
-        >>> model.learn_one(
-        ...     {"color": "yellow", "shape": "long"},
-        ...     "banana"
-        ... )
-        >>>
-        >>> model.predict_proba_one(
-        ...     {"color": "red", "shape": "round"}
-        ... )
-        {'apple': ..., 'banana': ...}
+    >>> from river import naive_bayes
+    >>>
+    >>> model = naive_bayes.CategoricalNB(alpha=1.0)
+    >>>
+    >>> model.learn_one(
+    ...     {"color": "red", "shape": "round"},
+    ...     "apple"
+    ... )
+    >>>
+    >>> model.learn_one(
+    ...     {"color": "yellow", "shape": "long"},
+    ...     "banana"
+    ... )
+    >>>
+    >>> model.predict_proba_one(
+    ...     {"color": "red", "shape": "round"}
+    ... )
+    {'apple': ..., 'banana': ...}
 
-        The model also supports mini-batch learning and prediction through
-        `learn_many` and `predict_many`.
+    The model also supports mini-batch learning and prediction through
+    `learn_many` and `predict_many`.
 
-        References
-        ----------
-        [^1]: Christopher M. Bishop.
-            *Pattern Recognition and Machine Learning*.
-            Springer, 2006.
-        """
+    References
+    ----------
+    [^1]: Christopher M. Bishop.
+        *Pattern Recognition and Machine Learning*.
+        Springer, 2006.
+    """
     
     def __init__(self, alpha=1.0):
         self.alpha = alpha
