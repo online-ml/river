@@ -28,7 +28,7 @@ class CategoricalNB(base.BaseNB):
 
         Parameters
         ----------
-        alpha
+        alpha : float, default=1.0
             Additive (Laplace/Lidstone) smoothing parameter (use 0 for no smoothing).
 
         Attributes
