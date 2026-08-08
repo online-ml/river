@@ -69,6 +69,7 @@ class CategoricalNB(base.BaseNB):
     [^1]: Christopher M. Bishop.
         *Pattern Recognition and Machine Learning*.
         Springer, 2006.
+        
     """
     
     def __init__(self, alpha=1.0):
@@ -86,6 +87,7 @@ class CategoricalNB(base.BaseNB):
             Dictionary mapping feature names to categorical values.
         y
             Target class label.
+            
         """
         self.class_counts[y] += 1
         for f, value in x.items():
@@ -101,10 +103,7 @@ class CategoricalNB(base.BaseNB):
             DataFrame containing categorical features.
         y
             Target class labels.
-
-        Returns
-        -------
-        self
+            
         """
         X = into_frame(X)
         y = into_series(y)
@@ -152,6 +151,7 @@ class CategoricalNB(base.BaseNB):
         -------
         dict
             Mapping of class labels to unnormalized log posterior probabilities.
+            
         """
         if not self.class_counts:
             return {}
