@@ -18,8 +18,7 @@ __all__ = ["CategoricalNB"]
 
 
 class CategoricalNB(base.BaseNB):
-    def __init__(self, alpha=1.0):
-        """Categorical Naive Bayes.
+    """Categorical Naive Bayes.
 
         Categorical Naive Bayes is suitable for discrete-valued features where each
         feature takes one of a finite set of categories. The model estimates the
@@ -28,7 +27,7 @@ class CategoricalNB(base.BaseNB):
 
         Parameters
         ----------
-        alpha : float, default=1.0
+        alpha
             Additive (Laplace/Lidstone) smoothing parameter (use 0 for no smoothing).
 
         Attributes
@@ -71,6 +70,8 @@ class CategoricalNB(base.BaseNB):
             *Pattern Recognition and Machine Learning*.
             Springer, 2006.
         """
+    
+    def __init__(self, alpha=1.0):
         self.alpha = alpha
         self.class_counts = collections.Counter()
         self.feature_counts = collections.defaultdict(collections.Counter)
