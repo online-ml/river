@@ -797,8 +797,6 @@
       
         
       
-        
-      
     
     
     
@@ -1178,65 +1176,6 @@
 
               
             
-              
-                
-  
-  
-  
-  
-    
-    
-      
-        
-      
-        
-      
-        
-      
-    
-    
-    
-      
-      
-    
-    
-      
-        
-        
-      
-    
-    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
-      
-        
-  
-  
-  
-    <a href="../base/AnomalyDetector/" class="md-nav__link">
-      
-  
-  
-  <span class="md-ellipsis">
-    
-  
-  base
-
-    
-  </span>
-  
-  
-
-      
-        <span class="md-nav__icon md-icon"></span>
-      
-    </a>
-  
-
-      
-    </li>
-  
-
-              
-            
           </ul>
         </nav>
       
@@ -1373,6 +1312,12 @@
       
         
       
+        
+      
+        
+      
+        
+      
     
     
     
@@ -1391,7 +1336,7 @@
   
   
   
-    <a href="../../base/Base/" class="md-nav__link">
+    <a href="../../base/AnomalyDetector/" class="md-nav__link">
       
   
   
@@ -4362,7 +4307,7 @@
 <p>Update the model.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     — <code>dict</code>    </li>
+<li><strong>x</strong>     — <code>dict[base.typing.FeatureName, Any]</code>    </li>
 </ul>
 </details>
 <p><span /></p>
@@ -4372,7 +4317,7 @@
 <p>A high score is indicative of an anomaly. A low score corresponds to a normal observation.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     — <code>dict</code>    </li>
+<li><strong>x</strong>     — <code>dict[base.typing.FeatureName, Any]</code>    </li>
 </ul>
 <p><strong>Returns</strong></p>
 <p><code>float</code>:     An anomaly score. A high score is indicative of an anomaly. A low score corresponds a</p>

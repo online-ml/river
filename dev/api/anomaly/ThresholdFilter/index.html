@@ -18,7 +18,7 @@
         <link rel="prev" href="../StandardAbsoluteDeviation/">
       
       
-        <link rel="next" href="../base/AnomalyDetector/">
+        <link rel="next" href="../../bandit/BayesUCB/">
       
       
         
@@ -797,8 +797,6 @@
       
         
       
-        
-      
     
     
     
@@ -1167,65 +1165,6 @@
 
               
             
-              
-                
-  
-  
-  
-  
-    
-    
-      
-        
-      
-        
-      
-        
-      
-    
-    
-    
-      
-      
-    
-    
-      
-        
-        
-      
-    
-    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
-      
-        
-  
-  
-  
-    <a href="../base/AnomalyDetector/" class="md-nav__link">
-      
-  
-  
-  <span class="md-ellipsis">
-    
-  
-  base
-
-    
-  </span>
-  
-  
-
-      
-        <span class="md-nav__icon md-icon"></span>
-      
-    </a>
-  
-
-      
-    </li>
-  
-
-              
-            
           </ul>
         </nav>
       
@@ -1362,6 +1301,12 @@
       
         
       
+        
+      
+        
+      
+        
+      
     
     
     
@@ -1380,7 +1325,7 @@
   
   
   
-    <a href="../../base/Base/" class="md-nav__link">
+    <a href="../../base/AnomalyDetector/" class="md-nav__link">
       
   
   
@@ -4306,7 +4251,8 @@
 anomalous observations so as not to corrupt a supervised model. As an example, let's take
 the <a href="../../datasets/WaterFlow"><code>datasets.WaterFlow</code></a> dataset. Some of the samples have anomalous target variables because
 of human interventions. We don't want our model to learn these values.</p>
-<p><div class="language-python highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">river</span><span class="w"> </span><span class="kn">import</span> <span class="n">datasets</span>
+<p><div class="language-python highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">river</span><span class="w"> </span><span class="kn">import</span> <span class="n">anomaly</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">river</span><span class="w"> </span><span class="kn">import</span> <span class="n">datasets</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">river</span><span class="w"> </span><span class="kn">import</span> <span class="n">evaluate</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">river</span><span class="w"> </span><span class="kn">import</span> <span class="n">metrics</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">river</span><span class="w"> </span><span class="kn">import</span> <span class="n">time_series</span>
@@ -4380,8 +4326,8 @@ of human interventions. We don't want our model to learn these values.</p>
 <p>Update the anomaly filter and the underlying anomaly detector.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>args</strong>    </li>
-<li><strong>learn_kwargs</strong>    </li>
+<li><strong>args</strong>     — <code>Any</code>    </li>
+<li><strong>learn_kwargs</strong>     — <code>Any</code>    </li>
 </ul>
 </details>
 <p><span /></p>
@@ -4391,11 +4337,11 @@ of human interventions. We don't want our model to learn these values.</p>
 <p>A high score is indicative of an anomaly. A low score corresponds to a normal observation.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>args</strong>    </li>
-<li><strong>kwargs</strong>    </li>
+<li><strong>args</strong>     — <code>Any</code>    </li>
+<li><strong>kwargs</strong>     — <code>Any</code>    </li>
 </ul>
 <p><strong>Returns</strong></p>
-<p>An anomaly score. A high score is indicative of an anomaly. A low score corresponds a</p>
+<p><code>float</code>:     An anomaly score. A high score is indicative of an anomaly. A low score corresponds a</p>
 </details>
 <p><span /></p>
 

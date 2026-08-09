@@ -97,15 +97,6 @@
         <loc>https://riverml.xyz/dev/api/anomaly/ThresholdFilter/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/api/anomaly/base/AnomalyDetector/</loc>
-      </url>
-      <url>
-        <loc>https://riverml.xyz/dev/api/anomaly/base/AnomalyFilter/</loc>
-      </url>
-      <url>
-        <loc>https://riverml.xyz/dev/api/anomaly/base/SupervisedAnomalyDetector/</loc>
-      </url>
-      <url>
         <loc>https://riverml.xyz/dev/api/bandit/BayesUCB/</loc>
       </url>
       <url>
@@ -149,6 +140,12 @@
       </url>
       <url>
         <loc>https://riverml.xyz/dev/api/bandit/envs/KArmedTestbed/</loc>
+      </url>
+      <url>
+        <loc>https://riverml.xyz/dev/api/base/AnomalyDetector/</loc>
+      </url>
+      <url>
+        <loc>https://riverml.xyz/dev/api/base/AnomalyFilter/</loc>
       </url>
       <url>
         <loc>https://riverml.xyz/dev/api/base/Base/</loc>
@@ -200,6 +197,9 @@
       </url>
       <url>
         <loc>https://riverml.xyz/dev/api/base/Regressor/</loc>
+      </url>
+      <url>
+        <loc>https://riverml.xyz/dev/api/base/SupervisedAnomalyDetector/</loc>
       </url>
       <url>
         <loc>https://riverml.xyz/dev/api/base/SupervisedTransformer/</loc>
