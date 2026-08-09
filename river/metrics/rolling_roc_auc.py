@@ -1,8 +1,7 @@
 from __future__ import annotations
 
-from river import metrics
+from river import base, metrics
 from river._river_rust.stats import RsRollingROCAUC
-from river.anomaly.base import AnomalyDetector, AnomalyFilter
 
 __all__ = ["RollingROCAUC"]
 
@@ -40,7 +39,7 @@ class RollingROCAUC(metrics.base.BinaryMetric):
     Examples
     --------
 
-    >>> from river import metrics
+    >>> from river import base, metrics
 
     >>> y_true = [ 0,  1,  0,  1,  0,  1,  0,  0,   1,  1]
     >>> y_pred = [.3, .5, .5, .7, .1, .3, .1, .4, .35, .8]
@@ -68,8 +67,8 @@ class RollingROCAUC(metrics.base.BinaryMetric):
     def works_with(self, model) -> bool:
         return (
             super().works_with(model)
-            or isinstance(model, AnomalyDetector)
-            or isinstance(model, AnomalyFilter)
+            or isinstance(model, base.AnomalyDetector)
+            or isinstance(model, base.AnomalyFilter)
         )
 
     def _flush(self):

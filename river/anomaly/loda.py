@@ -3,12 +3,12 @@ from __future__ import annotations
 import math
 import random
 
-from river import anomaly, sketch
+from river import base, sketch
 
 __all__ = ["LODA"]
 
 
-class LODA(anomaly.base.AnomalyDetector):
+class LODA(base.AnomalyDetector):
     """LODA (Lightweight on-line detector of anomalies).
 
     LODA [^1] is an ensemble of one-dimensional histograms. Each histogram approximates the

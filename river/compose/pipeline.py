@@ -16,21 +16,6 @@ if typing.TYPE_CHECKING:
 
 from . import func, union
 
-
-@functools.cache
-def _anomaly_filter_cls():
-    from river.anomaly.base import AnomalyFilter
-
-    return AnomalyFilter
-
-
-@functools.cache
-def _anomaly_detector_cls():
-    from river.anomaly.base import AnomalyDetector
-
-    return AnomalyDetector
-
-
 __all__ = ["Pipeline"]
 
 
@@ -351,13 +336,12 @@ class Pipeline(base.Estimator):
         methods) can forward arguments such as a `utils.TimeRolling` timestamp `t` to the steps
         that declare them without any per-event inspection.
         """
-        AnomalyFilter = _anomaly_filter_cls()
         UnionCls = union.TransformerUnion
         TransformerCls = base.Transformer
 
         plan: list[tuple] = []
         for step in self.steps.values():
-            if isinstance(step, AnomalyFilter):
+            if isinstance(step, base.AnomalyFilter):
                 plan.append(("anomaly", step, step._supervised, _method_params(step, "learn_one")))
             elif isinstance(step, TransformerCls):
                 if isinstance(step, UnionCls):
@@ -770,7 +754,7 @@ class Pipeline(base.Estimator):
 
             if isinstance(final, base.Classifier):
                 print_dict(final.predict_proba_one(x), show_types=False, space_after=False)
-            elif isinstance(final, _anomaly_detector_cls()):
+            elif isinstance(final, base.AnomalyDetector):
                 _print(f"Score: {format_value(final.score_one(x))}")
             else:
                 _print(f"Prediction: {format_value(final.predict_one(x))}")
