@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import collections
 import pickle
 import random
 
@@ -67,6 +68,43 @@ def test_reproducibility():
         return out
 
     assert run() == run()
+
+
+def test_duplicate_points():
+    rrcf = anomaly.RobustRandomCutForest(n_trees=5, tree_size=32, seed=11)
+    for _ in range(10):
+        rrcf.learn_one({"a": 1.0, "b": 2.0})
+        rrcf.learn_one({"a": -1.0, "b": 0.5})
+    score = rrcf.score_one({"a": 1.0, "b": 2.0})
+    assert score >= 0.0
+    assert rrcf.score_one({"a": 50.0, "b": -50.0}) > score
+
+
+def test_constant_stream():
+    rrcf = anomaly.RobustRandomCutForest(n_trees=5, tree_size=16, seed=2)
+    for _ in range(50):
+        rrcf.learn_one({"a": 3.14})
+    assert rrcf.score_one({"a": 3.14}) == 0.0
+    assert rrcf.score_one({"a": 100.0}) >= 0.0
+
+
+def test_leaf_split_cut_is_drawn_in_proportion_to_feature_spans():
+    forest = anomaly.RobustRandomCutForest(n_trees=300, tree_size=8, seed=0)
+    forest.learn_one({"a": 0.0, "b": 0.0})
+    forest.learn_one({"a": 1.0, "b": 10.0})
+    picks = collections.Counter(member.root.feature for member in forest.trees)
+    assert picks["b"] > 5 * picks["a"]
+
+
+def test_window_slides():
+    tree_size = 16
+    rrcf = anomaly.RobustRandomCutForest(n_trees=3, tree_size=tree_size, seed=5)
+    rng = random.Random(0)
+    for _ in range(5 * tree_size):
+        rrcf.learn_one({"a": rng.gauss(0.0, 1.0), "b": rng.gauss(0.0, 1.0)})
+    for member in rrcf.trees:
+        assert len(member.leaves) == tree_size
+        assert member.root.n_points == tree_size
 
 
 def test_missing_and_extra_features_do_not_crash():

@@ -3,327 +3,262 @@ from __future__ import annotations
 import collections
 import random
 
-import numpy as np
-
-from river import anomaly
+from river import base
+from river.tree.base import Branch, Leaf
 
 __all__ = ["RobustRandomCutForest"]
 
 _QUERY_INDEX = -1
 
 
-class _Branch:
-    __slots__ = ["q", "p", "l", "r", "u", "n", "b"]
+class RobustRandomCutBranch(Branch):
+    def __init__(self, left, right, feature, threshold, n_points, lower, upper):
+        super().__init__(left, right)
+        self.feature = feature
+        self.threshold = threshold
+        self.n_points = n_points
+        self.lower = lower
+        self.upper = upper
+        self.parent: RobustRandomCutBranch | None = None
 
-    def __init__(self, q, p, left=None, right=None, u=None, n=0, b=None):
-        self.l = left
-        self.r = right
-        self.u = u
-        self.q = q
-        self.p = p
-        self.n = n
-        self.b = b
+    @property
+    def left(self):
+        return self.children[0]
+
+    @property
+    def right(self):
+        return self.children[1]
+
+    def replace_child(self, old_child, new_child):
+        self.children = tuple(new_child if child is old_child else child for child in self.children)
+
+    def next(self, x):
+        if x[self.feature] <= self.threshold:
+            return self.left
+        return self.right
+
+    def most_common_path(self):
+        raise NotImplementedError
+
+    @property
+    def repr_split(self):
+        return f"{self.feature} <= {self.threshold:.5f}"
+
+
+class RobustRandomCutLeaf(Leaf):
+    def __init__(self, index, parent, point, n_points=1):
+        super().__init__(index=index, parent=parent, point=point, n_points=n_points)
+
+    @property
+    def lower(self):
+        return self.point
+
+    @property
+    def upper(self):
+        return self.point
 
     def __repr__(self):
-        return f"Branch(q={self.q}, p={self.p:.2f})"
+        return f"Leaf({self.index})"
 
 
-class _Leaf:
-    __slots__ = ["i", "d", "u", "x", "n", "b"]
+class RobustRandomCutTree:
+    """A single robust random cut tree, grown one point at a time.
 
-    def __init__(self, i, d=None, u=None, x=None, n=1):
-        self.u = u
-        self.i = i
-        self.d = d
-        self.x = x
-        self.n = n
-        self.b = x.reshape(1, -1)
+    The incremental `insert`/`forget`/`collusive_displacement` logic is adapted from the
+    reference implementation of the algorithm, the `rrcf` package
+    (https://github.com/kLabUM/rrcf, MIT license).
 
-    def __repr__(self):
-        return f"Leaf({self.i})"
-
-
-class _RCTree:
-    """A single robust random cut tree.
-
-    This is a faithful port of the ``RCTree`` data structure from the ``rrcf`` package
-    (https://github.com/kLabUM/rrcf, MIT license), restricted to the incremental streaming
-    interface used by River: an empty tree grown one point at a time via ``insert_point`` and
-    trimmed via ``forget_point``.
     """
 
-    def __init__(self, random_state=None):
-        if isinstance(random_state, int):
-            self.rng = np.random.RandomState(random_state)
-        elif isinstance(random_state, np.random.RandomState):
-            self.rng = random_state
-        else:
-            self.rng = np.random.RandomState()
-        self.leaves: dict = {}
-        self.root = None
-        self.ndim = None
+    def __init__(self, rng: random.Random):
+        self.rng = rng
+        self.root: RobustRandomCutBranch | RobustRandomCutLeaf | None = None
+        self.leaves: dict[int, RobustRandomCutLeaf] = {}
+        self.features: list[base.typing.FeatureName] | None = None
 
-    def map_leaves(self, node, op=(lambda x: None), *args, **kwargs):
-        if isinstance(node, _Branch):
-            if node.l:
-                self.map_leaves(node.l, op=op, *args, **kwargs)
-            if node.r:
-                self.map_leaves(node.r, op=op, *args, **kwargs)
-        else:
-            op(node, *args, **kwargs)
-
-    def insert_point(self, point, index, tolerance=None):
-        if not isinstance(point, np.ndarray):
-            point = np.asarray(point)
-        point = point.ravel()
+    def insert(self, point, index):
         if self.root is None:
-            leaf = _Leaf(x=point, i=index, d=0)
+            leaf = RobustRandomCutLeaf(index=index, parent=None, point=point)
             self.root = leaf
-            self.ndim = point.size
+            self.features = list(point)
             self.leaves[index] = leaf
-            return leaf
-        if point.size != self.ndim:
-            raise ValueError("Point must be same dimension as existing points in tree.")
-        if index in self.leaves:
-            raise KeyError("Index already exists in leaves dict.")
-        duplicate = self.find_duplicate(point, tolerance=tolerance)
-        if duplicate:
-            self._update_leaf_count_upwards(duplicate, inc=1)
+            return
+
+        duplicate = self._find_duplicate(point)
+        if duplicate is not None:
+            self._update_counts_upwards(duplicate, step=1)
             self.leaves[index] = duplicate
-            return duplicate
+            return
+
         node = self.root
-        parent = node.u
-        maxdepth = max([leaf.d for leaf in self.leaves.values()])
-        depth = 0
-        branch = None
-        side = "l"
-        for _ in range(maxdepth + 1):
-            bbox = node.b
-            cut_dimension, cut = self._insert_point_cut(point, bbox)
-            if cut <= bbox[0, cut_dimension]:
-                leaf = _Leaf(x=point, i=index, d=depth)
-                branch = _Branch(q=cut_dimension, p=cut, left=leaf, right=node, n=(leaf.n + node.n))
+        parent = None
+        leaf = None
+        new_branch = None
+        for _ in range(len(self.leaves) + 1):
+            feature, threshold = self._draw_cut(point, node)
+            if threshold <= node.lower[feature]:
+                leaf = RobustRandomCutLeaf(index=index, parent=None, point=point)
+                new_branch = RobustRandomCutBranch(
+                    left=leaf,
+                    right=node,
+                    feature=feature,
+                    threshold=threshold,
+                    n_points=leaf.n_points + node.n_points,
+                    lower=None,
+                    upper=None,
+                )
                 break
-            elif cut >= bbox[-1, cut_dimension]:
-                leaf = _Leaf(x=point, i=index, d=depth)
-                branch = _Branch(q=cut_dimension, p=cut, left=node, right=leaf, n=(leaf.n + node.n))
+            elif threshold >= node.upper[feature]:
+                leaf = RobustRandomCutLeaf(index=index, parent=None, point=point)
+                new_branch = RobustRandomCutBranch(
+                    left=node,
+                    right=leaf,
+                    feature=feature,
+                    threshold=threshold,
+                    n_points=leaf.n_points + node.n_points,
+                    lower=None,
+                    upper=None,
+                )
                 break
             else:
-                depth += 1
-                if point[node.q] <= node.p:
-                    parent = node
-                    node = node.l
-                    side = "l"
-                else:
-                    parent = node
-                    node = node.r
-                    side = "r"
-        if branch is None:
-            raise AssertionError("Error with program logic: a cut was not found.")
-        node.u = branch
-        leaf.u = branch
-        branch.u = parent
-        if parent is not None:
-            setattr(parent, side, branch)
-        else:
-            self.root = branch
-        self.map_leaves(branch, op=self._increment_depth, inc=1)
-        self._update_leaf_count_upwards(parent, inc=1)
-        self._tighten_bbox_upwards(branch)
-        self.leaves[index] = leaf
-        return leaf
+                parent = node
+                node = node.next(point)
 
-    def forget_point(self, index):
-        leaf = self.leaves[index]
-        if leaf.n > 1:
-            self._update_leaf_count_upwards(leaf, inc=-1)
-            return self.leaves.pop(index)
+        if new_branch is None:
+            raise RuntimeError("A cut separating the new point was not found.")
+
+        node.parent = new_branch
+        leaf.parent = new_branch
+        new_branch.parent = parent
+        if parent is not None:
+            parent.replace_child(node, new_branch)
+        else:
+            self.root = new_branch
+        self._update_counts_upwards(parent, step=1)
+        self._tighten_bounds_upwards(new_branch)
+        self.leaves[index] = leaf
+
+    def forget(self, index):
+        leaf = self.leaves.pop(index)
+
+        if leaf.n_points > 1:
+            self._update_counts_upwards(leaf, step=-1)
+            return
+
         if leaf is self.root:
             self.root = None
-            self.ndim = None
-            return self.leaves.pop(index)
-        parent = leaf.u
-        if leaf is parent.l:
-            sibling = parent.r
-        else:
-            sibling = parent.l
+            self.features = None
+            return
+
+        parent = leaf.parent
+        sibling = parent.right if leaf is parent.left else parent.left
+
         if parent is self.root:
-            del parent
-            sibling.u = None
+            sibling.parent = None
             self.root = sibling
-            if isinstance(sibling, _Leaf):
-                sibling.d = 0
-            else:
-                self.map_leaves(sibling, op=self._increment_depth, inc=-1)
-            return self.leaves.pop(index)
-        grandparent = parent.u
-        sibling.u = grandparent
-        if parent is grandparent.l:
-            grandparent.l = sibling
-        else:
-            grandparent.r = sibling
-        parent = grandparent
-        self.map_leaves(sibling, op=self._increment_depth, inc=-1)
-        self._update_leaf_count_upwards(parent, inc=-1)
-        point = leaf.x
-        self._relax_bbox_upwards(parent, point)
-        return self.leaves.pop(index)
+            return
 
-    def _update_leaf_count_upwards(self, node, inc=1):
-        while node:
-            node.n += inc
-            node = node.u
+        grandparent = parent.parent
+        sibling.parent = grandparent
+        grandparent.replace_child(parent, sibling)
+        self._update_counts_upwards(grandparent, step=-1)
+        self._relax_bounds_upwards(grandparent, leaf.point)
 
-    def query(self, point, node=None):
-        if not isinstance(point, np.ndarray):
-            point = np.asarray(point)
-        point = point.ravel()
-        if node is None:
-            node = self.root
-        return self._query(point, node)
+    def collusive_displacement(self, index):
+        leaf = self.leaves[index]
+        if leaf is self.root:
+            return 0.0
+        node = leaf
+        displacements = []
+        while node.parent is not None:
+            parent = node.parent
+            sibling = parent.right if node is parent.left else parent.left
+            displacements.append(sibling.n_points / node.n_points)
+            node = parent
+        return max(displacements)
 
-    def _query(self, point, node):
-        if isinstance(node, _Leaf):
+    def _find_duplicate(self, point):
+        node = self.root
+        while isinstance(node, RobustRandomCutBranch):
+            node = node.next(point)
+        if node.point == point:
             return node
-        else:
-            if point[node.q] <= node.p:
-                return self._query(point, node.l)
-            else:
-                return self._query(point, node.r)
-
-    def find_duplicate(self, point, tolerance=None):
-        nearest = self.query(point)
-        if tolerance is None:
-            if (nearest.x == point).all():
-                return nearest
-        else:
-            if np.isclose(nearest.x, point, rtol=tolerance).all():
-                return nearest
         return None
 
-    def disp(self, leaf):
-        if not isinstance(leaf, _Leaf):
-            leaf = self.leaves[leaf]
-        if leaf is self.root:
-            return 0
-        parent = leaf.u
-        if leaf is parent.l:
-            sibling = parent.r
-        else:
-            sibling = parent.l
-        return sibling.n
+    def _update_counts_upwards(self, node, step):
+        while node is not None:
+            node.n_points += step
+            node = node.parent
 
-    def codisp(self, leaf):
-        if not isinstance(leaf, _Leaf):
-            leaf = self.leaves[leaf]
-        if leaf is self.root:
-            return 0
-        node = leaf
-        results = []
-        for _ in range(node.d):
-            parent = node.u
-            if parent is None:
+    def _draw_cut(self, point, node):
+        cumulative_spans = []
+        total_span = 0.0
+        for feature in self.features:
+            span = max(node.upper[feature], point[feature]) - min(
+                node.lower[feature], point[feature]
+            )
+            total_span += span
+            cumulative_spans.append(total_span)
+        draw = self.rng.uniform(0, total_span)
+        for feature, cumulative_span in zip(self.features, cumulative_spans):
+            if cumulative_span >= draw:
+                extended_lower = min(node.lower[feature], point[feature])
+                return feature, extended_lower + cumulative_span - draw
+        raise RuntimeError("No feature was selected for the cut.")
+
+    def _merged_bounds(self, branch):
+        lower = {}
+        upper = {}
+        for feature in self.features:
+            lower[feature] = min(branch.left.lower[feature], branch.right.lower[feature])
+            upper[feature] = max(branch.left.upper[feature], branch.right.upper[feature])
+        return lower, upper
+
+    def _tighten_bounds_upwards(self, branch):
+        lower, upper = self._merged_bounds(branch)
+        branch.lower = lower
+        branch.upper = upper
+        node = branch.parent
+        while node is not None:
+            changed = False
+            for feature in self.features:
+                if lower[feature] < node.lower[feature]:
+                    node.lower[feature] = lower[feature]
+                    changed = True
+                if upper[feature] > node.upper[feature]:
+                    node.upper[feature] = upper[feature]
+                    changed = True
+            if not changed:
                 break
-            if node is parent.l:
-                sibling = parent.r
-            else:
-                sibling = parent.l
-            num_deleted = node.n
-            displacement = sibling.n
-            result = displacement / num_deleted
-            results.append(result)
-            node = parent
-        co_displacement = max(results)
-        return co_displacement
+            node = node.parent
 
-    def get_bbox(self, branch=None):
-        if branch is None:
-            branch = self.root
-        mins = np.full(self.ndim, np.inf)
-        maxes = np.full(self.ndim, -np.inf)
-        self.map_leaves(branch, op=self._get_bbox, mins=mins, maxes=maxes)
-        bbox = np.vstack([mins, maxes])
-        return bbox
-
-    def _lr_branch_bbox(self, node):
-        bbox = np.vstack(
-            [
-                np.minimum(node.l.b[0, :], node.r.b[0, :]),
-                np.maximum(node.l.b[-1, :], node.r.b[-1, :]),
-            ]
-        )
-        return bbox
-
-    def _get_bbox(self, x, mins, maxes):
-        lt = x.x < mins
-        gt = x.x > maxes
-        mins[lt] = x.x[lt]
-        maxes[gt] = x.x[gt]
-
-    def _tighten_bbox_upwards(self, node):
-        bbox = self._lr_branch_bbox(node)
-        node.b = bbox
-        node = node.u
-        while node:
-            lt = bbox[0, :] < node.b[0, :]
-            gt = bbox[-1, :] > node.b[-1, :]
-            lt_any = lt.any()
-            gt_any = gt.any()
-            if lt_any or gt_any:
-                if lt_any:
-                    node.b[0, :][lt] = bbox[0, :][lt]
-                if gt_any:
-                    node.b[-1, :][gt] = bbox[-1, :][gt]
-            else:
+    def _relax_bounds_upwards(self, node, point):
+        while node is not None:
+            on_boundary = any(
+                node.lower[feature] == point[feature] or node.upper[feature] == point[feature]
+                for feature in self.features
+            )
+            if not on_boundary:
                 break
-            node = node.u
-
-    def _relax_bbox_upwards(self, node, point):
-        while node:
-            bbox = self._lr_branch_bbox(node)
-            if not ((node.b[0, :] == point) | (node.b[-1, :] == point)).any():
-                break
-            node.b[0, :] = bbox[0, :]
-            node.b[-1, :] = bbox[-1, :]
-            node = node.u
-
-    def _increment_depth(self, x, inc=1):
-        x.d += inc
-
-    def _insert_point_cut(self, point, bbox):
-        bbox_hat = np.empty(bbox.shape)
-        bbox_hat[0, :] = np.minimum(bbox[0, :], point)
-        bbox_hat[-1, :] = np.maximum(bbox[-1, :], point)
-        b_span = bbox_hat[-1, :] - bbox_hat[0, :]
-        b_range = b_span.sum()
-        r = self.rng.uniform(0, b_range)
-        span_sum = np.cumsum(b_span)
-        cut_dimension = np.inf
-        for j in range(len(span_sum)):
-            if span_sum[j] >= r:
-                cut_dimension = j
-                break
-        if not np.isfinite(cut_dimension):
-            raise ValueError("Cut dimension is not finite.")
-        cut = bbox_hat[0, cut_dimension] + span_sum[cut_dimension] - r
-        return cut_dimension, cut
+            node.lower, node.upper = self._merged_bounds(node)
+            node = node.parent
 
 
-class RobustRandomCutForest(anomaly.base.AnomalyDetector):
+class RobustRandomCutForest(base.AnomalyDetector):
     """Robust Random Cut Forest (RRCF).
 
     An online anomaly detector built from an ensemble of robust random cut trees. Each tree keeps
     a bounded, sliding sample of the stream (a reservoir of the most recent `tree_size` points).
     A point's anomaly score is its *collusive displacement* (CoDisp): roughly, the expected change
     in model complexity caused by inserting the point, which is large for points that would move
-    many others when added. The score returned by `score_one` is the CoDisp averaged over the
-    trees. Higher scores indicate more anomalous points.
+    many others when added. The score returned by `score_one` is the collusive displacement
+    averaged over the trees. Higher scores indicate more anomalous points.
 
     Cuts are drawn in proportion to the span of each feature within the bounding box of the sample,
     which makes the forest scale-aware and robust to irrelevant dimensions: a feature only receives
     cuts in proportion to how much it stretches the data.
 
-    The public API is dictionary based. A fixed feature ordering is established from the first
+    The implementation is dictionary based. The set of features is established from the first
     observation seen by `learn_one` (its keys, sorted). For subsequent points, any feature missing
     from an observation is treated as `0.0`, and any feature not seen in that first observation is
     ignored. RRCF therefore expects a consistent set of finite-valued features.
@@ -349,13 +284,12 @@ class RobustRandomCutForest(anomaly.base.AnomalyDetector):
         Maximum number of points held by each tree. Once a tree is full, the oldest point is
         forgotten before a new one is inserted, so each tree tracks a sliding window of the stream.
     seed
-        Random number seed. Each tree is given its own seed derived from this value, so that a
-        given `seed` and stream always produce the same scores.
+        Random number seed. A given `seed` and stream always produce the same scores.
 
     Attributes
     ----------
     trees
-        The list of `_RCTree` instances making up the forest.
+        The list of `RobustRandomCutTree` instances making up the forest.
 
     Examples
     --------
@@ -377,7 +311,7 @@ class RobustRandomCutForest(anomaly.base.AnomalyDetector):
     >>> normal < anomalous
     True
     >>> round(anomalous, 4)
-    53.5494
+    51.025
 
     The example below combines RRCF with a `StandardScaler` in a pipeline and scores a real
     stream, using the rank-based `RollingROCAUC` so that the unbounded scores are handled correctly.
@@ -400,7 +334,7 @@ class RobustRandomCutForest(anomaly.base.AnomalyDetector):
     ...     auc.update(y, score)
 
     >>> auc
-    RollingROCAUC: 95.64%
+    RollingROCAUC: 95.39%
 
     References
     ----------
@@ -418,37 +352,34 @@ class RobustRandomCutForest(anomaly.base.AnomalyDetector):
         self.n_trees = n_trees
         self.tree_size = tree_size
         self.seed = seed
+        self.rng = random.Random(seed)
 
-        seeder = random.Random(seed)
-        self.trees: list[_RCTree] = [
-            _RCTree(random_state=seeder.randint(0, 2**32 - 1)) for _ in range(n_trees)
+        self.trees: list[RobustRandomCutTree] = [
+            RobustRandomCutTree(rng=self.rng) for _ in range(n_trees)
         ]
-        self._feature_names: list | None = None
+        self._feature_names: list[base.typing.FeatureName] | None = None
         self._index = 0
         self._index_window: collections.deque = collections.deque()
 
-    def _to_vector(self, x: dict) -> np.ndarray:
+    def _canonicalize(self, x: dict) -> dict:
         assert self._feature_names is not None
-        return np.array(
-            [float(x.get(feature, 0.0)) for feature in self._feature_names],
-            dtype=np.float64,
-        )
+        return {feature: float(x.get(feature, 0.0)) for feature in self._feature_names}
 
     def learn_one(self, x: dict) -> None:
         if self._feature_names is None:
             self._feature_names = sorted(x.keys())
 
-        point = self._to_vector(x)
+        point = self._canonicalize(x)
         index = self._index
         self._index += 1
 
         if len(self._index_window) >= self.tree_size:
             oldest = self._index_window.popleft()
-            for tree in self.trees:
-                tree.forget_point(oldest)
+            for member in self.trees:
+                member.forget(oldest)
 
-        for tree in self.trees:
-            tree.insert_point(point, index)
+        for member in self.trees:
+            member.insert(point, index)
 
         self._index_window.append(index)
 
@@ -456,14 +387,14 @@ class RobustRandomCutForest(anomaly.base.AnomalyDetector):
         if self._feature_names is None or not self._index_window:
             return 0.0
 
-        point = self._to_vector(x)
+        point = self._canonicalize(x)
+        state = self.rng.getstate()
         total = 0.0
-        for tree in self.trees:
-            state = tree.rng.get_state()
-            tree.insert_point(point, _QUERY_INDEX)
-            total += float(tree.codisp(_QUERY_INDEX))
-            tree.forget_point(_QUERY_INDEX)
-            tree.rng.set_state(state)
+        for member in self.trees:
+            member.insert(point, _QUERY_INDEX)
+            total += member.collusive_displacement(_QUERY_INDEX)
+            member.forget(_QUERY_INDEX)
+        self.rng.setstate(state)
 
         return total / len(self.trees)
 
