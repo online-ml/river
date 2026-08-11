@@ -132,8 +132,9 @@ class PredictiveAnomalyDetection(base.SupervisedAnomalyDetector):
         # score_one free of side effects, so scoring never mutates the model or the threshold.
         if self.iter >= self.warmup_period:
             squared_error = (self._predict(x) - y) ** 2
-            self.dynamic_mae.update(squared_error)
-            self.dynamic_se_variance.update(squared_error)
+            if math.isfinite(squared_error):
+                self.dynamic_mae.update(squared_error)
+                self.dynamic_se_variance.update(squared_error)
 
         self.iter += 1
 
@@ -164,6 +165,11 @@ class PredictiveAnomalyDetection(base.SupervisedAnomalyDetector):
         # When warmup hyper-parameter is used, the anomaly score is only returned once the warmup period has passed.
         # When the warmup period has not passed, the default value of the anomaly score is 0.0
         if self.iter < self.warmup_period:
+            return 0.0
+
+        # A predictive model that has not learnt yet can return a non-finite prediction, which
+        # carries no information about how anomalous the observation is.
+        if not math.isfinite(squared_error):
             return 0.0
 
         # An error above the threshold will result in a score of 1.0.
