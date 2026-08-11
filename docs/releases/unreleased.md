@@ -92,6 +92,7 @@
 ## naive_bayes
 
 - Added mini-batch support to `GaussianNB` via `learn_many`, `predict_many`, and `predict_proba_many`.
+- Added `CategoricalNB`, a Naive Bayes classifier for categorical features that maintains per-class frequencies for every value of every feature, with additive (Laplace) smoothing and support for both online and mini-batch modes.
 
 ## neighbors
 
