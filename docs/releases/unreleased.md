@@ -1,4 +1,8 @@
-# Unreleased
+﻿# Unreleased
+
+## naive_bayes
+
+- Added `CategoricalNB`, a Naive Bayes classifier for categorical features that maintains per-class frequencies for every value of every feature, with additive (Laplace) smoothing and support for both online and mini-batch modes.
 
 ## stream
 
