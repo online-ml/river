@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import collections
 
-from river import optim
+from river import base, optim
 from river.optim.base import DictLike
 
 __all__ = ["AdaMax"]
@@ -51,13 +51,19 @@ class AdaMax(optim.base.Optimizer):
 
     """
 
-    def __init__(self, lr=0.1, beta_1=0.9, beta_2=0.999, eps=1e-8):
+    def __init__(
+        self,
+        lr: int | float | optim.base.Scheduler = 0.1,
+        beta_1: float = 0.9,
+        beta_2: float = 0.999,
+        eps: float = 1e-8,
+    ):
         super().__init__(lr)
         self.beta_1 = beta_1
         self.beta_2 = beta_2
         self.eps = eps
-        self.m = collections.defaultdict(float)
-        self.u = collections.defaultdict(float)
+        self.m: dict[base.typing.FeatureName, float] = collections.defaultdict(float)
+        self.u: dict[base.typing.FeatureName, float] = collections.defaultdict(float)
 
     def _step_with_dict(self, w: DictLike, g: DictLike) -> DictLike:
         # Correct bias for `m`

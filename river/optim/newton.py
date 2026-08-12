@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import typing
+
 import numpy as np
 
 from river import base, optim, utils
@@ -64,7 +66,7 @@ class Newton(optim.base.Optimizer):
 
     """
 
-    def __init__(self, lr=0.1, eps=1e-5):
+    def __init__(self, lr: int | float | optim.base.Scheduler = 0.1, eps: float = 1e-5):
         super().__init__(lr)
         self.eps = eps
         self._idx: dict[base.typing.FeatureName, int] = {}
@@ -82,7 +84,7 @@ class Newton(optim.base.Optimizer):
         self._H_inv = new_H_inv
         self._cap = new_cap
 
-    def _ensure_features(self, features) -> None:
+    def _ensure_features(self, features: typing.Iterable[base.typing.FeatureName]) -> None:
         idx = self._idx
         for f in features:
             if f not in idx:

@@ -3,7 +3,7 @@ from __future__ import annotations
 import numpy as np
 
 from river import optim
-from river.optim.base import DictLike
+from river.optim.base import DictLike, VectorLike
 
 __all__ = ["SGD"]
 
@@ -42,7 +42,7 @@ class SGD(optim.base.Optimizer):
 
     """
 
-    def __init__(self, lr=0.01) -> None:
+    def __init__(self, lr: int | float | optim.base.Scheduler = 0.01) -> None:
         super().__init__(lr)
 
     def _step_with_dict(self, w: DictLike, g: DictLike) -> DictLike:
@@ -50,7 +50,7 @@ class SGD(optim.base.Optimizer):
             w[i] -= self.learning_rate * gi
         return w
 
-    def _step_with_vector(self, w, g):
+    def _step_with_vector(self, w: VectorLike, g: VectorLike) -> VectorLike:
         if isinstance(w, np.ndarray):
             w -= self.learning_rate * g
         else:

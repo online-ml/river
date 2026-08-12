@@ -6,7 +6,7 @@ import typing
 import numpy as np
 
 from river import optim, utils
-from river.optim.base import DictLike
+from river.optim.base import DictLike, VectorLike
 
 __all__ = ["Adam"]
 
@@ -53,7 +53,13 @@ class Adam(optim.base.Optimizer):
 
     """
 
-    def __init__(self, lr=0.1, beta_1=0.9, beta_2=0.999, eps=1e-8) -> None:
+    def __init__(
+        self,
+        lr: int | float | optim.base.Scheduler = 0.1,
+        beta_1: float = 0.9,
+        beta_2: float = 0.999,
+        eps: float = 1e-8,
+    ) -> None:
         super().__init__(lr)
         self.beta_1 = beta_1
         self.beta_2 = beta_2
@@ -82,7 +88,7 @@ class Adam(optim.base.Optimizer):
 
         return w
 
-    def _step_with_vector(self, w, g):
+    def _step_with_vector(self, w: VectorLike, g: VectorLike) -> VectorLike:
         if self.m is None:
             if isinstance(w, np.ndarray):
                 self.m = np.zeros_like(w)
