@@ -5046,6 +5046,7 @@
 <ul>
 <li>
 <p><strong>threshold</strong></p>
+<p><em>Type</em> → <code>float</code></p>
 <p><em>Default</em> → <code>1.0</code></p>
 <p>Margin threshold. 1 yield the loss used in SVMs, whilst 0 is equivalent to the loss used in the Perceptron algorithm.</p>
 </li>
@@ -5068,8 +5069,8 @@
 <p>Returns the loss.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>y_true</strong>    </li>
-<li><strong>y_pred</strong>    </li>
+<li><strong>y_true</strong>     — <code>typing.Any</code>    </li>
+<li><strong>y_pred</strong>     — <code>typing.Any</code>    </li>
 </ul>
 <p><strong>Returns</strong></p>
 <p><code>typing.Any</code>:     The loss(es).</p>
@@ -5080,8 +5081,8 @@
 <p>Return the gradient with respect to y_pred.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>y_true</strong>    </li>
-<li><strong>y_pred</strong>    </li>
+<li><strong>y_true</strong>     — <code>typing.Any</code>    </li>
+<li><strong>y_pred</strong>     — <code>typing.Any</code>    </li>
 </ul>
 <p><strong>Returns</strong></p>
 <p><code>typing.Any</code>:     The gradient(s).</p>
@@ -5093,7 +5094,7 @@
 <p>This is the inverse of the link function. Typically, a loss function takes as input the raw output of a model. In the case of classification, the raw output would be logits. The mean function can be used to convert the raw output into a value that makes sense to the user, such as a probability.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>y_pred</strong>    </li>
+<li><strong>y_pred</strong>     — <code>typing.Any</code>    </li>
 </ul>
 <p><strong>Returns</strong></p>
 <p><code>typing.Any</code>:     The adjusted prediction(s).</p>

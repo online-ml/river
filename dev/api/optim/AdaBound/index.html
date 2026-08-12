@@ -4699,27 +4699,33 @@
 <ul>
 <li>
 <p><strong>lr</strong> <em>(mutable)</em></p>
+<p><em>Type</em> → <code>int | float | optim.base.Scheduler</code></p>
 <p><em>Default</em> → <code>0.001</code></p>
 <p>The learning rate.</p>
 </li>
 <li>
 <p><strong>beta_1</strong></p>
+<p><em>Type</em> → <code>float</code></p>
 <p><em>Default</em> → <code>0.9</code></p>
 </li>
 <li>
 <p><strong>beta_2</strong></p>
+<p><em>Type</em> → <code>float</code></p>
 <p><em>Default</em> → <code>0.999</code></p>
 </li>
 <li>
 <p><strong>eps</strong></p>
+<p><em>Type</em> → <code>float</code></p>
 <p><em>Default</em> → <code>1e-08</code></p>
 </li>
 <li>
 <p><strong>gamma</strong></p>
+<p><em>Type</em> → <code>float</code></p>
 <p><em>Default</em> → <code>0.001</code></p>
 </li>
 <li>
 <p><strong>final_lr</strong></p>
+<p><em>Type</em> → <code>float</code></p>
 <p><em>Default</em> → <code>0.1</code></p>
 </li>
 </ul>
@@ -4759,7 +4765,7 @@
 <p>Parameters:     w (dict): A dictionary of weight parameters. The weights are modified in-place.  Returns:     The updated weights.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>w</strong>     — <code>dict</code>    </li>
+<li><strong>w</strong>     — <code>DictLike | VectorLike</code>    </li>
 </ul>
 </details>
 <p><span /></p>
@@ -4768,11 +4774,11 @@
 <p>Updates a weight vector given a gradient.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>w</strong>     — <code>dict | VectorLike</code>    </li>
-<li><strong>g</strong>     — <code>dict | VectorLike</code>    </li>
+<li><strong>w</strong>     — <code>DictLike | VectorLike</code>    </li>
+<li><strong>g</strong>     — <code>DictLike | VectorLike</code>    </li>
 </ul>
 <p><strong>Returns</strong></p>
-<p><code>dict | VectorLike</code>:     The updated weights.</p>
+<p><code>DictLike | VectorLike</code>:     The updated weights.</p>
 </details>
 <p><span /></p>
 <h2 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h2>

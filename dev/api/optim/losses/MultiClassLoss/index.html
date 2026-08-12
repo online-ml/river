@@ -5000,11 +5000,11 @@
 <p>Returns the loss.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>y_true</strong>    </li>
-<li><strong>y_pred</strong>    </li>
+<li><strong>y_true</strong>     — <code>base.typing.ClfTarget</code>    </li>
+<li><strong>y_pred</strong>     — <code>dict[base.typing.ClfTarget, float]</code>    </li>
 </ul>
 <p><strong>Returns</strong></p>
-<p><code>typing.Any</code>:     The loss(es).</p>
+<p><code>float</code>:     The loss(es).</p>
 </details>
 <p><span /></p>
 <details class="- abstract">
@@ -5012,11 +5012,11 @@
 <p>Return the gradient with respect to y_pred.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>y_true</strong>    </li>
-<li><strong>y_pred</strong>    </li>
+<li><strong>y_true</strong>     — <code>base.typing.ClfTarget</code>    </li>
+<li><strong>y_pred</strong>     — <code>dict[base.typing.ClfTarget, float]</code>    </li>
 </ul>
 <p><strong>Returns</strong></p>
-<p><code>typing.Any</code>:     The gradient(s).</p>
+<p><code>dict&amp;#91;base.typing.ClfTarget, float&amp;#93;</code>:     The gradient(s).</p>
 </details>
 <p><span /></p>
 <details class="- abstract">
@@ -5025,7 +5025,7 @@
 <p>This is the inverse of the link function. Typically, a loss function takes as input the raw output of a model. In the case of classification, the raw output would be logits. The mean function can be used to convert the raw output into a value that makes sense to the user, such as a probability.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>y_pred</strong>    </li>
+<li><strong>y_pred</strong>     — <code>typing.Any</code>    </li>
 </ul>
 <p><strong>Returns</strong></p>
 <p><code>typing.Any</code>:     The adjusted prediction(s).</p>

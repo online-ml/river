@@ -5064,6 +5064,7 @@
 <ul>
 <li>
 <p><strong>alpha</strong></p>
+<p><em>Type</em> → <code>float</code></p>
 <p><em>Default</em> → <code>0.5</code></p>
 <p>Desired quantile to attain.</p>
 </li>
@@ -5090,8 +5091,8 @@
 <p>Returns the loss.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>y_true</strong>    </li>
-<li><strong>y_pred</strong>    </li>
+<li><strong>y_true</strong>     — <code>typing.Any</code>    </li>
+<li><strong>y_pred</strong>     — <code>typing.Any</code>    </li>
 </ul>
 <p><strong>Returns</strong></p>
 <p><code>typing.Any</code>:     The loss(es).</p>
@@ -5102,8 +5103,8 @@
 <p>Return the gradient with respect to y_pred.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>y_true</strong>    </li>
-<li><strong>y_pred</strong>    </li>
+<li><strong>y_true</strong>     — <code>typing.Any</code>    </li>
+<li><strong>y_pred</strong>     — <code>typing.Any</code>    </li>
 </ul>
 <p><strong>Returns</strong></p>
 <p><code>typing.Any</code>:     The gradient(s).</p>
@@ -5115,7 +5116,7 @@
 <p>This is the inverse of the link function. Typically, a loss function takes as input the raw output of a model. In the case of classification, the raw output would be logits. The mean function can be used to convert the raw output into a value that makes sense to the user, such as a probability.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>y_pred</strong>    </li>
+<li><strong>y_pred</strong>     — <code>typing.Any</code>    </li>
 </ul>
 <p><strong>Returns</strong></p>
 <p><code>typing.Any</code>:     The adjusted prediction(s).</p>
