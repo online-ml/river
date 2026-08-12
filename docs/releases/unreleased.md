@@ -151,6 +151,7 @@
 
 - Added `stats.EWCov`, an exponentially weighted covariance between two variables (the bivariate counterpart of `stats.EWVar`).
 - Added `stats.ChiSquared`, a streaming Chi-squared statistic between two categorical variables. Wrap it with `utils.Rolling` for a rolling version.
+- Added `stats.SavitzkyGolay`, a rolling Savitzky-Golay smoothing filter that fits a polynomial to the current window by least squares and returns the value at the most recent point.
 - Enabled strict typing in the entire `stats` package: added missing annotations and made the statistic classes generic in their output type (values produced by `.get()`).
 
 ## tree

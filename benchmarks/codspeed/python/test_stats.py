@@ -106,3 +106,16 @@ def test_rolling_iqr_update(benchmark) -> None:
         return model.get()
 
     benchmark(run)
+
+
+@benchmark("stats")
+def test_savitzky_golay_update(benchmark) -> None:
+    series = scalar_series()
+
+    def run() -> float:
+        model = stats.SavitzkyGolay(window_size=15, polyorder=3)
+        for x in series:
+            model.update(x)
+        return model.get()
+
+    benchmark(run)
