@@ -69,7 +69,7 @@ class Gaussian(base.ContinuousDistribution):
 
     @property
     def sigma(self) -> float:
-        return typing.cast(float, self._var.get() ** 0.5)
+        return math.sqrt(self._var.get())
 
     def __repr__(self) -> str:
         return f"𝒩(μ={self.mu:.3f}, σ={self.sigma:.3f})"
