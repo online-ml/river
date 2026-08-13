@@ -6,10 +6,11 @@ import numpy as np
 
 from river.utils import dataframe as dataframe_utils
 
-from .emp import SymmetricMatrix
+from .emp import MatrixKey, SymmetricMatrix
 
 if typing.TYPE_CHECKING:
     from narwhals.stable.v2.typing import IntoDataFrame
+    from numpy.typing import NDArray
 
 __all__ = [
     "EwaCovariance",
@@ -22,7 +23,7 @@ __all__ = [
 _EPS = 1e-12
 
 
-class _EWMatrix(SymmetricMatrix):
+class _EWMatrix(SymmetricMatrix[float]):
     """Array-backed exponentially weighted matrix estimator with a dict-native interface.
 
     Shared engine for the exponentially weighted covariance and precision estimators. It keeps a
@@ -37,19 +38,19 @@ class _EWMatrix(SymmetricMatrix):
         if not 0 <= fading_factor <= 1:
             raise ValueError("fading_factor is not comprised between 0 and 1")
         self.fading_factor = float(fading_factor)
-        self._features: list = []
-        self._idx: dict = {}
-        self._mean = np.zeros(0, dtype=np.float64)
-        self._initialized = np.zeros(0, dtype=bool)
+        self._features: list[typing.Any] = []
+        self._idx: dict[typing.Any, int] = {}
+        self._mean: NDArray[np.float64] = np.zeros(0, dtype=np.float64)
+        self._initialized: NDArray[np.bool_] = np.zeros(0, dtype=bool)
         self._n = 0
-        self._matrix_cache: np.ndarray | None = None
+        self._matrix_cache: NDArray[np.float64] | None = None
 
     # --------------------------------------------------------------- internals
     def _on_grow(self, old_dim: int, new_dim: int) -> None:
         """Resize the subclass's matrix state when new features appear."""
         raise NotImplementedError
 
-    def _grow(self, new_keys: list) -> None:
+    def _grow(self, new_keys: list[typing.Any]) -> None:
         old_dim = len(self._features)
         for k in new_keys:
             self._idx[k] = len(self._features)
@@ -62,7 +63,7 @@ class _EWMatrix(SymmetricMatrix):
         self._mean, self._initialized = mean, init
         self._on_grow(old_dim, new_dim)
 
-    def _vector(self, x: dict) -> np.ndarray:
+    def _vector(self, x: dict[typing.Any, float]) -> NDArray[np.float64]:
         new_keys = [k for k in x if k not in self._idx]
         if new_keys:
             self._grow(new_keys)
@@ -74,29 +75,29 @@ class _EWMatrix(SymmetricMatrix):
                 "estimators assume a consistent set of features"
             ) from e
 
-    def _fresh(self) -> np.ndarray:
+    def _fresh(self) -> NDArray[np.bool_]:
         return ~self._initialized
 
-    def _blend_mean(self, v: np.ndarray, fresh: np.ndarray) -> np.ndarray:
+    def _blend_mean(self, v: NDArray[np.float64], fresh: NDArray[np.bool_]) -> NDArray[np.float64]:
         f = self.fading_factor
         # Seed freshly-seen features with the observed value (like stats.EWMean's first step).
         if fresh.any():
             return np.where(fresh, v, (1 - f) * self._mean + f * v)
         return (1 - f) * self._mean + f * v
 
-    def _learn_vector(self, v: np.ndarray) -> None:
+    def _learn_vector(self, v: NDArray[np.float64]) -> None:
         raise NotImplementedError
 
-    def _to_matrix_array(self) -> np.ndarray:
+    def _to_matrix_array(self) -> NDArray[np.float64]:
         raise NotImplementedError
 
-    def _matrix_array(self) -> np.ndarray:
+    def _matrix_array(self) -> NDArray[np.float64]:
         if self._matrix_cache is None:
             self._matrix_cache = self._to_matrix_array()
         return self._matrix_cache
 
     # -------------------------------------------------------------- public API
-    def update(self, x: dict):
+    def update(self, x: dict[typing.Any, float]) -> None:
         """Update with a single sample.
 
         Parameters
@@ -107,7 +108,7 @@ class _EWMatrix(SymmetricMatrix):
         """
         self._learn_vector(self._vector(x))
 
-    def update_many(self, X: IntoDataFrame):
+    def update_many(self, X: IntoDataFrame) -> None:
         """Update with a dataframe of samples.
 
         Any [narwhals](https://github.com/narwhals-dev/narwhals)-compatible eager dataframe
@@ -135,18 +136,18 @@ class _EWMatrix(SymmetricMatrix):
             self._learn_vector(row)
 
     @property
-    def matrix(self) -> dict:
+    def matrix(self) -> dict[MatrixKey, float]:
         if not self._features:
             return {}
         arr = self._matrix_array()
-        out = {}
+        out: dict[MatrixKey, float] = {}
         for ai, fa in enumerate(self._features):
             for bi in range(ai, len(self._features)):
                 fb = self._features[bi]
                 out[min((fa, fb), (fb, fa))] = float(arr[ai, bi])
         return out
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: MatrixKey) -> float:
         i, j = key
         ai = self._idx.get(i)
         bi = self._idx.get(j)
@@ -165,17 +166,17 @@ class _EWCovariance(_EWMatrix):
 
     def __init__(self, fading_factor: float = 0.5):
         super().__init__(fading_factor)
-        self._M2 = np.zeros((0, 0), dtype=np.float64)
+        self._M2: NDArray[np.float64] = np.zeros((0, 0), dtype=np.float64)
 
     def _on_grow(self, old_dim: int, new_dim: int) -> None:
         M2 = np.zeros((new_dim, new_dim), dtype=np.float64)
         M2[:old_dim, :old_dim] = self._M2
         self._M2 = M2
 
-    def _before_update(self, v: np.ndarray) -> None:
+    def _before_update(self, v: NDArray[np.float64]) -> None:
         """Hook called with the new observation before the state is updated (mean/M2 are old)."""
 
-    def _learn_vector(self, v: np.ndarray) -> None:
+    def _learn_vector(self, v: NDArray[np.float64]) -> None:
         self._before_update(v)
         f = self.fading_factor
         fresh = self._fresh()
@@ -190,10 +191,10 @@ class _EWCovariance(_EWMatrix):
         self._n += 1
         self._matrix_cache = None
 
-    def _raw_cov(self) -> np.ndarray:
+    def _raw_cov(self) -> NDArray[np.float64]:
         return self._M2 - np.outer(self._mean, self._mean)
 
-    def _to_matrix_array(self) -> np.ndarray:
+    def _to_matrix_array(self) -> NDArray[np.float64]:
         return self._raw_cov()
 
 
@@ -317,7 +318,7 @@ class LedoitWolfCovariance(_EWCovariance):
         super().__init__(fading_factor)
         self._pi_bar = 0.0  # running dispersion of the per-sample scatter about the covariance
 
-    def _before_update(self, v: np.ndarray) -> None:
+    def _before_update(self, v: NDArray[np.float64]) -> None:
         d = len(v)
         if d == 0:
             return
@@ -328,10 +329,10 @@ class LedoitWolfCovariance(_EWCovariance):
         f = self.fading_factor
         self._pi_bar = (1 - f) * self._pi_bar + f * q
 
-    def _to_matrix_array(self) -> np.ndarray:
+    def _to_matrix_array(self) -> NDArray[np.float64]:
         S = self._raw_cov()
-        d = S.shape[0]
-        mu = np.trace(S) / d
+        d: int = S.shape[0]
+        mu = float(np.trace(S)) / d
         identity = np.eye(d)
         disp = float(((S - mu * identity) ** 2).sum() / d)
         if disp <= _EPS or self._pi_bar <= 0:
@@ -384,12 +385,12 @@ class OASCovariance(_EWCovariance):
 
     """
 
-    def _to_matrix_array(self) -> np.ndarray:
+    def _to_matrix_array(self) -> NDArray[np.float64]:
         S = self._raw_cov()
-        d = S.shape[0]
+        d: int = S.shape[0]
         n = max(1.0 / self.fading_factor, 2.0)
-        tr = np.trace(S)
-        tr2 = np.trace(S @ S)
+        tr = float(np.trace(S))
+        tr2 = float(np.trace(S @ S))
         mu = tr / d
         num = (1.0 - 2.0 / d) * tr2 + tr * tr
         den = (n + 1.0 - 2.0 / d) * (tr2 - tr * tr / d)
@@ -455,11 +456,11 @@ class ShrunkCovariance(_EWCovariance):
         self.delta = delta
         self.target = target
 
-    def _to_matrix_array(self) -> np.ndarray:
+    def _to_matrix_array(self) -> NDArray[np.float64]:
         S = self._raw_cov()
-        d = S.shape[0]
+        d: int = S.shape[0]
         if self.target == "identity":
-            target = (np.trace(S) / d) * np.eye(d)
+            target = (float(np.trace(S)) / d) * np.eye(d)
         else:  # constant_correlation
             sd = np.sqrt(np.maximum(np.diag(S), _EPS))
             corr = S / np.outer(sd, sd)
@@ -528,7 +529,8 @@ class EwaPrecision(_EWMatrix):
         if not 0 < fading_factor < 1:
             raise ValueError("fading_factor must be strictly between 0 and 1")
         super().__init__(fading_factor)
-        self._Pm = np.zeros((0, 0), dtype=np.float64)  # inverse of the EW second-moment matrix
+        # inverse of the EW second-moment matrix
+        self._Pm: NDArray[np.float64] = np.zeros((0, 0), dtype=np.float64)
 
     def _on_grow(self, old_dim: int, new_dim: int) -> None:
         # New features start from an identity prior on the second-moment matrix.
@@ -536,7 +538,7 @@ class EwaPrecision(_EWMatrix):
         Pm[:old_dim, :old_dim] = self._Pm
         self._Pm = Pm
 
-    def _learn_vector(self, v: np.ndarray) -> None:
+    def _learn_vector(self, v: NDArray[np.float64]) -> None:
         f = self.fading_factor
         fresh = self._fresh()
         # Forgetting-factor Sherman-Morrison update of inv(M2), where M2 <- (1-f) M2 + f v vᵀ.
@@ -550,7 +552,7 @@ class EwaPrecision(_EWMatrix):
         self._n += 1
         self._matrix_cache = None
 
-    def _to_matrix_array(self) -> np.ndarray:
+    def _to_matrix_array(self) -> NDArray[np.float64]:
         # precision = inv(M2 - mean meanᵀ), via a rank-one Sherman-Morrison downdate of inv(M2).
         Pm = self._Pm
         m = self._mean

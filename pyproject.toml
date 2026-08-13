@@ -269,7 +269,6 @@ module = [
     "river.neighbors.*",
     "river.sketch.*",
     "river.facto.*",
-    "river.covariance.*",
     "river.compat.river_to_sklearn",
     "river.multiclass.*",
     "river.reco.*",
