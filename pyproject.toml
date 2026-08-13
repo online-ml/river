@@ -259,7 +259,6 @@ module = [
     "river.time_series.*",
     "river.feature_extraction.*",
     "river.ensemble.*",
-    "river.proba.*",
     "river.multioutput.*",
     "river.naive_bayes.*",
     "river.checks.*",

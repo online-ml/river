@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import math
+import typing
 
 import scipy.special
 
@@ -9,7 +10,7 @@ from river.proba import base
 __all__ = ["Beta"]
 
 
-def _beta_func(a, b):
+def _beta_func(a: float, b: float) -> float:
     """
 
     A naive implementation with (math.gamma(a) + math.gamma(b)) / math.gamma(a + b) would
@@ -82,16 +83,16 @@ class Beta(base.ContinuousDistribution):
         self._beta = beta
 
     @property
-    def n_samples(self):
+    def n_samples(self) -> int:
         return self.alpha - self._alpha + self.beta - self._beta
 
-    def update(self, x):
+    def update(self, x: float) -> None:
         if x:
             self.alpha += 1
         else:
             self.beta += 1
 
-    def revert(self, x):
+    def revert(self, x: float) -> None:
         if x:
             self.alpha -= 1
         else:
@@ -112,5 +113,5 @@ class Beta(base.ContinuousDistribution):
         except ZeroDivisionError:
             return 0.5
 
-    def cdf(self, x) -> float:
-        return scipy.special.betainc(self.alpha, self.beta, x).item()
+    def cdf(self, x: float) -> float:
+        return typing.cast(float, scipy.special.betainc(self.alpha, self.beta, x).item())
