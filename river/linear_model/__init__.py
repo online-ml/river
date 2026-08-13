@@ -10,6 +10,7 @@ from .lin_reg import LinearRegression
 from .log_reg import LogisticRegression
 from .pa import PAClassifier, PARegressor
 from .perceptron import Perceptron
+from .quantile_regression import QuantileRegressor
 from .softmax import SoftmaxRegression
 
 __all__ = [
@@ -22,5 +23,6 @@ __all__ = [
     "PAClassifier",
     "PARegressor",
     "Perceptron",
+    "QuantileRegressor",
     "SoftmaxRegression",
 ]
