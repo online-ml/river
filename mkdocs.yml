@@ -99,6 +99,8 @@ nav:
       - api/base/Transformer.md
       - api/base/Wrapper.md
       - api/base/WrapperEnsemble.md
+    - calibration:
+      - api/calibration/CalibratedClassifier.md
     - cluster:
       - api/cluster/CluStream.md
       - api/cluster/DBSTREAM.md
