@@ -12,6 +12,10 @@
 
 - `base.Transformer` and `base.SupervisedTransformer` are now properly abstract: their `transform_one` abstract method is registered with `abc`, so a subclass that forgets to implement it raises `TypeError` at instantiation instead of failing later. This also restores estimator-check coverage for all concrete transformers, which were unintentionally excluded from the automated test suite.
 
+## calibration
+
+- Added `calibration.CalibratedClassifier`, a wrapper that recalibrates a binary classifier's probability estimates with online Platt scaling. It fits a logistic function $\\sigma(a \\cdot s + b)$ on the wrapped model's score, where the score is read out-of-sample (before the wrapped model learns on the current sample), and updates $a$ and $b$ with a gradient step on the log-loss at every `learn_one`. It starts from the identity mapping ($a=1$, $b=0$), so it is a no-op until data flows in.
+
 ## anomaly
 
 - Added `anomaly.LODA`, an online implementation of Pevný's *Lightweight on-line detector of anomalies*. It maintains an ensemble of one-dimensional `sketch.Histogram`s over sparse random projections and scores samples by their average negative log-likelihood.
