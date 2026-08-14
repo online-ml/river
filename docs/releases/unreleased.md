@@ -19,6 +19,10 @@
 
 - Made `anomaly.OneClassSVM.learn_many` dataframe-agnostic via narwhals: it now accepts any narwhals-supported eager backend (pandas, polars, pyarrow, ...) instead of only pandas. Outputs are unchanged.
 
+- Fixed `anomaly.PredictiveAnomalyDetection.score_one` mutating the model: it used to update the dynamic threshold statistics, so scoring a point changed the detector and repeated scoring of the same point returned different values. The threshold is now maintained by `learn_one` instead, leaving `score_one` side-effect free. Scores over the usual score-then-learn loop are unchanged. A new estimator check, `checks.anomaly.check_score_one_does_not_mutate`, now guards every anomaly detector (supervised or not) against `score_one` side effects.
+
+- Fixed `anomaly.PredictiveAnomalyDetection` crashing with a `ZeroDivisionError` when scoring before the predictive model had learnt anything. The default `preprocessing.MinMaxScaler` maps a first observation to `0 / 0`, making the prediction and the squared error `NaN`; scoring then divided by a zero threshold, and the `NaN` went on to poison the dynamic threshold statistics permanently. A non-finite squared error is now treated as carrying no information: it scores `0.0` and is kept out of the running statistics.
+
 ## cluster
 
 - Gave the `CluStream`, `DenStream`, and `DBSTREAM` micro-cluster objects `__slots__`. These are created in large numbers on long streams, so dropping their per-instance `__dict__` trims memory (~40 bytes per micro-cluster). Behavior is unchanged.
