@@ -154,9 +154,7 @@ class CategoricalNB(base.BaseNB):
         """
         return {
             c: math.log(self.p_class(c))
-            + sum(
-                math.log(self.p_feature_given_class(f, v, c)) for f, v in x.items()
-            )
+            + sum(math.log(self.p_feature_given_class(f, v, c)) for f, v in x.items())
             for c in self.class_counts
         }
 
