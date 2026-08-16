@@ -1,10 +1,14 @@
 from __future__ import annotations
 
 import math
+from collections.abc import Iterator
+from typing import Any, TypeVar
 
-from river import base, utils
+from river import base, compose, utils
 
 __all__ = ["CalibratedClassifier"]
+
+T = TypeVar("T", bound=base.Classifier | compose.Pipeline)
 
 
 def _logit(p: float) -> float:
@@ -12,7 +16,7 @@ def _logit(p: float) -> float:
     return math.log(p / (1 - p))
 
 
-class CalibratedClassifier(base.Wrapper, base.Classifier):
+class CalibratedClassifier(base.Wrapper[T], base.Classifier):
     """Calibrates the probability estimates of a classifier using Platt scaling.
 
     Platt scaling fits a sigmoid curve on top of the raw scores produced by a classifier, so that
@@ -77,26 +81,30 @@ class CalibratedClassifier(base.Wrapper, base.Classifier):
 
     """
 
-    def __init__(self, classifier: base.Classifier, lr: float = 0.1):
+    def __init__(self, classifier: T, lr: float = 0.1):
         self.classifier = classifier
         self.lr = lr
         self.a = 1.0
         self.b = 0.0
 
     @property
-    def _wrapped_model(self):
+    def _wrapped_model(self) -> T:
         return self.classifier
 
     @property
     def _multiclass(self) -> bool:
         return False
 
-    def _score_one(self, x, **kwargs) -> tuple[base.typing.ClfTarget, float]:
+    def _score_one(
+        self, x: dict[base.typing.FeatureName, Any], **kwargs: Any
+    ) -> tuple[base.typing.ClfTarget, float]:
         y_pred = self.classifier.predict_proba_one(x, **kwargs)
         label, p = max(y_pred.items(), key=lambda kv: kv[1])
         return label, _logit(p)
 
-    def learn_one(self, x, y, **kwargs):
+    def learn_one(
+        self, x: dict[base.typing.FeatureName, Any], y: base.typing.ClfTarget, **kwargs: Any
+    ) -> None:
         label, s = self._score_one(x, **kwargs)
         y_num = float(y == label)
 
@@ -106,13 +114,15 @@ class CalibratedClassifier(base.Wrapper, base.Classifier):
 
         self.classifier.learn_one(x, y, **kwargs)
 
-    def predict_proba_one(self, x, **kwargs):
+    def predict_proba_one(
+        self, x: dict[base.typing.FeatureName, Any], **kwargs: Any
+    ) -> dict[base.typing.ClfTarget, float]:
         _, s = self._score_one(x, **kwargs)
         p = utils.math.sigmoid(self.a * s + self.b)
         return {False: 1 - p, True: p}
 
     @classmethod
-    def _unit_test_params(cls):
-        from river import linear_model
+    def _unit_test_params(cls) -> Iterator[dict[str, compose.Pipeline]]:
+        from river import linear_model, preprocessing
 
-        yield {"classifier": linear_model.LogisticRegression()}
+        yield {"classifier": (preprocessing.StandardScaler() | linear_model.LogisticRegression())}
