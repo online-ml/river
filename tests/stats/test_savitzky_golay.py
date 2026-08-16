@@ -26,10 +26,12 @@ def test_savitzky_golay_matches_least_squares_polyfit() -> None:
         if i < window_size - 1:
             assert stat.get() is None
             continue
+        smooth = stat.get()
+        assert smooth is not None
         window = x[i - window_size + 1 : i + 1]
         expected = sum(c * v for c, v in zip(coeffs, window))
-        assert math.isclose(stat.get(), expected, rel_tol=1e-10)
-        assert stat.get() == np.dot(coeffs, window)
+        assert math.isclose(smooth, expected, rel_tol=1e-10)
+        assert smooth == np.dot(coeffs, window)
 
 
 def test_savitzky_golay_preserves_polynomials() -> None:
@@ -42,7 +44,9 @@ def test_savitzky_golay_preserves_polynomials() -> None:
     for i, value in enumerate(x):
         stat.update(value)
         if i >= window_size - 1:
-            assert math.isclose(stat.get(), value, rel_tol=1e-8)
+            smooth = stat.get()
+            assert smooth is not None
+            assert math.isclose(smooth, value, rel_tol=1e-8)
 
 
 def test_savitzky_golay_returns_none_until_window_is_full() -> None:
