@@ -2,14 +2,14 @@ from __future__ import annotations
 
 import math
 
-from river import calibration, datasets, evaluate, linear_model, metrics, preprocessing
+from river import base, calibration, datasets, evaluate, linear_model, metrics, preprocessing
 
 
 def test_identity_initially() -> None:
     # With a=1 and b=0, the calibrated probabilities equal the wrapped ones.
     wrapped = linear_model.LogisticRegression()
     model = calibration.CalibratedClassifier(wrapped)
-    x = {i: 0.1 * i for i in range(5)}
+    x: dict[base.typing.FeatureName, float] = {"a": 0.1, "b": 0.2, "c": 0.3, "d": 0.4, "e": 0.5}
     y_pred = wrapped.predict_proba_one(x)
     y_pred_cal = model.predict_proba_one(x)
     assert math.isclose(y_pred[True], y_pred_cal[True])
