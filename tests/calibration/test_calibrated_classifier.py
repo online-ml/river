@@ -27,14 +27,21 @@ def test_predict_proba_is_a_distribution() -> None:
         assert math.isclose(y_pred[True] + y_pred[False], 1.0)
 
 
-def test_predict_one_matches_wrapped_label() -> None:
-    # The sigmoid is monotonic, so calibration never changes the predicted label.
+def test_monotonicity_is_preserved() -> None:
+    # Platt scaling is a monotonic transform of the wrapped score, so the relative ordering
+    # of the True-class probability across samples is preserved.
     wrapped = linear_model.PAClassifier()
     cal = calibration.CalibratedClassifier(wrapped.clone())
     for x, y in datasets.Phishing().take(500):
-        assert cal.predict_one(x) == wrapped.predict_one(x)
         cal.learn_one(x, y)
         wrapped.learn_one(x, y)
+
+    wrapped_probs = [wrapped.predict_proba_one(x)[True] for x, _ in datasets.Phishing().take(200)]
+    cal_probs = [cal.predict_proba_one(x)[True] for x, _ in datasets.Phishing().take(200)]
+
+    pairs = sorted(zip(wrapped_probs, cal_probs))
+    for i in range(len(pairs) - 1):
+        assert pairs[i][1] <= pairs[i + 1][1]
 
 
 def test_calibration_improves_log_loss() -> None:
