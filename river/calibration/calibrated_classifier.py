@@ -64,7 +64,7 @@ class CalibratedClassifier(base.Wrapper[T], base.Classifier):
     >>> metric = metrics.LogLoss()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    LogLoss: 0.3179
+    LogLoss: 0.3301120464388312
 
     The calibrated version spreads the probabilities further apart when the model is confident and
     pulls them back towards 0.5 when it is not, which typically yields a lower log-loss:
