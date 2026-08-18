@@ -6,13 +6,14 @@ import typing
 
 import narwhals as nw
 import numpy as np
-import pandas as pd
 
+from river import utils
 from river.utils.dataframe import into_frame, to_native_frame
 
 from . import base
 
 if typing.TYPE_CHECKING:
+    import pandas as pd
     from narwhals.stable.v2.typing import IntoDataFrame, IntoSeries
 
 __all__ = ["CategoricalNB"]
@@ -180,6 +181,8 @@ class CategoricalNB(base.BaseNB):
         X_np = np.asarray(X.to_numpy(), dtype=object)
         y_np = np.asarray(y.to_numpy())
 
+        pd = utils.pandas.import_pandas()
+
         for j, col in enumerate(X.columns):
             values = X_np[:, j]
             for c in np.unique(y_np):
@@ -212,6 +215,8 @@ class CategoricalNB(base.BaseNB):
         if not self.class_counts:
             native = X.to_native()
             return native.iloc[:, 0:0]
+
+        pd = utils.pandas.import_pandas()
 
         jll = {}
 
