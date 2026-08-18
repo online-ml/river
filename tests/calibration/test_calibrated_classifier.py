@@ -29,7 +29,8 @@ def test_predict_proba_is_a_distribution() -> None:
 
 def test_score_is_logit_of_wrapped_max_probability() -> None:
     # The score fed to the sigmoid is the logit of the wrapped classifier's maximum
-    # probability, and predict_proba_one applies sigmoid(a * s + b) to it.
+    # probability, and predict_proba_one applies sigmoid(a * s + b) to it. That probability is
+    # assigned to the label the wrapped model is most confident about.
     wrapped = linear_model.PAClassifier()
     cal = calibration.CalibratedClassifier(wrapped.clone())
     for x, y in datasets.Phishing().take(500):
@@ -37,10 +38,10 @@ def test_score_is_logit_of_wrapped_max_probability() -> None:
         wrapped.learn_one(x, y)
 
     for x, _ in datasets.Phishing().take(200):
-        p = max(wrapped.predict_proba_one(x).values())
+        label, p = max(wrapped.predict_proba_one(x).items(), key=lambda kv: kv[1])
         s = math.log(p / (1 - p))
         expected = utils.math.sigmoid(cal.a * s + cal.b)
-        assert math.isclose(cal.predict_proba_one(x)[True], expected)
+        assert math.isclose(cal.predict_proba_one(x)[label], expected)
 
 
 def test_calibration_improves_log_loss() -> None:
