@@ -1,15 +1,22 @@
 from __future__ import annotations
 
+import typing
+
 import sqlalchemy
 
 from river import base
+
+if typing.TYPE_CHECKING:
+    from sqlalchemy.orm import Session
+
+    from river.base.typing import FeatureName
 
 __all__ = ["iter_sql"]
 
 
 def iter_sql(
-    query: str | sqlalchemy.TextClause | sqlalchemy.Select,
-    conn: sqlalchemy.Connection,
+    query: str | sqlalchemy.Executable,
+    conn: sqlalchemy.Connection | Session,
     target_name: str | None = None,
 ) -> base.typing.Stream:
     """Iterates over the results from an SQL query.
@@ -17,16 +24,17 @@ def iter_sql(
     By default, SQLAlchemy prefetches results. Therefore, even though you can iterate over the
     resulting rows one by one, the results are in fact loaded in batch. You can modify this
     behavior by configuring the connection you pass to `iter_sql`. For instance, you can set
-    the `stream_results` parameter to `True`, as [explained in SQLAlchemy's documentation](https://docs.sqlalchemy.org/en/13/core/connections.html#sqlalchemy.engine.Connection.execution_options). Note, however,
+    the `stream_results` parameter to `True`, as [explained in SQLAlchemy's documentation](https://docs.sqlalchemy.org/en/20/core/connections.html#sqlalchemy.engine.Connection.execution_options). Note, however,
     that this isn't available for all database engines.
 
     Parameters
     ----------
     query
-        SQL query to be executed.
+        SQL query to be executed. Either a string, or any SQLAlchemy construct that can be
+        executed, such as the result of `sqlalchemy.select`.
     conn
-        An SQLAlchemy construct which has an `execute` method. In other words you can pass an
-        engine, a connection, or a session.
+        An SQLAlchemy construct which has an `execute` method. In other words you can pass a
+        connection or a session.
     target_name
         The name of the target field. If this is `None`, then `y` will also be `None`.
 
@@ -92,14 +100,15 @@ def iter_sql(
 
     """
 
-    result_proxy = conn.execute(sqlalchemy.sql.text(query) if isinstance(query, str) else query)
+    result = conn.execute(sqlalchemy.text(query) if isinstance(query, str) else query)
+    names: tuple[FeatureName, ...] = tuple(result.keys())
 
     if target_name is None:
-        for row in result_proxy:
-            yield dict(row._mapping.items()), None  # type: ignore[arg-type] # An item view is an iterable
+        for row in result:
+            yield dict(zip(names, row)), None
         return
 
-    for row in result_proxy:
-        x = dict(row._mapping.items())
+    for row in result:
+        x: dict[FeatureName, typing.Any] = dict(zip(names, row))
         y = x.pop(target_name)
-        yield x, y  # type: ignore[misc]
+        yield x, y
