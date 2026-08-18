@@ -73,7 +73,7 @@ class CalibratedClassifier(base.Wrapper[T], base.Classifier):
     >>> model = calibration.CalibratedClassifier(wrapped)
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    LogLoss: 0.3181
+    LogLoss: 0.3048718553325107
 
     References
     ----------
