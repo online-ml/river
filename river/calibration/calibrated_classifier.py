@@ -117,9 +117,11 @@ class CalibratedClassifier(base.Wrapper[T], base.Classifier):
     def predict_proba_one(
         self, x: dict[base.typing.FeatureName, Any], **kwargs: Any
     ) -> dict[base.typing.ClfTarget, float]:
-        _, s = self._score_one(x, **kwargs)
+        label, s = self._score_one(x, **kwargs)
         p = utils.math.sigmoid(self.a * s + self.b)
-        return {False: 1 - p, True: p}
+        if label is True:
+            return {False: 1 - p, True: p}
+        return {False: p, True: 1 - p}
 
     @classmethod
     def _unit_test_params(cls) -> Iterator[dict[str, compose.Pipeline]]:
