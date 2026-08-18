@@ -1,7 +1,34 @@
 from marks import benchmark
-from workloads import N_PREDICT, multiclass_stream, text_stream
+from workloads import N_PREDICT, categorical_stream, multiclass_stream, text_stream
 
 from river import feature_extraction, naive_bayes
+
+
+@benchmark("naive_bayes")
+def test_categorical_nb_learn(benchmark) -> None:
+    stream = [(x, i % 2) for i, x in enumerate(categorical_stream())]
+
+    def run() -> None:
+        model = naive_bayes.CategoricalNB()
+        for x, y in stream:
+            model.learn_one(x, y)
+
+    benchmark(run)
+
+
+@benchmark("naive_bayes")
+def test_categorical_nb_predict(benchmark) -> None:
+    stream = [(x, i % 2) for i, x in enumerate(categorical_stream())]
+    model = naive_bayes.CategoricalNB()
+    for x, y in stream:
+        model.learn_one(x, y)
+    xs = [x for x, _ in stream[:N_PREDICT]]
+
+    def run() -> None:
+        for x in xs:
+            model.predict_proba_one(x)
+
+    benchmark(run)
 
 
 @benchmark("naive_bayes")

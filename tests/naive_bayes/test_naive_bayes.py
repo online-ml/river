@@ -360,3 +360,105 @@ def test_gaussian_learn_many_not_fit():
 
     assert model.predict_proba_many(X).equals(pd.DataFrame(index=["river", "rocks"]))
     assert model.predict_many(X).equals(pd.DataFrame(index=["river", "rocks"]))
+
+
+def yield_categorical_dataset():
+    """Categorical dataset with two features and two classes."""
+    yield from [
+        ({"outlook": "sunny", "temp": "hot"}, "no"),
+        ({"outlook": "sunny", "temp": "hot"}, "no"),
+        ({"outlook": "sunny", "temp": "mild"}, "no"),
+        ({"outlook": "sunny", "temp": "cool"}, "no"),
+        ({"outlook": "rainy", "temp": "cool"}, "yes"),
+        ({"outlook": "rainy", "temp": "cool"}, "yes"),
+        ({"outlook": "rainy", "temp": "mild"}, "yes"),
+        ({"outlook": "rainy", "temp": "hot"}, "yes"),
+        ({"outlook": "overcast", "temp": "cool"}, "yes"),
+        ({"outlook": "overcast", "temp": "mild"}, "yes"),
+        ({"outlook": "overcast", "temp": "mild"}, "yes"),
+        ({"outlook": "overcast", "temp": "hot"}, "yes"),
+    ]
+
+
+def yield_categorical_batch_dataset():
+    """Batch version of the categorical dataset."""
+    X = pd.DataFrame([x for x, _ in yield_categorical_dataset()])
+    y = pd.Series([y for _, y in yield_categorical_dataset()])
+    return X, y
+
+
+def test_categorical_learn_many_vs_learn_one():
+    model = naive_bayes.CategoricalNB()
+    batch_model = naive_bayes.CategoricalNB()
+
+    for x, y in yield_categorical_dataset():
+        model.learn_one(x, y)
+
+    X, y = yield_categorical_batch_dataset()
+    batch_model.learn_many(X, y)
+
+    assert batch_model.class_counts == model.class_counts
+    assert batch_model.feature_counts == model.feature_counts
+
+    for x, _ in yield_categorical_dataset():
+        assert model.predict_proba_one(x) == pytest.approx(batch_model.predict_proba_one(x))
+
+
+def test_categorical_learn_many_sparse():
+    X, y = yield_categorical_batch_dataset()
+    X_sparse = X.astype(pd.SparseDtype(str, pd.NA))
+
+    model = naive_bayes.CategoricalNB()
+    batch_model = naive_bayes.CategoricalNB()
+
+    model.learn_many(X, y)
+    batch_model.learn_many(X_sparse, y)
+
+    assert model.feature_counts == batch_model.feature_counts
+    assert model.class_counts == batch_model.class_counts
+
+
+def test_categorical_river_vs_sklearn():
+    X, y = yield_categorical_batch_dataset()
+
+    model = naive_bayes.CategoricalNB(alpha=1.0)
+    sk_model = sk_naive_bayes.CategoricalNB(alpha=1.0)
+
+    model.learn_many(X, y)
+
+    outlook_map = {"sunny": 0, "rainy": 1, "overcast": 2}
+    temp_map = {"hot": 0, "mild": 1, "cool": 2}
+    X_sk = pd.DataFrame(
+        {
+            "outlook": X["outlook"].map(outlook_map),
+            "temp": X["temp"].map(temp_map),
+        }
+    )
+    sk_model.fit(X_sk, y)
+
+    unseen = pd.DataFrame(
+        [
+            {"outlook": "sunny", "temp": "mild"},
+            {"outlook": "rainy", "temp": "cool"},
+            {"outlook": "overcast", "temp": "mild"},
+        ]
+    )
+    X_unseen_sk = pd.DataFrame(
+        {
+            "outlook": unseen["outlook"].map(outlook_map),
+            "temp": unseen["temp"].map(temp_map),
+        }
+    )
+
+    river_proba = model.predict_proba_many(unseen)
+    sk_proba = sk_model.predict_proba(X_unseen_sk)
+
+    np.testing.assert_allclose(river_proba.values, sk_proba, rtol=1e-12, atol=1e-12)
+
+
+def test_categorical_learn_many_not_fit():
+    model = naive_bayes.CategoricalNB()
+    X = pd.DataFrame([{"outlook": "sunny", "temp": "mild"}], index=["river"])
+
+    assert model.predict_proba_many(X).equals(pd.DataFrame(index=["river"]))
+    assert model.predict_many(X).equals(pd.DataFrame(index=["river"]))
