@@ -56,7 +56,7 @@ jobs:
           CARGO_HOME: ${{ runner.temp }}/river-cargo
           CIBW_BUILD: "cp${{ matrix.python-version }}-*"
           CIBW_ARCHS_MACOS: "universal2"
-          CIBW_ENVIRONMENT_MACOS: 'PATH="$CARGO_HOME/bin:$PATH"'
+          CIBW_ENVIRONMENT_MACOS: 'PATH="$CARGO_HOME/bin:$PATH" MACOSX_DEPLOYMENT_TARGET="10.13"'
           RUSTUP_HOME: ${{ runner.temp }}/river-rustup
       - uses: actions/upload-artifact@v5
         with:
@@ -142,7 +142,7 @@ jobs:
           CARGO_HOME: ${{ runner.temp }}/river-cargo
           CIBW_BUILD: "cp311-*"
           CIBW_ARCHS_MACOS: "universal2"
-          CIBW_ENVIRONMENT_MACOS: 'PATH="$CARGO_HOME/bin:$PATH"'
+          CIBW_ENVIRONMENT_MACOS: 'PATH="$CARGO_HOME/bin:$PATH" MACOSX_DEPLOYMENT_TARGET="10.13"'
           RUSTUP_HOME: ${{ runner.temp }}/river-rustup
       - uses: actions/upload-artifact@v5
         with:
