@@ -33,6 +33,21 @@ class CalibratedClassifier(base.Wrapper[T], base.Classifier):
     This wrapper is meant for binary classifiers. Its `predict_proba_one` output is always keyed
     on `False` and `True`.
 
+    Use case
+    --------
+
+    A classifier can be very good at picking the right label while still returning probabilities
+    that are off. For instance, it may routinely report `p = 0.9` for samples that only come out
+    correct 70% of the time. That matters whenever probabilities are consumed downstream, e.g.
+    to compare confidence across classes, to set a decision threshold, or to compute an expected
+    value. Calibration is a post-processing step that adjusts the probabilities so they match the
+    true frequency of the positive class.
+
+    Note that the calibration only rescales the probabilities: because the sigmoid is monotonic,
+    the predicted label is never changed by the wrapper. If your goal is purely to improve
+    accuracy, calibration will not help; use it when you care about the *reliability* of the
+    probabilities, not just the winning label.
+
     Parameters
     ----------
     classifier
