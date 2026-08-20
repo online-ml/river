@@ -1,9 +1,9 @@
 {
     "arch": "x86_64",
-    "cpu": "Intel(R) Xeon(R) 6973P-C",
+    "cpu": "AMD EPYC 7763 64-Core Processor",
     "machine": "runnervm76f27",
     "num_cpu": "4",
     "os": "Linux 6.17.0-1022-azure",
-    "ram": "16765378560",
+    "ram": "16766414848",
     "version": 1
 }
