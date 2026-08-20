@@ -116,6 +116,10 @@ select = "*-*linux_*"
 before-build = "curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain=none --profile=minimal -y && rustup show"
 
 [[tool.cibuildwheel.overrides]]
+select = "*-musllinux_ppc64le"
+build-frontend = "build"
+
+[[tool.cibuildwheel.overrides]]
 select = ["*-macosx_*"]
 before-build = "rustup show"
 
