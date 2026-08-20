@@ -1671,17 +1671,17 @@
 
 <span class="n">evaluate</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>[25,000] MAE: 0.761761
-RMSE: 0.960662 – 00:00:01 – 594.5 KiB
+<div class="language-text highlight"><pre><span></span><code>[25,000] MAE: 0.761778
+RMSE: 0.960803 – 00:00:00 – 594.5 KiB
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>[50,000] MAE: 0.751922
-RMSE: 0.949783 – 00:00:03 – 688.91 KiB
+<div class="language-text highlight"><pre><span></span><code>[50,000] MAE: 0.751986
+RMSE: 0.949941 – 00:00:01 – 688.91 KiB
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>[75,000] MAE: 0.749822
-RMSE: 0.948634 – 00:00:04 – 792.22 KiB
+<div class="language-text highlight"><pre><span></span><code>[75,000] MAE: 0.750044
+RMSE: 0.948911 – 00:00:01 – 792.22 KiB
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>[100,000] MAE: 0.748393
-RMSE: 0.94776 – 00:00:06 – 887.22 KiB
+<div class="language-text highlight"><pre><span></span><code>[100,000] MAE: 0.748609
+RMSE: 0.947994 – 00:00:02 – 887.22 KiB
 </code></pre></div>
 <p>Both MAE are very close to each other (0.7486 vs 0.7485) showing that we almost reproduced <a href="/api/reco/BiasedMF/">[reco.BiasedMF](../../api/reco/BiasedMF)</a> algorithm. The cost is a naturally slower running time as FM implementation offers more flexibility.</p>
 <h2 id="feature-engineering-for-fm-models">Feature engineering for FM models<a class="headerlink" href="#feature-engineering-for-fm-models" title="Permanent link">&para;</a></h2>
@@ -1758,16 +1758,16 @@ y = 4.0
 <span class="n">evaluate</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 </code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>[25,000] MAE: 0.759838
-RMSE: 0.961281 – 00:00:04 – 710.02 KiB
+RMSE: 0.961281 – 00:00:01 – 710.02 KiB
 </code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>[50,000] MAE: 0.751307
-RMSE: 0.951391 – 00:00:08 – 824.3 KiB
+RMSE: 0.951391 – 00:00:03 – 824.3 KiB
 </code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>[75,000] MAE: 0.750361
-RMSE: 0.951393 – 00:00:12 – 949.36 KiB
+RMSE: 0.951393 – 00:00:06 – 949.36 KiB
 </code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>[100,000] MAE: 0.749994
-RMSE: 0.951435 – 00:00:17 – 1.04 MiB
+RMSE: 0.951435 – 00:00:07 – 1.04 MiB
 </code></pre></div>
 <p>Note that using more variables involves factorizing a larger latent space, then increasing the number of latent factors <span class="arithmatex">\(k\)</span> often helps capturing more information.</p>
 <p>Some other feature engineering tips from <a href="https://www.kaggle.com/c/criteo-display-ad-challenge/discussion/10555">3 idiots' winning solution</a> for Kaggle <a href="https://www.kaggle.com/c/criteo-display-ad-challenge">Criteo display ads</a> competition in 2014:</p>
@@ -1810,16 +1810,16 @@ RMSE: 0.951435 – 00:00:17 – 1.04 MiB
 <span class="n">evaluate</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 </code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>[25,000] MAE: 0.761297
-RMSE: 0.962054 – 00:00:13 – 1.49 MiB
+RMSE: 0.962054 – 00:00:06 – 1.49 MiB
 </code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>[50,000] MAE: 0.751865
-RMSE: 0.951499 – 00:00:27 – 1.76 MiB
+RMSE: 0.951499 – 00:00:13 – 1.76 MiB
 </code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>[75,000] MAE: 0.750853
-RMSE: 0.951526 – 00:00:41 – 2.05 MiB
+RMSE: 0.951526 – 00:00:21 – 2.05 MiB
 </code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>[100,000] MAE: 0.750607
-RMSE: 0.951982 – 00:00:55 – 2.31 MiB
+RMSE: 0.951982 – 00:00:28 – 2.31 MiB
 </code></pre></div>
 <p>As said previously, high-order interactions are often hard to estimate due to too much sparsity, that's why we won't spend too much time here.</p>
 <h2 id="field-aware-factorization-machines-ffm">Field-aware Factorization Machines (FFM)<a class="headerlink" href="#field-aware-factorization-machines-ffm" title="Permanent link">&para;</a></h2>
@@ -1859,16 +1859,16 @@ RMSE: 0.951982 – 00:00:55 – 2.31 MiB
 <span class="n">evaluate</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 </code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>[25,000] MAE: 0.757718
-RMSE: 0.958158 – 00:00:07 – 1.61 MiB
+RMSE: 0.958158 – 00:00:03 – 1.61 MiB
 </code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>[50,000] MAE: 0.749502
-RMSE: 0.948065 – 00:00:15 – 1.9 MiB
+RMSE: 0.948065 – 00:00:07 – 1.9 MiB
 </code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>[75,000] MAE: 0.749275
-RMSE: 0.948918 – 00:00:23 – 2.21 MiB
+RMSE: 0.948918 – 00:00:10 – 2.21 MiB
 </code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>[100,000] MAE: 0.749542
-RMSE: 0.949769 – 00:00:30 – 2.5 MiB
+RMSE: 0.949769 – 00:00:14 – 2.5 MiB
 </code></pre></div>
 <p>Note that FFM usually needs to learn smaller number of latent factors <span class="arithmatex">\(k\)</span> than FM as each latent vector only deals with one field.</p>
 <h2 id="field-weighted-factorization-machines-fwfm">Field-weighted Factorization Machines (FwFM)<a class="headerlink" href="#field-weighted-factorization-machines-fwfm" title="Permanent link">&para;</a></h2>
@@ -1906,16 +1906,16 @@ RMSE: 0.949769 – 00:00:30 – 2.5 MiB
 <span class="n">evaluate</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 </code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>[25,000] MAE: 0.761539
-RMSE: 0.962241 – 00:00:07 – 607.32 KiB
+RMSE: 0.962241 – 00:00:03 – 607.32 KiB
 </code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>[50,000] MAE: 0.754089
-RMSE: 0.953181 – 00:00:13 – 701.72 KiB
+RMSE: 0.953181 – 00:00:06 – 701.72 KiB
 </code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>[75,000] MAE: 0.754806
-RMSE: 0.954979 – 00:00:21 – 805.04 KiB
+RMSE: 0.954979 – 00:00:10 – 805.04 KiB
 </code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>[100,000] MAE: 0.755404
-RMSE: 0.95604 – 00:00:27 – 900.04 KiB
+RMSE: 0.95604 – 00:00:13 – 900.04 KiB
 </code></pre></div>
 
 

@@ -142,6 +142,12 @@
         <loc>https://riverml.xyz/0.26.0/api/bandit/envs/KArmedTestbed/</loc>
       </url>
       <url>
+        <loc>https://riverml.xyz/0.26.0/api/base/AnomalyDetector/</loc>
+      </url>
+      <url>
+        <loc>https://riverml.xyz/0.26.0/api/base/AnomalyFilter/</loc>
+      </url>
+      <url>
         <loc>https://riverml.xyz/0.26.0/api/base/Base/</loc>
       </url>
       <url>
@@ -191,6 +197,9 @@
       </url>
       <url>
         <loc>https://riverml.xyz/0.26.0/api/base/Regressor/</loc>
+      </url>
+      <url>
+        <loc>https://riverml.xyz/0.26.0/api/base/SupervisedAnomalyDetector/</loc>
       </url>
       <url>
         <loc>https://riverml.xyz/0.26.0/api/base/SupervisedTransformer/</loc>
@@ -1123,6 +1132,9 @@
         <loc>https://riverml.xyz/0.26.0/api/preprocessing/FeatureHasher/</loc>
       </url>
       <url>
+        <loc>https://riverml.xyz/0.26.0/api/preprocessing/GapEncoder/</loc>
+      </url>
+      <url>
         <loc>https://riverml.xyz/0.26.0/api/preprocessing/GaussianRandomProjector/</loc>
       </url>
       <url>
@@ -1328,6 +1340,15 @@
       </url>
       <url>
         <loc>https://riverml.xyz/0.26.0/api/stats/base/Bivariate/</loc>
+      </url>
+      <url>
+        <loc>https://riverml.xyz/0.26.0/api/stats/base/Link/</loc>
+      </url>
+      <url>
+        <loc>https://riverml.xyz/0.26.0/api/stats/base/RollingUnivariate/</loc>
+      </url>
+      <url>
+        <loc>https://riverml.xyz/0.26.0/api/stats/base/Statistic/</loc>
       </url>
       <url>
         <loc>https://riverml.xyz/0.26.0/api/stats/base/Univariate/</loc>
