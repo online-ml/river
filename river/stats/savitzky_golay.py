@@ -16,7 +16,9 @@ class SavitzkyGolay(stats.base.RollingUnivariate):
     of the window, the filter is causal and therefore compatible with online learning.
 
     This is a standard technique to smooth noisy signals while preserving their shape, for
-    example when engineering features from sensor streams.
+    example when engineering features from sensor streams. It is a good fit whenever the
+    underlying signal changes slowly relative to the sampling rate and the noise is
+    higher-frequency than the trend you want to recover.
 
     Parameters
     ----------
@@ -62,6 +64,33 @@ class SavitzkyGolay(stats.base.RollingUnivariate):
     >>> stat = stats.SavitzkyGolay(window_size=3, polyorder=1)
     >>> stat.get() is None
     True
+
+    Use case
+    --------
+
+    The filter is useful when you want to follow a slow-moving trend in a noisy signal.
+    Consider a temperature probe that drifts upward over time but whose readings jump
+    around on every sample. Smoothing the raw readings reveals the underlying trend, which
+    can then be fed to a downstream model or threshold:
+
+    >>> from river import stats
+
+    >>> stat = stats.SavitzkyGolay(window_size=5, polyorder=2)
+    >>> raw = [10.0, 12.3, 9.1, 14.2, 13.8, 16.1, 15.2, 18.9, 17.4, 20.1]
+    >>> for x in raw:
+    ...     stat.update(x)
+    ...     if stat.get() is not None:
+    ...         print(round(stat.get(), 3))
+    14.194
+    16.346
+    15.171
+    18.514
+    17.851
+    19.866
+
+    The raw values swing between 9.1 and 20.1, whereas the smoothed values trace a steady
+    upward drift. This makes it straightforward to spot when the probe crosses a threshold,
+    for example.
 
     """
 
