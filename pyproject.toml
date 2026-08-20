@@ -102,7 +102,7 @@ default-groups = [
 [tool.cibuildwheel]
 build-frontend = "build[uv]"
 skip = ["*_i686", "*-win32", "*-musllinux_i686"]
-test-skip = "*-musllinux_ppc64le"
+test-skip = "*-*linux_ppc64le"
 test-command = "python -c \"import river\""
 
 [tool.cibuildwheel.environment]
