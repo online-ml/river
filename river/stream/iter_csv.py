@@ -18,7 +18,7 @@ if typing.TYPE_CHECKING:
 __all__ = ["iter_csv"]
 
 
-class DictReader(csv.DictReader["FeatureName"]):
+class DictReader(csv.DictReader):
     """Overlay on top of `csv.DictReader` which allows sampling."""
 
     def __init__(

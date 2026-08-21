@@ -9,6 +9,23 @@ on:
       - main
 
 jobs:
+  smoke-tests:
+    name: Smoke tests ~ Python ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12", "3.13", "3.14", "3.15"]
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Import public packages from the source checkout
+        run: uv run --no-project --with "numpy>=2.2.5,<3" --with "narwhals>=2.0.0" python -c "import river.stream"
+
   tests:
     name: Tests + prek
     runs-on: ubuntu-latest

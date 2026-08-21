@@ -103,7 +103,7 @@ default-groups = [
 build-frontend = "build[uv]"
 skip = ["*_i686", "*-win32", "*-musllinux_i686"]
 test-skip = ["*-*linux_ppc64le", "cp315-*"]
-test-command = "python -c \"import river\""
+test-command = "python -c \"import river.anomaly, river.datasets, river.drift, river.stream, river.tree\""
 
 [tool.cibuildwheel.environment]
 PATH = "$HOME/.cargo/bin:$PATH"
