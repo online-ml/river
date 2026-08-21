@@ -1570,10 +1570,6 @@
 <span class="k">for</span> <span class="n">c</span><span class="p">,</span> <span class="n">count</span> <span class="ow">in</span> <span class="n">counts</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">c</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s1"> (</span><span class="si">{</span><span class="n">count</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="nb">sum</span><span class="p">(</span><span class="n">counts</span><span class="o">.</span><span class="n">values</span><span class="p">())</span><span class="si">:</span><span class="s1">.5%</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">)</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>Downloading https://maxhalford.github.io/files/datasets/creditcardfraud.zip (65.95 MiB)
-</code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>Uncompressing into /home/runner/river_data/CreditCard
-</code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>0: 284315 (99.82725%)
 1: 492 (0.17275%)
 </code></pre></div>
@@ -1596,9 +1592,7 @@
 
 <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">X_y</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">metric</span><span class="p">)</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
-
-<div class="language-text highlight"><pre><span></span><code>ROCAUC: [1;36m89.11[0m%
+<div class="language-text highlight"><pre><span></span><code>ROCAUC: 89.11%
 </code></pre></div>
 <h2 id="importance-weighting">Importance weighting<a class="headerlink" href="#importance-weighting" title="Permanent link">&para;</a></h2>
 <p>The performance is already quite acceptable, but as we will now see we can do even better. The first thing we can do is to add weight to the 1s by using the <code>weight_pos</code> argument of the <code>Log</code> loss function.</p>
@@ -1615,9 +1609,7 @@
 
 <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">X_y</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">metric</span><span class="p">)</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
-
-<div class="language-text highlight"><pre><span></span><code>ROCAUC: [1;36m91.43[0m%
+<div class="language-text highlight"><pre><span></span><code>ROCAUC: 91.43%
 </code></pre></div>
 <h2 id="focal-loss">Focal loss<a class="headerlink" href="#focal-loss" title="Permanent link">&para;</a></h2>
 <p>The deep learning for object detection community has produced a special loss function for imbalanced learning called <a href="https://arxiv.org/pdf/1708.02002.pdf">focal loss</a>. We are doing binary classification, so we can plug the binary version of focal loss into our logistic regression and see how well it fairs.</p>
@@ -1630,9 +1622,7 @@
 
 <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">X_y</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">metric</span><span class="p">)</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
-
-<div class="language-text highlight"><pre><span></span><code>ROCAUC: [1;36m91.31[0m%
+<div class="language-text highlight"><pre><span></span><code>ROCAUC: 91.31%
 </code></pre></div>
 <h2 id="under-sampling-the-majority-class">Under-sampling the majority class<a class="headerlink" href="#under-sampling-the-majority-class" title="Permanent link">&para;</a></h2>
 <p>Adding importance weights only works with gradient-based models (which includes neural networks). A more generic, and potentially more effective approach, is to use undersamplig and oversampling. As an example, we'll under-sample the stream so that our logistic regression encounter 20% of 1s and 80% of 0s. Under-sampling has the additional benefit of requiring less training steps, and thus reduces the total training time.</p>
@@ -1651,18 +1641,13 @@
 
 <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">X_y</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">metric</span><span class="p">)</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
-
-<div class="language-text highlight"><pre><span></span><code>ROCAUC: [1;36m94.75[0m%
+<div class="language-text highlight"><pre><span></span><code>ROCAUC: 94.75%
 </code></pre></div>
 <p>The <code>RandomUnderSampler</code> class is a wrapper for classifiers. This is represented by a rectangle around the logistic regression bubble when we visualize the model.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">model</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
-
 <div><div class="river-component river-pipeline"><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">StandardScaler</pre></summary><code class="river-estimator-params">StandardScaler (
   with_std=True
-  window_size=None
 )
 </code></details><div class="river-component river-wrapper"><details class="river-details"><summary class="river-summary"><pre class="river-estimator-name">RandomUnderSampler</pre></summary><code class="river-estimator-params">RandomUnderSampler (
   classifier=LogisticRegression (
@@ -1723,13 +1708,12 @@
 
 .river-union {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
     justify-content: center;
     padding: 1em;
     border-style: solid;
     background: white;
-    max-width: max-content;
 }
 
 .river-wrapper {
@@ -1752,14 +1736,22 @@
     margin-top: 2em;
 }
 
-/* Spacing within a union of estimators */
-
 .river-union > .river-estimator {
-    margin-top: 1em;
+    margin-top: 0;
 }
 
+.river-union > .river-component {
+    margin-top: 0;
+}
+
+.river-union > .pipeline {
+    margin-top: 0;
+}
+
+/* Spacing within a union of estimators */
+
 .river-union > .river-component + .river-component {
-    margin-top: 1em;
+    margin-left: 1em;
 }
 
 /* Typography */
@@ -1814,9 +1806,7 @@
 
 <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">X_y</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">metric</span><span class="p">)</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
-
-<div class="language-text highlight"><pre><span></span><code>ROCAUC: [1;36m91.71[0m%
+<div class="language-text highlight"><pre><span></span><code>ROCAUC: 91.71%
 </code></pre></div>
 <h2 id="sampling-with-a-desired-sample-size">Sampling with a desired sample size<a class="headerlink" href="#sampling-with-a-desired-sample-size" title="Permanent link">&para;</a></h2>
 <p>The downside of both <code>RandomUnderSampler</code> and <code>RandomOverSampler</code> is that you don't have any control on the amount of data the classifier trains on. The number of samples is adjusted so that the target distribution can be attained, either by under-sampling or over-sampling. However, you can do both at the same time and choose how much data the classifier will see. To do so, we can use the <code>RandomSampler</code> class. In addition to the desired class distribution, we can specify how much data to train on. The samples will both be under-sampled and over-sampled in order to fit your constraints. This is powerful because it allows you to control both the class distribution and the size of the training data (and thus the training time). In the following example we'll set it so that the model will train with 1 percent of the data.</p>
@@ -1834,9 +1824,7 @@
 
 <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">X_y</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">metric</span><span class="p">)</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
-
-<div class="language-text highlight"><pre><span></span><code>ROCAUC: [1;36m94.71[0m%
+<div class="language-text highlight"><pre><span></span><code>ROCAUC: 94.71%
 </code></pre></div>
 <h2 id="hybrid-approach">Hybrid approach<a class="headerlink" href="#hybrid-approach" title="Permanent link">&para;</a></h2>
 <p>As you might have guessed by now, nothing is stopping you from mixing imbalanced learning methods together. As an example, let's combine <code>sampling.RandomUnderSampler</code> and the <code>weight_pos</code> parameter from the <a href="../../api/optim/losses/Log"><code>optim.losses.Log</code></a> loss function.</p>
@@ -1855,9 +1843,7 @@
 
 <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">X_y</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">metric</span><span class="p">)</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
-
-<div class="language-text highlight"><pre><span></span><code>ROCAUC: [1;36m96.52[0m%
+<div class="language-text highlight"><pre><span></span><code>ROCAUC: 96.52%
 </code></pre></div>
 
 

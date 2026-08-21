@@ -1547,9 +1547,7 @@
 
 <span class="n">metric</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
-
-<div class="language-text highlight"><pre><span></span><code>Accuracy: [1;36m89.28[0m%
+<div class="language-text highlight"><pre><span></span><code>Accuracy: 89.28%
 </code></pre></div>
 <p>This is the essence of progressive validation. Every sample is first used for testing, then for training.</p>
 <h2 id="using-evaluateprogressive_val_score">Using <a href="../../api/evaluate/progressive-val-score"><code>evaluate.progressive_val_score</code></a><a class="headerlink" href="#using-evaluateprogressive_val_score" title="Permanent link">&para;</a></h2>
@@ -1564,9 +1562,7 @@
     <span class="n">metric</span><span class="o">=</span><span class="n">metrics</span><span class="o">.</span><span class="n">Accuracy</span><span class="p">(),</span>
 <span class="p">)</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
-
-<div class="language-text highlight"><pre><span></span><code>Accuracy: [1;36m89.28[0m%
+<div class="language-text highlight"><pre><span></span><code>Accuracy: 89.28%
 </code></pre></div>
 <p>Use <code>print_every</code> to see progress during evaluation:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">StandardScaler</span><span class="p">()</span> <span class="o">|</span> <span class="n">linear_model</span><span class="o">.</span><span class="n">LogisticRegression</span><span class="p">()</span>
@@ -1584,9 +1580,7 @@
 [1,000] Accuracy: 89.10%
 [1,250] Accuracy: 89.28%
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
-
-<div class="language-text highlight"><pre><span></span><code>Accuracy: [1;36m89.28[0m%
+<div class="language-text highlight"><pre><span></span><code>Accuracy: 89.28%
 </code></pre></div>
 <h2 id="choosing-metrics">Choosing metrics<a class="headerlink" href="#choosing-metrics" title="Permanent link">&para;</a></h2>
 <p>River's <code>metrics</code> module has all the usual suspects. For classification: <code>Accuracy</code>, <code>F1</code>, <code>Precision</code>, <code>Recall</code>, <code>ROCAUC</code>, <code>LogLoss</code>, etc. For regression: <code>MAE</code>, <code>MSE</code>, <code>RMSE</code>, <code>R2</code>, <code>SMAPE</code>, etc.</p>
@@ -1599,9 +1593,7 @@
     <span class="n">metric</span><span class="o">=</span><span class="n">metrics</span><span class="o">.</span><span class="n">ROCAUC</span><span class="p">(),</span>
 <span class="p">)</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
-
-<div class="language-text highlight"><pre><span></span><code>ROCAUC: [1;36m95.07[0m%
+<div class="language-text highlight"><pre><span></span><code>ROCAUC: 95.07%
 </code></pre></div>
 <p>You can also combine multiple metrics with <code>+</code>:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">StandardScaler</span><span class="p">()</span> <span class="o">|</span> <span class="n">linear_model</span><span class="o">.</span><span class="n">LogisticRegression</span><span class="p">()</span>
@@ -1612,11 +1604,9 @@
     <span class="n">metric</span><span class="o">=</span><span class="n">metrics</span><span class="o">.</span><span class="n">Accuracy</span><span class="p">()</span> <span class="o">+</span> <span class="n">metrics</span><span class="o">.</span><span class="n">F1</span><span class="p">()</span> <span class="o">+</span> <span class="n">metrics</span><span class="o">.</span><span class="n">LogLoss</span><span class="p">(),</span>
 <span class="p">)</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
-
-<div class="language-text highlight"><pre><span></span><code>Accuracy: [1;36m89.28[0m%
-F1: [1;36m87.97[0m%
-LogLoss: [1;36m0.3301120464388312[0m
+<div class="language-text highlight"><pre><span></span><code>Accuracy: 89.28%
+F1: 87.97%
+LogLoss: 0.3301120464388312
 </code></pre></div>
 <h2 id="tracking-performance-over-time-with-iter_progressive_val_score">Tracking performance over time with <code>iter_progressive_val_score</code><a class="headerlink" href="#tracking-performance-over-time-with-iter_progressive_val_score" title="Permanent link">&para;</a></h2>
 <p>Often you want to see how a model's performance evolves as it processes more data. <code>iter_progressive_val_score</code> yields results at regular checkpoints, which you can collect and plot:</p>
@@ -1632,9 +1622,7 @@ LogLoss: [1;36m0.3301120464388312[0m
 <span class="c1"># Each checkpoint is a dict</span>
 <span class="n">checkpoints</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
-
-<div class="language-text highlight"><pre><span></span><code>[1m{[0m[32m&#39;Accuracy&#39;[0m: Accuracy: [1;36m89.28[0m%, [32m&#39;Step&#39;[0m: [1;36m1250[0m[1m}[0m
+<div class="language-text highlight"><pre><span></span><code>{&#39;Accuracy&#39;: Accuracy: 89.28%, &#39;Step&#39;: 1250}
 </code></pre></div>
 <div class="language-python highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">altair</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">alt</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
@@ -1656,26 +1644,24 @@ LogLoss: [1;36m0.3301120464388312[0m
     <span class="n">height</span><span class="o">=</span><span class="mi">300</span>
 <span class="p">)</span><span class="o">.</span><span class="n">interactive</span><span class="p">()</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
-
 <style>
-  #altair-viz-be74e977f0944fe191f33cf1ead7b69b.vega-embed {
+  #altair-viz-6f110be857d74e9e93c7307b2c1b4789.vega-embed {
     width: 100%;
     display: flex;
   }
 
-  #altair-viz-be74e977f0944fe191f33cf1ead7b69b.vega-embed details,
-  #altair-viz-be74e977f0944fe191f33cf1ead7b69b.vega-embed details summary {
+  #altair-viz-6f110be857d74e9e93c7307b2c1b4789.vega-embed details,
+  #altair-viz-6f110be857d74e9e93c7307b2c1b4789.vega-embed details summary {
     position: relative;
   }
 </style>
-<div id="altair-viz-be74e977f0944fe191f33cf1ead7b69b"></div>
+<div id="altair-viz-6f110be857d74e9e93c7307b2c1b4789"></div>
 <script type="text/javascript">
   var VEGA_DEBUG = (typeof VEGA_DEBUG == "undefined") ? {} : VEGA_DEBUG;
   (function(spec, embedOpt){
     let outputDiv = document.currentScript.previousElementSibling;
-    if (outputDiv.id !== "altair-viz-be74e977f0944fe191f33cf1ead7b69b") {
-      outputDiv = document.getElementById("altair-viz-be74e977f0944fe191f33cf1ead7b69b");
+    if (outputDiv.id !== "altair-viz-6f110be857d74e9e93c7307b2c1b4789") {
+      outputDiv = document.getElementById("altair-viz-6f110be857d74e9e93c7307b2c1b4789");
     }
 
     const paths = {
@@ -1749,9 +1735,7 @@ LogLoss: [1;36m0.3301120464388312[0m
 [1,000] MAE: 2.324138
 [1,001] MAE: 2.321971
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
-
-<div class="language-text highlight"><pre><span></span><code>MAE: [1;36m2.321971[0m
+<div class="language-text highlight"><pre><span></span><code>MAE: 2.321971
 </code></pre></div>
 <h2 id="delayed-labels">Delayed labels<a class="headerlink" href="#delayed-labels" title="Permanent link">&para;</a></h2>
 <p>In real-world scenarios, the ground truth often arrives with a delay. For example, a fraud detection system makes a prediction at transaction time, but the label (fraud or not) may only be confirmed days later. During that delay, the model keeps making predictions without learning from the pending labels.</p>
@@ -1769,9 +1753,7 @@ LogLoss: [1;36m0.3301120464388312[0m
     <span class="n">delay</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
 <span class="p">)</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
-
-<div class="language-text highlight"><pre><span></span><code>MAE: [1;36m2.321971[0m
+<div class="language-text highlight"><pre><span></span><code>MAE: 2.321971
 </code></pre></div>
 <p>With a delay, the model must predict using an older version of itself — just like in production. This typically gives a more realistic (and lower) performance estimate.</p>
 <h2 id="measuring-time-and-memory">Measuring time and memory<a class="headerlink" href="#measuring-time-and-memory" title="Permanent link">&para;</a></h2>
@@ -1787,13 +1769,11 @@ LogLoss: [1;36m0.3301120464388312[0m
     <span class="n">show_memory</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>[500] Accuracy: 86.80% – 00:00:00 – 4.04 KiB
-[1,000] Accuracy: 89.10% – 00:00:00 – 4.04 KiB
-[1,250] Accuracy: 89.28% – 00:00:00 – 4.04 KiB
+<div class="language-text highlight"><pre><span></span><code>[500] Accuracy: 86.80% – 00:00:00 – 5.33 KiB
+[1,000] Accuracy: 89.10% – 00:00:00 – 5.33 KiB
+[1,250] Accuracy: 89.28% – 00:00:00 – 5.33 KiB
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
-
-<div class="language-text highlight"><pre><span></span><code>Accuracy: [1;36m89.28[0m%
+<div class="language-text highlight"><pre><span></span><code>Accuracy: 89.28%
 </code></pre></div>
 
 

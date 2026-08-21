@@ -1363,24 +1363,22 @@
 <span class="n">dataset</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">ImageSegments</span><span class="p">()</span>
 <span class="n">dataset</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
-
 <div class="language-text highlight"><pre><span></span><code>Image segments classification.
 
-This dataset contains features that describe image segments into [1;36m7[0m classes: brickface, sky,
+This dataset contains features that describe image segments into 7 classes: brickface, sky,
 foliage, cement, window, path, and grass.
 
 References
 ----------
-[1m[[0m^[1;36m1[0m[1m][0m: [1m[[0mUCI page[1m][0m[1m([0m[4;94mhttps://archive.ics.uci.edu/ml/datasets/Statlog+[0m[4;94m([0m[4;94mImage+Segmentation[0m[4;94m)[0m[4;94m)[0m
+[^1]: [UCI page](https://archive.ics.uci.edu/ml/datasets/Statlog+(Image+Segmentation))
 
-    Name  ImageSegments                                               
-    Task  Multi-class classification                                  
- Samples  [1;36m2[0m,[1;36m310[0m                                                       
-Features  [1;36m18[0m                                                          
- Classes  [1;36m7[0m                                                           
-  Sparse  [3;91mFalse[0m                                                       
-    Path  [35m/home/runner/work/river/river/river/datasets/[0m[95msegment.csv.zip[0m
+    Name  ImageSegments                                           
+    Task  Multi-class classification                              
+ Samples  2,310                                                   
+Features  18                                                      
+ Classes  7                                                       
+  Sparse  False                                                   
+    Path  /Users/max/projects/river/river/datasets/segment.csv.zip
 </code></pre></div>
 <p>This dataset is a streaming dataset which can be looped over.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">dataset</span><span class="p">:</span>
@@ -1390,34 +1388,28 @@ Features  [1;36m18[0m
 <div class="language-python highlight"><pre><span></span><code><span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">dataset</span><span class="p">))</span>
 <span class="n">x</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
-
-<div class="language-text highlight"><pre><span></span><code>[1m{[0m
-    [32m&#39;region-centroid-col&#39;[0m: [1;36m218[0m,
-    [32m&#39;region-centroid-row&#39;[0m: [1;36m178[0m,
-    [32m&#39;short-line-density-5&#39;[0m: [1;36m0.11111111[0m,
-    [32m&#39;short-line-density-2&#39;[0m: [1;36m0.0[0m,
-    [32m&#39;vedge-mean&#39;[0m: [1;36m0.8333326999999999[0m,
-    [32m&#39;vegde-sd&#39;[0m: [1;36m0.54772234[0m,
-    [32m&#39;hedge-mean&#39;[0m: [1;36m1.1111094[0m,
-    [32m&#39;hedge-sd&#39;[0m: [1;36m0.5443307[0m,
-    [32m&#39;intensity-mean&#39;[0m: [1;36m59.629630000000006[0m,
-    [32m&#39;rawred-mean&#39;[0m: [1;36m52.44444300000001[0m,
-    [32m&#39;rawblue-mean&#39;[0m: [1;36m75.22222[0m,
-    [32m&#39;rawgreen-mean&#39;[0m: [1;36m51.22222[0m,
-    [32m&#39;exred-mean&#39;[0m: [1;36m-21.555555[0m,
-    [32m&#39;exblue-mean&#39;[0m: [1;36m46.77778[0m,
-    [32m&#39;exgreen-mean&#39;[0m: [1;36m-25.222220999999998[0m,
-    [32m&#39;value-mean&#39;[0m: [1;36m75.22222[0m,
-    [32m&#39;saturation-mean&#39;[0m: [1;36m0.31899637[0m,
-    [32m&#39;hue-mean&#39;[0m: [1;36m-2.0405545[0m
-[1m}[0m
+<div class="language-text highlight"><pre><span></span><code>{&#39;region-centroid-col&#39;: 218,
+ &#39;region-centroid-row&#39;: 178,
+ &#39;short-line-density-5&#39;: 0.11111111,
+ &#39;short-line-density-2&#39;: 0.0,
+ &#39;vedge-mean&#39;: 0.8333326999999999,
+ &#39;vegde-sd&#39;: 0.54772234,
+ &#39;hedge-mean&#39;: 1.1111094,
+ &#39;hedge-sd&#39;: 0.5443307,
+ &#39;intensity-mean&#39;: 59.629630000000006,
+ &#39;rawred-mean&#39;: 52.44444300000001,
+ &#39;rawblue-mean&#39;: 75.22222,
+ &#39;rawgreen-mean&#39;: 51.22222,
+ &#39;exred-mean&#39;: -21.555555,
+ &#39;exblue-mean&#39;: 46.77778,
+ &#39;exgreen-mean&#39;: -25.222220999999998,
+ &#39;value-mean&#39;: 75.22222,
+ &#39;saturation-mean&#39;: 0.31899637,
+ &#39;hue-mean&#39;: -2.0405545}
 </code></pre></div>
 <div class="language-python highlight"><pre><span></span><code><span class="n">y</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
-
-<div class="language-text highlight"><pre><span></span><code>[32m&#39;path&#39;[0m
+<div class="language-text highlight"><pre><span></span><code>&#39;path&#39;
 </code></pre></div>
 <p>A multiclass classifier's goal is to learn how to predict a class <code>y</code> from a bunch of features <code>x</code>. We'll attempt to do this with a decision tree.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">river</span><span class="w"> </span><span class="kn">import</span> <span class="n">tree</span>
@@ -1425,9 +1417,7 @@ Features  [1;36m18[0m
 <span class="n">model</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">HoeffdingTreeClassifier</span><span class="p">()</span>
 <span class="n">model</span><span class="o">.</span><span class="n">predict_proba_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
-
-<div class="language-text highlight"><pre><span></span><code>[1m{[0m[1m}[0m
+<div class="language-text highlight"><pre><span></span><code>{}
 </code></pre></div>
 <p>The reason why the output dictionary is empty is because the model hasn't seen any data yet. It isn't aware of the dataset whatsoever. If this were a binary classifier, then it would output a probability of 50% for <code>True</code> and <code>False</code> because the classes are implicit. But in this case we're doing multiclass classification.</p>
 <p>Likewise, the <code>predict_one</code> method initially returns <code>None</code> because the model hasn't seen any labeled data yet.</p>
@@ -1439,9 +1429,7 @@ Features  [1;36m18[0m
 <div class="language-python highlight"><pre><span></span><code><span class="n">model</span><span class="o">.</span><span class="n">learn_one</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 <span class="n">model</span><span class="o">.</span><span class="n">predict_proba_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
-
-<div class="language-text highlight"><pre><span></span><code>[1m{[0m[32m&#39;path&#39;[0m: [1;36m1.0[0m[1m}[0m
+<div class="language-text highlight"><pre><span></span><code>{&#39;path&#39;: 1.0}
 </code></pre></div>
 <p>This is a strength of online classifiers: they're able to deal with new classes appearing in the data stream.</p>
 <p>Typically, an online model makes a prediction, and then learns once the ground truth reveals itself. The prediction and the ground truth can be compared to measure the model's correctness. If you have a dataset available, you can loop over it, make a prediction, update the model, and compare the model's output with the ground truth. This is called progressive validation.</p>
@@ -1459,23 +1447,21 @@ Features  [1;36m18[0m
 
 <span class="n">metric</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
-
 <div class="language-text highlight"><pre><span></span><code>Precision   Recall   F1       Support  
 
-brickface      [1;36m77.13[0m%   [1;36m84.85[0m%   [1;36m80.81[0m%       [1;36m330[0m  
-   cement      [1;36m79.60[0m%   [1;36m83.94[0m%   [1;36m81.71[0m%       [1;36m330[0m  
-  foliage      [1;36m66.36[0m%   [1;36m21.52[0m%   [1;36m32.49[0m%       [1;36m330[0m  
-    grass     [1;36m100.00[0m%   [1;36m97.27[0m%   [1;36m98.62[0m%       [1;36m330[0m  
-     path      [1;36m90.91[0m%   [1;36m91.19[0m%   [1;36m91.05[0m%       [1;36m329[0m  
-      sky     [1;36m100.00[0m%   [1;36m98.18[0m%   [1;36m99.08[0m%       [1;36m330[0m  
-   window      [1;36m43.41[0m%   [1;36m67.88[0m%   [1;36m52.96[0m%       [1;36m330[0m  
+brickface      77.13%   84.85%   80.81%       330  
+   cement      79.60%   83.94%   81.71%       330  
+  foliage      66.36%   21.52%   32.49%       330  
+    grass     100.00%   97.27%   98.62%       330  
+     path      90.91%   91.19%   91.05%       329  
+      sky     100.00%   98.18%   99.08%       330  
+   window      43.41%   67.88%   52.96%       330  
 
-    Macro      [1;36m79.63[0m%   [1;36m77.83[0m%   [1;36m76.67[0m%            
-    Micro      [1;36m77.83[0m%   [1;36m77.83[0m%   [1;36m77.83[0m%            
- Weighted      [1;36m79.62[0m%   [1;36m77.83[0m%   [1;36m76.67[0m%            
+    Macro      79.63%   77.83%   76.67%            
+    Micro      77.83%   77.83%   77.83%            
+ Weighted      79.62%   77.83%   76.67%            
 
-                  [1;36m77.83[0m% accuracy
+                  77.83% accuracy
 </code></pre></div>
 <p>This is a common way to evaluate an online model. In fact, there is a dedicated <a href="../../../api/evaluate/progressive-val-score"><code>evaluate.progressive_val_score</code></a> function that does this for you.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">river</span><span class="w"> </span><span class="kn">import</span> <span class="n">evaluate</span>
@@ -1485,23 +1471,21 @@ brickface      [1;36m77.13[0m%   [1;36m84.85[0m%   [1;36m80.81[0m%       
 
 <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">metric</span><span class="p">)</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
-
 <div class="language-text highlight"><pre><span></span><code>Precision   Recall   F1       Support  
 
-brickface      [1;36m77.13[0m%   [1;36m84.85[0m%   [1;36m80.81[0m%       [1;36m330[0m  
-   cement      [1;36m79.60[0m%   [1;36m83.94[0m%   [1;36m81.71[0m%       [1;36m330[0m  
-  foliage      [1;36m66.36[0m%   [1;36m21.52[0m%   [1;36m32.49[0m%       [1;36m330[0m  
-    grass     [1;36m100.00[0m%   [1;36m97.27[0m%   [1;36m98.62[0m%       [1;36m330[0m  
-     path      [1;36m90.91[0m%   [1;36m91.19[0m%   [1;36m91.05[0m%       [1;36m329[0m  
-      sky     [1;36m100.00[0m%   [1;36m98.18[0m%   [1;36m99.08[0m%       [1;36m330[0m  
-   window      [1;36m43.41[0m%   [1;36m67.88[0m%   [1;36m52.96[0m%       [1;36m330[0m  
+brickface      77.13%   84.85%   80.81%       330  
+   cement      79.60%   83.94%   81.71%       330  
+  foliage      66.36%   21.52%   32.49%       330  
+    grass     100.00%   97.27%   98.62%       330  
+     path      90.91%   91.19%   91.05%       329  
+      sky     100.00%   98.18%   99.08%       330  
+   window      43.41%   67.88%   52.96%       330  
 
-    Macro      [1;36m79.63[0m%   [1;36m77.83[0m%   [1;36m76.67[0m%            
-    Micro      [1;36m77.83[0m%   [1;36m77.83[0m%   [1;36m77.83[0m%            
- Weighted      [1;36m79.62[0m%   [1;36m77.83[0m%   [1;36m76.67[0m%            
+    Macro      79.63%   77.83%   76.67%            
+    Micro      77.83%   77.83%   77.83%            
+ Weighted      79.62%   77.83%   76.67%            
 
-                  [1;36m77.83[0m% accuracy
+                  77.83% accuracy
 </code></pre></div>
 
 

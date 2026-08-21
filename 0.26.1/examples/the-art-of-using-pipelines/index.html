@@ -1375,9 +1375,6 @@
     <span class="n">pprint</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
     <span class="k">break</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>Downloading https://maxhalford.github.io/files/datasets/kaggle_recruit_restaurants.zip (4.28 MiB)
-Uncompressing into /home/runner/river_data/Restaurants
-</code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>{&#39;area_name&#39;: &#39;Tōkyō-to Nerima-ku Toyotamakita&#39;,
  &#39;date&#39;: datetime.datetime(2016, 1, 1, 0, 0),
  &#39;genre_name&#39;: &#39;Izakaya&#39;,
@@ -1433,13 +1430,6 @@ Uncompressing into /home/runner/river_data/Restaurants
 
 <span class="nb">print</span><span class="p">(</span><span class="n">metric</span><span class="p">)</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>/tmp/ipykernel_4585/951201656.py:9: DeprecationWarning: Passing an instance to utils.Rolling is deprecated and will be removed in a future release. Pass the class and forward constructor kwargs instead, e.g. utils.Rolling(stats.Mean, window_size=...) or utils.Rolling(stats.Var, window_size=..., ddof=0).
-  feature_extraction.TargetAgg(by=&#39;store_id&#39;, how=utils.Rolling(stats.Mean(), 7)),
-/tmp/ipykernel_4585/951201656.py:10: DeprecationWarning: Passing an instance to utils.Rolling is deprecated and will be removed in a future release. Pass the class and forward constructor kwargs instead, e.g. utils.Rolling(stats.Mean, window_size=...) or utils.Rolling(stats.Var, window_size=..., ddof=0).
-  feature_extraction.TargetAgg(by=&#39;store_id&#39;, how=utils.Rolling(stats.Mean(), 14)),
-/tmp/ipykernel_4585/951201656.py:11: DeprecationWarning: Passing an instance to utils.Rolling is deprecated and will be removed in a future release. Pass the class and forward constructor kwargs instead, e.g. utils.Rolling(stats.Mean, window_size=...) or utils.Rolling(stats.Var, window_size=..., ddof=0).
-  feature_extraction.TargetAgg(by=&#39;store_id&#39;, how=utils.Rolling(stats.Mean(), 21))
-</code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>MAE: 8.316538
 </code></pre></div>
 <p>We're not using many features. We can print the last <code>x</code> to get an idea of the features (don't forget they've been scaled!)</p>
@@ -1486,13 +1476,6 @@ Uncompressing into /home/runner/river_data/Restaurants
 
 <span class="nb">print</span><span class="p">(</span><span class="n">metric</span><span class="p">)</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>/tmp/ipykernel_4585/62508338.py:12: DeprecationWarning: Passing an instance to utils.Rolling is deprecated and will be removed in a future release. Pass the class and forward constructor kwargs instead, e.g. utils.Rolling(stats.Mean, window_size=...) or utils.Rolling(stats.Var, window_size=..., ddof=0).
-  (&#39;last_7_mean&#39;, feature_extraction.TargetAgg(by=&#39;store_id&#39;, how=utils.Rolling(stats.Mean(), 7))),
-/tmp/ipykernel_4585/62508338.py:13: DeprecationWarning: Passing an instance to utils.Rolling is deprecated and will be removed in a future release. Pass the class and forward constructor kwargs instead, e.g. utils.Rolling(stats.Mean, window_size=...) or utils.Rolling(stats.Var, window_size=..., ddof=0).
-  (&#39;last_14_mean&#39;, feature_extraction.TargetAgg(by=&#39;store_id&#39;, how=utils.Rolling(stats.Mean(), 14))),
-/tmp/ipykernel_4585/62508338.py:14: DeprecationWarning: Passing an instance to utils.Rolling is deprecated and will be removed in a future release. Pass the class and forward constructor kwargs instead, e.g. utils.Rolling(stats.Mean, window_size=...) or utils.Rolling(stats.Var, window_size=..., ddof=0).
-  (&#39;last_21_mean&#39;, feature_extraction.TargetAgg(by=&#39;store_id&#39;, how=utils.Rolling(stats.Mean(), 21)))
-</code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>MAE: 8.413859
 </code></pre></div>
 <p>We use a <code>Pipeline</code> to arrange each step in a sequential order. A <code>TransformerUnion</code> is used to merge multiple feature extractors into a single transformer. The <code>for</code> loop is now much shorter and is thus easier to grok: we get the out-of-fold prediction, we fit the model, and finally we update the metric. This way of evaluating a model is typical of online learning, and so we put it wrapped it inside a function called <code>progressive_val_score</code> part of the <code>evaluate</code> module. We can use it to replace the <code>for</code> loop.</p>
@@ -1512,16 +1495,7 @@ Uncompressing into /home/runner/river_data/Restaurants
 
 <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="n">datasets</span><span class="o">.</span><span class="n">Restaurants</span><span class="p">(),</span> <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="n">metrics</span><span class="o">.</span><span class="n">MAE</span><span class="p">())</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>/tmp/ipykernel_4585/3293120273.py:6: DeprecationWarning: Passing an instance to utils.Rolling is deprecated and will be removed in a future release. Pass the class and forward constructor kwargs instead, e.g. utils.Rolling(stats.Mean, window_size=...) or utils.Rolling(stats.Var, window_size=..., ddof=0).
-  (&#39;last_7_mean&#39;, feature_extraction.TargetAgg(by=&#39;store_id&#39;, how=utils.Rolling(stats.Mean(), 7))),
-/tmp/ipykernel_4585/3293120273.py:7: DeprecationWarning: Passing an instance to utils.Rolling is deprecated and will be removed in a future release. Pass the class and forward constructor kwargs instead, e.g. utils.Rolling(stats.Mean, window_size=...) or utils.Rolling(stats.Var, window_size=..., ddof=0).
-  (&#39;last_14_mean&#39;, feature_extraction.TargetAgg(by=&#39;store_id&#39;, how=utils.Rolling(stats.Mean(), 14))),
-/tmp/ipykernel_4585/3293120273.py:8: DeprecationWarning: Passing an instance to utils.Rolling is deprecated and will be removed in a future release. Pass the class and forward constructor kwargs instead, e.g. utils.Rolling(stats.Mean, window_size=...) or utils.Rolling(stats.Var, window_size=..., ddof=0).
-  (&#39;last_21_mean&#39;, feature_extraction.TargetAgg(by=&#39;store_id&#39;, how=utils.Rolling(stats.Mean(), 21)))
-</code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
-
-<div class="language-text highlight"><pre><span></span><code>MAE: [1;36m8.413859[0m
+<div class="language-text highlight"><pre><span></span><code>MAE: 8.413859
 </code></pre></div>
 <p>Notice that you couldn't have used the <code>progressive_val_score</code> method if you wrote the model in a procedural manner.</p>
 <p>Our code is getting shorter, but it's still a bit difficult on the eyes. Indeed there is a lot of boilerplate code associated with pipelines that can get tedious to write. However River has some special tricks up it's sleeve to save you from a lot of pain.</p>
@@ -1540,16 +1514,7 @@ Uncompressing into /home/runner/river_data/Restaurants
 
 <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">datasets</span><span class="o">.</span><span class="n">Restaurants</span><span class="p">(),</span> <span class="n">model</span><span class="p">,</span> <span class="n">metrics</span><span class="o">.</span><span class="n">MAE</span><span class="p">())</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>/tmp/ipykernel_4585/1516519861.py:4: DeprecationWarning: Passing an instance to utils.Rolling is deprecated and will be removed in a future release. Pass the class and forward constructor kwargs instead, e.g. utils.Rolling(stats.Mean, window_size=...) or utils.Rolling(stats.Var, window_size=..., ddof=0).
-  feature_extraction.TargetAgg(by=&#39;store_id&#39;, how=utils.Rolling(stats.Mean(), 7)),
-/tmp/ipykernel_4585/1516519861.py:5: DeprecationWarning: Passing an instance to utils.Rolling is deprecated and will be removed in a future release. Pass the class and forward constructor kwargs instead, e.g. utils.Rolling(stats.Mean, window_size=...) or utils.Rolling(stats.Var, window_size=..., ddof=0).
-  feature_extraction.TargetAgg(by=&#39;store_id&#39;, how=utils.Rolling(stats.Mean(), 14)),
-/tmp/ipykernel_4585/1516519861.py:6: DeprecationWarning: Passing an instance to utils.Rolling is deprecated and will be removed in a future release. Pass the class and forward constructor kwargs instead, e.g. utils.Rolling(stats.Mean, window_size=...) or utils.Rolling(stats.Var, window_size=..., ddof=0).
-  feature_extraction.TargetAgg(by=&#39;store_id&#39;, how=utils.Rolling(stats.Mean(), 21))
-</code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
-
-<div class="language-text highlight"><pre><span></span><code>MAE: [1;36m8.413859[0m
+<div class="language-text highlight"><pre><span></span><code>MAE: 8.413859
 </code></pre></div>
 <p>Under the hood a <code>Pipeline</code> inherits from <code>collections.OrderedDict</code>. Indeed this makes sense because if you think about it a <code>Pipeline</code> is simply a sequence of steps where each step has a name. The reason we mention this is because it means you can manipulate a <code>Pipeline</code> the same way you would manipulate an ordinary <code>dict</code>. For instance we can print the name of each step by using the <code>keys</code> method.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">steps</span><span class="p">:</span>
@@ -1575,16 +1540,7 @@ LinearRegression
 
 <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">datasets</span><span class="o">.</span><span class="n">Restaurants</span><span class="p">(),</span> <span class="n">model</span><span class="p">,</span> <span class="n">metrics</span><span class="o">.</span><span class="n">MAE</span><span class="p">())</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>/tmp/ipykernel_4585/4037441292.py:3: DeprecationWarning: Passing an instance to utils.Rolling is deprecated and will be removed in a future release. Pass the class and forward constructor kwargs instead, e.g. utils.Rolling(stats.Mean, window_size=...) or utils.Rolling(stats.Var, window_size=..., ddof=0).
-  feature_extraction.TargetAgg(by=&#39;store_id&#39;, how=utils.Rolling(stats.Mean(), 7)) + \
-/tmp/ipykernel_4585/4037441292.py:4: DeprecationWarning: Passing an instance to utils.Rolling is deprecated and will be removed in a future release. Pass the class and forward constructor kwargs instead, e.g. utils.Rolling(stats.Mean, window_size=...) or utils.Rolling(stats.Var, window_size=..., ddof=0).
-  feature_extraction.TargetAgg(by=&#39;store_id&#39;, how=utils.Rolling(stats.Mean(), 14)) + \
-/tmp/ipykernel_4585/4037441292.py:5: DeprecationWarning: Passing an instance to utils.Rolling is deprecated and will be removed in a future release. Pass the class and forward constructor kwargs instead, e.g. utils.Rolling(stats.Mean, window_size=...) or utils.Rolling(stats.Var, window_size=..., ddof=0).
-  feature_extraction.TargetAgg(by=&#39;store_id&#39;, how=utils.Rolling(stats.Mean(), 21)),
-</code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
-
-<div class="language-text highlight"><pre><span></span><code>MAE: [1;36m8.413859[0m
+<div class="language-text highlight"><pre><span></span><code>MAE: 8.413859
 </code></pre></div>
 <p>Likewise we can use the <code>|</code> operator to assemble steps into a <code>Pipeline</code>. </p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="p">(</span>
@@ -1602,16 +1558,7 @@ LinearRegression
 
 <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">datasets</span><span class="o">.</span><span class="n">Restaurants</span><span class="p">(),</span> <span class="n">model</span><span class="p">,</span> <span class="n">metrics</span><span class="o">.</span><span class="n">MAE</span><span class="p">())</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>/tmp/ipykernel_4585/2780677158.py:3: DeprecationWarning: Passing an instance to utils.Rolling is deprecated and will be removed in a future release. Pass the class and forward constructor kwargs instead, e.g. utils.Rolling(stats.Mean, window_size=...) or utils.Rolling(stats.Var, window_size=..., ddof=0).
-  feature_extraction.TargetAgg(by=&#39;store_id&#39;, how=utils.Rolling(stats.Mean(), 7)) +
-/tmp/ipykernel_4585/2780677158.py:4: DeprecationWarning: Passing an instance to utils.Rolling is deprecated and will be removed in a future release. Pass the class and forward constructor kwargs instead, e.g. utils.Rolling(stats.Mean, window_size=...) or utils.Rolling(stats.Var, window_size=..., ddof=0).
-  feature_extraction.TargetAgg(by=&#39;store_id&#39;, how=utils.Rolling(stats.Mean(), 14)) +
-/tmp/ipykernel_4585/2780677158.py:5: DeprecationWarning: Passing an instance to utils.Rolling is deprecated and will be removed in a future release. Pass the class and forward constructor kwargs instead, e.g. utils.Rolling(stats.Mean, window_size=...) or utils.Rolling(stats.Var, window_size=..., ddof=0).
-  feature_extraction.TargetAgg(by=&#39;store_id&#39;, how=utils.Rolling(stats.Mean(), 21))
-</code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
-
-<div class="language-text highlight"><pre><span></span><code>MAE: [1;36m8.413859[0m
+<div class="language-text highlight"><pre><span></span><code>MAE: 8.413859
 </code></pre></div>
 <p>Hopefully you'll agree that this is a powerful way to express machine learning pipelines. For some people this should be quite remeniscent of the UNIX pipe operator. One final trick we want to mention is that functions are automatically wrapped with a <code>FuncTransformer</code>, which can be quite handy.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">get_date_features</span>
@@ -1625,157 +1572,167 @@ LinearRegression
 
 <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">datasets</span><span class="o">.</span><span class="n">Restaurants</span><span class="p">(),</span> <span class="n">model</span><span class="p">,</span> <span class="n">metrics</span><span class="o">.</span><span class="n">MAE</span><span class="p">())</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>/tmp/ipykernel_4585/3016371111.py:4: DeprecationWarning: Passing an instance to utils.Rolling is deprecated and will be removed in a future release. Pass the class and forward constructor kwargs instead, e.g. utils.Rolling(stats.Mean, window_size=...) or utils.Rolling(stats.Var, window_size=..., ddof=0).
-  model += feature_extraction.TargetAgg(by=&#39;store_id&#39;, how=utils.Rolling(stats.Mean(), n))
-</code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
-
-<div class="language-text highlight"><pre><span></span><code>MAE: [1;36m8.413859[0m
+<div class="language-text highlight"><pre><span></span><code>MAE: 8.413859
 </code></pre></div>
 <p>Naturally some may prefer the procedural style we first used because they find it easier to work with. It all depends on your style and you should use what you feel comfortable with. However we encourage you to use operators because we believe that this will increase the readability of your code, which is very important. To each their own!</p>
 <p>Before finishing we can take an interactive look at our pipeline.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">model</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
+<div><div class="river-component river-pipeline"><div class="river-component river-union"><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">get_date_features</pre></summary><code class="river-estimator-params">
+def get_date_features(x):
+    weekday =  x&#91;'date'&#93;.weekday()
+    return {'weekday': weekday, 'is_weekend': weekday in (5, 6)}
 
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #800000; text-decoration-color: #800000">╭─────────────────────────────── </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">Traceback </span><span style="color: #bf7f7f; text-decoration-color: #bf7f7f; font-weight: bold">(most recent call last)</span><span style="color: #800000; text-decoration-color: #800000"> ────────────────────────────────╮</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span> <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">/home/runner/work/river/river/.venv/lib/python3.13/site-packages/IPython/core/</span><span style="font-weight: bold">formatters.py</span>:282  <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span> in catch_format_error                                                                            <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>                                                                                                  <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 279 </span><span style="color: #0000ff; text-decoration-color: #0000ff">def</span><span style="color: #808080; text-decoration-color: #808080"> </span><span style="color: #00ff00; text-decoration-color: #00ff00">catch_format_error</span>(method, <span style="color: #00ffff; text-decoration-color: #00ffff">self</span>, *args, **kwargs):                                    <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 280 </span><span style="color: #bfbfbf; text-decoration-color: #bfbfbf">│   </span><span style="color: #808000; text-decoration-color: #808000">"""show traceback on failed format call"""</span>                                            <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 281 </span><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   </span><span style="color: #0000ff; text-decoration-color: #0000ff">try</span>:                                                                                  <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span> <span style="color: #800000; text-decoration-color: #800000">❱ </span> 282 <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   │   </span>r = method(<span style="color: #00ffff; text-decoration-color: #00ffff">self</span>, *args, **kwargs)                                                 <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 283 </span><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   </span><span style="color: #0000ff; text-decoration-color: #0000ff">except</span> <span style="color: #00ffff; text-decoration-color: #00ffff">NotImplementedError</span>:                                                           <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 284 </span><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   │   </span><span style="color: #7f7f7f; text-decoration-color: #7f7f7f"># don't warn on NotImplementedErrors</span>                                              <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 285 </span><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   │   </span><span style="color: #0000ff; text-decoration-color: #0000ff">return</span> <span style="color: #00ffff; text-decoration-color: #00ffff">self</span>._check_return(<span style="color: #0000ff; text-decoration-color: #0000ff">None</span>, args&#91;<span style="color: #0000ff; text-decoration-color: #0000ff">0</span>&#93;)                                          <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>                                                                                                  <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span> <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">/home/runner/work/river/river/.venv/lib/python3.13/site-packages/IPython/core/</span><span style="font-weight: bold">formatters.py</span>:406  <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span> in __call__                                                                                      <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>                                                                                                  <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 403 </span><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   │   │   </span><span style="color: #7f7f7f; text-decoration-color: #7f7f7f"># Finally look for special method names</span>                                       <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 404 </span><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   │   │   </span>method = get_real_method(obj, <span style="color: #00ffff; text-decoration-color: #00ffff">self</span>.print_method)                              <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 405 </span><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   │   │   </span><span style="color: #0000ff; text-decoration-color: #0000ff">if</span> method <span style="color: #ff00ff; text-decoration-color: #ff00ff">is</span> <span style="color: #ff00ff; text-decoration-color: #ff00ff">not</span> <span style="color: #0000ff; text-decoration-color: #0000ff">None</span>:                                                        <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span> <span style="color: #800000; text-decoration-color: #800000">❱ </span> 406 <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   │   │   │   </span><span style="color: #0000ff; text-decoration-color: #0000ff">return</span> <span style="font-weight: bold; text-decoration: underline">method()</span>                                                           <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 407 </span><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   │   │   </span><span style="color: #0000ff; text-decoration-color: #0000ff">return</span> <span style="color: #0000ff; text-decoration-color: #0000ff">None</span>                                                                   <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 408 </span><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   │   </span><span style="color: #0000ff; text-decoration-color: #0000ff">else</span>:                                                                             <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 409 </span><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   │   │   </span><span style="color: #0000ff; text-decoration-color: #0000ff">return</span> <span style="color: #0000ff; text-decoration-color: #0000ff">None</span>                                                                   <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>                                                                                                  <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span> <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">/home/runner/work/river/river/river/base/</span><span style="font-weight: bold">estimator.py</span>:65 in _repr_html_                          <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>                                                                                                  <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 62 </span><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   │   </span>                                                                                   <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 63 </span><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   │   </span><span style="color: #0000ff; text-decoration-color: #0000ff">from</span><span style="color: #808080; text-decoration-color: #808080"> </span><span style="color: #00ffff; text-decoration-color: #00ffff; text-decoration: underline">river.base</span><span style="color: #808080; text-decoration-color: #808080"> </span><span style="color: #0000ff; text-decoration-color: #0000ff">import</span> viz                                                         <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 64 </span><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   │   </span>                                                                                   <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span> <span style="color: #800000; text-decoration-color: #800000">❱ </span> 65 <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   │   </span>div = <span style="font-weight: bold; text-decoration: underline">viz.to_html(</span><span style="color: #00ffff; text-decoration-color: #00ffff; font-weight: bold; text-decoration: underline">self</span><span style="font-weight: bold; text-decoration: underline">)</span>                                                            <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 66 </span><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   │   </span>div_str = ET.tostring(div, encoding=<span style="color: #808000; text-decoration-color: #808000">"unicode"</span>)                                     <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 67 </span><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   │   </span><span style="color: #0000ff; text-decoration-color: #0000ff">return</span> <span style="color: #808000; text-decoration-color: #808000">f"&lt;div&gt;{</span>div_str<span style="color: #808000; text-decoration-color: #808000">}&lt;style scoped&gt;{</span>viz.CSS<span style="color: #808000; text-decoration-color: #808000">}&lt;/style&gt;&lt;/div&gt;"</span>                      <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 68 </span>                                                                                           <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>                                                                                                  <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span> <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">/home/runner/work/river/river/river/base/</span><span style="font-weight: bold">viz.py</span>:13 in to_html                                    <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>                                                                                                  <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 10 </span>                                                                                           <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 11 </span><span style="color: #0000ff; text-decoration-color: #0000ff">def</span><span style="color: #808080; text-decoration-color: #808080"> </span><span style="color: #00ff00; text-decoration-color: #00ff00">to_html</span>(obj: [base.Estimator](../api/base/Estimator)) -&gt; ET.Element:                                            <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 12 </span><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   </span><span style="color: #0000ff; text-decoration-color: #0000ff">if</span> <span style="color: #00ffff; text-decoration-color: #00ffff">isinstance</span>(obj, [compose.Pipeline](../api/compose/Pipeline)):                                                  <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span> <span style="color: #800000; text-decoration-color: #800000">❱ </span> 13 <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   │   </span><span style="color: #0000ff; text-decoration-color: #0000ff">return</span> <span style="font-weight: bold; text-decoration: underline">pipeline_to_html(obj)</span>                                                       <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 14 </span><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   </span><span style="color: #0000ff; text-decoration-color: #0000ff">if</span> <span style="color: #00ffff; text-decoration-color: #00ffff">isinstance</span>(obj, [compose.TransformerUnion](../api/compose/TransformerUnion)):                                          <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 15 </span><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   │   </span><span style="color: #0000ff; text-decoration-color: #0000ff">return</span> union_to_html(obj)                                                          <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 16 </span><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   </span><span style="color: #0000ff; text-decoration-color: #0000ff">if</span> <span style="color: #00ffff; text-decoration-color: #00ffff">isinstance</span>(obj, [base.Wrapper](../api/base/Wrapper)):                                                      <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>                                                                                                  <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span> <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">/home/runner/work/river/river/river/base/</span><span style="font-weight: bold">viz.py</span>:51 in pipeline_to_html                           <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>                                                                                                  <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 48 </span><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   </span>div = ET.Element(<span style="color: #808000; text-decoration-color: #808000">"div"</span>, attrib={<span style="color: #808000; text-decoration-color: #808000">"class"</span>: <span style="color: #808000; text-decoration-color: #808000">"river-component river-pipeline"</span>})            <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 49 </span><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   </span>                                                                                       <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 50 </span><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   </span><span style="color: #0000ff; text-decoration-color: #0000ff">for</span> step <span style="color: #ff00ff; text-decoration-color: #ff00ff">in</span> pipeline.steps.values():                                                   <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span> <span style="color: #800000; text-decoration-color: #800000">❱ </span> 51 <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   │   </span>div.append(<span style="font-weight: bold; text-decoration: underline">to_html(step)</span>)                                                          <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 52 </span><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   </span>                                                                                       <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 53 </span><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   </span><span style="color: #0000ff; text-decoration-color: #0000ff">return</span> div                                                                             <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 54 </span>                                                                                           <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>                                                                                                  <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span> <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">/home/runner/work/river/river/river/base/</span><span style="font-weight: bold">viz.py</span>:15 in to_html                                    <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>                                                                                                  <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 12 </span><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   </span><span style="color: #0000ff; text-decoration-color: #0000ff">if</span> <span style="color: #00ffff; text-decoration-color: #00ffff">isinstance</span>(obj, [compose.Pipeline](../api/compose/Pipeline)):                                                  <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 13 </span><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   │   </span><span style="color: #0000ff; text-decoration-color: #0000ff">return</span> pipeline_to_html(obj)                                                       <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 14 </span><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   </span><span style="color: #0000ff; text-decoration-color: #0000ff">if</span> <span style="color: #00ffff; text-decoration-color: #00ffff">isinstance</span>(obj, [compose.TransformerUnion](../api/compose/TransformerUnion)):                                          <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span> <span style="color: #800000; text-decoration-color: #800000">❱ </span> 15 <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   │   </span><span style="color: #0000ff; text-decoration-color: #0000ff">return</span> <span style="font-weight: bold; text-decoration: underline">union_to_html(obj)</span>                                                          <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 16 </span><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   </span><span style="color: #0000ff; text-decoration-color: #0000ff">if</span> <span style="color: #00ffff; text-decoration-color: #00ffff">isinstance</span>(obj, [base.Wrapper](../api/base/Wrapper)):                                                      <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 17 </span><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   │   </span><span style="color: #0000ff; text-decoration-color: #0000ff">return</span> wrapper_to_html(obj)                                                        <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 18 </span><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   </span><span style="color: #0000ff; text-decoration-color: #0000ff">return</span> estimator_to_html(obj)                                                          <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>                                                                                                  <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span> <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">/home/runner/work/river/river/river/base/</span><span style="font-weight: bold">viz.py</span>:70 in union_to_html                              <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>                                                                                                  <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 67 </span><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   </span>summary.append(pre)                                                                    <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 68 </span><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   </span>                                                                                       <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 69 </span><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   </span><span style="color: #0000ff; text-decoration-color: #0000ff">for</span> transformer <span style="color: #ff00ff; text-decoration-color: #ff00ff">in</span> union.transformers.values():                                        <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span> <span style="color: #800000; text-decoration-color: #800000">❱ </span> 70 <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   │   </span>div.append(<span style="font-weight: bold; text-decoration: underline">to_html(transformer)</span>)                                                   <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 71 </span><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   </span>                                                                                       <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 72 </span><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   </span><span style="color: #0000ff; text-decoration-color: #0000ff">return</span> div                                                                             <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 73 </span>                                                                                           <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>                                                                                                  <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span> <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">/home/runner/work/river/river/river/base/</span><span style="font-weight: bold">viz.py</span>:18 in to_html                                    <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>                                                                                                  <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 15 </span><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   │   </span><span style="color: #0000ff; text-decoration-color: #0000ff">return</span> union_to_html(obj)                                                          <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 16 </span><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   </span><span style="color: #0000ff; text-decoration-color: #0000ff">if</span> <span style="color: #00ffff; text-decoration-color: #00ffff">isinstance</span>(obj, [base.Wrapper](../api/base/Wrapper)):                                                      <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 17 </span><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   │   </span><span style="color: #0000ff; text-decoration-color: #0000ff">return</span> wrapper_to_html(obj)                                                        <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span> <span style="color: #800000; text-decoration-color: #800000">❱ </span> 18 <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   </span><span style="color: #0000ff; text-decoration-color: #0000ff">return</span> <span style="font-weight: bold; text-decoration: underline">estimator_to_html(obj)</span>                                                          <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 19 </span>                                                                                           <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 20 </span>                                                                                           <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 21 </span><span style="color: #0000ff; text-decoration-color: #0000ff">def</span><span style="color: #808080; text-decoration-color: #808080"> </span><span style="color: #00ff00; text-decoration-color: #00ff00">estimator_to_html</span>(estimator: [base.Estimator](../api/base/Estimator)) -&gt; ET.Element:                            <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>                                                                                                  <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span> <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">/home/runner/work/river/river/river/base/</span><span style="font-weight: bold">viz.py</span>:41 in estimator_to_html                          <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>                                                                                                  <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 38 </span><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   </span><span style="color: #0000ff; text-decoration-color: #0000ff">if</span> <span style="color: #00ffff; text-decoration-color: #00ffff">isinstance</span>(estimator, [compose.FuncTransformer](../api/compose/FuncTransformer)):                                     <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 39 </span><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   │   </span>code.text = <span style="color: #808000; text-decoration-color: #808000">f"\n{</span>inspect.getsource(estimator.func)<span style="color: #808000; text-decoration-color: #808000">}\n"</span>                             <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 40 </span><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   </span><span style="color: #0000ff; text-decoration-color: #0000ff">else</span>:                                                                                  <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span> <span style="color: #800000; text-decoration-color: #800000">❱ </span> 41 <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   │   </span>code.text = <span style="color: #808000; text-decoration-color: #808000">f"{</span><span style="color: #00ffff; text-decoration-color: #00ffff; font-weight: bold; text-decoration: underline">repr</span><span style="font-weight: bold; text-decoration: underline">(estimator)</span><span style="color: #808000; text-decoration-color: #808000">}\n"</span>                                                 <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 42 </span><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   </span>details.append(code)                                                                   <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 43 </span><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   </span>                                                                                       <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 44 </span><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   </span><span style="color: #0000ff; text-decoration-color: #0000ff">return</span> details                                                                         <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>                                                                                                  <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span> <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">/home/runner/work/river/river/river/base/</span><span style="font-weight: bold">base.py</span>:29 in __repr__                                  <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>                                                                                                  <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 26 </span><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   │   </span><span style="color: #0000ff; text-decoration-color: #0000ff">return</span> <span style="color: #00ffff; text-decoration-color: #00ffff">self</span>.<span style="color: #ff0000; text-decoration-color: #ff0000">__class__</span>.<span style="color: #ff0000; text-decoration-color: #ff0000">__name__</span>                                                     <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 27 </span><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   </span>                                                                                       <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 28 </span><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   </span><span style="color: #0000ff; text-decoration-color: #0000ff">def</span><span style="color: #808080; text-decoration-color: #808080"> </span><span style="color: #00ff00; text-decoration-color: #00ff00">__repr__</span>(<span style="color: #00ffff; text-decoration-color: #00ffff">self</span>) -&gt; <span style="color: #00ffff; text-decoration-color: #00ffff">str</span>:                                                             <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span> <span style="color: #800000; text-decoration-color: #800000">❱ </span> 29 <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   │   </span><span style="color: #0000ff; text-decoration-color: #0000ff">return</span> <span style="font-weight: bold; text-decoration: underline">_repr_obj(obj=</span><span style="color: #00ffff; text-decoration-color: #00ffff; font-weight: bold; text-decoration: underline">self</span><span style="font-weight: bold; text-decoration: underline">)</span>                                                         <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 30 </span><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   </span>                                                                                       <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 31 </span><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   </span><span style="color: #ff00ff; text-decoration-color: #ff00ff; font-weight: bold">@classmethod</span>                                                                           <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 32 </span><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   </span><span style="color: #0000ff; text-decoration-color: #0000ff">def</span><span style="color: #808080; text-decoration-color: #808080"> </span><span style="color: #00ff00; text-decoration-color: #00ff00">_unit_test_params</span>(<span style="color: #00ffff; text-decoration-color: #00ffff">cls</span>) -&gt; collections.abc.Iterator&#91;<span style="color: #00ffff; text-decoration-color: #00ffff">dict</span>&#91;<span style="color: #00ffff; text-decoration-color: #00ffff">str</span>, [utils.random.Any](../api/utils/random/Any)&#93;&#93;:         <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>                                                                                                  <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span> <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">/home/runner/work/river/river/river/base/</span><span style="font-weight: bold">base.py</span>:525 in _repr_obj                                <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>                                                                                                  <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">522 </span><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   │   </span><span style="color: #0000ff; text-decoration-color: #0000ff">elif</span> <span style="color: #00ffff; text-decoration-color: #00ffff">isinstance</span>(val, <span style="color: #00ffff; text-decoration-color: #00ffff">set</span>):                                                         <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">523 </span><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   │   │   </span>val = <span style="color: #00ffff; text-decoration-color: #00ffff">sorted</span>(val)                                                              <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">524 </span><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   │   </span><span style="color: #0000ff; text-decoration-color: #0000ff">elif</span> <span style="color: #00ffff; text-decoration-color: #00ffff">hasattr</span>(val, <span style="color: #808000; text-decoration-color: #808000">"__class__"</span>) <span style="color: #ff00ff; text-decoration-color: #ff00ff">and</span> <span style="color: #808000; text-decoration-color: #808000">"river."</span> <span style="color: #ff00ff; text-decoration-color: #ff00ff">in</span> <span style="color: #00ffff; text-decoration-color: #00ffff">str</span>(<span style="color: #00ffff; text-decoration-color: #00ffff">type</span>(val)):                     <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span> <span style="color: #800000; text-decoration-color: #800000">❱ </span>525 <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   │   │   </span>val = <span style="font-weight: bold; text-decoration: underline">_repr_obj(obj=val, show_modules=show_modules, depth=depth + </span><span style="color: #0000ff; text-decoration-color: #0000ff; font-weight: bold; text-decoration: underline">1</span><span style="font-weight: bold; text-decoration: underline">)</span>           <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">526 </span><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   │   </span>                                                                                   <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">527 </span><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   │   </span>rep += <span style="color: #808000; text-decoration-color: #808000">f"\n{</span>tab<span style="color: #808080; text-decoration-color: #808080"> </span>*<span style="color: #808080; text-decoration-color: #808080"> </span>(depth<span style="color: #808080; text-decoration-color: #808080"> </span>+<span style="color: #808080; text-decoration-color: #808080"> </span><span style="color: #0000ff; text-decoration-color: #0000ff">1</span>)<span style="color: #808000; text-decoration-color: #808000">}{</span>name<span style="color: #808000; text-decoration-color: #808000">}={</span>val<span style="color: #808000; text-decoration-color: #808000">}"</span>                                        <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">528 </span>                                                                                           <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>                                                                                                  <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span> <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">/home/runner/work/river/river/river/base/</span><span style="font-weight: bold">base.py</span>:496 in _repr_obj                                <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>                                                                                                  <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">493 </span><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   </span>tab = <span style="color: #808000; text-decoration-color: #808000">"\t"</span>                                                                             <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">494 </span><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   </span>                                                                                       <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">495 </span><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   </span>params = <span style="font-weight: bold; text-decoration: underline">{</span>                                                                             <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span> <span style="color: #800000; text-decoration-color: #800000">❱ </span>496 <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   │   </span><span style="font-weight: bold; text-decoration: underline">name: </span><span style="color: #00ffff; text-decoration-color: #00ffff; font-weight: bold; text-decoration: underline">getattr</span><span style="font-weight: bold; text-decoration: underline">(obj, name)</span>                                                           <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">497 </span><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   │   </span><span style="color: #0000ff; text-decoration-color: #0000ff; font-weight: bold; text-decoration: underline">for</span><span style="font-weight: bold; text-decoration: underline"> name, param </span><span style="color: #ff00ff; text-decoration-color: #ff00ff; font-weight: bold; text-decoration: underline">in</span><span style="font-weight: bold; text-decoration: underline"> inspect.signature(obj.</span><span style="color: #00ff00; text-decoration-color: #00ff00; font-weight: bold; text-decoration: underline">__init__</span><span style="font-weight: bold; text-decoration: underline">).parameters.items()</span>              <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">498 </span><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   │   </span><span style="color: #0000ff; text-decoration-color: #0000ff; font-weight: bold; text-decoration: underline">if</span><span style="font-weight: bold; text-decoration: underline"> </span><span style="color: #ff00ff; text-decoration-color: #ff00ff; font-weight: bold; text-decoration: underline">not</span><span style="font-weight: bold; text-decoration: underline"> (</span>                                                                           <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">499 </span><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   │   │   </span><span style="font-weight: bold; text-decoration: underline">param.name == </span><span style="color: #808000; text-decoration-color: #808000; font-weight: bold; text-decoration: underline">"args"</span>                                                           <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>                                                                                                  <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span> <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">/home/runner/work/river/river/river/utils/</span><span style="font-weight: bold">rolling.py</span>:41 in __getattr__                           <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>                                                                                                  <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 38 </span><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   │   │   </span>obj = <span style="color: #00ffff; text-decoration-color: #00ffff">object</span>.<span style="color: #00ff00; text-decoration-color: #00ff00">__getattribute__</span>(<span style="color: #00ffff; text-decoration-color: #00ffff">self</span>, <span style="color: #808000; text-decoration-color: #808000">"obj"</span>)                                     <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 39 </span><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   │   </span><span style="color: #0000ff; text-decoration-color: #0000ff">except</span> <span style="color: #00ffff; text-decoration-color: #00ffff">AttributeError</span>:                                                             <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 40 </span><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   │   │   </span><span style="color: #0000ff; text-decoration-color: #0000ff">raise</span> <span style="color: #00ffff; text-decoration-color: #00ffff">AttributeError</span>(name)                                                     <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span> <span style="color: #800000; text-decoration-color: #800000">❱ </span> 41 <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   │   </span><span style="color: #0000ff; text-decoration-color: #0000ff">return</span> <span style="color: #00ffff; text-decoration-color: #00ffff; font-weight: bold; text-decoration: underline">getattr</span><span style="font-weight: bold; text-decoration: underline">(obj, name)</span>                                                          <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 42 </span><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   </span>                                                                                       <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 43 </span><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   </span><span style="color: #0000ff; text-decoration-color: #0000ff">def</span><span style="color: #808080; text-decoration-color: #808080"> </span><span style="color: #00ff00; text-decoration-color: #00ff00">__getitem__</span>(<span style="color: #00ffff; text-decoration-color: #00ffff">self</span>, idx: Any) -&gt; <span style="color: #00ffff; text-decoration-color: #00ffff">object</span>:                                             <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">│</span>   <span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 44 </span><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">│   │   </span><span style="color: #7f7f7f; text-decoration-color: #7f7f7f"># Enable for when it needs, throws a runtime error as usual if tried on a type t</span>   <span style="color: #800000; text-decoration-color: #800000">│</span>
-<span style="color: #800000; text-decoration-color: #800000">╰──────────────────────────────────────────────────────────────────────────────────────────────────╯</span>
-<span style="color: #ff0000; text-decoration-color: #ff0000; font-weight: bold">AttributeError: </span><span style="color: #008000; text-decoration-color: #008000">'Mean'</span> object has no attribute <span style="color: #008000; text-decoration-color: #008000">'cls'</span>
-</pre>
+</code></details><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">y_mean_by_store_id</pre></summary><code class="river-estimator-params">TargetAgg (
+  by=&#91;'store_id'&#93;
+  how=Rolling (
+    obj=Mean ()
+    window_size=7
+  )
+  target_name="y"
+)
+</code></details><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">y_mean_by_store_id</pre></summary><code class="river-estimator-params">TargetAgg (
+  by=&#91;'store_id'&#93;
+  how=Rolling (
+    obj=Mean ()
+    window_size=14
+  )
+  target_name="y"
+)
+</code></details><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">y_mean_by_store_id</pre></summary><code class="river-estimator-params">TargetAgg (
+  by=&#91;'store_id'&#93;
+  how=Rolling (
+    obj=Mean ()
+    window_size=21
+  )
+  target_name="y"
+)
+</code></details></div><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">~&#91;'area_name', &#91;...&#93;</pre></summary><code class="river-estimator-params">Discard (
+  area_name
+  date
+  genre_name
+  latitude
+  longitude
+  store_id
+)
+</code></details><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">StandardScaler</pre></summary><code class="river-estimator-params">StandardScaler (
+  with_std=True
+)
+</code></details><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">LinearRegression</pre></summary><code class="river-estimator-params">LinearRegression (
+  optimizer=SGD (
+    lr=Constant (
+      learning_rate=0.01
+    )
+  )
+  loss=Squared ()
+  l2=0.
+  l1=0.
+  intercept_init=0.
+  intercept_lr=Constant (
+    learning_rate=0.01
+  )
+  clip_gradient=1e+12
+  initializer=Zeros ()
+)
+</code></details></div><style scoped>
+.river-estimator {
+    padding: 1em;
+    border-style: solid;
+    background: white;
+    max-width: max-content;
+}
 
-<div class="language-text highlight"><pre><span></span><code>[1m&lt;[0m[1;95mrepr-error[0m[39m [0m[32m&quot;&#39;Mean&#39; object has no attribute &#39;cls&#39;&quot;[0m[1m&gt;[0m
-</code></pre></div>
+.river-pipeline {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: linear-gradient(#000, #000) no-repeat center / 1.5px 100%;
+}
+
+.river-union {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding: 1em;
+    border-style: solid;
+    background: white;
+}
+
+.river-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1em;
+    border-style: solid;
+    background: white;
+}
+
+.river-wrapper > .river-estimator {
+    margin-top: 1em;
+}
+
+/* Vertical spacing between steps */
+
+.river-component + .river-component {
+    margin-top: 2em;
+}
+
+.river-union > .river-estimator {
+    margin-top: 0;
+}
+
+.river-union > .river-component {
+    margin-top: 0;
+}
+
+.river-union > .pipeline {
+    margin-top: 0;
+}
+
+/* Spacing within a union of estimators */
+
+.river-union > .river-component + .river-component {
+    margin-left: 1em;
+}
+
+/* Typography */
+
+.river-estimator-params {
+    display: block;
+    white-space: pre-wrap;
+    font-size: 110%;
+    margin-top: 1em;
+}
+
+.river-estimator > .river-estimator-params,
+.river-wrapper > .river-details > river-estimator-params {
+    background-color: white !important;
+}
+
+.river-wrapper > .river-details {
+    margin-bottom: 1em;
+}
+
+.river-estimator-name {
+    display: inline;
+    margin: 0;
+    font-size: 110%;
+}
+
+/* Toggle */
+
+.river-summary {
+    display: flex;
+    align-items:center;
+    cursor: pointer;
+}
+
+.river-summary > div {
+    width: 100%;
+}
+</style></div>
 
 
 

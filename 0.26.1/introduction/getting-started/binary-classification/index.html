@@ -1363,22 +1363,20 @@
 <span class="n">dataset</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">Phishing</span><span class="p">()</span>
 <span class="n">dataset</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
-
 <div class="language-text highlight"><pre><span></span><code>Phishing websites.
 
 This dataset contains features from web pages that are classified as phishing or not.
 
 References
 ----------
-[1m[[0m^[1;36m1[0m[1m][0m: [1m[[0mUCI page[1m][0m[1m([0m[4;94mhttp://archive.ics.uci.edu/ml/datasets/Website+Phishing[0m[4;94m)[0m
+[^1]: [UCI page](http://archive.ics.uci.edu/ml/datasets/Website+Phishing)
 
-    Name  Phishing                                                    
-    Task  Binary classification                                       
- Samples  [1;36m1[0m,[1;36m250[0m                                                       
-Features  [1;36m9[0m                                                           
-  Sparse  [3;91mFalse[0m                                                       
-    Path  [35m/home/runner/work/river/river/river/datasets/[0m[95mphishing.csv.gz[0m
+    Name  Phishing                                                
+    Task  Binary classification                                   
+ Samples  1,250                                                   
+Features  9                                                       
+  Sparse  False                                                   
+    Path  /Users/max/projects/river/river/datasets/phishing.csv.gz
 </code></pre></div>
 <p>This dataset is a streaming dataset which can be looped over.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">dataset</span><span class="p">:</span>
@@ -1388,25 +1386,19 @@ Features  [1;36m9[0m
 <div class="language-python highlight"><pre><span></span><code><span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">dataset</span><span class="p">))</span>
 <span class="n">x</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
-
-<div class="language-text highlight"><pre><span></span><code>[1m{[0m
-    [32m&#39;empty_server_form_handler&#39;[0m: [1;36m0.0[0m,
-    [32m&#39;popup_window&#39;[0m: [1;36m0.0[0m,
-    [32m&#39;https&#39;[0m: [1;36m0.0[0m,
-    [32m&#39;request_from_other_domain&#39;[0m: [1;36m0.0[0m,
-    [32m&#39;anchor_from_other_domain&#39;[0m: [1;36m0.0[0m,
-    [32m&#39;is_popular&#39;[0m: [1;36m0.5[0m,
-    [32m&#39;long_url&#39;[0m: [1;36m1.0[0m,
-    [32m&#39;age_of_domain&#39;[0m: [1;36m1[0m,
-    [32m&#39;ip_in_url&#39;[0m: [1;36m1[0m
-[1m}[0m
+<div class="language-text highlight"><pre><span></span><code>{&#39;empty_server_form_handler&#39;: 0.0,
+ &#39;popup_window&#39;: 0.0,
+ &#39;https&#39;: 0.0,
+ &#39;request_from_other_domain&#39;: 0.0,
+ &#39;anchor_from_other_domain&#39;: 0.0,
+ &#39;is_popular&#39;: 0.5,
+ &#39;long_url&#39;: 1.0,
+ &#39;age_of_domain&#39;: 1,
+ &#39;ip_in_url&#39;: 1}
 </code></pre></div>
 <div class="language-python highlight"><pre><span></span><code><span class="n">y</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
-
-<div class="language-text highlight"><pre><span></span><code>[3;92mTrue[0m
+<div class="language-text highlight"><pre><span></span><code>True
 </code></pre></div>
 <p>A binary classifier's goal is to learn to predict a binary target <code>y</code> from some given features <code>x</code>. We'll try to do this with a logistic regression.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">river</span><span class="w"> </span><span class="kn">import</span> <span class="n">linear_model</span>
@@ -1414,9 +1406,7 @@ Features  [1;36m9[0m
 <span class="n">model</span> <span class="o">=</span> <span class="n">linear_model</span><span class="o">.</span><span class="n">LogisticRegression</span><span class="p">()</span>
 <span class="n">model</span><span class="o">.</span><span class="n">predict_proba_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
-
-<div class="language-text highlight"><pre><span></span><code>[1m{[0m[3;91mFalse[0m: [1;36m0.5[0m, [3;92mTrue[0m: [1;36m0.5[0m[1m}[0m
+<div class="language-text highlight"><pre><span></span><code>{False: 0.5, True: 0.5}
 </code></pre></div>
 <p>The model hasn't been trained on any data, and therefore outputs a default probability of 50% for each class.</p>
 <p>The model can be trained on the sample, which will update the model's state.</p>
@@ -1425,16 +1415,12 @@ Features  [1;36m9[0m
 <p>If we try to make a prediction on the same sample, we can see that the probabilities are different, because the model has learned something.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">model</span><span class="o">.</span><span class="n">predict_proba_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
-
-<div class="language-text highlight"><pre><span></span><code>[1m{[0m[3;91mFalse[0m: [1;36m0.494687699901455[0m, [3;92mTrue[0m: [1;36m0.505312300098545[0m[1m}[0m
+<div class="language-text highlight"><pre><span></span><code>{False: 0.494687699901455, True: 0.505312300098545}
 </code></pre></div>
 <p>Note that there is also a <code>predict_one</code> if you're only interested in the most likely class rather than the probability distribution.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">model</span><span class="o">.</span><span class="n">predict_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
-
-<div class="language-text highlight"><pre><span></span><code>[3;92mTrue[0m
+<div class="language-text highlight"><pre><span></span><code>True
 </code></pre></div>
 <p>Typically, an online model makes a prediction, and then learns once the ground truth reveals itself. The prediction and the ground truth can be compared to measure the model's correctness. If you have a dataset available, you can loop over it, make a prediction, update the model, and compare the model's output with the ground truth. This is called progressive validation.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">river</span><span class="w"> </span><span class="kn">import</span> <span class="n">metrics</span>
@@ -1450,9 +1436,7 @@ Features  [1;36m9[0m
 
 <span class="n">metric</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
-
-<div class="language-text highlight"><pre><span></span><code>ROCAUC: [1;36m89.36[0m%
+<div class="language-text highlight"><pre><span></span><code>ROCAUC: 89.36%
 </code></pre></div>
 <p>This is a common way to evaluate an online model. In fact, there is a dedicated <a href="../../../api/evaluate/progressive-val-score"><code>evaluate.progressive_val_score</code></a> function that does this for you.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">river</span><span class="w"> </span><span class="kn">import</span> <span class="n">evaluate</span>
@@ -1462,9 +1446,7 @@ Features  [1;36m9[0m
 
 <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">metric</span><span class="p">)</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
-
-<div class="language-text highlight"><pre><span></span><code>ROCAUC: [1;36m89.36[0m%
+<div class="language-text highlight"><pre><span></span><code>ROCAUC: 89.36%
 </code></pre></div>
 <p>A common way to improve the performance of a logistic regression is to scale the data. This can be done by using a <a href="../../../api/preprocessing/StandardScaler"><code>preprocessing.StandardScaler</code></a>. In particular, we can define a pipeline to organise our model into a sequence of steps:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">river</span><span class="w"> </span><span class="kn">import</span> <span class="n">compose</span>
@@ -1477,11 +1459,8 @@ Features  [1;36m9[0m
 
 <span class="n">model</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
-
 <div><div class="river-component river-pipeline"><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">StandardScaler</pre></summary><code class="river-estimator-params">StandardScaler (
   with_std=True
-  window_size=None
 )
 </code></details><details class="river-component river-estimator"><summary class="river-summary"><pre class="river-estimator-name">LogisticRegression</pre></summary><code class="river-estimator-params">LogisticRegression (
   optimizer=SGD (
@@ -1519,13 +1498,12 @@ Features  [1;36m9[0m
 
 .river-union {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
     justify-content: center;
     padding: 1em;
     border-style: solid;
     background: white;
-    max-width: max-content;
 }
 
 .river-wrapper {
@@ -1548,14 +1526,22 @@ Features  [1;36m9[0m
     margin-top: 2em;
 }
 
-/* Spacing within a union of estimators */
-
 .river-union > .river-estimator {
-    margin-top: 1em;
+    margin-top: 0;
 }
 
+.river-union > .river-component {
+    margin-top: 0;
+}
+
+.river-union > .pipeline {
+    margin-top: 0;
+}
+
+/* Spacing within a union of estimators */
+
 .river-union > .river-component + .river-component {
-    margin-top: 1em;
+    margin-left: 1em;
 }
 
 /* Typography */
@@ -1598,9 +1584,7 @@ Features  [1;36m9[0m
 <div class="language-python highlight"><pre><span></span><code><span class="n">metric</span> <span class="o">=</span> <span class="n">metrics</span><span class="o">.</span><span class="n">ROCAUC</span><span class="p">()</span>
 <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">metric</span><span class="p">)</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
-
-<div class="language-text highlight"><pre><span></span><code>ROCAUC: [1;36m95.07[0m%
+<div class="language-text highlight"><pre><span></span><code>ROCAUC: 95.07%
 </code></pre></div>
 
 

@@ -1427,8 +1427,6 @@
 
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Model saved (</span><span class="si">{</span><span class="nb">__import__</span><span class="p">(</span><span class="s1">&#39;os&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getsize</span><span class="p">(</span><span class="s1">&#39;model.pkl&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> bytes)&quot;</span><span class="p">)</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>Model saved (1574 bytes)
-</code></pre></div>
 <h2 id="loading-a-saved-model">Loading a saved model<a class="headerlink" href="#loading-a-saved-model" title="Permanent link">&para;</a></h2>
 <p>Loading restores the full model state — all learned parameters, scaler statistics, etc.:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;model.pkl&quot;</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
@@ -1438,10 +1436,6 @@
 <span class="n">x</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">datasets</span><span class="o">.</span><span class="n">Phishing</span><span class="p">()))</span>
 <span class="n">loaded_model</span><span class="o">.</span><span class="n">predict_proba_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
-
-<div class="language-text highlight"><pre><span></span><code>[1m{[0m[3;91mFalse[0m: [1;36m0.02418666502237432[0m, [3;92mTrue[0m: [1;36m0.9758133349776257[0m[1m}[0m
-</code></pre></div>
 <p>The loaded model is ready to predict and can continue learning from new data — no retraining needed.</p>
 <h2 id="serializing-to-bytes">Serializing to bytes<a class="headerlink" href="#serializing-to-bytes" title="Permanent link">&para;</a></h2>
 <p>If you don't want to write to a file (e.g. for storing in a database or sending over a network), use <code>pickle.dumps</code> and <code>pickle.loads</code>:</p>
@@ -1450,12 +1444,6 @@
 
 <span class="n">restored</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 <span class="n">restored</span><span class="o">.</span><span class="n">predict_proba_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-</code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>Serialized to 1574 bytes
-</code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
-
-<div class="language-text highlight"><pre><span></span><code>[1m{[0m[3;91mFalse[0m: [1;36m0.02418666502237432[0m, [3;92mTrue[0m: [1;36m0.9758133349776257[0m[1m}[0m
 </code></pre></div>
 
 

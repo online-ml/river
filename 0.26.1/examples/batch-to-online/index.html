@@ -1522,13 +1522,11 @@
 <p>In this case we're iterating over a dataset that is already in memory, but we could just as well stream from a CSV file, a Kafka stream, an SQL query, etc. If we look at <code>xi</code> we can notice that it is a <code>numpy.ndarray</code>.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">xi</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
-
-<div class="language-text highlight"><pre><span></span><code>[1;35marray[0m[1m([0m[1m[[0m[1;36m7.760e+00[0m, [1;36m2.454e+01[0m, [1;36m4.792e+01[0m, [1;36m1.810e+02[0m, [1;36m5.263e-02[0m, [1;36m4.362e-02[0m,
-       [1;36m0.000e+00[0m, [1;36m0.000e+00[0m, [1;36m1.587e-01[0m, [1;36m5.884e-02[0m, [1;36m3.857e-01[0m, [1;36m1.428e+00[0m,
-       [1;36m2.548e+00[0m, [1;36m1.915e+01[0m, [1;36m7.189e-03[0m, [1;36m4.660e-03[0m, [1;36m0.000e+00[0m, [1;36m0.000e+00[0m,
-       [1;36m2.676e-02[0m, [1;36m2.783e-03[0m, [1;36m9.456e+00[0m, [1;36m3.037e+01[0m, [1;36m5.916e+01[0m, [1;36m2.686e+02[0m,
-       [1;36m8.996e-02[0m, [1;36m6.444e-02[0m, [1;36m0.000e+00[0m, [1;36m0.000e+00[0m, [1;36m2.871e-01[0m, [1;36m7.039e-02[0m[1m][0m[1m)[0m
+<div class="language-text highlight"><pre><span></span><code>array([7.760e+00, 2.454e+01, 4.792e+01, 1.810e+02, 5.263e-02, 4.362e-02,
+       0.000e+00, 0.000e+00, 1.587e-01, 5.884e-02, 3.857e-01, 1.428e+00,
+       2.548e+00, 1.915e+01, 7.189e-03, 4.660e-03, 0.000e+00, 0.000e+00,
+       2.676e-02, 2.783e-03, 9.456e+00, 3.037e+01, 5.916e+01, 2.686e+02,
+       8.996e-02, 6.444e-02, 0.000e+00, 0.000e+00, 2.871e-01, 7.039e-02])
 </code></pre></div>
 <p>River by design works with <code>dict</code>s. We believe that <code>dict</code>s are more enjoyable to program with than <code>numpy.ndarray</code>s, at least for when single observations are concerned. <code>dict</code>'s bring the added benefit that each feature can be accessed by name rather than by position.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="k">for</span> <span class="n">xi</span><span class="p">,</span> <span class="n">yi</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
@@ -1537,40 +1535,36 @@
 
 <span class="n">xi</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
-
-<div class="language-text highlight"><pre><span></span><code>[1m{[0m
-    [1;35mnp.str_[0m[1m([0m[32m&#39;mean radius&#39;[0m[1m)[0m: [1;35mnp.float64[0m[1m([0m[1;36m7.76[0m[1m)[0m,
-    [1;35mnp.str_[0m[1m([0m[32m&#39;mean texture&#39;[0m[1m)[0m: [1;35mnp.float64[0m[1m([0m[1;36m24.54[0m[1m)[0m,
-    [1;35mnp.str_[0m[1m([0m[32m&#39;mean perimeter&#39;[0m[1m)[0m: [1;35mnp.float64[0m[1m([0m[1;36m47.92[0m[1m)[0m,
-    [1;35mnp.str_[0m[1m([0m[32m&#39;mean area&#39;[0m[1m)[0m: [1;35mnp.float64[0m[1m([0m[1;36m181.0[0m[1m)[0m,
-    [1;35mnp.str_[0m[1m([0m[32m&#39;mean smoothness&#39;[0m[1m)[0m: [1;35mnp.float64[0m[1m([0m[1;36m0.05263[0m[1m)[0m,
-    [1;35mnp.str_[0m[1m([0m[32m&#39;mean compactness&#39;[0m[1m)[0m: [1;35mnp.float64[0m[1m([0m[1;36m0.04362[0m[1m)[0m,
-    [1;35mnp.str_[0m[1m([0m[32m&#39;mean concavity&#39;[0m[1m)[0m: [1;35mnp.float64[0m[1m([0m[1;36m0.0[0m[1m)[0m,
-    [1;35mnp.str_[0m[1m([0m[32m&#39;mean concave points&#39;[0m[1m)[0m: [1;35mnp.float64[0m[1m([0m[1;36m0.0[0m[1m)[0m,
-    [1;35mnp.str_[0m[1m([0m[32m&#39;mean symmetry&#39;[0m[1m)[0m: [1;35mnp.float64[0m[1m([0m[1;36m0.1587[0m[1m)[0m,
-    [1;35mnp.str_[0m[1m([0m[32m&#39;mean fractal dimension&#39;[0m[1m)[0m: [1;35mnp.float64[0m[1m([0m[1;36m0.05884[0m[1m)[0m,
-    [1;35mnp.str_[0m[1m([0m[32m&#39;radius error&#39;[0m[1m)[0m: [1;35mnp.float64[0m[1m([0m[1;36m0.3857[0m[1m)[0m,
-    [1;35mnp.str_[0m[1m([0m[32m&#39;texture error&#39;[0m[1m)[0m: [1;35mnp.float64[0m[1m([0m[1;36m1.428[0m[1m)[0m,
-    [1;35mnp.str_[0m[1m([0m[32m&#39;perimeter error&#39;[0m[1m)[0m: [1;35mnp.float64[0m[1m([0m[1;36m2.548[0m[1m)[0m,
-    [1;35mnp.str_[0m[1m([0m[32m&#39;area error&#39;[0m[1m)[0m: [1;35mnp.float64[0m[1m([0m[1;36m19.15[0m[1m)[0m,
-    [1;35mnp.str_[0m[1m([0m[32m&#39;smoothness error&#39;[0m[1m)[0m: [1;35mnp.float64[0m[1m([0m[1;36m0.007189[0m[1m)[0m,
-    [1;35mnp.str_[0m[1m([0m[32m&#39;compactness error&#39;[0m[1m)[0m: [1;35mnp.float64[0m[1m([0m[1;36m0.00466[0m[1m)[0m,
-    [1;35mnp.str_[0m[1m([0m[32m&#39;concavity error&#39;[0m[1m)[0m: [1;35mnp.float64[0m[1m([0m[1;36m0.0[0m[1m)[0m,
-    [1;35mnp.str_[0m[1m([0m[32m&#39;concave points error&#39;[0m[1m)[0m: [1;35mnp.float64[0m[1m([0m[1;36m0.0[0m[1m)[0m,
-    [1;35mnp.str_[0m[1m([0m[32m&#39;symmetry error&#39;[0m[1m)[0m: [1;35mnp.float64[0m[1m([0m[1;36m0.02676[0m[1m)[0m,
-    [1;35mnp.str_[0m[1m([0m[32m&#39;fractal dimension error&#39;[0m[1m)[0m: [1;35mnp.float64[0m[1m([0m[1;36m0.002783[0m[1m)[0m,
-    [1;35mnp.str_[0m[1m([0m[32m&#39;worst radius&#39;[0m[1m)[0m: [1;35mnp.float64[0m[1m([0m[1;36m9.456[0m[1m)[0m,
-    [1;35mnp.str_[0m[1m([0m[32m&#39;worst texture&#39;[0m[1m)[0m: [1;35mnp.float64[0m[1m([0m[1;36m30.37[0m[1m)[0m,
-    [1;35mnp.str_[0m[1m([0m[32m&#39;worst perimeter&#39;[0m[1m)[0m: [1;35mnp.float64[0m[1m([0m[1;36m59.16[0m[1m)[0m,
-    [1;35mnp.str_[0m[1m([0m[32m&#39;worst area&#39;[0m[1m)[0m: [1;35mnp.float64[0m[1m([0m[1;36m268.6[0m[1m)[0m,
-    [1;35mnp.str_[0m[1m([0m[32m&#39;worst smoothness&#39;[0m[1m)[0m: [1;35mnp.float64[0m[1m([0m[1;36m0.08996[0m[1m)[0m,
-    [1;35mnp.str_[0m[1m([0m[32m&#39;worst compactness&#39;[0m[1m)[0m: [1;35mnp.float64[0m[1m([0m[1;36m0.06444[0m[1m)[0m,
-    [1;35mnp.str_[0m[1m([0m[32m&#39;worst concavity&#39;[0m[1m)[0m: [1;35mnp.float64[0m[1m([0m[1;36m0.0[0m[1m)[0m,
-    [1;35mnp.str_[0m[1m([0m[32m&#39;worst concave points&#39;[0m[1m)[0m: [1;35mnp.float64[0m[1m([0m[1;36m0.0[0m[1m)[0m,
-    [1;35mnp.str_[0m[1m([0m[32m&#39;worst symmetry&#39;[0m[1m)[0m: [1;35mnp.float64[0m[1m([0m[1;36m0.2871[0m[1m)[0m,
-    [1;35mnp.str_[0m[1m([0m[32m&#39;worst fractal dimension&#39;[0m[1m)[0m: [1;35mnp.float64[0m[1m([0m[1;36m0.07039[0m[1m)[0m
-[1m}[0m
+<div class="language-text highlight"><pre><span></span><code>{np.str_(&#39;mean radius&#39;): np.float64(7.76),
+ np.str_(&#39;mean texture&#39;): np.float64(24.54),
+ np.str_(&#39;mean perimeter&#39;): np.float64(47.92),
+ np.str_(&#39;mean area&#39;): np.float64(181.0),
+ np.str_(&#39;mean smoothness&#39;): np.float64(0.05263),
+ np.str_(&#39;mean compactness&#39;): np.float64(0.04362),
+ np.str_(&#39;mean concavity&#39;): np.float64(0.0),
+ np.str_(&#39;mean concave points&#39;): np.float64(0.0),
+ np.str_(&#39;mean symmetry&#39;): np.float64(0.1587),
+ np.str_(&#39;mean fractal dimension&#39;): np.float64(0.05884),
+ np.str_(&#39;radius error&#39;): np.float64(0.3857),
+ np.str_(&#39;texture error&#39;): np.float64(1.428),
+ np.str_(&#39;perimeter error&#39;): np.float64(2.548),
+ np.str_(&#39;area error&#39;): np.float64(19.15),
+ np.str_(&#39;smoothness error&#39;): np.float64(0.007189),
+ np.str_(&#39;compactness error&#39;): np.float64(0.00466),
+ np.str_(&#39;concavity error&#39;): np.float64(0.0),
+ np.str_(&#39;concave points error&#39;): np.float64(0.0),
+ np.str_(&#39;symmetry error&#39;): np.float64(0.02676),
+ np.str_(&#39;fractal dimension error&#39;): np.float64(0.002783),
+ np.str_(&#39;worst radius&#39;): np.float64(9.456),
+ np.str_(&#39;worst texture&#39;): np.float64(30.37),
+ np.str_(&#39;worst perimeter&#39;): np.float64(59.16),
+ np.str_(&#39;worst area&#39;): np.float64(268.6),
+ np.str_(&#39;worst smoothness&#39;): np.float64(0.08996),
+ np.str_(&#39;worst compactness&#39;): np.float64(0.06444),
+ np.str_(&#39;worst concavity&#39;): np.float64(0.0),
+ np.str_(&#39;worst concave points&#39;): np.float64(0.0),
+ np.str_(&#39;worst symmetry&#39;): np.float64(0.2871),
+ np.str_(&#39;worst fractal dimension&#39;): np.float64(0.07039)}
 </code></pre></div>
 <p>Conveniently, River's <code>stream</code> module has an <code>iter_sklearn_dataset</code> method that we can use instead.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">river</span><span class="w"> </span><span class="kn">import</span> <span class="n">stream</span>

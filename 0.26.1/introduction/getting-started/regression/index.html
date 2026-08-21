@@ -1362,25 +1362,23 @@
 <span class="n">dataset</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">TrumpApproval</span><span class="p">()</span>
 <span class="n">dataset</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
-
 <div class="language-text highlight"><pre><span></span><code>Donald Trump approval ratings.
 
 This dataset was obtained by reshaping the data used by FiveThirtyEight for analyzing Donald
-Trump&#39;s approval ratings. It contains [1;36m5[0m features, which are approval ratings collected by
-[1;36m5[0m polling agencies. The target is the approval rating from FiveThirtyEight&#39;s model. The goal of
+Trump&#39;s approval ratings. It contains 5 features, which are approval ratings collected by
+5 polling agencies. The target is the approval rating from FiveThirtyEight&#39;s model. The goal of
 this task is to see if we can reproduce FiveThirtyEight&#39;s model.
 
 References
 ----------
-[1m[[0m^[1;36m1[0m[1m][0m: [1m[[0mTrump Approval Ratings[1m][0m[1m([0m[4;94mhttps://projects.fivethirtyeight.com/trump-approval-ratings/[0m[4;94m)[0m
+[^1]: [Trump Approval Ratings](https://projects.fivethirtyeight.com/trump-approval-ratings/)
 
-    Name  TrumpApproval                                                     
-    Task  Regression                                                        
- Samples  [1;36m1[0m,[1;36m001[0m                                                             
-Features  [1;36m6[0m                                                                 
-  Sparse  [3;91mFalse[0m                                                             
-    Path  [35m/home/runner/work/river/river/river/datasets/[0m[95mtrump_approval.csv.gz[0m
+    Name  TrumpApproval                                                 
+    Task  Regression                                                    
+ Samples  1,001                                                         
+Features  6                                                             
+  Sparse  False                                                         
+    Path  /Users/max/projects/river/river/datasets/trump_approval.csv.gz
 </code></pre></div>
 <p>This dataset is a streaming dataset which can be looped over.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">dataset</span><span class="p">:</span>
@@ -1390,16 +1388,12 @@ Features  [1;36m6[0m
 <div class="language-python highlight"><pre><span></span><code><span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">dataset</span><span class="p">))</span>
 <span class="n">x</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
-
-<div class="language-text highlight"><pre><span></span><code>[1m{[0m
-    [32m&#39;ordinal_date&#39;[0m: [1;36m736389[0m,
-    [32m&#39;gallup&#39;[0m: [1;36m43.843213[0m,
-    [32m&#39;ipsos&#39;[0m: [1;36m46.19925042857143[0m,
-    [32m&#39;morning_consult&#39;[0m: [1;36m48.318749[0m,
-    [32m&#39;rasmussen&#39;[0m: [1;36m44.104692[0m,
-    [32m&#39;you_gov&#39;[0m: [1;36m43.636914000000004[0m
-[1m}[0m
+<div class="language-text highlight"><pre><span></span><code>{&#39;ordinal_date&#39;: 736389,
+ &#39;gallup&#39;: 43.843213,
+ &#39;ipsos&#39;: 46.19925042857143,
+ &#39;morning_consult&#39;: 48.318749,
+ &#39;rasmussen&#39;: 44.104692,
+ &#39;you_gov&#39;: 43.636914000000004}
 </code></pre></div>
 <p>A regression model's goal is to learn to predict a numeric target <code>y</code> from a bunch of features <code>x</code>. We'll attempt to do this with a nearest neighbors model.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">river</span><span class="w"> </span><span class="kn">import</span> <span class="n">neighbors</span>
@@ -1407,9 +1401,7 @@ Features  [1;36m6[0m
 <span class="n">model</span> <span class="o">=</span> <span class="n">neighbors</span><span class="o">.</span><span class="n">KNNRegressor</span><span class="p">()</span>
 <span class="n">model</span><span class="o">.</span><span class="n">predict_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
-
-<div class="language-text highlight"><pre><span></span><code>[1;36m0.0[0m
+<div class="language-text highlight"><pre><span></span><code>0.0
 </code></pre></div>
 <p>The model hasn't been trained on any data, and therefore outputs a default value of 0.</p>
 <p>The model can be trained on the sample, which will update the model's state.</p>
@@ -1418,9 +1410,7 @@ Features  [1;36m6[0m
 <p>If we try to make a prediction on the same sample, we can see that the output is different, because the model has learned something.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">model</span><span class="o">.</span><span class="n">predict_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
-
-<div class="language-text highlight"><pre><span></span><code>[1;36m43.75505[0m
+<div class="language-text highlight"><pre><span></span><code>43.75505
 </code></pre></div>
 <p>Typically, an online model makes a prediction, and then learns once the ground truth reveals itself. The prediction and the ground truth can be compared to measure the model's correctness. If you have a dataset available, you can loop over it, make a prediction, update the model, and compare the model's output with the ground truth. This is called progressive validation.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">river</span><span class="w"> </span><span class="kn">import</span> <span class="n">metrics</span>
@@ -1436,9 +1426,7 @@ Features  [1;36m6[0m
 
 <span class="n">metric</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
-
-<div class="language-text highlight"><pre><span></span><code>MAE: [1;36m0.310353[0m
+<div class="language-text highlight"><pre><span></span><code>MAE: 0.310353
 </code></pre></div>
 <p>This is a common way to evaluate an online model. In fact, there is a dedicated <a href="../../../api/evaluate/progressive-val-score"><code>evaluate.progressive_val_score</code></a> function that does this for you.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">river</span><span class="w"> </span><span class="kn">import</span> <span class="n">evaluate</span>
@@ -1448,9 +1436,7 @@ Features  [1;36m6[0m
 
 <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">metric</span><span class="p">)</span>
 </code></pre></div>
-<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
-
-<div class="language-text highlight"><pre><span></span><code>MAE: [1;36m0.310353[0m
+<div class="language-text highlight"><pre><span></span><code>MAE: 0.310353
 </code></pre></div>
 
 
