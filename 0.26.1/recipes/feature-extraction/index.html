@@ -1655,7 +1655,7 @@
 
 <span class="n">rolling_mean</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>  <span class="c1"># mean of last 3 values: (3 + 4 + 5) / 3</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>/tmp/ipykernel_4000/3566156614.py:3: DeprecationWarning: Passing an instance to utils.Rolling is deprecated and will be removed in a future release. Pass the class and forward constructor kwargs instead, e.g. utils.Rolling(stats.Mean, window_size=...) or utils.Rolling(stats.Var, window_size=..., ddof=0).
+<div class="language-text highlight"><pre><span></span><code>/tmp/ipykernel_4116/3566156614.py:3: DeprecationWarning: Passing an instance to utils.Rolling is deprecated and will be removed in a future release. Pass the class and forward constructor kwargs instead, e.g. utils.Rolling(stats.Mean, window_size=...) or utils.Rolling(stats.Var, window_size=..., ddof=0).
   rolling_mean = utils.Rolling(stats.Mean(), window_size=3)
 </code></pre></div>
 <pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
@@ -1815,7 +1815,7 @@ hour=9, volume=1100 -&gt; {&#39;volume_mean_by_hour&#39;: 1100.0}
 </code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>Cumulative accuracy: 49.75%
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>/tmp/ipykernel_4000/3157691925.py:9: DeprecationWarning: Passing an instance to utils.Rolling is deprecated and will be removed in a future release. Pass the class and forward constructor kwargs instead, e.g. utils.Rolling(stats.Mean, window_size=...) or utils.Rolling(stats.Var, window_size=..., ddof=0).
+<div class="language-text highlight"><pre><span></span><code>/tmp/ipykernel_4116/3157691925.py:9: DeprecationWarning: Passing an instance to utils.Rolling is deprecated and will be removed in a future release. Pass the class and forward constructor kwargs instead, e.g. utils.Rolling(stats.Mean, window_size=...) or utils.Rolling(stats.Var, window_size=..., ddof=0).
   rolling_acc = utils.Rolling(metrics.Accuracy(), window_size=100)
 </code></pre></div>
 <p>Let's visualize the rolling accuracy alongside the price chart:</p>
@@ -1878,23 +1878,23 @@ hour=9, volume=1100 -&gt; {&#39;volume_mean_by_hour&#39;: 1100.0}
 <pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
 
 <style>
-  #altair-viz-770a7da5749e478e90d927f59eed0d7b.vega-embed {
+  #altair-viz-60008781adbe420aa49dda9f8e2e60ad.vega-embed {
     width: 100%;
     display: flex;
   }
 
-  #altair-viz-770a7da5749e478e90d927f59eed0d7b.vega-embed details,
-  #altair-viz-770a7da5749e478e90d927f59eed0d7b.vega-embed details summary {
+  #altair-viz-60008781adbe420aa49dda9f8e2e60ad.vega-embed details,
+  #altair-viz-60008781adbe420aa49dda9f8e2e60ad.vega-embed details summary {
     position: relative;
   }
 </style>
-<div id="altair-viz-770a7da5749e478e90d927f59eed0d7b"></div>
+<div id="altair-viz-60008781adbe420aa49dda9f8e2e60ad"></div>
 <script type="text/javascript">
   var VEGA_DEBUG = (typeof VEGA_DEBUG == "undefined") ? {} : VEGA_DEBUG;
   (function(spec, embedOpt){
     let outputDiv = document.currentScript.previousElementSibling;
-    if (outputDiv.id !== "altair-viz-770a7da5749e478e90d927f59eed0d7b") {
-      outputDiv = document.getElementById("altair-viz-770a7da5749e478e90d927f59eed0d7b");
+    if (outputDiv.id !== "altair-viz-60008781adbe420aa49dda9f8e2e60ad") {
+      outputDiv = document.getElementById("altair-viz-60008781adbe420aa49dda9f8e2e60ad");
     }
 
     const paths = {

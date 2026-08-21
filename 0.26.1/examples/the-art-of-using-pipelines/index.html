@@ -1377,7 +1377,8 @@
 </code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>Downloading https://maxhalford.github.io/files/datasets/kaggle_recruit_restaurants.zip (4.28 MiB)
 Uncompressing into /home/runner/river_data/Restaurants
-{&#39;area_name&#39;: &#39;Tōkyō-to Nerima-ku Toyotamakita&#39;,
+</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code>{&#39;area_name&#39;: &#39;Tōkyō-to Nerima-ku Toyotamakita&#39;,
  &#39;date&#39;: datetime.datetime(2016, 1, 1, 0, 0),
  &#39;genre_name&#39;: &#39;Izakaya&#39;,
  &#39;is_holiday&#39;: True,
@@ -1432,11 +1433,11 @@ Uncompressing into /home/runner/river_data/Restaurants
 
 <span class="nb">print</span><span class="p">(</span><span class="n">metric</span><span class="p">)</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>/tmp/ipykernel_4463/951201656.py:9: DeprecationWarning: Passing an instance to utils.Rolling is deprecated and will be removed in a future release. Pass the class and forward constructor kwargs instead, e.g. utils.Rolling(stats.Mean, window_size=...) or utils.Rolling(stats.Var, window_size=..., ddof=0).
+<div class="language-text highlight"><pre><span></span><code>/tmp/ipykernel_4585/951201656.py:9: DeprecationWarning: Passing an instance to utils.Rolling is deprecated and will be removed in a future release. Pass the class and forward constructor kwargs instead, e.g. utils.Rolling(stats.Mean, window_size=...) or utils.Rolling(stats.Var, window_size=..., ddof=0).
   feature_extraction.TargetAgg(by=&#39;store_id&#39;, how=utils.Rolling(stats.Mean(), 7)),
-/tmp/ipykernel_4463/951201656.py:10: DeprecationWarning: Passing an instance to utils.Rolling is deprecated and will be removed in a future release. Pass the class and forward constructor kwargs instead, e.g. utils.Rolling(stats.Mean, window_size=...) or utils.Rolling(stats.Var, window_size=..., ddof=0).
+/tmp/ipykernel_4585/951201656.py:10: DeprecationWarning: Passing an instance to utils.Rolling is deprecated and will be removed in a future release. Pass the class and forward constructor kwargs instead, e.g. utils.Rolling(stats.Mean, window_size=...) or utils.Rolling(stats.Var, window_size=..., ddof=0).
   feature_extraction.TargetAgg(by=&#39;store_id&#39;, how=utils.Rolling(stats.Mean(), 14)),
-/tmp/ipykernel_4463/951201656.py:11: DeprecationWarning: Passing an instance to utils.Rolling is deprecated and will be removed in a future release. Pass the class and forward constructor kwargs instead, e.g. utils.Rolling(stats.Mean, window_size=...) or utils.Rolling(stats.Var, window_size=..., ddof=0).
+/tmp/ipykernel_4585/951201656.py:11: DeprecationWarning: Passing an instance to utils.Rolling is deprecated and will be removed in a future release. Pass the class and forward constructor kwargs instead, e.g. utils.Rolling(stats.Mean, window_size=...) or utils.Rolling(stats.Var, window_size=..., ddof=0).
   feature_extraction.TargetAgg(by=&#39;store_id&#39;, how=utils.Rolling(stats.Mean(), 21))
 </code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>MAE: 8.316538
@@ -1485,11 +1486,11 @@ Uncompressing into /home/runner/river_data/Restaurants
 
 <span class="nb">print</span><span class="p">(</span><span class="n">metric</span><span class="p">)</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>/tmp/ipykernel_4463/62508338.py:12: DeprecationWarning: Passing an instance to utils.Rolling is deprecated and will be removed in a future release. Pass the class and forward constructor kwargs instead, e.g. utils.Rolling(stats.Mean, window_size=...) or utils.Rolling(stats.Var, window_size=..., ddof=0).
+<div class="language-text highlight"><pre><span></span><code>/tmp/ipykernel_4585/62508338.py:12: DeprecationWarning: Passing an instance to utils.Rolling is deprecated and will be removed in a future release. Pass the class and forward constructor kwargs instead, e.g. utils.Rolling(stats.Mean, window_size=...) or utils.Rolling(stats.Var, window_size=..., ddof=0).
   (&#39;last_7_mean&#39;, feature_extraction.TargetAgg(by=&#39;store_id&#39;, how=utils.Rolling(stats.Mean(), 7))),
-/tmp/ipykernel_4463/62508338.py:13: DeprecationWarning: Passing an instance to utils.Rolling is deprecated and will be removed in a future release. Pass the class and forward constructor kwargs instead, e.g. utils.Rolling(stats.Mean, window_size=...) or utils.Rolling(stats.Var, window_size=..., ddof=0).
+/tmp/ipykernel_4585/62508338.py:13: DeprecationWarning: Passing an instance to utils.Rolling is deprecated and will be removed in a future release. Pass the class and forward constructor kwargs instead, e.g. utils.Rolling(stats.Mean, window_size=...) or utils.Rolling(stats.Var, window_size=..., ddof=0).
   (&#39;last_14_mean&#39;, feature_extraction.TargetAgg(by=&#39;store_id&#39;, how=utils.Rolling(stats.Mean(), 14))),
-/tmp/ipykernel_4463/62508338.py:14: DeprecationWarning: Passing an instance to utils.Rolling is deprecated and will be removed in a future release. Pass the class and forward constructor kwargs instead, e.g. utils.Rolling(stats.Mean, window_size=...) or utils.Rolling(stats.Var, window_size=..., ddof=0).
+/tmp/ipykernel_4585/62508338.py:14: DeprecationWarning: Passing an instance to utils.Rolling is deprecated and will be removed in a future release. Pass the class and forward constructor kwargs instead, e.g. utils.Rolling(stats.Mean, window_size=...) or utils.Rolling(stats.Var, window_size=..., ddof=0).
   (&#39;last_21_mean&#39;, feature_extraction.TargetAgg(by=&#39;store_id&#39;, how=utils.Rolling(stats.Mean(), 21)))
 </code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>MAE: 8.413859
@@ -1511,11 +1512,11 @@ Uncompressing into /home/runner/river_data/Restaurants
 
 <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="n">datasets</span><span class="o">.</span><span class="n">Restaurants</span><span class="p">(),</span> <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="n">metrics</span><span class="o">.</span><span class="n">MAE</span><span class="p">())</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>/tmp/ipykernel_4463/3293120273.py:6: DeprecationWarning: Passing an instance to utils.Rolling is deprecated and will be removed in a future release. Pass the class and forward constructor kwargs instead, e.g. utils.Rolling(stats.Mean, window_size=...) or utils.Rolling(stats.Var, window_size=..., ddof=0).
+<div class="language-text highlight"><pre><span></span><code>/tmp/ipykernel_4585/3293120273.py:6: DeprecationWarning: Passing an instance to utils.Rolling is deprecated and will be removed in a future release. Pass the class and forward constructor kwargs instead, e.g. utils.Rolling(stats.Mean, window_size=...) or utils.Rolling(stats.Var, window_size=..., ddof=0).
   (&#39;last_7_mean&#39;, feature_extraction.TargetAgg(by=&#39;store_id&#39;, how=utils.Rolling(stats.Mean(), 7))),
-/tmp/ipykernel_4463/3293120273.py:7: DeprecationWarning: Passing an instance to utils.Rolling is deprecated and will be removed in a future release. Pass the class and forward constructor kwargs instead, e.g. utils.Rolling(stats.Mean, window_size=...) or utils.Rolling(stats.Var, window_size=..., ddof=0).
+/tmp/ipykernel_4585/3293120273.py:7: DeprecationWarning: Passing an instance to utils.Rolling is deprecated and will be removed in a future release. Pass the class and forward constructor kwargs instead, e.g. utils.Rolling(stats.Mean, window_size=...) or utils.Rolling(stats.Var, window_size=..., ddof=0).
   (&#39;last_14_mean&#39;, feature_extraction.TargetAgg(by=&#39;store_id&#39;, how=utils.Rolling(stats.Mean(), 14))),
-/tmp/ipykernel_4463/3293120273.py:8: DeprecationWarning: Passing an instance to utils.Rolling is deprecated and will be removed in a future release. Pass the class and forward constructor kwargs instead, e.g. utils.Rolling(stats.Mean, window_size=...) or utils.Rolling(stats.Var, window_size=..., ddof=0).
+/tmp/ipykernel_4585/3293120273.py:8: DeprecationWarning: Passing an instance to utils.Rolling is deprecated and will be removed in a future release. Pass the class and forward constructor kwargs instead, e.g. utils.Rolling(stats.Mean, window_size=...) or utils.Rolling(stats.Var, window_size=..., ddof=0).
   (&#39;last_21_mean&#39;, feature_extraction.TargetAgg(by=&#39;store_id&#39;, how=utils.Rolling(stats.Mean(), 21)))
 </code></pre></div>
 <pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
@@ -1539,11 +1540,11 @@ Uncompressing into /home/runner/river_data/Restaurants
 
 <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">datasets</span><span class="o">.</span><span class="n">Restaurants</span><span class="p">(),</span> <span class="n">model</span><span class="p">,</span> <span class="n">metrics</span><span class="o">.</span><span class="n">MAE</span><span class="p">())</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>/tmp/ipykernel_4463/1516519861.py:4: DeprecationWarning: Passing an instance to utils.Rolling is deprecated and will be removed in a future release. Pass the class and forward constructor kwargs instead, e.g. utils.Rolling(stats.Mean, window_size=...) or utils.Rolling(stats.Var, window_size=..., ddof=0).
+<div class="language-text highlight"><pre><span></span><code>/tmp/ipykernel_4585/1516519861.py:4: DeprecationWarning: Passing an instance to utils.Rolling is deprecated and will be removed in a future release. Pass the class and forward constructor kwargs instead, e.g. utils.Rolling(stats.Mean, window_size=...) or utils.Rolling(stats.Var, window_size=..., ddof=0).
   feature_extraction.TargetAgg(by=&#39;store_id&#39;, how=utils.Rolling(stats.Mean(), 7)),
-/tmp/ipykernel_4463/1516519861.py:5: DeprecationWarning: Passing an instance to utils.Rolling is deprecated and will be removed in a future release. Pass the class and forward constructor kwargs instead, e.g. utils.Rolling(stats.Mean, window_size=...) or utils.Rolling(stats.Var, window_size=..., ddof=0).
+/tmp/ipykernel_4585/1516519861.py:5: DeprecationWarning: Passing an instance to utils.Rolling is deprecated and will be removed in a future release. Pass the class and forward constructor kwargs instead, e.g. utils.Rolling(stats.Mean, window_size=...) or utils.Rolling(stats.Var, window_size=..., ddof=0).
   feature_extraction.TargetAgg(by=&#39;store_id&#39;, how=utils.Rolling(stats.Mean(), 14)),
-/tmp/ipykernel_4463/1516519861.py:6: DeprecationWarning: Passing an instance to utils.Rolling is deprecated and will be removed in a future release. Pass the class and forward constructor kwargs instead, e.g. utils.Rolling(stats.Mean, window_size=...) or utils.Rolling(stats.Var, window_size=..., ddof=0).
+/tmp/ipykernel_4585/1516519861.py:6: DeprecationWarning: Passing an instance to utils.Rolling is deprecated and will be removed in a future release. Pass the class and forward constructor kwargs instead, e.g. utils.Rolling(stats.Mean, window_size=...) or utils.Rolling(stats.Var, window_size=..., ddof=0).
   feature_extraction.TargetAgg(by=&#39;store_id&#39;, how=utils.Rolling(stats.Mean(), 21))
 </code></pre></div>
 <pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
@@ -1574,11 +1575,11 @@ LinearRegression
 
 <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">datasets</span><span class="o">.</span><span class="n">Restaurants</span><span class="p">(),</span> <span class="n">model</span><span class="p">,</span> <span class="n">metrics</span><span class="o">.</span><span class="n">MAE</span><span class="p">())</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>/tmp/ipykernel_4463/4037441292.py:3: DeprecationWarning: Passing an instance to utils.Rolling is deprecated and will be removed in a future release. Pass the class and forward constructor kwargs instead, e.g. utils.Rolling(stats.Mean, window_size=...) or utils.Rolling(stats.Var, window_size=..., ddof=0).
+<div class="language-text highlight"><pre><span></span><code>/tmp/ipykernel_4585/4037441292.py:3: DeprecationWarning: Passing an instance to utils.Rolling is deprecated and will be removed in a future release. Pass the class and forward constructor kwargs instead, e.g. utils.Rolling(stats.Mean, window_size=...) or utils.Rolling(stats.Var, window_size=..., ddof=0).
   feature_extraction.TargetAgg(by=&#39;store_id&#39;, how=utils.Rolling(stats.Mean(), 7)) + \
-/tmp/ipykernel_4463/4037441292.py:4: DeprecationWarning: Passing an instance to utils.Rolling is deprecated and will be removed in a future release. Pass the class and forward constructor kwargs instead, e.g. utils.Rolling(stats.Mean, window_size=...) or utils.Rolling(stats.Var, window_size=..., ddof=0).
+/tmp/ipykernel_4585/4037441292.py:4: DeprecationWarning: Passing an instance to utils.Rolling is deprecated and will be removed in a future release. Pass the class and forward constructor kwargs instead, e.g. utils.Rolling(stats.Mean, window_size=...) or utils.Rolling(stats.Var, window_size=..., ddof=0).
   feature_extraction.TargetAgg(by=&#39;store_id&#39;, how=utils.Rolling(stats.Mean(), 14)) + \
-/tmp/ipykernel_4463/4037441292.py:5: DeprecationWarning: Passing an instance to utils.Rolling is deprecated and will be removed in a future release. Pass the class and forward constructor kwargs instead, e.g. utils.Rolling(stats.Mean, window_size=...) or utils.Rolling(stats.Var, window_size=..., ddof=0).
+/tmp/ipykernel_4585/4037441292.py:5: DeprecationWarning: Passing an instance to utils.Rolling is deprecated and will be removed in a future release. Pass the class and forward constructor kwargs instead, e.g. utils.Rolling(stats.Mean, window_size=...) or utils.Rolling(stats.Var, window_size=..., ddof=0).
   feature_extraction.TargetAgg(by=&#39;store_id&#39;, how=utils.Rolling(stats.Mean(), 21)),
 </code></pre></div>
 <pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
@@ -1601,11 +1602,11 @@ LinearRegression
 
 <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">datasets</span><span class="o">.</span><span class="n">Restaurants</span><span class="p">(),</span> <span class="n">model</span><span class="p">,</span> <span class="n">metrics</span><span class="o">.</span><span class="n">MAE</span><span class="p">())</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>/tmp/ipykernel_4463/2780677158.py:3: DeprecationWarning: Passing an instance to utils.Rolling is deprecated and will be removed in a future release. Pass the class and forward constructor kwargs instead, e.g. utils.Rolling(stats.Mean, window_size=...) or utils.Rolling(stats.Var, window_size=..., ddof=0).
+<div class="language-text highlight"><pre><span></span><code>/tmp/ipykernel_4585/2780677158.py:3: DeprecationWarning: Passing an instance to utils.Rolling is deprecated and will be removed in a future release. Pass the class and forward constructor kwargs instead, e.g. utils.Rolling(stats.Mean, window_size=...) or utils.Rolling(stats.Var, window_size=..., ddof=0).
   feature_extraction.TargetAgg(by=&#39;store_id&#39;, how=utils.Rolling(stats.Mean(), 7)) +
-/tmp/ipykernel_4463/2780677158.py:4: DeprecationWarning: Passing an instance to utils.Rolling is deprecated and will be removed in a future release. Pass the class and forward constructor kwargs instead, e.g. utils.Rolling(stats.Mean, window_size=...) or utils.Rolling(stats.Var, window_size=..., ddof=0).
+/tmp/ipykernel_4585/2780677158.py:4: DeprecationWarning: Passing an instance to utils.Rolling is deprecated and will be removed in a future release. Pass the class and forward constructor kwargs instead, e.g. utils.Rolling(stats.Mean, window_size=...) or utils.Rolling(stats.Var, window_size=..., ddof=0).
   feature_extraction.TargetAgg(by=&#39;store_id&#39;, how=utils.Rolling(stats.Mean(), 14)) +
-/tmp/ipykernel_4463/2780677158.py:5: DeprecationWarning: Passing an instance to utils.Rolling is deprecated and will be removed in a future release. Pass the class and forward constructor kwargs instead, e.g. utils.Rolling(stats.Mean, window_size=...) or utils.Rolling(stats.Var, window_size=..., ddof=0).
+/tmp/ipykernel_4585/2780677158.py:5: DeprecationWarning: Passing an instance to utils.Rolling is deprecated and will be removed in a future release. Pass the class and forward constructor kwargs instead, e.g. utils.Rolling(stats.Mean, window_size=...) or utils.Rolling(stats.Var, window_size=..., ddof=0).
   feature_extraction.TargetAgg(by=&#39;store_id&#39;, how=utils.Rolling(stats.Mean(), 21))
 </code></pre></div>
 <pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
@@ -1624,7 +1625,7 @@ LinearRegression
 
 <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">datasets</span><span class="o">.</span><span class="n">Restaurants</span><span class="p">(),</span> <span class="n">model</span><span class="p">,</span> <span class="n">metrics</span><span class="o">.</span><span class="n">MAE</span><span class="p">())</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>/tmp/ipykernel_4463/3016371111.py:4: DeprecationWarning: Passing an instance to utils.Rolling is deprecated and will be removed in a future release. Pass the class and forward constructor kwargs instead, e.g. utils.Rolling(stats.Mean, window_size=...) or utils.Rolling(stats.Var, window_size=..., ddof=0).
+<div class="language-text highlight"><pre><span></span><code>/tmp/ipykernel_4585/3016371111.py:4: DeprecationWarning: Passing an instance to utils.Rolling is deprecated and will be removed in a future release. Pass the class and forward constructor kwargs instead, e.g. utils.Rolling(stats.Mean, window_size=...) or utils.Rolling(stats.Var, window_size=..., ddof=0).
   model += feature_extraction.TargetAgg(by=&#39;store_id&#39;, how=utils.Rolling(stats.Mean(), n))
 </code></pre></div>
 <pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
