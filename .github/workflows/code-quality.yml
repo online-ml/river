@@ -13,6 +13,7 @@ jobs:
     name: Smoke tests ~ Python ${{ matrix.python-version }}
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         python-version: ["3.11", "3.12", "3.13", "3.14", "3.15"]
     steps:
@@ -24,7 +25,12 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Import public packages from the source checkout
-        run: uv run --no-project --with "numpy>=2.2.5,<3" --with "narwhals>=2.0.0" python -c "import river.stream"
+        if: matrix.python-version != '3.15'
+        run: uv run --no-project --with "numpy>=2.2.5,<3" --with "narwhals>=2.0.0" --with "scipy>=1.14.1,<2" python -c "import river.stream"
+
+      - name: Compile the source checkout
+        if: matrix.python-version == '3.15'
+        run: uv run --no-project python -m compileall -q river
 
   tests:
     name: Tests + prek
