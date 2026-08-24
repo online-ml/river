@@ -152,9 +152,7 @@ class MiniBatchClassifier(Classifier):
         # Read native column labels so non-string class labels (e.g. int) are preserved.
         native_proba = nw.to_native(proba_nw)
         native_cols = list(
-            native_proba.columns
-            if hasattr(native_proba, "columns")
-            else proba_nw.columns
+            native_proba.columns if hasattr(native_proba, "columns") else proba_nw.columns
         )
         labels = np.asarray(native_cols)[arr.argmax(axis=1)]
         Xnw = nw.from_native(X, eager_only=True)
