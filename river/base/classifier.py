@@ -145,11 +145,11 @@ class MiniBatchClassifier(Classifier):
         proba_native = self.predict_proba_many(X)
         proba_nw = nw.from_native(proba_native, eager_only=True)
         # Equivalent to pandas .empty: no rows or no columns (e.g. untrained model).
+        # Return the probability frame as-is to preserve the caller's backend and index.
         if len(proba_nw) == 0 or len(proba_nw.columns) == 0:
-            ns = nw.get_native_namespace(proba_nw)
-            return nw.new_series(name=None, values=[], backend=ns).to_native()  # type: ignore[arg-type]
+            return proba_native  # type: ignore[return-value]
         arr = proba_nw.to_numpy()
-        # Use native column labels so non-string class labels (e.g. int) are preserved.
+        # Read native column labels so non-string class labels (e.g. int) are preserved.
         native_proba = nw.to_native(proba_nw)
         native_cols = list(
             native_proba.columns
@@ -159,4 +159,5 @@ class MiniBatchClassifier(Classifier):
         labels = np.asarray(native_cols)[arr.argmax(axis=1)]
         Xnw = nw.from_native(X, eager_only=True)
         ns = nw.get_native_namespace(Xnw)
-        return nw.new_series(name=None, values=labels, backend=ns).to_native()  # type: ignore[arg-type]
+        series = nw.new_series(name=None, values=labels, backend=ns)  # type: ignore[arg-type]
+        return typing.cast("IntoSeries", series.to_native())
