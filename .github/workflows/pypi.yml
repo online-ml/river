@@ -13,7 +13,7 @@ jobs:
     strategy:
       matrix:
         linux_tag: ["manylinux", "musllinux"]
-        python-version: ["311", "312", "313", "314"]
+        python-version: ["311", "312", "313", "314", "315"]
     steps:
       - uses: actions/checkout@v4
       - name: Install uv
@@ -23,7 +23,7 @@ jobs:
         with:
           platforms: all
       - name: Build wheels
-        uses: pypa/cibuildwheel@v3.4.1
+        uses: pypa/cibuildwheel@v4.2.0
         timeout-minutes: 720
         env:
           CIBW_BUILD: "cp${{ matrix.python-version }}-${{ matrix.linux_tag }}_*"
@@ -39,17 +39,27 @@ jobs:
     strategy:
       matrix:
         os: [macos-15]
-        python-version: ["311", "312", "313", "314"]
+        python-version: ["311", "312", "313", "314", "315"]
     steps:
       - uses: actions/checkout@v4
       - name: Install uv
         uses: astral-sh/setup-uv@v7
+      - name: Install Rust
+        run: |
+          curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain=none --profile=minimal -y
+          "$CARGO_HOME/bin/rustup" component add cargo
+        env:
+          CARGO_HOME: ${{ runner.temp }}/river-cargo
+          RUSTUP_HOME: ${{ runner.temp }}/river-rustup
       - name: Build wheels
-        uses: pypa/cibuildwheel@v3.4.1
+        uses: pypa/cibuildwheel@v4.2.0
         timeout-minutes: 720
         env:
+          CARGO_HOME: ${{ runner.temp }}/river-cargo
           CIBW_BUILD: "cp${{ matrix.python-version }}-*"
           CIBW_ARCHS_MACOS: "universal2"
+          CIBW_ENVIRONMENT_MACOS: 'PATH="$CARGO_HOME/bin:$PATH" MACOSX_DEPLOYMENT_TARGET="10.13"'
+          RUSTUP_HOME: ${{ runner.temp }}/river-rustup
       - uses: actions/upload-artifact@v5
         with:
           name: cibw-wheels-${{ matrix.os }}-${{ matrix.python-version }}-${{ strategy.job-index }}
@@ -61,13 +71,13 @@ jobs:
     strategy:
       matrix:
         os: [windows-2025]
-        python-version: ["311", "312", "313", "314"]
+        python-version: ["311", "312", "313", "314", "315"]
     steps:
       - uses: actions/checkout@v4
       - name: Install uv
         uses: astral-sh/setup-uv@v7
       - name: Build wheels
-        uses: pypa/cibuildwheel@v3.4.1
+        uses: pypa/cibuildwheel@v4.2.0
         timeout-minutes: 720
         env:
           CIBW_BUILD: "cp${{ matrix.python-version }}-*"
@@ -101,7 +111,7 @@ jobs:
         with:
           platforms: all
       - name: Build wheels
-        uses: pypa/cibuildwheel@v3.4.1
+        uses: pypa/cibuildwheel@v4.2.0
         timeout-minutes: 720
         env:
           CIBW_BUILD: "cp311-${{ matrix.linux_tag }}_*"
@@ -122,12 +132,22 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install uv
         uses: astral-sh/setup-uv@v7
+      - name: Install Rust
+        run: |
+          curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain=none --profile=minimal -y
+          "$CARGO_HOME/bin/rustup" component add cargo
+        env:
+          CARGO_HOME: ${{ runner.temp }}/river-cargo
+          RUSTUP_HOME: ${{ runner.temp }}/river-rustup
       - name: Build wheels
-        uses: pypa/cibuildwheel@v3.4.1
+        uses: pypa/cibuildwheel@v4.2.0
         timeout-minutes: 720
         env:
+          CARGO_HOME: ${{ runner.temp }}/river-cargo
           CIBW_BUILD: "cp311-*"
           CIBW_ARCHS_MACOS: "universal2"
+          CIBW_ENVIRONMENT_MACOS: 'PATH="$CARGO_HOME/bin:$PATH" MACOSX_DEPLOYMENT_TARGET="10.13"'
+          RUSTUP_HOME: ${{ runner.temp }}/river-rustup
       - uses: actions/upload-artifact@v5
         with:
           name: cibw-wheels-abi3-macos
@@ -143,7 +163,7 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v7
       - name: Build wheels
-        uses: pypa/cibuildwheel@v3.4.1
+        uses: pypa/cibuildwheel@v4.2.0
         timeout-minutes: 720
         env:
           CIBW_BUILD: "cp311-*"
@@ -206,7 +226,7 @@ jobs:
           rustup toolchain install "${{ matrix.rust_toolchain }}" \
             --profile minimal --target wasm32-unknown-emscripten ${{ matrix.rust_component }}
       - name: Build wheels
-        uses: pypa/cibuildwheel@v4.1.0
+        uses: pypa/cibuildwheel@v4.2.0
         timeout-minutes: 720
         env:
           CIBW_PLATFORM: pyodide

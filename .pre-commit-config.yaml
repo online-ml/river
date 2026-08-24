@@ -1,4 +1,4 @@
-files: river
+files: ^(river/|tests/|conftest\.py$)
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.4.0
@@ -28,4 +28,11 @@ repos:
         entry: uv run mypy --config-file=pyproject.toml --python-version=3.11 --implicit-optional
         language: system
         types_or: [python, pyi]
+        require_serial: true
+      - id: lint-imports
+        name: lint-imports
+        entry: uv run lint-imports
+        language: system
+        types_or: [python, pyi]
+        pass_filenames: false
         require_serial: true

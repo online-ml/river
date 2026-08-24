@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 import collections
+import typing
 
 import numpy as np
 
-from river import optim
-from river.optim.base import DictLike
+from river import base, optim
+from river.optim.base import DictLike, VectorLike
 
 __all__ = ["NesterovMomentum"]
 
@@ -41,14 +42,15 @@ class NesterovMomentum(optim.base.Optimizer):
 
     """
 
-    def __init__(self, lr=0.1, rho=0.9):
+    def __init__(self, lr: int | float | optim.base.Scheduler = 0.1, rho: float = 0.9):
         super().__init__(lr)
         self.rho = rho
-        self.s = collections.defaultdict(float)
+        self.s: dict[base.typing.FeatureName, typing.Any] = collections.defaultdict(float)
 
-    def look_ahead(self, w):
+    def look_ahead(self, w: DictLike | VectorLike) -> DictLike | VectorLike:
         # `w` may be a dict-like (iterating yields keys) or a NumPy array (iterate its indices).
-        for i in range(len(w)) if isinstance(w, np.ndarray) else w:
+        indices: typing.Iterable[typing.Any] = range(len(w)) if isinstance(w, np.ndarray) else w
+        for i in indices:
             w[i] -= self.rho * self.s[i]
 
         return w

@@ -6,7 +6,7 @@ import typing
 import numpy as np
 
 from river import optim, utils
-from river.optim.base import DictLike
+from river.optim.base import DictLike, VectorLike
 
 __all__ = ["RMSProp"]
 
@@ -47,7 +47,9 @@ class RMSProp(optim.base.Optimizer):
 
     """
 
-    def __init__(self, lr=0.1, rho=0.9, eps=1e-8):
+    def __init__(
+        self, lr: int | float | optim.base.Scheduler = 0.1, rho: float = 0.9, eps: float = 1e-8
+    ):
         super().__init__(lr)
         self.rho = rho
         self.eps = eps
@@ -66,14 +68,17 @@ class RMSProp(optim.base.Optimizer):
 
         return w
 
-    def _step_with_vector(self, w, g):
+    def _step_with_vector(self, w: VectorLike, g: VectorLike) -> VectorLike:
         if self.g2 is None:
             if isinstance(w, np.ndarray):
                 self.g2 = np.zeros_like(w)
             else:
                 self.g2 = utils.VectorDict()
 
-        self.g2 = self.rho * self.g2 + (1 - self.rho) * g**2
+        if isinstance(g, utils.VectorDict):
+            self.g2.update_ema(g, self.rho, square=True)
+        else:
+            self.g2 = self.rho * self.g2 + (1 - self.rho) * g**2
         w -= self.learning_rate / (self.g2 + self.eps) ** 0.5 * g
 
         return w

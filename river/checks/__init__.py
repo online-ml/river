@@ -62,7 +62,6 @@ def _yield_datasets(model: Estimator, scale: int = 1):
     from sklearn import datasets as sk_datasets
 
     from river import base, compose, datasets, preprocessing, stream
-    from river.anomaly.base import AnomalyDetector
     from river.time_series.base import Forecaster
 
     # Time series forecasters have a specialized interface: learn_one(y, x=None) and
@@ -134,7 +133,7 @@ def _yield_datasets(model: Estimator, scale: int = 1):
             yield datasets.ImageSegments().take(200 * scale)
 
     # Anomaly detection
-    elif isinstance(model, AnomalyDetector):
+    elif isinstance(model, base.AnomalyDetector):
         yield datasets.CreditCard().take(1000 * scale)
 
     # Plain transformers (no other base class matched above). These were
@@ -157,7 +156,6 @@ def yield_checks(model: Estimator) -> typing.Iterator[typing.Callable]:
     """
 
     from river import base, utils
-    from river.anomaly.base import AnomalyDetector
     from river.time_series.base import Forecaster
 
     # General checks
@@ -230,7 +228,7 @@ def yield_checks(model: Estimator) -> typing.Iterator[typing.Callable]:
     if isinstance(model, Ranker):
         yield reco.check_reco_routine
 
-    if isinstance(model, AnomalyDetector):
+    if isinstance(model, base.AnomalyDetector):
         dataset_checks.append(anomaly.check_roc_auc)
 
     if isinstance(model, Forecaster):

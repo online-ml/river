@@ -3,7 +3,7 @@ from __future__ import annotations
 import math
 import typing
 
-from river import anomaly, utils
+from river import base, utils
 from river.neighbors import LazySearch
 from river.neighbors.base import BaseNN, FunctionWrapper
 from river.utils.vectordict import euclidean_distance_tuple as _euclidean_tuple_distance
@@ -14,7 +14,7 @@ if typing.TYPE_CHECKING:
 __all__ = ["LocalOutlierFactor"]
 
 
-class LocalOutlierFactor(anomaly.base.AnomalyDetector):
+class LocalOutlierFactor(base.AnomalyDetector):
     """Local Outlier Factor (LOF).
 
     The LOF of a sample measures how isolated it is relative to the density of its neighbors:

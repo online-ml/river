@@ -1,6 +1,6 @@
 [project]
 name = "river"
-version = "0.25.0"
+version = "0.26.1"
 description = "Online machine learning in Python"
 authors = [{ name = "Max Halford", email = "maxhalford25@gmail.com" }]
 requires-python = ">=3.11"
@@ -34,7 +34,6 @@ include = [
     { path = "river/datasets/*.gz",  format = ["sdist", "wheel"] },
     { path = "river/datasets/*.zip", format = ["sdist", "wheel"] },
     { path = "river/drift/datasets/*.csv", format = ["sdist", "wheel"] },
-    { path = "river/stream/*.zip", format = ["sdist", "wheel"] },
 ]
 
 [dependency-groups]
@@ -55,6 +54,7 @@ dev = [
     "mike @ git+https://github.com/squidfunk/mike.git",
     "polars>=1.1.0",
     "pyarrow>=11.0.0",
+    "import-linter>=2.13",
 ]
 compat = [
     "scikit-learn>=1.5.1,<2",
@@ -102,7 +102,8 @@ default-groups = [
 [tool.cibuildwheel]
 build-frontend = "build[uv]"
 skip = ["*_i686", "*-win32", "*-musllinux_i686"]
-test-command = "python -c \"import river\""
+test-skip = ["*-*linux_ppc64le", "cp315-*"]
+test-command = "python -c \"import river.anomaly, river.datasets, river.drift, river.stream, river.tree\""
 
 [tool.cibuildwheel.environment]
 PATH = "$HOME/.cargo/bin:$PATH"
@@ -114,6 +115,10 @@ PATH = "$HOME/.cargo/bin:$PATH"
 [[tool.cibuildwheel.overrides]]
 select = "*-*linux_*"
 before-build = "curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain=none --profile=minimal -y && rustup show"
+
+[[tool.cibuildwheel.overrides]]
+select = "*-musllinux_ppc64le"
+build-frontend = "build"
 
 [[tool.cibuildwheel.overrides]]
 select = ["*-macosx_*"]
@@ -192,7 +197,7 @@ quote-style = "double"
 indent-style = "space"
 
 [tool.mypy]
-files = "river"
+files = ["river", "tests", "conftest.py"]
 strict = true
 
 [[tool.mypy.overrides]]
@@ -245,7 +250,6 @@ ignore_missing_imports = true
 # Disable strict mode for all non fully-typed modules
 module = [
     "river.metrics.*",
-    "river.optim.*",
     "river.datasets.*",
     "river.tree.*",
     "river.preprocessing.*",
@@ -277,7 +281,7 @@ module = [
     "river.imblearn.*",
     "river.feature_selection.*",
     "river.active.*",
-    "river.test_estimators",
+    "tests.*",
 ]
 # The strict option is global, the checks must be disabled one by one
 warn_unused_ignores = false
@@ -288,3 +292,45 @@ allow_untyped_calls = true
 allow_incomplete_defs = true
 allow_untyped_defs = true
 warn_return_any = false
+
+[tool.importlinter]
+root_packages = ["river"]
+exclude_type_checking_imports = true
+
+[[tool.importlinter.contracts]]
+name = "River sub-packages form a DAG"
+type = "acyclic_siblings"
+ancestors = ["river"]
+# TODO: we ignore all these function-local imports for now
+# as refactoring them would require a lot of work.
+# import-linter has no "ignore function-local" setting
+# so we need to list them manually, which is brittle.
+# Long-term solution would be to prevent function-local imports
+# (enable ruff PLC0415) and solve all the cyclic dependencies
+# they create.
+ignore_imports = [
+    "river.active.entropy -> river.tree",
+    "river.anomaly.filter -> river.preprocessing",
+    "river.base.base -> river.utils",
+    "river.base.estimator -> river.compose",
+    "river.base.transformer -> river.compose",
+    "river.base.viz -> river.compose",
+    "river.checks.clf -> river.active.base",
+    "river.checks.common -> river.active.base",
+    "river.conf.jackknife -> river.linear_model",
+    "river.conf.jackknife -> river.preprocessing",
+    "river.drift.retrain -> river.linear_model",
+    "river.drift.retrain -> river.naive_bayes",
+    "river.drift.retrain -> river.preprocessing",
+    "river.evaluate.forecasting -> river.time_series",
+    "river.evaluate.progressive_validation -> river.active.base",
+    "river.model_selection.base -> river.compose",
+    "river.model_selection.base -> river.linear_model",
+    "river.model_selection.base -> river.optim",
+    "river.model_selection.base -> river.preprocessing",
+    "river.multioutput.chain -> river.neighbors",
+    "river.multioutput.encoder -> river.tree",
+    "river.preprocessing.pred_clipper -> river.linear_model",
+    "river.time_series -> river.evaluate",
+    "river.tree.base -> river.tree.viz",
+]

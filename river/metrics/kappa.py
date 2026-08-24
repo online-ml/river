@@ -50,15 +50,15 @@ class CohenKappa(metrics.base.MultiClassMetric):
 
     def get(self):
         try:
-            p0 = self.cm.total_true_positives / self.cm.n_samples  # same as accuracy
+            p0 = self.cm.total_true_positives / self.cm.total_weight  # same as accuracy
         except ZeroDivisionError:
             p0 = 0
 
         pe = 0
 
         for c in self.cm.classes:
-            estimation_row = self.cm.sum_row[c] / self.cm.n_samples
-            estimation_col = self.cm.sum_col[c] / self.cm.n_samples
+            estimation_row = self.cm.sum_row[c] / self.cm.total_weight
+            estimation_col = self.cm.sum_col[c] / self.cm.total_weight
             pe += estimation_row * estimation_col
 
         try:
