@@ -142,15 +142,21 @@ class MiniBatchClassifier(Classifier):
         # individual basis.
         import numpy as np
 
-        from river.utils.dataframe import to_native_series
-
         proba_native = self.predict_proba_many(X)
         proba_nw = nw.from_native(proba_native, eager_only=True)
-        if len(proba_nw) == 0:
-            # Return an empty series in the caller's backend.
-            return typing.cast("IntoSeries", to_native_series([], name=None, like=proba_nw))
-        classes = proba_nw.columns
+        # Equivalent to pandas .empty: no rows or no columns (e.g. untrained model).
+        if len(proba_nw) == 0 or len(proba_nw.columns) == 0:
+            ns = nw.get_native_namespace(proba_nw)
+            return nw.new_series(name=None, values=[], backend=ns).to_native()  # type: ignore[arg-type]
         arr = proba_nw.to_numpy()
-        labels = np.array(classes, dtype=object)[arr.argmax(axis=1)]
+        # Use native column labels so non-string class labels (e.g. int) are preserved.
+        native_proba = nw.to_native(proba_nw)
+        native_cols = list(
+            native_proba.columns
+            if hasattr(native_proba, "columns")
+            else proba_nw.columns
+        )
+        labels = np.asarray(native_cols)[arr.argmax(axis=1)]
         Xnw = nw.from_native(X, eager_only=True)
-        return typing.cast("IntoSeries", to_native_series(labels, name=None, like=Xnw))
+        ns = nw.get_native_namespace(Xnw)
+        return nw.new_series(name=None, values=labels, backend=ns).to_native()  # type: ignore[arg-type]
