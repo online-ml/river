@@ -4,12 +4,14 @@ import abc
 import typing
 from typing import Any
 
+import narwhals.stable.v2 as nw
+
 from river import base
 
 from . import estimator
 
 if typing.TYPE_CHECKING:
-    import pandas as pd
+    from narwhals.stable.v2.typing import IntoDataFrame, IntoSeries
 
 
 class Classifier(estimator.Estimator):
@@ -86,29 +88,32 @@ class MiniBatchClassifier(Classifier):
     """A classifier that can operate on mini-batches."""
 
     @abc.abstractmethod
-    def learn_many(self, X: pd.DataFrame, y: pd.Series) -> None:
+    def learn_many(self, X: IntoDataFrame, y: IntoSeries) -> None:
         """Update the model with a mini-batch of features `X` and boolean targets `y`.
 
         Parameters
         ----------
         X
-            A dataframe of features.
+            A dataframe of features. Any narwhals-supported eager backend is accepted
+            (pandas, polars, PyArrow, etc.).
         y
             A series of boolean target values.
 
         """
 
-    def predict_proba_many(self, X: pd.DataFrame) -> pd.DataFrame:
+    def predict_proba_many(self, X: IntoDataFrame) -> IntoDataFrame:
         """Predict the outcome probabilities for each given sample.
 
         Parameters
         ----------
         X
-            A dataframe of features.
+            A dataframe of features. Any narwhals-supported eager backend is accepted
+            (pandas, polars, PyArrow, etc.).
 
         Returns
         -------
-        A dataframe with probabilities of `True` and `False` for each sample.
+        A dataframe with probabilities of `True` and `False` for each sample, in the same
+        backend as `X`.
 
         """
 
@@ -118,23 +123,34 @@ class MiniBatchClassifier(Classifier):
         # that a classifier does not support predict_proba_many.
         raise NotImplementedError
 
-    def predict_many(self, X: pd.DataFrame) -> pd.Series:
+    def predict_many(self, X: IntoDataFrame) -> IntoSeries:
         """Predict the outcome for each given sample.
 
         Parameters
         ----------
         X
-            A dataframe of features.
+            A dataframe of features. Any narwhals-supported eager backend is accepted
+            (pandas, polars, PyArrow, etc.).
 
         Returns
         -------
-        The predicted labels.
+        The predicted labels, in the same backend as `X`.
 
         """
 
         # The following code acts as a default for each classifier, and may be overridden on an
         # individual basis.
-        y_pred = self.predict_proba_many(X)
-        if y_pred.empty:
-            return y_pred
-        return y_pred.idxmax(axis="columns")
+        import numpy as np
+
+        from river.utils.dataframe import to_native_series
+
+        proba_native = self.predict_proba_many(X)
+        proba_nw = nw.from_native(proba_native, eager_only=True)
+        if len(proba_nw) == 0:
+            # Return an empty series in the caller's backend.
+            return typing.cast("IntoSeries", to_native_series([], name=None, like=proba_nw))
+        classes = proba_nw.columns
+        arr = proba_nw.to_numpy()
+        labels = np.array(classes, dtype=object)[arr.argmax(axis=1)]
+        Xnw = nw.from_native(X, eager_only=True)
+        return typing.cast("IntoSeries", to_native_series(labels, name=None, like=Xnw))

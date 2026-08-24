@@ -7,7 +7,7 @@ from typing import Any
 from river import base
 
 if typing.TYPE_CHECKING:
-    import pandas as pd
+    from narwhals.stable.v2.typing import IntoDataFrame, IntoSeries
 
     from river import compose
 
@@ -116,21 +116,22 @@ class MiniBatchTransformer(Transformer):
     """A transform that can operate on mini-batches."""
 
     @abc.abstractmethod
-    def transform_many(self, X: pd.DataFrame) -> pd.DataFrame:
+    def transform_many(self, X: IntoDataFrame) -> IntoDataFrame:
         """Transform a mini-batch of features.
 
         Parameters
         ----------
         X
-            A DataFrame of features.
+            A DataFrame of features. Any narwhals-supported eager backend is accepted
+            (pandas, polars, PyArrow, etc.).
 
         Returns
         -------
-        A new DataFrame.
+        A new DataFrame in the same backend as `X`.
 
         """
 
-    def learn_many(self, X: pd.DataFrame) -> None:
+    def learn_many(self, X: IntoDataFrame) -> None:
         """Update with a mini-batch of features.
 
         A lot of transformers don't actually have to do anything during the `learn_many` step
@@ -141,7 +142,8 @@ class MiniBatchTransformer(Transformer):
         Parameters
         ----------
         X
-            A DataFrame of features.
+            A DataFrame of features. Any narwhals-supported eager backend is accepted
+            (pandas, polars, PyArrow, etc.).
 
         """
         return
@@ -155,30 +157,32 @@ class MiniBatchSupervisedTransformer(Transformer):
         return True
 
     @abc.abstractmethod
-    def learn_many(self, X: pd.DataFrame, y: pd.Series) -> None:
+    def learn_many(self, X: IntoDataFrame, y: IntoSeries) -> None:
         """Update the model with a mini-batch of features `X` and targets `y`.
 
         Parameters
         ----------
         X
-            A dataframe of features.
+            A dataframe of features. Any narwhals-supported eager backend is accepted
+            (pandas, polars, PyArrow, etc.).
         y
-            A series of boolean target values.
+            A series of target values.
 
         """
         return
 
     @abc.abstractmethod
-    def transform_many(self, X: pd.DataFrame) -> pd.DataFrame:
+    def transform_many(self, X: IntoDataFrame) -> IntoDataFrame:
         """Transform a mini-batch of features.
 
         Parameters
         ----------
         X
-            A DataFrame of features.
+            A DataFrame of features. Any narwhals-supported eager backend is accepted
+            (pandas, polars, PyArrow, etc.).
 
         Returns
         -------
-        A new DataFrame.
+        A new DataFrame in the same backend as `X`.
 
         """
