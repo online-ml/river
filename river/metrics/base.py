@@ -3,8 +3,9 @@ from __future__ import annotations
 import abc
 import collections
 import operator
+import typing
 
-from river import base, stats, utils
+from river import base, reco, stats, utils
 
 __all__ = [
     "BinaryMetric",
@@ -14,6 +15,7 @@ __all__ = [
     "MultiClassMetric",
     "RegressionMetric",
     "WrapperMetric",
+    "RankingMetric",
 ]
 
 
@@ -203,6 +205,49 @@ class RegressionMetric(Metric):
                 "are not compatible"
             )
         return Metrics([self, other])
+
+
+class RankingMetric(Metric):
+    """Mother class of all ranking metric
+
+    Parameters
+    ----------
+    k
+        k to calculate top k metrics: only consider the highest k scores in the ranking.
+    """
+
+    _fmt = ".2%"  # output a percentage, e.g. 0.427 becomes "42,7%"
+
+    def __init__(self, k=None):
+        if k is not None and k <= 0:
+            raise ValueError('k must be positive or None')
+        self.k = k
+
+    @abc.abstractmethod
+    def update(self, y_true, y_pred) -> None:
+        """Update the metric"""
+
+    @abc.abstractmethod
+    def revert(self, y_true, y_pred) -> None:
+        """Revert the metric"""
+
+    @property
+    def bigger_is_better(self):
+        return True
+
+    def works_with(self, model) -> bool:
+        return isinstance(model, reco.base.Ranker)
+
+    def __add__(self, other) -> Metrics:
+        if not isinstance(other, RankingMetric):
+            raise ValueError(
+                f"{self.__class__.__name__} and {other.__class__.__name__} metrics "
+                "are not compatible"
+            )
+        return Metrics([self, other])
+            
+    def _resolve_k(self, y_pred):
+        return len(y_pred) if self.k is None else self.k
 
 
 class Metrics(Metric, collections.UserList):
