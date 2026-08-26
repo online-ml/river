@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import csv
 import io
+import random
 import typing
 from datetime import datetime
 from functools import partial
@@ -9,6 +10,7 @@ from functools import partial
 import pytest
 
 from river import stream
+from river.stream.iter_csv import DictReader
 
 if typing.TYPE_CHECKING:
     import pathlib
@@ -76,6 +78,12 @@ CONVERTER_CASES: dict[str, tuple[bool, list[Row]]] = {
         ],
     ),
 }
+
+
+def test_dict_reader_can_be_instantiated() -> None:
+    reader = DictReader(fraction=1, rng=random.Random(42), f=io.StringIO(CONTENT))
+
+    assert next(reader) == {"name": "a", "year": "2016", "rating": "9.5"}
 
 
 @pytest.mark.parametrize(("make", "expected"), FIRST_ROW_CASES.values(), ids=FIRST_ROW_CASES)
