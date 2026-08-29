@@ -19,7 +19,7 @@ if typing.TYPE_CHECKING:
     # `csv.DictReader` only became subscriptable at runtime in Python 3.12.
     _DictReader = csv.DictReader[FeatureName]
 else:
-    # TODO(Unassigned): Remove branching once min python is bumped to 3.12
+    # TODO(Unassigned): Remove branching once min python is bumped to 3.12
     _DictReader = csv.DictReader
 
 __all__ = ["iter_csv"]
