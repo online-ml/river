@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+import contextlib
 import glob
 import inspect
 import os
 import pickle
 import platform
+import tempfile
 import typing
 
 from river import utils
@@ -19,7 +21,7 @@ T = typing.TypeVar("T")
 CACHE_SUFFIX = ".river_cache.pkl"
 """Extension of a cached stream, which is also what identifies one in a shared directory."""
 
-_SYSTEM_TO_DIR: dict[str, str] = {"Linux": "/tmp", "Darwin": "/tmp", "Windows": "C:\\TEMP"}
+_SYSTEM_TO_TMP_DIR: dict[str, str] = {"Linux": "/tmp", "Darwin": "/tmp", "Windows": "C:\\TEMP"}
 """Where to cache streams on each `platform.system()`."""
 
 
@@ -96,7 +98,7 @@ class Cache:
         # Guess the directory from the system
         if directory is None:
             system = platform.system()
-            if (directory := _SYSTEM_TO_DIR.get(system)) is None:
+            if (directory := _SYSTEM_TO_TMP_DIR.get(system)) is None:
                 raise ValueError(
                     f"There is no default directory defined for {system} systems, "
                     "please provide one manually"
@@ -148,12 +150,20 @@ class Cache:
             yield from self[key]
             return
 
-        with open(path, "wb") as f:
-            pickler = pickle.Pickler(f)
-            for el in stream:
-                pickler.dump(el)
-                yield el
-            self.keys.add(key)
+        descriptor, partial_path = tempfile.mkstemp(dir=self.directory, suffix=".part")
+        try:
+            with os.fdopen(descriptor, "wb") as file:
+                pickler = pickle.Pickler(file)
+                for element in stream:
+                    pickler.dump(element)
+                    yield element
+        except BaseException:
+            with contextlib.suppress(OSError):
+                os.remove(partial_path)
+            raise
+
+        os.replace(partial_path, path)
+        self.keys.add(key)
 
     def __getitem__(self, key: str) -> Iterator[typing.Any]:
         """Iterates over the stream associated with the given key.
@@ -164,9 +174,9 @@ class Cache:
             The name the stream was cached under.
 
         """
-        with open(self._get_path(key), "rb") as f:
-            unpickler = pickle.Unpickler(f)
-            while f.peek(1):
+        with open(self._get_path(key), "rb") as file:
+            unpickler = pickle.Unpickler(file)
+            while file.peek(1):
                 yield unpickler.load()
 
     def clear(self, key: str) -> None:
@@ -188,8 +198,8 @@ class Cache:
             self.keys.remove(key)
 
     def __repr__(self) -> str:
-        parts = (
+        lines = (
             f"{key} - {utils.pretty.humanize_bytes(os.path.getsize(self._get_path(key)))}"
             for key in self.keys
         )
-        return "\n".join((self.directory, *parts))
+        return "\n".join((self.directory, *lines))

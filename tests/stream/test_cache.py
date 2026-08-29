@@ -32,6 +32,12 @@ def recording_source(consumed: list[int], n: int = 3) -> Iterator[int]:
         yield i
 
 
+def failing_source() -> Iterator[int]:
+    """A stream that dies halfway through, i.e. after the cache file has been created."""
+    yield 1
+    yield 1 // 0
+
+
 def read_key(cache: stream.Cache, key: str) -> None:
     """Iterates a cached stream, which is when its file is actually opened."""
     _ = list(cache[key])
@@ -150,6 +156,8 @@ def test_keyless_call_raises(
     with pytest.raises(error, match=match):
         _ = list(stream.Cache(directory=tmp_path)(source))
 
+    assert list(tmp_path.iterdir()) == []
+
 
 def test_getitem_iterates_a_cached_key(tmp_path: Path) -> None:
     cache = stream.Cache(directory=tmp_path)
@@ -236,7 +244,6 @@ def test_repr(tmp_path: Path, keys: list[str]) -> None:
     )
 
 
-@pytest.mark.xfail(strict=True, reason="an abandoned first pass leaves a truncated cache file")
 def test_abandoned_stream_does_not_poison_the_cache(tmp_path: Path) -> None:
     cache = stream.Cache(directory=tmp_path)
     rows = cache([1, 2, 3, 4, 5], key="k")
@@ -245,4 +252,17 @@ def test_abandoned_stream_does_not_poison_the_cache(tmp_path: Path) -> None:
     del rows
     _ = gc.collect()
 
+    assert cache.keys == set()
+    assert list(tmp_path.iterdir()) == []
     assert list(cache([1, 2, 3, 4, 5], key="k")) == [1, 2, 3, 4, 5]
+
+
+def test_a_failing_stream_does_not_poison_the_cache(tmp_path: Path) -> None:
+    cache = stream.Cache(directory=tmp_path)
+
+    with pytest.raises(ZeroDivisionError):
+        _ = list(cache(failing_source(), key="k"))
+
+    assert cache.keys == set()
+    assert list(tmp_path.iterdir()) == []
+    assert list(cache([1, 2, 3], key="k")) == [1, 2, 3]
