@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import datetime as dt
+import gc
 import json
 import os
 import typing
@@ -164,6 +165,42 @@ def test_a_returning_statement_is_iterated(executor: Executor) -> None:
     query = INSERT.returning(T_SALES.c.shop, T_SALES.c.amount)
 
     assert list(stream.iter_sql(query, executor, target_name="amount")) == [({"shop": "Zeeman"}, 9)]
+
+
+@pytest.fixture
+def executed_results(
+    executor: Executor, monkeypatch: pytest.MonkeyPatch
+) -> list[sqlalchemy.Result[typing.Any]]:
+    """Records the results `iter_sql` gets back, so tests can check it closes them."""
+    results: list[sqlalchemy.Result[typing.Any]] = []
+    execute = executor.execute
+
+    def spy(*args: typing.Any, **kwargs: typing.Any) -> sqlalchemy.Result[typing.Any]:
+        result = execute(*args, **kwargs)
+        results.append(result)
+        return result
+
+    monkeypatch.setattr(executor, "execute", spy)
+    return results
+
+
+@pytest.mark.parametrize("exhaust", [True, False], ids=["exhausted", "abandoned"])
+def test_the_result_is_closed(
+    executor: Executor, executed_results: list[sqlalchemy.Result[typing.Any]], exhaust: bool
+) -> None:
+    """The result holds a cursor, which stays open for as long as it is not closed."""
+    dataset = stream.iter_sql(SHOPS_AND_AMOUNTS, executor)
+    _ = next(dataset)
+
+    assert not executed_results[0].closed
+
+    if exhaust:
+        _ = list(dataset)
+    else:
+        del dataset
+        _ = gc.collect()
+
+    assert executed_results[0].closed
 
 
 def test_the_query_is_only_executed_once_iteration_starts(engine: sqlalchemy.Engine) -> None:

@@ -100,15 +100,17 @@ def iter_sql(
 
     """
 
-    result = conn.execute(sqlalchemy.text(query) if isinstance(query, str) else query)
-    names: tuple[FeatureName, ...] = tuple(result.keys())
+    statement = sqlalchemy.text(query) if isinstance(query, str) else query
 
-    if target_name is None:
+    with conn.execute(statement) as result:
+        column_names: tuple[FeatureName, ...] = tuple(result.keys())
+
+        if target_name is None:
+            for row in result:
+                yield dict(zip(column_names, row)), None
+            return
+
         for row in result:
-            yield dict(zip(names, row)), None
-        return
-
-    for row in result:
-        x: dict[FeatureName, typing.Any] = dict(zip(names, row))
-        y = x.pop(target_name)
-        yield x, y
+            x: dict[FeatureName, typing.Any] = dict(zip(column_names, row))
+            y = x.pop(target_name)
+            yield x, y
