@@ -16,10 +16,16 @@ if typing.TYPE_CHECKING:
     from river.base.typing import FeatureName
     from river.stream.typing import Compression, FilePath
 
+    # `csv.DictReader` only became subscriptable at runtime in Python 3.12.
+    _DictReader = csv.DictReader[FeatureName]
+else:
+    # TODO(Unassigned): Remove branching once min python is bumped to 3.12
+    _DictReader = csv.DictReader
+
 __all__ = ["iter_csv"]
 
 
-class DictReader(csv.DictReader["FeatureName"]):
+class DictReader(_DictReader):
     """Overlay on top of `csv.DictReader` which allows sampling."""
 
     def __init__(
