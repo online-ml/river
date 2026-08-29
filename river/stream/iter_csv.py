@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import contextlib
 import csv
 import datetime as dt
 import os
@@ -32,13 +33,16 @@ class DictReader(csv.DictReader["FeatureName"]):
         self.names: Sequence[FeatureName] = self.fieldnames or ()
 
     def __next__(self) -> dict[FeatureName, typing.Any]:
-        row = next(self.reader)
+        while True:
+            values = next(self.reader)
 
-        if self.fraction < 1:
-            while self.rng.random() > self.fraction:
-                row = next(self.reader)
+            if not values:
+                continue
 
-        return dict(zip(self.names, row))
+            if self.fraction < 1 and self.rng.random() > self.fraction:
+                continue
+
+            return dict(zip(self.names, values))
 
 
 def iter_csv(
@@ -151,52 +155,46 @@ def iter_csv(
 
     """
 
-    # Set the field size limit
-    limit = csv.field_size_limit()
-    if field_size_limit is not None:
-        csv.field_size_limit(field_size_limit)
+    with contextlib.ExitStack() as stack:
+        # Set the field size limit
+        if field_size_limit is not None:
+            previous_limit = csv.field_size_limit(field_size_limit)
+            stack.callback(csv.field_size_limit, previous_limit)
 
-    # If a file is not opened, then we open it
-    if isinstance(filepath_or_buffer, (str, os.PathLike)):
-        buffer = utils.open_filepath(filepath_or_buffer, compression)
-        should_close = True
-    else:
-        buffer = filepath_or_buffer
-        should_close = False
+        # If a file is not opened, then we open it
+        if isinstance(filepath_or_buffer, (str, os.PathLike)):
+            buffer = stack.enter_context(utils.open_filepath(filepath_or_buffer, compression))
+        else:
+            buffer = filepath_or_buffer
 
-    for x in DictReader(fraction=fraction, rng=random.Random(seed), f=buffer, **kwargs):
-        if drop:
-            for dropped in drop:
-                del x[dropped]
+        reader = DictReader(fraction=fraction, rng=random.Random(seed), f=buffer, **kwargs)
 
-        # Cast the values to the given types
-        if converters is not None:
-            for name, convert in converters.items():
-                x[name] = convert(x[name])
+        for x in reader:
+            if drop:
+                for dropped in drop:
+                    del x[dropped]
 
-        # Drop Nones
-        if drop_nones:
-            for name in list(x):
-                if x[name] is None:
-                    del x[name]
+            # Cast the values to the given types
+            if converters is not None:
+                for name, convert in converters.items():
+                    x[name] = convert(x[name])
 
-        # Parse the dates
-        if parse_dates is not None:
-            for name, fmt in parse_dates.items():
-                x[name] = dt.datetime.strptime(x[name], fmt)
+            # Drop Nones
+            if drop_nones:
+                for name in list(x):
+                    if x[name] is None:
+                        del x[name]
 
-        # Separate the target from the features
-        y = None
-        if isinstance(target, list):
-            y = {name: x.pop(name) for name in target}
-        elif target is not None:
-            y = x.pop(target)
+            # Parse the dates
+            if parse_dates is not None:
+                for name, fmt in parse_dates.items():
+                    x[name] = dt.datetime.strptime(x[name], fmt)
 
-        yield x, y
+            # Separate the target from the features
+            y = None
+            if isinstance(target, list):
+                y = {name: x.pop(name) for name in target}
+            elif target is not None:
+                y = x.pop(target)
 
-    # Close the file if we opened it
-    if should_close:
-        buffer.close()
-
-    # Reset the file size limit to it's original value
-    csv.field_size_limit(limit)
+            yield x, y
