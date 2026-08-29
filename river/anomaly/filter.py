@@ -2,10 +2,10 @@ from __future__ import annotations
 
 import math
 
-from river import anomaly, stats
+from river import base, stats
 
 
-class ThresholdFilter(anomaly.base.AnomalyFilter):
+class ThresholdFilter(base.AnomalyFilter):
     """Threshold anomaly filter.
 
     Parameters
@@ -29,6 +29,7 @@ class ThresholdFilter(anomaly.base.AnomalyFilter):
     the `datasets.WaterFlow` dataset. Some of the samples have anomalous target variables because
     of human interventions. We don't want our model to learn these values.
 
+    >>> from river import anomaly
     >>> from river import datasets
     >>> from river import evaluate
     >>> from river import metrics
@@ -99,7 +100,7 @@ class ThresholdFilter(anomaly.base.AnomalyFilter):
 
     @classmethod
     def _unit_test_params(cls):
-        from river import preprocessing
+        from river import anomaly, preprocessing
 
         yield {
             "anomaly_detector": preprocessing.MinMaxScaler() | anomaly.HalfSpaceTrees(),
@@ -107,7 +108,7 @@ class ThresholdFilter(anomaly.base.AnomalyFilter):
         }
 
 
-class QuantileFilter(anomaly.base.AnomalyFilter):
+class QuantileFilter(base.AnomalyFilter):
     """Threshold anomaly filter.
 
     Parameters
@@ -184,7 +185,7 @@ class QuantileFilter(anomaly.base.AnomalyFilter):
 
     @classmethod
     def _unit_test_params(cls):
-        from river import preprocessing
+        from river import anomaly, preprocessing
 
         yield {
             "anomaly_detector": preprocessing.StandardScaler() | anomaly.OneClassSVM(nu=0.2),

@@ -1,21 +1,25 @@
 from __future__ import annotations
 
 import abc
+from typing import Any
 
 from river import base
+
+from .estimator import Estimator
+from .wrapper import Wrapper
 
 __all__ = ["AnomalyDetector", "SupervisedAnomalyDetector", "AnomalyFilter"]
 
 
-class AnomalyDetector(base.Estimator):
+class AnomalyDetector(Estimator):
     """An anomaly detector."""
 
     @property
-    def _supervised(self):
+    def _supervised(self) -> bool:
         return False
 
     @abc.abstractmethod
-    def learn_one(self, x: dict) -> None:
+    def learn_one(self, x: dict[base.typing.FeatureName, Any]) -> None:
         """Update the model.
 
         Parameters
@@ -26,7 +30,7 @@ class AnomalyDetector(base.Estimator):
         """
 
     @abc.abstractmethod
-    def score_one(self, x: dict) -> float:
+    def score_one(self, x: dict[base.typing.FeatureName, Any]) -> float:
         """Return an outlier score.
 
         A high score is indicative of an anomaly. A low score corresponds to a normal observation.
@@ -44,11 +48,11 @@ class AnomalyDetector(base.Estimator):
         """
 
 
-class SupervisedAnomalyDetector(base.Estimator):
+class SupervisedAnomalyDetector(Estimator):
     """A supervised anomaly detector."""
 
     @abc.abstractmethod
-    def learn_one(self, x: dict, y: base.typing.Target) -> None:
+    def learn_one(self, x: dict[base.typing.FeatureName, Any], y: base.typing.Target) -> None:
         """Update the model.
 
         Parameters
@@ -59,7 +63,7 @@ class SupervisedAnomalyDetector(base.Estimator):
         """
 
     @abc.abstractmethod
-    def score_one(self, x: dict, y: base.typing.Target) -> float:
+    def score_one(self, x: dict[base.typing.FeatureName, Any], y: base.typing.Target) -> float:
         """Return an outlier score.
 
         A high score is indicative of an anomaly. A low score corresponds a normal observation.
@@ -77,7 +81,7 @@ class SupervisedAnomalyDetector(base.Estimator):
         """
 
 
-class AnomalyFilter(base.Wrapper, base.Estimator):
+class AnomalyFilter(Wrapper[AnomalyDetector], Estimator):
     """Anomaly filter base class.
 
     An anomaly filter has the ability to classify an anomaly score as anomalous or not. It can then
@@ -96,12 +100,14 @@ class AnomalyFilter(base.Wrapper, base.Estimator):
 
     """
 
-    def __init__(self, anomaly_detector: AnomalyDetector, protect_anomaly_detector=True):
+    def __init__(
+        self, anomaly_detector: AnomalyDetector, protect_anomaly_detector: bool = True
+    ) -> None:
         self.anomaly_detector = anomaly_detector
         self.protect_anomaly_detector = protect_anomaly_detector
 
     @property
-    def _wrapped_model(self):
+    def _wrapped_model(self) -> AnomalyDetector:
         return self.anomaly_detector
 
     @abc.abstractmethod
@@ -119,7 +125,7 @@ class AnomalyFilter(base.Wrapper, base.Estimator):
 
         """
 
-    def score_one(self, *args, **kwargs):
+    def score_one(self, *args: Any, **kwargs: Any) -> float:
         """Return an outlier score.
 
         A high score is indicative of an anomaly. A low score corresponds to a normal observation.
@@ -137,7 +143,7 @@ class AnomalyFilter(base.Wrapper, base.Estimator):
         """
         return self.anomaly_detector.score_one(*args, **kwargs)
 
-    def learn_one(self, *args, **learn_kwargs) -> None:
+    def learn_one(self, *args: Any, **learn_kwargs: Any) -> None:
         """Update the anomaly filter and the underlying anomaly detector.
 
         Parameters

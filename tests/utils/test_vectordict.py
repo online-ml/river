@@ -6,6 +6,7 @@ import numpy as np
 import pytest
 
 from river.utils import VectorDict
+from river.utils.vectordict import euclidean_distance_dict
 
 
 def test_vectordict() -> None:
@@ -126,3 +127,54 @@ def test_vectordict() -> None:
     vy = VectorDict(y)
     assert vx.minimum(vy) == vy.minimum(vx) == {"a": 0, "b": -5, "c": 0}
     assert vx.maximum(vy) == vy.maximum(vx) == {"a": 1, "b": 0.5, "c": 4}
+
+
+def test_values_are_normalized_to_float() -> None:
+    values: VectorDict[str, float] = VectorDict({"int": 1, "float": 2.5, "numpy": np.float64(3.5)})
+    assert values.to_dict() == {"int": 1.0, "float": 2.5, "numpy": 3.5}
+    assert all(isinstance(value, float) for value in values.values())
+
+
+@pytest.mark.parametrize("value", ["1", 1 + 2j, object()])
+def test_non_real_values_are_rejected(value) -> None:
+    with pytest.raises(TypeError, match="real numbers"):
+        VectorDict({"value": value})
+
+    values: VectorDict[str, float] = VectorDict()
+    with pytest.raises(TypeError, match="real numbers"):
+        values["value"] = value
+
+
+@pytest.mark.parametrize(
+    "left, right, expected",
+    [
+        ({"a": 1.0, "b": 2.0}, {"a": 4.0, "b": 6.0}, 5.0),
+        ({"a": 3.0}, {"a": 3.0, "b": 4.0}, 4.0),
+        ({"a": 3.0, "b": 4.0}, {"a": 3.0}, 4.0),
+        ({"a": 3.0}, {"b": 4.0}, 5.0),
+    ],
+)
+def test_euclidean_distance_dict(left, right, expected) -> None:
+    assert euclidean_distance_dict(left, right) == expected
+    assert euclidean_distance_dict(right, left) == expected
+
+
+def test_from_scaled() -> None:
+    assert VectorDict.from_scaled({"a": 2.0, "b": -3.0}, 0.5) == {"a": 1.0, "b": -1.5}
+
+
+def test_masked_in_place_writes() -> None:
+    data = {"a": 1.0, "b": 2.0}
+    values: VectorDict[str, float] = VectorDict(data, mask={"a"})
+    values += VectorDict({"a": 3.0, "b": 4.0})
+    assert data == {"a": 4.0, "b": 2.0}
+    values.isub_scaled(VectorDict({"a": 2.0, "b": 5.0}), 0.5)
+    assert data == {"a": 3.0, "b": 2.0}
+
+
+def test_update_ema() -> None:
+    values: VectorDict[str, float] = VectorDict({"a": 2.0, "b": 3.0})
+    values.update_ema(VectorDict({"a": 4.0, "c": 5.0}), 0.5)
+    assert values == {"a": 3.0, "b": 3.0, "c": 2.5}
+    values.update_ema(VectorDict({"a": 3.0}), 0.5, square=True)
+    assert values == {"a": 6.0, "b": 3.0, "c": 2.5}

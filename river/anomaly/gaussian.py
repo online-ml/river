@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from river import anomaly, proba, utils
+from river import base, proba, utils
 
 
-class GaussianScorer(anomaly.base.SupervisedAnomalyDetector):
+class GaussianScorer(base.SupervisedAnomalyDetector):
     """Univariate Gaussian anomaly detector.
 
     This is a supervised anomaly detector. It fits a Gaussian distribution to the target values.

@@ -6,7 +6,7 @@ import typing
 import numpy as np
 
 from river import optim, utils
-from river.optim.base import DictLike
+from river.optim.base import DictLike, VectorLike
 
 __all__ = ["Adam"]
 
@@ -53,7 +53,13 @@ class Adam(optim.base.Optimizer):
 
     """
 
-    def __init__(self, lr=0.1, beta_1=0.9, beta_2=0.999, eps=1e-8) -> None:
+    def __init__(
+        self,
+        lr: int | float | optim.base.Scheduler = 0.1,
+        beta_1: float = 0.9,
+        beta_2: float = 0.999,
+        eps: float = 1e-8,
+    ) -> None:
         super().__init__(lr)
         self.beta_1 = beta_1
         self.beta_2 = beta_2
@@ -82,7 +88,7 @@ class Adam(optim.base.Optimizer):
 
         return w
 
-    def _step_with_vector(self, w, g):
+    def _step_with_vector(self, w: VectorLike, g: VectorLike) -> VectorLike:
         if self.m is None:
             if isinstance(w, np.ndarray):
                 self.m = np.zeros_like(w)
@@ -94,8 +100,12 @@ class Adam(optim.base.Optimizer):
         lr = self.learning_rate * (1 - self.beta_2 ** (self.n_iterations + 1)) ** 0.5
         lr /= 1 - self.beta_1 ** (self.n_iterations + 1)
 
-        self.m = self.beta_1 * self.m + (1 - self.beta_1) * g
-        self.v = self.beta_2 * self.v + (1 - self.beta_2) * g**2
+        if isinstance(g, utils.VectorDict):
+            self.m.update_ema(g, self.beta_1)
+            self.v.update_ema(g, self.beta_2, square=True)
+        else:
+            self.m = self.beta_1 * self.m + (1 - self.beta_1) * g
+            self.v = self.beta_2 * self.v + (1 - self.beta_2) * g**2
         w -= lr * self.m / (self.v**0.5 + self.eps)
 
         return w

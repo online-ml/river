@@ -7,7 +7,6 @@ import time
 import typing
 
 from river import base, metrics, stream, utils
-from river.anomaly.base import AnomalyDetector, AnomalyFilter
 from river.compose.pipeline import Pipeline
 
 __all__ = ["progressive_val_score"]
@@ -32,14 +31,14 @@ def _progressive_validation(
     # Using closures avoids per-sample isinstance checks and branching.
 
     # Predict closure: score_one + classify for anomaly filters, predict_proba_one or predict_one
-    if isinstance(model, AnomalyFilter):
+    if isinstance(model, base.AnomalyFilter):
         _score = model.score_one
         _classify = model.classify
 
         def predict(x, **kwargs):
             return _classify(_score(x, **kwargs))
 
-    elif isinstance(model, AnomalyDetector):
+    elif isinstance(model, base.AnomalyDetector):
         predict = model.score_one  # type: ignore[assignment]
     elif isinstance(model, base.Classifier) and not metric.requires_labels:  # type: ignore
         predict = model.predict_proba_one  # type: ignore[assignment]

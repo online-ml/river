@@ -8,16 +8,15 @@ import math
 import pickle
 import random
 
+from river import base
+
 from .utils import assert_predictions_are_close, seed_params
 
 
 def _inference_methods(model):
     """Yield the names of inference methods this model exposes."""
 
-    from river import base
-    from river.anomaly.base import AnomalyDetector
-
-    if isinstance(model, AnomalyDetector):
+    if isinstance(model, base.AnomalyDetector):
         yield "score_one"
     elif isinstance(model, base.Classifier):
         if not isinstance(model, base.MultiLabelClassifier):
@@ -32,10 +31,7 @@ def _inference_methods(model):
 def _infer(model, x):
     """Call the model's primary inference method on `x`."""
 
-    from river import base
-    from river.anomaly.base import AnomalyDetector
-
-    if isinstance(model, AnomalyDetector):
+    if isinstance(model, base.AnomalyDetector):
         return model.score_one(x)
     if isinstance(model, base.Classifier):
         try:
@@ -50,9 +46,7 @@ def _infer(model, x):
 def _learn(model, x, y):
     """Call `learn_one` with the right signature for the model's kind."""
 
-    from river.anomaly.base import AnomalyDetector
-
-    if isinstance(model, AnomalyDetector):
+    if isinstance(model, base.AnomalyDetector):
         model.learn_one(x)
     elif model._supervised:
         model.learn_one(x, y)

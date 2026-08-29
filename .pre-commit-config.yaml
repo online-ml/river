@@ -29,3 +29,10 @@ repos:
         language: system
         types_or: [python, pyi]
         require_serial: true
+      - id: lint-imports
+        name: lint-imports
+        entry: uv run lint-imports
+        language: system
+        types_or: [python, pyi]
+        pass_filenames: false
+        require_serial: true

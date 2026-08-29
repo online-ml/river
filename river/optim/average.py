@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 import collections
+import typing
 
-from river import optim
-from river.optim.base import DictLike
+from river import base, optim
+from river.optim.base import DictLike, VectorLike
 
 
 class Averager(optim.base.Optimizer):
@@ -54,10 +55,10 @@ class Averager(optim.base.Optimizer):
     def __init__(self, optimizer: optim.base.Optimizer, start: int = 0):
         self.optimizer = optimizer
         self.start = start
-        self.avg_w: dict[str, float] = collections.defaultdict(float)
+        self.avg_w: dict[base.typing.FeatureName, float] = collections.defaultdict(float)
         self.n_iterations = 0
 
-    def look_ahead(self, w):
+    def look_ahead(self, w: DictLike | VectorLike) -> DictLike | VectorLike:
         return self.optimizer.look_ahead(w)
 
     def _step_with_dict(self, w: DictLike, g: DictLike) -> DictLike:
@@ -75,5 +76,5 @@ class Averager(optim.base.Optimizer):
         return self.avg_w
 
     @classmethod
-    def _unit_test_params(cls):
+    def _unit_test_params(cls) -> collections.abc.Iterator[dict[str, typing.Any]]:
         yield {"optimizer": optim.SGD()}

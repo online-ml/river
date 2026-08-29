@@ -19,7 +19,7 @@ import random
 import pytest
 
 from river import base, optim
-from river.anomaly.base import AnomalyDetector
+from river.base import AnomalyDetector
 from river.reco.base import Ranker
 
 # __init__ parameters through which an optimizer can be injected.

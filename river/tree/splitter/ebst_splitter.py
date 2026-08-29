@@ -1,11 +1,11 @@
 from __future__ import annotations
 
+import collections
 import copy
-import functools
 
 from river.stats import Var
 
-from ..utils import BranchFactory
+from ..utils import BranchFactory, combine_stats, update_stats
 from .base import Splitter
 
 
@@ -68,12 +68,9 @@ class EBSTSplitter(Splitter):
         self._pre_split_dist = pre_split_dist
         self._att_idx = att_idx
 
-        # Import VectorDict here to prevent circular import of river.utils
-        from river.utils import VectorDict
-
         # Handles both single-target and multi-target tasks
-        if isinstance(pre_split_dist, VectorDict):
-            self._aux_estimator = VectorDict(default_factory=functools.partial(Var))
+        if isinstance(pre_split_dist, dict):
+            self._aux_estimator = collections.defaultdict(Var)
         else:
             self._aux_estimator = Var()
 
@@ -105,12 +102,12 @@ class EBSTSplitter(Splitter):
                 if n._left is not None:  # type: ignore[union-attr]
                     ops.append(("descend", n._left))  # type: ignore[union-attr]
             elif action == "add_aux":
-                self._aux_estimator += n.estimator  # type: ignore[union-attr]
+                update_stats(self._aux_estimator, n.estimator)  # type: ignore[union-attr]
             elif action == "sub_aux":
-                self._aux_estimator -= n.estimator  # type: ignore[union-attr]
+                update_stats(self._aux_estimator, n.estimator, subtract=True)  # type: ignore[union-attr]
             else:  # "process"
-                left_dist = n.estimator + self._aux_estimator  # type: ignore[union-attr]
-                right_dist = self._pre_split_dist - left_dist
+                left_dist = combine_stats(n.estimator, self._aux_estimator)  # type: ignore[union-attr]
+                right_dist = combine_stats(self._pre_split_dist, left_dist, subtract=True)
                 post_split_dists = [left_dist, right_dist]
                 merit = self._criterion.merit_of_split(self._pre_split_dist, post_split_dists)
                 if merit > candidate.merit:
@@ -179,12 +176,9 @@ class EBSTSplitter(Splitter):
         self._last_check_vr = last_check_vr
         self._last_check_e = last_check_e
 
-        # Import VectorDict here to prevent circular import of river.utils
-        from river.utils import VectorDict
-
         # Handles both single-target and multi-target tasks
-        if isinstance(pre_split_dist, VectorDict):
-            self._aux_estimator = VectorDict(default_factory=functools.partial(Var))
+        if isinstance(pre_split_dist, dict):
+            self._aux_estimator = collections.defaultdict(Var)
         else:
             self._aux_estimator = Var()
 
@@ -236,7 +230,7 @@ class EBSTSplitter(Splitter):
                     child_is_bad = False
                     continue
                 if node._right is not None:
-                    self._aux_estimator += node.estimator
+                    update_stats(self._aux_estimator, node.estimator)
                     frame[3] = PHASE_EVAL
                     frame[4] = True
                     stack.append([node._right, node, False, PHASE_LEFT, False])
@@ -248,14 +242,14 @@ class EBSTSplitter(Splitter):
 
             # PHASE_EVAL: both subtrees have been processed (or were absent).
             if frame[4]:
-                self._aux_estimator -= node.estimator
+                update_stats(self._aux_estimator, node.estimator, subtract=True)
 
             is_bad = child_is_bad
             stack.pop()
 
             if is_bad:
-                left_dist = node.estimator + self._aux_estimator
-                right_dist = self._pre_split_dist - left_dist
+                left_dist = combine_stats(node.estimator, self._aux_estimator)
+                right_dist = combine_stats(self._pre_split_dist, left_dist, subtract=True)
                 post_split_dists = [left_dist, right_dist]
                 merit = self._criterion.merit_of_split(self._pre_split_dist, post_split_dists)
                 if (merit / self._last_check_vr) < (
@@ -284,10 +278,7 @@ class EBSTNode:
         self.att_val = att_val
 
         if isinstance(target_val, dict):
-            # Import VectorDict here to prevent circular import of river.utils
-            from river.utils import VectorDict
-
-            self.estimator = VectorDict(default_factory=functools.partial(Var))
+            self.estimator = collections.defaultdict(Var)
             self._update_estimator = self._update_estimator_multivariate
         else:
             self.estimator = Var()

@@ -3,7 +3,7 @@ from __future__ import annotations
 import collections
 import math
 
-from river import optim, utils
+from river import base, optim, utils
 from river.optim.base import DictLike
 
 __all__ = ["AdaBound"]
@@ -54,7 +54,15 @@ class AdaBound(optim.base.Optimizer):
 
     """
 
-    def __init__(self, lr=1e-3, beta_1=0.9, beta_2=0.999, eps=1e-8, gamma=1e-3, final_lr=0.1):
+    def __init__(
+        self,
+        lr: int | float | optim.base.Scheduler = 1e-3,
+        beta_1: float = 0.9,
+        beta_2: float = 0.999,
+        eps: float = 1e-8,
+        gamma: float = 1e-3,
+        final_lr: float = 0.1,
+    ):
         super().__init__(lr)
         # Capture the base learning rate as a float. Reading it back from `lr` directly would
         # break on clone (where `lr` arrives as a `Constant` scheduler rather than a number).
@@ -64,8 +72,8 @@ class AdaBound(optim.base.Optimizer):
         self.beta_2 = beta_2
         self.eps = eps
         self.gamma = gamma
-        self.m = collections.defaultdict(float)
-        self.v = collections.defaultdict(float)
+        self.m: dict[base.typing.FeatureName, float] = collections.defaultdict(float)
+        self.v: dict[base.typing.FeatureName, float] = collections.defaultdict(float)
 
     def _step_with_dict(self, w: DictLike, g: DictLike) -> DictLike:
         bias_1 = 1 - self.beta_1 ** (self.n_iterations + 1)

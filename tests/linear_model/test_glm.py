@@ -30,6 +30,15 @@ if typing.TYPE_CHECKING:
     Columnar = tuple[dict[FeatureName, list[Any]], list[Any], list[dict[FeatureName, Any]]]
 
 
+@pytest.mark.parametrize("optimizer_cls", [optim.Adam, optim.RMSProp])
+def test_disappearing_features_are_not_updated(optimizer_cls) -> None:
+    model = lm.LinearRegression(optimizer=optimizer_cls())
+    model.learn_one({"a": 1.0}, 1.0)
+    weight = model.weights["a"]
+    model.learn_one({"b": 1.0}, 1.0)
+    assert model.weights["a"] == weight
+
+
 def _pd_split(df, n):
     """Split a pandas DataFrame or Series into n chunks without triggering swapaxes deprecation."""
     indices = np.array_split(range(len(df)), n)

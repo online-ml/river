@@ -13,10 +13,12 @@ vectorised branches of a loss **must** resolve such a boundary point identically
 
 from __future__ import annotations
 
+import abc
 import math
+import typing
 
 import numpy as np
-from scipy import special  # type: ignore
+from scipy import special
 
 from river import base, utils
 from river.optim.base import Loss as Loss
@@ -46,7 +48,31 @@ def clamp_proba(x: float) -> float:
 class BinaryLoss(Loss):
     """A loss appropriate for binary classification tasks."""
 
-    def mean_func(self, y_pred):
+    @typing.overload
+    def __call__(self, y_true: bool, y_pred: float) -> float: ...
+
+    @typing.overload
+    def __call__(self, y_true: np.ndarray, y_pred: np.ndarray) -> np.ndarray: ...
+
+    @abc.abstractmethod
+    def __call__(self, y_true: typing.Any, y_pred: typing.Any) -> typing.Any: ...
+
+    @typing.overload
+    def gradient(self, y_true: bool, y_pred: float) -> float: ...
+
+    @typing.overload
+    def gradient(self, y_true: np.ndarray, y_pred: np.ndarray) -> np.ndarray: ...
+
+    @abc.abstractmethod
+    def gradient(self, y_true: typing.Any, y_pred: typing.Any) -> typing.Any: ...
+
+    @typing.overload
+    def mean_func(self, y_pred: float) -> float: ...
+
+    @typing.overload
+    def mean_func(self, y_pred: np.ndarray) -> np.ndarray: ...
+
+    def mean_func(self, y_pred: typing.Any) -> typing.Any:
         if isinstance(y_pred, np.ndarray):
             return 1.0 / (1.0 + np.exp(-y_pred))
         return utils.math.sigmoid(y_pred)
@@ -55,7 +81,25 @@ class BinaryLoss(Loss):
 class MultiClassLoss(Loss):
     """A loss appropriate for multi-class classification tasks."""
 
-    def mean_func(self, y_pred):
+    @abc.abstractmethod
+    def __call__(
+        self, y_true: base.typing.ClfTarget, y_pred: dict[base.typing.ClfTarget, float]
+    ) -> float: ...
+
+    @abc.abstractmethod
+    def gradient(
+        self, y_true: base.typing.ClfTarget, y_pred: dict[base.typing.ClfTarget, float]
+    ) -> dict[base.typing.ClfTarget, float]: ...
+
+    @typing.overload
+    def mean_func(
+        self, y_pred: dict[base.typing.ClfTarget, float]
+    ) -> dict[base.typing.ClfTarget, float]: ...
+
+    @typing.overload
+    def mean_func(self, y_pred: np.ndarray) -> np.ndarray: ...
+
+    def mean_func(self, y_pred: typing.Any) -> typing.Any:
         if isinstance(y_pred, np.ndarray):
             return special.softmax(y_pred)
         return utils.math.softmax(y_pred)
@@ -64,7 +108,31 @@ class MultiClassLoss(Loss):
 class RegressionLoss(Loss):
     """A loss appropriate for regression tasks."""
 
-    def mean_func(self, y_pred):
+    @typing.overload
+    def __call__(self, y_true: float, y_pred: float) -> float: ...
+
+    @typing.overload
+    def __call__(self, y_true: np.ndarray, y_pred: np.ndarray) -> np.ndarray: ...
+
+    @abc.abstractmethod
+    def __call__(self, y_true: typing.Any, y_pred: typing.Any) -> typing.Any: ...
+
+    @typing.overload
+    def gradient(self, y_true: float, y_pred: float) -> float: ...
+
+    @typing.overload
+    def gradient(self, y_true: np.ndarray, y_pred: np.ndarray) -> np.ndarray: ...
+
+    @abc.abstractmethod
+    def gradient(self, y_true: typing.Any, y_pred: typing.Any) -> typing.Any: ...
+
+    @typing.overload
+    def mean_func(self, y_pred: float) -> float: ...
+
+    @typing.overload
+    def mean_func(self, y_pred: np.ndarray) -> np.ndarray: ...
+
+    def mean_func(self, y_pred: typing.Any) -> typing.Any:
         return y_pred
 
 
@@ -94,12 +162,12 @@ class Absolute(RegressionLoss):
 
     """
 
-    def __call__(self, y_true, y_pred):
+    def __call__(self, y_true: typing.Any, y_pred: typing.Any) -> typing.Any:
         if isinstance(y_true, np.ndarray):
             return np.abs(y_pred - y_true)
         return abs(y_pred - y_true)
 
-    def gradient(self, y_true, y_pred):
+    def gradient(self, y_true: typing.Any, y_pred: typing.Any) -> typing.Any:
         if isinstance(y_true, np.ndarray):
             return np.where(y_pred > y_true, 1, -1)
 
@@ -122,15 +190,15 @@ class Cauchy(RegressionLoss):
 
     """
 
-    def __init__(self, C=80):
+    def __init__(self, C: float = 80):
         self.C = C
 
-    def __call__(self, y_true, y_pred):
+    def __call__(self, y_true: typing.Any, y_pred: typing.Any) -> typing.Any:
         if isinstance(y_true, np.ndarray):
             return np.abs(y_pred - y_true)
         return abs(y_pred - y_true)
 
-    def gradient(self, y_true, y_pred):
+    def gradient(self, y_true: typing.Any, y_pred: typing.Any) -> typing.Any:
         diff = y_pred - y_true
         return diff / ((diff / self.C) ** 2 + 1)
 
@@ -185,8 +253,8 @@ class CrossEntropy(MultiClassLoss):
             class_weight = {}
         self.class_weight = class_weight
 
-    def __call__(self, y_true, y_pred):
-        total = 0
+    def __call__(self, y_true: typing.Any, y_pred: typing.Any) -> typing.Any:
+        total = 0.0
 
         for label, proba in y_pred.items():
             if y_true == label:
@@ -194,7 +262,7 @@ class CrossEntropy(MultiClassLoss):
 
         return -total
 
-    def gradient(self, y_true, y_pred):
+    def gradient(self, y_true: typing.Any, y_pred: typing.Any) -> typing.Any:
         return {
             label: (
                 self.class_weight.get(label, 1.0)
@@ -242,10 +310,10 @@ class Hinge(BinaryLoss):
 
     """
 
-    def __init__(self, threshold=1.0):
+    def __init__(self, threshold: float = 1.0):
         self.threshold = threshold
 
-    def __call__(self, y_true, y_pred):
+    def __call__(self, y_true: typing.Any, y_pred: typing.Any) -> typing.Any:
         y_true = y_true * 2 - 1  # [0, 1] -> [-1, 1]
 
         if isinstance(y_true, np.ndarray):
@@ -253,7 +321,7 @@ class Hinge(BinaryLoss):
 
         return max(self.threshold - y_true * y_pred, 0)
 
-    def gradient(self, y_true, y_pred):
+    def gradient(self, y_true: typing.Any, y_pred: typing.Any) -> typing.Any:
         y_true = y_true * 2 - 1  # [0, 1] -> [-1, 1]
 
         # Boundary convention (see module docstring): a point sitting exactly on the margin
@@ -277,10 +345,10 @@ class EpsilonInsensitiveHinge(RegressionLoss):
 
     """
 
-    def __init__(self, eps=0.1):
+    def __init__(self, eps: float = 0.1):
         self.eps = eps
 
-    def __call__(self, y_true, y_pred):
+    def __call__(self, y_true: typing.Any, y_pred: typing.Any) -> typing.Any:
         y_true = y_true * 2 - 1  # [0, 1] -> [-1, 1]
 
         if isinstance(y_true, np.ndarray):
@@ -288,7 +356,7 @@ class EpsilonInsensitiveHinge(RegressionLoss):
 
         return max(math.fabs(y_pred - y_true) - self.eps, 0)
 
-    def gradient(self, y_true, y_pred):
+    def gradient(self, y_true: typing.Any, y_pred: typing.Any) -> typing.Any:
         y_true = y_true * 2 - 1  # [0, 1] -> [-1, 1]
 
         if isinstance(y_true, np.ndarray):
@@ -321,11 +389,11 @@ class Log(BinaryLoss):
 
     """
 
-    def __init__(self, weight_pos=1.0, weight_neg=1.0):
+    def __init__(self, weight_pos: float = 1.0, weight_neg: float = 1.0):
         self.weight_pos = weight_pos
         self.weight_neg = weight_neg
 
-    def __call__(self, y_true, y_pred):
+    def __call__(self, y_true: typing.Any, y_pred: typing.Any) -> typing.Any:
         if isinstance(y_true, np.ndarray):
             weights = np.where(y_true == 0, self.weight_neg, self.weight_pos)
             y_true = 2 * y_true - 1  # map {0, 1} to {-1, 1}
@@ -346,7 +414,7 @@ class Log(BinaryLoss):
             return weight * -z
         return weight * math.log(1.0 + math.exp(-z))
 
-    def gradient(self, y_true, y_pred):
+    def gradient(self, y_true: typing.Any, y_pred: typing.Any) -> typing.Any:
         if isinstance(y_true, np.ndarray):
             weights = np.where(y_true == 0, self.weight_neg, self.weight_pos)
             y_true = 2 * y_true - 1  # map {0, 1} to {-1, 1}
@@ -398,14 +466,14 @@ class Quantile(RegressionLoss):
 
     """
 
-    def __init__(self, alpha=0.5):
+    def __init__(self, alpha: float = 0.5):
         self.alpha = alpha
 
-    def __call__(self, y_true, y_pred):
+    def __call__(self, y_true: typing.Any, y_pred: typing.Any) -> typing.Any:
         diff = y_pred - y_true
         return (self.alpha - (diff < 0)) * diff
 
-    def gradient(self, y_true, y_pred):
+    def gradient(self, y_true: typing.Any, y_pred: typing.Any) -> typing.Any:
         return (y_true < y_pred) - self.alpha
 
 
@@ -439,10 +507,10 @@ class Squared(RegressionLoss):
 
     """
 
-    def __call__(self, y_true, y_pred):
+    def __call__(self, y_true: typing.Any, y_pred: typing.Any) -> typing.Any:
         return (y_pred - y_true) * (y_pred - y_true)
 
-    def gradient(self, y_true, y_pred):
+    def gradient(self, y_true: typing.Any, y_pred: typing.Any) -> typing.Any:
         return 2 * (y_pred - y_true)
 
 
@@ -461,10 +529,10 @@ class Huber(RegressionLoss):
 
     """
 
-    def __init__(self, epsilon=0.1):
+    def __init__(self, epsilon: float = 0.1):
         self.epsilon = epsilon
 
-    def __call__(self, y_true, y_pred):
+    def __call__(self, y_true: typing.Any, y_pred: typing.Any) -> typing.Any:
         r = y_pred - y_true
 
         if isinstance(y_true, np.ndarray):
@@ -480,7 +548,7 @@ class Huber(RegressionLoss):
             return 0.5 * r * r
         return self.epsilon * abs_r - (0.5 * self.epsilon * self.epsilon)
 
-    def gradient(self, y_true, y_pred):
+    def gradient(self, y_true: typing.Any, y_pred: typing.Any) -> typing.Any:
         r = y_pred - y_true
 
         if isinstance(y_true, np.ndarray):
@@ -513,11 +581,11 @@ class BinaryFocalLoss(BinaryLoss):
 
     """
 
-    def __init__(self, gamma=2, beta=1):
+    def __init__(self, gamma: float = 2, beta: float = 1):
         self.gamma = gamma
         self.beta = beta
 
-    def __call__(self, y_true, y_pred):
+    def __call__(self, y_true: typing.Any, y_pred: typing.Any) -> typing.Any:
         y_true = y_true * 2 - 1  # [0, 1] -> [-1, 1]
 
         xt = y_true * y_pred
@@ -529,7 +597,7 @@ class BinaryFocalLoss(BinaryLoss):
         pt = utils.math.sigmoid(self.gamma * xt + self.beta)
         return -math.log(pt) / self.gamma
 
-    def gradient(self, y_true, y_pred):
+    def gradient(self, y_true: typing.Any, y_pred: typing.Any) -> typing.Any:
         y_true = y_true * 2 - 1  # [0, 1] -> [-1, 1]
 
         xt = y_true * y_pred
@@ -557,17 +625,17 @@ class Poisson(RegressionLoss):
 
     """
 
-    def __call__(self, y_true, y_pred):
+    def __call__(self, y_true: typing.Any, y_pred: typing.Any) -> typing.Any:
         if isinstance(y_pred, np.ndarray):
             return np.exp(y_pred) - y_true * y_pred
         return math.exp(y_pred) - y_true * y_pred
 
-    def gradient(self, y_true, y_pred):
+    def gradient(self, y_true: typing.Any, y_pred: typing.Any) -> typing.Any:
         if isinstance(y_pred, np.ndarray):
             return np.exp(y_pred) - y_true
         return math.exp(y_pred) - y_true
 
-    def mean_func(self, y_pred):
+    def mean_func(self, y_pred: typing.Any) -> typing.Any:
         if isinstance(y_pred, np.ndarray):
             return np.exp(y_pred)
         return math.exp(y_pred)

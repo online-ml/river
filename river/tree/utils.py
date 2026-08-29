@@ -12,6 +12,30 @@ from river.base.typing import FeatureName
 from river.stats import Cov, Var
 
 
+def update_stats(left, right, subtract=False):
+    if not isinstance(left, dict):
+        if subtract:
+            left -= right
+        else:
+            left += right
+        return left
+    for key, value in right.items():
+        if key in left:
+            if subtract:
+                left[key] -= value
+            else:
+                left[key] += value
+        elif subtract:
+            left[key] = Var() - value
+        else:
+            left[key] = copy.deepcopy(value)
+    return left
+
+
+def combine_stats(left, right, subtract=False):
+    return update_stats(copy.deepcopy(left), right, subtract)
+
+
 def do_naive_bayes_prediction(x, observed_class_distribution: dict, splitters: dict):
     """Perform Naive Bayes prediction
 
