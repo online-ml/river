@@ -326,7 +326,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../releases/0.26.1/" class="md-tabs__link">
+        <a href="../../../releases/unreleased/" class="md-tabs__link">
           
   
   Releases
@@ -4201,6 +4201,8 @@
       
         
       
+        
+      
     
     
     
@@ -4219,7 +4221,7 @@
   
   
   
-    <a href="../../../releases/0.26.1/" class="md-nav__link">
+    <a href="../../../releases/unreleased/" class="md-nav__link">
       
   
   
@@ -4388,19 +4390,20 @@
 
 <h1 id="cache">Cache<a class="headerlink" href="#cache" title="Permanent link">&para;</a></h1>
 <p>Utility for caching iterables.</p>
-<p>This can be used to save a stream of data to the disk in order to iterate over it faster the following time. This can save time depending on the nature of stream. The more processing happens in a stream, the more time will be saved. Even in the case where no processing is done apart from reading the data, the cache will save some time because it is using the pickle binary protocol. It can thus improve the speed in common cases such as reading from a CSV file.</p>
+<p>This can be used to save a stream of data to the disk in order to iterate over it faster the following time. This can save time depending on the nature of the stream. The more processing happens in a stream, the more time will be saved. Even in the case where no processing is done apart from reading the data, the cache will save some time because it is using the pickle binary protocol. It can thus improve the speed in common cases such as reading from a CSV file.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
 <p><strong>directory</strong></p>
+<p><em>Type</em> → <code>FilePath | None</code></p>
 <p><em>Default</em> → <code>None</code></p>
-<p>The path where to store the pickled data streams. If not provided, then it will be automatically inferred whenever possible, if not an exception will be raised.</p>
+<p>The existing directory where to store the pickled data streams. If not provided, then a temporary directory is picked for the current system, and an exception is raised if none is known.</p>
 </li>
 </ul>
 <h2 id="attributes">Attributes<a class="headerlink" href="#attributes" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
-<p><strong>keys</strong> (<code>set</code>)</p>
+<p><strong>keys</strong> (<code>set[str]</code>)</p>
 <p>The set of keys that are being cached.</p>
 </li>
 </ul>
@@ -4412,7 +4415,7 @@
 <span class="n">dataset</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">Phishing</span><span class="p">()</span>
 <span class="n">cache</span> <span class="o">=</span> <span class="n">stream</span><span class="o">.</span><span class="n">Cache</span><span class="p">()</span>
 </code></pre></div>
-<p>The cache can be used by wrapping it around an iterable. Because this is the first time
+<p>The cache can be used by wrapping it around an iterable. Because this is the first time we
 are iterating over the data, nothing is cached.</p>
 <p><div class="language-python highlight"><pre><span></span><code><span class="n">tic</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
 <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">cache</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s1">&#39;phishing&#39;</span><span class="p">):</span>
@@ -4450,11 +4453,11 @@ phishing - 125.2KiB
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <details class="- abstract">
 <summary><strong>call</strong></summary>
-<p>Call self as a function.</p>
+<p>Iterates over a stream, caching it along the way if it is not cached yet.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>stream</strong>    </li>
-<li><strong>key</strong>     — defaults to <code>None</code>    </li>
+<li><strong>stream</strong>     — <code>Iterable[T]</code>    </li>
+<li><strong>key</strong>     — <code>str | None</code>     — defaults to <code>None</code>    </li>
 </ul>
 </details>
 <p><span /></p>

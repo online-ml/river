@@ -326,7 +326,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../releases/0.26.1/" class="md-tabs__link">
+        <a href="../../../releases/unreleased/" class="md-tabs__link">
           
   
   Releases
@@ -4179,6 +4179,8 @@
       
         
       
+        
+      
     
     
     
@@ -4197,7 +4199,7 @@
   
   
   
-    <a href="../../../releases/0.26.1/" class="md-nav__link">
+    <a href="../../../releases/unreleased/" class="md-nav__link">
       
   
   
@@ -4344,18 +4346,18 @@
 
 <h1 id="iter_sql">iter_sql<a class="headerlink" href="#iter_sql" title="Permanent link">&para;</a></h1>
 <p>Iterates over the results from an SQL query.</p>
-<p>By default, SQLAlchemy prefetches results. Therefore, even though you can iterate over the resulting rows one by one, the results are in fact loaded in batch. You can modify this behavior by configuring the connection you pass to <code>iter_sql</code>. For instance, you can set the <code>stream_results</code> parameter to <code>True</code>, as <a href="https://docs.sqlalchemy.org/en/13/core/connections.html#sqlalchemy.engine.Connection.execution_options">explained in SQLAlchemy's documentation</a>. Note, however, that this isn't available for all database engines.</p>
+<p>By default, SQLAlchemy prefetches results. Therefore, even though you can iterate over the resulting rows one by one, the results are in fact loaded in batch. You can modify this behavior by configuring the connection you pass to <code>iter_sql</code>. For instance, you can set the <code>stream_results</code> parameter to <code>True</code>, as <a href="https://docs.sqlalchemy.org/en/20/core/connections.html#sqlalchemy.engine.Connection.execution_options">explained in SQLAlchemy's documentation</a>. Note, however, that this isn't available for all database engines.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
 <p><strong>query</strong></p>
-<p><em>Type</em> → <code>str | sqlalchemy.TextClause | sqlalchemy.Select</code></p>
-<p>SQL query to be executed.</p>
+<p><em>Type</em> → <code>str | sqlalchemy.Executable</code></p>
+<p>SQL query to be executed. Either a string, or any SQLAlchemy construct that can be executed, such as the result of <code>sqlalchemy.select</code>.</p>
 </li>
 <li>
 <p><strong>conn</strong></p>
-<p><em>Type</em> → <code>sqlalchemy.Connection</code></p>
-<p>An SQLAlchemy construct which has an <code>execute</code> method. In other words you can pass an engine, a connection, or a session.</p>
+<p><em>Type</em> → <code>sqlalchemy.Connection | Session</code></p>
+<p>An SQLAlchemy construct which has an <code>execute</code> method. In other words you can pass a connection or a session.</p>
 </li>
 <li>
 <p><strong>target_name</strong></p>
