@@ -19,7 +19,7 @@ try:
     import sqlalchemy  # noqa: F401
 except ImportError:
     collect_ignore.append("river/stream/iter_sql.py")
-    collect_ignore.append("tests/stream/test_sql.py")
+    collect_ignore.append("tests/stream/test_iter_sql.py")
 
 try:
     import vaex  # noqa: F401

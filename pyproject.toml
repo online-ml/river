@@ -223,8 +223,6 @@ module = [
     "vaex.*",
     "torch",
     "torch.*",
-    "sqlalchemy",
-    "sqlalchemy.*",
     "requests",
     "requests.*",
     "gymnasium",
