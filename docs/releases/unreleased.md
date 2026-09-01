@@ -1,5 +1,9 @@
 # Unreleased
 
+## calibration
+
+- Added `calibration.CalibratedClassifier`, a wrapper that recalibrates a binary classifier's probability estimates with online Platt scaling. It fits a logistic function $\sigma(a \cdot s + b)$ on the wrapped model's score, where the score is read out-of-sample (before the wrapped model learns on the current sample), and updates $a$ and $b$ with a gradient step on the log-loss at every `learn_one`. It starts from the identity mapping ($a=1$, $b=0$), so it is a no-op until data flows in.
+
 ## stream
 
 - `stream.Cache` now writes a pass to a temporary file and renames it into place once the stream is exhausted. An interrupted first pass (a `break`, an exception, an abandoned generator) used to leave a truncated file behind, which every later pass then read back as if it were the whole dataset.
