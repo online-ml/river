@@ -138,6 +138,15 @@ def score_pairs(n: int = N_LEARN) -> list[tuple[bool, float]]:
 
 
 @functools.cache
+def ranking_pairs(n: int = N_LEARN) -> list[tuple[list, list]]:
+    """(y_true, y_pred) pairs for ranking metrics such as Precision@k."""
+    t = 'abcdefghij'
+    return [([t[i% 10],t[(i+1)% 10],t[(i+2)% 10],t[(i+3)% 10],t[(i+4)% 10]], \
+                ([t[(i+4)% 10],t[(i+5)% 10],t[(i+6)% 10],t[(i+7)% 10],t[(i+8)% 10]]))\
+                    for i in range(n)]
+
+
+@functools.cache
 def multioutput_stream(n: int = N_LEARN) -> list[tuple[dict, dict[int, bool]]]:
     """Binary stream with a deterministic 3-label target for multioutput models."""
     return [

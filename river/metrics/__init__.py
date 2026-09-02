@@ -58,6 +58,7 @@ from .mutual_info import AdjustedMutualInfo, MutualInfo, NormalizedMutualInfo
 from .precision import MacroPrecision, MicroPrecision, Precision, WeightedPrecision
 from .r2 import R2
 from .rand import AdjustedRand, Rand
+from .ranking import F1AtK, PrecisionAtK, RecallAtK
 from .recall import MacroRecall, MicroRecall, Recall, WeightedRecall
 from .report import ClassificationReport
 from .roc_auc import ROCAUC
@@ -122,4 +123,7 @@ __all__ = [
     "WeightedPrecision",
     "WeightedRecall",
     "WeightedJaccard",
+    "PrecisionAtK",
+    "RecallAtK",
+    "F1AtK",
 ]

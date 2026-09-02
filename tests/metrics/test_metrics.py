@@ -93,6 +93,13 @@ def generate_test_cases(metric, n):
             [random.random() for _ in range(n)],
             sample_weights,
         )
+        
+    if isinstance(metric, metrics.base.RankingMetric):
+        yield (
+            random.sample('abcdefghijklmno', random.randint(0,15)),
+            random.sample('abcdefghijklmno', random.randint(0,15)),
+            sample_weights,    
+        )
 
 
 def partial(f, **kwargs):
