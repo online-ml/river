@@ -9,7 +9,7 @@ from river import base
 from . import estimator
 
 if typing.TYPE_CHECKING:
-    import pandas as pd
+    from narwhals.stable.v2.typing import IntoDataFrame, IntoSeries
 
 
 class Regressor(estimator.Estimator):
@@ -48,29 +48,31 @@ class MiniBatchRegressor(Regressor):
     """A regressor that can operate on mini-batches."""
 
     @abc.abstractmethod
-    def learn_many(self, X: pd.DataFrame, y: pd.Series) -> None:
+    def learn_many(self, X: IntoDataFrame, y: IntoSeries) -> None:
         """Update the model with a mini-batch of features `X` and real-valued targets `y`.
 
         Parameters
         ----------
         X
-            A dataframe of features.
+            A dataframe of features. Any narwhals-supported eager backend is accepted
+            (pandas, polars, PyArrow, etc.).
         y
             A series of numbers.
 
         """
 
     @abc.abstractmethod
-    def predict_many(self, X: pd.DataFrame) -> pd.Series:
+    def predict_many(self, X: IntoDataFrame) -> IntoSeries:
         """Predict the outcome for each given sample.
 
         Parameters
         ----------
         X
-            A dataframe of features.
+            A dataframe of features. Any narwhals-supported eager backend is accepted
+            (pandas, polars, PyArrow, etc.).
 
         Returns
         -------
-        The predicted outcomes.
+        The predicted outcomes, in the same backend as `X`.
 
         """
