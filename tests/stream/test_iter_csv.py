@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import csv
+import gc
 import io
 import random
 import typing
@@ -99,9 +100,22 @@ def test_values_are_cast_by_the_converters(drop_nones: bool, expected: list[Row]
     assert list(dataset) == expected
 
 
-@pytest.mark.parametrize("content", ["", "name,year,rating\n"], ids=["empty", "header-only"])
+@pytest.mark.parametrize(
+    "content",
+    ["", "name,year,rating\n", "name,year,rating\n\n\n"],
+    ids=["empty", "header-only", "blank-lines-only"],
+)
 def test_a_file_without_rows_yields_nothing(content: str) -> None:
     assert list(stream.iter_csv(io.StringIO(content))) == []
+
+
+@pytest.mark.parametrize("fraction", [1.0, 0.999], ids=["no-sampling", "sampling"])
+def test_blank_lines_are_skipped(fraction: float) -> None:
+    """`csv.DictReader` skips them, so an empty `x` never reaches a model."""
+    content = "name,year\n\na,2016\n\n\nb,2006\n\n"
+
+    dataset = stream.iter_csv(io.StringIO(content), fraction=fraction, seed=42)
+    assert [x for x, _ in dataset] == [{"name": "a", "year": "2016"}, {"name": "b", "year": "2006"}]
 
 
 def test_sampling_is_deterministic_for_a_given_seed() -> None:
@@ -154,3 +168,22 @@ def test_a_buffer_passed_in_by_the_caller_is_left_open() -> None:
     _ = list(stream.iter_csv(buffer))
 
     assert not buffer.closed
+
+
+def test_an_abandoned_stream_releases_what_it_took(
+    tmp_path: pathlib.Path, write_file: WriteFile, opened_files: list[typing.TextIO]
+) -> None:
+    """Breaking out of the loop is common, and used to leak the file and the global limit."""
+    limit = csv.field_size_limit()
+    path = write_file(tmp_path / "data.csv", CONTENT)
+
+    dataset = stream.iter_csv(path, field_size_limit=10**6)
+    _ = next(dataset)
+
+    assert csv.field_size_limit() == 10**6
+
+    del dataset
+    _ = gc.collect()
+
+    assert opened_files[0].closed
+    assert csv.field_size_limit() == limit
