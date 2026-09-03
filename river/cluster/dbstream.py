@@ -65,14 +65,17 @@ class DBSTREAM(base.Clusterer):
         Parameter that controls the importance of historical data to current cluster.
         Note that `fading_factor` has to be different from `0`.
     cleanup_interval
-        The time interval between two consecutive time points when the cleanup process is
-         conducted.
+        The time interval between cleanup processes. This interval is also used to
+        determine whether micro-clusters and shared densities are weak.
     minimum_weight
         The minimum weight for a cluster to be not "noisy".
     intersection_factor
         The intersection factor related to the area of the overlap of the micro clusters
         relative to the area cover by micro clusters. This parameter is used to determine
         whether a micro cluster or a shared density is weak.
+    auto_cleanup
+        Whether to automatically run cleanup at each `cleanup_interval`. If `False`, call
+        `cleanup` explicitly instead.
 
     Attributes
     ----------
@@ -138,6 +141,7 @@ class DBSTREAM(base.Clusterer):
         cleanup_interval: float = 2,
         intersection_factor: float = 0.3,
         minimum_weight: float = 1.0,
+        auto_cleanup: bool = True,
     ):
         super().__init__()
         self._time_stamp = 0
@@ -147,6 +151,7 @@ class DBSTREAM(base.Clusterer):
         self.cleanup_interval = cleanup_interval
         self.intersection_factor = intersection_factor
         self.minimum_weight = minimum_weight
+        self.auto_cleanup = auto_cleanup
 
         self._n_clusters: int = 0
         self._clusters: dict[int, DBSTREAMMicroCluster] = {}
@@ -277,6 +282,11 @@ class DBSTREAM(base.Clusterer):
                     s_i[j] = 0
                     s_t_i[j] = 0
 
+    def cleanup(self):
+        """Run the DBSTREAM cleanup process manually."""
+        self._cleanup()
+        self.clustering_is_up_to_date = False
+
     def _generate_weighted_adjacency_matrix(self):
         # Algorithm 3 of Michael Hahsler and Matthew Bolanos: Reclustering using
         # shared density graph
@@ -393,8 +403,8 @@ class DBSTREAM(base.Clusterer):
     def learn_one(self, x, w=None):
         self._update(x)
 
-        if self._time_stamp % self.cleanup_interval == 0:
-            self._cleanup()
+        if self.auto_cleanup and self._time_stamp % self.cleanup_interval == 0:
+            self.cleanup()
 
         self.clustering_is_up_to_date = False
 
