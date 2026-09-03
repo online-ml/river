@@ -1,11 +1,13 @@
 from __future__ import annotations
 
+import narwhals.stable.v2 as nw
 import numpy as np
 import pandas as pd
 import pytest
 from sklearn import naive_bayes as sk_naive_bayes
 
 from river import compose, feature_extraction, naive_bayes
+from tests.frames import FRAME_BACKENDS, FrameBackend
 
 
 def river_models():
@@ -239,6 +241,71 @@ def test_river_vs_sklearn(model, sk_model, bag):
     ):
         for sk_pred, river_pred in zip(sk_preds, river_preds):
             assert river_pred == pytest.approx(1 - sk_pred) or river_pred == pytest.approx(sk_pred)
+
+
+MULTINOMIAL_X = {
+    "Chinese": [2, 2, 1, 1],
+    "Beijing": [1, 0, 0, 0],
+    "Shanghai": [0, 1, 0, 0],
+    "Macao": [0, 0, 1, 0],
+    "Tokyo": [0, 0, 0, 1],
+    "Japan": [0, 0, 0, 1],
+}
+MULTINOMIAL_Y = ["yes", "yes", "maybe", "no"]
+MULTINOMIAL_TEST = {
+    "Chinese": [0, 1, 2],
+    "Beijing": [0, 0, 1],
+    "Shanghai": [0, 1, 0],
+    "Macao": [0, 0, 0],
+    "Tokyo": [1, 0, 0],
+    "Japan": [1, 0, 0],
+    "Taipei": [1, 1, 0],
+}
+
+
+def test_multinomial_predict_many_backend_agnostic(frame_backend: FrameBackend):
+    pandas = FRAME_BACKENDS["pandas"]()
+
+    reference = naive_bayes.MultinomialNB(alpha=1)
+    reference.learn_many(pandas.frame(MULTINOMIAL_X), pandas.series(MULTINOMIAL_Y))
+    expected_proba = nw.from_native(
+        reference.predict_proba_many(pandas.frame(MULTINOMIAL_TEST)),
+        eager_only=True,
+    )
+    expected_pred = nw.from_native(
+        reference.predict_many(pandas.frame(MULTINOMIAL_TEST)),
+        series_only=True,
+    ).to_list()
+
+    model = naive_bayes.MultinomialNB(alpha=1)
+    model.learn_many(frame_backend.frame(MULTINOMIAL_X), frame_backend.series(MULTINOMIAL_Y))
+
+    native_test = frame_backend.frame(MULTINOMIAL_TEST)
+    got_proba_native = model.predict_proba_many(native_test)
+    got_pred_native = model.predict_many(native_test)
+
+    assert type(got_proba_native) is type(native_test)
+    assert type(got_pred_native) is type(frame_backend.series(MULTINOMIAL_Y))
+
+    got_proba = nw.from_native(got_proba_native, eager_only=True)
+    got_pred = nw.from_native(got_pred_native, series_only=True).to_list()
+
+    assert got_proba.columns == expected_proba.columns
+    np.testing.assert_allclose(got_proba.to_numpy(), expected_proba.to_numpy())
+    assert got_pred == expected_pred
+
+
+def test_multinomial_predict_many_not_fit_backend_agnostic(frame_backend: FrameBackend):
+    X = frame_backend.frame({"Chinese": [1, 0], "Tokyo": [0, 1]})
+    model = naive_bayes.MultinomialNB()
+
+    proba = model.predict_proba_many(X)
+    pred = model.predict_many(X)
+
+    assert type(proba) is type(X)
+    assert type(pred) is type(X)
+    assert nw.from_native(proba, eager_only=True).columns == []
+    assert nw.from_native(pred, eager_only=True).columns == []
 
 
 def test_gaussian_learn_many_vs_learn_one():
