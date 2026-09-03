@@ -1,0 +1,9 @@
+{
+    "arch": "x86_64",
+    "cpu": "AMD EPYC 9V74 80-Core Processor",
+    "machine": "runnervmejwal",
+    "num_cpu": "4",
+    "os": "Linux 6.17.0-1022-azure",
+    "ram": "16766410752",
+    "version": 1
+}
