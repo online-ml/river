@@ -771,7 +771,7 @@ class Normalizer(base.Transformer):
 
     def transform_one(self, x):
         norm = utils.math.norm(x, order=self.order)
-        return {i: xi / norm for i, xi in x.items()}
+        return {i: safe_div(xi, norm) for i, xi in x.items()}
 
 
 class AdaptiveStandardScaler(base.Transformer):
