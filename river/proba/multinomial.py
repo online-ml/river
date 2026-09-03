@@ -101,42 +101,46 @@ class Multinomial(base.DiscreteDistribution):
 
     """
 
-    def __init__(self, events: dict | list | None = None, seed=None):
+    def __init__(
+        self,
+        events: dict[typing.Any, int] | list[typing.Any] | None = None,
+        seed: int | None = None,
+    ):
         super().__init__(seed)
         self.events = events
         self.counts: typing.Counter[typing.Any] = collections.Counter(events)
         self._n = sum(self.counts.values())
 
     @property
-    def n_samples(self):
+    def n_samples(self) -> int:
         return self._n
 
-    def __iter__(self):
+    def __iter__(self) -> typing.Iterator[typing.Any]:
         return iter(self.counts)
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.counts)
 
     @property
-    def mode(self):
+    def mode(self) -> typing.Any:
         return self.counts.most_common(1)[0][0]
 
-    def update(self, x):
+    def update(self, x: typing.Hashable) -> None:
         self.counts.update([x])
         self._n += 1
 
-    def revert(self, x):
+    def revert(self, x: typing.Hashable) -> None:
         self.counts.subtract([x])
         self._n -= 1
 
-    def sample(self):
+    def sample(self) -> typing.Any:
         return self._rng.choices(list(self.counts.keys()), weights=list(self.counts.values()))[0]
 
-    def __call__(self, x):
+    def __call__(self, x: typing.Hashable) -> float:
         try:
             return self.counts[x] / self._n
         except ZeroDivisionError:
             return 0.0
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return "\n".join(f"P({c}) = {self(c):.3f}" for c, _ in self.counts.most_common())
