@@ -1000,6 +1000,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#preprocessing" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        preprocessing
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2241,6 +2252,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#preprocessing" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        preprocessing
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2267,6 +2289,10 @@
 <li><a href="../../api/stream/iter-csv"><code>stream.iter_csv</code></a> now closes the file it opened and restores <code>csv.field_size_limit</code> even when the stream is not exhausted, e.g. when the caller breaks out of the loop. Only the file <code>iter_csv</code> opened itself is closed; a buffer passed in by the caller is still left open.</li>
 <li><a href="../../api/stream/iter-sql"><code>stream.iter_sql</code></a> now closes the result it iterates, so the underlying cursor is released once the stream is exhausted or abandoned.</li>
 <li><code>stream.cache</code>, <a href="../../api/stream/iter-csv"><code>stream.iter_csv</code></a>, and <a href="../../api/stream/iter-sql"><code>stream.iter_sql</code></a> are now clean under strict mypy. <code>sqlalchemy</code> is type-checked rather than ignored, so the <code>query</code> and <code>conn</code> arguments of <a href="../../api/stream/iter-sql"><code>stream.iter_sql</code></a> are checked against the SQLAlchemy 2.0 types.</li>
+</ul>
+<h2 id="preprocessing">preprocessing<a class="headerlink" href="#preprocessing" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../../api/preprocessing/Normalizer"><code>preprocessing.Normalizer</code></a> now handles zero vectors without raising a <code>ZeroDivisionError</code>. A zero vector is returned unchanged instead.</li>
 </ul>
 
 
