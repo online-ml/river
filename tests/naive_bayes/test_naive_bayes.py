@@ -14,6 +14,7 @@ def river_models():
         naive_bayes.MultinomialNB,
         naive_bayes.BernoulliNB,
         naive_bayes.ComplementNB,
+        naive_bayes.CategoricalNB,
     ]
 
 
@@ -23,6 +24,7 @@ def sklearn_models():
         (naive_bayes.MultinomialNB, sk_naive_bayes.MultinomialNB),
         (naive_bayes.BernoulliNB, sk_naive_bayes.BernoulliNB),
         (naive_bayes.ComplementNB, sk_naive_bayes.ComplementNB),
+        (naive_bayes.CategoricalNB, sk_naive_bayes.CategoricalNB),
     ]
 
 
@@ -216,6 +218,9 @@ def test_river_vs_sklearn(model, sk_model, bag):
     same with dense and sparse dataframe. Models tested are MultinomialNB, BernoulliNB and
     ComplementNB with different alpha parameters.
     """
+    if isinstance(model["model"], naive_bayes.CategoricalNB):
+        pytest.skip("CategoricalNB expects dense categorical features.")
+
     for x, y in yield_batch_dataset():
         model.learn_many(x, y)
 
