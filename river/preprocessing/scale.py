@@ -538,6 +538,9 @@ class MinMaxScaler(base.Transformer):
         for i, xi in x.items():
             lo = min_[i].get()
             hi = max_[i].get()
+            if lo is None or hi is None or hi < lo:
+                result[i] = 0.0
+                continue
             d = hi - lo
             result[i] = (xi - lo) / d if d else 0.0
         return result
