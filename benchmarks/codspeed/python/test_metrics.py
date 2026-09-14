@@ -1,5 +1,5 @@
 from marks import benchmark
-from workloads import label_pairs, multiclass_stream, score_pairs
+from workloads import label_pairs, multiclass_stream, score_pairs, ranking_pairs
 
 from river import metrics
 
@@ -62,4 +62,40 @@ def test_classification_report_update(benchmark) -> None:
         for y_true, y_pred in pairs:
             metric.update(y_true, y_pred)
 
+    benchmark(run)
+
+
+@benchmark("metrics")
+def test_precisionatk_update(benchmark) -> None:
+    pairs = ranking_pairs()
+    
+    def run() -> None:
+        metric = metrics.PrecisionAtK()
+        for y_true, y_pred in pairs:
+            metric.update(y_true, y_pred)
+    
+    benchmark(run)
+    
+    
+@benchmark("metrics")
+def test_recallatk_update(benchmark) -> None:
+    pairs = ranking_pairs()
+    
+    def run() -> None:
+        metric = metrics.RecallAtK()
+        for y_true, y_pred in pairs:
+            metric.update(y_true, y_pred)
+    
+    benchmark(run)
+    
+    
+@benchmark("metrics")
+def test_f1atk_update(benchmark) -> None:
+    pairs = ranking_pairs()
+    
+    def run() -> None:
+        metric = metrics.F1AtK()
+        for y_true, y_pred in pairs:
+            metric.update(y_true, y_pred)
+    
     benchmark(run)
