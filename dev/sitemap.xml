@@ -985,6 +985,9 @@
         <loc>https://riverml.xyz/dev/api/naive-bayes/BernoulliNB/</loc>
       </url>
       <url>
+        <loc>https://riverml.xyz/dev/api/naive-bayes/CategoricalNB/</loc>
+      </url>
+      <url>
         <loc>https://riverml.xyz/dev/api/naive-bayes/ComplementNB/</loc>
       </url>
       <url>
