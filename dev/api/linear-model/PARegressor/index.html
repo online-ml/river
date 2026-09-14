@@ -4314,18 +4314,22 @@
 <ul>
 <li>
 <p><strong>C</strong></p>
+<p><em>Type</em> → <code>float</code></p>
 <p><em>Default</em> → <code>1.0</code></p>
 </li>
 <li>
 <p><strong>mode</strong></p>
+<p><em>Type</em> → <code>int</code></p>
 <p><em>Default</em> → <code>1</code></p>
 </li>
 <li>
 <p><strong>eps</strong></p>
+<p><em>Type</em> → <code>float</code></p>
 <p><em>Default</em> → <code>0.1</code></p>
 </li>
 <li>
 <p><strong>learn_intercept</strong></p>
+<p><em>Type</em> → <code>bool</code></p>
 <p><em>Default</em> → <code>True</code></p>
 </li>
 </ul>
@@ -4364,8 +4368,8 @@ MSE: 472.393532
 <p>Fits to a set of features <code>x</code> and a real-valued target <code>y</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>    </li>
-<li><strong>y</strong>    </li>
+<li><strong>x</strong>     — <code>dict[base.typing.FeatureName, typing.Any]</code>    </li>
+<li><strong>y</strong>     — <code>base.typing.RegTarget</code>    </li>
 </ul>
 </details>
 <p><span /></p>
@@ -4374,10 +4378,10 @@ MSE: 472.393532
 <p>Predict the output of features <code>x</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>    </li>
+<li><strong>x</strong>     — <code>dict[base.typing.FeatureName, typing.Any]</code>    </li>
 </ul>
 <p><strong>Returns</strong></p>
-<p>The prediction.</p>
+<p><code>base.typing.RegTarget</code>:     The prediction.</p>
 </details>
 <p><span /></p>
 <h2 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h2>

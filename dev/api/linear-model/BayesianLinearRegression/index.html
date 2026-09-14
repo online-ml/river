@@ -4316,11 +4316,13 @@
 <ul>
 <li>
 <p><strong>alpha</strong></p>
+<p><em>Type</em> → <code>float</code></p>
 <p><em>Default</em> → <code>1</code></p>
 <p>Prior parameter.</p>
 </li>
 <li>
 <p><strong>beta</strong></p>
+<p><em>Type</em> → <code>float</code></p>
 <p><em>Default</em> → <code>1</code></p>
 <p>Noise parameter.</p>
 </li>
@@ -4350,7 +4352,7 @@
 </code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>43.855...
 </code></pre></div></p>
-<p><div class="language-python highlight"><pre><span></span><code><span class="n">model</span><span class="o">.</span><span class="n">predict_one</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">with_dist</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<p><div class="language-python highlight"><pre><span></span><code><span class="n">model</span><span class="o">.</span><span class="n">predict_dist_one</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 </code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>𝒩(μ=43.85..., σ=1.00...)
 </code></pre></div></p>
@@ -4446,11 +4448,14 @@ filled with a running statistic before they reach the model:</p>
 <p>Fits to a set of features <code>x</code> and a real-valued target <code>y</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     — <code>dict[base.typing.FeatureName, Any]</code>    </li>
+<li><strong>x</strong>     — <code>dict[base.typing.FeatureName, typing.Any]</code>    </li>
 <li><strong>y</strong>     — <code>base.typing.RegTarget</code>    </li>
 </ul>
 </details>
 <p><span /></p>
+<details class="- abstract">
+<summary>predict_dist_one</summary>
+</details>
 <details class="- abstract">
 <summary>predict_many</summary>
 <p>Predict the outcome for each given sample.</p>
@@ -4467,8 +4472,7 @@ filled with a running statistic before they reach the model:</p>
 <p>Predict the output of features <code>x</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     — <code>dict[base.typing.FeatureName, Any]</code>    </li>
-<li><strong>with_dist</strong>     — defaults to <code>False</code>    </li>
+<li><strong>x</strong>     — <code>dict[base.typing.FeatureName, typing.Any]</code>    </li>
 </ul>
 <p><strong>Returns</strong></p>
 <p><code>base.typing.RegTarget</code>:     The prediction.</p>

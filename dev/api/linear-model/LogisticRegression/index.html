@@ -4328,16 +4328,19 @@
 </li>
 <li>
 <p><strong>l2</strong> <em>(mutable)</em></p>
+<p><em>Type</em> → <code>float</code></p>
 <p><em>Default</em> → <code>0.0</code></p>
 <p>Amount of L2 regularization used to push weights towards 0. For now, only one type of penalty can be used. The joint use of L1 and L2 is not explicitly supported.</p>
 </li>
 <li>
 <p><strong>l1</strong> <em>(mutable)</em></p>
+<p><em>Type</em> → <code>float</code></p>
 <p><em>Default</em> → <code>0.0</code></p>
 <p>Amount of L1 regularization used to push weights towards 0. For now, only one type of penalty can be used. The joint use of L1 and L2 is not explicitly supported.</p>
 </li>
 <li>
 <p><strong>intercept_init</strong></p>
+<p><em>Type</em> → <code>float</code></p>
 <p><em>Default</em> → <code>0.0</code></p>
 <p>Initial intercept value.</p>
 </li>
@@ -4349,6 +4352,7 @@
 </li>
 <li>
 <p><strong>clip_gradient</strong> <em>(mutable)</em></p>
+<p><em>Type</em> → <code>float</code></p>
 <p><em>Default</em> → <code>1000000000000.0</code></p>
 <p>Clips the absolute value of each gradient value.</p>
 </li>
@@ -4404,9 +4408,9 @@
 <p>Update the model with a set of features <code>x</code> and a label <code>y</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     — <code>dict[base.typing.FeatureName, Any]</code>    </li>
-<li><strong>y</strong>     — <code>base.typing.ClfTarget</code>    </li>
-<li><strong>w</strong>     — defaults to <code>1.0</code>    </li>
+<li><strong>x</strong>     — <code>dict[base.typing.FeatureName, typing.Any]</code>    </li>
+<li><strong>y</strong>     — <code>typing.Any</code>    </li>
+<li><strong>w</strong>     — <code>float</code>     — defaults to <code>1.0</code>    </li>
 </ul>
 </details>
 <p><span /></p>
@@ -4449,10 +4453,11 @@
 <p>Predict the probability of each label for a dictionary of features <code>x</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>    </li>
+<li><strong>x</strong>     — <code>dict[base.typing.FeatureName, typing.Any]</code>    </li>
+<li><strong>kwargs</strong>     — <code>typing.Any</code>    </li>
 </ul>
 <p><strong>Returns</strong></p>
-<p>A dictionary that associates a probability which each label.</p>
+<p><code>dict&amp;#91;base.typing.ClfTarget, float&amp;#93;</code>:     A dictionary that associates a probability which each label.</p>
 </details>
 <p><span /></p>
 

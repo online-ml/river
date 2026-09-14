@@ -4328,16 +4328,19 @@
 </li>
 <li>
 <p><strong>l2</strong> <em>(mutable)</em></p>
+<p><em>Type</em> → <code>float</code></p>
 <p><em>Default</em> → <code>0.0</code></p>
 <p>Amount of L2 regularization used to push weights towards 0. For now, only one type of penalty can be used. The joint use of L1 and L2 is not explicitly supported.</p>
 </li>
 <li>
 <p><strong>l1</strong> <em>(mutable)</em></p>
+<p><em>Type</em> → <code>float</code></p>
 <p><em>Default</em> → <code>0.0</code></p>
 <p>Amount of L1 regularization used to push weights towards 0. For now, only one type of penalty can be used. The joint use of L1 and L2 is not explicitly supported.</p>
 </li>
 <li>
 <p><strong>intercept_init</strong></p>
+<p><em>Type</em> → <code>float</code></p>
 <p><em>Default</em> → <code>0.0</code></p>
 <p>Initial intercept value.</p>
 </li>
@@ -4349,6 +4352,7 @@
 </li>
 <li>
 <p><strong>clip_gradient</strong> <em>(mutable)</em></p>
+<p><em>Type</em> → <code>float</code></p>
 <p><em>Default</em> → <code>1000000000000.0</code></p>
 <p>Clips the absolute value of each gradient value.</p>
 </li>
@@ -4432,7 +4436,7 @@ Prediction: 32.54607
 <p>Debugs the output of the linear regression.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     — <code>dict</code>    </li>
+<li><strong>x</strong>     — <code>dict[base.typing.FeatureName, typing.Any]</code>    </li>
 <li><strong>decimals</strong>     — <code>int</code>     — defaults to <code>5</code>    </li>
 </ul>
 <p><strong>Returns</strong></p>
@@ -4455,9 +4459,9 @@ Prediction: 32.54607
 <p>Fits to a set of features <code>x</code> and a real-valued target <code>y</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     — <code>dict[base.typing.FeatureName, Any]</code>    </li>
-<li><strong>y</strong>     — <code>base.typing.RegTarget</code>    </li>
-<li><strong>w</strong>     — defaults to <code>1.0</code>    </li>
+<li><strong>x</strong>     — <code>dict[base.typing.FeatureName, typing.Any]</code>    </li>
+<li><strong>y</strong>     — <code>typing.Any</code>    </li>
+<li><strong>w</strong>     — <code>float</code>     — defaults to <code>1.0</code>    </li>
 </ul>
 </details>
 <p><span /></p>
@@ -4477,10 +4481,10 @@ Prediction: 32.54607
 <p>Predict the output of features <code>x</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>    </li>
+<li><strong>x</strong>     — <code>dict[base.typing.FeatureName, typing.Any]</code>    </li>
 </ul>
 <p><strong>Returns</strong></p>
-<p>The prediction.</p>
+<p><code>base.typing.RegTarget</code>:     The prediction.</p>
 </details>
 <p><span /></p>
 

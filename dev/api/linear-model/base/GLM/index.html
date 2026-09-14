@@ -4329,34 +4329,42 @@
 <ul>
 <li>
 <p><strong>optimizer</strong> <em>(mutable)</em></p>
+<p><em>Type</em> → <code>optim.base.Optimizer</code></p>
 <p>The sequential optimizer used for updating the weights. Note that the intercept updates are handled separately.</p>
 </li>
 <li>
 <p><strong>loss</strong> <em>(mutable)</em></p>
+<p><em>Type</em> → <code>optim.losses.Loss</code></p>
 <p>The loss function to optimize for.</p>
 </li>
 <li>
 <p><strong>l2</strong> <em>(mutable)</em></p>
+<p><em>Type</em> → <code>float</code></p>
 <p>Amount of L2 regularization used to push weights towards 0. For now, only one type of penalty can be used. The joint use of L1 and L2 is not explicitly supported.</p>
 </li>
 <li>
 <p><strong>l1</strong> <em>(mutable)</em></p>
+<p><em>Type</em> → <code>float</code></p>
 <p>Amount of L1 regularization used to push weights towards 0. For now, only one type of penalty can be used. The joint use of L1 and L2 is not explicitly supported.</p>
 </li>
 <li>
 <p><strong>intercept_init</strong></p>
+<p><em>Type</em> → <code>float</code></p>
 <p>Initial intercept value.</p>
 </li>
 <li>
 <p><strong>intercept_lr</strong> <em>(mutable)</em></p>
+<p><em>Type</em> → <code>optim.base.Scheduler | float</code></p>
 <p>Learning rate scheduler used for updating the intercept. A <code>optim.schedulers.Constant</code> is used if a <code>float</code> is provided. The intercept is not updated when this is set to 0.</p>
 </li>
 <li>
 <p><strong>clip_gradient</strong> <em>(mutable)</em></p>
+<p><em>Type</em> → <code>float</code></p>
 <p>Clips the absolute value of each gradient value.</p>
 </li>
 <li>
 <p><strong>initializer</strong> <em>(mutable)</em></p>
+<p><em>Type</em> → <code>optim.base.Initializer</code></p>
 <p>Weights initialization scheme.</p>
 </li>
 </ul>

@@ -990,6 +990,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#linear_model" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        linear_model
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#stream" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -2242,6 +2253,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#linear_model" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        linear_model
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#stream" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -2282,6 +2304,10 @@
 
 
 <h1 id="unreleased">Unreleased<a class="headerlink" href="#unreleased" title="Permanent link">&para;</a></h1>
+<h2 id="linear_model">linear_model<a class="headerlink" href="#linear_model" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>BayesianLinearRegression.predict_dist_one</code> now replaces <code>BayesianLinearRegression.predict_one(..., with_dist=True)</code> to better respect the <code>Regressor</code> interface while still being able to predict distributions.</li>
+</ul>
 <h2 id="stream">stream<a class="headerlink" href="#stream" title="Permanent link">&para;</a></h2>
 <ul>
 <li><a href="../../api/stream/Cache"><code>stream.Cache</code></a> now writes a pass to a temporary file and renames it into place once the stream is exhausted. An interrupted first pass (a <code>break</code>, an exception, an abandoned generator) used to leave a truncated file behind, which every later pass then read back as if it were the whole dataset.</li>
