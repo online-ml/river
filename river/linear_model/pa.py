@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import collections
+import typing
+from collections.abc import Callable
 
 import numpy as np
 
@@ -10,28 +12,32 @@ __all__ = ["PAClassifier", "PARegressor"]
 
 
 class BasePA:
-    def __init__(self, C, mode, learn_intercept):
+    def __init__(self, C: float, mode: int, learn_intercept: bool) -> None:
         self.C = C
         self.mode = mode
-        self.calc_tau = {0: self._calc_tau_0, 1: self._calc_tau_1, 2: self._calc_tau_2}[mode]
+        self.calc_tau: Callable[[dict[base.typing.FeatureName, float], float], float] = {
+            0: self._calc_tau_0,
+            1: self._calc_tau_1,
+            2: self._calc_tau_2,
+        }[mode]
         self.learn_intercept = learn_intercept
-        self.weights = collections.defaultdict(float)
+        self.weights: dict[base.typing.FeatureName, float] = collections.defaultdict(float)
         self.intercept = 0.0
 
     @classmethod
-    def _calc_tau_0(cls, x, loss):
+    def _calc_tau_0(cls, x: dict[base.typing.FeatureName, float], loss: float) -> float:
         norm = utils.math.norm(x, order=2) ** 2
         if norm > 0:
             return loss / utils.math.norm(x, order=2) ** 2
         return 0
 
-    def _calc_tau_1(self, x, loss):
+    def _calc_tau_1(self, x: dict[base.typing.FeatureName, float], loss: float) -> float:
         norm = utils.math.norm(x, order=2) ** 2
         if norm > 0:
             return min(self.C, loss / norm)
         return 0
 
-    def _calc_tau_2(self, x, loss):
+    def _calc_tau_2(self, x: dict[base.typing.FeatureName, float], loss: float) -> float:
         return loss / (utils.math.norm(x, order=2) ** 2 + 0.5 / self.C)
 
 
@@ -82,12 +88,16 @@ class PARegressor(BasePA, base.Regressor):
 
     """
 
-    def __init__(self, C=1.0, mode=1, eps=0.1, learn_intercept=True):
+    def __init__(
+        self, C: float = 1.0, mode: int = 1, eps: float = 0.1, learn_intercept: bool = True
+    ) -> None:
         super().__init__(C=C, mode=mode, learn_intercept=learn_intercept)
         self.eps = eps
         self.loss = optim.losses.EpsilonInsensitiveHinge(eps=eps)
 
-    def learn_one(self, x, y):
+    def learn_one(
+        self, x: dict[base.typing.FeatureName, typing.Any], y: base.typing.RegTarget
+    ) -> None:
         y_pred = self.predict_one(x)
         tau = self.calc_tau(x, self.loss(y, y_pred))
         step = tau * np.sign(y - y_pred)
@@ -97,7 +107,7 @@ class PARegressor(BasePA, base.Regressor):
         if self.learn_intercept:
             self.intercept += step
 
-    def predict_one(self, x):
+    def predict_one(self, x: dict[base.typing.FeatureName, typing.Any]) -> base.typing.RegTarget:
         return utils.math.dot(x, self.weights) + self.intercept
 
 
@@ -164,20 +174,25 @@ class PAClassifier(BasePA, base.Classifier):
 
     """
 
-    def __init__(self, C=1.0, mode=1, learn_intercept=True):
+    def __init__(self, C: float = 1.0, mode: int = 1, learn_intercept: bool = True) -> None:
         super().__init__(C=C, mode=mode, learn_intercept=learn_intercept)
         self.loss = optim.losses.Hinge()
 
-    def learn_one(self, x, y):
+    def learn_one(
+        self, x: dict[base.typing.FeatureName, typing.Any], y: base.typing.ClfTarget
+    ) -> None:
         y_pred = utils.math.dot(x, self.weights) + self.intercept
         tau = self.calc_tau(x, self.loss(y, y_pred))
-        step = tau * (y or -1)  # y == False becomes -1
+        # y == False becomes -1
+        step = tau * (y or -1)  # type: ignore[operator]
 
         for i, xi in x.items():
             self.weights[i] += step * xi
         if self.learn_intercept:
             self.intercept += step
 
-    def predict_proba_one(self, x):
+    def predict_proba_one(
+        self, x: dict[base.typing.FeatureName, typing.Any], **kwargs: typing.Any
+    ) -> dict[base.typing.ClfTarget, float]:
         y_pred = utils.math.sigmoid(utils.math.dot(x, self.weights) + self.intercept)
         return {False: 1.0 - y_pred, True: y_pred}

@@ -615,7 +615,7 @@ def test_bayesian_predict_many_returns_native_backend(
 def test_bayesian_predict_one_distribution_uses_predictive_variance() -> None:
     """The predictive distribution must expose the standard deviation, not its square root."""
     model = lm.BayesianLinearRegression(beta=25)
-    prediction = model.predict_one({}, with_dist=True)
+    prediction = model.predict_dist_one({})
     assert prediction.sigma == pytest.approx(1 / math.sqrt(model.beta))
 
 
@@ -639,8 +639,8 @@ def test_bayesian_learn_many_matches_learn_one(
     # covariance through chained Sherman-Morrison rank-1 updates that drift slightly from the
     # single inverse `learn_many` computes.
     for x in feats:
-        got = many.predict_one(x, with_dist=True)
-        want = one.predict_one(x, with_dist=True)
+        got = many.predict_dist_one(x)
+        want = one.predict_dist_one(x)
         assert math.isclose(got.mu, want.mu, rel_tol=1e-5, abs_tol=1e-6)
         assert math.isclose(got.sigma, want.sigma, rel_tol=1e-5, abs_tol=1e-6)
 
