@@ -71,6 +71,38 @@ def test_standard_scaler_add_remove_columns():
         ss.learn_many(xb[cols])
 
 
+@pytest.mark.parametrize("window_size", [None, 1, 3])
+def test_minmax_scaler_transform_before_learn(window_size):
+    scaler = preprocessing.MinMaxScaler(window_size=window_size)
+    assert scaler.transform_one({}) == {}
+    for _ in range(2):
+        assert scaler.transform_one({"x": 2.0, "y": -3.0}) == {"x": 0.0, "y": 0.0}
+    scaler.learn_one({"x": 5.0, "y": -1.0})
+    assert scaler.min["x"].get() == scaler.max["x"].get() == 5.0
+    assert scaler.min["y"].get() == scaler.max["y"].get() == -1.0
+    assert scaler.transform_one({"x": 5.0, "y": -1.0}) == {"x": 0.0, "y": 0.0}
+
+
+@pytest.mark.parametrize("window_size", [None, 3])
+@pytest.mark.parametrize("warm_start", [False, True])
+def test_minmax_scaler_transform_unseen_feature(window_size, warm_start):
+    scaler = preprocessing.MinMaxScaler(window_size=window_size)
+    if warm_start:
+        scaler = preprocessing.MinMaxScaler._from_state(
+            min={"x": 1.0}, max={"x": 5.0}, window_size=window_size
+        )
+    else:
+        scaler.learn_one({"x": 1.0})
+        scaler.learn_one({"x": 5.0})
+    x = {"x": 3.0, "y": 100.0}
+    for _ in range(2):
+        assert scaler.transform_one(x) == {"x": 0.5, "y": 0.0}
+    assert x == {"x": 3.0, "y": 100.0}
+    scaler.learn_one({"y": 2.0})
+    scaler.learn_one({"y": 6.0})
+    assert scaler.transform_one({"x": 7.0, "y": 4.0}) == {"x": 1.5, "y": 0.5}
+
+
 def test_minmax_scaler_warm_start():
     """`_from_state` seeds min/max so the very first transform uses them."""
     scaler = preprocessing.MinMaxScaler._from_state(min={"x": 8.0}, max={"x": 12.0})
