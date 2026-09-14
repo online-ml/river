@@ -513,6 +513,7 @@ nav:
       - api/stats/RollingMode.md
       - api/stats/RollingPeakToPeak.md
       - api/stats/RollingQuantile.md
+      - api/stats/SavitzkyGolay.md
       - api/stats/SEM.md
       - api/stats/Shift.md
       - api/stats/Skew.md
