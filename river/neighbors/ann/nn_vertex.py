@@ -3,6 +3,7 @@ from __future__ import annotations
 import heapq
 import math
 import random
+import typing
 
 
 class Vertex:
@@ -10,7 +11,7 @@ class Vertex:
 
     _isolated: set[int] = set()
 
-    def __init__(self, item, uuid: int) -> None:
+    def __init__(self, item: typing.Any, uuid: int) -> None:
         self.item = item
         self.uuid = uuid
         self.edges: dict[int, float] = {}
@@ -18,19 +19,19 @@ class Vertex:
         self.flags: set[int] = set()
         self.worst_edge: int | None = None
 
-    def __eq__(self, other) -> bool:
+    def __eq__(self, other: typing.Any) -> bool:
         if not isinstance(other, Vertex):
             raise NotImplementedError
 
         return self.uuid == other.uuid
 
-    def __lt__(self, other) -> bool:
+    def __lt__(self, other: typing.Any) -> bool:
         if not isinstance(other, Vertex):
             raise NotImplementedError
 
         return self.uuid < other.uuid
 
-    def farewell(self, vertex_pool: list[Vertex]):
+    def farewell(self, vertex_pool: typing.Sequence[Vertex]) -> None:
         for rn in list(self.r_edges):
             vertex_pool[rn].rem_edge(self)
 
@@ -39,7 +40,7 @@ class Vertex:
 
         Vertex._isolated.discard(self.uuid)
 
-    def fill(self, neighbors: list[Vertex], dists: list[float]):
+    def fill(self, neighbors: list[Vertex], dists: list[float]) -> None:
         for n, dist in zip(neighbors, dists):
             self.edges[n.uuid] = dist
             self.flags.add(n.uuid)
@@ -47,9 +48,9 @@ class Vertex:
 
         # Neighbors are ordered by distance, so the last neighbor
         # is the farthest one
-        self.worst_edge = n.uuid
+        self.worst_edge = neighbors[-1].uuid
 
-    def add_edge(self, vertex: Vertex, dist):
+    def add_edge(self, vertex: Vertex, dist: float) -> None:
         self.edges[vertex.uuid] = dist
         self.flags.add(vertex.uuid)
         vertex.r_edges[self.uuid] = dist
@@ -57,7 +58,7 @@ class Vertex:
         if self.worst_edge is None or self.edges[self.worst_edge] < dist:
             self.worst_edge = vertex.uuid
 
-    def rem_edge(self, vertex: Vertex):
+    def rem_edge(self, vertex: Vertex) -> None:
         self.edges.pop(vertex.uuid)
         vertex.r_edges.pop(self.uuid)
         self.flags.discard(vertex.uuid)
@@ -86,10 +87,10 @@ class Vertex:
 
         return 1
 
-    def is_neighbor(self, vertex: Vertex):
+    def is_neighbor(self, vertex: Vertex) -> bool:
         return vertex.uuid in self.edges or vertex.uuid in self.r_edges
 
-    def get_edge(self, vertex: Vertex):
+    def get_edge(self, vertex: Vertex) -> tuple[Vertex, Vertex, float]:
         if vertex.uuid in self.edges:
             return self, vertex, self.edges[vertex.uuid]
         return vertex, self, self.r_edges[vertex.uuid]
@@ -101,30 +102,30 @@ class Vertex:
         return len(self.r_edges) > 0
 
     @property
-    def sample_flags(self):
+    def sample_flags(self) -> list[bool]:
         return list(map(lambda n: n in self.flags, self.edges.keys()))
 
     @sample_flags.setter
-    def sample_flags(self, sampled):
-        self.flags -= set(sampled)
+    def sample_flags(self, sampled: set[int]) -> None:
+        self.flags -= sampled
 
     def neighbors(self) -> tuple[list[int], list[float]]:
-        res = tuple(map(list, zip(*((node, dist) for node, dist in self.edges.items()))))
-        return res if len(res) > 0 else ([], [])  # type: ignore
+        res = [(node, dist) for node, dist in self.edges.items()]
+        return [n for n, _ in res], [d for _, d in res]
 
     def r_neighbors(self) -> tuple[list[int], list[float]]:
-        res = tuple(map(list, zip(*((vertex, dist) for vertex, dist in self.r_edges.items()))))
-        return res if len(res) > 0 else ([], [])  # type: ignore
+        res = [(vertex, dist) for vertex, dist in self.r_edges.items()]
+        return [v for v, _ in res], [d for _, d in res]
 
     def all_neighbors(self) -> set[int]:
         return self.edges.keys() | self.r_edges.keys()
 
-    def is_isolated(self):
+    def is_isolated(self) -> bool:
         return len(self.edges) == 0 and len(self.r_edges) == 0
 
     def prune(
         self, prune_prob: float, prune_trigger: int, vertex_pool: list[Vertex], rng: random.Random
-    ):
+    ) -> None:
         if prune_prob == 0:
             return
 

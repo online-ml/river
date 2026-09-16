@@ -6,8 +6,9 @@ import math
 import operator
 import random
 import typing
+from collections.abc import Iterator
 
-from river import utils
+from river import base, utils
 from river.neighbors.base import BaseNN, DistanceFunc, FunctionWrapper
 
 from .nn_vertex import Vertex
@@ -96,11 +97,11 @@ class SWINN(BaseNN):
         prune_prob: float = 0.0,
         n_iters: int = 10,
         seed: int | None = None,
-    ):
+    ) -> None:
         self.graph_k = graph_k
         if dist_func is None:
-            dist_func = utils.math._euclidean_distance  # type: ignore[attr-defined,assignment]
-        self.dist_func = dist_func  # type: ignore[assignment]
+            dist_func = typing.cast(DistanceFunc, utils.math._euclidean_distance)
+        self.dist_func = dist_func
 
         self.maxlen = maxlen
         self.warm_up = warm_up
@@ -115,21 +116,21 @@ class SWINN(BaseNN):
         self.n_iters = n_iters
         self.seed = seed
 
-        self._data: collections.deque[Vertex | None] = collections.deque(maxlen=self.maxlen)
+        self._data: collections.deque[Vertex] = collections.deque(maxlen=self.maxlen)
         self._uuid: int = 0
         self._rng = random.Random(self.seed)
         self._index = False
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self._data)
 
-    def __getitem__(self, i):
+    def __getitem__(self, i: int) -> Vertex:
         return self._data[i]
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[Vertex]:
         yield from self._data
 
-    def _init_graph(self):
+    def _init_graph(self) -> None:
         """Create a random nearest neighbor graph."""
         n_nodes = len(self)
 
@@ -141,7 +142,7 @@ class SWINN(BaseNN):
             self[nid].fill([self[n] for n in ns], dists)
             nodes.add(nid)
 
-    def _fix_graph(self):
+    def _fix_graph(self) -> None:
         """Connect every isolated node in the graph to their nearest neighbors."""
 
         for nid in list(Vertex._isolated):
@@ -153,7 +154,7 @@ class SWINN(BaseNN):
         # Update class property
         Vertex._isolated.clear()
 
-    def _safe_node_removal(self, nid: int):
+    def _safe_node_removal(self, nid: int) -> None:
         """Remove the oldest data point from the search graph.
 
         Make sure nodes are accessible from any given starting point after removing the oldest
@@ -163,14 +164,14 @@ class SWINN(BaseNN):
         """
         node = self[nid]
         # Get previous neighborhood info
-        rns = node.r_neighbors()[0]
-        ns = node.neighbors()[0]
+        prev_rns = node.r_neighbors()[0]
+        prev_ns = node.neighbors()[0]
         node.farewell(vertex_pool=self._data)
 
         # Nodes whose only direct neighbor was the removed node
-        rns = {rn for rn in rns if not self[rn].has_neighbors()}
+        rns = {rn for rn in prev_rns if not self[rn].has_neighbors()}
         # Nodes whose only reverse neighbor was the removed node
-        ns = {n for n in ns if not self[n].has_rneighbors()}
+        ns = {n for n in prev_ns if not self[n].has_rneighbors()}
 
         affected = list(rns | ns)
         isolated = rns.intersection(ns)
@@ -182,26 +183,23 @@ class SWINN(BaseNN):
 
         rns -= isolated
         ns -= isolated
-        ns = tuple(ns)
+        seeds = tuple(ns)
 
         # Nodes with no direct neighbors
         for rn in rns:
             seed = None
             # Check the group of nodes without reverse neighborhood for seeds
             # Thus we can join two separate groups
-            if len(ns) > 0:
-                seed = self[self._rng.choice(ns)]
+            if len(seeds) > 0:
+                seed = self[self._rng.choice(seeds)]
 
             # Use the search index to create new connections
             neighbors, dists = self._search(self[rn].item, self.graph_k, seed=seed, exclude={rn})
             self[rn].fill(neighbors, dists)
 
-        self._data[nid] = None
-        del node
-
         self._refine(affected)
 
-    def _refine(self, nodes: list[int] | None = None):
+    def _refine(self, nodes: list[int] | None = None) -> None:
         """Update the nearest neighbor graph to improve the edge distances.
 
         Parameters
@@ -227,14 +225,14 @@ class SWINN(BaseNN):
         for _ in range(self.n_iters):
             total_changes = 0
 
-            new = collections.defaultdict(set)
-            old = collections.defaultdict(set)
+            new: dict[int, set[int]] = collections.defaultdict(set)
+            old: dict[int, set[int]] = collections.defaultdict(set)
 
             # Expand undirected neighborhood
             for nid in nodes:
                 node = _data[nid]
-                neighbors = node.neighbors()[0]  # type: ignore[union-attr]
-                flags = node.sample_flags  # type: ignore[union-attr]
+                neighbors = node.neighbors()[0]
+                flags = node.sample_flags
 
                 for neigh, flag in zip(neighbors, flags):
                     # To avoid evaluating previous neighbors again
@@ -254,7 +252,7 @@ class SWINN(BaseNN):
                 if len(old[nid]) > max_candidates:
                     old[nid] = _rng.sample(tuple(old[nid]), max_candidates)  # type: ignore
 
-                _data[nid].sample_flags = new[nid]  # type: ignore[union-attr]
+                _data[nid].sample_flags = new[nid]
 
             # Perform local joins an attempt to improve the neighborhood
             for nid in nodes:
@@ -263,9 +261,9 @@ class SWINN(BaseNN):
                 # The origin of the join must have a boolean flag set to true
                 for n1 in new_nid:
                     v1 = _data[n1]
-                    v1_edges = v1.edges  # type: ignore[union-attr]
-                    v1_r_edges = v1.r_edges  # type: ignore[union-attr]
-                    v1_item = v1.item  # type: ignore[union-attr]
+                    v1_edges = v1.edges
+                    v1_r_edges = v1.r_edges
+                    v1_item = v1.item
                     # Consider connections between vertices whose boolean flags are both true
                     for n2 in new_nid:
                         if n1 == n2 or n2 in v1_edges or n2 in v1_r_edges:
@@ -275,9 +273,9 @@ class SWINN(BaseNN):
                             continue
 
                         v2 = _data[n2]
-                        dist = dist_func(v1_item, v2.item)  # type: ignore[union-attr]
-                        total_changes += v1.push_edge(v2, dist, graph_k, _data)  # type: ignore[union-attr,arg-type]
-                        total_changes += v2.push_edge(v1, dist, graph_k, _data)  # type: ignore[union-attr,arg-type]
+                        dist = dist_func(v1_item, v2.item)
+                        total_changes += v1.push_edge(v2, dist, graph_k, _data)  # type: ignore[arg-type]
+                        total_changes += v2.push_edge(v1, dist, graph_k, _data)  # type: ignore[arg-type]
 
                         tried.add((n1, n2))
 
@@ -290,9 +288,9 @@ class SWINN(BaseNN):
                             continue
 
                         v2 = _data[n2]
-                        dist = dist_func(v1_item, v2.item)  # type: ignore[union-attr]
-                        total_changes += v1.push_edge(v2, dist, graph_k, _data)  # type: ignore[union-attr,arg-type]
-                        total_changes += v2.push_edge(v1, dist, graph_k, _data)  # type: ignore[union-attr,arg-type]
+                        dist = dist_func(v1_item, v2.item)
+                        total_changes += v1.push_edge(v2, dist, graph_k, _data)  # type: ignore[arg-type]
+                        total_changes += v2.push_edge(v1, dist, graph_k, _data)  # type: ignore[arg-type]
 
                         tried.add((n1, n2))
 
@@ -302,12 +300,12 @@ class SWINN(BaseNN):
 
         # Reduce the number of edges, if needed
         for n in nodes:
-            _data[n].prune(self.prune_prob, max_candidates, _data, _rng)  # type: ignore[union-attr,arg-type]
+            _data[n].prune(self.prune_prob, max_candidates, _data, _rng)  # type: ignore[arg-type]
 
         # Ensure that no node is isolated in the graph
         self._fix_graph()
 
-    def append(self, item: typing.Any, **kwargs):
+    def append(self, item: typing.Any, **kwargs: typing.Any) -> None:
         """Add a new item to the search index.
 
         Data is stored using the FIFO strategy. Both the data buffer and the search graph are updated. The
@@ -342,7 +340,10 @@ class SWINN(BaseNN):
             self._safe_node_removal(node.uuid)
 
         # Assign the closest neighbors to the new item
-        neighbors, dists = self._search(node.item, self.graph_k)
+        if len(self) == self.maxlen:
+            neighbors, dists = self._search(node.item, self.graph_k, exclude={node.uuid})
+        else:
+            neighbors, dists = self._search(node.item, self.graph_k)
 
         # Add the new element to the buffer
         if len(self) == self.maxlen:
@@ -351,23 +352,24 @@ class SWINN(BaseNN):
             self._data.append(node)
         node.fill(neighbors, dists)
 
-    def _linear_scan(self, item, k):
+    def _linear_scan(self, item: typing.Any, k: int) -> tuple[list[typing.Any], list[float]]:
         # Lazy search while the warm-up period is not finished
         points = [(p.item, self.dist_func(item, p.item)) for p in self]
 
         if points:
-            return tuple(map(list, zip(*sorted(points, key=operator.itemgetter(-1))[:k])))
+            res = sorted(points, key=operator.itemgetter(-1))[:k]
+            return [i for i, _ in res], [d for _, d in res]
 
         return [], []
 
     def _search(
         self,
-        item,
-        k,
+        item: typing.Any,
+        k: int,
         epsilon: float = 0.1,
         seed: Vertex | None = None,
         exclude: set[int] | None = None,
-    ) -> tuple[list, list]:
+    ) -> tuple[list[typing.Any], list[float]]:
         # Cache frequently accessed attributes as locals
         _data = self._data
         dist_func = self.dist_func
@@ -406,17 +408,17 @@ class SWINN(BaseNN):
             tns = [_data[n] for n in c_n.edges.keys() | c_n.r_edges.keys() if n not in visited]
 
             for n in tns:
-                dist = dist_func(item, n.item)  # type: ignore[union-attr]
+                dist = dist_func(item, n.item)
 
                 if len(result) < k:
-                    heapq.heappush(result, (-dist, n))  # type: ignore[misc]
-                    heapq.heappush(pool, (dist, n))  # type: ignore[misc]
+                    heapq.heappush(result, (-dist, n))
+                    heapq.heappush(pool, (dist, n))
                     distance_bound = distance_scale * -result[0][0]
                 elif dist < -result[0][0]:
-                    heapq.heapreplace(result, (-dist, n))  # type: ignore[misc]
-                    heapq.heappush(pool, (dist, n))  # type: ignore[misc]
+                    heapq.heapreplace(result, (-dist, n))
+                    heapq.heappush(pool, (dist, n))
                     distance_bound = distance_scale * -result[0][0]
-                visited.add(n.uuid)  # type: ignore[union-attr]
+                visited.add(n.uuid)
             if len(pool) == 0:
                 break
             c_dist, c_n = heapq.heappop(pool)
@@ -427,8 +429,8 @@ class SWINN(BaseNN):
         return neighbors, dists
 
     def search(
-        self, item: typing.Any, n_neighbors: int, epsilon: float = 0.1, **kwargs
-    ) -> tuple[list, list]:
+        self, item: typing.Any, n_neighbors: int, epsilon: float = 0.1, **kwargs: typing.Any
+    ) -> tuple[list[typing.Any], list[float]]:
         """Search the underlying nearest neighbor graph given a query item.
 
         In case not enough samples were observed, i.e., the number of stored samples is smaller than
@@ -503,7 +505,7 @@ class SWINN(BaseNN):
 
         return [len(tree) for tree in forest]
 
-    def refresh_targets(self) -> set:
+    def refresh_targets(self) -> set[base.typing.ClfTarget]:
         """Refresh the set of classes in the window. Used by classifiers where labels are added as [1] in the vertex tuple.
 
         This is used to clean up classes that are no longer in the window, and
