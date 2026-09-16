@@ -114,20 +114,20 @@ class DenStream(base.Clusterer):
     >>> denstream = cluster.DenStream(decaying_factor=0.01,
     ...                               beta=0.5,
     ...                               mu=2.5,
-    ...                               epsilon=0.5,
+    ...                               epsilon=1.0,
     ...                               n_samples_init=10)
 
     >>> for x, _ in stream.iter_array(X):
     ...     denstream.learn_one(x)
 
     >>> denstream.predict_one({0: -1, 1: -2})
-    1
+    0
 
     >>> denstream.predict_one({0: 5, 1: 4})
     2
 
     >>> denstream.predict_one({0: 1, 1: 1})
-    0
+    1
 
     >>> denstream.n_clusters
     3
@@ -415,20 +415,6 @@ class DenStreamMicroCluster(metaclass=ABCMeta):
         self.squared_sum = {i: (x_val * x_val) for i, x_val in x.items()}
         self._center: dict | None = None
 
-    def calc_norm_cf1_cf2(self, fading_factor):
-        # |CF1| and |CF2| in the paper
-        sum_of_squares_cf1 = 0.0
-        sum_of_squares_cf2 = 0.0
-        squared_sum = self.squared_sum
-        for key, val_ls in self.linear_sum.items():
-            val_ss = squared_sum[key]
-            sum_of_squares_cf1 += val_ls * val_ls
-            sum_of_squares_cf2 += val_ss * val_ss
-        # (ff * v)^2 = ff^2 * v^2 -- factor ff out of the sum once.
-        return fading_factor * math.sqrt(sum_of_squares_cf1), fading_factor * math.sqrt(
-            sum_of_squares_cf2
-        )
-
     def calc_weight(self, timestamp):
         return self.N * 2 ** (-self.decaying_factor * (timestamp - self.last_edit_time))
 
@@ -448,16 +434,15 @@ class DenStreamMicroCluster(metaclass=ABCMeta):
         return self.center
 
     def calc_radius(self, timestamp):
-        # The fading factor cancels here too: diff = sqrt(sum ss^2)/N - sum ls^2/N^2.
+        # The fading factor cancels here too: diff = sum ss/N - sum ls^2/N^2.
         inv_n = 1.0 / self.N
         sum_ls_sq = 0.0
-        sum_ss_sq = 0.0
+        sum_ss = 0.0
         squared_sum = self.squared_sum
         for key, ls_k in self.linear_sum.items():
-            ss_k = squared_sum[key]
             sum_ls_sq += ls_k * ls_k
-            sum_ss_sq += ss_k * ss_k
-        diff = math.sqrt(sum_ss_sq) * inv_n - sum_ls_sq * inv_n * inv_n
+            sum_ss += squared_sum[key]
+        diff = sum_ss * inv_n - sum_ls_sq * inv_n * inv_n
         return math.sqrt(diff) if diff > 0 else 0.0
 
     def radius_with(self, x):
@@ -467,23 +452,21 @@ class DenStreamMicroCluster(metaclass=ABCMeta):
         ls = self.linear_sum
         ss = self.squared_sum
         sum_ls_sq = 0.0
-        sum_ss_sq = 0.0
+        sum_ss = 0.0
         shared = 0
         for key, v in x.items():
             ls_k = ls.get(key, 0.0) + v
-            ss_k = ss.get(key, 0.0) + v * v
             sum_ls_sq += ls_k * ls_k
-            sum_ss_sq += ss_k * ss_k
+            sum_ss += ss.get(key, 0.0) + v * v
             if key in ls:
                 shared += 1
         if shared < len(ls):
             for key, ls_k in ls.items():
                 if key in x:
                     continue
-                ss_k = ss[key]
                 sum_ls_sq += ls_k * ls_k
-                sum_ss_sq += ss_k * ss_k
-        diff = math.sqrt(sum_ss_sq) * inv_n - sum_ls_sq * inv_n * inv_n
+                sum_ss += ss[key]
+        diff = sum_ss * inv_n - sum_ls_sq * inv_n * inv_n
         return math.sqrt(diff) if diff > 0 else 0.0
 
     def insert(self, x, timestamp):
