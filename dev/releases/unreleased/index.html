@@ -2367,6 +2367,8 @@
 <h2 id="cluster">cluster<a class="headerlink" href="#cluster" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Fixed the radius of <a href="../../api/cluster/DenStream"><code>cluster.DenStream</code></a> micro-clusters, which used the norm of the vector of squared sums instead of the sum of its components and was 0 away from the origin. The docstring example now uses <code>epsilon=1.0</code>.</li>
+<li><code>cluster.DenStream.predict_one</code> now expands a cluster past the direct neighbors of its first micro-cluster. The neighbors of a neighbor were only queued if they already had a label, so a chain of micro-clusters came out as several clusters.</li>
+<li>New <a href="../../api/cluster/DenStream"><code>cluster.DenStream</code></a> micro-clusters no longer reuse the key of a deleted one, which overwrote an existing micro-cluster.</li>
 </ul>
 
 
