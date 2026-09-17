@@ -1,4 +1,12 @@
-# Unreleased
+﻿# Unreleased
+
+## naive_bayes
+
+- Added `CategoricalNB`, a Naive Bayes classifier for categorical features that maintains per-class frequencies for every value of every feature, with additive (Laplace) smoothing and support for both online and mini-batch modes.
+
+## linear_model
+
+- `BayesianLinearRegression.predict_dist_one` now replaces `BayesianLinearRegression.predict_one(..., with_dist=True)` to better respect the `Regressor` interface while still being able to predict distributions.
 
 ## stream
 

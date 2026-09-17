@@ -252,7 +252,6 @@ module = [
     "river.tree.*",
     "river.preprocessing.*",
     "river.stream.*",
-    "river.linear_model.*",
     "river.evaluate.*",
     "river.drift.*",
     "river.compose.*",
