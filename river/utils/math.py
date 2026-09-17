@@ -37,6 +37,7 @@ __all__ = [
     "softmax",
     "woodbury_matrix",
     "log_sum_2_exp",
+    "_euclidean_distance",
 ]
 
 
