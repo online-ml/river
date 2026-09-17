@@ -3,6 +3,7 @@ from __future__ import annotations
 import collections
 import functools
 import itertools
+import math
 import numbers
 import typing
 
@@ -538,11 +539,8 @@ class MinMaxScaler(base.Transformer):
         for i, xi in x.items():
             lo = min_[i].get()
             hi = max_[i].get()
-            if lo is None or hi is None or hi < lo:
-                result[i] = 0.0
-                continue
-            d = hi - lo
-            result[i] = (xi - lo) / d if d else 0.0
+            d = hi - lo if (hi is not None and lo is not None) else 0.0
+            result[i] = (xi - lo) / d if (d and math.isfinite(d)) else 0.0
         return result
 
 
