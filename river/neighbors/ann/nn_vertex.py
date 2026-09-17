@@ -125,7 +125,11 @@ class Vertex:
         return len(self.edges) == 0 and len(self.r_edges) == 0
 
     def prune(
-        self, prune_prob: float, prune_trigger: int, vertex_pool: typing.Sequence[Vertex], rng: random.Random
+        self,
+        prune_prob: float,
+        prune_trigger: int,
+        vertex_pool: typing.Sequence[Vertex],
+        rng: random.Random,
     ) -> None:
         if prune_prob == 0:
             return
