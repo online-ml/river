@@ -4,6 +4,7 @@ import heapq
 import math
 import random
 import typing
+from collections.abc import Iterable
 
 
 class Vertex:
@@ -73,7 +74,7 @@ class Vertex:
                 Vertex._isolated.add(self.uuid)
 
     def push_edge(
-        self, node: Vertex, dist: float, max_edges: int, vertex_pool: list[Vertex]
+        self, node: Vertex, dist: float, max_edges: int, vertex_pool: typing.Sequence[Vertex]
     ) -> int:
         if self.is_neighbor(node) or node.uuid == self.uuid:
             return 0
@@ -106,8 +107,8 @@ class Vertex:
         return list(map(lambda n: n in self.flags, self.edges.keys()))
 
     @sample_flags.setter
-    def sample_flags(self, sampled: set[int]) -> None:
-        self.flags -= sampled
+    def sample_flags(self, sampled: Iterable[int]) -> None:
+        self.flags -= set(sampled)
 
     def neighbors(self) -> tuple[list[int], list[float]]:
         res = [(node, dist) for node, dist in self.edges.items()]
@@ -124,7 +125,7 @@ class Vertex:
         return len(self.edges) == 0 and len(self.r_edges) == 0
 
     def prune(
-        self, prune_prob: float, prune_trigger: int, vertex_pool: list[Vertex], rng: random.Random
+        self, prune_prob: float, prune_trigger: int, vertex_pool: typing.Sequence[Vertex], rng: random.Random
     ) -> None:
         if prune_prob == 0:
             return

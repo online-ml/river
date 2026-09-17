@@ -225,8 +225,11 @@ class SWINN(BaseNN):
         for _ in range(self.n_iters):
             total_changes = 0
 
-            new: dict[int, set[int]] = collections.defaultdict(set)
-            old: dict[int, set[int]] = collections.defaultdict(set)
+            # We use Any instead of a precise type because the values
+            # can be both set[int] and list[int] and using a union type
+            # confuses mypy here.
+            new: dict[int, typing.Any] = collections.defaultdict(set)
+            old: dict[int, typing.Any] = collections.defaultdict(set)
 
             # Expand undirected neighborhood
             for nid in nodes:
@@ -247,10 +250,10 @@ class SWINN(BaseNN):
             # Limits the maximum number of edges to explore and update sample flags
             for nid in nodes:
                 if len(new[nid]) > max_candidates:
-                    new[nid] = set(_rng.sample(tuple(new[nid]), max_candidates))
+                    new[nid] = _rng.sample(tuple(new[nid]), max_candidates)
 
                 if len(old[nid]) > max_candidates:
-                    old[nid] = set(_rng.sample(tuple(old[nid]), max_candidates))
+                    old[nid] = _rng.sample(tuple(old[nid]), max_candidates)
 
                 _data[nid].sample_flags = new[nid]
 
@@ -274,8 +277,8 @@ class SWINN(BaseNN):
 
                         v2 = _data[n2]
                         dist = dist_func(v1_item, v2.item)
-                        total_changes += v1.push_edge(v2, dist, graph_k, _data)  # type: ignore[arg-type]
-                        total_changes += v2.push_edge(v1, dist, graph_k, _data)  # type: ignore[arg-type]
+                        total_changes += v1.push_edge(v2, dist, graph_k, _data)
+                        total_changes += v2.push_edge(v1, dist, graph_k, _data)
 
                         tried.add((n1, n2))
 
@@ -289,8 +292,8 @@ class SWINN(BaseNN):
 
                         v2 = _data[n2]
                         dist = dist_func(v1_item, v2.item)
-                        total_changes += v1.push_edge(v2, dist, graph_k, _data)  # type: ignore[arg-type]
-                        total_changes += v2.push_edge(v1, dist, graph_k, _data)  # type: ignore[arg-type]
+                        total_changes += v1.push_edge(v2, dist, graph_k, _data)
+                        total_changes += v2.push_edge(v1, dist, graph_k, _data)
 
                         tried.add((n1, n2))
 
@@ -300,7 +303,7 @@ class SWINN(BaseNN):
 
         # Reduce the number of edges, if needed
         for n in nodes:
-            _data[n].prune(self.prune_prob, max_candidates, _data, _rng)  # type: ignore[arg-type]
+            _data[n].prune(self.prune_prob, max_candidates, _data, _rng)
 
         # Ensure that no node is isolated in the graph
         self._fix_graph()
@@ -341,7 +344,8 @@ class SWINN(BaseNN):
 
         # Assign the closest neighbors to the new item
         if len(self) == self.maxlen:
-            neighbors, dists = self._search(node.item, self.graph_k, exclude={node.uuid})
+            # neighbors, dists = self._search(node.item, self.graph_k, exclude={node.uuid})
+            neighbors, dists = self._search(node.item, self.graph_k)
         else:
             neighbors, dists = self._search(node.item, self.graph_k)
 
