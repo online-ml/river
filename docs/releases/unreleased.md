@@ -19,3 +19,7 @@
 ## preprocessing
 
 - `preprocessing.Normalizer` now handles zero vectors without raising a `ZeroDivisionError`. A zero vector is returned unchanged instead.
+
+## cluster
+
+- Fixed the radius of `cluster.DenStream` micro-clusters, which used the norm of the vector of squared sums instead of the sum of its components and was 0 away from the origin. The docstring example now uses `epsilon=1.0`.
