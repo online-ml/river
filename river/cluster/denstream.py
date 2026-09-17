@@ -220,7 +220,7 @@ class DenStream(base.Clusterer):
                 if closest_omc.calc_weight(self.timestamp) > self.mu * self.beta:
                     # it has grown into a p-micro-cluster
                     del self.o_micro_clusters[closest_omc_key]
-                    self.p_micro_clusters[len(self.p_micro_clusters)] = closest_omc
+                    self.p_micro_clusters[max(self.p_micro_clusters, default=-1) + 1] = closest_omc
             else:
                 # create a new o-micro-cluster by p and add it to o_micro_clusters
                 mc_from_p = DenStreamMicroCluster(
@@ -228,7 +228,7 @@ class DenStream(base.Clusterer):
                     timestamp=self.timestamp,
                     decaying_factor=self.decaying_factor,
                 )
-                self.o_micro_clusters[len(self.o_micro_clusters)] = mc_from_p
+                self.o_micro_clusters[max(self.o_micro_clusters, default=-1) + 1] = mc_from_p
             merged_status = True
 
         # when p is not merged and o-micro-cluster set is empty
@@ -306,7 +306,7 @@ class DenStream(base.Clusterer):
                         decaying_factor=self.decaying_factor,
                     )
                     self._expand_cluster(mc, neighborhood)
-                    self.p_micro_clusters.update({len(self.p_micro_clusters): mc})
+                    self.p_micro_clusters[max(self.p_micro_clusters, default=-1) + 1] = mc
                 else:
                     item.covered = False
 
@@ -381,7 +381,7 @@ class DenStream(base.Clusterer):
                     neighbor_neighbors = self._query_neighbor(seed_queue[0])
                     # add new neighbors to seed set
                     for neighbor_neighbor in neighbor_neighbors:
-                        if labels[neighbor_neighbor] is not None:
+                        if labels[neighbor_neighbor] is None:
                             seed_queue.append(neighbor_neighbor)
 
         self.n_clusters, self.clusters = self._generate_clusters_for_labels(labels)
