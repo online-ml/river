@@ -247,10 +247,10 @@ class SWINN(BaseNN):
             # Limits the maximum number of edges to explore and update sample flags
             for nid in nodes:
                 if len(new[nid]) > max_candidates:
-                    new[nid] = _rng.sample(tuple(new[nid]), max_candidates)  # type: ignore
+                    new[nid] = set(_rng.sample(tuple(new[nid]), max_candidates))
 
                 if len(old[nid]) > max_candidates:
-                    old[nid] = _rng.sample(tuple(old[nid]), max_candidates)  # type: ignore
+                    old[nid] = set(_rng.sample(tuple(old[nid]), max_candidates))
 
                 _data[nid].sample_flags = new[nid]
 
