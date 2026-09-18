@@ -8,6 +8,10 @@
 
 - `BayesianLinearRegression.predict_dist_one` now replaces `BayesianLinearRegression.predict_one(..., with_dist=True)` to better respect the `Regressor` interface while still being able to predict distributions.
 
+## anomaly
+
+- Added `anomaly.RobustRandomCutForest`, an online implementation of the Robust Random Cut Forest (Guha et al., 2016). It maintains an ensemble of robust random cut trees over a sliding window of the stream and scores points by their average collusive displacement (CoDisp); higher scores indicate anomalies. The implementation is dictionary based and `score_one` is side-effect-free.
+
 ## stream
 
 - `stream.Cache` now writes a pass to a temporary file and renames it into place once the stream is exhausted. An interrupted first pass (a `break`, an exception, an abandoned generator) used to leave a truncated file behind, which every later pass then read back as if it were the whole dataset.
