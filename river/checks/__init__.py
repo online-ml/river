@@ -155,7 +155,7 @@ def yield_checks(model: Estimator) -> typing.Iterator[typing.Callable]:
 
     """
 
-    from river import base, utils
+    from river import base, datasets, utils
     from river.time_series.base import Forecaster
 
     # General checks
@@ -228,8 +228,13 @@ def yield_checks(model: Estimator) -> typing.Iterator[typing.Callable]:
     if isinstance(model, Ranker):
         yield reco.check_reco_routine
 
-    if isinstance(model, base.AnomalyDetector):
-        dataset_checks.append(anomaly.check_roc_auc)
+    if isinstance(model, (base.AnomalyDetector, base.SupervisedAnomalyDetector)):
+        anomaly_dataset = list(datasets.CreditCard().take(1000))
+        yield _wrapped_partial(anomaly.check_roc_auc, dataset=anomaly_dataset)
+        # The mutation check pickles the model at every step, so a short prefix keeps it fast.
+        yield _wrapped_partial(
+            anomaly.check_score_one_does_not_mutate, dataset=anomaly_dataset[:100]
+        )
 
     if isinstance(model, Forecaster):
         dataset_checks = [
