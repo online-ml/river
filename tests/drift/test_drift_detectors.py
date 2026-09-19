@@ -121,6 +121,79 @@ def test_page_hinkley():
     assert detected_indices == expected_indices
 
 
+def test_ewma():
+    detected_indices = perform_test(drift.EWMA(), data_stream_1)
+
+    assert len(detected_indices) >= 1
+    assert any(1000 <= idx <= 1050 for idx in detected_indices)
+
+    detected_indices = perform_test(drift.EWMA(), data_stream_3)
+
+    assert any(500 <= idx <= 560 for idx in detected_indices)
+    assert any(1500 <= idx <= 1560 for idx in detected_indices)
+
+    detected_indices = perform_test(drift.EWMA(mode="up"), data_stream_3)
+
+    assert not any(idx < 500 for idx in detected_indices)
+    assert not any(1000 <= idx < 1500 for idx in detected_indices)
+
+    detected_indices = perform_test(drift.EWMA(mode="down"), data_stream_3)
+
+    assert not any(500 <= idx < 1000 for idx in detected_indices)
+    assert not any(idx >= 1500 for idx in detected_indices)
+
+
+def test_ewma_coverage():
+    with pytest.raises(ValueError):
+        drift.EWMA(alpha=0)
+
+    with pytest.raises(ValueError):
+        drift.EWMA(alpha=1.1)
+
+    with pytest.raises(ValueError):
+        drift.EWMA(threshold=0)
+
+    with pytest.raises(ValueError):
+        drift.EWMA(min_instances=0)
+
+    with pytest.raises(ValueError):
+        drift.EWMA(mode="sideways")
+
+    detector = drift.EWMA(min_instances=3)
+
+    for _ in range(10):
+        detector.update(1.0)
+
+    assert detector.drift_detected is False
+
+    detector = drift.EWMA(min_instances=3)
+    detected = False
+
+    for _ in range(100):
+        detector.update(0.0)
+        detector.update(10.0)
+        detected = detected or detector.drift_detected
+
+    assert detected is True
+
+    detector = drift.EWMA()
+
+    for _ in range(40):
+        detector.update(0.0)
+
+    detected = False
+
+    for _ in range(25):
+        detector.update(100.0)
+        detected = detected or detector.drift_detected
+
+    assert detected is True
+
+    detector.update(0.0)
+
+    assert detector.drift_detected is False
+
+
 def perform_test(drift_detector, data_stream):
     detected_indices = []
     for i, val in enumerate(data_stream):
