@@ -1008,6 +1008,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#naive_bayes_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        naive_bayes
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#stream" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -2291,6 +2302,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#naive_bayes_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        naive_bayes
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#stream" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -2351,6 +2373,10 @@
 <h2 id="linear_model">linear_model<a class="headerlink" href="#linear_model" title="Permanent link">&para;</a></h2>
 <ul>
 <li><code>BayesianLinearRegression.predict_dist_one</code> now replaces <code>BayesianLinearRegression.predict_one(..., with_dist=True)</code> to better respect the <code>Regressor</code> interface while still being able to predict distributions.</li>
+</ul>
+<h2 id="naive_bayes_1">naive_bayes<a class="headerlink" href="#naive_bayes_1" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>MultinomialNB.learn_many</code>, <code>predict_many</code>, and <code>predict_proba_many</code> now accept any <a href="https://github.com/narwhals-dev/narwhals">narwhals</a>-supported eager backend (pandas, polars, pyarrow, ...) instead of being pandas-only, preserving the input backend (including the pandas index) on output. A backend-agnostic <code>BaseNB.predict_many</code> was added so the argmax-over-probabilities logic is shared by all Naive Bayes variants.</li>
 </ul>
 <h2 id="stream">stream<a class="headerlink" href="#stream" title="Permanent link">&para;</a></h2>
 <ul>
