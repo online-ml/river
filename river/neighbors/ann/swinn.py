@@ -343,11 +343,7 @@ class SWINN(BaseNN):
             self._safe_node_removal(node.uuid)
 
         # Assign the closest neighbors to the new item
-        if len(self) == self.maxlen:
-            # neighbors, dists = self._search(node.item, self.graph_k, exclude={node.uuid})
-            neighbors, dists = self._search(node.item, self.graph_k)
-        else:
-            neighbors, dists = self._search(node.item, self.graph_k)
+        neighbors, dists = self._search(node.item, self.graph_k)
 
         # Add the new element to the buffer
         if len(self) == self.maxlen:
