@@ -97,12 +97,12 @@ class SavitzkyGolay(stats.base.RollingUnivariate):
     def __init__(self, window_size: int = 5, polyorder: int = 2) -> None:
         self.window_size_value = window_size
         self.polyorder = polyorder
-        self._coeffs = savgol_coeffs(
+        self._coeffs: list[float] = savgol_coeffs(
             window_length=window_size,
             polyorder=polyorder,
             pos=window_size - 1,
             use="dot",
-        )
+        ).tolist()
         self.window: collections.deque[float] = collections.deque(maxlen=window_size)
 
     @property
