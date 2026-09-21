@@ -4197,7 +4197,7 @@ chosen distance using <code>functools.partial</code>:</p>
 <p>Update the model with a set of features <code>x</code> and a label <code>y</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     — <code>dict[base.typing.FeatureName, Any]</code>    </li>
+<li><strong>x</strong>     — <code>dict[base.typing.FeatureName, typing.Any]</code>    </li>
 <li><strong>y</strong>     — <code>base.typing.ClfTarget</code>    </li>
 </ul>
 </details>
@@ -4219,8 +4219,8 @@ chosen distance using <code>functools.partial</code>:</p>
 <p>Predict the probability of each label for a dictionary of features <code>x</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><strong>x</strong>     — <code>dict[base.typing.FeatureName, Any]</code>    </li>
-<li><strong>kwargs</strong>     — <code>Any</code>    </li>
+<li><strong>x</strong>     — <code>dict[base.typing.FeatureName, typing.Any]</code>    </li>
+<li><strong>kwargs</strong>     — <code>typing.Any</code>    </li>
 </ul>
 <p><strong>Returns</strong></p>
 <p><code>dict&amp;#91;base.typing.ClfTarget, float&amp;#93;</code>:     A dictionary that associates a probability which each label.</p>
