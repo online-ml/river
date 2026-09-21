@@ -273,7 +273,6 @@ module = [
     "river.multiclass.*",
     "river.reco.*",
     "river.imblearn.*",
-    "river.feature_selection.*",
     "river.active.*",
     "tests.*",
 ]
