@@ -4311,26 +4311,31 @@
 <ul>
 <li>
 <p><strong>delta</strong></p>
+<p><em>Type</em> → <code>float</code></p>
 <p><em>Default</em> → <code>0.002</code></p>
 <p>Significance value.</p>
 </li>
 <li>
 <p><strong>clock</strong></p>
+<p><em>Type</em> → <code>int</code></p>
 <p><em>Default</em> → <code>32</code></p>
 <p>How often ADWIN should check for changes. 1 means every new data point, default is 32. Higher values speed up processing, but may also lead to increased delay in change detection.</p>
 </li>
 <li>
 <p><strong>max_buckets</strong></p>
+<p><em>Type</em> → <code>int</code></p>
 <p><em>Default</em> → <code>5</code></p>
 <p>The maximum number of buckets of each size that ADWIN should keep before merging buckets. The idea of data buckets comes from the compression algorithm introduced in the ADWIN2, the second iteration of the ADWIN algorithm presented in the original research paper. This is the ADWIN version available in River.</p>
 </li>
 <li>
 <p><strong>min_window_length</strong></p>
+<p><em>Type</em> → <code>int</code></p>
 <p><em>Default</em> → <code>5</code></p>
 <p>The minimum length allowed for a subwindow when checking for concept drift. Subwindows whose size is smaller than this value will be ignored during concept drift evaluation. Lower values may decrease delay in change detection but may also lead to more false positives.</p>
 </li>
 <li>
 <p><strong>grace_period</strong></p>
+<p><em>Type</em> → <code>int</code></p>
 <p><em>Default</em> → <code>10</code></p>
 <p>ADWIN does not perform any change detection until at least this many data points have arrived.</p>
 </li>
@@ -4387,8 +4392,6 @@
 <ul>
 <li><strong>x</strong>     — <code>int | float</code>    </li>
 </ul>
-<p><strong>Returns</strong></p>
-<p><code>None</code>:     self</p>
 </details>
 <p><span /></p>
 <div class="footnote">
