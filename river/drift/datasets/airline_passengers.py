@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from river import datasets, stream
+from river import base, datasets, stream
 
 from .base import ChangePointFileDataset
 
@@ -17,7 +17,7 @@ class AirlinePassengers(ChangePointFileDataset):
 
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(
             annotations={"6": [299], "7": [], "8": [302], "9": [326, 382], "10": [296]},
             filename="airline_passengers.csv",
@@ -26,7 +26,8 @@ class AirlinePassengers(ChangePointFileDataset):
             n_features=1,
         )
 
-    def __iter__(self):
+    def __iter__(self) -> base.typing.Stream:
+
         return stream.iter_csv(
             self.path,
             target="Total Passengers",

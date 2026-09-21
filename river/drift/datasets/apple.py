@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from river import datasets, stream
+from river import base, datasets, stream
 
 from .base import ChangePointFileDataset
 
@@ -17,7 +17,7 @@ class Apple(ChangePointFileDataset):
 
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(
             annotations={
                 "6": [319],
@@ -32,7 +32,8 @@ class Apple(ChangePointFileDataset):
             n_features=6,
         )
 
-    def __iter__(self):
+    def __iter__(self) -> base.typing.Stream:
+
         return stream.iter_csv(
             self.path,
             target=["Open", "High", "Low", "Close", "Adj Close", "Volume"],
