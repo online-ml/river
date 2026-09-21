@@ -99,8 +99,6 @@ nav:
       - api/base/Transformer.md
       - api/base/Wrapper.md
       - api/base/WrapperEnsemble.md
-    - calibration:
-      - api/calibration/CalibratedClassifier.md
     - cluster:
       - api/cluster/CluStream.md
       - api/cluster/DBSTREAM.md
@@ -573,6 +571,7 @@ nav:
         - api/tree/splitter/StaticQuantizer.md
         - api/tree/splitter/TEBSTSplitter.md
     - utils:
+      - api/utils/CalibratedClassifier.md
       - api/utils/Rolling.md
       - api/utils/SortedWindow.md
       - api/utils/TimeRolling.md
