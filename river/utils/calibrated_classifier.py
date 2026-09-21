@@ -2,13 +2,17 @@ from __future__ import annotations
 
 import math
 from collections.abc import Iterator
-from typing import Any, TypeVar
+from typing import TYPE_CHECKING, Any, TypeVar
 
-from river import base, compose, utils
+from river import base
+from river.utils.math import sigmoid
+
+if TYPE_CHECKING:
+    from river import compose
 
 __all__ = ["CalibratedClassifier"]
 
-T = TypeVar("T", bound=base.Classifier | compose.Pipeline)
+T = TypeVar("T", bound="base.Classifier | compose.Pipeline")
 
 
 def _logit(p: float) -> float:
@@ -24,9 +28,10 @@ class CalibratedClassifier(base.Wrapper[T], base.Classifier):
     wrapped classifier's predicted probability for the most likely label is taken as a score, and
     a logistic function of the form $\\hat{p} = \\sigma(a \\cdot s + b)$ is fitted to it.
 
-    The two parameters $a$ and $b$ are updated online, one stochastic gradient step per sample,
-    minimizing the log-loss with respect to the true labels. Both are initialized to $a = 1$ and
-    $b = 0$, so that the calibration starts as a no-op (the identity) and adapts as data flows in.
+    The slope $a$ and the intercept $b$ are updated online, one stochastic gradient step per
+    sample, minimizing the log-loss with respect to the true labels. Both are initialized to $a = 1$
+    and $b = 0$, so that the calibration starts as a no-op (the identity) and adapts as data flows
+    in.
     The score of each sample is obtained from the wrapped classifier *before* it learns on that
     same sample, giving the calibration an out-of-sample flavour that prevents overfitting.
 
@@ -53,24 +58,24 @@ class CalibratedClassifier(base.Wrapper[T], base.Classifier):
     classifier
         The binary classifier to wrap.
     lr
-        Learning rate used to update $a$ and $b$.
+        Learning rate used to update the slope and the intercept.
 
     Attributes
     ----------
-    a
+    slope
         Slope of the fitted sigmoid.
-    b
+    intercept
         Intercept of the fitted sigmoid.
 
     Examples
     --------
 
-    >>> from river import calibration
     >>> from river import datasets
     >>> from river import evaluate
     >>> from river import linear_model
     >>> from river import metrics
     >>> from river import preprocessing
+    >>> from river import utils
 
     >>> dataset = datasets.Phishing()
 
@@ -79,16 +84,16 @@ class CalibratedClassifier(base.Wrapper[T], base.Classifier):
     >>> metric = metrics.LogLoss()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    LogLoss: 0.3301120464388312
+    LogLoss: 0.330112...
 
     The calibrated version spreads the probabilities further apart when the model is confident and
     pulls them back towards 0.5 when it is not, which typically yields a lower log-loss:
 
     >>> wrapped = preprocessing.StandardScaler() | linear_model.LogisticRegression()
-    >>> model = calibration.CalibratedClassifier(wrapped)
+    >>> model = utils.CalibratedClassifier(wrapped)
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    LogLoss: 0.3048718553325107
+    LogLoss: 0.304871...
 
     References
     ----------
@@ -99,8 +104,8 @@ class CalibratedClassifier(base.Wrapper[T], base.Classifier):
     def __init__(self, classifier: T, lr: float = 0.1):
         self.classifier = classifier
         self.lr = lr
-        self.a = 1.0
-        self.b = 0.0
+        self.slope = 1.0
+        self.intercept = 0.0
 
     @property
     def _wrapped_model(self) -> T:
@@ -123,9 +128,9 @@ class CalibratedClassifier(base.Wrapper[T], base.Classifier):
         label, s = self._score_one(x, **kwargs)
         y_num = float(y == label)
 
-        p = utils.math.sigmoid(self.a * s + self.b)
-        self.a -= self.lr * (p - y_num) * s
-        self.b -= self.lr * (p - y_num)
+        p = sigmoid(self.slope * s + self.intercept)
+        self.slope -= self.lr * (p - y_num) * s
+        self.intercept -= self.lr * (p - y_num)
 
         self.classifier.learn_one(x, y, **kwargs)
 
@@ -133,7 +138,7 @@ class CalibratedClassifier(base.Wrapper[T], base.Classifier):
         self, x: dict[base.typing.FeatureName, Any], **kwargs: Any
     ) -> dict[base.typing.ClfTarget, float]:
         label, s = self._score_one(x, **kwargs)
-        p = utils.math.sigmoid(self.a * s + self.b)
+        p = sigmoid(self.slope * s + self.intercept)
         if label is True:
             return {False: 1 - p, True: p}
         return {False: p, True: 1 - p}
