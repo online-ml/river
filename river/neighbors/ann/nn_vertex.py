@@ -49,7 +49,8 @@ class Vertex:
 
         # Neighbors are ordered by distance, so the last neighbor
         # is the farthest one
-        self.worst_edge = neighbors[-1].uuid
+        if neighbors:
+            self.worst_edge = neighbors[-1].uuid
 
     def add_edge(self, vertex: Vertex, dist: float) -> None:
         self.edges[vertex.uuid] = dist
