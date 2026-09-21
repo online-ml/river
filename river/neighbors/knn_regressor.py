@@ -4,8 +4,11 @@ import statistics
 import typing
 from collections.abc import Iterator
 
-from river import base, utils
+from river import base
 from river.neighbors import SWINN
+from river.utils.vectordict import (
+    euclidean_distance_dict as _euclidean_dict_distance,
+)
 
 from .base import (
     BaseNN,
@@ -65,7 +68,7 @@ class KNNRegressor(base.Regressor):
     ) -> None:
         self.n_neighbors = n_neighbors
 
-        _default_dist = typing.cast(DistanceFunc, utils.math._euclidean_distance)
+        _default_dist = typing.cast(DistanceFunc, _euclidean_dict_distance)
         if engine is None:
             engine = SWINN(dist_func=_default_dist)
 
@@ -91,7 +94,7 @@ class KNNRegressor(base.Regressor):
             "n_neighbors": 3,
             "engine": LazySearch(
                 window_size=50,
-                dist_func=typing.cast(DistanceFunc, utils.math._euclidean_distance),
+                dist_func=typing.cast(DistanceFunc, _euclidean_dict_distance),
             ),
         }
 

@@ -8,8 +8,11 @@ import random
 import typing
 from collections.abc import Iterator
 
-from river import base, utils
+from river import base
 from river.neighbors.base import BaseNN, DistanceFunc, FunctionWrapper
+from river.utils.vectordict import (
+    euclidean_distance_dict as _euclidean_dict_distance,
+)
 
 from .nn_vertex import Vertex
 
@@ -100,7 +103,7 @@ class SWINN(BaseNN):
     ) -> None:
         self.graph_k = graph_k
         if dist_func is None:
-            dist_func = typing.cast(DistanceFunc, utils.math._euclidean_distance)
+            dist_func = typing.cast(DistanceFunc, _euclidean_dict_distance)
         self.dist_func = dist_func
 
         self.maxlen = maxlen

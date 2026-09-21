@@ -4,7 +4,10 @@ import collections
 import heapq
 import typing
 
-from river import base, utils
+from river import base
+from river.utils.vectordict import (
+    euclidean_distance_dict as _euclidean_dict_distance,
+)
 from river.utils.vectordict import (
     euclidean_distance_tuple as _euclidean_tuple_distance,
 )
@@ -58,7 +61,7 @@ class LazySearch(BaseNN):
         self.min_distance_keep = min_distance_keep
 
         if dist_func is None:
-            dist_func = typing.cast(DistanceFunc, utils.math._euclidean_distance)
+            dist_func = typing.cast(DistanceFunc, _euclidean_dict_distance)
         self.dist_func = dist_func
 
         self.window: collections.deque[typing.Any] = collections.deque(maxlen=self.window_size)

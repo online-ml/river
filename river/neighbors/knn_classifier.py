@@ -5,6 +5,9 @@ from collections.abc import Iterator
 
 from river import base, utils
 from river.neighbors import SWINN
+from river.utils.vectordict import (
+    euclidean_distance_dict as _euclidean_dict_distance,
+)
 
 from .base import (
     BaseNN,
@@ -88,7 +91,7 @@ class KNNClassifier(base.Classifier):
     ) -> None:
         self.n_neighbors = n_neighbors
 
-        _default_dist = typing.cast(DistanceFunc, utils.math._euclidean_distance)
+        _default_dist = typing.cast(DistanceFunc, _euclidean_dict_distance)
         if engine is None:
             engine = SWINN(dist_func=_default_dist)
 
@@ -120,7 +123,7 @@ class KNNClassifier(base.Classifier):
             "n_neighbors": 3,
             "engine": LazySearch(
                 window_size=30,
-                dist_func=typing.cast(DistanceFunc, utils.math._euclidean_distance),
+                dist_func=typing.cast(DistanceFunc, _euclidean_dict_distance),
             ),
         }
 
