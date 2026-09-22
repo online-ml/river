@@ -325,4 +325,6 @@ ignore_imports = [
     "river.preprocessing.pred_clipper -> river.linear_model",
     "river.time_series -> river.evaluate",
     "river.tree.base -> river.tree.viz",
+    "river.utils.calibrated_classifier -> river.linear_model",
+    "river.utils.calibrated_classifier -> river.preprocessing",
 ]
