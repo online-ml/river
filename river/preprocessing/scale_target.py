@@ -30,7 +30,6 @@ class TargetStandardScaler(compose.TargetTransformRegressor):
 
     Examples
     --------
-
     >>> from river import datasets
     >>> from river import evaluate
     >>> from river import linear_model
@@ -75,7 +74,6 @@ class TargetMinMaxScaler(compose.TargetTransformRegressor):
 
     Examples
     --------
-
     >>> from river import datasets
     >>> from river import evaluate
     >>> from river import linear_model

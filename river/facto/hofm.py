@@ -185,7 +185,6 @@ class HOFMRegressor(HOFM, base.Regressor):
 
     Examples
     --------
-
     >>> from river import facto
 
     >>> dataset = (
@@ -335,7 +334,6 @@ class HOFMClassifier(HOFM, base.Classifier):
 
     Examples
     --------
-
     >>> from river import facto
 
     >>> dataset = (

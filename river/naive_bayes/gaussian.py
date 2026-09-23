@@ -32,7 +32,6 @@ class GaussianNB(base.BaseNB):
 
     Examples
     --------
-
     >>> from river import naive_bayes
     >>> from river import stream
     >>> import numpy as np

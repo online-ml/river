@@ -126,7 +126,6 @@ class EDDM(base.BinaryDriftAndWarningDetector):
             not. 1 indicates an error (miss-classification).
 
         """
-
         if self.drift_detected:
             self._reset()
 

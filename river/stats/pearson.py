@@ -26,7 +26,6 @@ class PearsonCorr(stats.base.Bivariate):
 
     Examples
     --------
-
     >>> from river import stats
 
     >>> x = [0, 0, 0, 1, 1, 1, 1]

@@ -28,7 +28,6 @@ class CohenKappa(metrics.base.MultiClassMetric):
 
     Examples
     --------
-
     >>> from river import metrics
 
     >>> y_true = ['cat', 'ant', 'cat', 'cat', 'ant', 'bird']

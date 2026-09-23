@@ -34,7 +34,6 @@ class FeatureHasher(base.Transformer):
 
     Examples
     --------
-
     >>> import river
 
     >>> hasher = river.preprocessing.FeatureHasher(n_features=10, seed=42)

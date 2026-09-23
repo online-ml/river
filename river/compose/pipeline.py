@@ -69,7 +69,6 @@ def learn_during_predict():
 
     Examples
     --------
-
     Let's first see what methods are called if we just call `predict_one`.
 
     >>> import io
@@ -183,7 +182,6 @@ class Pipeline(base.Estimator):
 
     Examples
     --------
-
     The recommended way to declare a pipeline is to use the `|` operator. The latter allows you
     to chain estimators in a very terse manner:
 
@@ -460,7 +458,6 @@ class Pipeline(base.Estimator):
         then it will be wrapped with a `compose.FuncTransformer`.
 
         """
-
         name = None
         if isinstance(obj, tuple):
             name, obj = obj
@@ -521,7 +518,6 @@ class Pipeline(base.Estimator):
             A target value.
 
         """
-
         plan = self._plan if self._plan is not None else self._build_plan()
         learn_during_predict = self._LEARN_UNSUPERVISED_DURING_PREDICT
 
@@ -581,7 +577,6 @@ class Pipeline(base.Estimator):
         unsupervised step exactly as in `learn_one`.
 
         """
-
         plan = self._plan if self._plan is not None else self._build_plan()
 
         # Fast path: typical inference, no learn-during-predict.
@@ -692,7 +687,6 @@ class Pipeline(base.Estimator):
             Number of decimals to display for each floating point value.
 
         """
-
         tab = " " * 4
 
         # We'll redirect all the print statement to a buffer, we'll return the content of the
@@ -774,7 +768,6 @@ class Pipeline(base.Estimator):
             A series of target values.
 
         """
-
         steps = iter(self.steps.values())
 
         # Loop over the first n - 1 steps, which should all be transformers
@@ -812,7 +805,6 @@ class Pipeline(base.Estimator):
         something with it.
 
         """
-
         steps = iter(self.steps.values())
 
         for t in itertools.islice(steps, len(self) - 1):

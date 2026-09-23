@@ -21,7 +21,6 @@ class ExactMatch(metrics.base.MeanMetric, MultiOutputClassificationMetric):
 
     Examples
     --------
-
     >>> from river import metrics
 
     >>> y_true = [

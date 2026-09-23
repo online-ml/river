@@ -29,7 +29,6 @@ class EntropySampler(ActiveLearningClassifier):
 
     Examples
     --------
-
     >>> from river import active
     >>> from river import datasets
     >>> from river import feature_extraction

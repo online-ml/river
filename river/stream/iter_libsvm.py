@@ -35,7 +35,6 @@ def iter_libsvm(
 
     Examples
     --------
-
     >>> import io
     >>> from river import stream
 
@@ -55,7 +54,6 @@ def iter_libsvm(
     [^1]: [LIBSVM documentation](https://www.csie.ntu.edu.tw/~cjlin/libsvm/)
 
     """
-
     # If a file is not opened, then we open it
     if isinstance(filepath_or_buffer, (str, os.PathLike)):
         buffer = utils.open_filepath(filepath_or_buffer, compression)

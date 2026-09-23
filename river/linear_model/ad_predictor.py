@@ -61,7 +61,6 @@ class AdPredictor(base.Classifier):
 
     Examples
     --------
-
     >>> from river import linear_model
 
     >>> model = linear_model.AdPredictor(beta=0.1, prior_probability=0.5)

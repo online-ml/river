@@ -41,7 +41,6 @@ class RandomTree(datasets.base.SyntheticDataset):
 
     Examples
     --------
-
     >>> from river.datasets import synth
 
     >>> dataset = synth.RandomTree(seed_tree=42, seed_sample=42, n_classes=2,

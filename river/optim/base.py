@@ -98,10 +98,12 @@ class Optimizer(base.Base):
     def look_ahead(self, w: DictLike | VectorLike) -> DictLike | VectorLike:
         """Updates a weight vector before a prediction is made.
 
-        Parameters:
+        Parameters
+        ----------
             w (dict): A dictionary of weight parameters. The weights are modified in-place.
 
-        Returns:
+        Returns
+        -------
             The updated weights.
 
         """
@@ -128,7 +130,6 @@ class Optimizer(base.Base):
         The updated weights.
 
         """
-
         if (isinstance(w, utils.VectorDict) or isinstance(w, np.ndarray)) and (
             isinstance(g, utils.VectorDict) or isinstance(g, np.ndarray)
         ):

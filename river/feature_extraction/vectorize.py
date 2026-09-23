@@ -66,7 +66,6 @@ def find_ngrams(tokens: typing.Iterator[str], n: int) -> typing.Iterator[N_GRAM]
 
     Examples
     --------
-
     >>> tokens = ['a', 'b', 'c']
 
     >>> list(find_ngrams(tokens, 0))
@@ -102,7 +101,6 @@ def find_all_ngrams(tokens: list[str], ngram_range: range) -> typing.Iterator[N_
 
     Examples
     --------
-
     >>> tokens = ['a', 'b', 'c']
 
     >>> list(find_all_ngrams(tokens, range(2)))
@@ -284,7 +282,6 @@ class BagOfWords(base.Transformer, VectorizerMixin):
 
     Examples
     --------
-
     By default, `BagOfWords` will take as input a sentence, preprocess it, tokenize the
     preprocessed text, and then return a `collections.Counter` containing the number of
     occurrences of each token.
@@ -436,7 +433,6 @@ class TFIDF(BagOfWords):
 
     Examples
     --------
-
     >>> from river import feature_extraction
 
     >>> tfidf = feature_extraction.TFIDF()

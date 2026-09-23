@@ -8,7 +8,6 @@ def check_roc_auc(anomaly_detector, dataset):
     never asked to score a point it has already memorised — which would leak the label and
     inflate the score.
     """
-
     from sklearn import metrics
 
     scores = []

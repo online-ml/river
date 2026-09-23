@@ -44,7 +44,6 @@ class CategoricalNB(base.BaseNB):
 
     Examples
     --------
-
     >>> from river import naive_bayes
 
     >>> X = [

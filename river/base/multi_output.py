@@ -38,7 +38,6 @@ class MultiLabelClassifier(Estimator, abc.ABC):
         A dictionary that associates a probability which each label.
 
         """
-
         # In case the multi-label classifier does not support probabilities
         raise NotImplementedError
 
@@ -57,7 +56,6 @@ class MultiLabelClassifier(Estimator, abc.ABC):
         The predicted labels.
 
         """
-
         probas = self.predict_proba_one(x, **kwargs)
 
         preds = {}

@@ -165,6 +165,7 @@ class BaseEFDTBranch(DTBranch):
             Id of attribute to find.
         split_suggestions
             Possible split candidates.
+
         Returns
         -------
             Found attribute.

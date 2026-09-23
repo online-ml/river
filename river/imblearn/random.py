@@ -48,7 +48,6 @@ class RandomUnderSampler(ClassificationSampler):
 
     Examples
     --------
-
     >>> from river import datasets
     >>> from river import evaluate
     >>> from river import imblearn
@@ -139,7 +138,6 @@ class RandomOverSampler(ClassificationSampler):
 
     Examples
     --------
-
     >>> from river import datasets
     >>> from river import evaluate
     >>> from river import imblearn
@@ -227,7 +225,6 @@ class RandomSampler(ClassificationSampler):
 
     Examples
     --------
-
     >>> from river import datasets
     >>> from river import evaluate
     >>> from river import imblearn

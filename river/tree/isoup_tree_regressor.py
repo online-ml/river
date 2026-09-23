@@ -80,7 +80,6 @@ class ISOUPTreeRegressor(tree.HoeffdingTreeRegressor, base.MultiTargetRegressor)
 
     Examples
     --------
-
     >>> import numbers
     >>> from river import compose
     >>> from river import datasets

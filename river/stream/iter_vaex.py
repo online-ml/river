@@ -24,7 +24,6 @@ def iter_vaex(
         specifying in `y` are ignored.
 
     """
-
     features = _ensure_strings_from_expressions(features)
     feature_names = features or X.get_column_names()
 

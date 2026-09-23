@@ -20,7 +20,6 @@ class BalancedAccuracy(metrics.base.MultiClassMetric):
 
     Examples
     --------
-
         >>> from river import metrics
         >>> y_true = [True, False, True, True, False, True]
         >>> y_pred = [True, False, True, True, True, False]

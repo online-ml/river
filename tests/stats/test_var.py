@@ -14,7 +14,6 @@ def test_weighted_variance_with_close_numbers() -> None:
     This test would fail if Var were implemented with a numerically unstable algorithm.
 
     """
-
     D = [
         (99.99999978143265, 6),
         (99.99999989071631, 8),

@@ -81,7 +81,6 @@ class Estimator(base.Base, abc.ABC, metaclass=EstimatorMeta):
         TODO: this could be a cachedproperty.
 
         """
-
         tags = self._more_tags()
 
         for parent in self.__class__.__mro__:

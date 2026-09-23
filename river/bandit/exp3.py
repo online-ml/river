@@ -34,7 +34,6 @@ class Exp3(bandit.base.Policy):
 
     Examples
     --------
-
     >>> import gymnasium as gym
     >>> from river import bandit
     >>> from river import proba

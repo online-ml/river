@@ -77,7 +77,6 @@ class BiasedMF(Ranker):
 
     Examples
     --------
-
     >>> from river import optim
     >>> from river import reco
 

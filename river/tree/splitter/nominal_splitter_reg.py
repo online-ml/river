@@ -13,7 +13,8 @@ class NominalSplitterReg(Splitter):
 
     As the monitored feature is nominal, it already has well-defined partitions. Hence,
     this splitter simply keeps the split-enabling target statistics for each incoming
-    category."""
+    category.
+    """
 
     def __init__(self):
         super().__init__()

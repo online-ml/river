@@ -43,7 +43,6 @@ class Beta(base.ContinuousDistribution):
 
     Examples
     --------
-
     >>> from river import proba
 
     >>> successes = 81

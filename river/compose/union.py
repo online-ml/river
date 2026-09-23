@@ -36,7 +36,6 @@ class TransformerUnion(base.MiniBatchTransformer):
 
     Examples
     --------
-
     Take the following dataset:
 
     >>> X = [
@@ -218,7 +217,6 @@ class TransformerUnion(base.MiniBatchTransformer):
 
     def _add_step(self, transformer):
         """Adds a transformer while taking care of the input type."""
-
         name = None
         if isinstance(transformer, tuple):
             name, transformer = transformer

@@ -28,7 +28,6 @@ class Var(stats.base.Univariate):
 
     Examples
     --------
-
     >>> from river import stats
 
     >>> X = [3, 5, 4, 7, 10, 12]

@@ -187,7 +187,6 @@ def test_suffixing():
 
 def test_one_many_consistent():
     """Checks that using transform_one or transform_many produces the same result."""
-
     product = (
         compose.Select("ordinal_date")
         + compose.Select("gallup", "ipsos") * compose.Select("morning_consult")

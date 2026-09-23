@@ -43,7 +43,6 @@ class HeavyHitters(base.Base):
 
     Examples
     --------
-
     >>> import random
     >>> import string
     >>> from river import sketch

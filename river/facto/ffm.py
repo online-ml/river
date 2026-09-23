@@ -177,7 +177,6 @@ class FFMRegressor(FFM, base.Regressor):
 
     Examples
     --------
-
     >>> from river import facto
 
     >>> dataset = (
@@ -324,7 +323,6 @@ class FFMClassifier(FFM, base.Classifier):
 
     Examples
     --------
-
     >>> from river import facto
 
     >>> dataset = (

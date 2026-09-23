@@ -48,7 +48,6 @@ class Cache:
 
     Examples
     --------
-
     >>> import time
     >>> from river import datasets
     >>> from river import stream

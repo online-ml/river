@@ -200,7 +200,6 @@ class FwFMRegressor(FwFM, base.Regressor):
 
     Examples
     --------
-
     >>> from river import facto
 
     >>> dataset = (
@@ -349,7 +348,6 @@ class FwFMClassifier(FwFM, base.Classifier):
 
     Examples
     --------
-
     >>> from river import facto
 
     >>> dataset = (

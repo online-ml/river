@@ -221,7 +221,6 @@ def iter_progressive_val_score(
 
     Examples
     --------
-
     Take the following model:
 
     >>> from river import linear_model
@@ -281,7 +280,6 @@ def iter_progressive_val_score(
     [^2]: [Grzenda, M., Gomes, H.M. and Bifet, A., 2019. Delayed labelling evaluation for data streams. Data Mining and Knowledge Discovery, pp.1-30](https://link.springer.com/content/pdf/10.1007%2Fs10618-019-00654-y.pdf)
 
     """
-
     yield from _progressive_validation(
         dataset,
         model,
@@ -364,7 +362,6 @@ def progressive_val_score(
 
     Examples
     --------
-
     Take the following model:
 
     >>> from river import linear_model
@@ -451,7 +448,6 @@ def progressive_val_score(
     [^2]: [Grzenda, M., Gomes, H.M. and Bifet, A., 2019. Delayed labelling evaluation for data streams. Data Mining and Knowledge Discovery, pp.1-30](https://link.springer.com/content/pdf/10.1007%2Fs10618-019-00654-y.pdf)
 
     """
-
     checkpoints = iter_progressive_val_score(
         dataset=dataset,
         model=model,
@@ -493,7 +489,6 @@ def _build_clustering_closures(metric, model):
     Returns ``(predict, metric_update)`` where both closures share a single
     transform pass for pipelines, avoiding redundant work.
     """
-
     if isinstance(model, Pipeline):
         clusterer = model._last_step
         _predict = clusterer.predict_one

@@ -17,7 +17,6 @@ class Cov(stats.base.Bivariate):
 
     Examples
     --------
-
     >>> from river import stats
 
     >>> x = [-2.1,  -1,  4.3]

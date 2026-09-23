@@ -54,7 +54,6 @@ class FunkMF(reco.base.Ranker):
 
     Examples
     --------
-
     >>> from river import optim
     >>> from river import reco
 

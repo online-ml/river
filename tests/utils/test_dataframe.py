@@ -27,7 +27,6 @@ def test_to_numpy_maps_nulls_to_nan(frame_backend: FrameBackend) -> None:
 @pytest.mark.parametrize("dtype", ["double[pyarrow]", "Float64", "float64"])
 def test_to_numpy_casts_pandas_extension_floats_with_nulls(dtype: str) -> None:
     """Guards the `pandas[pyarrow]` case above against pandas' dtype inference changing."""
-
     # NOTE:`frame_backend` reaches these dtypes through `convert_dtypes`, so what it actually produces
     # depends on the data. Here the dtype is pinned instead, keeping the coverage explicit.
 

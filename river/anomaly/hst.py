@@ -84,7 +84,6 @@ class HalfSpaceTrees(base.AnomalyDetector):
 
     Examples
     --------
-
     >>> from river import anomaly
 
     >>> X = [0.5, 0.45, 0.43, 0.44, 0.445, 0.45, 0.0]

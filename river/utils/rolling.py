@@ -68,7 +68,6 @@ class Rolling(BaseRolling[_T]):
 
     Examples
     --------
-
     For instance, here is how you can compute a rolling average over a window of size 3:
 
     >>> from river import stats, utils
@@ -150,7 +149,6 @@ class TimeRolling(BaseRolling[_T]):
 
     Examples
     --------
-
     For instance, here is how you can compute a rolling average over a period of 3 days:
 
     >>> from river import stats, utils

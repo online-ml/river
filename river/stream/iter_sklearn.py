@@ -20,7 +20,6 @@ def iter_sklearn_dataset(dataset: sklearn.utils.Bunch, **kwargs) -> base.typing.
 
     Examples
     --------
-
     >>> import pprint
     >>> from sklearn import datasets
     >>> from river import stream

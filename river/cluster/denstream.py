@@ -96,7 +96,6 @@ class DenStream(base.Clusterer):
 
     Examples
     --------
-
     The following example uses the default parameters of the algorithm to test its functionality.
     The set of evolving points `X` are designed so that clusters are easily identifiable.
 

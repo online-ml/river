@@ -499,6 +499,7 @@ def _color_brew(n: int) -> list[tuple[int, int, int]]:
     Returns
     -------
         List of n tuples of form (R, G, B) being the components of each color.
+
     References
     ----------
     https://github.com/scikit-learn/scikit-learn/blob/master/sklearn/tree/_export.py

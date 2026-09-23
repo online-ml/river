@@ -63,8 +63,8 @@ class HDDMW(base.BinaryDriftAndWarningDetector):
     Warning detected at index 451
     Change detected at index 1077
 
-     References
-     ----------
+    References
+    ----------
      [^1]: Frías-Blanco I, del Campo-Ávila J, Ramos-Jimenez G, et al. Online and non-parametric drift
      detection methods based on Hoeffding’s bounds. IEEE Transactions on Knowledge and Data
      Engineering, 2014, 27(3): 810-823.
@@ -111,7 +111,6 @@ class HDDMW(base.BinaryDriftAndWarningDetector):
             correctly classified or not. 1 indicates an error (miss-classification).
 
         """
-
         if self.drift_detected:
             self._reset()
 

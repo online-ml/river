@@ -23,7 +23,6 @@ class MultiClassEncoder(base.MultiLabelClassifier):
 
     Examples
     --------
-
     >>> from river import forest
     >>> from river import metrics
     >>> from river import multioutput

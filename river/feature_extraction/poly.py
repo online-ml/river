@@ -38,7 +38,6 @@ class PolynomialExtender(base.Transformer):
 
     Examples
     --------
-
     >>> from river import feature_extraction as fx
 
     >>> X = [

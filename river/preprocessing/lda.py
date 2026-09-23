@@ -72,7 +72,6 @@ class LDA(base.Transformer):
 
     Examples
     --------
-
     >>> from river import compose
     >>> from river import feature_extraction
     >>> from river import preprocessing
@@ -172,7 +171,6 @@ class LDA(base.Transformer):
         Component attributions for the input document.
 
         """
-
         # Updates number of documents:
         self.counter += 1
 

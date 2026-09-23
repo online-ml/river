@@ -213,7 +213,6 @@ class KolmogorovSmirnov(stats.base.Bivariate):
 
     Examples
     --------
-
     >>> import numpy as np
     >>> from river import stats
 

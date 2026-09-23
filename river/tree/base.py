@@ -101,7 +101,6 @@ class Branch(base.Base, abc.ABC):
 
     def iter_bfs(self):
         """Iterate over nodes in breadth-first order."""
-
         queue = Queue()
 
         queue.put(self)

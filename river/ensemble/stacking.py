@@ -18,7 +18,6 @@ class StackingClassifier(base.Ensemble, base.Classifier):
 
     Examples
     --------
-
     >>> from river import compose
     >>> from river import datasets
     >>> from river import ensemble

@@ -93,7 +93,7 @@ def from_dict(data: dict) -> pd.DataFrame:
         Input data as dict.
 
     Returns
-    --------
+    -------
         Dict to pandas dataframe.
 
     """
@@ -111,7 +111,7 @@ def one_hot_encode(y: pd.Series) -> pd.DataFrame:
         Pandas Series of strings.
 
     Returns
-    --------
+    -------
     One hot encoded sparse dataframe.
 
     """

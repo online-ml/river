@@ -589,11 +589,11 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
         ----------
         node
             The node to reevaluate.
+
         Returns
         -------
             The new leaf.
         """
-
         leaf = self._new_leaf()
         leaf.depth = node.depth  # type: ignore
         leaf.stats = node.stats

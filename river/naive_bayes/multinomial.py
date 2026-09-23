@@ -46,7 +46,6 @@ class MultinomialNB(base.BaseNB):
 
     Examples
     --------
-
     >>> import pandas as pd
     >>> from river import compose
     >>> from river import feature_extraction

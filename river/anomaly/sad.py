@@ -34,7 +34,6 @@ class StandardAbsoluteDeviation(base.SupervisedAnomalyDetector):
 
     Examples
     --------
-
     >>> import random
     >>> from river import anomaly
     >>> from river import stats

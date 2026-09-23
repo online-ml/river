@@ -52,7 +52,6 @@ class ClassifierChain(BaseChain, base.MultiLabelClassifier):  # type:ignore[misc
 
     Examples
     --------
-
     >>> import random
 
     >>> from river import datasets
@@ -179,7 +178,6 @@ class RegressorChain(BaseChain, base.MultiTargetRegressor):  # type:ignore[misc]
 
     Examples
     --------
-
     >>> from river import evaluate
     >>> from river import linear_model
     >>> from river import metrics
@@ -279,7 +277,6 @@ class ProbabilisticClassifierChain(ClassifierChain):
 
     Examples
     --------
-
     >>> from river import linear_model
     >>> from river import metrics
     >>> from river import multioutput

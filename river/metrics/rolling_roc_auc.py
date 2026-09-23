@@ -38,7 +38,6 @@ class RollingROCAUC(metrics.base.BinaryMetric):
 
     Examples
     --------
-
     >>> from river import base, metrics
 
     >>> y_true = [ 0,  1,  0,  1,  0,  1,  0,  0,   1,  1]

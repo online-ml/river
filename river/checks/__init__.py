@@ -58,7 +58,6 @@ def _yield_datasets(model: Estimator, scale: int = 1):
         long stream — for instance to reliably observe whether memory plateaus.
 
     """
-
     from sklearn import datasets as sk_datasets
 
     from river import base, compose, datasets, preprocessing, stream
@@ -154,7 +153,6 @@ def yield_checks(model: Estimator) -> typing.Iterator[typing.Callable]:
     model
 
     """
-
     from river import base, utils
     from river.time_series.base import Forecaster
 

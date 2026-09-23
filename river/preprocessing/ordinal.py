@@ -42,7 +42,6 @@ class OrdinalEncoder(base.MiniBatchTransformer):
 
     Examples
     --------
-
     >>> from river import preprocessing
 
     >>> X = [

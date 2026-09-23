@@ -97,7 +97,6 @@ def iter_array(
 
     Examples
     --------
-
     >>> from river import stream
     >>> import numpy as np
 
@@ -123,7 +122,6 @@ def iter_array(
     bar False
 
     """
-
     if chunk_size < 1:
         raise ValueError(f"chunk_size must be a positive integer, got {chunk_size}")
 

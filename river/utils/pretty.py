@@ -26,7 +26,6 @@ def print_table(
         are given.
 
     """
-
     # Check inputs
     if len(headers) != len(columns):
         raise ValueError("there must be as many headers as columns")

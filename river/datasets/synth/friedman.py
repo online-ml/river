@@ -26,7 +26,6 @@ class Friedman(datasets.base.SyntheticDataset):
 
     Examples
     --------
-
     >>> from river.datasets import synth
 
     >>> dataset = synth.Friedman(seed=42)

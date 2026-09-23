@@ -386,7 +386,6 @@ class SRPClassifier(BaseSRPEnsemble, base.Classifier):
 
     Examples
     --------
-
     >>> from river import ensemble
     >>> from river import evaluate
     >>> from river import metrics
@@ -654,7 +653,6 @@ class SRPRegressor(BaseSRPEnsemble, base.Regressor):
 
     Examples
     --------
-
     >>> from river import ensemble
     >>> from river import evaluate
     >>> from river import metrics

@@ -117,7 +117,6 @@ class BaseForest(base.Ensemble):
             The number of concept drift warnings detected.
 
         """
-
         if self._warning_detection_disabled:
             return 0
 
@@ -141,7 +140,6 @@ class BaseForest(base.Ensemble):
             The number of concept drifts detected.
 
         """
-
         if self._drift_detection_disabled:
             return 0
 
@@ -410,7 +408,6 @@ class BaseTreeRegressor(HoeffdingTreeRegressor):
 
         The type of learning node depends on the tree configuration.
         """
-
         if parent is not None:
             depth = parent.depth + 1
         else:
@@ -564,7 +561,6 @@ class ARFClassifier(BaseForest, base.Classifier):
 
     Examples
     --------
-
     >>> from river import evaluate
     >>> from river import forest
     >>> from river import metrics
@@ -850,7 +846,6 @@ class ARFRegressor(BaseForest, base.Regressor):
 
     Examples
     --------
-
     >>> from river import datasets
     >>> from river import evaluate
     >>> from river import forest

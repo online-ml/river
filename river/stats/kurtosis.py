@@ -14,7 +14,6 @@ class Kurtosis(stats.base.Univariate):
 
     Examples
     --------
-
     >>> from river import stats
     >>> import scipy.stats
     >>> import numpy as np

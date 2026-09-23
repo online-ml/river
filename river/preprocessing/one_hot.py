@@ -59,7 +59,6 @@ class OneHotEncoder(base.MiniBatchTransformer):
 
     Examples
     --------
-
     Let us first create an example dataset.
 
     >>> from pprint import pprint

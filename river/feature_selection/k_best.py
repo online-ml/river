@@ -31,7 +31,6 @@ class SelectKBest(base.SupervisedTransformer):
 
     Examples
     --------
-
     >>> from pprint import pprint
     >>> from river import feature_selection
     >>> from river import stats

@@ -20,7 +20,6 @@ class MCC(metrics.base.BinaryMetric):
 
     Examples
     --------
-
     >>> from river import metrics
 
     >>> y_true = [True, True, True, False]

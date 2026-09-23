@@ -46,7 +46,6 @@ def iter_frame(
 
     Examples
     --------
-
     >>> from river import stream
 
     The same code works regardless of the dataframe library. With pandas:

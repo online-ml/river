@@ -89,7 +89,6 @@ class GapEncoder(base.Transformer):
 
     Examples
     --------
-
     Say people type in city names by hand. The same city shows up spelled several different ways,
     with typos and extra bits, and no two spellings need to share a whole word. The encoder still
     groups the variants under the same topic:

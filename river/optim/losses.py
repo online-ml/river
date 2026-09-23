@@ -149,7 +149,6 @@ class Absolute(RegressionLoss):
 
     Examples
     --------
-
     >>> from river import optim
 
     >>> loss = optim.losses.Absolute()
@@ -215,7 +214,6 @@ class CrossEntropy(MultiClassLoss):
 
     Examples
     --------
-
     >>> from river import optim
 
     >>> y_true = [0, 1, 2, 2]
@@ -298,7 +296,6 @@ class Hinge(BinaryLoss):
 
     Examples
     --------
-
     >>> from river import optim
 
     >>> loss = optim.losses.Hinge(threshold=1)
@@ -446,7 +443,6 @@ class Quantile(RegressionLoss):
 
     Examples
     --------
-
     >>> from river import optim
 
     >>> loss = optim.losses.Quantile(0.5)
@@ -494,7 +490,6 @@ class Squared(RegressionLoss):
 
     Examples
     --------
-
     >>> from river import optim
 
     >>> loss = optim.losses.Squared()

@@ -100,7 +100,6 @@ class DBSTREAM(base.Clusterer):
 
     Examples
     --------
-
     >>> from river import cluster
     >>> from river import stream
 

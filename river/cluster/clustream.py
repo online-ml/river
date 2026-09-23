@@ -75,7 +75,6 @@ class CluStream(base.Clusterer):
 
     Examples
     --------
-
     In the following example, `max_micro_clusters` is set relatively low due to the
     limited number of training points. Moreover, all points are learnt before any predictions are made.
     The `halflife` is set at 0.4, to show that you can pass `cluster.KMeans` parameters via keyword arguments.

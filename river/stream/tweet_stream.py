@@ -43,16 +43,15 @@ class TwitterLiveStream:
             Using this requires having the [`requests`](https://requests.readthedocs.io/en/latest/)
             package installed.
 
-        Parameters
-        ----------
+    Parameters
+    ----------
         rules
             See the [documentation](https://developer.twitter.com/en/docs/twitter-api/tweets/filtered-stream/integrate/build-a-rule) for a comprehensive overview of filtering rules.
         bearer_token
             A bearer token that is available in each account's developer portal.
 
-        Examples
-        --------
-
+    Examples
+    --------
         The live stream is instantiated by passing a list of filtering rules, as well as a bearer
         token. For instance, we can listen to all the breaking news Tweets from the BBC and CNN.
 
@@ -104,8 +103,8 @@ class TwitterLiveStream:
         }
         ```
 
-        References
-        ----------
+    References
+    ----------
         [^1]: [Filtered stream introduction](https://developer.twitter.com/en/docs/twitter-api/tweets/filtered-stream/introduction)
         [^2]: [Building rules for filtered stream](https://developer.twitter.com/en/docs/twitter-api/tweets/filtered-stream/integrate/build-a-rule)
         [^3]: [Stream Tweets in real-time](https://developer.twitter.com/en/docs/tutorials/stream-tweets-in-real-time)

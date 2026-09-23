@@ -15,8 +15,8 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
         This is important because Mondrian trees are highly sensitive to feature scaling, as
         the distance between a sample and the node's bounding box is calculated as the sum of the distances across all features.
 
-        Parameters
-        ----------
+    Parameters
+    ----------
         step
             Step of the tree.
         use_aggregation
@@ -33,13 +33,13 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
         seed
             Random seed for reproducibility.
 
-        Notes
-        -----
+    Notes
+    -----
         The Mondrian Tree Classifier is a type of decision tree that bases splitting decisions over a
         Mondrian process.
 
-        Examples
-        --------
+    Examples
+    --------
     >>> from river import datasets
         >>> from river import evaluate
         >>> from river import metrics
@@ -63,8 +63,8 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
         >>> evaluate.progressive_val_score(dataset, model, metric)
         Accuracy: 72.24%
 
-        References
-        ----------
+    References
+    ----------
         [^1]: [Lakshminarayanan, B., Roy, D.M. and Teh, Y.W., 2014. Mondrian forests: Efficient online random forests. Advances in neural information processing systems, 27. (pages 2-4)](https://proceedings.neurips.cc/paper_files/paper/2014/hash/195c9c0797f42473f2c2f922c4cf52cf-Abstract.html)
 
     """
@@ -152,7 +152,6 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
             Feature vector.
 
         """
-
         if not self._is_initialized:
             return {}
 

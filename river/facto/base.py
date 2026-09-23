@@ -142,7 +142,6 @@ class BaseFM:
         -------
         A table which explains the output.
         """
-
         x = self._ohe_cat_features(x)
 
         def fmt_float(x: float) -> str:
@@ -198,7 +197,7 @@ class BaseFM:
 
     @abc.abstractmethod
     def _interaction_names(self, x) -> list:
-        "Return names for interactions."
+        """Return names for interactions."""
 
     @abc.abstractmethod
     def _interaction_combination_keys(self, x) -> Iterable:

@@ -24,7 +24,6 @@ class GaussianScorer(base.SupervisedAnomalyDetector):
 
     Examples
     --------
-
     >>> import random
     >>> from river import anomaly
 

@@ -25,7 +25,6 @@ MO_REG = "Multi-output regression"
 
 def get_data_home():
     """Return the location where remote datasets are to be stored."""
-
     data_home = os.environ.get("RIVER_DATA", os.path.join("~", "river_data"))
     data_home = os.path.expanduser(data_home)
     if not os.path.exists(data_home):
@@ -98,7 +97,6 @@ class Dataset(abc.ABC):
         This property can be overridden in order to modify the output of the __repr__ method.
 
         """
-
         content = {}
         content["Name"] = self.__class__.__name__
         content["Task"] = self.task

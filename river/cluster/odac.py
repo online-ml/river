@@ -43,7 +43,6 @@ class ODAC(base.Clusterer):
 
     Examples
     --------
-
     >>> from river import cluster
     >>> from river.datasets import synth
 

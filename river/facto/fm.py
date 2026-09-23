@@ -161,7 +161,6 @@ class FMRegressor(FM, base.Regressor):
 
     Examples
     --------
-
     >>> from river import facto
 
     >>> dataset = (
@@ -303,7 +302,6 @@ class FMClassifier(FM, base.Classifier):
 
     Examples
     --------
-
     >>> from river import facto
 
     >>> dataset = (

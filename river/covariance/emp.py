@@ -76,7 +76,6 @@ class EmpiricalCovariance(SymmetricMatrix[typing.Any]):
 
     Examples
     --------
-
     >>> import numpy as np
     >>> import pandas as pd
     >>> from river import covariance
@@ -204,7 +203,6 @@ class EmpiricalCovariance(SymmetricMatrix[typing.Any]):
             A dataframe of samples.
 
         """
-
         frame = utils.dataframe.into_frame(X)
         columns = list(frame.columns)
         X_arr = utils.dataframe.to_numpy(frame)
@@ -235,7 +233,7 @@ class EmpiricalCovariance(SymmetricMatrix[typing.Any]):
             A dictionary of covariance or variance values.
 
         Raises
-        ----------
+        ------
             KeyError: If an element in `mean` or `cov` is missing.
 
         """
@@ -292,7 +290,7 @@ class EmpiricalCovariance(SymmetricMatrix[typing.Any]):
             Degrees of freedom for covariance calculation. Defaults to 1.
 
         Returns
-        ----------
+        -------
             cls: A new instance of the class with updated covariance matrix.
 
         """
@@ -312,7 +310,6 @@ class EmpiricalPrecision(SymmetricMatrix[float]):
 
     Examples
     --------
-
     >>> import numpy as np
     >>> import pandas as pd
     >>> from river import covariance

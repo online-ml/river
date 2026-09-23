@@ -41,7 +41,6 @@ def iter_sql(
 
     Examples
     --------
-
     As an example we'll create an in-memory database with SQLAlchemy.
 
     >>> import datetime as dt
@@ -102,7 +101,6 @@ def iter_sql(
     >>> engine.dispose()
 
     """
-
     statement = sqlalchemy.text(query) if isinstance(query, str) else query
 
     with conn.execute(statement) as result:

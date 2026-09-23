@@ -23,7 +23,6 @@ class RandomSplitter(Splitter):
 
     def clone(self, new_params: dict | None = None, include_attributes=False):
         """Change the behavior of clone to allow copies to have a different rng."""
-
         new_params = new_params or {}
         new_params["seed"] = self._rng.randint(0, sys.maxsize)
         return super().clone(new_params, include_attributes)

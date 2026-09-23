@@ -222,7 +222,6 @@ class EwaCovariance(_EWCovariance):
 
     Examples
     --------
-
     We estimate the covariance of daily returns (in percent) for a few stocks from the
     `datasets.SP500Stocks` dataset.
 
@@ -287,7 +286,6 @@ class LedoitWolfCovariance(_EWCovariance):
 
     Examples
     --------
-
     On the ten stocks of `datasets.SP500Stocks` with a short effective memory, the raw covariance is
     poorly conditioned; Ledoit-Wolf shrinkage tames it.
 
@@ -364,7 +362,6 @@ class OASCovariance(_EWCovariance):
 
     Examples
     --------
-
     >>> import numpy as np
     >>> from river import covariance, datasets
 
@@ -422,7 +419,6 @@ class ShrunkCovariance(_EWCovariance):
 
     Examples
     --------
-
     >>> from river import covariance, datasets
 
     >>> tickers = ["AAPL", "JPM", "XOM"]
@@ -494,7 +490,6 @@ class EwaPrecision(_EWMatrix):
 
     Examples
     --------
-
     >>> from river import covariance, datasets
 
     >>> tickers = ["AAPL", "JPM", "XOM"]

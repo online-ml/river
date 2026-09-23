@@ -17,7 +17,6 @@ class Quantile(stats.base.Univariate):
 
     Examples
     --------
-
     >>> from river import stats
     >>> import numpy as np
 
@@ -96,7 +95,6 @@ class RollingQuantile(stats.base.RollingUnivariate):
 
     Examples
     --------
-
     >>> from river import stats
 
     >>> rolling_quantile = stats.RollingQuantile(

@@ -15,7 +15,6 @@ from .utils import assert_predictions_are_close, seed_params
 
 def _inference_methods(model):
     """Yield the names of inference methods this model exposes."""
-
     if isinstance(model, base.AnomalyDetector):
         yield "score_one"
     elif isinstance(model, base.Classifier):
@@ -30,7 +29,6 @@ def _inference_methods(model):
 
 def _infer(model, x):
     """Call the model's primary inference method on `x`."""
-
     if isinstance(model, base.AnomalyDetector):
         return model.score_one(x)
     if isinstance(model, base.Classifier):
@@ -45,7 +43,6 @@ def _infer(model, x):
 
 def _learn(model, x, y):
     """Call `learn_one` with the right signature for the model's kind."""
-
     if isinstance(model, base.AnomalyDetector):
         model.learn_one(x)
     elif model._supervised:
@@ -56,7 +53,6 @@ def _learn(model, x, y):
 
 def check_learn_one(model, dataset):
     """learn_one should return the calling model and be pure."""
-
     klass = model.__class__
 
     for x, y in dataset:
@@ -77,7 +73,6 @@ def check_learn_one(model, dataset):
 
 def check_shuffle_features_no_impact(model, dataset):
     """Changing the order of the features between calls should have no effect on a model."""
-
     from river.active.base import ActiveLearningClassifier
 
     params = seed_params(model._get_params(), seed=42)
@@ -112,7 +107,6 @@ def check_predict_one_pure(model, dataset):
     depending on the estimator's type. The `learn_one` counterpart is already
     covered by `check_learn_one`.
     """
-
     methods = list(_inference_methods(model))
     if not methods:
         return
@@ -136,7 +130,6 @@ def check_predict_one_pure(model, dataset):
 
 def check_emerging_features(model, dataset):
     """The model should work fine when new features appear."""
-
     for x, y in dataset:
         features = list(x.keys())
         random.shuffle(features)
@@ -146,7 +139,6 @@ def check_emerging_features(model, dataset):
 
 def check_disappearing_features(model, dataset):
     """The model should work fine when features disappear."""
-
     for x, y in dataset:
         features = list(x.keys())
         random.shuffle(features)
@@ -156,7 +148,6 @@ def check_disappearing_features(model, dataset):
 
 def check_radically_disappearing_features(model, dataset):
     """The model should work fine when nearly all features disappear."""
-
     # First give all the data to prime the model
     for x, y in itertools.islice(dataset, 20):
         _infer(model, x)
@@ -198,7 +189,6 @@ def check_bounded_memory_growth(model, dataset):
     collector, dict capacity jumps, and bursty tree splits can all shift the
     numbers by tens of percent between runs.
     """
-
     samples = list(dataset)
     if len(samples) < 4:
         return  # not enough data to split meaningfully
@@ -298,7 +288,6 @@ def check_init_default_params_are_not_mutable(model):
     We enforce immutable parameters by only allowing a certain list of basic types.
 
     """
-
     allowed = (type(None), float, int, tuple, str, bool, type)
 
     for param in inspect.signature(model.__class__).parameters.values():
@@ -330,7 +319,6 @@ def check_clone_with_new_params_applies(model):
     value or strict inequality with the original attribute as evidence that
     the override took effect.
     """
-
     for name, param in inspect.signature(model.__class__).parameters.items():
         if param.kind in (param.VAR_POSITIONAL, param.VAR_KEYWORD):
             continue
@@ -361,7 +349,6 @@ def check_get_params_matches_signature(model):
     Catches estimators that accept a parameter in `__init__` but don't store
     it as a same-named attribute — which would silently break `clone`.
     """
-
     expected = {
         name
         for name, param in inspect.signature(model.__class__).parameters.items()
@@ -380,7 +367,6 @@ def check_clone_is_independent(model, dataset):
     differ. This check guards against deeper shared state (e.g. a list of base
     models stored by reference).
     """
-
     clone = model.clone()
     snapshot = pickle.dumps(clone)
 
@@ -399,7 +385,6 @@ def check_predict_one_before_any_learn(model, dataset):
     `transform_one` are callable from the very first event, before any
     `learn_one` has been issued.
     """
-
     methods = list(_inference_methods(model))
     if not methods:
         return
@@ -422,7 +407,6 @@ def check_no_state_aliasing_with_input(model, dataset):
     Catches estimators that stash a reference to the input dict instead of
     copying the values they care about.
     """
-
     for x, y in dataset:
         x_copy = copy.deepcopy(x)
         _learn(model, x_copy, copy.deepcopy(y))
@@ -447,7 +431,6 @@ def check_no_state_aliasing_with_input(model, dataset):
 
 def check_transform_one(model, dataset):
     """`transform_one` should return a dict and be reachable from the public API."""
-
     from river import base
 
     if not isinstance(model, (base.Transformer, base.SupervisedTransformer)):
@@ -479,7 +462,6 @@ def _assert_dict_predictions_match(a, b, tolerance=1e-5):
 
 def _train_and_split(model, dataset, n_train=30, n_test=20):
     """Train `model` with `learn_one` on the first slice; return the held-out slice."""
-
     rows = list(itertools.islice(dataset, n_train + n_test))
     train, test = rows[:n_train], rows[n_train:]
     for x, y in train:
@@ -489,7 +471,6 @@ def _train_and_split(model, dataset, n_train=30, n_test=20):
 
 def check_predict_many_matches_predict_one(model, dataset):
     """`predict_many` on a batch must agree with `predict_one` per row."""
-
     import pandas as pd
 
     from river import base
@@ -531,7 +512,6 @@ def check_learn_many_matches_learn_one(model, dataset):
     mean-gradient step per batch rather than one step per row) and naive Bayes (whose
     `learn_many` consumes sparse count matrices, covered by its own test).
     """
-
     import pandas as pd
 
     params = seed_params(model._get_params(), seed=42)
@@ -588,7 +568,6 @@ def check_learn_many_matches_learn_one(model, dataset):
 
 def check_predict_proba_many_matches_predict_proba_one(model, dataset):
     """`predict_proba_many` on a batch must agree with `predict_proba_one` per row."""
-
     import pandas as pd
 
     from river import base
@@ -619,7 +598,6 @@ def check_predict_proba_many_matches_predict_proba_one(model, dataset):
 
 def check_transform_many_matches_transform_one(model, dataset):
     """`transform_many` on a batch must agree with `transform_one` per row."""
-
     import pandas as pd
 
     from river import base

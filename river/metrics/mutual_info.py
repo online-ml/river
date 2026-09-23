@@ -52,7 +52,6 @@ class MutualInfo(metrics.base.MultiClassMetric):
 
     Examples
     --------
-
     >>> from river import metrics
 
     >>> y_true = [1, 1, 2, 2, 3, 3]
@@ -137,7 +136,6 @@ class NormalizedMutualInfo(metrics.base.MultiClassMetric):
 
     Examples
     --------
-
     >>> from river import metrics
 
     >>> y_true = [1, 1, 2, 2, 3, 3]
@@ -252,7 +250,6 @@ class AdjustedMutualInfo(metrics.base.MultiClassMetric):
 
     Examples
     --------
-
     >>> from river import metrics
 
     >>> y_true = [1, 1, 2, 2, 3, 3]

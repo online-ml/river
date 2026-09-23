@@ -42,7 +42,8 @@ class ExhaustiveSplitter(Splitter):
 
     def cond_proba(self, att_val, target_val):
         """The underlying data structure used to monitor the input does not allow probability
-        density estimations. Hence, it always returns zero for any given input."""
+        density estimations. Hence, it always returns zero for any given input.
+        """
         return 0.0
 
     def best_evaluated_split_suggestion(self, criterion, pre_split_dist, att_idx, binary_only):

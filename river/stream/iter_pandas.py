@@ -32,7 +32,6 @@ def iter_pandas(
 
     Examples
     --------
-
     >>> import pandas as pd
     >>> from river import stream
 

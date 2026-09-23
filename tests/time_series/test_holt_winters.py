@@ -131,7 +131,6 @@ def austourists():
 
 def test_oil(printer, oil):
     """https://otexts.com/fpp2/ses.html#example-oil-production"""
-
     model = HoltWinters(alpha=0.8339)
     model.level.append(446.5868)
     model._initialized = True
@@ -180,7 +179,6 @@ t  | y        | level    | y_pred
 
 def test_ausair(printer, ausair):
     """https://otexts.com/fpp2/holt.html#example-air-passengers"""
-
     model = HoltWinters(alpha=0.8302, beta=1e-04)
     model.level.append(15.5715)
     model.trend.append(2.1017)
@@ -240,7 +238,6 @@ t  | y        | level    | trend    | y_pred
 
 def test_austourists_additive(printer, austourists):
     """https://otexts.com/fpp2/holt-winters.html#example-international-tourist-visitor-nights-in-australia"""
-
     model = HoltWinters(alpha=0.3063, beta=1e-04, gamma=0.4263, seasonality=4)
     model.level.append(32.2597)
     model.trend.append(0.7014)
@@ -320,7 +317,6 @@ t  | y        | level    | trend    | seasonality | y_pred
 
 def test_austourists_multiplicative(printer, austourists):
     """https://otexts.com/fpp2/holt-winters.html#example-international-tourist-visitor-nights-in-australia"""
-
     model = HoltWinters(alpha=0.441, beta=0.03, gamma=0.002, seasonality=4, multiplicative=True)
     model.level.append(32.4875)
     model.trend.append(0.6974)

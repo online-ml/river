@@ -30,7 +30,6 @@ class NUnique(base.Base):
 
     Examples
     --------
-
     >>> import string
     >>> from river import sketch
 

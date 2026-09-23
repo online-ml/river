@@ -32,7 +32,6 @@ def iter_polars(
 
     Examples
     --------
-
     >>> import polars as pl
     >>> from river import stream
 

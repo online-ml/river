@@ -27,7 +27,6 @@ class Gaussian(base.ContinuousDistribution):
 
     Examples
     --------
-
     >>> from river import proba
 
     >>> p = proba.Gaussian()
@@ -133,7 +132,6 @@ class MultivariateGaussian(base.MultivariateContinuousDistribution):
 
     Examples
     --------
-
     >>> import numpy as np
     >>> import pandas as pd
     >>> from river import proba

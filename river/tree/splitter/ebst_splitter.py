@@ -165,7 +165,6 @@ class EBSTSplitter(Splitter):
         [^1]: Ikonomovska, E., Gama, J., & Džeroski, S. (2011). Learning model trees from evolving
         data streams. Data mining and knowledge discovery, 23(1), 128-168.
         """
-
         if self._root is None:
             return
 

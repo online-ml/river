@@ -137,7 +137,6 @@ class AMFClassifier(AMFLearner, base.Classifier):
 
     Examples
     --------
-
     >>> from river import datasets
     >>> from river import evaluate
     >>> from river import forest
@@ -283,7 +282,6 @@ class AMFRegressor(AMFLearner, base.Regressor):
 
     Examples
     --------
-
     >>> from river import datasets
     >>> from river import evaluate
     >>> from river import forest
@@ -329,7 +327,6 @@ class AMFRegressor(AMFLearner, base.Regressor):
 
     def _initialize_trees(self) -> None:
         """Initialize the forest."""
-
         self.data: list[MondrianTreeRegressor] = []
         for _ in range(self.n_estimators):
             # We don't want to have the same stochastic scheme for each tree, or it'll break the randomness

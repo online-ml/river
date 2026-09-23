@@ -95,7 +95,6 @@ class MondrianTreeRegressor(MondrianTree, base.Regressor):
             Feature vector.
 
         """
-
         if self._native_model is None:
             return 0.0
 

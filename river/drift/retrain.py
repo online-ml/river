@@ -25,7 +25,6 @@ class DriftRetrainingClassifier(base.Wrapper[base.Classifier], base.Classifier):
 
     Examples
     --------
-
     >>> from river import datasets
     >>> from river import evaluate
     >>> from river import drift

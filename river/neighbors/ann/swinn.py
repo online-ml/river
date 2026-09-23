@@ -147,7 +147,6 @@ class SWINN(BaseNN):
 
     def _fix_graph(self) -> None:
         """Connect every isolated node in the graph to their nearest neighbors."""
-
         for nid in list(Vertex._isolated):
             if not self[nid].is_isolated():
                 continue
@@ -211,7 +210,6 @@ class SWINN(BaseNN):
             The list of node ids for which the neighborhood refinement will be applied.
             If `None`, all nodes will have their neighborhood enhanced.
         """
-
         # Cache frequently accessed attributes as locals
         _data = self._data
         dist_func = self.dist_func
@@ -460,7 +458,6 @@ class SWINN(BaseNN):
             A tuple containing the id of the neighbors in the buffer and the respective distances to them.
 
         """
-
         if len(self) <= self.warm_up:
             return self._linear_scan(item, n_neighbors)
 
