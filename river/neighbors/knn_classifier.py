@@ -1,12 +1,19 @@
 from __future__ import annotations
 
+import typing
+from collections.abc import Iterator
+
 from river import base, utils
 from river.neighbors import SWINN
+from river.utils.vectordict import (
+    euclidean_distance_dict as _euclidean_dict_distance,
+)
 
 from .base import (
     BaseNN,
+    DistanceFunc,
     FunctionWrapper,
-    _euclidean_tuple_distance,  # type: ignore[attr-defined]
+    _euclidean_tuple_distance,
 )
 
 
@@ -81,12 +88,12 @@ class KNNClassifier(base.Classifier):
         weighted: bool = True,
         cleanup_every: int = 0,
         softmax: bool = False,
-    ):
+    ) -> None:
         self.n_neighbors = n_neighbors
 
-        _default_dist = utils.math._euclidean_distance  # type: ignore[attr-defined]
+        _default_dist = typing.cast(DistanceFunc, _euclidean_dict_distance)
         if engine is None:
-            engine = SWINN(dist_func=_default_dist)  # type: ignore[arg-type]
+            engine = SWINN(dist_func=_default_dist)
 
         if not isinstance(engine.dist_func, FunctionWrapper):
             if engine.dist_func is _default_dist:
@@ -105,22 +112,22 @@ class KNNClassifier(base.Classifier):
         self._nn: BaseNN = self.engine.clone(include_attributes=True)
 
     @property
-    def _multiclass(self):
+    def _multiclass(self) -> bool:
         return True
 
     @classmethod
-    def _unit_test_params(cls):
+    def _unit_test_params(cls) -> Iterator[dict[str, typing.Any]]:
         from river.neighbors import LazySearch
 
         yield {
             "n_neighbors": 3,
             "engine": LazySearch(
                 window_size=30,
-                dist_func=utils.math._euclidean_distance,  # type: ignore[attr-defined]
+                dist_func=typing.cast(DistanceFunc, _euclidean_dict_distance),
             ),
         }
 
-    def clean_up_classes(self):
+    def clean_up_classes(self) -> None:
         """Clean up classes added to the window.
 
         Classes that are added (and removed) from the window may no longer be valid.
@@ -131,7 +138,9 @@ class KNNClassifier(base.Classifier):
         """
         self.classes = self._nn.refresh_targets()
 
-    def learn_one(self, x, y):
+    def learn_one(
+        self, x: dict[base.typing.FeatureName, typing.Any], y: base.typing.ClfTarget
+    ) -> None:
         # Copy x so the caller can safely mutate the input dict after learn_one
         # without disturbing the stored neighbours.
         self._nn.append((dict(x), y))
@@ -142,7 +151,7 @@ class KNNClassifier(base.Classifier):
         # Ensure classes known to instance reflect window
         self._run_class_cleanup()
 
-    def _run_class_cleanup(self):
+    def _run_class_cleanup(self) -> None:
         """Helper function to run class cleanup, accounting for _cleanup_counter."""
         # clean up classes every cleanup_every steps
         if self.cleanup_every:
@@ -151,7 +160,9 @@ class KNNClassifier(base.Classifier):
                 self.clean_up_classes()
                 self._cleanup_counter = self.cleanup_every
 
-    def predict_proba_one(self, x, **kwargs):
+    def predict_proba_one(
+        self, x: dict[base.typing.FeatureName, typing.Any], **kwargs: typing.Any
+    ) -> dict[base.typing.ClfTarget, float]:
         neighbors, distances = self._nn.search((x, None), n_neighbors=self.n_neighbors, **kwargs)
 
         # Default prediction for every class we know is 0.
@@ -182,7 +193,7 @@ class KNNClassifier(base.Classifier):
 
         # Normalize votes into real [0, 1] probabilities
         if self.softmax:
-            return utils.math.softmax(y_pred)
+            return utils.math.softmax(y_pred)  # type: ignore[return-value]
 
         # Otherwise normalize by the total sum
         total = sum(y_pred.values())

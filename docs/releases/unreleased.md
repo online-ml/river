@@ -1,5 +1,11 @@
 ﻿# Unreleased
 
+## drift
+
+- The `river.drift` sub-package is now clean under strict mypy, and the `river.drift.*` entry was removed from the non-strict overrides in `pyproject.toml`. Public signatures and docstrings are unchanged.
+- Fixed a latent bug in `drift.datasets.base.Dataset._annotations_aggregated`, which read a nonexistent `self._annotations` attribute and keyed the intersection branch on the integer `0` instead of the annotator key. The method has no callers today, so behavior is unchanged.
+- `DriftRetrainingClassifier` now passes a `bool` instead of an `int` as the error indicator to its wrapped binary drift detector.
+
 ## naive_bayes
 
 - Added `CategoricalNB`, a Naive Bayes classifier for categorical features that maintains per-class frequencies for every value of every feature, with additive (Laplace) smoothing and support for both online and mini-batch modes.
@@ -8,6 +14,9 @@
 
 - `BayesianLinearRegression.predict_dist_one` now replaces `BayesianLinearRegression.predict_one(..., with_dist=True)` to better respect the `Regressor` interface while still being able to predict distributions.
 
+## naive_bayes
+
+- `MultinomialNB.learn_many`, `predict_many`, and `predict_proba_many` now accept any [narwhals](https://github.com/narwhals-dev/narwhals)-supported eager backend (pandas, polars, pyarrow, ...) instead of being pandas-only, preserving the input backend (including the pandas index) on output. A backend-agnostic `BaseNB.predict_many` was added so the argmax-over-probabilities logic is shared by all Naive Bayes variants.
 ## stream
 
 - `stream.Cache` now writes a pass to a temporary file and renames it into place once the stream is exhausted. An interrupted first pass (a `break`, an exception, an abandoned generator) used to leave a truncated file behind, which every later pass then read back as if it were the whole dataset.

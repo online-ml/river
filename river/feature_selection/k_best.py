@@ -4,6 +4,7 @@ import collections
 import copy
 import functools
 import typing
+from collections.abc import Iterator
 
 from river import base, stats
 
@@ -106,29 +107,35 @@ class SelectKBest(base.SupervisedTransformer):
     {1: 0.07524386007376704}
     """
 
-    def __init__(self, similarity: stats.base.Bivariate, k=10, use_abs: bool = False):
+    def __init__(
+        self, similarity: stats.base.Bivariate, k: int = 10, use_abs: bool = False
+    ) -> None:
         self.k = k
         self.similarity = similarity
-        self.similarities: collections.defaultdict = collections.defaultdict(
-            functools.partial(copy.deepcopy, similarity)
+        self.similarities: dict[base.typing.FeatureName, stats.base.Bivariate] = (
+            collections.defaultdict(functools.partial(copy.deepcopy, similarity))
         )
-        self.leaderboard: typing.Counter = collections.Counter()
+        self.leaderboard: typing.Counter[base.typing.FeatureName] = collections.Counter()
         self.use_abs = use_abs
 
     @classmethod
-    def _unit_test_params(cls):
+    def _unit_test_params(cls) -> Iterator[dict[str, typing.Any]]:
         yield {"similarity": stats.PearsonCorr()}
 
-    def learn_one(self, x, y):
+    def learn_one(
+        self, x: dict[base.typing.FeatureName, typing.Any], y: base.typing.Target
+    ) -> None:
         for i, xi in x.items():
-            self.similarities[i].update(xi, y)
+            self.similarities[i].update(xi, y)  # type: ignore[arg-type]
             if self.use_abs:
-                similarity_value = abs(self.similarities[i].get())
+                similarity_value = abs(self.similarities[i].get())  # type: ignore[arg-type]
             else:
-                similarity_value = self.similarities[i].get()
-            self.leaderboard[i] = similarity_value
+                similarity_value = self.similarities[i].get()  # type: ignore[assignment]
+            self.leaderboard[i] = similarity_value  # type: ignore[assignment]
 
-    def transform_one(self, x):
+    def transform_one(
+        self, x: dict[base.typing.FeatureName, typing.Any]
+    ) -> dict[base.typing.FeatureName, typing.Any]:
         best_features = {pair[0] for pair in self.leaderboard.most_common(self.k)}
 
         if self.leaderboard:

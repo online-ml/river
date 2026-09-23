@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+from collections.abc import Iterator
+from typing import Any
+
 from river import base, drift
 
 
-class DriftRetrainingClassifier(base.Wrapper, base.Classifier):
+class DriftRetrainingClassifier(base.Wrapper[base.Classifier], base.Classifier):
     """Drift retraining classifier.
 
     This classifier is a wrapper for any classifier. It monitors the incoming data for concept
@@ -58,22 +61,31 @@ class DriftRetrainingClassifier(base.Wrapper, base.Classifier):
             self.bkg_model = model.clone()
 
     @property
-    def _wrapped_model(self):
+    def _wrapped_model(self) -> base.Classifier:
         return self.model
 
-    def predict_proba_one(self, x, **kwargs):
+    def predict_proba_one(
+        self, x: dict[base.typing.FeatureName, Any], **kwargs: Any
+    ) -> dict[base.typing.ClfTarget, float]:
         return self.model.predict_proba_one(x, **kwargs)
 
-    def learn_one(self, x, y, **kwargs):
+    def learn_one(
+        self,
+        x: dict[base.typing.FeatureName, Any],
+        y: base.typing.ClfTarget,
+        **kwargs: Any,
+    ) -> None:
         self._update_detector(x, y)
         self.model.learn_one(x, y, **kwargs)
 
-    def _update_detector(self, x, y):
+    def _update_detector(
+        self, x: dict[base.typing.FeatureName, Any], y: base.typing.ClfTarget
+    ) -> None:
         y_pred = self.model.predict_one(x)
         if y_pred is None:
             return
 
-        incorrectly_classifies = int(y_pred != y)
+        incorrectly_classifies: bool = y_pred != y
         self.drift_detector.update(incorrectly_classifies)
 
         if self.train_in_background:
@@ -90,11 +102,11 @@ class DriftRetrainingClassifier(base.Wrapper, base.Classifier):
                 self.model = self.model.clone()
 
     @classmethod
-    def _unit_test_params(cls):
+    def _unit_test_params(cls) -> Iterator[dict[str, Any]]:
         from river import linear_model, naive_bayes, preprocessing
 
         yield {
             "model": preprocessing.StandardScaler() | linear_model.LogisticRegression(),
             "drift_detector": drift.binary.DDM(),
         }
-        yield {"model": naive_bayes.GaussianNB(), "drift_detector": drift.binary.DDM()}
+        yield {"model": naive_bayes.GaussianNB(), "drift_detector": drift.binary.DDM()}  # type: ignore[no-untyped-call]
