@@ -111,6 +111,41 @@ def test_submodules_define_all() -> None:
         )
 
 
+def test_all_names_resolve() -> None:
+    """Every name listed in a module's __all__ must exist on that module.
+
+    from river.x import * and the docs parser both trust __all__. A name left
+    behind by a rename breaks star-imports with an AttributeError.
+    """
+    unresolved: list[str] = []
+
+    def visit(prefix: str, mod: types.ModuleType) -> None:
+        if not hasattr(mod, "__all__"):
+            return
+        for name in mod.__all__:
+            if not hasattr(mod, name):
+                unresolved.append(f"{prefix}.{name}")
+        for name, submod in inspect.getmembers(mod, inspect.ismodule):
+            if (
+                name in mod.__all__
+                and not name.startswith("_")
+                and name not in ("tags", "typing", "inspect", "skmultiflow_utils")
+            ):
+                visit(f"{prefix}.{name}", submod)
+
+    library = importlib.import_module("river.api")
+    for mod_name, mod in inspect.getmembers(library, inspect.ismodule):
+        if mod_name.startswith("_") or mod_name == "api":
+            continue
+        visit(f"river.{mod_name}", mod)
+
+    if unresolved:
+        pytest.fail(
+            "The following names are listed in __all__ but do not exist "
+            "(star-imports will raise AttributeError):\n  " + "\n  ".join(unresolved)
+        )
+
+
 def test_print_docstring() -> None:
     """Every public object's docstring must be parseable by the doc generator."""
     failures = []

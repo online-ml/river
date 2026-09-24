@@ -26,5 +26,4 @@ __all__ = [
     "KSWIN",
     "NoDrift",
     "PageHinkley",
-    "PeriodicTrigger",
 ]
