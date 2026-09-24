@@ -103,6 +103,21 @@ def test_minmax_scaler_transform_unseen_feature(window_size, warm_start):
     assert scaler.transform_one({"x": 7.0, "y": 4.0}) == {"x": 1.5, "y": 0.5}
 
 
+def test_minmax_scaler_transform_multiple_unseen_features():
+    scaler = preprocessing.MinMaxScaler()
+    scaler.learn_one({"x": 1.0})
+    scaler.learn_one({"x": 5.0})
+
+    x = {"x": 3.0, "y": 10.0, "z": -5.0}
+
+    assert scaler.transform_one(x) == {
+        "x": 0.5,
+        "y": 0.0,
+        "z": 0.0,
+    }
+    assert x == {"x": 3.0, "y": 10.0, "z": -5.0}
+
+
 def test_minmax_scaler_warm_start():
     """`_from_state` seeds min/max so the very first transform uses them."""
     scaler = preprocessing.MinMaxScaler._from_state(min={"x": 8.0}, max={"x": 12.0})
