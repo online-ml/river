@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from . import dataframe, math, norm, pandas, pretty, random  # noqa: F401
+from .calibrated_classifier import CalibratedClassifier
 from .context_managers import log_method_calls
 from .param_grid import expand_param_grid
 from .rolling import Rolling, TimeRolling
@@ -10,6 +11,7 @@ from .sorted_window import SortedWindow
 from .vectordict import VectorDict
 
 __all__ = [
+    "CalibratedClassifier",
     "expand_param_grid",
     "log_method_calls",
     "math",
