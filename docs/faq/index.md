@@ -50,7 +50,9 @@ The algorithms from `sklearn` that support incremental learning are mostly meant
 ...     model = pickle.load(f)
 ```
 
-We also encourage you to try out [dill](https://dill.readthedocs.io/en/latest/dill.html) and [cloudpickle](https://github.com/cloudpipe/cloudpickle).
+River does not support loading pickled objects across River versions. A checkpoint may fail to load, or it may load and then fail or behave differently when used. Keep the River, Python, and relevant dependency versions pinned when you need to resume a stored model, metric, or statistic. Before upgrading, test the operations you rely on (e.g. check that `predict_one` produces the same result).
+
+[dill](https://dill.readthedocs.io/en/latest/dill.html) and [cloudpickle](https://github.com/cloudpipe/cloudpickle) can serialize additional Python objects, but they also do not solve the cross-version compatibility topic.
 
 ## What about neural networks?
 

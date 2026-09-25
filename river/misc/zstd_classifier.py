@@ -168,7 +168,8 @@ class ZstdClassifier(base.Classifier):
         return {label: w / total for label, w in weights.items()}
 
     def __getstate__(self) -> dict[str, Any]:
-        state = self.__dict__.copy()
+        state = super().__getstate__()
+        assert isinstance(state, dict)
         state["_compressors"] = {}
         state["_pending"] = {label: self.rebuild_every for label in self.buffers}
         return state

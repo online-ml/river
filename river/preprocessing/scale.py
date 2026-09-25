@@ -223,7 +223,7 @@ class StandardScaler(base.MiniBatchTransformer):
         # Default `window_size` to None so pickles written before this attribute was
         # introduced keep working without re-running __init__.
         state.setdefault("window_size", None)
-        self.__dict__.update(state)
+        super().__setstate__(state)
 
     @classmethod
     def _from_state(
@@ -492,7 +492,7 @@ class MinMaxScaler(base.Transformer):
         # Default `window_size` to None so pickles written before this attribute was
         # introduced keep working without re-running __init__.
         state.setdefault("window_size", None)
-        self.__dict__.update(state)
+        super().__setstate__(state)
 
     @classmethod
     def _from_state(
@@ -614,7 +614,7 @@ class MaxAbsScaler(base.Transformer):
         # Default `window_size` to None so pickles written before this attribute was
         # introduced keep working without re-running __init__.
         state.setdefault("window_size", None)
-        self.__dict__.update(state)
+        super().__setstate__(state)
 
     @classmethod
     def _from_state(
