@@ -1,5 +1,9 @@
 ﻿# Unreleased
 
+## stats
+
+- Added `stats.SavitzkyGolay`, a rolling Savitzky-Golay smoothing filter that fits a polynomial to the current window by least squares and returns the value at the most recent point.
+
 ## drift
 
 - The `river.drift` sub-package is now clean under strict mypy, and the `river.drift.*` entry was removed from the non-strict overrides in `pyproject.toml`. Public signatures and docstrings are unchanged.
