@@ -9,6 +9,10 @@ import logging
 import sys
 import types
 import typing
+import warnings
+
+from river.__version__ import __version__
+from river.exceptions import InconsistentVersionWarning
 
 
 class Base:
@@ -21,6 +25,44 @@ class Base:
     - Mutating/cloning
 
     """
+
+    def __getstate__(self) -> typing.Any:
+        state = object.__getstate__(self)
+        if isinstance(state, tuple):
+            attributes, slots = state
+            attributes = {} if attributes is None else attributes.copy()
+            if type(self).__module__.startswith("river."):
+                attributes["_river_version"] = __version__
+            return attributes, slots
+
+        assert state is None or isinstance(state, dict)
+        state = {} if state is None else state.copy()
+        if type(self).__module__.startswith("river."):
+            state["_river_version"] = __version__
+        return state
+
+    def __setstate__(self, state: typing.Any) -> None:
+        if isinstance(state, tuple):
+            attributes, slots = state
+        else:
+            attributes, slots = state, {}
+        attributes = {} if attributes is None else attributes
+        assert isinstance(attributes, dict)
+        assert isinstance(slots, dict)
+        if type(self).__module__.startswith("river."):
+            pickle_version = attributes.pop("_river_version", "unknown")
+            if pickle_version != __version__:
+                warnings.warn(
+                    InconsistentVersionWarning(
+                        estimator_name=self.__class__.__name__,
+                        current_river_version=__version__,
+                        original_river_version=pickle_version,
+                    ),
+                    stacklevel=2,
+                )
+        self.__dict__.update(attributes)
+        for name, value in slots.items():
+            setattr(self, name, value)
 
     def __str__(self) -> str:
         return self.__class__.__name__
