@@ -1,5 +1,9 @@
 ﻿# Unreleased
 
+## anomaly
+
+- Fixed `anomaly.PredictiveAnomalyDetection.score_one` mutating the model: it used to update the dynamic threshold statistics, so scoring a point changed the detector and repeated scoring of the same point returned different values. The threshold is now maintained by `learn_one` instead, leaving `score_one` side-effect free. Scores over the usual score-then-learn loop are unchanged. A new estimator check, `checks.anomaly.check_score_one_does_not_mutate`, now guards every anomaly detector (supervised or not) against `score_one` side effects.
+
 ## drift
 
 - The `river.drift` sub-package is now clean under strict mypy, and the `river.drift.*` entry was removed from the non-strict overrides in `pyproject.toml`. Public signatures and docstrings are unchanged.
