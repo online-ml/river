@@ -16,7 +16,8 @@ def iter_polars(
 ) -> base.typing.Stream:
     """Iterate over the rows of a `polars.DataFrame`.
 
-    .. deprecated::
+    !!! warning "Deprecated"
+
         Use `stream.iter_frame` instead, which works with any eager dataframe (pandas, polars,
         PyArrow, ...). `stream.iter_polars` will be removed in a future release.
 
