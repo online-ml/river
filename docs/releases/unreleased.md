@@ -5,6 +5,7 @@
 - The `river.drift` sub-package is now clean under strict mypy, and the `river.drift.*` entry was removed from the non-strict overrides in `pyproject.toml`. Public signatures and docstrings are unchanged.
 - Fixed a latent bug in `drift.datasets.base.Dataset._annotations_aggregated`, which read a nonexistent `self._annotations` attribute and keyed the intersection branch on the integer `0` instead of the annotator key. The method has no callers today, so behavior is unchanged.
 - `DriftRetrainingClassifier` now passes a `bool` instead of an `int` as the error indicator to its wrapped binary drift detector.
+- Added `drift.binary.RDDM`, the Reactive Drift Detection Method. Unlike `DDM`, which latches onto the global minimum error rate and goes deaf after a long stable concept, RDDM re-anchors from a ring buffer of recent error rates, so it reacts several times sooner when a long low-error concept degrades. Ported from the authors' reference implementation in MOA.
 
 ## naive_bayes
 
