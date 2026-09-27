@@ -165,6 +165,9 @@ target-version = 'py310'
 extend-include = ["*.ipynb"]
 
 [tool.ruff.lint]
+preview = true
+explicit-preview-rules = true
+extend-select = ["F822"]
 select = [
     # pycodestyle
     "E",
