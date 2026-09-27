@@ -4,6 +4,7 @@ import numpy as np
 
 from river import optim
 from river.optim.base import DictLike, VectorLike
+from river.utils.vectordict import VectorDict
 
 __all__ = ["SGD"]
 
@@ -54,5 +55,6 @@ class SGD(optim.base.Optimizer):
         if isinstance(w, np.ndarray):
             w -= self.learning_rate * g
         else:
+            assert isinstance(g, VectorDict)
             w.isub_scaled(g, self.learning_rate)
         return w
