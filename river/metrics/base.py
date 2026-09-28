@@ -337,9 +337,7 @@ class MeanMetric(abc.ABC):
 
 
 class ClusteringMetric(base.Base, abc.ABC):
-    """
-    Mother class of all internal clustering metrics.
-    """
+    """Mother class of all internal clustering metrics."""
 
     # Define the format specification used for string representation.
     _fmt = ",.6f"  # Use commas to separate big numbers and show 6 decimals

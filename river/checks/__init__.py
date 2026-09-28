@@ -28,11 +28,7 @@ def _allow_exception(func, exception):
 
 
 def _wrapped_partial(func, *args, **kwargs):
-    """
-
-    Taken from http://louistiao.me/posts/adding-__name__-and-__doc__-attributes-to-functoolspartial-objects/
-
-    """
+    """Taken from http://louistiao.me/posts/adding-__name__-and-__doc__-attributes-to-functoolspartial-objects/"""
     partial = functools.partial(func, *args, **kwargs)
     functools.update_wrapper(partial, func)
     return partial
