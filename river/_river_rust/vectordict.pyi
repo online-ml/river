@@ -85,5 +85,5 @@ def euclidean_distance_tuple(
     a: tuple[Mapping[Any, float], Any], b: tuple[Mapping[Any, float], Any]
 ) -> float: ...
 def lazy_search_euclidean(
-    query: tuple[Any, ...], window: Any, n_neighbors: int
+    query: tuple[Any, ...], window: Iterable[Any], n_neighbors: int
 ) -> tuple[list[Any], list[float]]: ...
