@@ -11,6 +11,22 @@ dependencies = [
     "numpy>=2.2.5,<3",
     "narwhals>=2.0.0",
 ]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: WebAssembly :: Emscripten",
+    "Intended Audience :: Information Technology",
+    "Intended Audience :: Science/Research",
+    "Operating System :: MacOS",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Rust",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+    "Topic :: Software Development :: Libraries",
+    "Typing :: Typed",
+]
 
 [project.optional-dependencies]
 pandas = [
