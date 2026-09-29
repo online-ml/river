@@ -94,7 +94,7 @@ class HeavyHitters(base.Base):
     def __getitem__(self, index) -> float:
         return self._entries.get(index, (0.0, None))[0]
 
-    def update(self, x: typing.Hashable):
+    def update(self, x: typing.Hashable) -> None:
         self._n += 1
         current_bucket = math.ceil(self._n / self._bucket_width)
         freq, delta = 1.0, current_bucket - 1.0

@@ -157,10 +157,10 @@ class Counter(base.Base):
         self._masks = [self._rng.getrandbits(64) for _ in range(self._d)]
         self._cms = np.zeros((self._d, self._w), dtype=np.int32)
 
-    def _hash(self, x):
+    def _hash(self, x: typing.Hashable) -> tuple:
         return tuple(zip(*((i, (hash(x) ^ self._masks[i]) % self._w) for i in range(self._d))))
 
-    def __getitem__(self, x) -> int:
+    def __getitem__(self, x: typing.Hashable) -> int:
         # Point query
         return min(self._cms[self._hash(x)]).item()
 
@@ -174,7 +174,7 @@ class Counter(base.Base):
 
         return min(np.einsum("ij,ij->i", self._cms, other._cms))
 
-    def __len__(self):
+    def __len__(self) -> int:
         # Return the total number of stored elements in the sketch
         return self._w * self._d
 

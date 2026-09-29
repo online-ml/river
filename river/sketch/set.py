@@ -157,10 +157,10 @@ class Set(base.Base):
         """Return the size of the binary array used by the Bloom filter."""
         return self._asize
 
-    def _hash(self, x: typing.Hashable):
+    def _hash(self, x: typing.Hashable) -> list[int]:
         return [(hash(x) ^ self._masks[i]) % self._asize for i in range(self._n_hash)]
 
-    def add(self, x: typing.Hashable):
+    def add(self, x: typing.Hashable) -> None:
         pos = self._hash(x)
 
         # Set the corresponding bits to 1
@@ -168,11 +168,11 @@ class Set(base.Base):
         for p in pos:
             self._bloom |= 1 << p
 
-    def update(self, values: typing.Iterable):
+    def update(self, values: typing.Iterable) -> None:
         for x in values:
             self.add(x)
 
-    def __contains__(self, x: typing.Hashable):
+    def __contains__(self, x: typing.Hashable) -> bool:
         proj = []
         pos = self._hash(x)
 
@@ -192,20 +192,20 @@ class Set(base.Base):
         mask_check = all(m1 == m2 for m1, m2 in zip(self._masks, other._masks))
         return mask_check and self.capacity == other.capacity
 
-    def _check_mergeable(self, other):
+    def _check_mergeable(self, other) -> None:
         if not self._is_mergeable(other):
             raise ValueError(
                 "The supplied 'sketch.Set' instances cannot the combined.",
                 "Ensure their 'capacity', 'fp_rate', and 'seed' match.",
             )
 
-    def __iand__(self, other: Set):
+    def __iand__(self, other: Set) -> typing.Self:
         self._check_mergeable(other)
 
         self._bloom &= other._bloom
         return self
 
-    def __and__(self, other: Set):
+    def __and__(self, other: Set) -> typing.Self:
         new = self.clone(include_attributes=True)
         new &= other
         return new

@@ -5,6 +5,7 @@ import collections
 import heapq
 import itertools
 import math
+from typing import Self
 
 from river import base
 
@@ -21,7 +22,7 @@ class Bin:
         self.right = right
         self.count = count
 
-    def __iadd__(self, other):
+    def __iadd__(self, other) -> Self:
         """Merge with another bin."""
         if other.left < self.left:
             self.left = other.left
@@ -30,13 +31,13 @@ class Bin:
         self.count += other.count
         return self
 
-    def __lt__(self, other):
+    def __lt__(self, other) -> bool:
         return self.right < other.left
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         return self.left == other.left and self.right == other.right
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"[{self.left:.5f}, {self.right:.5f}]: {self.count}"
 
 
@@ -129,12 +130,12 @@ class Histogram(collections.UserList, base.Base):
 
     """
 
-    def __init__(self, max_bins=256):
+    def __init__(self, max_bins: int = 256):
         super().__init__()
         self.max_bins = max_bins
         self.n = 0
 
-    def update(self, x):
+    def update(self, x) -> None:
         self.n += 1
         # Operate on the underlying list directly: going through UserList's
         # __getitem__/__len__ (with their isinstance checks) dominates the cost
@@ -381,8 +382,8 @@ class Histogram(collections.UserList, base.Base):
 
         return merged
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return "\n".join(str(b) for b in self)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return repr(self)
