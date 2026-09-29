@@ -17,12 +17,12 @@ class Bin:
 
     __slots__ = ["left", "right", "count"]
 
-    def __init__(self, left, right, count):
+    def __init__(self, left: float, right: float, count: float):
         self.left = left
         self.right = right
         self.count = count
 
-    def __iadd__(self, other) -> Self:
+    def __iadd__(self, other: Bin) -> Self:
         """Merge with another bin."""
         if other.left < self.left:
             self.left = other.left
@@ -31,10 +31,12 @@ class Bin:
         self.count += other.count
         return self
 
-    def __lt__(self, other) -> bool:
+    def __lt__(self, other: Bin) -> bool:
         return self.right < other.left
 
-    def __eq__(self, other) -> bool:
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Bin):
+            return False
         return self.left == other.left and self.right == other.right
 
     def __repr__(self) -> str:
