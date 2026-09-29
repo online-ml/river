@@ -1,4 +1,13 @@
-from collections.abc import Callable, ItemsView, Iterable, Iterator, KeysView, Mapping, ValuesView
+from collections.abc import (
+    Callable,
+    ItemsView,
+    Iterable,
+    Iterator,
+    KeysView,
+    Mapping,
+    Sequence,
+    ValuesView,
+)
 from typing import Any, Generic, Literal, Self, TypeVar, overload
 
 import numpy.typing
