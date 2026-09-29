@@ -168,7 +168,7 @@ class Set(base.Base):
         for p in pos:
             self._bloom |= 1 << p
 
-    def update(self, values: typing.Iterable) -> None:
+    def update(self, values: typing.Iterable[typing.Hashable]) -> None:
         for x in values:
             self.add(x)
 
@@ -192,7 +192,7 @@ class Set(base.Base):
         mask_check = all(m1 == m2 for m1, m2 in zip(self._masks, other._masks))
         return mask_check and self.capacity == other.capacity
 
-    def _check_mergeable(self, other) -> None:
+    def _check_mergeable(self, other: Set) -> None:
         if not self._is_mergeable(other):
             raise ValueError(
                 "The supplied 'sketch.Set' instances cannot the combined.",
@@ -210,19 +210,19 @@ class Set(base.Base):
         new &= other
         return new
 
-    def __ior__(self, other: Set):
+    def __ior__(self, other: Set) -> typing.Self:
         self._check_mergeable(other)
 
         self._bloom |= other._bloom
         return self
 
-    def __or__(self, other: Set):
+    def __or__(self, other: Set) -> typing.Self:
         new = self.clone(include_attributes=True)
         new |= other
 
         return new
 
-    def intersection(self, other: Set):
+    def intersection(self, other: Set) -> Set:
         """Set intersection.
 
         Return a new instance that results from the set intersection between the current `Set` object
@@ -242,7 +242,7 @@ class Set(base.Base):
         """
         return self & other
 
-    def union(self, other: Set):
+    def union(self, other: Set) -> Set:
         """Set union.
 
         Return a new instance that results from the set union between the current `Set` object and `other`.

@@ -5,6 +5,7 @@ import collections
 import heapq
 import itertools
 import math
+from collections.abc import Iterable, Iterator
 from typing import Self
 
 from river import base
@@ -76,7 +77,7 @@ def coverage_ratio(x: Bin, y: Bin) -> float:
     return max(0, min(x.right, y.right) - max(x.left, y.left)) / (y.right - y.left)
 
 
-class Histogram(collections.UserList, base.Base):
+class Histogram(collections.UserList[Bin], base.Base):
     """Streaming histogram.
 
     Parameters
@@ -137,7 +138,7 @@ class Histogram(collections.UserList, base.Base):
         self.max_bins = max_bins
         self.n = 0
 
-    def update(self, x) -> None:
+    def update(self, x: float) -> None:
         self.n += 1
         # Operate on the underlying list directly: going through UserList's
         # __getitem__/__len__ (with their isinstance checks) dominates the cost
@@ -175,7 +176,7 @@ class Histogram(collections.UserList, base.Base):
         if len(data) > self.max_bins:
             self._shrink(1)
 
-    def _shrink(self, k):
+    def _shrink(self, k: int) -> None:
         """Shrinks the histogram by merging the k closest pairs of bins."""
 
         data = self.data
@@ -202,13 +203,13 @@ class Histogram(collections.UserList, base.Base):
 
         indexes = range(len(data) - 1)
 
-        def bin_distance(i):
+        def bin_distance(i: int) -> float:
             return data[i + 1].right - data[i].right
 
         for i in sorted(heapq.nsmallest(n=k, iterable=indexes, key=bin_distance), reverse=True):
             data[i] += data.pop(i + 1)  # Calls Bin.__iadd__
 
-    def iter_cdf(self, X, verbose=False):
+    def iter_cdf(self, X: Iterable[float], verbose: bool = False) -> Iterator[float]:
         """Yields CDF values for a sorted iterable of values.
 
         This is faster than calling `cdf` with many values.
@@ -267,7 +268,7 @@ class Histogram(collections.UserList, base.Base):
 
             yield cdf / self.n
 
-    def cdf(self, x):
+    def cdf(self, x: float) -> float:
         """Cumulative distribution function.
 
         Examples
@@ -306,7 +307,7 @@ class Histogram(collections.UserList, base.Base):
         """
         return next(self.iter_cdf([x]))
 
-    def __add__(self, other):
+    def __add__(self, other: Iterable[Bin]) -> Histogram:
         """Merge two histograms, conserving the total count.
 
         Interval bins are spread proportionally over the tiles defined by the
@@ -348,7 +349,7 @@ class Histogram(collections.UserList, base.Base):
         1.0
 
         """
-
+        assert isinstance(other, Histogram)
         merged = Histogram(max_bins=max(self.max_bins, other.max_bins))
         merged.n = self.n + other.n
 

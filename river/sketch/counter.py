@@ -181,7 +181,7 @@ class Counter(base.Base):
         # Return the total number of stored elements in the sketch
         return self._w * self._d
 
-    def update(self, x: typing.Hashable, w: int = 1):
+    def update(self, x: typing.Hashable, w: int = 1) -> None:
         self._cms[self._hash(x)] += w
 
     def total(self) -> int:
