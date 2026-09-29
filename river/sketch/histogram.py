@@ -222,6 +222,13 @@ class Histogram(collections.UserList[Bin], base.Base):
 
         This is faster than calling `cdf` with many values.
 
+        Parameters
+        ----------
+        X:
+            Collection of values to evaluate the CDF at.
+        verbose:
+            Ignored parameter.
+
         Examples
         --------
 
