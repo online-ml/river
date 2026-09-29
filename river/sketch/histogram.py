@@ -255,7 +255,7 @@ class Histogram(collections.UserList[Bin], base.Base):
         b = next(bins)
         INF = Bin(math.inf, math.inf, 0)
 
-        cdf = 0
+        cdf = 0.0
 
         for x in X:
             while x >= b.right:
