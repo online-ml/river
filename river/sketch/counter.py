@@ -157,8 +157,11 @@ class Counter(base.Base):
         self._masks = [self._rng.getrandbits(64) for _ in range(self._d)]
         self._cms = np.zeros((self._d, self._w), dtype=np.int32)
 
-    def _hash(self, x: typing.Hashable) -> tuple:
-        return tuple(zip(*((i, (hash(x) ^ self._masks[i]) % self._w) for i in range(self._d))))
+    def _hash(self, x: typing.Hashable) -> tuple[tuple[int, ...], tuple[int, ...]]:
+        return typing.cast(
+            tuple[tuple[int, ...], tuple[int, ...]],
+            tuple(zip(*((i, (hash(x) ^ self._masks[i]) % self._w) for i in range(self._d)))),
+        )
 
     def __getitem__(self, x: typing.Hashable) -> int:
         # Point query
