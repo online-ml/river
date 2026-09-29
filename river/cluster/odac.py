@@ -215,7 +215,9 @@ class ODAC(base.Clusterer):
 
     # This algorithm does not predict anything. It builds a hierarchical cluster's structure
     def predict_one(self, x: dict):
-        """This algorithm does not predict anything. It builds a hierarchical cluster's structure.
+        """Raise an error.
+
+        This algorithm does not predict anything. It builds a hierarchical cluster's structure.
 
         Parameters
         ----------

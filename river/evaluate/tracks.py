@@ -48,7 +48,8 @@ class Track:
 
 
 class BinaryClassificationTrack(Track):
-    """This track evaluates a model's performance on binary classification tasks.
+    """Evaluate a model's performance on binary classification tasks.
+
     These do not include synthetic datasets.
 
     Parameters
@@ -72,7 +73,8 @@ class BinaryClassificationTrack(Track):
 
 
 class MultiClassClassificationTrack(Track):
-    """This track evaluates a model's performance on multi-class classification tasks.
+    """Evaluate a model's performance on multi-class classification tasks.
+
     These do not include synthetic datasets.
 
     Parameters
@@ -95,7 +97,8 @@ class MultiClassClassificationTrack(Track):
 
 
 class RegressionTrack(Track):
-    """This track evaluates a model's performance on regression tasks.
+    """Evaluate a model's performance on regression tasks.
+
     These do not include synthetic datasets.
 
     Parameters
@@ -117,7 +120,7 @@ class RegressionTrack(Track):
 
 
 class ForecastingTrack(Track):
-    """This track evaluates a model's performance on forecasting tasks.
+    """Evaluate a model's performance on forecasting tasks.
 
     The objective is to compare time series forecasters with a common protocol over a fixed set of
     datasets and horizons.

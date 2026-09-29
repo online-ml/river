@@ -568,7 +568,9 @@ class Pipeline(base.Estimator):
                     break
 
     def _transform_one(self, x: dict, params: dict | None = None):
-        """This methods takes care of applying the first n - 1 steps of the pipeline, which are
+        """Apply the transformer steps of the pipeline.
+
+        This methods takes care of applying the first n - 1 steps of the pipeline, which are
         supposedly transformers. It also returns the final step so that other functions can do
         something with it.
 
@@ -800,7 +802,9 @@ class Pipeline(base.Estimator):
             last_step.learn_many(X=X, **params)
 
     def _transform_many(self, X: IntoDataFrame):
-        """This methods takes care of applying the first n - 1 steps of the pipeline, which are
+        """Apply the transformer steps of the pipeline.
+
+        This methods takes care of applying the first n - 1 steps of the pipeline, which are
         supposedly transformers. It also returns the final step so that other functions can do
         something with it.
 

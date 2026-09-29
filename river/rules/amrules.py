@@ -24,9 +24,10 @@ class MeanRegressor(base.Regressor):
 
 
 class AdaptiveRegressor(base.Regressor):
-    """This predictor selects between the target mean and the the user-selected regression model
-     automatically. Faded error metrics are kept for both the predictors, and the most
-    accurate one is selected automatically for each incoming instance.
+    """Select between the target mean and the the user-selected regression model automatically.
+
+    Faded error metrics are kept for both the predictors, and the most accurate one is selected
+    automatically for each incoming instance.
     """
 
     def __init__(self, model_predictor: base.Regressor, fading_factor: float):

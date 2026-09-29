@@ -76,7 +76,10 @@ def convert_river_to_sklearn(estimator: base.Estimator):
 
 
 class River2SKLBase(base.Wrapper, sklearn_base.BaseEstimator):
-    """This class is just here for house-keeping."""
+    """Base class for the compatibility layers.
+
+    This class is just here for house-keeping.
+    """
 
     @property
     def _wrapped_model(self):

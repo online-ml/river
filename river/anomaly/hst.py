@@ -183,7 +183,7 @@ class HalfSpaceTrees(base.AnomalyDetector):
 
     @property
     def size_limit(self):
-        """This is the threshold under which the node search stops during the scoring phase.
+        """Threshold under which the node search stops during the scoring phase.
 
         The value .1 is a magic constant indicated in the original paper.
 
