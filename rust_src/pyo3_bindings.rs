@@ -16,7 +16,8 @@ use crate::{
     quantile::RollingQuantile, rolling_pr_auc::RollingPRAUC, rolling_roc_auc::RollingROCAUC,
     skew::Skew, stats::Univariate,
     vectordict::{
-        euclidean_distance_dict, euclidean_distance_tuple, lazy_search_euclidean, VectorDict,
+        euclidean_distance_dict, euclidean_distance_squared_dict, euclidean_distance_tuple,
+        lazy_search_euclidean, VectorDict,
     },
 };
 
@@ -588,6 +589,7 @@ fn register_tree(_py: Python, m: &Bound<PyModule>) -> PyResult<()> {
 fn register_vectordict(_py: Python, m: &Bound<PyModule>) -> PyResult<()> {
     m.add_class::<VectorDict>()?;
     m.add_function(wrap_pyfunction!(euclidean_distance_dict, m)?)?;
+    m.add_function(wrap_pyfunction!(euclidean_distance_squared_dict, m)?)?;
     m.add_function(wrap_pyfunction!(euclidean_distance_tuple, m)?)?;
     m.add_function(wrap_pyfunction!(lazy_search_euclidean, m)?)?;
     Ok(())

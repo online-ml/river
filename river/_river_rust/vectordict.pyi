@@ -77,6 +77,10 @@ def euclidean_distance_dict(
     a: dict[Incomplete, Incomplete],
     b: dict[Incomplete, Incomplete],
 ) -> float: ...
+def euclidean_distance_squared_dict(
+    a: dict[Incomplete, Incomplete],
+    b: dict[Incomplete, Incomplete],
+) -> float: ...
 def euclidean_distance_tuple(
     a: tuple[Incomplete, ...],
     b: tuple[Incomplete, ...],
