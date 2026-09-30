@@ -41,6 +41,40 @@ def test_standard_scaler_one_many_consistent():
             assert math.isclose(one.vars[i], many.vars[i])
 
 
+@pytest.mark.parametrize("with_std", [False, True])
+def test_standard_scaler_sparse_features(with_std):
+    scaler = preprocessing.StandardScaler(with_std=with_std)
+    for x in (
+        {"a": 1_000_000_000.0, "b": -3.0},
+        {"a": 1_000_000_001.0},
+        {"b": -1.0},
+        {"a": 1_000_000_002.0, "b": 2.0},
+    ):
+        scaler.learn_one(x)
+
+    for feature, values in {
+        "a": [1_000_000_000.0, 1_000_000_001.0, 1_000_000_002.0],
+        "b": [-3.0, -1.0, 2.0],
+    }.items():
+        assert scaler.counts[feature] == len(values)
+        assert math.isclose(scaler.means[feature], np.mean(values))
+        if with_std:
+            assert math.isclose(scaler.vars[feature], np.var(values))
+        else:
+            assert feature not in scaler.vars
+
+
+def test_standard_scaler_transform_zero_and_unseen_variance():
+    scaler = preprocessing.StandardScaler()
+    for value in (1.0, 2.0, 4.0):
+        scaler.learn_one({"varying": value, "constant": 5.0})
+
+    transformed = scaler.transform_one({"varying": 5.0, "constant": 7.0, "new": 8.0})
+    assert math.isclose(transformed["varying"], 8 / math.sqrt(14))
+    assert transformed["constant"] == 0.0
+    assert transformed["new"] == 0.0
+
+
 def test_standard_scaler_shuffle_columns():
     """Checks that learn_many works identically whether columns are shuffled or not."""
     X = pd.read_csv(datasets.TrumpApproval().path)
