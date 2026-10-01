@@ -243,7 +243,7 @@ def evaluate_offline(
     References
     ----------
     [^1]: [Offline Evaluation of Multi-Armed Bandit Algorithms in Python using Replay](https://jamesrledoux.com/algorithms/offline-bandit-evaluation/)
-    [^2]: [Unbiased Offline Evaluation of Contextual-bandit-based News Article Recommendation Algorithms](https://arxiv.org/pdf/1003.5956.pdf)
+    [^2]: [Li, L., Chu, W., Langford, J. and Wang, X., 2011, February. Unbiased offline evaluation of contextual-bandit-based news article recommendation algorithms. In Proceedings of the fourth ACM international conference on Web search and data mining (pp. 297-306).](https://doi.org/10.1145/1935826.1935878)
     [^3]: [Understanding Inverse Propensity Score for Contextual Bandits](https://chanind.github.io/ai/2022/03/14/inverse-propensity-score-contextual-bandits.html)
 
     """
