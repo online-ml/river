@@ -36,8 +36,7 @@ class MondrianTreeRegressor(MondrianTree, base.Regressor):
 
     References
     ----------
-    [^1]: Balaji Lakshminarayanan, Daniel M. Roy, Yee Whye Teh. Mondrian Forests: Efficient Online Random Forests.
-        arXiv:1406.2673, pages 2-4.
+    [^1]: [Lakshminarayanan, B., Roy, D.M. and Teh, Y.W., 2014. Mondrian forests: Efficient online random forests. Advances in neural information processing systems, 27. (pages 2-4)](https://proceedings.neurips.cc/paper_files/paper/2014/hash/195c9c0797f42473f2c2f922c4cf52cf-Abstract.html)
 
     """
 
