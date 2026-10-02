@@ -1,8 +1,8 @@
-from _typeshed import Incomplete
+from typing import Any
 
 def feature_hash(
-    x: dict[Incomplete, Incomplete],
+    x: dict[Any, str | int],
     n_features: int,
     seed: int,
     alternate_sign: bool,
-) -> dict[Incomplete, Incomplete]: ...
+) -> dict[int, int]: ...
