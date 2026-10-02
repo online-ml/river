@@ -23,6 +23,7 @@ from .mode import Mode, RollingMode
 from .pearson import PearsonCorr
 from .ptp import PeakToPeak, RollingPeakToPeak
 from .quantile import Quantile, RollingQuantile
+from .savitzky_golay import SavitzkyGolay
 from .sem import SEM
 from .shift import Shift
 from .skew import Skew
@@ -60,6 +61,7 @@ __all__ = [
     "RollingMode",
     "RollingPeakToPeak",
     "RollingQuantile",
+    "SavitzkyGolay",
     "SEM",
     "Shift",
     "Skew",
