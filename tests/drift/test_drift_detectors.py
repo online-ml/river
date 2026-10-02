@@ -3,7 +3,7 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from river import drift
+from river import drift, tree
 
 np.random.seed(12345)
 data_stream_1 = np.concatenate((np.random.randint(2, size=1000), np.random.randint(8, size=1000)))
@@ -119,6 +119,57 @@ def test_page_hinkley():
     detected_indices = perform_test(drift.PageHinkley(mode="both"), data_stream_3)
 
     assert detected_indices == expected_indices
+
+
+def test_d3():
+    np.random.seed(12345)
+    old_regime = [
+        {"a": float(np.random.randint(0, 50)), "b": float(np.random.randint(0, 50))}
+        for _ in range(500)
+    ]
+    np.random.seed(54321)
+    new_regime = [
+        {"a": float(np.random.randint(50, 100)), "b": float(np.random.randint(0, 50))}
+        for _ in range(500)
+    ]
+    data_stream = old_regime + new_regime
+
+    classifier = tree.HoeffdingTreeClassifier(grace_period=40, max_depth=3)
+    detected_indices = perform_test(
+        drift.D3(classifier, window_size=200),
+        data_stream,
+    )
+
+    assert detected_indices == [599]
+
+
+def test_d3_no_drift():
+    np.random.seed(999)
+    data_stream = [
+        {"a": float(np.random.randint(0, 100)), "b": float(np.random.randint(0, 100))}
+        for _ in range(1200)
+    ]
+
+    classifier = tree.HoeffdingTreeClassifier(grace_period=40, max_depth=3)
+    detected_indices = perform_test(
+        drift.D3(classifier, window_size=200),
+        data_stream,
+    )
+
+    assert detected_indices == []
+
+
+def test_d3_coverage():
+    classifier = tree.HoeffdingTreeClassifier(grace_period=40, max_depth=3)
+
+    with pytest.raises(ValueError):
+        drift.D3(classifier, window_size=1)
+
+    with pytest.raises(ValueError):
+        drift.D3(classifier, auc_threshold=0.5)
+
+    with pytest.raises(ValueError):
+        drift.D3(classifier, auc_threshold=1.1)
 
 
 def perform_test(drift_detector, data_stream):
