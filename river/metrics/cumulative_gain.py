@@ -33,7 +33,7 @@ class CumulativeGain(metrics.base.MeanMetric, metrics.base.RankingMetric):
     >>> y_true = [{'a': 3, 'b': 2, 'c': 1}, {'a': 1, 'c': 1}]
     >>> y_pred = [['a', 'b', 'c'], ['b', 'a', 'c']]
 
-    >>> metric = metrics.CG()
+    >>> metric = metrics.CumulativeGain()
 
     >>> for yt, yp in zip(y_true, y_pred):
     ...     metric.update(yt, yp)
