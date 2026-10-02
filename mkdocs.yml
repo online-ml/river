@@ -32,6 +32,7 @@ nav:
     - recipes/model-evaluation.md
     - recipes/pipelines.md
     - recipes/feature-extraction.md
+    - recipes/linear-quantile-regression.md
     - recipes/saving-loading.md
     - recipes/mini-batching.md
     - recipes/active-learning.md
