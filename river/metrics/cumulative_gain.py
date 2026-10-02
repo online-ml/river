@@ -41,7 +41,7 @@ class CumulativeGain(metrics.base.MeanMetric, metrics.base.RankingMetric):
     6.0
     4.0
 
-    >>> metric = metrics.CG(k=1)
+    >>> metric = metrics.CumulativeGain(k=1)
     >>> metric.update({'a': 3, 'b': 2}, ['b', 'a'])
     >>> metric.get()
     2.0
