@@ -1,67 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
       <url>
-        <loc>https://riverml.xyz/dev/introduction/installation/</loc>
-      </url>
-      <url>
-        <loc>https://riverml.xyz/dev/introduction/basic-concepts/</loc>
-      </url>
-      <url>
-        <loc>https://riverml.xyz/dev/introduction/getting-started/</loc>
-      </url>
-      <url>
-        <loc>https://riverml.xyz/dev/introduction/getting-started/binary-classification/</loc>
-      </url>
-      <url>
-        <loc>https://riverml.xyz/dev/introduction/getting-started/concept-drift-detection/</loc>
-      </url>
-      <url>
-        <loc>https://riverml.xyz/dev/introduction/getting-started/multiclass-classification/</loc>
-      </url>
-      <url>
-        <loc>https://riverml.xyz/dev/introduction/getting-started/regression/</loc>
-      </url>
-      <url>
-        <loc>https://riverml.xyz/dev/introduction/why-use-river/</loc>
-      </url>
-      <url>
-        <loc>https://riverml.xyz/dev/introduction/next-steps/</loc>
-      </url>
-      <url>
-        <loc>https://riverml.xyz/dev/introduction/related-projects/</loc>
-      </url>
-      <url>
-        <loc>https://riverml.xyz/dev/recipes/reading-data/</loc>
-      </url>
-      <url>
-        <loc>https://riverml.xyz/dev/recipes/model-evaluation/</loc>
-      </url>
-      <url>
-        <loc>https://riverml.xyz/dev/recipes/pipelines/</loc>
-      </url>
-      <url>
-        <loc>https://riverml.xyz/dev/recipes/feature-extraction/</loc>
-      </url>
-      <url>
-        <loc>https://riverml.xyz/dev/recipes/saving-loading/</loc>
-      </url>
-      <url>
-        <loc>https://riverml.xyz/dev/recipes/mini-batching/</loc>
-      </url>
-      <url>
-        <loc>https://riverml.xyz/dev/recipes/active-learning/</loc>
-      </url>
-      <url>
-        <loc>https://riverml.xyz/dev/recipes/bandits-101/</loc>
-      </url>
-      <url>
-        <loc>https://riverml.xyz/dev/recipes/cloning-and-mutating/</loc>
-      </url>
-      <url>
-        <loc>https://riverml.xyz/dev/recipes/rolling-computations/</loc>
-      </url>
-      <url>
-        <loc>https://riverml.xyz/dev/api/overview/</loc>
+        <loc>https://riverml.xyz/dev/</loc>
       </url>
       <url>
         <loc>https://riverml.xyz/dev/api/active/EntropySampler/</loc>
@@ -118,12 +58,6 @@
         <loc>https://riverml.xyz/dev/api/bandit/UCB/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/api/bandit/evaluate/</loc>
-      </url>
-      <url>
-        <loc>https://riverml.xyz/dev/api/bandit/evaluate-offline/</loc>
-      </url>
-      <url>
         <loc>https://riverml.xyz/dev/api/bandit/base/ContextualPolicy/</loc>
       </url>
       <url>
@@ -140,6 +74,12 @@
       </url>
       <url>
         <loc>https://riverml.xyz/dev/api/bandit/envs/KArmedTestbed/</loc>
+      </url>
+      <url>
+        <loc>https://riverml.xyz/dev/api/bandit/evaluate-offline/</loc>
+      </url>
+      <url>
+        <loc>https://riverml.xyz/dev/api/bandit/evaluate/</loc>
       </url>
       <url>
         <loc>https://riverml.xyz/dev/api/base/AnomalyDetector/</loc>
@@ -1126,6 +1066,9 @@
         <loc>https://riverml.xyz/dev/api/optim/schedulers/Optimal/</loc>
       </url>
       <url>
+        <loc>https://riverml.xyz/dev/api/overview/</loc>
+      </url>
+      <url>
         <loc>https://riverml.xyz/dev/api/preprocessing/AdaptiveStandardScaler/</loc>
       </url>
       <url>
@@ -1414,13 +1357,13 @@
         <loc>https://riverml.xyz/dev/api/time-series/SNARIMAX/</loc>
       </url>
       <url>
+        <loc>https://riverml.xyz/dev/api/time-series/base/Forecaster/</loc>
+      </url>
+      <url>
         <loc>https://riverml.xyz/dev/api/time-series/evaluate/</loc>
       </url>
       <url>
         <loc>https://riverml.xyz/dev/api/time-series/iter-evaluate/</loc>
-      </url>
-      <url>
-        <loc>https://riverml.xyz/dev/api/time-series/base/Forecaster/</loc>
       </url>
       <url>
         <loc>https://riverml.xyz/dev/api/tree/ExtremelyFastDecisionTreeClassifier/</loc>
@@ -1570,6 +1513,9 @@
         <loc>https://riverml.xyz/dev/api/utils/random/poisson/</loc>
       </url>
       <url>
+        <loc>https://riverml.xyz/dev/benchmarks/</loc>
+      </url>
+      <url>
         <loc>https://riverml.xyz/dev/examples/batch-to-online/</loc>
       </url>
       <url>
@@ -1597,6 +1543,9 @@
         <loc>https://riverml.xyz/dev/examples/matrix-factorization-for-recommender-systems/part-3/</loc>
       </url>
       <url>
+        <loc>https://riverml.xyz/dev/examples/on-hoeffding-trees/</loc>
+      </url>
+      <url>
         <loc>https://riverml.xyz/dev/examples/quantile-regression-uncertainty/</loc>
       </url>
       <url>
@@ -1606,135 +1555,201 @@
         <loc>https://riverml.xyz/dev/examples/the-art-of-using-pipelines/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/examples/on-hoeffding-trees/</loc>
+        <loc>https://riverml.xyz/dev/faq/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/releases/unreleased/</loc>
+        <loc>https://riverml.xyz/dev/introduction/basic-concepts/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/releases/0.26.1/</loc>
+        <loc>https://riverml.xyz/dev/introduction/getting-started/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/releases/0.26.0/</loc>
+        <loc>https://riverml.xyz/dev/introduction/getting-started/binary-classification/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/releases/0.25.0/</loc>
+        <loc>https://riverml.xyz/dev/introduction/getting-started/concept-drift-detection/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/releases/0.24.2/</loc>
+        <loc>https://riverml.xyz/dev/introduction/getting-started/multiclass-classification/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/releases/0.24.1/</loc>
+        <loc>https://riverml.xyz/dev/introduction/getting-started/regression/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/releases/0.24.0/</loc>
+        <loc>https://riverml.xyz/dev/introduction/installation/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/releases/0.23.0/</loc>
+        <loc>https://riverml.xyz/dev/introduction/next-steps/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/releases/0.22.0/</loc>
+        <loc>https://riverml.xyz/dev/introduction/related-projects/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/releases/0.21.2/</loc>
+        <loc>https://riverml.xyz/dev/introduction/why-use-river/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/releases/0.21.1/</loc>
+        <loc>https://riverml.xyz/dev/license/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/releases/0.21.0/</loc>
+        <loc>https://riverml.xyz/dev/recipes/active-learning/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/releases/0.20.1/</loc>
+        <loc>https://riverml.xyz/dev/recipes/bandits-101/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/releases/0.20.0/</loc>
+        <loc>https://riverml.xyz/dev/recipes/cloning-and-mutating/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/releases/0.19.0/</loc>
+        <loc>https://riverml.xyz/dev/recipes/clustering/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/releases/0.18.0/</loc>
+        <loc>https://riverml.xyz/dev/recipes/feature-extraction/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/releases/0.17.0/</loc>
+        <loc>https://riverml.xyz/dev/recipes/mini-batching/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/releases/0.16.0/</loc>
+        <loc>https://riverml.xyz/dev/recipes/model-evaluation/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/releases/0.15.0/</loc>
+        <loc>https://riverml.xyz/dev/recipes/pipelines/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/releases/0.14.0/</loc>
+        <loc>https://riverml.xyz/dev/recipes/reading-data/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/releases/0.13.0/</loc>
+        <loc>https://riverml.xyz/dev/recipes/rolling-computations/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/releases/0.12.1/</loc>
+        <loc>https://riverml.xyz/dev/recipes/saving-loading/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/releases/0.12.0/</loc>
-      </url>
-      <url>
-        <loc>https://riverml.xyz/dev/releases/0.11.1/</loc>
-      </url>
-      <url>
-        <loc>https://riverml.xyz/dev/releases/0.11.0/</loc>
-      </url>
-      <url>
-        <loc>https://riverml.xyz/dev/releases/0.10.1/</loc>
-      </url>
-      <url>
-        <loc>https://riverml.xyz/dev/releases/0.10.0/</loc>
-      </url>
-      <url>
-        <loc>https://riverml.xyz/dev/releases/0.9.0/</loc>
-      </url>
-      <url>
-        <loc>https://riverml.xyz/dev/releases/0.8.0/</loc>
-      </url>
-      <url>
-        <loc>https://riverml.xyz/dev/releases/0.7.1/</loc>
-      </url>
-      <url>
-        <loc>https://riverml.xyz/dev/releases/0.7.0/</loc>
-      </url>
-      <url>
-        <loc>https://riverml.xyz/dev/releases/0.6.1/</loc>
-      </url>
-      <url>
-        <loc>https://riverml.xyz/dev/releases/0.6.0/</loc>
-      </url>
-      <url>
-        <loc>https://riverml.xyz/dev/releases/0.5.1/</loc>
-      </url>
-      <url>
-        <loc>https://riverml.xyz/dev/releases/0.5.0/</loc>
-      </url>
-      <url>
-        <loc>https://riverml.xyz/dev/releases/0.4.4/</loc>
-      </url>
-      <url>
-        <loc>https://riverml.xyz/dev/releases/0.4.3/</loc>
-      </url>
-      <url>
-        <loc>https://riverml.xyz/dev/releases/0.4.1/</loc>
-      </url>
-      <url>
-        <loc>https://riverml.xyz/dev/releases/0.3.0/</loc>
-      </url>
-      <url>
-        <loc>https://riverml.xyz/dev/releases/0.2.0/</loc>
-      </url>
-      <url>
-        <loc>https://riverml.xyz/dev/releases/0.1.0/</loc>
+        <loc>https://riverml.xyz/dev/releases/0.0.2/</loc>
       </url>
       <url>
         <loc>https://riverml.xyz/dev/releases/0.0.3/</loc>
       </url>
       <url>
-        <loc>https://riverml.xyz/dev/releases/0.0.2/</loc>
+        <loc>https://riverml.xyz/dev/releases/0.1.0/</loc>
+      </url>
+      <url>
+        <loc>https://riverml.xyz/dev/releases/0.10.0/</loc>
+      </url>
+      <url>
+        <loc>https://riverml.xyz/dev/releases/0.10.1/</loc>
+      </url>
+      <url>
+        <loc>https://riverml.xyz/dev/releases/0.11.0/</loc>
+      </url>
+      <url>
+        <loc>https://riverml.xyz/dev/releases/0.11.1/</loc>
+      </url>
+      <url>
+        <loc>https://riverml.xyz/dev/releases/0.12.0/</loc>
+      </url>
+      <url>
+        <loc>https://riverml.xyz/dev/releases/0.12.1/</loc>
+      </url>
+      <url>
+        <loc>https://riverml.xyz/dev/releases/0.13.0/</loc>
+      </url>
+      <url>
+        <loc>https://riverml.xyz/dev/releases/0.14.0/</loc>
+      </url>
+      <url>
+        <loc>https://riverml.xyz/dev/releases/0.15.0/</loc>
+      </url>
+      <url>
+        <loc>https://riverml.xyz/dev/releases/0.16.0/</loc>
+      </url>
+      <url>
+        <loc>https://riverml.xyz/dev/releases/0.17.0/</loc>
+      </url>
+      <url>
+        <loc>https://riverml.xyz/dev/releases/0.18.0/</loc>
+      </url>
+      <url>
+        <loc>https://riverml.xyz/dev/releases/0.19.0/</loc>
+      </url>
+      <url>
+        <loc>https://riverml.xyz/dev/releases/0.2.0/</loc>
+      </url>
+      <url>
+        <loc>https://riverml.xyz/dev/releases/0.20.0/</loc>
+      </url>
+      <url>
+        <loc>https://riverml.xyz/dev/releases/0.20.1/</loc>
+      </url>
+      <url>
+        <loc>https://riverml.xyz/dev/releases/0.21.0/</loc>
+      </url>
+      <url>
+        <loc>https://riverml.xyz/dev/releases/0.21.1/</loc>
+      </url>
+      <url>
+        <loc>https://riverml.xyz/dev/releases/0.21.2/</loc>
+      </url>
+      <url>
+        <loc>https://riverml.xyz/dev/releases/0.22.0/</loc>
+      </url>
+      <url>
+        <loc>https://riverml.xyz/dev/releases/0.23.0/</loc>
+      </url>
+      <url>
+        <loc>https://riverml.xyz/dev/releases/0.24.0/</loc>
+      </url>
+      <url>
+        <loc>https://riverml.xyz/dev/releases/0.24.1/</loc>
+      </url>
+      <url>
+        <loc>https://riverml.xyz/dev/releases/0.24.2/</loc>
+      </url>
+      <url>
+        <loc>https://riverml.xyz/dev/releases/0.25.0/</loc>
+      </url>
+      <url>
+        <loc>https://riverml.xyz/dev/releases/0.26.0/</loc>
+      </url>
+      <url>
+        <loc>https://riverml.xyz/dev/releases/0.26.1/</loc>
+      </url>
+      <url>
+        <loc>https://riverml.xyz/dev/releases/0.3.0/</loc>
+      </url>
+      <url>
+        <loc>https://riverml.xyz/dev/releases/0.4.1/</loc>
+      </url>
+      <url>
+        <loc>https://riverml.xyz/dev/releases/0.4.3/</loc>
+      </url>
+      <url>
+        <loc>https://riverml.xyz/dev/releases/0.4.4/</loc>
+      </url>
+      <url>
+        <loc>https://riverml.xyz/dev/releases/0.5.0/</loc>
+      </url>
+      <url>
+        <loc>https://riverml.xyz/dev/releases/0.5.1/</loc>
+      </url>
+      <url>
+        <loc>https://riverml.xyz/dev/releases/0.6.0/</loc>
+      </url>
+      <url>
+        <loc>https://riverml.xyz/dev/releases/0.6.1/</loc>
+      </url>
+      <url>
+        <loc>https://riverml.xyz/dev/releases/0.7.0/</loc>
+      </url>
+      <url>
+        <loc>https://riverml.xyz/dev/releases/0.7.1/</loc>
+      </url>
+      <url>
+        <loc>https://riverml.xyz/dev/releases/0.8.0/</loc>
+      </url>
+      <url>
+        <loc>https://riverml.xyz/dev/releases/0.9.0/</loc>
+      </url>
+      <url>
+        <loc>https://riverml.xyz/dev/releases/unreleased/</loc>
       </url>
 </urlset>
