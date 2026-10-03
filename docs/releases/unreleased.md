@@ -5,6 +5,7 @@
 - The `river.drift` sub-package is now clean under strict mypy, and the `river.drift.*` entry was removed from the non-strict overrides in `pyproject.toml`. Public signatures and docstrings are unchanged.
 - Fixed a latent bug in `drift.datasets.base.Dataset._annotations_aggregated`, which read a nonexistent `self._annotations` attribute and keyed the intersection branch on the integer `0` instead of the annotator key. The method has no callers today, so behavior is unchanged.
 - `DriftRetrainingClassifier` now passes a `bool` instead of an `int` as the error indicator to its wrapped binary drift detector.
+- Added `Shewhart`, the classical individuals control chart. Each sample is compared against fixed limits set at `k` standard deviations from a center line estimated over the warm-up window. Unlike `EWMA` and `CUSUM` it accumulates no evidence, so it is the fastest to react to a large abrupt shift and the noisiest on ordinary variation.
 
 ## naive_bayes
 
