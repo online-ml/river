@@ -70,6 +70,10 @@ jobs:
       - name: Uninstall pandas
         run: uv pip uninstall pandas
 
+      # Some tests depend on having the fully-built documentation available.
+      - name: Build the documentation
+        run: make doc
+
       - name: Run tests
         run: uv run --no-sync pytest
 
