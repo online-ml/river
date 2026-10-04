@@ -33,7 +33,7 @@ _ROOT = pathlib.Path(__file__).parent
 # The library (doctest sources) and the test suite are separate trees since the
 # tests were moved out of the package; both need the same pandas filtering.
 _TREES = (_ROOT / "river", _ROOT / "tests")
-_PANDAS_NEEDLES = ("import pandas", ">>> pd.", "fetch_openml", "iter_pandas")
+_PANDAS_NEEDLES = ("import pandas", ">>> pd.", "fetch_openml", "FRAME_BACKENDS")
 
 
 def _iter_modules() -> typing.Iterator[pathlib.Path]:
