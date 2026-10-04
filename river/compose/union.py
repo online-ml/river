@@ -299,7 +299,7 @@ class TransformerUnion(base.MiniBatchTransformer):
 
         """
         for t in self.transformers.values():
-            if isinstance(t, base.MiniBatchSupervisedTransformer):
+            if isinstance(t, base.MiniBatchSupervisedTransformer) and y is not None:
                 t.learn_many(X, y)
             else:
                 t.learn_many(X)
