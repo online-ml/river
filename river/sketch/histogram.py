@@ -83,7 +83,7 @@ def coverage_ratio(x: Bin, y: Bin) -> float:
 class Histogram(collections.UserList[Bin], base.Base):
     """Streaming histogram.
 
-    A histogram estimates a distribution byt dividing the range in discrete bins, and counting the
+    A histogram estimates a distribution by dividing the range in discrete bins, and counting the
     number of items that fall in each bin.
 
     This version of a histogram works only with real numbers.
