@@ -117,15 +117,26 @@ class CalibratedClassifier(base.Wrapper[T], base.Classifier):
 
     def _score_one(
         self, x: dict[base.typing.FeatureName, Any], **kwargs: Any
-    ) -> tuple[base.typing.ClfTarget, float]:
+    ) -> tuple[base.typing.ClfTarget, float] | None:
         y_pred = self.classifier.predict_proba_one(x, **kwargs)
+        if not y_pred:
+            # the wrapped model has no opinion yet: a tree returns an empty
+            # dict until it has seen a class. There is nothing to calibrate,
+            # and inventing a label here would train the sigmoid against a
+            # prediction the model never made.
+            return None
         label, p = max(y_pred.items(), key=lambda kv: kv[1])
         return label, _logit(p)
 
     def learn_one(
         self, x: dict[base.typing.FeatureName, Any], y: base.typing.ClfTarget, **kwargs: Any
     ) -> None:
-        label, s = self._score_one(x, **kwargs)
+        scored = self._score_one(x, **kwargs)
+        if scored is None:
+            # nothing to learn from, but the wrapped model still needs the sample
+            self.classifier.learn_one(x, y, **kwargs)
+            return
+        label, s = scored
         y_num = float(y == label)
 
         p = sigmoid(self.slope * s + self.intercept)
@@ -137,7 +148,11 @@ class CalibratedClassifier(base.Wrapper[T], base.Classifier):
     def predict_proba_one(
         self, x: dict[base.typing.FeatureName, Any], **kwargs: Any
     ) -> dict[base.typing.ClfTarget, float]:
-        label, s = self._score_one(x, **kwargs)
+        scored = self._score_one(x, **kwargs)
+        if scored is None:
+            # mirror the wrapped model: no opinion in, no opinion out
+            return {}
+        label, s = scored
         p = sigmoid(self.slope * s + self.intercept)
         if label is True:
             return {False: 1 - p, True: p}

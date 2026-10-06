@@ -66,3 +66,34 @@ def test_learns_non_trivial_params() -> None:
         model.learn_one(x, y)
     # The model should have moved away from the identity mapping.
     assert not (math.isclose(model.slope, 1.0) and math.isclose(model.intercept, 0.0))
+
+
+def test_wrapped_model_with_no_opinion():
+    """A tree returns an empty dict until it has seen a class.
+
+    see https://github.com/online-ml/river/pull/1988#issuecomment
+    """
+    from river import tree
+
+    model = utils.CalibratedClassifier(tree.HoeffdingTreeClassifier())
+
+    x = {"a": 1.0, "b": 2.0}
+
+    # before anything is learned the wrapper must not raise, and must report no
+    # opinion rather than inventing a label
+    assert model.predict_proba_one(x) == {}
+    assert model.predict_one(x) is None
+
+    # the sample still reaches the wrapped model, and the calibration is
+    # untouched while there was nothing to calibrate
+    model.learn_one(x, True)
+    assert model.slope == 1.0
+    assert model.intercept == 0.0
+
+    # once the wrapped model has an opinion, calibration resumes
+    for _ in range(5):
+        model.learn_one(x, True)
+        model.learn_one({"a": -1.0, "b": -2.0}, False)
+    proba = model.predict_proba_one(x)
+    assert set(proba) == {False, True}
+    assert abs(sum(proba.values()) - 1.0) < 1e-9
