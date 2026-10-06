@@ -322,7 +322,7 @@ class Histogram(collections.UserList[Bin], base.Base):
         """
         return next(self.iter_cdf([x]))
 
-    def __add__(self, other: Iterable[Bin]) -> Histogram:
+    def __add__(self, other: Histogram) -> Histogram:  # type: ignore[override]
         """Merge two histograms, conserving the total count.
 
         Interval bins are spread proportionally over the tiles defined by the
@@ -364,7 +364,6 @@ class Histogram(collections.UserList[Bin], base.Base):
         1.0
 
         """
-        assert isinstance(other, Histogram)
         merged = Histogram(max_bins=max(self.max_bins, other.max_bins))
         merged.n = self.n + other.n
 
