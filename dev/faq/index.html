@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../img/favicon.ico">
-      <meta name="generator" content="zensical-0.0.67">
+      <meta name="generator" content="zensical-0.0.68">
     
     
       
@@ -32,12 +32,12 @@
       
         
       
-      <link rel="stylesheet" href="../assets/stylesheets/classic/main.cfc7948b.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/classic/main.3d7537f3.min.css">
       
         
           
         
-        <link rel="stylesheet" href="../assets/stylesheets/classic/palette.bf1c5cd6.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/classic/palette.031959be.min.css">
       
       
 
@@ -101,14 +101,11 @@
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
-    <label class="md-overlay" for="__drawer" aria-label="Navigation"></label>
+    <label class="md-overlay" for="__drawer" aria-hidden="true"></label>
     <div data-md-component="skip">
-      
-        
-        <a href="#frequently-asked-questions" class="md-skip">
-          Skip to content
-        </a>
-      
+      <a href="#__skip" class="md-skip">
+        Skip to content
+      </a>
     </div>
     <div data-md-component="announce">
       
@@ -1343,6 +1340,7 @@
             <div class="md-content" data-md-component="content">
               
               <article class="md-content__inner md-typeset">
+                <a id="__skip" tabindex="-1"></a>
                 
                   
 
@@ -1384,7 +1382,7 @@
 <p>River does not support loading pickled objects across River versions. A checkpoint may fail to load, or it may load and then fail or behave differently when used. Keep the River, Python, and relevant dependency versions pinned when you need to resume a stored model, metric, or statistic. Before upgrading, test the operations you rely on (e.g. check that <code>predict_one</code> produces the same result).</p>
 <p><a href="https://dill.readthedocs.io/en/latest/dill.html">dill</a> and <a href="https://github.com/cloudpipe/cloudpickle">cloudpickle</a> can serialize additional Python objects, but they also do not solve the cross-version compatibility topic.</p>
 <h2 id="what-about-neural-networks">What about neural networks?<a class="headerlink" href="#what-about-neural-networks" title="Permanent link">&para;</a></h2>
-<p>There are many great open-source libraries for building neural network models. We don't feel that we can bring anything of value to the existing Python ecosystem. However, we are open to implementing compatibility wrappers for popular libraries such as PyTorch and Keras.</p>
+<p>There are many great open-source libraries for building neural network models. We don't feel that we can bring anything of value to the existing Python ecosystem. Instead of implementing neural networks in River, members of our community created an independent library that interfaces with PyTorch called <a href="https://github.com/online-ml/deep-river">deep-river</a>. Check it out if you're interested in deep learning!</p>
 <h2 id="who-are-the-authors-of-this-library">Who are the authors of this library?<a class="headerlink" href="#who-are-the-authors-of-this-library" title="Permanent link">&para;</a></h2>
 <p>We are research engineers, graduate students, PhDs and machine learning researchers. The members of the development team are mainly located in France, Brazil and New Zealand.</p>
 
@@ -1479,7 +1477,7 @@
       <script id="__config" type="application/json">{"annotate":null,"base":"..","features":["content.code.copy","navigation.tabs","navigation.instant","navigation.indexes","navigation.prune"],"redirect":null,"search":"../assets/javascripts/workers/search.7d14d953.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","clipboard.error":"Could not copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":{"provider":"mike"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.67a597eb.min.js"></script>
+      <script src="../assets/javascripts/bundle.3c842f4c.min.js"></script>
       
         <script src="../javascripts/config.js"></script>
       

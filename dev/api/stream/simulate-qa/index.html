@@ -25,7 +25,7 @@
       
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="zensical-0.0.67">
+      <meta name="generator" content="zensical-0.0.68">
     
     
       
@@ -36,12 +36,12 @@
       
         
       
-      <link rel="stylesheet" href="../../../assets/stylesheets/classic/main.cfc7948b.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/classic/main.3d7537f3.min.css">
       
         
           
         
-        <link rel="stylesheet" href="../../../assets/stylesheets/classic/palette.bf1c5cd6.min.css">
+        <link rel="stylesheet" href="../../../assets/stylesheets/classic/palette.031959be.min.css">
       
       
 
@@ -105,14 +105,11 @@
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
-    <label class="md-overlay" for="__drawer" aria-label="Navigation"></label>
+    <label class="md-overlay" for="__drawer" aria-hidden="true"></label>
     <div data-md-component="skip">
-      
-        
-        <a href="#simulate_qa" class="md-skip">
-          Skip to content
-        </a>
-      
+      <a href="#__skip" class="md-skip">
+        Skip to content
+      </a>
     </div>
     <div data-md-component="announce">
       
@@ -4628,6 +4625,7 @@
             <div class="md-content" data-md-component="content">
               
               <article class="md-content__inner md-typeset">
+                <a id="__skip" tabindex="-1"></a>
                 
                   
 
@@ -4642,17 +4640,17 @@
 <ul>
 <li>
 <p><strong>dataset</strong></p>
-<p><em>Type</em> → <code>base.typing.Dataset</code></p>
+<p><em>Type</em> → <code>Iterable[tuple[Features, typing.Any] | tuple[Features, typing.Any, Kwargs]]</code></p>
 <p>A stream of (features, target) tuples.</p>
 </li>
 <li>
 <p><strong>moment</strong></p>
-<p><em>Type</em> → <code>str | typing.Callable[[dict], dt.datetime] | None</code></p>
+<p><em>Type</em> → <code>Moment</code></p>
 <p>The attribute used for measuring time. If a callable is passed, then it is expected to take as input a <code>dict</code> of features. If <code>None</code>, then the observations are implicitly timestamped in the order in which they arrive. If a <code>str</code> is passed, then it will be used to obtain the time from the input features.</p>
 </li>
 <li>
 <p><strong>delay</strong></p>
-<p><em>Type</em> → <code>str | int | dt.timedelta | typing.Callable | None</code></p>
+<p><em>Type</em> → <code>Delay</code></p>
 <p>The amount of time to wait before revealing the target associated with each observation to the model. This value is expected to be able to sum with the <code>moment</code> value. For instance, if <code>moment</code> is a <code>datetime.date</code>, then <code>delay</code> is expected to be a <code>datetime.timedelta</code>. If a callable is passed, then it is expected to take as input a <code>dict</code> of features and the target. If a <code>str</code> is passed, then it will be used to access the relevant field from the features. If <code>None</code> is passed, then no delay will be used, which leads to doing standard online validation. If a scalar is passed, such an <code>int</code> or a <code>datetime.timedelta</code>, then the delay is constant.</p>
 </li>
 <li>
@@ -4798,7 +4796,7 @@ evaluating models in an online manner.</p>
       <script id="__config" type="application/json">{"annotate":null,"base":"../../..","features":["content.code.copy","navigation.tabs","navigation.instant","navigation.indexes","navigation.prune"],"redirect":null,"search":"../../../assets/javascripts/workers/search.7d14d953.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","clipboard.error":"Could not copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":{"provider":"mike"}}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.67a597eb.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.3c842f4c.min.js"></script>
       
         <script src="../../../javascripts/config.js"></script>
       
