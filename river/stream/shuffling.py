@@ -2,11 +2,14 @@ from __future__ import annotations
 
 import itertools
 import random
-import types
 import typing
 
+T = typing.TypeVar("T")
 
-def shuffle(stream: typing.Iterator, buffer_size: int, seed: int | None = None):
+
+def shuffle(
+    stream: typing.Iterable[T], buffer_size: int, seed: int | None = None
+) -> typing.Iterator[T]:
     """Shuffles a stream of data.
 
     This works by maintaining a buffer of elements. The first `buffer_size` elements are stored in
@@ -59,15 +62,13 @@ def shuffle(stream: typing.Iterator, buffer_size: int, seed: int | None = None):
 
     rng = random.Random(seed)
 
-    # If stream is not a generator, then we coerce it to one
-    if not isinstance(stream, types.GeneratorType):
-        stream = iter(stream)
+    iterator = iter(stream)
 
     # Initialize the buffer with the first buffer_size elements of the stream
-    buffer = list(itertools.islice(stream, buffer_size))
+    buffer = list(itertools.islice(iterator, buffer_size))
 
     # Deplete the stream until it is empty
-    for element in stream:
+    for element in iterator:
         # Pick a random element from the buffer and yield it
         i = rng.randint(0, len(buffer) - 1)
         yield buffer[i]

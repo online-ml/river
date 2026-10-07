@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-import dataclasses
 import datetime as dt
 import enum
 import re
 import socket
+import typing
 from collections.abc import Iterator
 
 SERVER = "irc.chat.twitch.tv"
@@ -23,8 +23,7 @@ class IrcMessage(enum.Enum):
     PONG = enum.auto()
 
 
-@dataclasses.dataclass
-class ChatMessageItem:
+class ChatMessageItem(typing.TypedDict):
     dt: dt.datetime
     channel: str
     username: str
@@ -104,7 +103,7 @@ class TwitchChatStream:
         channels: list[str],
         buffer_size: int = BUFFER_SIZE,
         timeout: int = TIMEOUT,
-    ):
+    ) -> None:
         self.nickname = nickname
         self.token = token
         self.channels = channels
@@ -155,7 +154,7 @@ class TwitchChatStream:
 
             yield from self._extract_chat_messages(resp, now)
 
-    def __iter__(self) -> Iterator[dict]:
+    def __iter__(self) -> Iterator[ChatMessageItem]:
         with socket.socket() as sock:
             self._setup_connection(sock)
-            yield from map(dataclasses.asdict, self._gen_items(sock))
+            yield from self._gen_items(sock)
