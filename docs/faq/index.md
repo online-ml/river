@@ -56,7 +56,7 @@ River does not support loading pickled objects across River versions. A checkpoi
 
 ## What about neural networks?
 
-There are many great open-source libraries for building neural network models. We don't feel that we can bring anything of value to the existing Python ecosystem. However, we are open to implementing compatibility wrappers for popular libraries such as PyTorch and Keras.
+There are many great open-source libraries for building neural network models. We don't feel that we can bring anything of value to the existing Python ecosystem. Instead of implementing neural networks in River, members of our community created an independent library that interfaces with PyTorch called [deep-river](https://github.com/online-ml/deep-river). Check it out if you're interested in deep learning!
 
 ## Who are the authors of this library?
 
