@@ -1,11 +1,27 @@
 from __future__ import annotations
 
 import itertools
+import operator
 import random
+import typing
 
 import numpy as np
 
 from river import base
+
+_T = typing.TypeVar("_T")
+
+
+@typing.overload
+def _take(array: np.ndarray, order: list[int]) -> np.ndarray: ...
+
+
+@typing.overload
+def _take(array: list[_T], order: list[int]) -> list[_T]: ...
+
+
+def _take(array: np.ndarray | list[_T], order: list[int]) -> np.ndarray | list[_T]:
+    return array[order] if isinstance(array, np.ndarray) else [array[i] for i in order]
 
 
 def iter_array(
@@ -82,23 +98,31 @@ def iter_array(
         feature_names = list(range(len(X[0]))) if feature_names is None else feature_names
 
         def handle_features(x):
-            return dict(zip(feature_names, xi.tolist() if isinstance(xi, np.ndarray) else xi))
+            return dict(zip(feature_names, x.tolist() if isinstance(x, np.ndarray) else x))
 
-    multioutput = y is not None and not np.isscalar(y[0])
+    multioutput = y is not None and np.ndim(y[0]) > 0
     if multioutput and target_names is None:
         target_names = list(range(len(y[0])))  # type: ignore
 
     # Shuffle the data
     rng = random.Random(seed)
     if shuffle:
-        order = rng.sample(range(len(X)), k=len(X))
-        X = X[order]
-        y = y if y is None else y[order]
+        size = len(X)
+        order = rng.sample(range(size), k=size)
+        rows = _take(X, order)
+        targets = None if y is None else _take(y, order)
+    else:
+        rows, targets = X, y
+
+    if isinstance(rows, np.ndarray) and rows.dtype.kind == "U":
+        rows = rows.tolist()
 
     if multioutput:
-        for xi, yi in itertools.zip_longest(X, y if hasattr(y, "__iter__") else []):  # type: ignore
-            yield handle_features(xi), dict(zip(target_names, yi.tolist()))  # type: ignore
+        tolist = operator.methodcaller("tolist")
+        outputs = map(tolist, targets) if isinstance(y[0], np.ndarray) else targets  # type: ignore
+        for xi, yi in itertools.zip_longest(rows, outputs):  # type: ignore
+            yield handle_features(xi), dict(zip(target_names, yi))  # type: ignore
 
     else:
-        for xi, yi in itertools.zip_longest(X, y if hasattr(y, "__iter__") else []):  # type: ignore
+        for xi, yi in itertools.zip_longest(rows, () if targets is None else targets):
             yield handle_features(xi), yi.item() if isinstance(yi, np.generic) else yi

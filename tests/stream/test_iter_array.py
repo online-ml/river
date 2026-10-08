@@ -27,42 +27,24 @@ ISSUE = "https://github.com/online-ml/river/issues/2046"
 DID_NOT_RAISE = pytest.fail.Exception
 
 KNOWN_BUGS: dict[tuple[str, ...], type[BaseException]] = {
-    ("test_expected_stream", "numpy", "none-as-first-label"): TypeError,
-    ("test_expected_stream", "numpy", "dict-labels"): AttributeError,
-    ("test_expected_stream", "numpy", "text-passes-through"): AssertionError,
     ("test_expected_stream", "numpy", "empty"): IndexError,
     ("test_expected_stream", "numpy", "empty-without-target"): IndexError,
-    ("test_expected_stream", "list", "multioutput"): AttributeError,
-    ("test_expected_stream", "list", "named-outputs"): AttributeError,
-    ("test_expected_stream", "list", "str-enum-labels"): AttributeError,
-    ("test_expected_stream", "list", "none-as-first-label"): TypeError,
-    ("test_expected_stream", "list", "dict-labels"): AttributeError,
     ("test_expected_stream", "list", "empty"): IndexError,
     ("test_expected_stream", "list", "empty-without-target"): IndexError,
     ("test_invalid_input_raises", "numpy", "shorter-target"): DID_NOT_RAISE,
-    ("test_invalid_input_raises", "numpy", "shorter-multioutput-target"): AttributeError,
+    ("test_invalid_input_raises", "numpy", "shorter-multioutput-target"): TypeError,
     ("test_invalid_input_raises", "numpy", "longer-target"): TypeError,
     ("test_invalid_input_raises", "numpy", "longer-target-for-texts"): DID_NOT_RAISE,
     ("test_invalid_input_raises", "numpy", "empty-features-with-target"): IndexError,
     ("test_invalid_input_raises", "numpy", "1d-features"): TypeError,
     ("test_invalid_input_raises", "numpy", "rows-of-dicts"): DID_NOT_RAISE,
     ("test_invalid_input_raises", "list", "shorter-target"): DID_NOT_RAISE,
-    ("test_invalid_input_raises", "list", "shorter-multioutput-target"): AttributeError,
+    ("test_invalid_input_raises", "list", "shorter-multioutput-target"): TypeError,
     ("test_invalid_input_raises", "list", "longer-target"): TypeError,
     ("test_invalid_input_raises", "list", "longer-target-for-texts"): DID_NOT_RAISE,
     ("test_invalid_input_raises", "list", "empty-features-with-target"): IndexError,
     ("test_invalid_input_raises", "list", "1d-features"): TypeError,
     ("test_invalid_input_raises", "list", "rows-of-dicts"): DID_NOT_RAISE,
-    ("test_backends_agree_on_shuffling", "with-target"): TypeError,
-    ("test_backends_agree_on_shuffling", "multioutput"): TypeError,
-    ("test_backends_agree_on_shuffling", "without-target"): TypeError,
-    ("test_backends_agree_on_shuffling", "text"): TypeError,
-    ("test_shuffle_reorders_and_preserves_rows", "list", "with-target"): TypeError,
-    ("test_shuffle_reorders_and_preserves_rows", "list", "multioutput"): TypeError,
-    ("test_shuffle_reorders_and_preserves_rows", "list", "without-target"): TypeError,
-    ("test_shuffle_reorders_and_preserves_rows", "list", "text"): TypeError,
-    ("test_list_targets_shuffle_like_numpy_targets",): TypeError,
-    ("test_shuffle_is_seeded", "list"): TypeError,
 }
 
 ARRAY_BACKENDS: dict[Backend, Callable[[list[typing.Any]], typing.Any]] = {
@@ -74,6 +56,7 @@ FEATURES = [[1, 2, 3], [11, 12, 13]]
 LABELED_FEATURES = [{0: 1, 1: 2, 2: 3}, {0: 11, 1: 12, 2: 13}]
 TARGET = [True, False]
 MULTI_TARGET = [[1, 2], [11, 12]]
+MULTI_TARGET_ROWS: list[typing.Any] = list(np.asarray(MULTI_TARGET))
 TEXTS = ["foo", "bar"]
 
 LONG_FEATURES = [[i, i * 10] for i in range(10)]
@@ -131,6 +114,10 @@ STREAMS: dict[str, tuple[Case, Rows]] = {
         Case(FEATURES, MULTI_TARGET),
         [(LABELED_FEATURES[0], {0: 1, 1: 2}), (LABELED_FEATURES[1], {0: 11, 1: 12})],
     ),
+    "multioutput-array-rows": (
+        Case(FEATURES, MULTI_TARGET_ROWS),
+        [(LABELED_FEATURES[0], {0: 1, 1: 2}), (LABELED_FEATURES[1], {0: 11, 1: 12})],
+    ),
     "named-outputs": (
         Case(FEATURES, MULTI_TARGET, {"target_names": ["y1", "y2"]}),
         [
@@ -155,6 +142,10 @@ STREAMS: dict[str, tuple[Case, Rows]] = {
         [(LABELED_FEATURES[0], {"y": 1}), (LABELED_FEATURES[1], {"y": 2})],
     ),
     "text-passes-through": (Case(TEXTS, TARGET), [("foo", True), ("bar", False)]),
+    "text-features": (
+        Case([["a", "b"], ["c", "d"]]),
+        [({0: "a", 1: "b"}, None), ({0: "c", 1: "d"}, None)],
+    ),
     "empty": (Case([], []), []),
     "empty-without-target": (Case([]), []),
 }
@@ -216,27 +207,23 @@ def test_invalid_input_raises(name: str, backend: Backend, request: pytest.Fixtu
 
 
 @pytest.mark.parametrize("name", SHUFFLED_STREAMS)
-def test_backends_agree_on_shuffling(name: str, request: pytest.FixtureRequest) -> None:
-    xfail_if_known_bug(request, ("test_backends_agree_on_shuffling", name))
+def test_backends_agree_on_shuffling(name: str) -> None:
     case = SHUFFLED_STREAMS[name]
     assert collect_rows(case, "numpy") == collect_rows(case, "list")
 
 
 @pytest.mark.parametrize("name", SHUFFLED_STREAMS)
-def test_shuffle_reorders_and_preserves_rows(
-    name: str, backend: Backend, request: pytest.FixtureRequest
-) -> None:
-    xfail_if_known_bug(request, ("test_shuffle_reorders_and_preserves_rows", backend, name))
+def test_shuffle_reorders_and_preserves_rows(name: str, backend: Backend) -> None:
     case = SHUFFLED_STREAMS[name]
     shuffled = collect_rows(case, backend)
     plain = collect_rows(case._replace(options={}), backend)
 
     assert shuffled != plain
     assert sorted(shuffled, key=plain.index) == plain
+    assert not [cell for cell in cells(shuffled) if isinstance(cell, np.generic)]
 
 
-def test_list_targets_shuffle_like_numpy_targets(request: pytest.FixtureRequest) -> None:
-    xfail_if_known_bug(request, ("test_list_targets_shuffle_like_numpy_targets",))
+def test_list_targets_shuffle_like_numpy_targets() -> None:
     X = np.array(LONG_FEATURES)
     y: typing.Any = LONG_TARGET
     assert list(stream.iter_array(X, y, **SEEDED_SHUFFLE)) == list(
@@ -244,8 +231,7 @@ def test_list_targets_shuffle_like_numpy_targets(request: pytest.FixtureRequest)
     )
 
 
-def test_shuffle_is_seeded(backend: Backend, request: pytest.FixtureRequest) -> None:
-    xfail_if_known_bug(request, ("test_shuffle_is_seeded", backend))
+def test_shuffle_is_seeded(backend: Backend) -> None:
     case = Case(LONG_FEATURES, LONG_TARGET, SEEDED_SHUFFLE)
 
     assert collect_rows(case, backend) == collect_rows(case, backend)
