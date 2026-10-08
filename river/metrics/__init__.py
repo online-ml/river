@@ -34,6 +34,8 @@ from .accuracy import Accuracy
 from .balanced_accuracy import BalancedAccuracy
 from .confusion import ConfusionMatrix
 from .cross_entropy import CrossEntropy
+from .cumulative_gain import CumulativeGain
+from .dcg import DCG
 from .fbeta import (
     F1,
     FBeta,
@@ -55,6 +57,7 @@ from .mape import MAPE
 from .mcc import MCC
 from .mse import MSE, RMSE, RMSLE
 from .mutual_info import AdjustedMutualInfo, MutualInfo, NormalizedMutualInfo
+from .ndcg import NDCG
 from .precision import MacroPrecision, MicroPrecision, Precision, WeightedPrecision
 from .r2 import R2
 from .rand import AdjustedRand, Rand
@@ -77,7 +80,9 @@ __all__ = [
     "ClassificationReport",
     "CohenKappa",
     "ConfusionMatrix",
+    "CumulativeGain",
     "CrossEntropy",
+    "DCG",
     "Jaccard",
     "MacroJaccard",
     "MicroJaccard",
@@ -101,6 +106,7 @@ __all__ = [
     "multioutput",
     "MSE",
     "MutualInfo",
+    "NDCG",
     "NormalizedMutualInfo",
     "Precision",
     "Rand",
