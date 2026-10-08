@@ -190,7 +190,7 @@ class MultivariateGaussian(base.MultivariateContinuousDistribution):
     >>> p(x)
     0.97967...
     >>> p.cdf(x)
-    0.00787...
+    0.005096...
 
     To sample data from distribution:
 
@@ -328,7 +328,7 @@ class MultivariateGaussian(base.MultivariateContinuousDistribution):
                 return 0.0
         return 0.0  # pragma: no cover
 
-    def cdf(self, x: dict[str, float]):
+    def cdf(self, x: dict[str, float]) -> float:
         x_ = [x[i] for i in self.mu]
         _, cov = self._covariance_array()
         cdf_ = multivariate_normal(

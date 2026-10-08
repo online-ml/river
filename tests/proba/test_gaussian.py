@@ -34,6 +34,7 @@ def test_univariate_multivariate_consistency(p):
         assert math.isclose(multi.mu[c], single[c].mu)
         assert math.isclose(multi.sigma[c][c], single[c].sigma)
 
+
 def test_multivariate_cdf_is_order_independent():
     p = proba.MultivariateGaussian()
 
