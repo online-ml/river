@@ -4,6 +4,7 @@ import itertools
 import operator
 import random
 import typing
+from collections.abc import Mapping, Sized
 
 import numpy as np
 
@@ -22,6 +23,10 @@ def _take(array: list[_T], order: list[int]) -> list[_T]: ...
 
 def _take(array: np.ndarray | list[_T], order: list[int]) -> np.ndarray | list[_T]:
     return array[order] if isinstance(array, np.ndarray) else [array[i] for i in order]
+
+
+def _is_feature_row(row: object) -> typing.TypeGuard[Sized]:
+    return isinstance(row, Sized) and not isinstance(row, Mapping)
 
 
 def iter_array(
@@ -72,13 +77,10 @@ def iter_array(
     {'x1': 1, 'x2': 2, 'x3': 3} True
     {'x1': 11, 'x2': 12, 'x3': 13} False
 
-    This also works with a array of texts:
+    This also works with an array of texts:
 
     >>> X = ["foo", "bar"]
-    >>> dataset = stream.iter_array(
-    ...     X, Y,
-    ...     feature_names=['x1', 'x2', 'x3']
-    ... )
+    >>> dataset = stream.iter_array(X, Y)
     >>> for x, y in dataset:
     ...     print(x, y)
     foo True
@@ -86,16 +88,27 @@ def iter_array(
 
     """
 
-    # If the first row of X is actually a string, then we assume all the rows are strings and will
-    # pass them through
-    if isinstance(X[0], str):
+    n_rows = len(X)
+    if y is not None and len(y) != n_rows:
+        raise ValueError(f"X and y must have the same length, got {n_rows} and {len(y)}")
+
+    if n_rows == 0:
+        return
+
+    first_row = X[0]
+    if isinstance(first_row, str):
 
         def handle_features(x):
             return x.tolist() if isinstance(x, np.ndarray) else x
 
-    # If not we assume each row if a set of features, and will convert them to a dictionary
+    elif not _is_feature_row(first_row):
+        raise ValueError(
+            "X must be a 2D array or a 1D array of strings, got rows of type "
+            f"{type(first_row).__name__}; use X.reshape(-1, 1) for a single feature"
+        )
+
     else:
-        feature_names = list(range(len(X[0]))) if feature_names is None else feature_names
+        feature_names = list(range(len(first_row))) if feature_names is None else feature_names
 
         def handle_features(x):
             return dict(zip(feature_names, x.tolist() if isinstance(x, np.ndarray) else x))
@@ -104,11 +117,9 @@ def iter_array(
     if multioutput and target_names is None:
         target_names = list(range(len(y[0])))  # type: ignore
 
-    # Shuffle the data
     rng = random.Random(seed)
     if shuffle:
-        size = len(X)
-        order = rng.sample(range(size), k=size)
+        order = rng.sample(range(n_rows), k=n_rows)
         rows = _take(X, order)
         targets = None if y is None else _take(y, order)
     else:
@@ -120,9 +131,11 @@ def iter_array(
     if multioutput:
         tolist = operator.methodcaller("tolist")
         outputs = map(tolist, targets) if isinstance(y[0], np.ndarray) else targets  # type: ignore
-        for xi, yi in itertools.zip_longest(rows, outputs):  # type: ignore
+        for xi, yi in zip(rows, outputs):  # type: ignore
             yield handle_features(xi), dict(zip(target_names, yi))  # type: ignore
 
     else:
-        for xi, yi in itertools.zip_longest(rows, () if targets is None else targets):
-            yield handle_features(xi), yi.item() if isinstance(yi, np.generic) else yi
+        if isinstance(targets, np.ndarray):
+            targets = targets.tolist()
+        for xi, yi in zip(rows, itertools.repeat(None) if targets is None else targets):
+            yield handle_features(xi), yi

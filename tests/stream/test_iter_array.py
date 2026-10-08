@@ -11,7 +11,7 @@ from river import stream
 if typing.TYPE_CHECKING:
     from collections.abc import Callable, Iterator
 
-    from river.base.typing import FeatureName
+    from river.base.typing import FeatureName, Stream
 
     Backend = typing.Literal["numpy", "list"]
     Rows = list[tuple[typing.Any, typing.Any]]
@@ -22,30 +22,6 @@ if typing.TYPE_CHECKING:
         shuffle: bool
         seed: int
 
-
-ISSUE = "https://github.com/online-ml/river/issues/2046"
-DID_NOT_RAISE = pytest.fail.Exception
-
-KNOWN_BUGS: dict[tuple[str, ...], type[BaseException]] = {
-    ("test_expected_stream", "numpy", "empty"): IndexError,
-    ("test_expected_stream", "numpy", "empty-without-target"): IndexError,
-    ("test_expected_stream", "list", "empty"): IndexError,
-    ("test_expected_stream", "list", "empty-without-target"): IndexError,
-    ("test_invalid_input_raises", "numpy", "shorter-target"): DID_NOT_RAISE,
-    ("test_invalid_input_raises", "numpy", "shorter-multioutput-target"): TypeError,
-    ("test_invalid_input_raises", "numpy", "longer-target"): TypeError,
-    ("test_invalid_input_raises", "numpy", "longer-target-for-texts"): DID_NOT_RAISE,
-    ("test_invalid_input_raises", "numpy", "empty-features-with-target"): IndexError,
-    ("test_invalid_input_raises", "numpy", "1d-features"): TypeError,
-    ("test_invalid_input_raises", "numpy", "rows-of-dicts"): DID_NOT_RAISE,
-    ("test_invalid_input_raises", "list", "shorter-target"): DID_NOT_RAISE,
-    ("test_invalid_input_raises", "list", "shorter-multioutput-target"): TypeError,
-    ("test_invalid_input_raises", "list", "longer-target"): TypeError,
-    ("test_invalid_input_raises", "list", "longer-target-for-texts"): DID_NOT_RAISE,
-    ("test_invalid_input_raises", "list", "empty-features-with-target"): IndexError,
-    ("test_invalid_input_raises", "list", "1d-features"): TypeError,
-    ("test_invalid_input_raises", "list", "rows-of-dicts"): DID_NOT_RAISE,
-}
 
 ARRAY_BACKENDS: dict[Backend, Callable[[list[typing.Any]], typing.Any]] = {
     "numpy": np.asarray,
@@ -150,14 +126,29 @@ STREAMS: dict[str, tuple[Case, Rows]] = {
     "empty-without-target": (Case([]), []),
 }
 
-INVALID_STREAMS: dict[str, Case] = {
-    "shorter-target": Case(FEATURES, [True]),
-    "shorter-multioutput-target": Case(FEATURES, [[1, 2]]),
-    "longer-target": Case([[1, 2]], [True, False]),
-    "longer-target-for-texts": Case(["foo"], [True, False]),
-    "empty-features-with-target": Case([], [True]),
-    "1d-features": Case([1.0, 2.0]),
-    "rows-of-dicts": Case([{"a": 1}, {"b": 2}]),
+LENGTH_MISMATCH = "same length"
+NOT_2D = "2D array"
+
+INVALID_STREAMS: dict[str, tuple[Case, str]] = {
+    "shorter-target": (Case(FEATURES, [True]), LENGTH_MISMATCH),
+    "shorter-target-shuffled": (Case(FEATURES, [True], SEEDED_SHUFFLE), LENGTH_MISMATCH),
+    "shorter-multioutput-target": (Case(FEATURES, [[1, 2]]), LENGTH_MISMATCH),
+    "longer-target": (Case([[1, 2]], [True, False]), LENGTH_MISMATCH),
+    "longer-target-for-texts": (Case(["foo"], [True, False]), LENGTH_MISMATCH),
+    "empty-features-with-target": (Case([], [True]), LENGTH_MISMATCH),
+    "1d-features": (Case([1.0, 2.0]), NOT_2D),
+    "rows-of-dicts": (Case([{"a": 1}, {"b": 2}]), NOT_2D),
+}
+
+SIZED_ROWS: dict[str, tuple[typing.Any, Rows]] = {
+    "sequence-cells": (
+        [[1, (2, 3)], [4, (5, 6)]],
+        [({0: 1, 1: (2, 3)}, None), ({0: 4, 1: (5, 6)}, None)],
+    ),
+    "records": (
+        np.array([(1, 2.0), (3, 4.0)], dtype=[("a", int), ("b", float)]),
+        [({0: 1, 1: 2.0}, None), ({0: 3, 1: 4.0}, None)],
+    ),
 }
 
 SHUFFLED_STREAMS: dict[str, Case] = {
@@ -168,15 +159,14 @@ SHUFFLED_STREAMS: dict[str, Case] = {
 }
 
 
-def xfail_if_known_bug(request: pytest.FixtureRequest, key: tuple[str, ...]) -> None:
-    if (raises := KNOWN_BUGS.get(key)) is not None:
-        request.applymarker(pytest.mark.xfail(raises=raises, strict=True, reason=ISSUE))
+def iter_case(case: Case, backend: Backend) -> Stream:
+    array = ARRAY_BACKENDS[backend]
+    y = None if case.y is None else array(case.y)
+    return stream.iter_array(array(case.X), y, **case.options)
 
 
 def collect_rows(case: Case, backend: Backend) -> Rows:
-    array = ARRAY_BACKENDS[backend]
-    y = None if case.y is None else array(case.y)
-    return list(stream.iter_array(array(case.X), y, **case.options))
+    return list(iter_case(case, backend))
 
 
 def cells(rows: Rows) -> Iterator[object]:
@@ -191,8 +181,7 @@ def backend(request: pytest.FixtureRequest) -> Backend:
 
 
 @pytest.mark.parametrize("name", STREAMS)
-def test_expected_stream(name: str, backend: Backend, request: pytest.FixtureRequest) -> None:
-    xfail_if_known_bug(request, ("test_expected_stream", backend, name))
+def test_expected_stream(name: str, backend: Backend) -> None:
     case, expected = STREAMS[name]
     rows = collect_rows(case, backend)
     assert rows == expected
@@ -200,10 +189,17 @@ def test_expected_stream(name: str, backend: Backend, request: pytest.FixtureReq
 
 
 @pytest.mark.parametrize("name", INVALID_STREAMS)
-def test_invalid_input_raises(name: str, backend: Backend, request: pytest.FixtureRequest) -> None:
-    xfail_if_known_bug(request, ("test_invalid_input_raises", backend, name))
-    with pytest.raises(ValueError):
-        _ = collect_rows(INVALID_STREAMS[name], backend)
+def test_invalid_input_raises_lazily(name: str, backend: Backend) -> None:
+    case, message = INVALID_STREAMS[name]
+    dataset = iter_case(case, backend)
+    with pytest.raises(ValueError, match=message):
+        _ = next(dataset)
+
+
+@pytest.mark.parametrize("name", SIZED_ROWS)
+def test_sized_rows_are_labeled(name: str) -> None:
+    X, expected = SIZED_ROWS[name]
+    assert list(stream.iter_array(X)) == expected
 
 
 @pytest.mark.parametrize("name", SHUFFLED_STREAMS)
