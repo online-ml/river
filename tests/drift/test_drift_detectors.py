@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+import math
+
 import numpy as np
 import pytest
+from scipy import stats
 
-from river import drift
+from river import checks, drift
 
 np.random.seed(12345)
 data_stream_1 = np.concatenate((np.random.randint(2, size=1000), np.random.randint(8, size=1000)))
@@ -119,6 +122,103 @@ def test_page_hinkley():
     detected_indices = perform_test(drift.PageHinkley(mode="both"), data_stream_3)
 
     assert detected_indices == expected_indices
+
+
+def test_wstd():
+    expected_indices = [1028]
+    detected_indices = perform_test(drift.binary.WSTD(), data_stream_2)
+    assert detected_indices == expected_indices
+
+    wstd = drift.binary.WSTD()
+    warning_indices = []
+    for i, x in enumerate(data_stream_2):
+        wstd.update(x)
+        if wstd.warning_detected:
+            warning_indices.append(i)
+    assert warning_indices[0] == 1017
+
+
+def test_wstd_stationary_no_false_alarm():
+    np.random.seed(12345)
+    stationary = np.array([np.random.binomial(1, 0.2) for _ in range(2000)])
+    assert perform_test(drift.binary.WSTD(), stationary) == []
+
+    np.random.seed(12345)
+    stationary = np.random.randint(2, size=2000)
+    assert perform_test(drift.binary.WSTD(), stationary) == []
+
+    assert perform_test(drift.binary.WSTD(), np.ones(1000)) == []
+    assert perform_test(drift.binary.WSTD(), np.zeros(1000)) == []
+
+
+def test_wstd_two_sided():
+    data_stream = np.array([0] * 200 + [1] * 60 + [0] * 200)
+    expected_indices = [210, 273]
+    assert perform_test(drift.binary.WSTD(), data_stream) == expected_indices
+
+
+def test_wstd_p_value_matches_ranksums():
+    rng = np.random.default_rng(42)
+    data_stream = rng.integers(0, 2, size=400)
+
+    wstd = drift.binary.WSTD()
+    history = []
+    for i, x in enumerate(data_stream):
+        wstd.update(x)
+        history.append(x)
+        if i >= wstd.recent_window_size + wstd.older_window_size - 1:
+            recent = history[-wstd.recent_window_size :]
+            older = history[
+                -wstd.older_window_size - wstd.recent_window_size : -wstd.recent_window_size
+            ]
+            _, p_value = stats.ranksums(recent, older)
+            assert math.isclose(wstd.p_value, p_value, rel_tol=1e-12, abs_tol=1e-300)
+
+
+def test_wstd_guard():
+    wstd = drift.binary.WSTD(recent_window_size=10, older_window_size=20, min_instances=10)
+    for x in [0] * 19:
+        wstd.update(x)
+        assert wstd.p_value == 1.0
+    wstd.update(0)
+    assert wstd.p_value == 1.0
+
+
+def test_wstd_coverage():
+    with pytest.raises(ValueError):
+        drift.binary.WSTD(alpha_warning=0.001, alpha_drift=0.003)
+
+    with pytest.raises(ValueError):
+        drift.binary.WSTD(alpha_warning=-0.1)
+
+    with pytest.raises(ValueError):
+        drift.binary.WSTD(alpha_drift=1.1)
+
+    with pytest.raises(ValueError):
+        drift.binary.WSTD(recent_window_size=1)
+
+    with pytest.raises(ValueError):
+        drift.binary.WSTD(min_instances=200)
+
+
+def test_wstd_check_estimator():
+    wstd = drift.binary.WSTD()
+    for check in [
+        checks.common.check_repr,
+        checks.common.check_str,
+        checks.common.check_doc,
+        checks.common.check_clone_same_class,
+        checks.common.check_clone_is_idempotent,
+        checks.common.check_init_has_default_params_for_tests,
+        checks.common.check_init_default_params_are_not_mutable,
+        checks.common.check_clone_changes_memory_addresses,
+        checks.common.check_mutate_can_be_idempotent,
+        checks.common.check_pickling_supports_roundtrip,
+        checks.common.check_repr_roundtrips_clone,
+        checks.common.check_clone_with_new_params_applies,
+        checks.common.check_get_params_matches_signature,
+    ]:
+        check(wstd.clone())
 
 
 def perform_test(drift_detector, data_stream):
