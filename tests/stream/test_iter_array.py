@@ -21,6 +21,7 @@ if typing.TYPE_CHECKING:
         target_names: list[FeatureName]
         shuffle: bool
         seed: int
+        chunk_size: int
 
 
 ARRAY_BACKENDS: dict[Backend, Callable[[list[typing.Any]], typing.Any]] = {
@@ -33,12 +34,16 @@ LABELED_FEATURES = [{0: 1, 1: 2, 2: 3}, {0: 11, 1: 12, 2: 13}]
 TARGET = [True, False]
 MULTI_TARGET = [[1, 2], [11, 12]]
 MULTI_TARGET_ROWS: list[typing.Any] = list(np.asarray(MULTI_TARGET))
+FEATURE_ROWS: list[typing.Any] = list(np.asarray(FEATURES))
 TEXTS = ["foo", "bar"]
 
 LONG_FEATURES = [[i, i * 10] for i in range(10)]
 LONG_TARGET = list(range(10))
 LONG_MULTI_TARGET = [[i, -i] for i in range(10)]
 LONG_TEXTS = [f"text {i}" for i in range(10)]
+MANY_FEATURES = [[i, -i] for i in range(10_000)]
+MANY_TARGET = list(range(10_000))
+MANY_TEXTS = [f"text {i}" for i in range(10_000)]
 SEEDED_SHUFFLE: IterArrayOptions = {"shuffle": True, "seed": 42}
 
 
@@ -86,6 +91,10 @@ STREAMS: dict[str, tuple[Case, Rows]] = {
         Case(FEATURES, options={"feature_names": ["x1", "x2", "x3", "x4"]}),
         [({"x1": 1, "x2": 2, "x3": 3}, None), ({"x1": 11, "x2": 12, "x3": 13}, None)],
     ),
+    "array-rows": (
+        Case(FEATURE_ROWS),
+        [(LABELED_FEATURES[0], None), (LABELED_FEATURES[1], None)],
+    ),
     "multioutput": (
         Case(FEATURES, MULTI_TARGET),
         [(LABELED_FEATURES[0], {0: 1, 1: 2}), (LABELED_FEATURES[1], {0: 11, 1: 12})],
@@ -128,6 +137,7 @@ STREAMS: dict[str, tuple[Case, Rows]] = {
 
 LENGTH_MISMATCH = "same length"
 NOT_2D = "2D array"
+BAD_CHUNK_SIZE = "chunk_size"
 
 INVALID_STREAMS: dict[str, tuple[Case, str]] = {
     "shorter-target": (Case(FEATURES, [True]), LENGTH_MISMATCH),
@@ -138,6 +148,8 @@ INVALID_STREAMS: dict[str, tuple[Case, str]] = {
     "empty-features-with-target": (Case([], [True]), LENGTH_MISMATCH),
     "1d-features": (Case([1.0, 2.0]), NOT_2D),
     "rows-of-dicts": (Case([{"a": 1}, {"b": 2}]), NOT_2D),
+    "zero-chunk-size": (Case(TEXTS, TARGET, {"chunk_size": 0}), BAD_CHUNK_SIZE),
+    "negative-chunk-size": (Case(TEXTS, TARGET, {"chunk_size": -1}), BAD_CHUNK_SIZE),
 }
 
 SIZED_ROWS: dict[str, tuple[typing.Any, Rows]] = {
@@ -156,6 +168,13 @@ SHUFFLED_STREAMS: dict[str, Case] = {
     "multioutput": Case(LONG_FEATURES, LONG_MULTI_TARGET, SEEDED_SHUFFLE),
     "without-target": Case(LONG_FEATURES, None, SEEDED_SHUFFLE),
     "text": Case(LONG_TEXTS, LONG_TARGET, SEEDED_SHUFFLE),
+}
+
+MANY_ROWS_STREAMS: dict[str, Case] = {
+    "with-target": Case(MANY_FEATURES, MANY_TARGET),
+    "with-target-shuffled": Case(MANY_FEATURES, MANY_TARGET, SEEDED_SHUFFLE),
+    "text": Case(MANY_TEXTS, MANY_TARGET),
+    "text-shuffled": Case(MANY_TEXTS, MANY_TARGET, SEEDED_SHUFFLE),
 }
 
 
@@ -206,6 +225,20 @@ def test_sized_rows_are_labeled(name: str) -> None:
 def test_backends_agree_on_shuffling(name: str) -> None:
     case = SHUFFLED_STREAMS[name]
     assert collect_rows(case, "numpy") == collect_rows(case, "list")
+
+
+@pytest.mark.parametrize("name", MANY_ROWS_STREAMS)
+def test_backends_agree_on_many_rows(name: str) -> None:
+    case = MANY_ROWS_STREAMS[name]
+    assert collect_rows(case, "numpy") == collect_rows(case, "list")
+
+
+@pytest.mark.parametrize("chunk_size", [1, 7, 10_000, 20_000])
+@pytest.mark.parametrize("name", MANY_ROWS_STREAMS)
+def test_chunk_size_does_not_change_the_stream(name: str, chunk_size: int) -> None:
+    case = MANY_ROWS_STREAMS[name]
+    options: IterArrayOptions = {**case.options, "chunk_size": chunk_size}
+    assert collect_rows(case._replace(options=options), "numpy") == collect_rows(case, "list")
 
 
 @pytest.mark.parametrize("name", SHUFFLED_STREAMS)
