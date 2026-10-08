@@ -25,6 +25,7 @@
 - `stream.iter_sql` now closes the result it iterates, so the underlying cursor is released once the stream is exhausted or abandoned.
 - `stream.cache`, `stream.iter_csv`, and `stream.iter_sql` are now clean under strict mypy. `sqlalchemy` is type-checked rather than ignored, so the `query` and `conn` arguments of `stream.iter_sql` are checked against the SQLAlchemy 2.0 types.
 - `stream.simulate_qa` is now clean under strict mypy. Its overloads type the yields: `(i, x, y)` for a dataset of `(x, y)` pairs, with the kwargs riding along for `(x, y, kwargs)` triples. Type checkers now also accept datasets keyed by plain `str`.
+- Added a test suite for `stream.iter_array` that runs every case on both numpy arrays and Python lists. The bugs reported in #2046 are marked as expected failures until they are fixed.
 
 ## preprocessing
 
