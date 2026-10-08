@@ -25,7 +25,9 @@
 - `stream.iter_sql` now closes the result it iterates, so the underlying cursor is released once the stream is exhausted or abandoned.
 - `stream.cache`, `stream.iter_csv`, and `stream.iter_sql` are now clean under strict mypy. `sqlalchemy` is type-checked rather than ignored, so the `query` and `conn` arguments of `stream.iter_sql` are checked against the SQLAlchemy 2.0 types.
 - `stream.simulate_qa` is now clean under strict mypy. Its overloads type the yields: `(i, x, y)` for a dataset of `(x, y)` pairs, with the kwargs riding along for `(x, y, kwargs)` triples. Type checkers now also accept datasets keyed by plain `str`.
-- Added a test suite for `stream.iter_array` that runs every case on both numpy arrays and Python lists. The bugs reported in #2046 are marked as expected failures until they are fixed.
+- Added a test suite for `stream.iter_array` that runs every case on both NumPy arrays and Python lists.
+- Fixed the `stream.iter_array` bugs reported in #2046. Python lists now work with `shuffle=True` and as multi-output targets, str enums, `None` and dicts are yielded as single targets, NumPy texts are yielded as `str` instead of `np.str_`, and an empty `X` yields an empty stream. `X` and `y` of different lengths now raise a `ValueError` instead of being padded with `None`, and so do rows of `X` that are scalars or dicts, e.g. a 1D numeric array (use `X.reshape(-1, 1)`). A list of dicts used to be accepted, with each dict's keys yielded as feature values.
+- `stream.iter_array` is now clean under strict mypy. Its annotations accept Python lists: `X` is a NumPy array or a list of rows (strings or collections), `y` a NumPy array or a list, and `feature_names` and `target_names` any sequence.
 
 ## preprocessing
 
