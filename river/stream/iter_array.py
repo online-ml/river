@@ -1,16 +1,22 @@
 from __future__ import annotations
 
-import itertools
 import operator
 import random
 import typing
-from collections.abc import Mapping, Sized
+from collections.abc import Mapping, Sequence, Sized
 
 import numpy as np
 
 from river import base
 
+if typing.TYPE_CHECKING:
+    from collections.abc import Callable, Collection
+
+    Features: typing.TypeAlias = dict[base.typing.FeatureName, typing.Any]
+    Row: typing.TypeAlias = str | Collection[object]
+
 _T = typing.TypeVar("_T")
+_RowT = typing.TypeVar("_RowT", bound="Row")
 
 
 @typing.overload
@@ -29,11 +35,22 @@ def _is_feature_row(row: object) -> typing.TypeGuard[Sized]:
     return isinstance(row, Sized) and not isinstance(row, Mapping)
 
 
+def _passthrough(row: Row) -> Row:
+    return row.tolist() if isinstance(row, np.ndarray) else row
+
+
+def _labeler(names: Sequence[base.typing.FeatureName]) -> Callable[[Row], Features]:
+    def label(row: Row) -> Features:
+        return dict(zip(names, row.tolist() if isinstance(row, np.ndarray) else row))
+
+    return label
+
+
 def iter_array(
-    X: np.ndarray,
-    y: np.ndarray | None = None,
-    feature_names: list[base.typing.FeatureName] | None = None,
-    target_names: list[base.typing.FeatureName] | None = None,
+    X: np.ndarray | list[_RowT],
+    y: np.ndarray | list[typing.Any] | None = None,
+    feature_names: Sequence[base.typing.FeatureName] | None = None,
+    target_names: Sequence[base.typing.FeatureName] | None = None,
     shuffle: bool = False,
     seed: int | None = None,
 ) -> base.typing.Stream:
@@ -96,10 +113,9 @@ def iter_array(
         return
 
     first_row = X[0]
+    to_x: Callable[[Row], Features]
     if isinstance(first_row, str):
-
-        def handle_features(x):
-            return x.tolist() if isinstance(x, np.ndarray) else x
+        to_x = typing.cast("Callable[[Row], Features]", _passthrough)
 
     elif not _is_feature_row(first_row):
         raise ValueError(
@@ -108,34 +124,32 @@ def iter_array(
         )
 
     else:
-        feature_names = list(range(len(first_row))) if feature_names is None else feature_names
+        to_x = _labeler(list(range(len(first_row))) if feature_names is None else feature_names)
 
-        def handle_features(x):
-            return dict(zip(feature_names, x.tolist() if isinstance(x, np.ndarray) else x))
-
-    multioutput = y is not None and np.ndim(y[0]) > 0
-    if multioutput and target_names is None:
-        target_names = list(range(len(y[0])))  # type: ignore
+    output_names: Sequence[base.typing.FeatureName] | None = None
+    if y is not None and np.ndim(y[0]) > 0:
+        output_names = list(range(len(y[0]))) if target_names is None else target_names
 
     rng = random.Random(seed)
-    if shuffle:
-        order = rng.sample(range(n_rows), k=n_rows)
-        rows = _take(X, order)
-        targets = None if y is None else _take(y, order)
-    else:
-        rows, targets = X, y
-
+    order = rng.sample(range(n_rows), k=n_rows) if shuffle else None
+    rows = X if order is None else _take(X, order)
     if isinstance(rows, np.ndarray) and rows.dtype.kind == "U":
         rows = rows.tolist()
 
-    if multioutput:
-        tolist = operator.methodcaller("tolist")
-        outputs = map(tolist, targets) if isinstance(y[0], np.ndarray) else targets  # type: ignore
-        for xi, yi in zip(rows, outputs):  # type: ignore
-            yield handle_features(xi), dict(zip(target_names, yi))  # type: ignore
+    if y is None:
+        for row in rows:
+            yield to_x(row), None
+        return
 
-    else:
+    targets = y if order is None else _take(y, order)
+    if output_names is None:
         if isinstance(targets, np.ndarray):
             targets = targets.tolist()
-        for xi, yi in zip(rows, itertools.repeat(None) if targets is None else targets):
-            yield handle_features(xi), yi
+        for row, target in zip(rows, targets):
+            yield to_x(row), target
+
+    else:
+        tolist = operator.methodcaller("tolist")
+        target_rows = map(tolist, targets) if isinstance(y[0], np.ndarray) else targets
+        for row, outputs in zip(rows, target_rows):
+            yield to_x(row), dict(zip(output_names, outputs))
