@@ -90,6 +90,10 @@ def iter_array(
         Indicates whether or not to shuffle the input arrays before iterating over them.
     seed
         Random seed used for shuffling the data.
+    chunk_size
+        Number of rows converted at a time to native Python values. Only applies to 1D `numpy`
+        arrays, i.e. texts and single-output targets. A larger value uses more memory while
+        iterating.
 
     Examples
     --------
