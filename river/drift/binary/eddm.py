@@ -36,7 +36,7 @@ class EDDM(base.BinaryDriftAndWarningDetector):
 
     - 0: Correct, $y=y'$
 
-    - 1: Error, $y \\neq y'$
+    - 1: Error, $y \neq y'$
 
     Parameters
     ----------
