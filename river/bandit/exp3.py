@@ -9,12 +9,12 @@ from river import bandit
 
 
 class Exp3(bandit.base.Policy):
-    """Exp3 bandit policy.
+    r"""Exp3 bandit policy.
 
     This policy works by maintaining a weight for each arm. These weights are used to randomly
     decide which arm to pull. The weights are increased or decreased, depending on the reward. An
-    egalitarianism factor $\\gamma \\in [0, 1]$ is included, to tune the desire to pick an arm
-    uniformly at random. That is, if $\\gamma = 1$, the arms are picked uniformly at random.
+    egalitarianism factor $\gamma \in [0, 1]$ is included, to tune the desire to pick an arm
+    uniformly at random. That is, if $\gamma = 1$, the arms are picked uniformly at random.
 
     Parameters
     ----------

@@ -137,7 +137,7 @@ class RegressionLoss(Loss):
 
 
 class Absolute(RegressionLoss):
-    """Absolute loss, also known as the mean absolute error or L1 loss.
+    r"""Absolute loss, also known as the mean absolute error or L1 loss.
 
     Mathematically, it is defined as
 
@@ -145,7 +145,7 @@ class Absolute(RegressionLoss):
 
     Its gradient w.r.t. to $p_i$ is
 
-    $$\\frac{\\partial L}{\\partial p_i} = sgn(p_i - y_i)$$
+    $$\frac{\partial L}{\partial p_i} = sgn(p_i - y_i)$$
 
     Examples
     --------
@@ -280,12 +280,12 @@ class Hinge(BinaryLoss):
     Its gradient w.r.t. to $p_i$ is
 
     $$
-    \\frac{\\partial L}{\\partial y_i} = \\left\{
-    \\begin{array}{ll}
-        \\ 0  &   p_iy_i \geqslant 1  \\\\
-        \\ - y_i & p_iy_i < 1
-    \\end{array}
-    \\right.
+    \frac{\partial L}{\partial y_i} = \left\{
+    \begin{array}{ll}
+        \ 0     & p_iy_i \geqslant 1  \\
+        \ - y_i & p_iy_i < 1
+    \end{array}
+    \right.
     $$
 
     Parameters
@@ -474,7 +474,7 @@ class Quantile(RegressionLoss):
 
 
 class Squared(RegressionLoss):
-    """Squared loss, also known as the L2 loss.
+    r"""Squared loss, also known as the L2 loss.
 
     Mathematically, it is defined as
 
@@ -482,7 +482,7 @@ class Squared(RegressionLoss):
 
     Its gradient w.r.t. to $p_i$ is
 
-    $$\\frac{\\partial L}{\\partial p_i} = 2 (p_i - y_i)$$
+    $$\frac{\partial L}{\partial p_i} = 2 (p_i - y_i)$$
 
     One thing to note is that this convention is consistent with Vowpal Wabbit and PyTorch, but
     not with scikit-learn. Indeed, scikit-learn divides the loss by 2, making the 2 disappear in
@@ -606,17 +606,17 @@ class BinaryFocalLoss(BinaryLoss):
 
 
 class Poisson(RegressionLoss):
-    """Poisson loss.
+    r"""Poisson loss.
 
     The Poisson loss is usually more suited for regression with count data than the squared loss.
 
     Mathematically, it is defined as
 
-    $$L = exp(p_i) - y_i \\times p_i$$
+    $$L = exp(p_i) - y_i \times p_i$$
 
     Its gradient w.r.t. to $p_i$ is
 
-    $$\\frac{\\partial L}{\\partial p_i} = exp(p_i) - y_i$$
+    $$\frac{\partial L}{\partial p_i} = exp(p_i) - y_i$$
 
     """
 

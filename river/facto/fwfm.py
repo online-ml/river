@@ -137,14 +137,14 @@ class FwFM(BaseFM):
 
 
 class FwFMRegressor(FwFM, base.Regressor):
-    """Field-weighted Factorization Machine for regression.
+    r"""Field-weighted Factorization Machine for regression.
 
     The model equation is defined as:
 
-    $$\\hat{y}(x) = w_{0} + \\sum_{j=1}^{p} w_{j} x_{j}  + \\sum_{j=1}^{p} \\sum_{j'=j+1}^{p} r_{f_j, f_{j'}} \\langle \\mathbf{v}_j, \\mathbf{v}_{j'} \\rangle x_{j} x_{j'}$$
+    $$\hat{y}(x) = w_{0} + \sum_{j=1}^{p} w_{j} x_{j}  + \sum_{j=1}^{p} \sum_{j'=j+1}^{p} r_{f_j, f_{j'}} \langle \mathbf{v}_j, \mathbf{v}_{j'} \rangle x_{j} x_{j'}$$
 
-    Where $f_j$ and $f_{j'}$ are $j$ and $j'$ fields, respectively, and $\\mathbf{v}_j$ and
-    $\\mathbf{v}_{j'}$ are $j$ and $j'$ latent vectors, respectively.
+    Where $f_j$ and $f_{j'}$ are $j$ and $j'$ fields, respectively, and $\mathbf{v}_j$ and
+    $\mathbf{v}_{j'}$ are $j$ and $j'$ latent vectors, respectively.
 
     For more efficiency, this model automatically one-hot encodes strings features considering them
     as categorical variables. Field names are inferred from feature names by taking everything
@@ -285,14 +285,14 @@ class FwFMRegressor(FwFM, base.Regressor):
 
 
 class FwFMClassifier(FwFM, base.Classifier):
-    """Field-weighted Factorization Machine for binary classification.
+    r"""Field-weighted Factorization Machine for binary classification.
 
     The model equation is defined as:
 
-    $$\\hat{y}(x) = w_{0} + \\sum_{j=1}^{p} w_{j} x_{j}  + \\sum_{j=1}^{p} \\sum_{j'=j+1}^{p} r_{f_j, f_{j'}} \\langle \\mathbf{v}_j, \\mathbf{v}_{j'} \\rangle x_{j} x_{j'}$$
+    $$\hat{y}(x) = w_{0} + \sum_{j=1}^{p} w_{j} x_{j}  + \sum_{j=1}^{p} \sum_{j'=j+1}^{p} r_{f_j, f_{j'}} \langle \mathbf{v}_j, \mathbf{v}_{j'} \rangle x_{j} x_{j'}$$
 
-    Where $f_j$ and $f_{j'}$ are $j$ and $j'$ fields, respectively, and $\\mathbf{v}_j$ and
-    $\\mathbf{v}_{j'}$ are $j$ and $j'$ latent vectors, respectively.
+    Where $f_j$ and $f_{j'}$ are $j$ and $j'$ fields, respectively, and $\mathbf{v}_j$ and
+    $\mathbf{v}_{j'}$ are $j$ and $j'$ latent vectors, respectively.
 
     For more efficiency, this model automatically one-hot encodes strings features considering them
     as categorical variables. Field names are inferred from feature names by taking everything

@@ -8,7 +8,7 @@ from river import base
 
 
 class HeavyHitters(base.Base):
-    """Find the Heavy Hitters using the Lossy Count with Forgetting factor algorithm[^1].
+    r"""Find the Heavy Hitters using the Lossy Count with Forgetting factor algorithm[^1].
 
     Keep track of the most frequent item(set)s in a data stream and apply a forgetting factor to
     discard previous frequent items that do not often appear anymore. This is an approximation
@@ -34,7 +34,7 @@ class HeavyHitters(base.Base):
         observations seen so far are outputted.
     epsilon
         Error parameter to control the accuracy-memory tradeoff. The value of `epsilon` must be
-        in $(0, 1]$ and typically `epsilon` $\\ll$ `support`. The smaller the `epsilon`, the more
+        in $(0, 1]$ and typically `epsilon` $\ll$ `support`. The smaller the `epsilon`, the more
         accurate the estimates will be, but the count sketch will have an increased memory
         footprint.
     fading_factor

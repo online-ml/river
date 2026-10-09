@@ -9,14 +9,14 @@ from river import datasets
 
 
 class Friedman(datasets.base.SyntheticDataset):
-    """Friedman synthetic dataset.
+    r"""Friedman synthetic dataset.
 
     Each observation is composed of 10 features. Each feature value is sampled uniformly in [0, 1].
     The target is defined by the following function:
 
-    $$y = 10 sin(\\pi x_0 x_1) + 20 (x_2 - 0.5)^2 + 10 x_3 + 5 x_4 + \\epsilon$$
+    $$y = 10 sin(\pi x_0 x_1) + 20 (x_2 - 0.5)^2 + 10 x_3 + 5 x_4 + \epsilon$$
 
-    In the last expression, $\\epsilon \\sim \\mathcal{N}(0, 1)$, is the noise. Therefore,
+    In the last expression, $\epsilon \sim \mathcal{N}(0, 1)$, is the noise. Therefore,
     only the first 5 features are relevant.
 
     Parameters

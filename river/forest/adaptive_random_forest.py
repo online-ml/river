@@ -724,7 +724,7 @@ class ARFClassifier(BaseForest, base.Classifier):
 
 
 class ARFRegressor(BaseForest, base.Regressor):
-    """Adaptive Random Forest regressor.
+    r"""Adaptive Random Forest regressor.
 
     The 3 most important aspects of Adaptive Random Forest [^1] are:
 
@@ -742,7 +742,7 @@ class ARFRegressor(BaseForest, base.Regressor):
     predictions and check for concept drifts. The deviations of the predictions
     to the target are monitored and normalized in the [0, 1] range to fulfill ADWIN's
     requirements. We assume that the data subjected to the normalization follows
-    a normal distribution, and thus, lies within the interval of the mean $\\pm3\\sigma$.
+    a normal distribution, and thus, lies within the interval of the mean $\pm3\sigma$.
 
     Parameters
     ----------

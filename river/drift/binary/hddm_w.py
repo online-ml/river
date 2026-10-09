@@ -7,7 +7,7 @@ from river import base, stats
 
 
 class HDDMW(base.BinaryDriftAndWarningDetector):
-    """Drift Detection Method based on Hoeffding's bounds with moving weighted average-test.
+    r"""Drift Detection Method based on Hoeffding's bounds with moving weighted average-test.
 
     HDDMW is an online drift detection method based on McDiarmid's bounds. HDDMW uses the
     Exponentially Weighted Moving Average (EWMA) statistic as estimator.
@@ -20,7 +20,7 @@ class HDDMW(base.BinaryDriftAndWarningDetector):
 
     - 0: Correct, $y=y'$
 
-     - 1: Error, $y \\neq y'$
+     - 1: Error, $y \neq y'$
 
     *Implementation based on MOA.*
 

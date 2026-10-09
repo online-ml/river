@@ -117,14 +117,14 @@ class FFM(BaseFM):
 
 
 class FFMRegressor(FFM, base.Regressor):
-    """Field-aware Factorization Machine for regression.
+    r"""Field-aware Factorization Machine for regression.
 
     The model equation is defined by:
 
-    $$\\hat{y}(x) = w_{0} + \\sum_{j=1}^{p} w_{j} x_{j}  + \\sum_{j=1}^{p} \\sum_{j'=j+1}^{p} \\langle \\mathbf{v}_{j, f_{j'}}, \\mathbf{v}_{j', f_j} \\rangle x_{j} x_{j'}$$
+    $$\hat{y}(x) = w_{0} + \sum_{j=1}^{p} w_{j} x_{j}  + \sum_{j=1}^{p} \sum_{j'=j+1}^{p} \langle \mathbf{v}_{j, f_{j'}}, \mathbf{v}_{j', f_j} \rangle x_{j} x_{j'}$$
 
-    Where $\\mathbf{v}_{j, f_{j'}}$ is the latent vector corresponding to $j$ feature for $f_{j'}$
-    field, and $\\mathbf{v}_{j', f_j}$ is the latent vector corresponding to $j'$ feature for $f_j$
+    Where $\mathbf{v}_{j, f_{j'}}$ is the latent vector corresponding to $j$ feature for $f_{j'}$
+    field, and $\mathbf{v}_{j', f_j}$ is the latent vector corresponding to $j'$ feature for $f_j$
     field.
 
     For more efficiency, this model automatically one-hot encodes strings features considering them
@@ -263,14 +263,14 @@ class FFMRegressor(FFM, base.Regressor):
 
 
 class FFMClassifier(FFM, base.Classifier):
-    """Field-aware Factorization Machine for binary classification.
+    r"""Field-aware Factorization Machine for binary classification.
 
     The model equation is defined by:
 
-    $$\\hat{y}(x) = w_{0} + \\sum_{j=1}^{p} w_{j} x_{j}  + \\sum_{j=1}^{p} \\sum_{j'=j+1}^{p} \\langle \\mathbf{v}_{j, f_{j'}}, \\mathbf{v}_{j', f_j} \\rangle x_{j} x_{j'}$$
+    $$\hat{y}(x) = w_{0} + \sum_{j=1}^{p} w_{j} x_{j}  + \sum_{j=1}^{p} \sum_{j'=j+1}^{p} \langle \mathbf{v}_{j, f_{j'}}, \mathbf{v}_{j', f_j} \rangle x_{j} x_{j'}$$
 
-    Where $\\mathbf{v}_{j, f_{j'}}$ is the latent vector corresponding to $j$ feature for $f_{j'}$
-    field, and $\\mathbf{v}_{j', f_j}$ is the latent vector corresponding to $j'$ feature for $f_j$
+    Where $\mathbf{v}_{j, f_{j'}}$ is the latent vector corresponding to $j$ feature for $f_{j'}$
+    field, and $\mathbf{v}_{j', f_j}$ is the latent vector corresponding to $j'$ feature for $f_j$
     field.
 
     For more efficiency, this model automatically one-hot encodes strings features considering them

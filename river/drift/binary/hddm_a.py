@@ -6,7 +6,7 @@ from river import base, stats
 
 
 class HDDMA(base.BinaryDriftAndWarningDetector):
-    """Drift Detection Method based on Hoeffding's bounds with moving average-test.
+    r"""Drift Detection Method based on Hoeffding's bounds with moving average-test.
 
     HDDMA is a drift detection method based on the Hoeffding's inequality which uses
     the input average as estimator.
@@ -19,7 +19,7 @@ class HDDMA(base.BinaryDriftAndWarningDetector):
 
     - 0: Correct, $y=y'$
 
-    - 1: Error, $y \\neq y'$
+    - 1: Error, $y \neq y'$
 
     *Implementation based on MOA.*
 

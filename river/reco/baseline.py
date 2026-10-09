@@ -10,11 +10,11 @@ __all__ = ["Baseline"]
 
 
 class Baseline(reco.base.Ranker):
-    """Baseline for recommender systems.
+    r"""Baseline for recommender systems.
 
     A first-order approximation of the bias involved in target. The model equation is defined as:
 
-    $$\\hat{y}(x) = \\bar{y} + bu_{u} + bi_{i}$$
+    $$\hat{y}(x) = \bar{y} + bu_{u} + bi_{i}$$
 
     Where $bu_{u}$ and $bi_{i}$ are respectively the user and item biases.
 

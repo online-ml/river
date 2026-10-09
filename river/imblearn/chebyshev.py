@@ -9,17 +9,17 @@ from river import base, linear_model, stats
 
 
 class ChebyshevUnderSampler(base.Wrapper[base.Regressor], base.Regressor):
-    """Under-sampling for imbalanced regression using Chebyshev's inequality.
+    r"""Under-sampling for imbalanced regression using Chebyshev's inequality.
 
     Chebyshev's inequality can be used to define the probability of target observations
     being frequent values (w.r.t. the distribution mean).
 
-    Let $Y$ be a random variable with finite expected value $\\overline{y}$ and non-zero variance
-    $\\sigma^2$. For any real number $t > 0$, the Chebyshev's inequality states that, for a wide class of
-    unimodal probability distributions: $Pr(|y-\\overline{y}| \\ge t\\sigma) \\le \\dfrac{1}{t^2}$.
+    Let $Y$ be a random variable with finite expected value $\overline{y}$ and non-zero variance
+    $\sigma^2$. For any real number $t > 0$, the Chebyshev's inequality states that, for a wide class of
+    unimodal probability distributions: $Pr(|y-\overline{y}| \ge t\sigma) \le \dfrac{1}{t^2}$.
 
-    Taking $t=\\dfrac{|y-\\overline{y}|}{\\sigma}$, and assuming $t > 1$, the Chebyshev’s inequality
-    for an observation $y$ becomes: $P(|y - \\overline{y}|=t) = \\dfrac{\\sigma^2}{|y-\\overline{y}|}$.
+    Taking $t=\dfrac{|y-\overline{y}|}{\sigma}$, and assuming $t > 1$, the Chebyshev’s inequality
+    for an observation $y$ becomes: $P(|y - \overline{y}|=t) = \dfrac{\sigma^2}{|y-\overline{y}|}$.
     The reciprocal of this probability is used for under-sampling[^1] the most frequent cases. Extreme
     valued or rare cases have higher probabilities of selection, whereas the most frequent cases are
     likely to be discarded. Still, frequent cases have a small chance of being selected (controlled via
@@ -125,21 +125,21 @@ class ChebyshevUnderSampler(base.Wrapper[base.Regressor], base.Regressor):
 
 
 class ChebyshevOverSampler(base.Wrapper[base.Regressor], base.Regressor):
-    """Over-sampling for imbalanced regression using Chebyshev's inequality.
+    r"""Over-sampling for imbalanced regression using Chebyshev's inequality.
 
     Chebyshev's inequality can be used to define the probability of target observations
     being frequent values (w.r.t. the distribution mean).
 
-    Let $Y$ be a random variable with finite expected value $\\overline{y}$ and non-zero variance
-    $\\sigma^2$. For any real number $t > 0$, the Chebyshev's inequality states that, for a wide class of
-    unimodal probability distributions: $Pr(|y-\\overline{y}| \\ge t\\sigma) \\le \\dfrac{1}{t^2}$.
+    Let $Y$ be a random variable with finite expected value $\overline{y}$ and non-zero variance
+    $\sigma^2$. For any real number $t > 0$, the Chebyshev's inequality states that, for a wide class of
+    unimodal probability distributions: $Pr(|y-\overline{y}| \ge t\sigma) \le \dfrac{1}{t^2}$.
 
-    Taking $t=\\dfrac{|y-\\overline{y}|}{\\sigma}$, and assuming $t > 1$, the Chebyshev’s inequality
-    for an observation $y$ becomes: $P(|y - \\overline{y}|=t) = \\dfrac{\\sigma^2}{|y-\\overline{y}|}$.
+    Taking $t=\dfrac{|y-\overline{y}|}{\sigma}$, and assuming $t > 1$, the Chebyshev’s inequality
+    for an observation $y$ becomes: $P(|y - \overline{y}|=t) = \dfrac{\sigma^2}{|y-\overline{y}|}$.
 
-    Alternatively, one can use $t$ directly to estimate a frequency weight $\\kappa = \\lceil t\\rceil$
+    Alternatively, one can use $t$ directly to estimate a frequency weight $\kappa = \lceil t\rceil$
     and define an over-sampling strategy for extreme and rare target values[^1]. Each incoming instance is
-    used $\\kappa$ times to update the underlying regressor. Frequent target values contribute only once
+    used $\kappa$ times to update the underlying regressor. Frequent target values contribute only once
     to the underlying regressor, whereas rares cases are used multiple times for training.
 
     Parameters

@@ -8,7 +8,7 @@ from river import stats
 
 
 class Var(stats.base.Univariate):
-    """Running variance using Welford's algorithm.
+    r"""Running variance using Welford's algorithm.
 
     Parameters
     ----------
@@ -24,7 +24,7 @@ class Var(stats.base.Univariate):
     Notes
     -----
     The outcomes of the incremental and parallel updates are consistent with numpy's
-    batch processing when $\\text{ddof} \\le 1$.
+    batch processing when $\text{ddof} \le 1$.
 
     Examples
     --------

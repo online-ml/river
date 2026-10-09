@@ -432,7 +432,7 @@ class SWINN(BaseNN):
     def search(
         self, item: typing.Any, n_neighbors: int, epsilon: float = 0.1, **kwargs: typing.Any
     ) -> tuple[list[typing.Any], list[float]]:
-        """Search the underlying nearest neighbor graph given a query item.
+        r"""Search the underlying nearest neighbor graph given a query item.
 
         In case not enough samples were observed, i.e., the number of stored samples is smaller than
         `warm_up`, then the search switches to a brute force strategy.
@@ -447,7 +447,7 @@ class SWINN(BaseNN):
             Distance bound to aid in avoiding local minima while traversing the search graph. Let $d_k$
             be the distance of the query item to current $k$-th nearest neighbor. At any given
             moment, any point whose distance to the query item is smaller than or equal to
-            $(1 + \\epsilon) * d_k$ is kept as a potential path. After every addition to the heap of
+            $(1 + \epsilon) * d_k$ is kept as a potential path. After every addition to the heap of
             candidate nodes, $d_k$ is updated.
         kwargs
             Not used in this implementation.
@@ -465,7 +465,7 @@ class SWINN(BaseNN):
         return [n.item for n in neighbors], dists
 
     def connectivity(self) -> list[int]:
-        """Get a list with the size of each connected component in the search graph.
+        r"""Get a list with the size of each connected component in the search graph.
 
         This metric provides an overview of reachability in the search index by using Kruskal's
         algorithm to build a forest of connected components.
@@ -474,7 +474,7 @@ class SWINN(BaseNN):
         a list containing a single number which is equal to `maxlen`. If that is not the case, not
         every node in the search graph can be reached from any given starting point. You may want to try
         increasing `graph_k` to improve connectivity. However, keep in mind the following aspects:
-        1) computing this metric is a costly operation ($O(E\\log V)$), where $E$ and $V$ are, respectively,
+        1) computing this metric is a costly operation ($O(E\log V)$), where $E$ and $V$ are, respectively,
         the number of edges and vertices in the search graph; 2) often, connectivity comes at the price of
         increased computational costs. Tweaking the `sample_rate` might help in such situations. The best
         possible scenario is to decrease the value of `graph_k` while keeping a single connected
