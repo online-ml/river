@@ -146,7 +146,7 @@ class BinaryMetric(ClassificationMetric):
         w=1.0,
     ) -> None:
         if self._requires_labels:
-            y_pred = y_pred == self.pos_val
+            return super().update(y_true, y_pred, w)
         return super().update(y_true == self.pos_val, y_pred, w)
 
     def revert(
@@ -156,7 +156,7 @@ class BinaryMetric(ClassificationMetric):
         w=1.0,
     ) -> None:
         if self._requires_labels:
-            y_pred = y_pred == self.pos_val
+            return super().revert(y_true, y_pred, w)
         return super().revert(y_true == self.pos_val, y_pred, w)
 
 

@@ -26,6 +26,10 @@
 - `stream.cache`, `stream.iter_csv`, and `stream.iter_sql` are now clean under strict mypy. `sqlalchemy` is type-checked rather than ignored, so the `query` and `conn` arguments of `stream.iter_sql` are checked against the SQLAlchemy 2.0 types.
 - `stream.simulate_qa` is now clean under strict mypy. Its overloads type the yields: `(i, x, y)` for a dataset of `(x, y)` pairs, with the kwargs riding along for `(x, y, kwargs)` triples. Type checkers now also accept datasets keyed by plain `str`.
 
+## metrics
+
+- `Precision`, `Recall`, `FBeta`, `F1`, `Jaccard`, and `MCC` now score the class named by `pos_val` when that value is not `True` or `1`. `ROCAUC` reads the probability of `pos_val` from a prediction dictionary.
+
 ## preprocessing
 
 - `preprocessing.Normalizer` now handles zero vectors without raising a `ZeroDivisionError`. A zero vector is returned unchanged instead.
