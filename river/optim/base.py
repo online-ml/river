@@ -206,6 +206,6 @@ class Loss(base.Base, abc.ABC):
 
         References
         ----------
-        [^1]: [Wikipedia section on link and mean function](https://www.wikiwand.com/en/Generalized_linear_model#/Link_function)
+        [^1]: [Wikipedia section on link and mean function](https://en.wikipedia.org/wiki/Generalized_linear_model#Link_function)
 
         """

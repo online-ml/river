@@ -50,7 +50,7 @@ class FeatureHasher(base.Transformer):
 
     References
     ----------
-    [^1]: [Wikipedia article on feature vectorization using the hashing trick](https://www.wikiwand.com/en/Feature_hashing#/Feature_vectorization_using_hashing_trick)
+    [^1]: [Wikipedia article on feature vectorization using the hashing trick](https://en.wikipedia.org/wiki/Feature_hashing#Algorithms)
     [^2]: [Weinberger et al. (2009), Feature Hashing for Large Scale Multitask Learning](https://arxiv.org/abs/0902.2206)
 
     """
