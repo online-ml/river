@@ -25,7 +25,7 @@
       
       
       <link rel="icon" href="../../img/favicon.ico">
-      <meta name="generator" content="zensical-0.0.68">
+      <meta name="generator" content="zensical-0.0.69">
     
     
       
@@ -1551,7 +1551,7 @@
 
 <h1 id="mini-batching">Mini-batching<a class="headerlink" href="#mini-batching" title="Permanent link">&para;</a></h1>
 <p>In its purest form, online machine learning encompasses models which learn with one sample at a time. This is the design which is used in River.</p>
-<p>The main downside of single-instance processing is that it doesn't scale to big data, at least not in the sense of traditional batch learning. Indeed, processing one sample at a time means that we are unable to fully take advantage of <a href="https://www.wikiwand.com/en/Vectorization">vectorisation</a> and other computational tools that are taken for granted in batch learning. On top of this, processing a large dataset in River essentially involves a Python <code>for</code> loop, which might be too slow for some usecases. However, this doesn't mean that River is slow. In fact, for processing a single instance, River is actually a couple of orders of magnitude faster than libraries such as scikit-learn, PyTorch, and Tensorflow. The reason why is because River is designed from the ground up to process a single instance, whereas the majority of other libraries choose to care about batches of data. Both approaches offer different compromises, and the best choice depends on your usecase.</p>
+<p>The main downside of single-instance processing is that it doesn't scale to big data, at least not in the sense of traditional batch learning. Indeed, processing one sample at a time means that we are unable to fully take advantage of <a href="https://en.wikipedia.org/wiki/Vectorization">vectorisation</a> and other computational tools that are taken for granted in batch learning. On top of this, processing a large dataset in River essentially involves a Python <code>for</code> loop, which might be too slow for some usecases. However, this doesn't mean that River is slow. In fact, for processing a single instance, River is actually a couple of orders of magnitude faster than libraries such as scikit-learn, PyTorch, and Tensorflow. The reason why is because River is designed from the ground up to process a single instance, whereas the majority of other libraries choose to care about batches of data. Both approaches offer different compromises, and the best choice depends on your usecase.</p>
 <p>In order to propose the best of both worlds, River offers some limited support for mini-batch learning. Some of River's estimators implement <code>*_many</code> methods on top of their <code>*_one</code> counterparts. For instance, <a href="../../api/preprocessing/StandardScaler"><code>preprocessing.StandardScaler</code></a> has a <code>learn_many</code> method as well as a <code>transform_many</code> method, in addition to <code>learn_one</code> and <code>transform_one</code>. Each mini-batch method takes as input a <code>pandas.DataFrame</code>. Supervised estimators also take as input a <code>pandas.Series</code> of target values. We choose to use <code>pandas.DataFrames</code> over <code>numpy.ndarrays</code> because of the simple fact that the former allows us to name each feature. This in turn allows us to offer a uniform interface for both single instance and mini-batch learning.</p>
 <p>As an example, we will build a simple pipeline that scales the data and trains a logistic regression. Indeed, the <a href="../../api/compose/Pipeline"><code>compose.Pipeline</code></a> class can be applied to mini-batches, as long as each step is able to do so.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">river</span><span class="w"> </span><span class="kn">import</span> <span class="n">compose</span>
@@ -1739,7 +1739,7 @@ StandardScaler
       <script id="__config" type="application/json">{"annotate":null,"base":"../..","features":["content.code.copy","navigation.tabs","navigation.instant","navigation.indexes","navigation.prune"],"redirect":null,"search":"../../assets/javascripts/workers/search.7d14d953.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","clipboard.error":"Could not copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":{"provider":"mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.3c842f4c.min.js"></script>
+      <script src="../../assets/javascripts/bundle.8b1c90bd.min.js"></script>
       
         <script src="../../javascripts/config.js"></script>
       

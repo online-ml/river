@@ -25,7 +25,7 @@
       
       
       <link rel="icon" href="../../img/favicon.ico">
-      <meta name="generator" content="zensical-0.0.68">
+      <meta name="generator" content="zensical-0.0.69">
     
     
       
@@ -1724,7 +1724,7 @@
 <h2 id="a-quick-overview-of-batch-learning">A quick overview of batch learning<a class="headerlink" href="#a-quick-overview-of-batch-learning" title="Permanent link">&para;</a></h2>
 <p>If you've already delved into machine learning, then you shouldn't have any difficulty in getting to use incremental learning. If you are somewhat new to machine learning, then do not worry! The point of this notebook in particular is to introduce simple notions. We'll also start to show how River fits in and explain how to use it.</p>
 <p>The whole point of machine learning is to <em>learn from data</em>. In <em>supervised learning</em> you want to learn how to predict a target <span class="arithmatex">\(y\)</span> given a set of features <span class="arithmatex">\(X\)</span>. Meanwhile in an unsupervised learning there is no target, and the goal is rather to identify patterns and trends in the features <span class="arithmatex">\(X\)</span>. At this point most people tend to imagine <span class="arithmatex">\(X\)</span> as a somewhat big table where each row is an observation and each column is a feature, and they would be quite right. Learning from tabular data is part of what's called <em>batch learning</em>, which basically that all of the data is available to our learning algorithm at once. Multiple libraries have been created to handle the batch learning regime, with one of the most prominent being Python's <a href="https://scikit-learn.org/stable/">scikit-learn</a>.</p>
-<p>As a simple example of batch learning let's say we want to learn to predict if a women has breast cancer or not. We'll use the <a href="https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_breast_cancer.html">breast cancer dataset available with scikit-learn</a>. We'll learn to map a set of features to a binary decision using a <a href="https://www.wikiwand.com/en/Logistic_regression">logistic regression</a>. Like many other models based on numerical weights, logistic regression is sensitive to the scale of the features. Rescaling the data so that each feature has mean 0 and variance 1 is generally considered good practice. We can apply the rescaling and fit the logistic regression sequentially in an elegant manner using a <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html">Pipeline</a>. To measure the performance of the model we'll evaluate the average <a href="https://www.wikiwand.com/en/Receiver_operating_characteristic">ROC AUC score</a> using a 5 fold <a href="https://www.wikiwand.com/en/Cross-validation_(statistics)">cross-validation</a>. </p>
+<p>As a simple example of batch learning let's say we want to learn to predict if a women has breast cancer or not. We'll use the <a href="https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_breast_cancer.html">breast cancer dataset available with scikit-learn</a>. We'll learn to map a set of features to a binary decision using a <a href="https://en.wikipedia.org/wiki/Logistic_regression">logistic regression</a>. Like many other models based on numerical weights, logistic regression is sensitive to the scale of the features. Rescaling the data so that each feature has mean 0 and variance 1 is generally considered good practice. We can apply the rescaling and fit the logistic regression sequentially in an elegant manner using a <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html">Pipeline</a>. To measure the performance of the model we'll evaluate the average <a href="https://en.wikipedia.org/wiki/Receiver_operating_characteristic">ROC AUC score</a> using a 5 fold <a href="https://en.wikipedia.org/wiki/Cross-validation_(statistics)">cross-validation</a>. </p>
 <div class="language-python highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">sklearn</span><span class="w"> </span><span class="kn">import</span> <span class="n">datasets</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">sklearn</span><span class="w"> </span><span class="kn">import</span> <span class="n">linear_model</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">sklearn</span><span class="w"> </span><span class="kn">import</span> <span class="n">metrics</span>
@@ -1930,7 +1930,7 @@ True variance: 123625.903
 <h2 id="going-further">Going further<a class="headerlink" href="#going-further" title="Permanent link">&para;</a></h2>
 <p>Here a few resources if you want to do some reading:</p>
 <ul>
-<li><a href="https://www.wikiwand.com/en/Online_machine_learning">Online learning -- Wikipedia</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Online_machine_learning">Online learning -- Wikipedia</a></li>
 <li><a href="https://medium.com/value-stream-design/online-machine-learning-515556ff72c5">What is online machine learning? -- Max Pagels</a></li>
 <li><a href="http://www-bcf.usc.edu/~haipengl/courses/CSCI699/">Introduction to Online Learning -- USC course</a></li>
 <li><a href="http://www.mit.edu/~rakhlin/6.883/">Online Methods in Machine Learning -- MIT course</a></li>
@@ -2024,7 +2024,7 @@ True variance: 123625.903
       <script id="__config" type="application/json">{"annotate":null,"base":"../..","features":["content.code.copy","navigation.tabs","navigation.instant","navigation.indexes","navigation.prune"],"redirect":null,"search":"../../assets/javascripts/workers/search.7d14d953.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","clipboard.error":"Could not copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":{"provider":"mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.3c842f4c.min.js"></script>
+      <script src="../../assets/javascripts/bundle.8b1c90bd.min.js"></script>
       
         <script src="../../javascripts/config.js"></script>
       
