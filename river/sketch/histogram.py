@@ -21,7 +21,7 @@ class Bin:
 
     __slots__ = ["left", "right", "count"]
 
-    def __init__(self, left: float, right: float, count: float):
+    def __init__(self, left: float, right: float, count: int):
         self.left = left
         self.right = right
         self.count = count
@@ -342,11 +342,11 @@ class Histogram(collections.UserList[Bin], base.Base):
         ...     h2.append(b)
 
         >>> h1 + h2
-        [0.00000, 1.00000]: 2.0
-        [1.00000, 2.00000]: 6.0
-        [2.00000, 3.00000]: 4.0
-        [3.00000, 4.00000]: 5.0
-        [4.00000, 5.00000]: 9.0
+        [0.00000, 1.00000]: 2
+        [1.00000, 2.00000]: 6
+        [2.00000, 3.00000]: 4
+        [3.00000, 4.00000]: 5
+        [4.00000, 5.00000]: 9
 
         Counts are conserved, including for point-valued histograms:
 
@@ -359,7 +359,7 @@ class Histogram(collections.UserList[Bin], base.Base):
         >>> merged.n
         10
         >>> sum(bin.count for bin in merged)
-        10.0
+        10
         >>> merged.cdf(10)
         1.0
 
@@ -377,7 +377,7 @@ class Histogram(collections.UserList[Bin], base.Base):
             merged.append(Bin(edges[0], edges[0], sum(b.count for b in bins)))
             return merged
 
-        tiles = [Bin(lo, hi, 0.0) for lo, hi in zip(edges, edges[1:])]
+        tiles = [Bin(lo, hi, 0) for lo, hi in zip(edges, edges[1:])]
 
         for b in bins:
             if b.left == b.right:
