@@ -30,7 +30,7 @@ classifiers = [
 
 [project.optional-dependencies]
 pandas = [
-    "pandas>=2.2,<3",
+    "pandas>=2.2,<4",
 ]
 
 [project.urls]
@@ -58,7 +58,7 @@ dev = [
     "gymnasium>=0.29.0",
     "altair>=5.0.0",
     "mypy>=1.11.1",
-    "pandas>=2.2,<3",
+    "pandas>=2.2,<4",
     "prek>=0.2",
     "pytest>=9.0.3",
     "ruff>=0.15.8",
