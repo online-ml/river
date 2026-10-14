@@ -389,10 +389,21 @@ class Histogram(collections.UserList[Bin], base.Base):
             else:
                 # Spread the count proportionally over the overlapping tiles.
                 start = bisect.bisect_left(edges, b.left)
+                max_tile = tiles[start]
+                max_coverage = 0.0
+                remainder = b.count  # Keeps track of the amount not yet spread
                 for tile in itertools.islice(tiles, start, None):
                     if tile.left >= b.right:
                         break
-                    tile.count += b.count * coverage_ratio(tile, b)
+                    coverage = b.count * coverage_ratio(tile, b)
+                    if coverage > max_coverage:
+                        max_tile = tile
+                        max_coverage = coverage
+                    # Round the proportion down so as not to get over the original count
+                    tile.count += math.floor(coverage)
+                    remainder -= math.floor(coverage)
+                # Assign the leftover rounding to the tile with the most overlap
+                max_tile.count += remainder
 
         merged.data.extend(tile for tile in tiles if tile.count)
         merged._shrink(k=len(merged) - merged.max_bins)
