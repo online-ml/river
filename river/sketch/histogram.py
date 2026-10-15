@@ -330,6 +330,16 @@ class Histogram(collections.UserList[Bin], base.Base):
         contribute their whole count to a single tile. The result is then shrunk
         back down to ``max_bins``.
 
+        Notes
+        -----
+        Because the counts per bin are integers, it is sometimes not possible to
+        perfectly divide the values from the original bins into the merged ones.
+
+        To preserve the integer nature of the counts, the bins get assigned the
+        rounded-down value of the theoretical proportional spread.
+        Once this is done, to keep the total counts, the remainder of the
+        division is added to the bin with the greatest overlap.
+
         Examples
         --------
 
