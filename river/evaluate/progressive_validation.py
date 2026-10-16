@@ -101,9 +101,9 @@ def _progressive_validation(
 
         return state
 
-    # Fast path: no delay and no moment — the common case.
+    # Fast path: no delay — the common case.
     # Iterates the dataset directly, skipping simulate_qa and the preds dict.
-    if moment is None and delay is None and not active_learning:
+    if delay is None and not active_learning:
         extra: list
         for x, y, *extra in dataset:
             kwargs: dict = extra[0] if extra else {}
