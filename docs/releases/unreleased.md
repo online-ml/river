@@ -22,6 +22,7 @@
 
 - The `sketch` module is now fully type-annotated.
 - `sketch.Counter.__matmul__` (often written as `Counter @ Counter`) now returns a Python integer instead of a NumPy integer. You may need to remove existing NumPy-to-Python conversions (`.item()`) to make it work again.
+- `sketch.Histogram` now consistently has integer counts, event after merging two histograms. It previously could convert values to floating-point after a merge operation.
 
 ## stream
 
