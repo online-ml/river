@@ -3,6 +3,7 @@ from __future__ import annotations
 import functools
 import gc
 import platform
+import tempfile
 import typing
 
 import pytest
@@ -16,7 +17,7 @@ if typing.TYPE_CHECKING:
 
 
 def keyless_function() -> Iterator[int]:
-    """A generator function, i.e. the only thing `Cache.__call__` guesses a key from."""
+    """A generator function, which has a name but is not a key."""
     yield 1
 
 
@@ -71,7 +72,7 @@ DISCOVERY_CASES: dict[str, tuple[list[str], set[str]]] = {
 
 KEYLESS_CASES: dict[str, tuple[typing.Any, type[Exception], str]] = {
     "an-iterable": ([1, 2], ValueError, "No default key could be guessed"),
-    "a-function": (keyless_function, TypeError, "'function' object is not iterable"),
+    "a-function": (keyless_function, ValueError, "No default key could be guessed"),
 }
 
 UNKNOWN_KEY_CASES: dict[str, Callable[[stream.Cache], None]] = {
@@ -196,7 +197,7 @@ def test_cleared_key_is_streamed_from_the_source(tmp_path: Path) -> None:
 
 @pytest.mark.parametrize(
     ("system", "expected"),
-    [("Linux", "/tmp"), ("Darwin", "/tmp"), ("Windows", "C:\\TEMP")],
+    [("Linux", "/tmp"), ("Darwin", "/tmp"), ("Windows", tempfile.gettempdir())],
 )
 def test_default_directory_from_system(
     monkeypatch: pytest.MonkeyPatch, system: str, expected: str
