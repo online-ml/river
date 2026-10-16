@@ -19,30 +19,23 @@ class LeafMajorityClassWithDetector(LeafMajorityClass):
     change_detector
         Change detector that monitors the leaf error rate or class distribution and
         determines when the leaf will split.
-    split_criterion
-        Split criterion used in the tree for updating the change detector if it
-        monitors the class distribution.
     kwargs
         Other parameters passed to the learning node.
     """
 
-    def __init__(self, stats, depth, splitter, change_detector, split_criterion=None, **kwargs):
+    def __init__(self, stats, depth, splitter, change_detector, **kwargs):
         super().__init__(stats, depth, splitter, **kwargs)
         self.change_detector = change_detector
-        # change this in future PR's by accessing the tree parameter in the leaf
-        self.split_criterion = (
-            split_criterion  # if None, the change detector will have binary inputs
-        )
 
     def learn_one(self, x, y, *, w=1, tree=None):
         self.update_stats(y, w)
         if self.is_active():
-            if self.split_criterion is None:
+            if tree.track_error:
                 mc_pred = self.prediction(x)
                 detector_input = max(mc_pred, key=mc_pred.get) != y
                 self.change_detector.update(detector_input)
             else:
-                detector_input = self.split_criterion.current_merit(self.stats)
+                detector_input = tree._change_detector_merit(self.stats)
                 self.change_detector.update(detector_input)
             self.update_splitters(x, y, w, tree.nominal_attributes)
 
@@ -62,25 +55,22 @@ class LeafNaiveBayesWithDetector(LeafMajorityClassWithDetector):
     change_detector
         Change detector that monitors the leaf error rate or class distribution and
         determines when the leaf will split.
-    split_criterion
-        Split criterion used in the tree for updating the change detector if it
-        monitors the class distribution.
     kwargs
         Other parameters passed to the learning node.
     """
 
-    def __init__(self, stats, depth, splitter, change_detector, split_criterion=None, **kwargs):
-        super().__init__(stats, depth, splitter, change_detector, split_criterion, **kwargs)
+    def __init__(self, stats, depth, splitter, change_detector, **kwargs):
+        super().__init__(stats, depth, splitter, change_detector, **kwargs)
 
     def learn_one(self, x, y, *, w=1, tree=None):
         self.update_stats(y, w)
         if self.is_active():
-            if self.split_criterion is None:
+            if tree.track_error:
                 nb_pred = self.prediction(x)
                 detector_input = max(nb_pred, key=nb_pred.get) == y
                 self.change_detector.update(detector_input)
             else:
-                detector_input = self.split_criterion.current_merit(self.stats)
+                detector_input = tree._change_detector_merit(self.stats)
                 self.change_detector.update(detector_input)
             self.update_splitters(x, y, w, tree.nominal_attributes)
 
@@ -119,15 +109,12 @@ class LeafNaiveBayesAdaptiveWithDetector(LeafMajorityClassWithDetector):
     change_detector
         Change detector that monitors the leaf error rate or class distribution and
         determines when the leaf will split.
-    split_criterion
-        Split criterion used in the tree for updating the change detector if it
-        monitors the class distribution.
     kwargs
         Other parameters passed to the learning node.
     """
 
-    def __init__(self, stats, depth, splitter, change_detector, split_criterion=None, **kwargs):
-        super().__init__(stats, depth, splitter, change_detector, split_criterion, **kwargs)
+    def __init__(self, stats, depth, splitter, change_detector, **kwargs):
+        super().__init__(stats, depth, splitter, change_detector, **kwargs)
         self._mc_correct_weight = 0.0
         self._nb_correct_weight = 0.0
 
@@ -162,13 +149,13 @@ class LeafNaiveBayesAdaptiveWithDetector(LeafMajorityClassWithDetector):
 
         self.update_stats(y, w)
         if self.is_active():
-            if self.split_criterion is None:
+            if tree.track_error:
                 if self._nb_correct_weight >= self._mc_correct_weight:
                     self.change_detector.update(detector_input_nb)
                 else:
                     self.change_detector.update(detector_input_mc)
             else:
-                detector_input = self.split_criterion.current_merit(self.stats)
+                detector_input = tree._change_detector_merit(self.stats)
                 self.change_detector.update(detector_input)
             self.update_splitters(x, y, w, tree.nominal_attributes)
 
