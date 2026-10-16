@@ -14,6 +14,7 @@ __all__ = [
     "MultiClassMetric",
     "RegressionMetric",
     "WrapperMetric",
+    "RankingMetric",
 ]
 
 
@@ -368,3 +369,38 @@ class ClusteringMetric(base.Base, abc.ABC):
     def __repr__(self):
         """Returns the class name along with the current value of the metric."""
         return f"{self.__class__.__name__}: {self.get():{self._fmt}}".rstrip("0")
+
+
+class RankingMetric(Metric):
+    """Mother class for all ranking metrics.
+
+    A ranking metric is updated once per query. `y_true` describes which items are relevant to the
+    query, while `y_pred` is the list of items that were returned, ordered from most to least
+    relevant according to the model.
+
+    """
+
+    _fmt = ".4f"
+
+    @abc.abstractmethod
+    def update(self, y_true, y_pred) -> None:
+        """Update the metric."""
+
+    @abc.abstractmethod
+    def revert(self, y_true, y_pred) -> None:
+        """Revert the metric."""
+
+    @property
+    def bigger_is_better(self):
+        return True
+
+    def works_with(self, model) -> bool:
+        return isinstance(model, base.Estimator)
+
+    def __add__(self, other) -> Metrics:
+        if not isinstance(other, RankingMetric):
+            raise ValueError(
+                f"{self.__class__.__name__} and {other.__class__.__name__} metrics "
+                "are not compatible"
+            )
+        return Metrics([self, other])
