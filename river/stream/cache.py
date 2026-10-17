@@ -137,7 +137,7 @@ class Cache:
 
         """
         if key is None:
-            msg = "No default key could be guessed for the given stream, please provide one"
+            msg = "No key was given for the stream, please provide one"
             raise ValueError(msg)
 
         path = self._get_path(key)
