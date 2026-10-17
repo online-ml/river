@@ -5,6 +5,7 @@
 - The `river.drift` sub-package is now clean under strict mypy, and the `river.drift.*` entry was removed from the non-strict overrides in `pyproject.toml`. Public signatures and docstrings are unchanged.
 - Fixed a latent bug in `drift.datasets.base.Dataset._annotations_aggregated`, which read a nonexistent `self._annotations` attribute and keyed the intersection branch on the integer `0` instead of the annotator key. The method has no callers today, so behavior is unchanged.
 - `DriftRetrainingClassifier` now passes a `bool` instead of an `int` as the error indicator to its wrapped binary drift detector.
+- Added `CUSUM`, the original tabular cumulative-sum control chart (Page 1954), with one-sided and two-sided modes. The reference mean and deviation are estimated over the warm-up window and then frozen, and the slack and decision interval are expressed as multiples of that deviation.
 
 ## naive_bayes
 
