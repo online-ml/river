@@ -119,8 +119,8 @@ def simulate_qa(
         `datetime.timedelta`. If a callable is passed, then it is expected to take as input a
         `dict` of features and the target. If a `str` is passed, then it will be used to access
         the relevant field from the features. If `None` is passed, then no delay will be used,
-        which leads to doing standard online validation. If a scalar is passed, such an `int`
-        or a `datetime.timedelta`, then the delay is constant.
+        which leads to doing standard online validation, and `moment` is ignored. If a scalar is
+        passed, such an `int` or a `datetime.timedelta`, then the delay is constant.
     copy
         If `True`, then a separate copy of the features are yielded the second time
         around. This ensures that inadvertent modifications in downstream code don't have any

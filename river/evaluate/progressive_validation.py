@@ -207,7 +207,7 @@ def iter_progressive_val_score(
         callable is passed, then it is expected to take as input a `dict` of features and the
         target. If a `str` is passed, then it will be used to access the relevant field from the
         features. If `None` is passed, then no delay will be used, which leads to doing standard
-        online validation.
+        online validation, and `moment` is ignored.
     step
         Iteration number at which to yield results. This only takes into account the
         predictions, and not the training steps.
@@ -350,7 +350,7 @@ def progressive_val_score(
         callable is passed, then it is expected to take as input a `dict` of features and the
         target. If a `str` is passed, then it will be used to access the relevant field from the
         features. If `None` is passed, then no delay will be used, which leads to doing standard
-        online validation.
+        online validation, and `moment` is ignored.
     print_every
         Iteration number at which to print the current metric. This only takes into account the
         predictions, and not the training steps.
