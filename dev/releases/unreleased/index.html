@@ -26,7 +26,7 @@
       
       
       <link rel="icon" href="../../img/favicon.ico">
-      <meta name="generator" content="zensical-0.0.70">
+      <meta name="generator" content="zensical-0.0.71">
     
     
       
@@ -1273,6 +1273,17 @@
     <span class="md-ellipsis">
       <span class="md-typeset">
         naive_bayes
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sketch" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        sketch
       </span>
     </span>
   </a>
@@ -2588,6 +2599,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#sketch" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        sketch
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#stream" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -2658,6 +2680,12 @@
 <h2 id="naive_bayes_1">naive_bayes<a class="headerlink" href="#naive_bayes_1" title="Permanent link">&para;</a></h2>
 <ul>
 <li><code>MultinomialNB.learn_many</code>, <code>predict_many</code>, and <code>predict_proba_many</code> now accept any <a href="https://github.com/narwhals-dev/narwhals">narwhals</a>-supported eager backend (pandas, polars, pyarrow, ...) instead of being pandas-only, preserving the input backend (including the pandas index) on output. A backend-agnostic <code>BaseNB.predict_many</code> was added so the argmax-over-probabilities logic is shared by all Naive Bayes variants.</li>
+</ul>
+<h2 id="sketch">sketch<a class="headerlink" href="#sketch" title="Permanent link">&para;</a></h2>
+<ul>
+<li>The <code>sketch</code> module is now fully type-annotated.</li>
+<li><code>sketch.Counter.__matmul__</code> (often written as <code>Counter @ Counter</code>) now returns a Python integer instead of a NumPy integer. You may need to remove existing NumPy-to-Python conversions (<code>.item()</code>) to make it work again.</li>
+<li><a href="../../api/sketch/Histogram"><code>sketch.Histogram</code></a> now consistently has integer counts, event after merging two histograms. It previously could convert values to floating-point after a merge operation.</li>
 </ul>
 <h2 id="stream">stream<a class="headerlink" href="#stream" title="Permanent link">&para;</a></h2>
 <ul>

@@ -26,7 +26,7 @@
       
       
       <link rel="icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="zensical-0.0.70">
+      <meta name="generator" content="zensical-0.0.71">
     
     
       
@@ -4592,7 +4592,7 @@ generating process:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">cosine_dist</span><span class="p">(</span><span class="n">cms_a</span><span class="p">,</span> <span class="n">cms_b</span><span class="p">):</span>
     <span class="n">num</span> <span class="o">=</span> <span class="n">cms_a</span> <span class="o">@</span> <span class="n">cms_b</span>
     <span class="n">den</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">cms_a</span> <span class="o">@</span> <span class="n">cms_a</span><span class="p">)</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">cms_b</span> <span class="o">@</span> <span class="n">cms_b</span><span class="p">)</span>
-    <span class="k">return</span> <span class="p">(</span><span class="n">num</span> <span class="o">/</span> <span class="n">den</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">num</span> <span class="o">/</span> <span class="n">den</span>
 </code></pre></div>
 <p>And use it to calculate the cosine distance between the elements monitored in <code>cms_a</code> and <code>cms_b</code>:</p>
 <p><div class="language-python highlight"><pre><span></span><code><span class="n">cosine_dist</span><span class="p">(</span><span class="n">cms_a</span><span class="p">,</span> <span class="n">cms_b</span><span class="p">)</span>
