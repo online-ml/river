@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import random
+
 import numpy as np
 import pytest
 
@@ -128,3 +130,67 @@ def perform_test(drift_detector, data_stream):
         if drift_detector.drift_detected:
             detected_indices.append(i)
     return detected_indices
+
+
+def test_rddm():
+    expected_indices = [1018, 1237]
+    detected_indices = perform_test(drift.binary.RDDM(), data_stream_2)
+    assert detected_indices == expected_indices
+
+    # A constant stream carries no degradation, so nothing should be flagged.
+    expected_indices = []
+    detected_indices = perform_test(drift.binary.RDDM(), np.ones(1000))
+    assert detected_indices == expected_indices
+
+
+def test_rddm_reacts_to_a_long_stable_concept():
+    """RDDM exists because DDM goes deaf after a long stable stretch.
+
+    DDM latches onto the global minimum error rate, so on a long low-error concept its
+    threshold drifts out of reach and it reacts late. RDDM re-anchors from its buffer and
+    should get there sooner.
+    """
+
+    def first_after(detector, se, jump, seed=42, n_stable=3000, n_after=1000):
+        stream = data_stream_for_rddm(se, jump, seed, n_stable, n_after)
+        for i, x in enumerate(stream):
+            detector.update(x)
+            if detector.drift_detected and i >= n_stable:
+                return i - n_stable
+        return None
+
+    for se, jump in ((0.05, 0.4), (0.1, 0.4), (0.1, 0.6)):
+        rddm_delay = first_after(drift.binary.RDDM(), se, jump)
+        ddm_delay = first_after(drift.binary.DDM(), se, jump)
+        assert rddm_delay is not None
+        assert ddm_delay is not None
+        assert rddm_delay < ddm_delay
+
+
+def data_stream_for_rddm(se, jump, seed, n_stable, n_after):
+    rng = random.Random(seed)
+    return [1 if rng.random() < se else 0 for _ in range(n_stable)] + [
+        1 if rng.random() < jump else 0 for _ in range(n_after)
+    ]
+
+
+def test_rddm_coverage():
+    with pytest.raises(ValueError):
+        drift.binary.RDDM(warm_start=0)
+
+    with pytest.raises(ValueError):
+        drift.binary.RDDM(warning_threshold=0)
+
+    # The drift threshold has to sit beyond the warning threshold, or the warning zone is
+    # unreachable and the escalation path can never be entered from it.
+    with pytest.raises(ValueError):
+        drift.binary.RDDM(warning_threshold=3.0, drift_threshold=2.0)
+
+    with pytest.raises(ValueError):
+        drift.binary.RDDM(buffer_size=0)
+
+    with pytest.raises(ValueError):
+        drift.binary.RDDM(max_concept_size=0)
+
+    with pytest.raises(ValueError):
+        drift.binary.RDDM(warning_limit=0)
