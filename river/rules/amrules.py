@@ -462,8 +462,9 @@ class AMRules(base.Regressor):
         ...         break
         ...     model.learn_one(x, y)
 
-        >>> model.anomaly_score(x)
-        (1.0168907243483933, 0.13045786430817402, 1.0)
+        >>> mean_anomaly, std_anomaly, support = model.anomaly_score(x)
+        >>> round(mean_anomaly, 6), round(std_anomaly, 6), support
+        (1.016891, 0.130458, 1.0)
 
         """
         var = stats.Var()
