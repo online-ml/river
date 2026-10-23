@@ -40,3 +40,15 @@ def test_page_hinkley_update(benchmark) -> None:
             detector.update(x)
 
     benchmark(run)
+
+
+@heavy("drift")
+def test_ewma_update(benchmark) -> None:
+    series = scalar_series()
+
+    def run() -> None:
+        detector = drift.EWMA()
+        for x in series:
+            detector.update(x)
+
+    benchmark(run)
