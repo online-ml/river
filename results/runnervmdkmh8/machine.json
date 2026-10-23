@@ -1,6 +1,6 @@
 {
     "arch": "x86_64",
-    "cpu": "AMD EPYC 9V45 96-Core Processor",
+    "cpu": "AMD EPYC 7763 64-Core Processor",
     "machine": "runnervmdkmh8",
     "num_cpu": "4",
     "os": "Linux 7.0.0-1017-azure",
