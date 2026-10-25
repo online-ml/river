@@ -61,7 +61,7 @@ class MondrianTreeRegressor(MondrianTree, base.Regressor):
 
     @property
     def _is_initialized(self):
-        """Check if the tree has learnt at least one sample"""
+        """Check if the tree has learnt at least one sample."""
         return self.iteration != 0
 
     def _init_native(self, x, y):

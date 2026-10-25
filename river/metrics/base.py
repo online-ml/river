@@ -43,7 +43,7 @@ class Metric(base.Base, abc.ABC):
 
     @property
     def works_with_weights(self) -> bool:
-        """Indicate whether the model takes into consideration the effect of sample weights"""
+        """Indicate whether the model takes into consideration the effect of sample weights."""
         return True
 
     def is_better_than(self, other) -> bool:

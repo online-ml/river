@@ -478,7 +478,7 @@ class AMRules(base.Regressor):
         return self._default_rule.score_one(x), 0.0, 0
 
     def debug_one(self, x) -> str:
-        """Return an explanation of how `x` is predicted
+        """Return an explanation of how `x` is predicted.
 
         Parameters
         ----------

@@ -408,7 +408,7 @@ def woodbury_matrix(A: npt.NDArray[Any], U: npt.NDArray[Any], V: npt.NDArray[Any
 
 
 def log_sum_2_exp(a: float, b: float) -> float:
-    """Computation of log( (e^a + e^b) / 2) in an overflow-proof way
+    """Computation of log( (e^a + e^b) / 2) in an overflow-proof way.
 
     Parameters
     ----------

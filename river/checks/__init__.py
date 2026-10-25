@@ -28,7 +28,7 @@ def _allow_exception(func, exception):
 
 
 def _wrapped_partial(func, *args, **kwargs):
-    """Taken from http://louistiao.me/posts/adding-__name__-and-__doc__-attributes-to-functoolspartial-objects/"""
+    """Taken from http://louistiao.me/posts/adding-__name__-and-__doc__-attributes-to-functoolspartial-objects/."""
     partial = functools.partial(func, *args, **kwargs)
     functools.update_wrapper(partial, func)
     return partial
@@ -99,7 +99,7 @@ def _yield_datasets(model: Estimator, scale: int = 1):
 
         # 2
         class SolarFlare:
-            """One-hot encoded version of `datasets.SolarFlare"""
+            """One-hot encoded version of `datasets.SolarFlare."""
 
             def __iter__(self):
                 oh = (compose.SelectType(str) | preprocessing.OneHotEncoder()) + compose.SelectType(

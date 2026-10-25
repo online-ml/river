@@ -16,7 +16,7 @@ from river.utils.random import poisson
 
 
 class BaseSRPEnsemble(base.Wrapper, base.Ensemble):
-    """Base class for the sRP ensemble family"""
+    """Base class for the sRP ensemble family."""
 
     _TRAIN_RANDOM_SUBSPACES = "subspaces"
     _TRAIN_RESAMPLING = "resampling"
@@ -218,7 +218,7 @@ class BaseSRPEnsemble(base.Wrapper, base.Ensemble):
 
 
 class BaseSRPEstimator:
-    """Base class for estimators (classifiers or regressors) in SRP"""
+    """Base class for estimators (classifiers or regressors) in SRP."""
 
     def __init__(
         self,

@@ -283,7 +283,7 @@ def check_init_has_default_params_for_tests(model):
 
 def check_init_default_params_are_not_mutable(model):
     """Mutable parameters in signatures are discouraged, as explained in
-    https://docs.python-guide.org/writing/gotchas/#mutable-default-arguments
+    https://docs.python-guide.org/writing/gotchas/#mutable-default-arguments.
 
     We enforce immutable parameters by only allowing a certain list of basic types.
 

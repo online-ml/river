@@ -95,7 +95,7 @@ class RandomRBF(datasets.base.SyntheticDataset):
         return x, y
 
     def _generate_centroids(self):
-        """Generates centroids
+        """Generates centroids.
 
         Sequentially creates all the centroids, choosing at random a center,
         a label, a standard deviation and a weight.
@@ -207,7 +207,7 @@ class RandomRBFDrift(RandomRBF):
             yield x, y
 
     def _generate_centroids(self):
-        """Generates centroids
+        """Generates centroids.
 
         The centroids are generated just as it is done in the parent class,
         an extra step is taken to introduce drift, if there is any.
