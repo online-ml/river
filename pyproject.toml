@@ -11,6 +11,22 @@ dependencies = [
     "numpy>=2.2.5,<3",
     "narwhals>=2.0.0",
 ]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: WebAssembly :: Emscripten",
+    "Intended Audience :: Information Technology",
+    "Intended Audience :: Science/Research",
+    "Operating System :: MacOS",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Rust",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+    "Topic :: Software Development :: Libraries",
+    "Typing :: Typed",
+]
 
 [project.optional-dependencies]
 pandas = [
@@ -165,6 +181,9 @@ target-version = 'py310'
 extend-include = ["*.ipynb"]
 
 [tool.ruff.lint]
+preview = true
+explicit-preview-rules = true
+extend-select = ["F822"]
 select = [
     # pycodestyle
     "E",
@@ -252,9 +271,7 @@ module = [
     "river.tree.*",
     "river.preprocessing.*",
     "river.stream.*",
-    "river.linear_model.*",
     "river.evaluate.*",
-    "river.drift.*",
     "river.compose.*",
     "river.bandit.*",
     "river.cluster.*",
@@ -268,14 +285,11 @@ module = [
     "river.rules.*",
     "river.model_selection.*",
     "river.forest.*",
-    "river.neighbors.*",
-    "river.sketch.*",
     "river.facto.*",
     "river.compat.river_to_sklearn",
     "river.multiclass.*",
     "river.reco.*",
     "river.imblearn.*",
-    "river.feature_selection.*",
     "river.active.*",
     "tests.*",
 ]

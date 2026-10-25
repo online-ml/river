@@ -31,6 +31,15 @@ def test_kmeans_predict(benchmark) -> None:
 
 
 @benchmark("cluster")
+def test_kmeans_predict_wide(benchmark) -> None:
+    model = cluster.KMeans(n_clusters=5, seed=42)
+    x = {i: (i % 17) / 17 for i in range(128)}
+    model.predict_one(x)
+
+    benchmark(lambda: model.predict_one(x))
+
+
+@benchmark("cluster")
 def test_dbstream_learn(benchmark) -> None:
     stream = [x for x, _ in binary_stream()]
 

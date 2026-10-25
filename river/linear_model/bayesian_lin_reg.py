@@ -51,7 +51,7 @@ class BayesianLinearRegression(base.MiniBatchRegressor):
     >>> model.predict_one(x)
     43.855...
 
-    >>> model.predict_one(x, with_dist=True)
+    >>> model.predict_dist_one(x)
     𝒩(μ=43.85..., σ=1.00...)
 
     The `smoothing` parameter can be set to make the model robust to drift. The parameter is
@@ -140,7 +140,7 @@ class BayesianLinearRegression(base.MiniBatchRegressor):
 
     """
 
-    def __init__(self, alpha=1, beta=1, smoothing: float | None = None):
+    def __init__(self, alpha: float = 1, beta: float = 1, smoothing: float | None = None) -> None:
         self.alpha = alpha
         self.beta = beta
         self.smoothing = smoothing
@@ -162,9 +162,9 @@ class BayesianLinearRegression(base.MiniBatchRegressor):
         self._ss_inv_arr = np.zeros((0, 0), dtype=np.float64, order="F")
         self._eta_arr = np.zeros(0, dtype=np.float64)
         self._m_arr = np.zeros(0, dtype=np.float64)
-        self._m_dirty = False
-        self._cap = 0
-        self._n = 1
+        self._m_dirty: bool = False
+        self._cap: int = 0
+        self._n: int = 1
 
     def _grow(self, needed: int) -> None:
         new_cap = max(needed, max(8, self._cap * 2))
@@ -181,7 +181,7 @@ class BayesianLinearRegression(base.MiniBatchRegressor):
         self._eta_arr = new_eta
         self._cap = new_cap
 
-    def _ensure_features(self, features) -> None:
+    def _ensure_features(self, features: typing.Iterable[typing.Any]) -> None:
         idx = self._idx
         for f in features:
             if f not in idx:
@@ -196,7 +196,9 @@ class BayesianLinearRegression(base.MiniBatchRegressor):
             self._m_arr = self._ss_inv_arr @ self._eta_arr
         self._m_dirty = False
 
-    def learn_one(self, x, y):
+    def learn_one(
+        self, x: dict[base.typing.FeatureName, typing.Any], y: base.typing.RegTarget
+    ) -> None:
         # Treat features absent from `x` as observed values of 0. Updating the
         # full-cap state (rather than just the touched submatrix via np.ix_)
         # keeps `_ss_inv_arr = inv(_ss_arr)` consistent across
@@ -261,20 +263,18 @@ class BayesianLinearRegression(base.MiniBatchRegressor):
 
         # `learn_one` keeps `_ss_inv_arr = inv(_ss_arr)` (via Sherman-Morrison without smoothing,
         # a full inverse with it). Refresh the active block in one inverse so subsequent
-        # `learn_one` updates and `predict_one(..., with_dist=True)` see a consistent covariance.
+        # `learn_one` updates and `predict_dist_one(...)` see a consistent covariance.
         if n:
             self._ss_inv_arr[:n, :n] = np.linalg.inv(self._ss_arr[:n, :n])
         self._m_dirty = True
 
-    def predict_one(self, x, with_dist=False):
+    def predict_one(self, x: dict[base.typing.FeatureName, typing.Any]) -> base.typing.RegTarget:
         """Predict the output of features `x`.
 
         Parameters
         ----------
         x
             A dictionary of features.
-        with_dist
-            Whether to return a predictive distribution, or instead just the most likely value.
 
         Returns
         -------
@@ -292,8 +292,10 @@ class BayesianLinearRegression(base.MiniBatchRegressor):
                 if i is not None:
                     y_pred_mean += m_arr[i] * v
 
-        if not with_dist:
-            return float(y_pred_mean)
+        return float(y_pred_mean)
+
+    def predict_dist_one(self, x: dict[base.typing.FeatureName, typing.Any]) -> proba.Gaussian:
+        y_pred_mean = self.predict_one(x)
 
         n = len(self._idx)
         diag = 1.0 / self.alpha

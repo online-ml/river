@@ -3,6 +3,7 @@ from __future__ import annotations
 import collections
 import functools
 import itertools
+import math
 import numbers
 import typing
 
@@ -222,7 +223,7 @@ class StandardScaler(base.MiniBatchTransformer):
         # Default `window_size` to None so pickles written before this attribute was
         # introduced keep working without re-running __init__.
         state.setdefault("window_size", None)
-        self.__dict__.update(state)
+        super().__setstate__(state)
 
     @classmethod
     def _from_state(
@@ -282,15 +283,20 @@ class StandardScaler(base.MiniBatchTransformer):
             return
         if self.with_std:
             for i, xi in x.items():
-                counts[i] += 1
+                count = counts[i] + 1
+                counts[i] = count
                 old_mean = means[i]
-                means[i] += (xi - old_mean) / counts[i]
-                vars_[i] += ((xi - old_mean) * (xi - means[i]) - vars_[i]) / counts[i]
+                delta = xi - old_mean
+                mean = old_mean + delta / count
+                means[i] = mean
+                old_var = vars_[i]
+                vars_[i] = old_var + (delta * (xi - mean) - old_var) / count
         else:
             for i, xi in x.items():
-                counts[i] += 1
+                count = counts[i] + 1
+                counts[i] = count
                 old_mean = means[i]
-                means[i] += (xi - old_mean) / counts[i]
+                means[i] = old_mean + (xi - old_mean) / count
 
     def transform_one(self, x):
         means = self.means
@@ -306,10 +312,11 @@ class StandardScaler(base.MiniBatchTransformer):
             return {i: xi - means[i].get() for i, xi in x.items()}
         if self.with_std:
             vars_ = self.vars
+            sqrt = math.sqrt
             result = {}
             for i, xi in x.items():
                 v = vars_[i]
-                result[i] = (xi - means[i]) / v**0.5 if v else 0.0
+                result[i] = (xi - means[i]) / sqrt(v) if v else 0.0
             return result
         return {i: xi - means[i] for i, xi in x.items()}
 
@@ -491,7 +498,7 @@ class MinMaxScaler(base.Transformer):
         # Default `window_size` to None so pickles written before this attribute was
         # introduced keep working without re-running __init__.
         state.setdefault("window_size", None)
-        self.__dict__.update(state)
+        super().__setstate__(state)
 
     @classmethod
     def _from_state(
@@ -538,8 +545,8 @@ class MinMaxScaler(base.Transformer):
         for i, xi in x.items():
             lo = min_[i].get()
             hi = max_[i].get()
-            d = hi - lo
-            result[i] = (xi - lo) / d if d else 0.0
+            d = hi - lo if (hi is not None and lo is not None) else 0.0
+            result[i] = (xi - lo) / d if (d and math.isfinite(d)) else 0.0
         return result
 
 
@@ -613,7 +620,7 @@ class MaxAbsScaler(base.Transformer):
         # Default `window_size` to None so pickles written before this attribute was
         # introduced keep working without re-running __init__.
         state.setdefault("window_size", None)
-        self.__dict__.update(state)
+        super().__setstate__(state)
 
     @classmethod
     def _from_state(

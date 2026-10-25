@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from river import datasets, stream
+from river import base, datasets, stream
 
 from .base import ChangePointFileDataset
 
@@ -19,7 +19,7 @@ class Occupancy(ChangePointFileDataset):
 
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(
             annotations={
                 "6": [238, 416],
@@ -34,7 +34,8 @@ class Occupancy(ChangePointFileDataset):
             n_features=4,
         )
 
-    def __iter__(self):
+    def __iter__(self) -> base.typing.Stream:
+
         return stream.iter_csv(
             self.path,
             target=["V1", "V2", "V3", "V4"],

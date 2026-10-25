@@ -22,7 +22,7 @@ jobs:
         uses: astral-sh/setup-uv@v7
 
       - name: Install the project
-        run: uv sync --locked --all-extras --dev
+        run: uv sync --all-extras --dev --upgrade-package zensical
 
       - name: Use Rich in notebooks
         run: |

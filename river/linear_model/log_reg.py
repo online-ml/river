@@ -76,13 +76,13 @@ class LogisticRegression(linear_model.base.GLM, base.MiniBatchClassifier):
         self,
         optimizer: optim.base.Optimizer | None = None,
         loss: optim.losses.BinaryLoss | None = None,
-        l2=0.0,
-        l1=0.0,
-        intercept_init=0.0,
+        l2: float = 0.0,
+        l1: float = 0.0,
+        intercept_init: float = 0.0,
         intercept_lr: float | optim.base.Scheduler = 0.01,
-        clip_gradient=1e12,
+        clip_gradient: float = 1e12,
         initializer: optim.base.Initializer | None = None,
-    ):
+    ) -> None:
         super().__init__(
             optimizer=optim.SGD(0.01) if optimizer is None else optimizer,
             loss=optim.losses.Log() if loss is None else loss,
@@ -94,7 +94,9 @@ class LogisticRegression(linear_model.base.GLM, base.MiniBatchClassifier):
             initializer=initializer if initializer else optim.initializers.Zeros(),
         )
 
-    def predict_proba_one(self, x):
+    def predict_proba_one(
+        self, x: dict[base.typing.FeatureName, typing.Any], **kwargs: typing.Any
+    ) -> dict[base.typing.ClfTarget, float]:
         p = self.loss.mean_func(self._raw_dot_one(x))  # Convert logit to probability
         return {False: 1.0 - p, True: p}
 

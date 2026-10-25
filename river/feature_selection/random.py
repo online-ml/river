@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import random
+import typing
 
 from river import base
 
@@ -52,13 +53,15 @@ class PoissonInclusion(base.Transformer):
 
     """
 
-    def __init__(self, p: float, seed: int | None = None):
+    def __init__(self, p: float, seed: int | None = None) -> None:
         self.p = p
         self.seed = seed
         self.rng = random.Random(seed)
         self.included: set[base.typing.FeatureName] = set()
 
-    def transform_one(self, x):
+    def transform_one(
+        self, x: dict[base.typing.FeatureName, typing.Any]
+    ) -> dict[base.typing.FeatureName, typing.Any]:
         xt = {}
 
         for i, xi in x.items():

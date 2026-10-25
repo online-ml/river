@@ -75,7 +75,6 @@ __all__ = [
     "base",
     "Completeness",
     "ClassificationReport",
-    "ClusteringReport",
     "CohenKappa",
     "ConfusionMatrix",
     "CrossEntropy",

@@ -6,7 +6,7 @@ import numpy as np
 import pytest
 
 from river.utils import VectorDict
-from river.utils.vectordict import euclidean_distance_dict
+from river.utils.vectordict import euclidean_distance_dict, euclidean_distance_squared_dict
 
 
 def test_vectordict() -> None:
@@ -152,11 +152,14 @@ def test_non_real_values_are_rejected(value) -> None:
         ({"a": 3.0}, {"a": 3.0, "b": 4.0}, 4.0),
         ({"a": 3.0, "b": 4.0}, {"a": 3.0}, 4.0),
         ({"a": 3.0}, {"b": 4.0}, 5.0),
+        ({}, {}, 0.0),
     ],
 )
 def test_euclidean_distance_dict(left, right, expected) -> None:
     assert euclidean_distance_dict(left, right) == expected
     assert euclidean_distance_dict(right, left) == expected
+    assert euclidean_distance_squared_dict(left, right) == expected**2
+    assert euclidean_distance_squared_dict(right, left) == expected**2
 
 
 def test_from_scaled() -> None:

@@ -916,7 +916,10 @@ impl VectorDict {
     }
 }
 
-fn euclidean_distance_dict_dict(a: &Bound<'_, PyDict>, b: &Bound<'_, PyDict>) -> PyResult<f64> {
+fn euclidean_distance_squared_dict_dict(
+    a: &Bound<'_, PyDict>,
+    b: &Bound<'_, PyDict>,
+) -> PyResult<f64> {
     let mut total = 0.0;
     let mut matched = 0;
     for (key, value) in a.iter() {
@@ -938,12 +941,24 @@ fn euclidean_distance_dict_dict(a: &Bound<'_, PyDict>, b: &Bound<'_, PyDict>) ->
             }
         }
     }
-    Ok(total.sqrt())
+    Ok(total)
+}
+
+fn euclidean_distance_dict_dict(a: &Bound<'_, PyDict>, b: &Bound<'_, PyDict>) -> PyResult<f64> {
+    Ok(euclidean_distance_squared_dict_dict(a, b)?.sqrt())
 }
 
 #[pyfunction]
 pub fn euclidean_distance_dict(a: &Bound<'_, PyDict>, b: &Bound<'_, PyDict>) -> PyResult<f64> {
     euclidean_distance_dict_dict(a, b)
+}
+
+#[pyfunction]
+pub fn euclidean_distance_squared_dict(
+    a: &Bound<'_, PyDict>,
+    b: &Bound<'_, PyDict>,
+) -> PyResult<f64> {
+    euclidean_distance_squared_dict_dict(a, b)
 }
 
 #[pyfunction]

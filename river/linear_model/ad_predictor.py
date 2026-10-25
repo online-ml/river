@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import math
+import typing
 
 from scipy.special import ndtri
 
@@ -15,7 +16,7 @@ MAX_SURPRISE = 5.0
 _BIAS_KEY = "__bias__"
 
 
-def _active(x: dict) -> list:
+def _active(x: dict[base.typing.FeatureName, typing.Any]) -> list[base.typing.FeatureName]:
     """The keys of `x` with a truthy value, i.e. the active binary indicators."""
     return [f for f, v in x.items() if v]
 
@@ -110,8 +111,8 @@ class AdPredictor(base.Classifier):
         self.prior_probability = prior_probability
         self.epsilon = epsilon
 
-        self.means: dict = {}
-        self.variances: dict = {}
+        self.means: dict[base.typing.FeatureName, float] = {}
+        self.variances: dict[base.typing.FeatureName, float] = {}
 
     def _init_bias(self, n_active: int) -> None:
         # The bias is an always-active weight, initialised lazily on the first
@@ -125,7 +126,7 @@ class AdPredictor(base.Classifier):
             )
             self.variances[_BIAS_KEY] = 1.0
 
-    def _total_mean_variance(self, features) -> tuple[float, float]:
+    def _total_mean_variance(self, features: list[base.typing.FeatureName]) -> tuple[float, float]:
         total_mean = self.means[_BIAS_KEY]
         total_variance = self.variances[_BIAS_KEY] + self.beta**2
         for f in features:
@@ -133,7 +134,9 @@ class AdPredictor(base.Classifier):
             total_variance += self.variances.get(f, 1.0)
         return total_mean, total_variance
 
-    def predict_proba_one(self, x):
+    def predict_proba_one(
+        self, x: dict[base.typing.FeatureName, typing.Any], **kwargs: typing.Any
+    ) -> dict[base.typing.ClfTarget, float]:
         active = _active(x)
         self._init_bias(len(active))
         total_mean, total_variance = self._total_mean_variance(active)
@@ -141,7 +144,9 @@ class AdPredictor(base.Classifier):
         p = min(1.0 - 1e-12, max(1e-12, p))
         return {False: 1.0 - p, True: p}
 
-    def learn_one(self, x, y):
+    def learn_one(
+        self, x: dict[base.typing.FeatureName, typing.Any], y: base.typing.ClfTarget
+    ) -> None:
         features = _active(x)
         self._init_bias(len(features))
         sign = 1.0 if y else -1.0
@@ -172,5 +177,5 @@ class AdPredictor(base.Classifier):
         return adjusted_mean, adjusted_variance
 
     @classmethod
-    def _unit_test_params(cls):
+    def _unit_test_params(cls) -> typing.Generator[dict[str, float]]:
         yield {"beta": 0.1, "prior_probability": 0.5, "epsilon": 0.05}

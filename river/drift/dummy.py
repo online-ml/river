@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import math
 import random
+import typing
 
 from river import base
 
@@ -152,7 +153,7 @@ class DummyDriftDetector(base.DriftDetector):
         else:  # self.trigger_method == self._RANDOM_TRIGGER
             self._trigger = self._random_trigger
 
-    def _fixed_trigger(self):
+    def _fixed_trigger(self) -> None:
         if not self._warmup_done:
             if self._n >= self._warmup:
                 self._n = 0
@@ -161,7 +162,7 @@ class DummyDriftDetector(base.DriftDetector):
             self._drift_detected = True
             self._n = 0
 
-    def _random_trigger(self):
+    def _random_trigger(self) -> None:
         t = self._n
         t_0 = self.t_0
         threshold = 1 / (1 + math.exp(-4 * (t - t_0) / self.w))
@@ -170,25 +171,22 @@ class DummyDriftDetector(base.DriftDetector):
         if self.drift_detected:
             self._n = 0
 
-    def update(self, x):
+    def update(self, x: int | float) -> None:
         self._n += 1
         self._drift_detected = False
         self._trigger()
 
-    def clone(self):
-        new = (
-            super().clone(
-                {
-                    "seed": self._rng.randint(0, int(1e15)),
-                    "w": (
-                        self._rng.randint(0, self.t_0 + 1)
-                        if self.trigger_method == self._FIXED_TRIGGER
-                        else self.w
-                    ),
-                }
-            )
-            if self.dynamic_cloning
-            else super().clone()
-        )
+    def clone(
+        self, new_params: dict[str, typing.Any] | None = None, include_attributes: bool = False
+    ) -> DummyDriftDetector:
+        if self.dynamic_cloning:
+            new_params = {
+                "seed": self._rng.randint(0, int(1e15)),
+                "w": (
+                    self._rng.randint(0, self.t_0 + 1)
+                    if self.trigger_method == self._FIXED_TRIGGER
+                    else self.w
+                ),
+            }
 
-        return new
+        return super().clone(new_params, include_attributes)

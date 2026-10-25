@@ -12,7 +12,7 @@ __all__ = ["BaseNN", "DistanceFunc", "FunctionWrapper", "_euclidean_tuple_distan
 
 
 class DistanceFunc(typing.Protocol):
-    def __call__(self, a: typing.Any, b: typing.Any, **kwargs) -> float: ...
+    def __call__(self, a: typing.Any, b: typing.Any, **kwargs: typing.Any) -> float: ...
 
 
 class FunctionWrapper:
@@ -31,26 +31,30 @@ class FunctionWrapper:
 
     __slots__ = ("distance_function",)
 
-    def __init__(self, distance_function: DistanceFunc):
+    def __init__(self, distance_function: DistanceFunc) -> None:
         self.distance_function = distance_function
 
-    def __call__(self, a, b):
+    def __call__(self, a: typing.Any, b: typing.Any) -> float:
         # Access x, which is stored in a tuple (x, y)
         return self.distance_function(a[0], b[0])
 
 
+# TODO: Generic instead of Any for more precise typing
+# should remove the type ignore comments KNNRegressor.predict_one
 class BaseNN(base.Estimator, abc.ABC):
-    def __init__(self, dist_func: DistanceFunc | FunctionWrapper):
+    def __init__(self, dist_func: DistanceFunc | FunctionWrapper) -> None:
         self.dist_func = dist_func
 
     @abc.abstractmethod
-    def append(self, item: typing.Any, **kwargs) -> None:
+    def append(self, item: typing.Any, **kwargs: typing.Any) -> None:
         pass
 
     @abc.abstractmethod
-    def search(self, item: typing.Any, n_neighbors: int, **kwargs) -> tuple[list, list]:
+    def search(
+        self, item: typing.Any, n_neighbors: int, **kwargs: typing.Any
+    ) -> tuple[list[typing.Any], list[float]]:
         pass
 
     @abc.abstractmethod
-    def refresh_targets(self) -> set:
+    def refresh_targets(self) -> set[base.typing.ClfTarget]:
         pass

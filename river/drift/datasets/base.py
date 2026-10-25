@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import abc
 import pathlib
+import typing
 
 from river.datasets import base
 
@@ -20,18 +21,22 @@ class ChangePointFileDataset(base.FileDataset, abc.ABC):
 
     """
 
-    def __init__(self, annotations, **desc):
-        super().__init__(**desc, directory=pathlib.Path(__file__).parent)
+    def __init__(
+        self,
+        annotations: dict[str, list[int]],
+        **desc: typing.Any,
+    ) -> None:
+        super().__init__(**desc, directory=pathlib.Path(__file__).parent)  # type: ignore[no-untyped-call]
         self.annotations = annotations
 
     @property
-    def _repr_content(self):
-        repr_content = super()._repr_content
+    def _repr_content(self) -> dict[str, str]:
+        repr_content: dict[str, str] = super()._repr_content
         repr_content["Annotators"] = f"{len(self.annotations):,d}"
         repr_content["Annotations"] = f"{sum(map(len, self.annotations.values())):,d}"
         return repr_content
 
-    def _annotations_aggregated(self, annotator_aggregation):
+    def _annotations_aggregated(self, annotator_aggregation: str) -> set[int] | dict[int, int]:
         """The function `annotations_aggregated` takes an annotator aggregation method as input and returns
         the aggregated annotations based on that method.
 
@@ -47,25 +52,25 @@ class ChangePointFileDataset(base.FileDataset, abc.ABC):
 
         """
         if annotator_aggregation == "union":
-            annotations = set()
-            for annotator in self._annotations:
-                annotations.update(self._annotations[annotator])
+            annotations: set[int] = set()
+            for annotator in self.annotations:
+                annotations.update(self.annotations[annotator])
         elif annotator_aggregation == "intersection":
-            annotations = set(self._annotations[0])
-            for annotator in self._annotations:
-                annotations.intersection_update(self._annotations[annotator])
+            annotations = set(self.annotations["0"])
+            for annotator in self.annotations:
+                annotations.intersection_update(self.annotations[annotator])
         elif annotator_aggregation == "majority":
-            annotations = {}
-            for annotator in self._annotations:
-                for change_point in self._annotations[annotator]:
-                    if change_point in annotations:
-                        annotations[change_point] += 1
+            counts: dict[int, int] = {}
+            for annotator in self.annotations:
+                for change_point in self.annotations[annotator]:
+                    if change_point in counts:
+                        counts[change_point] += 1
                     else:
-                        annotations[change_point] = 1
+                        counts[change_point] = 1
             annotations = {
                 change_point
-                for change_point, count in annotations.items()
-                if count > len(self._annotations) / 2
+                for change_point, count in counts.items()
+                if count > len(self.annotations) / 2
             }
         else:
             raise ValueError("Unknown annotator aggregation method.")

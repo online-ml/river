@@ -3,6 +3,7 @@ from __future__ import annotations
 import collections
 import copy
 import functools
+import typing
 
 from river import base, optim, utils
 
@@ -61,8 +62,8 @@ class SoftmaxRegression(base.Classifier):
         self,
         optimizer: optim.base.Optimizer | None = None,
         loss: optim.losses.MultiClassLoss | None = None,
-        l2=0,
-    ):
+        l2: float = 0,
+    ) -> None:
         if optimizer is None:
             optimizer = optim.SGD(0.01)
         new_optimizer = functools.partial(copy.deepcopy, optimizer)
@@ -73,10 +74,12 @@ class SoftmaxRegression(base.Classifier):
         self.weights = collections.defaultdict(functools.partial(collections.defaultdict, float))  # type: ignore
 
     @property
-    def _multiclass(self):
+    def _multiclass(self) -> bool:
         return True
 
-    def learn_one(self, x, y):
+    def learn_one(
+        self, x: dict[base.typing.FeatureName, typing.Any], y: base.typing.ClfTarget
+    ) -> None:
         # Some optimizers need to do something before a prediction is made
         for label, weights in self.weights.items():
             self.optimizers[label].look_ahead(w=weights)
@@ -93,7 +96,9 @@ class SoftmaxRegression(base.Classifier):
             gradient = {i: xi * loss + self.l2 * weights.get(i, 0) for i, xi in x.items()}
             self.weights[label] = self.optimizers[label].step(w=weights, g=gradient)
 
-    def predict_proba_one(self, x):
+    def predict_proba_one(
+        self, x: dict[base.typing.FeatureName, typing.Any], **kwargs: typing.Any
+    ) -> dict[base.typing.ClfTarget, float]:
         return utils.math.softmax(
             {label: utils.math.dot(weights, x) for label, weights in self.weights.items()}
-        )
+        )  # type: ignore[return-value]

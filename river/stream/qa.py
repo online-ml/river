@@ -1,27 +1,100 @@
 from __future__ import annotations
 
 import bisect
-import collections
 import datetime as dt
+import functools
 import typing
 from copy import deepcopy
 
 from river import base
 
+if typing.TYPE_CHECKING:
+    from collections.abc import Callable, Iterable, Iterator
+
+    Features: typing.TypeAlias = dict[typing.Any, typing.Any]
+    Kwargs: typing.TypeAlias = dict[str, typing.Any]
+    MomentFn: typing.TypeAlias = Callable[[Features], dt.datetime]
+    DelayFn: typing.TypeAlias = Callable[[Features, typing.Any], typing.Any]
+    Moment: typing.TypeAlias = str | MomentFn | None
+    Delay: typing.TypeAlias = str | int | dt.timedelta | DelayFn | None
+
 __all__ = ["simulate_qa"]
 
 
-class Memento(collections.namedtuple("Memento", "i x y kwargs t_expire")):
-    def __lt__(self, other):
+class Memento(typing.NamedTuple):
+    i: int
+    x: Features
+    y: typing.Any
+    kwargs: Kwargs | None
+    t_expire: base.typing.SupportsComparisonLesser
+
+    # NOTE: `bisect.insort` only ever compares Mementos with one another, hence
+    # the narrowing of `other`.
+    def __lt__(self, other: Memento) -> bool:  # type: ignore[override]
         return self.t_expire < other.t_expire
 
 
+def _coerce_moment(moment: Moment) -> Callable[[int, Features], typing.Any]:
+    if isinstance(moment, str):
+
+        def _from_field(i: int, x: Features) -> typing.Any:
+            return x[moment]
+
+        return _from_field
+    if callable(moment):
+        moment_fn = moment
+
+        def _from_callable(i: int, x: Features) -> typing.Any:
+            return moment_fn(x)
+
+        return _from_callable
+
+    def _from_index(i: int, x: Features) -> typing.Any:
+        return i
+
+    return _from_index
+
+
+def _coerce_delay(delay: Delay) -> DelayFn:
+    if isinstance(delay, str):
+
+        def _from_field(x: Features, y: typing.Any) -> typing.Any:
+            return x[delay]
+
+        return _from_field
+    if not callable(delay):
+
+        def _constant(x: Features, y: typing.Any) -> typing.Any:
+            return delay
+
+        return _constant
+    return delay
+
+
+@typing.overload
 def simulate_qa(
-    dataset: base.typing.Dataset,
-    moment: str | typing.Callable[[dict], dt.datetime] | None,
-    delay: str | int | dt.timedelta | typing.Callable | None,
+    dataset: Iterable[tuple[Features, typing.Any, Kwargs]],
+    moment: Moment,
+    delay: Delay,
     copy: bool = True,
-):
+) -> Iterator[tuple[int, Features, typing.Any] | tuple[int, Features, typing.Any, Kwargs]]: ...
+
+
+@typing.overload
+def simulate_qa(
+    dataset: Iterable[tuple[Features, typing.Any]],
+    moment: Moment,
+    delay: Delay,
+    copy: bool = True,
+) -> Iterator[tuple[int, Features, typing.Any]]: ...
+
+
+def simulate_qa(
+    dataset: Iterable[tuple[Features, typing.Any] | tuple[Features, typing.Any, Kwargs]],
+    moment: Moment,
+    delay: Delay,
+    copy: bool = True,
+) -> Iterator[tuple[int, Features, typing.Any] | tuple[int, Features, typing.Any, Kwargs]]:
     """Simulate a time-ordered question and answer session.
 
     This method allows looping through a dataset in the order in which it arrived. Indeed, it
@@ -114,7 +187,6 @@ def simulate_qa(
     # Fast path: no moment and no delay (the common case).
     # Skip all memento/queue machinery and yield question then answer directly.
     if moment is None and delay is None:
-        kwargs_list: list
         for i, (x, y, *kwargs_list) in enumerate(dataset):
             kwargs = kwargs_list[0] if kwargs_list else None
             if copy:
@@ -125,38 +197,24 @@ def simulate_qa(
             yield (i, x, y, kwargs) if kwargs else (i, x, y)
         return
 
-    # Determine how to insert mementos into the queue
-    queue = (
-        (lambda q, el: bisect.insort(q, el))
-        if callable(delay) or isinstance(delay, str)
-        else (lambda q, el: q.append(el))
-    )
-
-    # Coerce moment to a function
-    get_moment = (
-        (lambda _, x: x[moment])
-        if isinstance(moment, str)
-        else (lambda _, x: moment(x))  # type: ignore
-        if callable(moment)
-        else (lambda i, _: i)  # type: ignore
-    )
-
-    # Coerce delay to a function
-    get_delay = (
-        (lambda x, _: x[delay])
-        if isinstance(delay, str)
-        else (lambda _, __: delay)  # type: ignore
-        if not callable(delay)
-        else delay  # type: ignore
-    )
+    get_moment = _coerce_moment(moment)
+    get_delay = _coerce_delay(delay)
 
     mementos: list[Memento] = []
+
+    # Determine how to insert mementos into the queue. A closure would turn `mementos` into a
+    # cell variable, making every access in the loop below slower, hence the partial.
+    enqueue: Callable[[Memento], None] = (
+        functools.partial(bisect.insort, mementos)
+        if callable(delay) or isinstance(delay, str)
+        else mementos.append
+    )
 
     for i, (x, y, *kwargs_list) in enumerate(dataset):
         kwargs = kwargs_list[0] if kwargs_list else None
 
         t = get_moment(i, x)
-        d = get_delay(x, y)  # type: ignore
+        d = get_delay(x, y)
 
         while mementos:
             # Get the oldest answer
@@ -178,7 +236,7 @@ def simulate_qa(
             )
             del mementos[0]
 
-        queue(mementos, Memento(i, x, y, kwargs, t + d))  # type: ignore[operator]
+        enqueue(Memento(i, x, y, kwargs, t + d))
         if copy:
             x = deepcopy(x)
         yield (i, x, None, kwargs) if kwargs else (i, x, None)

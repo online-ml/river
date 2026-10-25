@@ -102,7 +102,7 @@ class EDDM(base.BinaryDriftAndWarningDetector):
 
         self._reset()
 
-    def _reset(self):
+    def _reset(self) -> None:
         super()._reset()
 
         # Variance of the distance between two error/failure reports
@@ -116,7 +116,7 @@ class EDDM(base.BinaryDriftAndWarningDetector):
 
         self._p2s_prime_max = -1
 
-    def update(self, x):
+    def update(self, x: bool) -> None:
         """Update the change detector with a single data point.
 
         Parameters
@@ -124,10 +124,6 @@ class EDDM(base.BinaryDriftAndWarningDetector):
         x
             This parameter indicates whether the last sample analyzed was correctly classified or
             not. 1 indicates an error (miss-classification).
-
-        Returns
-        -------
-        self
 
         """
 

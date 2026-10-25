@@ -115,13 +115,13 @@ class LinearRegression(linear_model.base.GLM, base.MiniBatchRegressor):
         self,
         optimizer: optim.base.Optimizer | None = None,
         loss: optim.losses.RegressionLoss | None = None,
-        l2=0.0,
-        l1=0.0,
-        intercept_init=0.0,
+        l2: float = 0.0,
+        l1: float = 0.0,
+        intercept_init: float = 0.0,
         intercept_lr: optim.base.Scheduler | float = 0.01,
-        clip_gradient=1e12,
+        clip_gradient: float = 1e12,
         initializer: optim.base.Initializer | None = None,
-    ):
+    ) -> None:
         super().__init__(
             optimizer=optim.SGD(0.01) if optimizer is None else optimizer,
             loss=optim.losses.Squared() if loss is None else loss,
@@ -133,8 +133,8 @@ class LinearRegression(linear_model.base.GLM, base.MiniBatchRegressor):
             initializer=initializer if initializer else optim.initializers.Zeros(),
         )
 
-    def predict_one(self, x):
-        return self.loss.mean_func(self._raw_dot_one(x))
+    def predict_one(self, x: dict[base.typing.FeatureName, typing.Any]) -> base.typing.RegTarget:
+        return self.loss.mean_func(self._raw_dot_one(x))  # type: ignore[no-any-return]
 
     def predict_many(self, X: IntoDataFrame) -> IntoSeries:
         X = utils.dataframe.into_frame(X)
@@ -143,7 +143,7 @@ class LinearRegression(linear_model.base.GLM, base.MiniBatchRegressor):
         )
         return utils.dataframe.to_native_series(y_pred, name=self._y_name, like=X)
 
-    def debug_one(self, x: dict, decimals: int = 5) -> str:
+    def debug_one(self, x: dict[base.typing.FeatureName, typing.Any], decimals: int = 5) -> str:
         """Debugs the output of the linear regression.
 
         Parameters
@@ -159,7 +159,7 @@ class LinearRegression(linear_model.base.GLM, base.MiniBatchRegressor):
 
         """
 
-        def fmt_float(x):
+        def fmt_float(x: float) -> str:
             return "{: ,.{prec}f}".format(x, prec=decimals)
 
         names = list(map(str, x.keys())) + ["Intercept"]

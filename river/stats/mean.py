@@ -130,9 +130,9 @@ class BayesianMean(stats.base.Univariate):
 
     References
     ----------
-    [^1]: [Additive smoothing](https://www.wikiwand.com/en/Additive_smoothing)
-    [^2]: [Bayesian average](https://www.wikiwand.com/en/Bayesian_average)
-    [^3]: [Practical example of Bayes estimators](https://www.wikiwand.com/en/Bayes_estimator#/Practical_example_of_Bayes_estimators)
+    [^1]: [Additive smoothing](https://en.wikipedia.org/wiki/Additive_smoothing)
+    [^2]: [Bayesian average](https://en.wikipedia.org/wiki/Bayesian_average)
+    [^3]: [Practical example of Bayes estimators](https://en.wikipedia.org/wiki/Bayes_estimator#Practical_example_of_Bayes_estimators)
 
     """
 
@@ -152,7 +152,7 @@ class BayesianMean(stats.base.Univariate):
         self._mean.revert(x)
 
     def get(self) -> float:
-        # Uses the notation from https://www.wikiwand.com/en/Bayes_estimator#/Practical_example_of_Bayes_estimators
+        # Uses the notation from https://en.wikipedia.org/wiki/Bayes_estimator#Practical_example_of_Bayes_estimators
         R = self._mean.get()
         v = self._mean.n
         m = self.prior_weight

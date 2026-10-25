@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import collections
+import typing
 
 from river import base, stats
 
@@ -43,21 +44,25 @@ class VarianceThreshold(base.Transformer):
 
     """
 
-    def __init__(self, threshold=0, min_samples=2):
+    def __init__(self, threshold: float = 0, min_samples: int = 2) -> None:
         self.threshold = threshold
         self.min_samples = min_samples
-        self.variances = collections.defaultdict(stats.Var)
+        self.variances: dict[base.typing.FeatureName, stats.Var] = collections.defaultdict(
+            stats.Var
+        )
 
-    def learn_one(self, x):
+    def learn_one(self, x: dict[base.typing.FeatureName, typing.Any]) -> None:
         for i, xi in x.items():
             self.variances[i].update(xi)
 
-    def check_feature(self, feature):
+    def check_feature(self, feature: base.typing.FeatureName) -> bool:
         if feature not in self.variances:
             return True
         if self.variances[feature].mean.n < self.min_samples:
             return True
         return self.variances[feature].get() > self.threshold
 
-    def transform_one(self, x):
+    def transform_one(
+        self, x: dict[base.typing.FeatureName, typing.Any]
+    ) -> dict[base.typing.FeatureName, typing.Any]:
         return {i: xi for i, xi in x.items() if self.check_feature(i)}

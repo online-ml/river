@@ -13,7 +13,11 @@ from river.base import tags
 from . import base
 
 if typing.TYPE_CHECKING:
+    from typing import Any
+
     import pandas as pd
+    from narwhals.stable.v2.typing import IntoDataFrame, IntoSeries
+    from numpy.typing import NDArray
 
 __all__ = ["MultinomialNB"]
 
@@ -185,7 +189,25 @@ class MultinomialNB(base.BaseNB):
             for c in self.classes_
         }
 
-    def learn_many(self, X: pd.DataFrame, y: pd.Series):
+    @staticmethod
+    def _one_hot_targets(y: IntoSeries) -> tuple[Any, NDArray[np.object_]]:
+        y = utils.dataframe.into_series(y)
+        y_np = np.asarray(y.to_numpy())
+        raw_classes = np.unique(y_np)
+        classes = np.asarray([str(c) for c in raw_classes], dtype=object)
+        indices = np.searchsorted(raw_classes, y_np)
+        rows = np.arange(len(y_np))
+        data: NDArray[np.int64] = np.ones(len(y_np), dtype=np.int64)
+        return sparse.csr_matrix((data, (indices, rows)), shape=(len(classes), len(y_np))), classes
+
+    @staticmethod
+    def _as_sparse_matrix(X):
+        native = X.to_native()
+        if hasattr(native, "sparse"):
+            return sparse.csr_matrix(native.sparse.to_coo())
+        return sparse.csr_matrix(utils.dataframe.to_numpy(X))
+
+    def learn_many(self, X: IntoDataFrame, y: IntoSeries):
         """Learn from a batch of count vectors.
 
         Parameters
@@ -196,16 +218,17 @@ class MultinomialNB(base.BaseNB):
             Target classes.
 
         """
-        y = base.one_hot_encode(y)
-        columns, classes = X.columns, y.columns
-        y = sparse.csc_matrix(y.sparse.to_coo()).T
+        X = utils.dataframe.into_frame(X)
+        y_one_hot, classes = self._one_hot_targets(y)
+        columns = X.columns
 
-        self.class_counts.update({c: count.item() for c, count in zip(classes, y.sum(axis=1))})
+        self.class_counts.update(
+            {c: int(count.item()) for c, count in zip(classes, y_one_hot.sum(axis=1))}
+        )
 
-        if hasattr(X, "sparse"):
-            X = sparse.csr_matrix(X.sparse.to_coo())
+        X = self._as_sparse_matrix(X)
 
-        fc = y @ X
+        fc = y_one_hot @ X
 
         self.class_totals.update({c: count.item() for c, count in zip(classes, fc.sum(axis=1))})
 
@@ -223,31 +246,22 @@ class MultinomialNB(base.BaseNB):
                 for f, count in dict_count.items():
                     self.feature_counts[f].update(count)
 
-    def _feature_log_prob(self, columns: list, known: list, unknown: list) -> pd.DataFrame:
-        """Compute log probabilities of input features.
+    def _feature_log_prob(self, columns: list) -> np.ndarray:
+        classes = self.classes_
+        smooth_cc = np.array(
+            [self.class_totals[c] + self.alpha * self.n_terms for c in classes],
+            dtype=float,
+        )
+        feature_log_prob: NDArray[np.float64] = np.empty((len(columns), len(classes)), dtype=float)
+        for i, f in enumerate(columns):
+            smooth_fc = np.array(
+                [self.feature_counts.get(f, {}).get(c, 0.0) + self.alpha for c in classes],
+                dtype=float,
+            )
+            feature_log_prob[i] = np.log(smooth_fc) - np.log(smooth_cc)
+        return feature_log_prob
 
-        Parameters
-        ----------
-        columns
-            List of input features.
-        known
-            List of input features that are part of the vocabulary.
-        unknown
-            List of input features that are not part the vocabulary.
-
-        Returns
-        -------
-        Log probabilities of input features.
-
-        """
-        smooth_fc = np.log(base.from_dict(self.feature_counts).fillna(0).T[known] + self.alpha)
-        smooth_fc[unknown] = np.log(self.alpha)
-
-        smooth_cc = np.log(base.from_dict(self.class_totals) + self.alpha * self.n_terms)
-
-        return smooth_fc.subtract(smooth_cc.values, axis="rows")[columns].T
-
-    def joint_log_likelihood_many(self, X: pd.DataFrame) -> pd.DataFrame:
+    def joint_log_likelihood_many(self, X: IntoDataFrame) -> IntoDataFrame:
         """Computes the joint log likelihood of input features.
 
         Parameters
@@ -260,25 +274,15 @@ class MultinomialNB(base.BaseNB):
         Input samples joint log likelihood.
 
         """
-        pd = utils.pandas.import_pandas()
-        index, columns = X.index, X.columns
-        known, unknown = [], []
+        X = utils.dataframe.into_frame(X)
+        columns = X.columns
 
         if not self.class_counts or not self.feature_counts:
-            return pd.DataFrame(index=index)
+            return utils.dataframe.to_native_frame(np.empty((len(X), 0)), columns=[], like=X)
 
-        for f in columns:
-            if f in self.feature_counts:
-                known.append(f)
-            else:
-                unknown.append(f)
+        X_matrix = self._as_sparse_matrix(X)
+        classes = self.classes_
+        jll = X_matrix @ self._feature_log_prob(columns=columns)
+        jll = np.asarray(jll) + np.log(np.array([self.p_class(c) for c in classes], dtype=float))
 
-        if hasattr(X, "sparse"):
-            X = sparse.csr_matrix(X.sparse.to_coo())
-
-        return pd.DataFrame(
-            X @ self._feature_log_prob(columns=columns, known=known, unknown=unknown)
-            + np.log(self.p_class_many()).values,
-            index=index,
-            columns=self.class_totals.keys(),
-        )
+        return utils.dataframe.to_native_frame(jll, columns=classes, like=X)
