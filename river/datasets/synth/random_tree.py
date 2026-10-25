@@ -125,6 +125,7 @@ class RandomTree(datasets.base.SyntheticDataset):
     ):
         """
         Creates a node, choosing at random the splitting feature and value.
+
         Then recursively generates its children. If the split feature is a
         numerical feature there will be two children nodes (left and right),
         one for samples where the value for the split feature is smaller than

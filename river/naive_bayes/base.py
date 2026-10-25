@@ -85,6 +85,7 @@ class BaseNB(base.MiniBatchClassifier):
 
 def from_dict(data: dict) -> pd.DataFrame:
     """Convert a dict into a pandas dataframe.
+
     This function is faster than pd.from_dict (01/02/2021).
 
     Parameters

@@ -300,6 +300,7 @@ class KolmogorovSmirnov(stats.base.Bivariate):
     def _test_ks_threshold(self, ca: float) -> bool:
         """
         Test whether the reference and sliding window follows the same or different probability distribution.
+
         This test will return `True` if we **reject** the null hypothesis that
         the two windows follow the same distribution.
         """

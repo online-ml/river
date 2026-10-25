@@ -218,6 +218,7 @@ class LDA(base.Transformer):
     def _update_indexes(self, word_list: typing.Iterable[str]):
         """
         Adds the words of the document to the index if they are not part of the current vocabulary.
+
         Updates of the number of distinct words seen.
 
         Parameters

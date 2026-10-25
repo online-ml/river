@@ -425,6 +425,7 @@ class ETRegressor(tree.HoeffdingTreeRegressor):
 
     def _new_learning_node(self, initial_stats=None, parent=None):  # noqa
         """Create a new learning node.
+
         The type of learning node depends on the tree configuration.
         """
         if parent is not None:

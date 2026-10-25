@@ -118,6 +118,7 @@ class BaseFM:
 
     def _calculate_interactions(self, x: dict) -> float:
         """Calculates greater than unary interactions.
+
         For normal FM: sigma (i < j) product(latents[xi] * latents[xj]) xi * xj
         interaction_combination_keys: sigma (i < j)
         interaction_val: xi * xj
