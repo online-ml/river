@@ -11,3 +11,7 @@
 ## preprocessing
 
 - `preprocessing.Normalizer` now handles zero vectors without raising a `ZeroDivisionError`. A zero vector is returned unchanged instead.
+
+## tree
+
+- Refactored `LASTClassifier` to reuse a single tree-level split criterion for class-distribution change detection, reducing per-leaf state without changing classifier behaviour.
