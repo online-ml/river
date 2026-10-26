@@ -4552,7 +4552,7 @@
 <p><strong>delay</strong></p>
 <p><em>Type</em> → <code>str | int | dt.timedelta | typing.Callable | None</code></p>
 <p><em>Default</em> → <code>None</code></p>
-<p>The amount to wait before revealing the target associated with each observation to the model. This value is expected to be able to sum with the <code>moment</code> value. For instance, if <code>moment</code> is a <code>datetime.date</code>, then <code>delay</code> is expected to be a <code>datetime.timedelta</code>. If a callable is passed, then it is expected to take as input a <code>dict</code> of features and the target. If a <code>str</code> is passed, then it will be used to access the relevant field from the features. If <code>None</code> is passed, then no delay will be used, which leads to doing standard online validation.</p>
+<p>The amount to wait before revealing the target associated with each observation to the model. This value is expected to be able to sum with the <code>moment</code> value. For instance, if <code>moment</code> is a <code>datetime.date</code>, then <code>delay</code> is expected to be a <code>datetime.timedelta</code>. If a callable is passed, then it is expected to take as input a <code>dict</code> of features and the target. If a <code>str</code> is passed, then it will be used to access the relevant field from the features. If <code>None</code> is passed, then no delay will be used, which leads to doing standard online validation, and <code>moment</code> is ignored.</p>
 </li>
 <li>
 <p><strong>step</strong></p>

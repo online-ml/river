@@ -2697,6 +2697,7 @@
 <li><a href="../../api/stream/iter-sql"><code>stream.iter_sql</code></a> now closes the result it iterates, so the underlying cursor is released once the stream is exhausted or abandoned.</li>
 <li><code>stream.cache</code>, <a href="../../api/stream/iter-csv"><code>stream.iter_csv</code></a>, and <a href="../../api/stream/iter-sql"><code>stream.iter_sql</code></a> are now clean under strict mypy. <code>sqlalchemy</code> is type-checked rather than ignored, so the <code>query</code> and <code>conn</code> arguments of <a href="../../api/stream/iter-sql"><code>stream.iter_sql</code></a> are checked against the SQLAlchemy 2.0 types.</li>
 <li><a href="../../api/stream/simulate-qa"><code>stream.simulate_qa</code></a> is now clean under strict mypy. Its overloads type the yields: <code>(i, x, y)</code> for a dataset of <code>(x, y)</code> pairs, with the kwargs riding along for <code>(x, y, kwargs)</code> triples. Type checkers now also accept datasets keyed by plain <code>str</code>.</li>
+<li><a href="../../api/stream/simulate-qa"><code>stream.simulate_qa</code></a> and <a href="../../api/evaluate/progressive-val-score"><code>evaluate.progressive_val_score</code></a> no longer raise a <code>TypeError</code> when <code>moment</code> is given without <code>delay</code>. Without a <code>delay</code>, <code>moment</code> is ignored. See <a href="https://github.com/online-ml/river/pull/2058">#2058</a>.</li>
 </ul>
 <h2 id="preprocessing">preprocessing<a class="headerlink" href="#preprocessing" title="Permanent link">&para;</a></h2>
 <ul>
