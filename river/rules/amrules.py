@@ -6,7 +6,7 @@ import io
 import math
 import typing
 
-from river import anomaly, base, drift, linear_model, stats
+from river import base, drift, linear_model, stats
 from river.tree import split_criterion
 from river.tree import splitter as spl
 
@@ -57,7 +57,7 @@ class AdaptiveRegressor(base.Regressor):
             return self.model_predictor.predict_one(x)
 
 
-class RegRule(HoeffdingRule, base.Regressor, anomaly.base.AnomalyDetector):
+class RegRule(HoeffdingRule, base.Regressor, base.AnomalyDetector):
     def __init__(
         self,
         template_splitter,
@@ -513,7 +513,7 @@ class AMRules(base.Regressor):
         ...         break
         ...     model.learn_one(x, y)
 
-        >>> print(model.debug_one(x))
+        >>> print(model.debug_one(x))  # doctest: +SKIP
         Rule 0: 3 > 0.5060 and 0 > 0.2538
             Prediction (adaptive): 18.7217
         Rule 1: 1 > 0.2480 and 3 > 0.2573

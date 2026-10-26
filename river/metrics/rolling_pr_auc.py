@@ -1,9 +1,7 @@
 from __future__ import annotations
 
-from river import metrics
-from river.anomaly.base import AnomalyDetector, AnomalyFilter
-
-from .efficient_rollingprauc import EfficientRollingPRAUC
+from river import base, metrics
+from river._river_rust.stats import RsRollingPRAUC
 
 __all__ = ["RollingPRAUC"]
 
@@ -36,7 +34,7 @@ class RollingPRAUC(metrics.base.BinaryMetric):
     Examples
     --------
 
-    >>> from river import metrics
+    >>> from river import base, metrics
 
     >>> y_true = [ 0,  1,  0,  1,  0,  1,  0,  0,   1,  1]
     >>> y_pred = [.3, .5, .5, .7, .1, .3, .1, .4, .35, .8]
@@ -54,22 +52,32 @@ class RollingPRAUC(metrics.base.BinaryMetric):
     def __init__(self, window_size=1000, pos_val=True):
         self.window_size = window_size
         self.pos_val = pos_val
-        self._metric = EfficientRollingPRAUC(pos_val, window_size)
+        self._metric = RsRollingPRAUC(int(pos_val), window_size)
+        self._buf_labels: list[int] = []
+        self._buf_scores: list[float] = []
 
     def works_with(self, model) -> bool:
         return (
             super().works_with(model)
-            or isinstance(model, AnomalyDetector)
-            or isinstance(model, AnomalyFilter)
+            or isinstance(model, base.AnomalyDetector)
+            or isinstance(model, base.AnomalyFilter)
         )
+
+    def _flush(self):
+        if self._buf_labels:
+            self._metric.update_many(self._buf_labels, self._buf_scores)
+            self._buf_labels = []
+            self._buf_scores = []
 
     def update(self, y_true, y_pred):
         p_true = y_pred.get(True, 0.0) if isinstance(y_pred, dict) else y_pred
-        self._metric.update(y_true, p_true)
+        self._buf_labels.append(int(y_true))
+        self._buf_scores.append(p_true)
 
     def revert(self, y_true, y_pred):
+        self._flush()
         p_true = y_pred.get(True, 0.0) if isinstance(y_pred, dict) else y_pred
-        self._metric.revert(y_true, p_true)
+        self._metric.revert(int(y_true), p_true)
 
     @property
     def requires_labels(self) -> bool:
@@ -80,4 +88,5 @@ class RollingPRAUC(metrics.base.BinaryMetric):
         return False
 
     def get(self):
+        self._flush()
         return self._metric.get()

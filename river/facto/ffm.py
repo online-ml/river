@@ -57,6 +57,16 @@ class FFM(BaseFM):
         field_latents_dict = functools.partial(collections.defaultdict, random_latents)
         return collections.defaultdict(field_latents_dict)
 
+    @classmethod
+    def _unit_test_params(cls):
+        yield {"seed": 42}
+
+    def _unit_test_skips(self):
+        # Latent factors are initialised lazily, the first time each feature is encountered. Their
+        # values therefore depend on the order in which features are first seen, so reshuffling a
+        # sample's features yields a different (yet equally valid) model.
+        return {"check_shuffle_features_no_impact"}
+
     def _interaction_names(self, x):
         return [
             f"{j1}({self._field(j2)}) - {j2}({self._field(j1)})"
@@ -82,32 +92,27 @@ class FFM(BaseFM):
     def _update_latents(self, x, g_loss):
         # For notational convenience
         v, l1, l2 = self.latents, self.l1_latent, self.l2_latent
-        sign, field = utils.math.sign, self._field
+        field = self._field
 
-        # Calculate each latent factor gradient before updating any
-        latent_gradient = collections.defaultdict(
-            lambda: collections.defaultdict(lambda: collections.defaultdict(float))
+        # Accumulate each (feature, field) latent gradient as a vector over the factors. NumPy
+        # handles the per-factor arithmetic in one shot rather than looping in Python.
+        latent_gradient: collections.defaultdict = collections.defaultdict(
+            lambda: collections.defaultdict(lambda: np.zeros(self.n_factors))
         )
 
         for j1, j2 in itertools.combinations(x.keys(), 2):
             xj1_xj2 = x[j1] * x[j2]
             field_j1, field_j2 = field(j1), field(j2)
-
-            for f in range(self.n_factors):
-                latent_gradient[j1][field_j2][f] += xj1_xj2 * v[j2][field_j1][f]
-                latent_gradient[j2][field_j1][f] += xj1_xj2 * v[j1][field_j2][f]
+            latent_gradient[j1][field_j2] += xj1_xj2 * v[j2][field_j1]
+            latent_gradient[j2][field_j1] += xj1_xj2 * v[j1][field_j2]
 
         # Finally update the latent weights
         for j in x.keys():
-            for field in latent_gradient[j].keys():
-                self.latents[j][field] = self.latent_optimizer.step(
-                    w=v[j][field],
-                    g={
-                        f: g_loss * latent_gradient[j][field][f]
-                        + l1 * sign(v[j][field][f])
-                        + 2.0 * l2 * v[j][field][f]
-                        for f in range(self.n_factors)
-                    },
+            for field_, gradient in latent_gradient[j].items():
+                vjf = v[j][field_]
+                gradient = g_loss * gradient + l1 * np.sign(vjf) + 2.0 * l2 * vjf
+                self.latents[j][field_] = self.latent_optimizer.step(
+                    w=vjf, g=dict(enumerate(gradient))
                 )
 
 

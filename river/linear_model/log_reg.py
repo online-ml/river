@@ -1,8 +1,13 @@
 from __future__ import annotations
 
-import pandas as pd
+import typing
 
-from river import base, linear_model, optim
+from river import base, linear_model, optim, utils
+
+if typing.TYPE_CHECKING:
+    import numpy as np
+    from narwhals.stable.v2.typing import IntoDataFrame, IntoSeries
+    from numpy.typing import NDArray
 
 
 class LogisticRegression(linear_model.base.GLM, base.MiniBatchClassifier):
@@ -71,13 +76,13 @@ class LogisticRegression(linear_model.base.GLM, base.MiniBatchClassifier):
         self,
         optimizer: optim.base.Optimizer | None = None,
         loss: optim.losses.BinaryLoss | None = None,
-        l2=0.0,
-        l1=0.0,
-        intercept_init=0.0,
+        l2: float = 0.0,
+        l1: float = 0.0,
+        intercept_init: float = 0.0,
         intercept_lr: float | optim.base.Scheduler = 0.01,
-        clip_gradient=1e12,
+        clip_gradient: float = 1e12,
         initializer: optim.base.Initializer | None = None,
-    ):
+    ) -> None:
         super().__init__(
             optimizer=optim.SGD(0.01) if optimizer is None else optimizer,
             loss=optim.losses.Log() if loss is None else loss,
@@ -89,10 +94,26 @@ class LogisticRegression(linear_model.base.GLM, base.MiniBatchClassifier):
             initializer=initializer if initializer else optim.initializers.Zeros(),
         )
 
-    def predict_proba_one(self, x):
+    def predict_proba_one(
+        self, x: dict[base.typing.FeatureName, typing.Any], **kwargs: typing.Any
+    ) -> dict[base.typing.ClfTarget, float]:
         p = self.loss.mean_func(self._raw_dot_one(x))  # Convert logit to probability
         return {False: 1.0 - p, True: p}
 
-    def predict_proba_many(self, X: pd.DataFrame) -> pd.DataFrame:
-        p = self.loss.mean_func(self._raw_dot_many(X))  # Convert logits to probabilities
-        return pd.DataFrame({False: 1.0 - p, True: p}, index=X.index, copy=False)
+    def predict_proba_many(self, X: IntoDataFrame) -> IntoDataFrame:
+        X_nw = utils.dataframe.into_frame(X)
+        p: NDArray[np.float64] = self.loss.mean_func(
+            self._raw_dot_many(utils.dataframe.to_numpy(X_nw), X_nw.columns)
+        )  # logits to probas
+        # pandas keeps the boolean column labels; other backends require string names.
+        return utils.dataframe.to_native_frame({False: 1.0 - p, True: p}, like=X_nw)
+
+    def predict_many(self, X: IntoDataFrame) -> IntoSeries:
+        # Labels are the booleans False/True, so the base `idxmax` over the proba frame is
+        # replaced by a numpy threshold that returns the actual booleans on every backend.
+        X_nw = utils.dataframe.into_frame(X)
+        values: NDArray[np.bool_] = (
+            self.loss.mean_func(self._raw_dot_many(utils.dataframe.to_numpy(X_nw), X_nw.columns))
+            > 0.5
+        )
+        return utils.dataframe.to_native_series(values, name=self._y_name, like=X_nw)

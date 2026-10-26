@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from river import anomaly, stats
+from river import base, stats
 
 __all__ = ["StandardAbsoluteDeviation"]
 
 
-class StandardAbsoluteDeviation(anomaly.base.SupervisedAnomalyDetector):
+class StandardAbsoluteDeviation(base.SupervisedAnomalyDetector):
     r"""Standard Absolute Deviation (SAD).
 
     SAD is the model that calculates the anomaly score by using the deviation from the mean/median, divided by the

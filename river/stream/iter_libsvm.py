@@ -1,12 +1,20 @@
 from __future__ import annotations
 
-from river import base
+import os
+import typing
 
-from . import utils
+from river import base
+from river.stream import utils
+
+if typing.TYPE_CHECKING:
+    from river.base.typing import FeatureName
+    from river.stream.typing import Compression, FilePath
 
 
 def iter_libsvm(
-    filepath_or_buffer: str, target_type=float, compression="infer"
+    filepath_or_buffer: FilePath | typing.TextIO,
+    target_type: type[typing.Any] = float,
+    compression: Compression | None = "infer",
 ) -> base.typing.Stream:
     """Iterates over a dataset in LIBSVM format.
 
@@ -49,16 +57,12 @@ def iter_libsvm(
     """
 
     # If a file is not opened, then we open it
-    buffer = filepath_or_buffer
-    should_close = False
-    if not hasattr(buffer, "read"):
+    if isinstance(filepath_or_buffer, (str, os.PathLike)):
+        buffer = utils.open_filepath(filepath_or_buffer, compression)
+        should_close = True
+    else:
+        buffer = filepath_or_buffer
         should_close = False
-        buffer = utils.open_filepath(buffer, compression)
-
-    def split_pair(pair):
-        name, value = pair.split(":")
-        value = float(value)
-        return name, value
 
     for line in buffer:
         # Remove carriage return and whitespace
@@ -68,9 +72,14 @@ def iter_libsvm(
 
         y, x_str = line.split(" ", maxsplit=1)
         y = target_type(y)
-        x = dict([split_pair(pair) for pair in x_str.split(" ")])
+        x = dict([_split_pair(pair) for pair in x_str.split(" ")])
         yield x, y
 
     # Close the file if we opened it
     if should_close:
-        buffer.close()  # type: ignore
+        buffer.close()
+
+
+def _split_pair(pair: str) -> tuple[FeatureName, float]:
+    name, value = pair.split(":")
+    return name, float(value)

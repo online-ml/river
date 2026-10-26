@@ -14,20 +14,19 @@ model.
 
 from __future__ import annotations
 
-from . import base
 from .filter import QuantileFilter, ThresholdFilter
 from .gaussian import GaussianScorer
 from .hst import HalfSpaceTrees
+from .loda import LODA
 from .lof import LocalOutlierFactor
 from .pad import PredictiveAnomalyDetection
 from .sad import StandardAbsoluteDeviation
 from .svm import OneClassSVM
 
 __all__ = [
-    "base",
-    "AnomalyDetector",
     "GaussianScorer",
     "HalfSpaceTrees",
+    "LODA",
     "OneClassSVM",
     "QuantileFilter",
     "StandardAbsoluteDeviation",

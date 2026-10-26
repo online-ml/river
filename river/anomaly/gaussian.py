@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from river import anomaly, proba, utils
+from river import base, proba, utils
 
 
-class GaussianScorer(anomaly.base.SupervisedAnomalyDetector):
+class GaussianScorer(base.SupervisedAnomalyDetector):
     """Univariate Gaussian anomaly detector.
 
     This is a supervised anomaly detector. It fits a Gaussian distribution to the target values.
@@ -51,7 +51,7 @@ class GaussianScorer(anomaly.base.SupervisedAnomalyDetector):
     def __init__(self, window_size=None, grace_period=100):
         self.window_size = window_size
         self.gaussian = (
-            utils.Rolling(proba.Gaussian(), window_size=self.window_size)
+            utils.Rolling(proba.Gaussian, window_size=window_size)
             if window_size
             else proba.Gaussian()
         )

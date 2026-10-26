@@ -1,8 +1,7 @@
 from __future__ import annotations
 
+from river._river_rust.drift import AdaptiveWindowing
 from river.base import DriftDetector
-
-from .adwin_c import AdaptiveWindowing
 
 
 class ADWIN(DriftDetector):
@@ -65,7 +64,14 @@ class ADWIN(DriftDetector):
 
     """
 
-    def __init__(self, delta=0.002, clock=32, max_buckets=5, min_window_length=5, grace_period=10):
+    def __init__(
+        self,
+        delta: float = 0.002,
+        clock: int = 32,
+        max_buckets: int = 5,
+        min_window_length: int = 5,
+        grace_period: int = 10,
+    ) -> None:
         super().__init__()
         self.delta = delta
         self.clock = clock
@@ -74,7 +80,7 @@ class ADWIN(DriftDetector):
         self.grace_period = grace_period
         self._reset()
 
-    def _reset(self):
+    def _reset(self) -> None:
         super()._reset()
         self._helper = AdaptiveWindowing(
             delta=self.delta,
@@ -85,7 +91,7 @@ class ADWIN(DriftDetector):
         )
 
     @property
-    def width(self) -> int:
+    def width(self) -> float:
         """Window size"""
         return self._helper.get_width()
 
@@ -111,7 +117,7 @@ class ADWIN(DriftDetector):
             return 0.0
         return self.total / self.width
 
-    def update(self, x):
+    def update(self, x: int | float) -> None:
         """Update the change detector with a single data point.
 
         Apart from adding the element value to the window, by inserting it in
@@ -123,10 +129,6 @@ class ADWIN(DriftDetector):
         ----------
         x
             Input value
-
-        Returns
-        -------
-        self
 
         """
         if self.drift_detected:

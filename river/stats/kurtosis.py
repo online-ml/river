@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from river import stats
-from river.stats import _rust_stats
+from river._river_rust import stats as _rust_stats
 
 
 class Kurtosis(stats.base.Univariate):
@@ -78,17 +78,17 @@ class Kurtosis(stats.base.Univariate):
 
     References
     ----------
-    [^1]: [Wikipedia article on algorithms for calculating variance](https://www.wikiwand.com/en/Algorithms_for_calculating_variance#/Covariance)
+    [^1]: [Wikipedia article on algorithms for calculating variance](https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Covariance)
 
     """
 
-    def __init__(self, bias=False):
+    def __init__(self, bias: bool = False) -> None:
         super().__init__()
         self.bias = bias
         self._kurtosis = _rust_stats.RsKurtosis(bias)
 
-    def update(self, x):
+    def update(self, x: float) -> None:
         self._kurtosis.update(x)
 
-    def get(self):
+    def get(self) -> float:
         return self._kurtosis.get()

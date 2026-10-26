@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import math
+
 import numpy as np
 
 from river import stats
@@ -50,7 +52,7 @@ class PearsonCorr(stats.base.Bivariate):
     >>> x = [0, 0, 0, 1, 1, 1, 1]
     >>> y = [0, 1, 2, 3, 4, 5, 6]
 
-    >>> pearson = utils.Rolling(stats.PearsonCorr(), window_size=4)
+    >>> pearson = utils.Rolling(stats.PearsonCorr, window_size=4)
 
     >>> for xi, yi in zip(x, y):
     ...     pearson.update(xi, yi)
@@ -65,33 +67,33 @@ class PearsonCorr(stats.base.Bivariate):
 
     """
 
-    def __init__(self, ddof=1):
+    def __init__(self, ddof: int = 1) -> None:
         self.var_x = stats.Var(ddof=ddof)
         self.var_y = stats.Var(ddof=ddof)
         self.cov_xy = stats.Cov(ddof=ddof)
 
     @property
-    def ddof(self):
+    def ddof(self) -> int:
         return self.cov_xy.ddof
 
-    def update(self, x, y):
+    def update(self, x: float, y: float) -> None:
         self.var_x.update(x)
         self.var_y.update(y)
         self.cov_xy.update(x, y)
 
-    def update_many(self, X: np.ndarray, Y: np.ndarray):
+    def update_many(self, X: np.ndarray, Y: np.ndarray) -> None:
         self.var_x.update_many(X)
         self.var_y.update_many(Y)
         self.cov_xy.update_many(X, Y)
 
-    def revert(self, x, y):
+    def revert(self, x: float, y: float) -> None:
         self.var_x.revert(x)
         self.var_y.revert(y)
         self.cov_xy.revert(x, y)
 
-    def get(self):
+    def get(self) -> float:
         var_x = self.var_x.get()
         var_y = self.var_y.get()
         if var_x and var_y:
-            return self.cov_xy.get() / (var_x * var_y) ** 0.5
+            return self.cov_xy.get() / math.sqrt(var_x * var_y)
         return 0

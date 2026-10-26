@@ -106,20 +106,20 @@ class DDM(base.BinaryDriftAndWarningDetector):
 
         self._reset()
 
-    def _reset(self):
+    def _reset(self) -> None:
         super()._reset()
 
         # Probability of error/failure
         self._p = stats.Mean()
 
         # Minimum values observed
-        self._p_min = None
-        self._s_min = None
+        self._p_min = float("inf")
+        self._s_min = float("inf")
 
         # The sum of p_min and s_min, to avoid calculating it every time
         self._ps_min = float("inf")
 
-    def update(self, x):
+    def update(self, x: bool) -> None:
         if self.drift_detected:
             self._reset()
 

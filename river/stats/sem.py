@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import math
+
 from . import var
 
 
@@ -39,7 +41,7 @@ class SEM(var.Var):
 
     >>> X = [1, 4, 2, -4, -8, 0]
 
-    >>> rolling_sem = utils.Rolling(stats.SEM(ddof=1), window_size=3)
+    >>> rolling_sem = utils.Rolling(stats.SEM, window_size=3, ddof=1)
     >>> for x in X:
     ...     rolling_sem.update(x)
     ...     print(rolling_sem.get())
@@ -52,12 +54,13 @@ class SEM(var.Var):
 
     References
     ----------
-    [^1]: [Wikipedia article on algorithms for calculating variance](https://www.wikiwand.com/en/Algorithms_for_calculating_variance#/Covariance)
+    [^1]: [Wikipedia article on algorithms for calculating variance](https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Covariance)
 
     """
 
-    def get(self):
+    # TODO: drop the ignore once get() raises stats.NotEnoughSamples instead of returning None
+    def get(self) -> float | None:  # type: ignore[override]
         try:
-            return (super().get() / self.mean.n) ** 0.5
+            return math.sqrt(super().get() / self.mean.n)
         except ZeroDivisionError:
             return None

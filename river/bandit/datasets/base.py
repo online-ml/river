@@ -40,7 +40,8 @@ class BanditDataset(datasets.base.Dataset):
             sparse=sparse,
         )
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def arms(self) -> list[bandit.base.ArmID]:
         """The list of arms that can be pulled."""
 

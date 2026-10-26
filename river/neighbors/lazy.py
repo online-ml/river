@@ -4,7 +4,10 @@ import collections
 import heapq
 import typing
 
-from river import utils
+from river import base
+from river.utils.vectordict import (
+    euclidean_distance_dict as _euclidean_dict_distance,
+)
 from river.utils.vectordict import (
     euclidean_distance_tuple as _euclidean_tuple_distance,
 )
@@ -49,7 +52,7 @@ class LazySearch(BaseNN):
         window_size: int = 50,
         min_distance_keep: float = 0.0,
         dist_func: DistanceFunc | FunctionWrapper | None = None,
-    ):
+    ) -> None:
         self.window_size = window_size
 
         # A minimum distance (similarity) to determine adding to window
@@ -58,12 +61,14 @@ class LazySearch(BaseNN):
         self.min_distance_keep = min_distance_keep
 
         if dist_func is None:
-            dist_func = utils.math._euclidean_distance  # type: ignore[attr-defined,assignment]
-        self.dist_func = dist_func  # type: ignore[assignment]
+            dist_func = typing.cast(DistanceFunc, _euclidean_dict_distance)
+        self.dist_func = dist_func
 
-        self.window: collections.deque = collections.deque(maxlen=self.window_size)
+        self.window: collections.deque[typing.Any] = collections.deque(maxlen=self.window_size)
 
-    def append(self, item: typing.Any, extra: typing.Any | None = None, **kwargs):
+    def append(
+        self, item: typing.Any, extra: typing.Any | None = None, **kwargs: typing.Any
+    ) -> None:
         """Add a point to the window, optionally with extra metadata.
 
         Parameters
@@ -85,7 +90,7 @@ class LazySearch(BaseNN):
         item: typing.Any,
         n_neighbors: int = 1,
         extra: typing.Any | None = None,
-    ):
+    ) -> bool:
         """Update the window with a new point, only added if > min distance.
 
         If min distance is 0, we do not need to do the calculation. The item
@@ -119,7 +124,9 @@ class LazySearch(BaseNN):
             return True
         return False
 
-    def search(self, item: typing.Any, n_neighbors: int, **kwargs):
+    def search(
+        self, item: typing.Any, n_neighbors: int, **kwargs: typing.Any
+    ) -> tuple[list[typing.Any], list[float]]:
         """Find the `n_neighbors` closest points to `item`, along with their distances."""
         # Fast path: Cython-accelerated search when using the default Euclidean distance
         if self.dist_func is _euclidean_tuple_distance:
@@ -140,7 +147,7 @@ class LazySearch(BaseNN):
             distances.append(dist)
         return items, distances
 
-    def refresh_targets(self) -> set:
+    def refresh_targets(self) -> set[base.typing.ClfTarget]:
         """Refresh the set of classes in the window. Used by classifiers where labels are added as [1] in the vertex tuple.
 
         This is used to clean up classes that are no longer in the window, and

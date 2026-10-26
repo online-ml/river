@@ -22,10 +22,10 @@ class Constant(optim.base.Scheduler):
         self.learning_rate = learning_rate
 
     @property
-    def _mutable_attributes(self):
+    def _mutable_attributes(self) -> set[str]:
         return {"learning_rate"}
 
-    def get(self, t):
+    def get(self, t: int) -> float:
         return self.learning_rate
 
 
@@ -45,12 +45,12 @@ class InverseScaling(optim.base.Scheduler):
 
     """
 
-    def __init__(self, learning_rate: float, power=0.5):
+    def __init__(self, learning_rate: float, power: float = 0.5):
         self.learning_rate = learning_rate
         self.power = power
 
-    def get(self, t):
-        return self.learning_rate / pow(t + 1, self.power)
+    def get(self, t: int) -> float:
+        return self.learning_rate / math.pow(t + 1, self.power)
 
 
 class Optimal(optim.base.Scheduler):
@@ -67,13 +67,13 @@ class Optimal(optim.base.Scheduler):
 
     """
 
-    def __init__(self, loss: optim.losses.Loss, alpha=1e-4):
+    def __init__(self, loss: optim.losses.Loss, alpha: float = 1e-4):
         self.loss = loss
         self.alpha = alpha
 
         typw = math.sqrt(1.0 / math.sqrt(self.alpha))
-        initial_eta0 = typw / max(1.0, self.loss.gradient(True, -typw))
+        initial_eta0 = typw / max(1.0, float(self.loss.gradient(True, -typw)))
         self.t0 = 1.0 / (initial_eta0 * self.alpha)
 
-    def get(self, t):
+    def get(self, t: int) -> float:
         return 1.0 / (self.alpha * (self.t0 + t))

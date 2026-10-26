@@ -1,3 +1,0 @@
-from river import metrics
-
-def expected_mutual_info(confusion_matrix: metrics.ConfusionMatrix) -> float: ...

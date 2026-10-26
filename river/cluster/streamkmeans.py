@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from river import base, cluster, utils
+from river import base, cluster
+from river.utils.vectordict import euclidean_distance_dict
 
 
 class STREAMKMeans(base.Clusterer):
@@ -107,6 +108,6 @@ class STREAMKMeans(base.Clusterer):
 
     def predict_one(self, x, w=None):
         def get_distance(c):
-            return utils.math.minkowski_distance(self.centers[c], x, 2)
+            return euclidean_distance_dict(self.centers[c], x)
 
         return min(self.centers, key=get_distance)

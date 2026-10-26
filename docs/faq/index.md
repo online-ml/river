@@ -23,7 +23,7 @@ False
 
 ## Why doesn't river do any input validation?
 
-Python encourages a coding style called [EAFP](https://docs.python.org/2/glossary.html?highlight=EAFP#term-eafp), which stands for "Easier to Ask for Forgiveness than Permission". The idea is to assume that runtime errors don't occur, and instead use try/expects to catch errors. The great benefit is that we don't have to drown our code with `if` statements, which is symptomatic of the [LBYL style](https://docs.python.org/2/glossary.html?highlight=EAFP#term-lbyl), which stands for "look before you leap". This makes our implementations much more readable than, say, scikit-learn, which does a lot of input validation. The catch is that users have to be careful to use sane inputs. As always, [there is no free lunch](https://www.wikiwand.com/en/No_free_lunch_theorem)!
+Python encourages a coding style called [EAFP](https://docs.python.org/2/glossary.html?highlight=EAFP#term-eafp), which stands for "Easier to Ask for Forgiveness than Permission". The idea is to assume that runtime errors don't occur, and instead use try/expects to catch errors. The great benefit is that we don't have to drown our code with `if` statements, which is symptomatic of the [LBYL style](https://docs.python.org/2/glossary.html?highlight=EAFP#term-lbyl), which stands for "look before you leap". This makes our implementations much more readable than, say, scikit-learn, which does a lot of input validation. The catch is that users have to be careful to use sane inputs. As always, [there is no free lunch](https://en.wikipedia.org/wiki/No_free_lunch_theorem)!
 
 ## What about reinforcement learning?
 
@@ -50,11 +50,13 @@ The algorithms from `sklearn` that support incremental learning are mostly meant
 ...     model = pickle.load(f)
 ```
 
-We also encourage you to try out [dill](https://dill.readthedocs.io/en/latest/dill.html) and [cloudpickle](https://github.com/cloudpipe/cloudpickle).
+River does not support loading pickled objects across River versions. A checkpoint may fail to load, or it may load and then fail or behave differently when used. Keep the River, Python, and relevant dependency versions pinned when you need to resume a stored model, metric, or statistic. Before upgrading, test the operations you rely on (e.g. check that `predict_one` produces the same result).
+
+[dill](https://dill.readthedocs.io/en/latest/dill.html) and [cloudpickle](https://github.com/cloudpipe/cloudpickle) can serialize additional Python objects, but they also do not solve the cross-version compatibility topic.
 
 ## What about neural networks?
 
-There are many great open-source libraries for building neural network models. We don't feel that we can bring anything of value to the existing Python ecosystem. However, we are open to implementing compatibility wrappers for popular libraries such as PyTorch and Keras.
+There are many great open-source libraries for building neural network models. We don't feel that we can bring anything of value to the existing Python ecosystem. Instead of implementing neural networks in River, members of our community created an independent library that interfaces with PyTorch called [deep-river](https://github.com/online-ml/deep-river). Check it out if you're interested in deep learning!
 
 ## Who are the authors of this library?
 

@@ -5,6 +5,7 @@ import functools
 import random
 
 from river import base
+from river.utils.vectordict import euclidean_distance_squared_dict
 
 __all__ = ["KMeans"]
 
@@ -122,6 +123,11 @@ class KMeans(base.Clusterer):
     def predict_one(self, x):
         def get_distance(c):
             center = self.centers[c]
+            if self.p == 2 and isinstance(x, dict):
+                if not x.keys() <= center.keys():
+                    for k in {*center.keys(), *x.keys()}:
+                        center[k]
+                return euclidean_distance_squared_dict(center, x)
             return sum(
                 (abs(center[k] - x.get(k, 0))) ** self.p for k in {*center.keys(), *x.keys()}
             )

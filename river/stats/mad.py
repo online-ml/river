@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import cast
+
 from . import quantile
 
 
@@ -38,15 +40,16 @@ class MAD(quantile.Quantile):
 
     References
     ----------
-    [^1]: [Median absolute deviation article on Wikipedia](https://www.wikiwand.com/en/Median_absolute_deviation)
+    [^1]: [Median absolute deviation article on Wikipedia](https://en.wikipedia.org/wiki/Median_absolute_deviation)
 
     """
 
     #
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(q=0.5)
         self.median = quantile.Quantile(q=0.5)
 
-    def update(self, x):
+    def update(self, x: float) -> None:
         self.median.update(x)
-        super().update(abs(x - self.median.get()))
+        # TODO: drop the cast once get() raises stats.NotEnoughSamples instead of returning None
+        super().update(abs(x - cast(float, self.median.get())))

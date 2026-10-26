@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import collections
+import typing
 
-from river import optim
+from river import base, optim
+from river.optim.base import DictLike
 
 __all__ = ["AdaDelta"]
 
@@ -47,17 +49,19 @@ class AdaDelta(optim.base.Optimizer):
 
     """
 
-    def __init__(self, rho=0.95, eps=1e-8):
-        super().__init__(lr=None)
+    def __init__(self, rho: float = 0.95, eps: float = 1e-8):
+        # AdaDelta has no global learning rate (it derives per-coordinate steps from `rho`). We pass
+        # an inert 0 so the base keeps a valid `Scheduler`; `learning_rate` is never read here.
+        super().__init__(lr=0.0)
         self.rho = rho
         self.eps = eps
-        self.g2 = collections.defaultdict(float)
-        self.s2 = collections.defaultdict(float)
+        self.g2: dict[base.typing.FeatureName, typing.Any] = collections.defaultdict(float)
+        self.s2: dict[base.typing.FeatureName, typing.Any] = collections.defaultdict(float)
 
-    def _rms(self, x):
+    def _rms(self, x: typing.Any) -> typing.Any:
         return (x + self.eps) ** 0.5
 
-    def _step_with_dict(self, w, g):
+    def _step_with_dict(self, w: DictLike, g: DictLike) -> DictLike:
         for i, gi in g.items():
             # Accumulate the gradient
             self.g2[i] = self.rho * self.g2[i] + (1 - self.rho) * gi**2

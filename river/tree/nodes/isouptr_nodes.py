@@ -1,12 +1,10 @@
 from __future__ import annotations
 
 import collections
-import functools
 import inspect
 from copy import deepcopy
 
 from river.stats import Var
-from river.utils import VectorDict
 
 from .htr_nodes import LeafMean
 
@@ -30,7 +28,7 @@ class LeafMeanMultiTarget(LeafMean):
     """
 
     def __init__(self, stats, depth, splitter, **kwargs):
-        stats = stats if stats else VectorDict(default_factory=functools.partial(Var))
+        stats = stats if stats else collections.defaultdict(Var)
         super().__init__(stats, depth, splitter, **kwargs)
 
     def update_stats(self, y, w):

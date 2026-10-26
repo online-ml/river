@@ -83,8 +83,8 @@ class KSWIN(DriftDetector):
         window_size: int = 100,
         stat_size: int = 30,
         seed: int | None = None,
-        window: typing.Iterable | None = None,
-    ):
+        window: typing.Iterable[int | float] | None = None,
+    ) -> None:
         super().__init__()
         if alpha < 0 or alpha > 1:
             raise ValueError("Alpha must be between 0 and 1.")
@@ -105,14 +105,14 @@ class KSWIN(DriftDetector):
         if window:
             self.window = collections.deque(window, maxlen=self.window_size)
 
-    def _reset(self):
+    def _reset(self) -> None:
         super()._reset()
         self.p_value = 0
         self.n = 0
         self.window = collections.deque(maxlen=self.window_size)
         self._rng = random.Random(self.seed)
 
-    def update(self, x):
+    def update(self, x: int | float) -> None:
         """Update the change detector with a single data point.
 
         Adds an element on top of the sliding window and removes the oldest one from the window.
@@ -122,10 +122,6 @@ class KSWIN(DriftDetector):
         ----------
         x
             New data sample the sliding window should add.
-
-        Returns
-        -------
-        self
 
         """
 
@@ -158,5 +154,5 @@ class KSWIN(DriftDetector):
             self._drift_detected = False
 
     @classmethod
-    def _unit_test_params(cls):
+    def _unit_test_params(cls) -> typing.Iterator[dict[str, typing.Any]]:
         yield {"seed": 1}

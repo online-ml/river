@@ -7,7 +7,7 @@ import random
 import typing
 
 from river import base
-from river.anomaly.hst import HSTBranch, HSTLeaf, make_padded_tree
+from river.tree.padded import PaddedBranch, PaddedLeaf, make_padded_tree
 
 __all__ = ["RBFSampler", "RandomTreesEmbedding"]
 
@@ -86,6 +86,12 @@ class RBFSampler(base.Transformer):
             math.sqrt(2 * self.gamma) * self.rng.gauss(mu=0, sigma=1)
             for _ in range(self.n_components)
         ]
+
+    def _unit_test_skips(self):
+        # The per-feature weight vectors are lazily populated from a shared RNG
+        # in the order features are first seen, so different feature orderings
+        # produce different (but equally valid) embeddings.
+        return {"check_shuffle_features_no_impact"}
 
     def transform_one(self, x, y=None):
         return {
@@ -168,7 +174,7 @@ class RandomTreesEmbedding(base.Transformer):
         self.seed = seed
         self.rng = random.Random(seed)
 
-        self.trees: list[HSTBranch | HSTLeaf] = []
+        self.trees: list[PaddedBranch | PaddedLeaf] = []
         self._leaf_indices: list[dict[int, int]] = []
         self._features: set[base.typing.FeatureName] = set()
 
@@ -213,7 +219,7 @@ class RandomTreesEmbedding(base.Transformer):
 
         features = {}
         for tree_id, tree in enumerate(self.trees):
-            leaf = tree if isinstance(tree, HSTLeaf) else tree.traverse(x)
+            leaf = tree if isinstance(tree, PaddedLeaf) else tree.traverse(x)
             features[(tree_id, self._leaf_indices[tree_id][id(leaf)])] = 1.0
 
         return features

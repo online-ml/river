@@ -66,7 +66,7 @@ class PageHinkley(DriftDetector):
         threshold: float = 50.0,
         alpha: float = 1 - 0.0001,
         mode: str = "both",
-    ):
+    ) -> None:
         super().__init__()
         self.min_instances = min_instances
         self.delta = delta
@@ -80,14 +80,14 @@ class PageHinkley(DriftDetector):
 
         self._reset()
 
-    def _reset(self):
+    def _reset(self) -> None:
         super()._reset()
         self._x_mean = stats.Mean()
         self._sum_increase = 0.0
         self._sum_decrease = 0.0
 
         self._min_increase = float("inf")
-        self._max_decrease = -1
+        self._max_decrease = float("-inf")
 
         if self.mode == self._MODE_UP:
             self._test_drift = self._test_increase
@@ -96,16 +96,16 @@ class PageHinkley(DriftDetector):
         else:
             self._test_drift = self._test_both
 
-    def _test_increase(self, test_increase, test_decrease) -> bool:
+    def _test_increase(self, test_increase: float, test_decrease: float) -> bool:
         return test_increase > self.threshold
 
-    def _test_decrease(self, test_increase, test_decrease) -> bool:
+    def _test_decrease(self, test_increase: float, test_decrease: float) -> bool:
         return test_decrease > self.threshold
 
-    def _test_both(self, test_increase, test_decrease) -> bool:
+    def _test_both(self, test_increase: float, test_decrease: float) -> bool:
         return test_increase > self.threshold or test_decrease > self.threshold
 
-    def update(self, x):
+    def update(self, x: int | float) -> None:
         if self.drift_detected:
             self._reset()
 

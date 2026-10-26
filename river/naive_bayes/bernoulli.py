@@ -2,12 +2,17 @@ from __future__ import annotations
 
 import collections
 import math
+import typing
 
 import numpy as np
-import pandas as pd
 from scipy import sparse
 
+from river import utils
+
 from . import base
+
+if typing.TYPE_CHECKING:
+    import pandas as pd
 
 __all__ = ["BernoulliNB"]
 
@@ -249,6 +254,7 @@ class BernoulliNB(base.BaseNB):
         Input samples joint log likelihood.
 
         """
+        pd = utils.pandas.import_pandas()
         unknown = [x for x in X.columns if x not in self.feature_counts]
         missing = [x for x in self.feature_counts if x not in X.columns]
 

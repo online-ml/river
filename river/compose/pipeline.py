@@ -3,31 +3,56 @@ from __future__ import annotations
 import collections
 import contextlib
 import functools
+import inspect
 import io
 import itertools
 import types
 import typing
 
-import pandas as pd
-
 from river import base
+
+if typing.TYPE_CHECKING:
+    from narwhals.stable.v2.typing import IntoDataFrame, IntoSeries
 
 from . import func, union
 
-
-def _anomaly_filter_cls():
-    from river.anomaly.base import AnomalyFilter
-
-    return AnomalyFilter
-
-
-def _anomaly_detector_cls():
-    from river.anomaly.base import AnomalyDetector
-
-    return AnomalyDetector
-
-
 __all__ = ["Pipeline"]
+
+
+def _method_params(step: base.Estimator, method: str) -> frozenset[str] | None:
+    """Names of the extra keyword arguments a step's `method` can receive.
+
+    This powers the pipeline's lightweight parameter routing: it is computed once, when the
+    execution plan is built, and consulted to forward arguments such as the timestamp `t` used by
+    `utils.TimeRolling` only to the steps (and methods) that declare them.
+
+    Returns `None` when the method accepts arbitrary keyword arguments (`**kwargs`), meaning every
+    extra argument should be forwarded, or when the method is absent/non-introspectable. The
+    `self`/`x`/`y` arguments are excluded since the pipeline always supplies those explicitly.
+
+    The signature is read off the class rather than the instance so it keeps working under
+    `utils.log_method_calls`, which patches instance attribute access.
+
+    """
+    try:
+        params = inspect.signature(getattr(type(step), method)).parameters
+    except (ValueError, TypeError, AttributeError):
+        return None
+    if any(p.kind is p.VAR_KEYWORD for p in params.values()):
+        return None
+    return frozenset(params) - {"self", "x", "y"}
+
+
+def _route(accepted: frozenset[str] | None, params: dict) -> dict:
+    """Subset of `params` a step accepts, per its precomputed `accepted` set (`None` = all)."""
+    if accepted is None or not params:
+        return params
+    return {name: params[name] for name in accepted & params.keys()}
+
+
+# Last-step methods whose extra arguments are routed (the predict-time entry points, plus
+# `learn_one` for an unsupervised final transformer that learns during `predict`/`transform`).
+_LAST_STEP_METHODS = ("learn_one", "predict_one", "predict_proba_one", "score_one", "transform_one")
 
 
 @contextlib.contextmanager
@@ -49,6 +74,7 @@ def learn_during_predict():
 
     >>> import io
     >>> import logging
+    >>> import pandas as pd
     >>> from river import compose
     >>> from river import datasets
     >>> from river import linear_model
@@ -174,6 +200,7 @@ class Pipeline(base.Estimator):
     Pipeline (
       StandardScaler (
         with_std=True
+        window_size=None
       ),
       LinearRegression (
         optimizer=SGD (
@@ -289,8 +316,60 @@ class Pipeline(base.Estimator):
 
     def __init__(self, *steps) -> None:
         self.steps: collections.OrderedDict = collections.OrderedDict()
+        self._plan: tuple | None = None
+        self._inference_transformers: tuple = ()
+        self._last_step_cached: typing.Any = None
         for step in steps:
             self |= step
+
+    def _build_plan(self) -> tuple:
+        """Build a cached execution plan describing each step's role.
+
+        Each item is a tuple ``(kind, step, *info)`` where ``kind`` is one of
+        ``"anomaly"``, ``"transformer"``, ``"union"``, ``"final"``. This avoids
+        repeated `isinstance` checks and ``_supervised`` property lookups on the
+        per-event hot path.
+
+        The plan also records, per step, which extra keyword arguments its `learn_one`
+        accepts (see `_method_params`). This is the routing "blueprint": signature
+        introspection happens here, once per plan, so that `learn_one` (and the predict-time
+        methods) can forward arguments such as a `utils.TimeRolling` timestamp `t` to the steps
+        that declare them without any per-event inspection.
+        """
+        UnionCls = union.TransformerUnion
+        TransformerCls = base.Transformer
+
+        plan: list[tuple] = []
+        for step in self.steps.values():
+            if isinstance(step, base.AnomalyFilter):
+                plan.append(("anomaly", step, step._supervised, _method_params(step, "learn_one")))
+            elif isinstance(step, TransformerCls):
+                if isinstance(step, UnionCls):
+                    # Each sub is stored alongside its accepted-parameter set.
+                    sup_subs: list = []
+                    unsup_subs: list = []
+                    for sub in step.transformers.values():
+                        bucket = sup_subs if sub._supervised else unsup_subs
+                        bucket.append((sub, _method_params(sub, "learn_one")))
+                    plan.append(("union", step, sup_subs, unsup_subs))
+                else:
+                    plan.append(
+                        ("transformer", step, step._supervised, _method_params(step, "learn_one"))
+                    )
+            else:
+                plan.append(("final", step, step._supervised, _method_params(step, "learn_one")))
+        self._plan = tuple(plan)
+        # Precomputed fast-path inference list: intermediate non-anomaly transformers.
+        # Used by `_transform_one` to avoid per-call slicing and anomaly checks.
+        self._inference_transformers = tuple(item[1] for item in plan[:-1] if item[0] != "anomaly")
+        last = plan[-1][1] if plan else None
+        self._last_step_cached = last
+        # Accepted extra arguments for the last step's prediction-time methods, so the predict
+        # entry points can route the same way `learn_one` does (e.g. drop a learn-only `t`).
+        self._last_step_params = (
+            {m: _method_params(last, m) for m in _LAST_STEP_METHODS} if last is not None else {}
+        )
+        return self._plan
 
     def __getitem__(self, key):
         """Just for convenience."""
@@ -426,6 +505,9 @@ class Pipeline(base.Estimator):
         if at_start:
             self.steps.move_to_end(name, last=False)
 
+        # Invalidate the cached plan
+        self._plan = None
+
     # Single instance methods
 
     def learn_one(self, x: dict, y=None, **params):
@@ -440,84 +522,89 @@ class Pipeline(base.Estimator):
 
         """
 
-        # Loop over the first n - 1 steps, which should all be transformers
-        for step in self.steps.values():
-            # There might be an anomaly filter in the pipeline. Its purpose is to prevent anomalous
-            # data from being learned by the subsequent parts of the pipeline.
-            if isinstance(step, _anomaly_filter_cls()):
-                if step._supervised:
-                    step.learn_one(x, y)
+        plan = self._plan if self._plan is not None else self._build_plan()
+        learn_during_predict = self._LEARN_UNSUPERVISED_DURING_PREDICT
+
+        # `params` carries any extra `learn_one` arguments, e.g. a `utils.TimeRolling` timestamp
+        # `t`. Each delegation forwards only the subset its step declared at plan-build time (see
+        # `_method_params`). With no extra arguments — the common case — `_route` returns the empty
+        # `params` untouched, so the hot loop keeps its original cost.
+        for item in plan:
+            kind = item[0]
+            step = item[1]
+
+            if kind == "transformer":
+                is_supervised = item[2]
+                x_pre = x
+                if not learn_during_predict and not is_supervised:
+                    step.learn_one(x, **_route(item[3], params))
+                x = step.transform_one(x)
+                if is_supervised:
+                    step.learn_one(x=x_pre, y=y, **_route(item[3], params))  # type: ignore
+
+            elif kind == "union":
+                sup_subs = item[2]
+                unsup_subs = item[3]
+                x_pre = x
+                if not learn_during_predict:
+                    for sub, accepted in unsup_subs:
+                        sub.learn_one(x, **_route(accepted, params))
+                x = step.transform_one(x)
+                for sub, accepted in sup_subs:
+                    sub.learn_one(x=x_pre, y=y, **_route(accepted, params))
+
+            elif kind == "final":
+                if item[2]:
+                    step.learn_one(x=x, y=y, **_route(item[3], params))
+                else:
+                    step.learn_one(x=x)
+
+            else:  # "anomaly"
+                # There might be an anomaly filter in the pipeline. Its purpose is to prevent
+                # anomalous data from being learned by the subsequent parts of the pipeline.
+                if item[2]:
+                    step.learn_one(x, y, **_route(item[3], params))
                     score = step.score_one(x, y)
                 else:
-                    step.learn_one(x)
+                    step.learn_one(x, **_route(item[3], params))
                     score = step.score_one(x)
-                # Skip the next parts of the pipeline if the score is classified as anomalous
                 if step.classify(score):
                     break
-                continue
 
-            x_pre = x
-            if isinstance(step, base.Transformer):
-                # In case of _LEARN_UNSUPERVISED_DURING_PREDICT, then the unsupervised transformers
-                # are updated before transforming.
-                if not self._LEARN_UNSUPERVISED_DURING_PREDICT:
-                    if isinstance(step, union.TransformerUnion):
-                        for sub_step in step.transformers.values():
-                            if not sub_step._supervised:
-                                sub_step.learn_one(x)
-                    elif not step._supervised:
-                        step.learn_one(x)
-                # Transform the data
-                x = step.transform_one(x)
-
-            # The supervised transformers have to be updated.
-            # Note that this is done after transforming in order to avoid target leakage.
-            if isinstance(step, base.Transformer):
-                if isinstance(step, union.TransformerUnion):
-                    for sub_step in step.transformers.values():
-                        if sub_step._supervised:
-                            sub_step.learn_one(x=x_pre, y=y)
-                # Here the step is a supervised transformer, such as a TargetAgg. It's important
-                # to pass the original features to the transformer, not the transformed ones.
-                elif step._supervised:
-                    step.learn_one(x=x_pre, y=y)  # type: ignore
-            # Here the step is not a transformer, and it's supervised, such as a LinearRegression.
-            # This is usually the last step of the pipeline.
-            elif step._supervised:
-                step.learn_one(x=x, y=y, **params)
-            # Here the step is not a transformer, and it's unsupervised, such as a KMeans. This
-            # is also usually the last step of the pipeline.
-            else:
-                step.learn_one(x=x)
-
-    def _transform_one(self, x: dict):
+    def _transform_one(self, x: dict, params: dict | None = None):
         """This methods takes care of applying the first n - 1 steps of the pipeline, which are
         supposedly transformers. It also returns the final step so that other functions can do
         something with it.
 
+        `params` are the extra keyword arguments passed to the calling predict-time method; they
+        are only consumed on the learn-during-predict slow path, where they are routed to each
+        unsupervised step exactly as in `learn_one`.
+
         """
 
-        steps = iter(self.steps.values())
+        plan = self._plan if self._plan is not None else self._build_plan()
 
-        for t in itertools.islice(steps, len(self) - 1):
-            # An anomaly filter is a no-op during inference
-            if isinstance(t, _anomaly_filter_cls()):
+        # Fast path: typical inference, no learn-during-predict.
+        if not self._LEARN_UNSUPERVISED_DURING_PREDICT:
+            for t in self._inference_transformers:
+                x = t.transform_one(x)
+            return x, self._last_step_cached
+
+        # Slow path: learn unsupervised steps before transforming.
+        extra = params or {}
+        for item in plan[:-1]:
+            kind = item[0]
+            if kind == "anomaly":
                 continue
+            step = item[1]
+            if kind == "union":
+                for sub, accepted in item[3]:  # unsup_subs
+                    sub.learn_one(x, **_route(accepted, extra))
+            elif not item[2]:  # transformer, not supervised
+                step.learn_one(x, **_route(item[3], extra))
+            x = step.transform_one(x)
 
-            # In case of _LEARN_UNSUPERVISED_DURING_PREDICT, then the unsupervised transformers
-            # are updated during the inference phase.
-            if self._LEARN_UNSUPERVISED_DURING_PREDICT:
-                if isinstance(t, union.TransformerUnion):
-                    for sub_t in t.transformers.values():
-                        if not sub_t._supervised:
-                            sub_t.learn_one(x)
-                elif not t._supervised:
-                    t.learn_one(x)
-
-            x = t.transform_one(x)
-
-        last_step = next(steps)
-        return x, last_step
+        return x, self._last_step_cached
 
     def transform_one(self, x: dict, **params):
         """Apply each transformer in the pipeline to some features.
@@ -527,11 +614,13 @@ class Pipeline(base.Estimator):
         that precede the final step are assumed to all be transformers.
 
         """
-        x, last_step = self._transform_one(x)
+        x, last_step = self._transform_one(x, params)
         if isinstance(last_step, base.Transformer):
             if not last_step._supervised and self._LEARN_UNSUPERVISED_DURING_PREDICT:
-                last_step.learn_one(x)
-            return last_step.transform_one(x, **params)
+                last_step.learn_one(x, **_route(self._last_step_params["learn_one"], params))
+            return last_step.transform_one(
+                x, **_route(self._last_step_params["transform_one"], params)
+            )
         return x
 
     def predict_one(self, x: dict, **params):
@@ -543,8 +632,8 @@ class Pipeline(base.Estimator):
             A dictionary of features.
 
         """
-        x, last_step = self._transform_one(x)
-        return last_step.predict_one(x, **params)
+        x, last_step = self._transform_one(x, params)
+        return last_step.predict_one(x, **_route(self._last_step_params["predict_one"], params))
 
     def predict_proba_one(self, x: dict, **params):
         """Call `transform_one` on the first steps and `predict_proba_one` on the last step.
@@ -555,8 +644,10 @@ class Pipeline(base.Estimator):
             A dictionary of features.
 
         """
-        x, last_step = self._transform_one(x)
-        return last_step.predict_proba_one(x, **params)
+        x, last_step = self._transform_one(x, params)
+        return last_step.predict_proba_one(
+            x, **_route(self._last_step_params["predict_proba_one"], params)
+        )
 
     def score_one(self, x: dict, **params):
         """Call `transform_one` on the first steps and `score_one` on the last step.
@@ -567,8 +658,8 @@ class Pipeline(base.Estimator):
             A dictionary of features.
 
         """
-        x, last_step = self._transform_one(x)
-        return last_step.score_one(x, **params)
+        x, last_step = self._transform_one(x, params)
+        return last_step.score_one(x, **_route(self._last_step_params["score_one"], params))
 
     def forecast(self, horizon: int, xs: list[dict] | None = None):
         """Return a forecast.
@@ -663,7 +754,7 @@ class Pipeline(base.Estimator):
 
             if isinstance(final, base.Classifier):
                 print_dict(final.predict_proba_one(x), show_types=False, space_after=False)
-            elif isinstance(final, _anomaly_detector_cls()):
+            elif isinstance(final, base.AnomalyDetector):
                 _print(f"Score: {format_value(final.score_one(x))}")
             else:
                 _print(f"Prediction: {format_value(final.predict_one(x))}")
@@ -672,7 +763,7 @@ class Pipeline(base.Estimator):
 
     # Mini-batch methods
 
-    def learn_many(self, X: pd.DataFrame, y: pd.Series | None = None, **params):
+    def learn_many(self, X: IntoDataFrame, y: IntoSeries | None = None, **params):
         """Fit to a mini-batch.
 
         Parameters
@@ -715,7 +806,7 @@ class Pipeline(base.Estimator):
         else:
             last_step.learn_many(X=X, **params)
 
-    def _transform_many(self, X: pd.DataFrame):
+    def _transform_many(self, X: IntoDataFrame):
         """This methods takes care of applying the first n - 1 steps of the pipeline, which are
         supposedly transformers. It also returns the final step so that other functions can do
         something with it.
@@ -739,7 +830,7 @@ class Pipeline(base.Estimator):
         last_step = next(steps)
         return X, last_step
 
-    def transform_many(self, X: pd.DataFrame):
+    def transform_many(self, X: IntoDataFrame):
         """Apply each transformer in the pipeline to some features.
 
         The final step in the pipeline will be applied if it is a transformer. If not, then it will
@@ -749,17 +840,17 @@ class Pipeline(base.Estimator):
         """
         X, last_step = self._transform_many(X=X)
         if isinstance(last_step, base.MiniBatchTransformer):
-            if not last_step._supervised and not self._LEARN_UNSUPERVISED_DURING_PREDICT:
+            if not last_step._supervised and self._LEARN_UNSUPERVISED_DURING_PREDICT:
                 last_step.learn_many(X)
             return last_step.transform_many(X)
         return X
 
-    def predict_many(self, X: pd.DataFrame):
+    def predict_many(self, X: IntoDataFrame):
         """Call transform_many, and then predict_many on the final step."""
         X, last_step = self._transform_many(X=X)
         return last_step.predict_many(X=X)
 
-    def predict_proba_many(self, X: pd.DataFrame):
+    def predict_proba_many(self, X: IntoDataFrame):
         """Call transform_many, and then predict_proba_many on the final step."""
         X, last_step = self._transform_many(X=X)
         return last_step.predict_proba_many(X=X)

@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import collections
+import typing
 
-from river import optim
+from river import base, optim
+from river.optim.base import DictLike
 
 __all__ = ["AdaGrad"]
 
@@ -46,12 +48,12 @@ class AdaGrad(optim.base.Optimizer):
 
     """
 
-    def __init__(self, lr=0.1, eps=1e-8):
+    def __init__(self, lr: int | float | optim.base.Scheduler = 0.1, eps: float = 1e-8):
         super().__init__(lr)
         self.eps = eps
-        self.g2 = collections.defaultdict(float)
+        self.g2: dict[base.typing.FeatureName, typing.Any] = collections.defaultdict(float)
 
-    def _step_with_dict(self, w, g):
+    def _step_with_dict(self, w: DictLike, g: DictLike) -> DictLike:
         for i, gi in g.items():
             self.g2[i] += gi**2
             w[i] -= self.learning_rate / (self.g2[i] + self.eps) ** 0.5 * gi

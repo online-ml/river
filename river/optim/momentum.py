@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import collections
+import typing
 
-from river import optim
+from river import base, optim
+from river.optim.base import DictLike
 
 __all__ = ["Momentum"]
 
@@ -38,12 +40,12 @@ class Momentum(optim.base.Optimizer):
 
     """
 
-    def __init__(self, lr=0.1, rho=0.9):
+    def __init__(self, lr: int | float | optim.base.Scheduler = 0.1, rho: float = 0.9):
         super().__init__(lr)
         self.rho = rho
-        self.s = collections.defaultdict(float)
+        self.s: dict[base.typing.FeatureName, typing.Any] = collections.defaultdict(float)
 
-    def _step_with_dict(self, w, g):
+    def _step_with_dict(self, w: DictLike, g: DictLike) -> DictLike:
         for i, gi in g.items():
             self.s[i] = self.rho * self.s[i] + self.learning_rate * gi
             w[i] -= self.s[i]

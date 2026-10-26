@@ -3,12 +3,16 @@ from __future__ import annotations
 import collections
 import contextlib
 import copy
+import gc
 import inspect
-import itertools
 import logging
 import sys
 import types
 import typing
+import warnings
+
+from river.__version__ import __version__
+from river.exceptions import InconsistentVersionWarning
 
 
 class Base:
@@ -21,6 +25,44 @@ class Base:
     - Mutating/cloning
 
     """
+
+    def __getstate__(self) -> typing.Any:
+        state = object.__getstate__(self)
+        if isinstance(state, tuple):
+            attributes, slots = state
+            attributes = {} if attributes is None else attributes.copy()
+            if type(self).__module__.startswith("river."):
+                attributes["_river_version"] = __version__
+            return attributes, slots
+
+        assert state is None or isinstance(state, dict)
+        state = {} if state is None else state.copy()
+        if type(self).__module__.startswith("river."):
+            state["_river_version"] = __version__
+        return state
+
+    def __setstate__(self, state: typing.Any) -> None:
+        if isinstance(state, tuple):
+            attributes, slots = state
+        else:
+            attributes, slots = state, {}
+        attributes = {} if attributes is None else attributes
+        assert isinstance(attributes, dict)
+        assert isinstance(slots, dict)
+        if type(self).__module__.startswith("river."):
+            pickle_version = attributes.pop("_river_version", "unknown")
+            if pickle_version != __version__:
+                warnings.warn(
+                    InconsistentVersionWarning(
+                        estimator_name=self.__class__.__name__,
+                        current_river_version=__version__,
+                        original_river_version=pickle_version,
+                    ),
+                    stacklevel=2,
+                )
+        self.__dict__.update(attributes)
+        for name, value in slots.items():
+            setattr(self, name, value)
 
     def __str__(self) -> str:
         return self.__class__.__name__
@@ -148,6 +190,7 @@ class Base:
         Pipeline (
           StandardScaler (
             with_std=True
+            window_size=None
           ),
           LinearRegression (
             optimizer=SGD (
@@ -277,6 +320,7 @@ class Base:
         Pipeline (
           StandardScaler (
             with_std=True
+            window_size=None
           ),
           LinearRegression (
             optimizer=SGD (
@@ -352,41 +396,39 @@ class Base:
 
     @property
     def _raw_memory_usage(self) -> int:
-        """Return the memory usage in bytes."""
+        """Return the memory usage in bytes.
+
+        Uses :func:`gc.get_referents` to walk the object graph, which is the
+        canonical stdlib recipe referenced by ``sys.getsizeof``'s documentation.
+        Compared to a hand-rolled traversal, it handles ``__slots__`` instances,
+        arbitrary containers, and (critically) does not consume generators or
+        other one-shot iterators. The only special case left is
+        :class:`numpy.ndarray`, whose data buffer is not GC-tracked.
+        """
 
         import numpy as np
 
-        buffer: collections.deque[typing.Any] = collections.deque([self])
-        seen = set()
+        # Walking into these would drag in the whole interpreter (every class
+        # references its module, every function its globals, etc.).
+        blacklist = (type, types.ModuleType, types.FunctionType)
+
+        seen: set[int] = set()
         size = 0
-        while len(buffer) > 0:
-            obj = buffer.popleft()
-            obj_id = id(obj)
-            if obj_id in seen:
-                continue
-            size += sys.getsizeof(obj)
-            # Important mark as seen to gracefully handle self-referential objects
-            seen.add(obj_id)
-            if isinstance(obj, dict):
-                buffer.extend([k for k in obj.keys()])
-                buffer.extend([v for v in obj.values()])
-            elif hasattr(obj, "__dict__"):  # Save object contents
-                contents = vars(obj)
-                size += sys.getsizeof(contents)
-                buffer.extend([k for k in contents.keys()])
-                buffer.extend([v for v in contents.values()])
-            elif isinstance(obj, np.ndarray):
-                size += obj.nbytes
-            elif (
-                isinstance(obj, itertools.count)
-                or isinstance(obj, itertools.cycle)
-                or isinstance(obj, itertools.repeat)
-            ):
-                ...
-            elif hasattr(obj, "__iter__") and not (
-                isinstance(obj, str) or isinstance(obj, bytes) or isinstance(obj, bytearray)
-            ):
-                buffer.extend([i for i in obj])
+        pending: list[typing.Any] = [self]
+        while pending:
+            next_round: list[typing.Any] = []
+            for obj in pending:
+                if isinstance(obj, blacklist):
+                    continue
+                obj_id = id(obj)
+                if obj_id in seen:
+                    continue
+                seen.add(obj_id)
+                size += sys.getsizeof(obj)
+                if isinstance(obj, np.ndarray):
+                    size += obj.nbytes
+                next_round.append(obj)
+            pending = gc.get_referents(*next_round)
 
         return size
 

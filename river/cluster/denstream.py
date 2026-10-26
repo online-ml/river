@@ -5,7 +5,8 @@ import math
 from abc import ABCMeta
 from collections import defaultdict, deque
 
-from river import base, utils
+from river import base
+from river.utils.vectordict import euclidean_distance_dict
 
 
 class DenStream(base.Clusterer):
@@ -113,20 +114,20 @@ class DenStream(base.Clusterer):
     >>> denstream = cluster.DenStream(decaying_factor=0.01,
     ...                               beta=0.5,
     ...                               mu=2.5,
-    ...                               epsilon=0.5,
+    ...                               epsilon=1.0,
     ...                               n_samples_init=10)
 
     >>> for x, _ in stream.iter_array(X):
     ...     denstream.learn_one(x)
 
     >>> denstream.predict_one({0: -1, 1: -2})
-    1
+    0
 
     >>> denstream.predict_one({0: 5, 1: 4})
     2
 
     >>> denstream.predict_one({0: 1, 1: 1})
-    0
+    1
 
     >>> denstream.n_clusters
     3
@@ -134,6 +135,8 @@ class DenStream(base.Clusterer):
     """
 
     class BufferItem:
+        __slots__ = ("x", "timestamp", "covered")
+
         def __init__(self, x, timestamp, covered):
             self.x = x
             self.timestamp = (timestamp,)
@@ -168,7 +171,7 @@ class DenStream(base.Clusterer):
         self._time_period = math.ceil(
             (1 / self.decaying_factor) * math.log((self.mu * self.beta) / (self.mu * self.beta - 1))
         )
-        self._init_buffer: deque[dict] = deque()
+        self._init_buffer: deque[DenStream.BufferItem] = deque()
         self._n_samples_seen = 0
 
         # check that the value of beta is within the range (0,1]
@@ -183,14 +186,13 @@ class DenStream(base.Clusterer):
 
     @staticmethod
     def _distance(point_a, point_b):
-        return utils.math.minkowski_distance(point_a, point_b, 2)
+        return euclidean_distance_dict(point_a, point_b)
 
     def _get_closest_cluster_key(self, point, clusters):
         min_distance = math.inf
         key = -1
         for k, cluster in clusters.items():
-            center = cluster.calc_center(self.timestamp)
-            distance = self._distance(center, point)
+            distance = euclidean_distance_dict(cluster.center, point)
             if distance < min_distance:
                 min_distance = distance
                 key = k
@@ -203,25 +205,22 @@ class DenStream(base.Clusterer):
         if len(self.p_micro_clusters) != 0:
             # try to merge p into its nearest p-micro-cluster c_p
             closest_pmc_key = self._get_closest_cluster_key(point, self.p_micro_clusters)
-            updated_pmc = copy.copy(self.p_micro_clusters[closest_pmc_key])
-            updated_pmc.insert(point, self.timestamp)
-            if updated_pmc.calc_radius(self.timestamp) <= self.epsilon:
+            closest_pmc = self.p_micro_clusters[closest_pmc_key]
+            if closest_pmc.radius_with(point) <= self.epsilon:
                 # keep updated p-micro-cluster
-                self.p_micro_clusters[closest_pmc_key] = updated_pmc
+                closest_pmc.insert(point, self.timestamp)
                 merged_status = True
 
         if not merged_status and len(self.o_micro_clusters) != 0:
             closest_omc_key = self._get_closest_cluster_key(point, self.o_micro_clusters)
-            updated_omc = copy.copy(self.o_micro_clusters[closest_omc_key])
-            updated_omc.insert(point, self.timestamp)
-            if updated_omc.calc_radius(self.timestamp) <= self.epsilon:
+            closest_omc = self.o_micro_clusters[closest_omc_key]
+            if closest_omc.radius_with(point) <= self.epsilon:
+                closest_omc.insert(point, self.timestamp)
                 # keep updated o-micro-cluster
-                if updated_omc.calc_weight(self.timestamp) > self.mu * self.beta:
+                if closest_omc.calc_weight(self.timestamp) > self.mu * self.beta:
                     # it has grown into a p-micro-cluster
                     del self.o_micro_clusters[closest_omc_key]
-                    self.p_micro_clusters[len(self.p_micro_clusters)] = updated_omc
-                else:
-                    self.o_micro_clusters[closest_omc_key] = updated_omc
+                    self.p_micro_clusters[max(self.p_micro_clusters, default=-1) + 1] = closest_omc
             else:
                 # create a new o-micro-cluster by p and add it to o_micro_clusters
                 mc_from_p = DenStreamMicroCluster(
@@ -229,7 +228,7 @@ class DenStream(base.Clusterer):
                     timestamp=self.timestamp,
                     decaying_factor=self.decaying_factor,
                 )
-                self.o_micro_clusters[len(self.o_micro_clusters)] = mc_from_p
+                self.o_micro_clusters[max(self.o_micro_clusters, default=-1) + 1] = mc_from_p
             merged_status = True
 
         # when p is not merged and o-micro-cluster set is empty
@@ -243,9 +242,7 @@ class DenStream(base.Clusterer):
     def _is_directly_density_reachable(self, c_p, c_q):
         if c_p.calc_weight(self.timestamp) > self.mu and c_q.calc_weight(self.timestamp) > self.mu:
             # check distance of two clusters and compare with 2*epsilon
-            c_p_center = c_p.calc_center(self.timestamp)
-            c_q_center = c_q.calc_center(self.timestamp)
-            distance = self._distance(c_p_center, c_q_center)
+            distance = euclidean_distance_dict(c_p.center, c_q.center)
             if distance < 2 * self.epsilon and distance <= c_p.calc_radius(
                 self.timestamp
             ) + c_q.calc_radius(self.timestamp):
@@ -293,7 +290,7 @@ class DenStream(base.Clusterer):
         neighborhood_ids = deque()
         for idx, other in enumerate(self._init_buffer):
             if not other.covered:
-                if self._distance(item.x, other.x) < self.epsilon:
+                if euclidean_distance_dict(item.x, other.x) < self.epsilon:
                     neighborhood_ids.append(idx)
         return neighborhood_ids
 
@@ -309,7 +306,7 @@ class DenStream(base.Clusterer):
                         decaying_factor=self.decaying_factor,
                     )
                     self._expand_cluster(mc, neighborhood)
-                    self.p_micro_clusters.update({len(self.p_micro_clusters): mc})
+                    self.p_micro_clusters[max(self.p_micro_clusters, default=-1) + 1] = mc
                 else:
                     item.covered = False
 
@@ -384,7 +381,7 @@ class DenStream(base.Clusterer):
                     neighbor_neighbors = self._query_neighbor(seed_queue[0])
                     # add new neighbors to seed set
                     for neighbor_neighbor in neighbor_neighbors:
-                        if labels[neighbor_neighbor] is not None:
+                        if labels[neighbor_neighbor] is None:
                             seed_queue.append(neighbor_neighbor)
 
         self.n_clusters, self.clusters = self._generate_clusters_for_labels(labels)
@@ -395,6 +392,17 @@ class DenStream(base.Clusterer):
 class DenStreamMicroCluster(metaclass=ABCMeta):
     """DenStream Micro-cluster class"""
 
+    __slots__ = (
+        "x",
+        "last_edit_time",
+        "creation_time",
+        "decaying_factor",
+        "N",
+        "linear_sum",
+        "squared_sum",
+        "_center",
+    )
+
     def __init__(self, x, timestamp, decaying_factor):
         self.x = x
         self.last_edit_time = timestamp
@@ -402,63 +410,94 @@ class DenStreamMicroCluster(metaclass=ABCMeta):
         self.decaying_factor = decaying_factor
 
         self.N = 1
-        self.linear_sum = x
+        # Copy x so subsequent mutations don't alias the caller's dict.
+        self.linear_sum = dict(x)
         self.squared_sum = {i: (x_val * x_val) for i, x_val in x.items()}
-
-    def calc_norm_cf1_cf2(self, fading_factor):
-        # |CF1| and |CF2| in the paper
-        sum_of_squares_cf1 = 0
-        sum_of_squares_cf2 = 0
-        for key in self.linear_sum.keys():
-            val_ls = self.linear_sum[key]
-            val_ss = self.squared_sum[key]
-            sum_of_squares_cf1 += fading_factor * val_ls * fading_factor * val_ls
-            sum_of_squares_cf2 += fading_factor * val_ss * fading_factor * val_ss
-        # return |CF1| and |CF2|
-        return math.sqrt(sum_of_squares_cf1), math.sqrt(sum_of_squares_cf2)
+        self._center: dict | None = None
 
     def calc_weight(self, timestamp):
-        return self._weight(self.fading_function(timestamp - self.last_edit_time))
+        return self.N * 2 ** (-self.decaying_factor * (timestamp - self.last_edit_time))
 
     def _weight(self, fading_factor):
         return self.N * fading_factor
 
+    @property
+    def center(self):
+        # The fading factor cancels in (ff * ls[k]) / (N * ff), so the center is
+        # just linear_sum / N -- independent of timestamp -- and can be cached.
+        if self._center is None:
+            inv_n = 1.0 / self.N
+            self._center = {key: val * inv_n for key, val in self.linear_sum.items()}
+        return self._center
+
     def calc_center(self, timestamp):
-        ff = self.fading_function(timestamp - self.last_edit_time)
-        weight = self._weight(ff)
-        center = {key: (ff * val) / weight for key, val in self.linear_sum.items()}
-        return center
+        return self.center
 
     def calc_radius(self, timestamp):
-        ff = self.fading_function(timestamp - self.last_edit_time)
-        weight = self._weight(ff)
-        norm_cf1, norm_cf2 = self.calc_norm_cf1_cf2(ff)
-        diff = (norm_cf2 / weight) - ((norm_cf1 / weight) ** 2)
-        radius = math.sqrt(diff) if diff > 0 else 0
-        return radius
+        # The fading factor cancels here too: diff = sum ss/N - sum ls^2/N^2.
+        inv_n = 1.0 / self.N
+        sum_ls_sq = 0.0
+        sum_ss = 0.0
+        squared_sum = self.squared_sum
+        for key, ls_k in self.linear_sum.items():
+            sum_ls_sq += ls_k * ls_k
+            sum_ss += squared_sum[key]
+        diff = sum_ss * inv_n - sum_ls_sq * inv_n * inv_n
+        return math.sqrt(diff) if diff > 0 else 0.0
+
+    def radius_with(self, x):
+        """Radius the cluster would have if ``x`` were inserted, without mutating state."""
+        n1 = self.N + 1
+        inv_n = 1.0 / n1
+        ls = self.linear_sum
+        ss = self.squared_sum
+        sum_ls_sq = 0.0
+        sum_ss = 0.0
+        shared = 0
+        for key, v in x.items():
+            ls_k = ls.get(key, 0.0) + v
+            sum_ls_sq += ls_k * ls_k
+            sum_ss += ss.get(key, 0.0) + v * v
+            if key in ls:
+                shared += 1
+        if shared < len(ls):
+            for key, ls_k in ls.items():
+                if key in x:
+                    continue
+                sum_ls_sq += ls_k * ls_k
+                sum_ss += ss[key]
+        diff = sum_ss * inv_n - sum_ls_sq * inv_n * inv_n
+        return math.sqrt(diff) if diff > 0 else 0.0
 
     def insert(self, x, timestamp):
         self.N += 1
         self.last_edit_time = timestamp
+        linear_sum = self.linear_sum
+        squared_sum = self.squared_sum
         for key, val in x.items():
-            try:
-                self.linear_sum[key] += val
-                self.squared_sum[key] += val * val
-            except KeyError:
-                self.linear_sum[key] = val
-                self.squared_sum[key] = val * val
+            if key in linear_sum:
+                linear_sum[key] += val
+                squared_sum[key] += val * val
+            else:
+                linear_sum[key] = val
+                squared_sum[key] = val * val
+        self._center = None
 
     def merge(self, cluster):
         self.N += cluster.N
-        for key in cluster.linear_sum.keys():
-            try:
-                self.linear_sum[key] += cluster.linear_sum[key]
-                self.squared_sum[key] += cluster.squared_sum[key]
-            except KeyError:
-                self.linear_sum[key] = cluster.linear_sum[key]
-                self.squared_sum[key] = cluster.squared_sum[key]
+        linear_sum = self.linear_sum
+        squared_sum = self.squared_sum
+        other_ss = cluster.squared_sum
+        for key, val in cluster.linear_sum.items():
+            if key in linear_sum:
+                linear_sum[key] += val
+                squared_sum[key] += other_ss[key]
+            else:
+                linear_sum[key] = val
+                squared_sum[key] = other_ss[key]
         if self.last_edit_time < cluster.creation_time:
             self.last_edit_time = cluster.creation_time
+        self._center = None
 
     def fading_function(self, time):
         return 2 ** (-self.decaying_factor * time)

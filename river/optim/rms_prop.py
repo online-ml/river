@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 import collections
+import typing
 
 import numpy as np
 
 from river import optim, utils
+from river.optim.base import DictLike, VectorLike
 
 __all__ = ["RMSProp"]
 
@@ -45,13 +47,18 @@ class RMSProp(optim.base.Optimizer):
 
     """
 
-    def __init__(self, lr=0.1, rho=0.9, eps=1e-8):
+    def __init__(
+        self, lr: int | float | optim.base.Scheduler = 0.1, rho: float = 0.9, eps: float = 1e-8
+    ):
         super().__init__(lr)
         self.rho = rho
         self.eps = eps
-        self.g2 = None
+        # Dual-mode accumulator: a `defaultdict` of floats on the `learn_one` path, or an
+        # array-like (`np.ndarray`/`VectorDict`) on the `learn_many` path. These modes support
+        # disjoint operations, so no single static type fits both — hence `Any`.
+        self.g2: typing.Any = None
 
-    def _step_with_dict(self, w, g):
+    def _step_with_dict(self, w: DictLike, g: DictLike) -> DictLike:
         if self.g2 is None:
             self.g2 = collections.defaultdict(float)
 
@@ -61,14 +68,17 @@ class RMSProp(optim.base.Optimizer):
 
         return w
 
-    def _step_with_vector(self, w, g):
+    def _step_with_vector(self, w: VectorLike, g: VectorLike) -> VectorLike:
         if self.g2 is None:
             if isinstance(w, np.ndarray):
                 self.g2 = np.zeros_like(w)
             else:
                 self.g2 = utils.VectorDict()
 
-        self.g2 = self.rho * self.g2 + (1 - self.rho) * g**2
+        if isinstance(g, utils.VectorDict):
+            self.g2.update_ema(g, self.rho, square=True)
+        else:
+            self.g2 = self.rho * self.g2 + (1 - self.rho) * g**2
         w -= self.learning_rate / (self.g2 + self.eps) ** 0.5 * g
 
         return w

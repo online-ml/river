@@ -1,13 +1,17 @@
 from __future__ import annotations
 
 import math
+import typing
 
 import numpy as np
-import pandas as pd
 from scipy.stats import multivariate_normal
 
-from river import covariance, stats
+from river import covariance, stats, utils
 from river.proba import base
+
+if typing.TYPE_CHECKING:
+    import pandas as pd
+    from numpy.typing import NDArray
 
 __all__ = ["Gaussian", "MultivariateGaussian"]
 
@@ -43,38 +47,40 @@ class Gaussian(base.ContinuousDistribution):
 
     """
 
-    def __init__(self, seed=None):
+    def __init__(self, seed: int | None = None):
         super().__init__(seed)
         self._var = stats.Var(ddof=1)
 
     @classmethod
-    def _from_state(cls, n, m, sig, ddof):
-        new = cls()
-        new._var = stats.Var._from_state(n, m, sig, ddof=ddof)
+    def _from_state(
+        cls, n: float, m: float, var: float, ddof: int, seed: int | None = None
+    ) -> typing.Self:
+        new = cls(seed=seed)
+        new._var = stats.Var._from_state(n, m, var, ddof=ddof)
         return new
 
     @property
-    def n_samples(self):
+    def n_samples(self) -> float:
         return self._var.mean.n
 
     @property
-    def mu(self):
+    def mu(self) -> float:
         return self._var.mean.get()
 
     @property
-    def sigma(self):
-        return self._var.get() ** 0.5
+    def sigma(self) -> float:
+        return math.sqrt(self._var.get())
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"𝒩(μ={self.mu:.3f}, σ={self.sigma:.3f})"
 
-    def update(self, x, w=1.0):
+    def update(self, x: float, w: float = 1.0) -> None:
         self._var.update(x, w)
 
-    def revert(self, x, w=1.0):
+    def revert(self, x: float, w: float = 1.0) -> None:
         self._var.revert(x, w)
 
-    def __call__(self, x) -> float:
+    def __call__(self, x: float) -> float:
         var = self._var
         n = var.mean.n
         if n > var.ddof:
@@ -82,14 +88,13 @@ class Gaussian(base.ContinuousDistribution):
             if variance > 0.0:
                 mu = var.mean._mean
                 try:
-                    return math.exp((x - mu) ** 2 / (-2.0 * variance)) / math.sqrt(
-                        math.tau * variance
-                    )
+                    sigma = math.sqrt(variance)
+                    return utils.math.norm_pdf((x - mu) / sigma) / sigma
                 except (ValueError, OverflowError):
                     return 0.0
         return 0.0
 
-    def log_pdf(self, x) -> float:
+    def log_pdf(self, x: float) -> float:
         """Log of the probability density function.
 
         This is more efficient and numerically stable than ``math.log(self(x))``
@@ -104,9 +109,9 @@ class Gaussian(base.ContinuousDistribution):
                 return (x - mu) ** 2 / (-2.0 * variance) - _HALF_LOG_TAU - 0.5 * math.log(variance)
         return -math.inf
 
-    def cdf(self, x) -> float:
+    def cdf(self, x: float) -> float:
         try:
-            return 0.5 * (1.0 + math.erf((x - self.mu) / (self.sigma * math.sqrt(2.0))))
+            return utils.math.norm_cdf((x - self.mu) / self.sigma)
         except ZeroDivisionError:
             return 0.0
 
@@ -167,9 +172,9 @@ class MultivariateGaussian(base.MultivariateContinuousDistribution):
     𝒩(
         μ=(0.518, 0.387, 0.416),
         σ^2=(
-            [ 0.076  0.020 -0.010]
-            [ 0.020  0.113 -0.053]
-            [-0.010 -0.053  0.079]
+            [0.076 0.020 -0.010]
+            [0.020 0.113 -0.053]
+            [-0.010 -0.053 0.079]
         )
     )
 
@@ -196,7 +201,7 @@ class MultivariateGaussian(base.MultivariateContinuousDistribution):
 
     >>> from river import utils
 
-    >>> p = utils.Rolling(MultivariateGaussian(), window_size=5)
+    >>> p = utils.Rolling(MultivariateGaussian, window_size=5)
     >>> for x in X.to_dict(orient="records"):
     ...     p.update(x)
     >>> p.var
@@ -209,7 +214,7 @@ class MultivariateGaussian(base.MultivariateContinuousDistribution):
 
     >>> from datetime import datetime as dt, timedelta as td
     >>> X.index = [dt(2023, 3, 28, 0, 0, 0) + td(seconds=x) for x in range(8)]
-    >>> p = utils.TimeRolling(MultivariateGaussian(), period=td(seconds=5))
+    >>> p = utils.TimeRolling(MultivariateGaussian, period=td(seconds=5))
     >>> for t, x in X.iterrows():
     ...     p.update(x.to_dict(), t=t)
     >>> p.var
@@ -237,7 +242,14 @@ class MultivariateGaussian(base.MultivariateContinuousDistribution):
         self._var = covariance.EmpiricalCovariance(ddof=1)
 
     @classmethod
-    def _from_state(cls, n, mean, cov, ddof, seed=None):
+    def _from_state(
+        cls,
+        n: int,
+        mean: dict[typing.Any, float],
+        cov: float | dict[tuple[typing.Any, typing.Any], float],
+        ddof: int,
+        seed: int | None = None,
+    ) -> typing.Self:
         new = cls(seed)
         new._var = covariance.EmpiricalCovariance._from_state(n, mean, cov, ddof=ddof)
         return new
@@ -247,10 +259,10 @@ class MultivariateGaussian(base.MultivariateContinuousDistribution):
         if not self._var.matrix:
             return 0.0
         else:
-            return list(self._var.matrix.values())[-1].mean.n
+            return typing.cast(stats.Var, list(self._var.matrix.values())[-1]).mean.n
 
     @property
-    def mu(self) -> dict:
+    def mu(self) -> dict[typing.Any, float]:
         """The mean value of the distribution."""
         return {
             key1: values.mean.get()
@@ -259,52 +271,53 @@ class MultivariateGaussian(base.MultivariateContinuousDistribution):
         }
 
     @property
-    def var(self) -> pd.DataFrame:
-        """The variance of the distribution."""
-        variables = sorted(list({var for cov in self._var.matrix.keys() for var in cov}))
-        # Initialize the covariance matrix array
+    def _variables(self) -> list[typing.Any]:
+        return sorted(list({var for cov in self._var.matrix.keys() for var in cov}))
+
+    def _covariance_array(self) -> tuple[list[typing.Any], NDArray[np.float64]]:
+        variables = self._variables
         cov_array = np.zeros((len(variables), len(variables)))
 
-        # Fill in the covariance matrix array
         for i in range(len(variables)):
             for j in range(i, len(variables)):
-                if i == j:
-                    # Fill in the diagonal with variances
-                    cov_array[i, j] = self._var[(variables[i], variables[j])].get()
-                else:
-                    # Fill in the off-diagonal with covariances
-                    cov_array[i, j] = self._var[(variables[i], variables[j])].get()
-                    cov_array[j, i] = self._var[(variables[i], variables[j])].get()
+                cov = self._var[(variables[i], variables[j])].get()
+                cov_array[i, j] = cov
+                cov_array[j, i] = cov
 
-        cov_array = pd.DataFrame(cov_array, index=variables, columns=variables)
-        return cov_array
+        return variables, cov_array
+
+    @property
+    def var(self) -> pd.DataFrame:
+        """The variance of the distribution."""
+        pd = utils.pandas.import_pandas()
+        variables, cov_array = self._covariance_array()
+        return pd.DataFrame(cov_array, index=variables, columns=variables)
 
     @property
     def sigma(self) -> pd.DataFrame:
         """The standard deviation of the distribution."""
         return self.var**0.5
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         mu_str = ", ".join(f"{m:.3f}" for m in self.mu.values())
-        var_str = self.var.to_string(float_format="{:0.3f}".format, header=False, index=False)
+        _, cov_array = self._covariance_array()
+        var_str = "\n".join(" ".join(f"{value:0.3f}" for value in row) for row in cov_array)
         var_str = "        [" + var_str.replace("\n", "]\n        [") + "]"
         return f"𝒩(\n    μ=({mu_str}),\n    σ^2=(\n{var_str}\n    )\n)"
 
-    def update(self, x):
-        # TODO: add support for weighted samples
-        self._var.update(x)
+    def update(self, x: dict[str, float], w: float = 1.0) -> None:
+        self._var.update(x, w)
 
-    def revert(self, x):
-        # TODO: add support for weighted samples
-        self._var.revert(x)
+    def revert(self, x: dict[str, float], w: float = 1.0) -> None:
+        self._var.revert(x, w)
 
-    def __call__(self, x: dict[str, float]):
+    def __call__(self, x: dict[str, float]) -> float:
         """PDF(x) method."""
         x_ = [x[i] for i in self.mu]
-        var = self.var
-        if var is not None:
+        _, cov = self._covariance_array()
+        if cov.size:
             try:
-                pdf_ = multivariate_normal([*self.mu.values()], var).pdf(x_)
+                pdf_ = multivariate_normal([*self.mu.values()], cov).pdf(x_)
                 return float(pdf_)
             # TODO: validate occurrence of ValueError
             # The input matrix must be symmetric positive semidefinite.
@@ -315,24 +328,24 @@ class MultivariateGaussian(base.MultivariateContinuousDistribution):
                 return 0.0
         return 0.0  # pragma: no cover
 
-    def cdf(self, x: dict[str, float]):
+    def cdf(self, x: dict[str, float]) -> float:
         x_ = list(x.values())
+        _, cov = self._covariance_array()
         cdf_ = multivariate_normal(
             [self.mu[i] for i in x],
-            self.var,
+            cov,
             allow_singular=True,
         ).cdf(x_)
         return float(cdf_)
 
     def sample(self) -> dict[str, float]:
+        _, cov = self._covariance_array()
         sample_ = map(
             float,
-            multivariate_normal(
-                [*self.mu.values()], self.var, seed=self._rng.randint(0, 2**10)
-            ).rvs(),
+            multivariate_normal([*self.mu.values()], cov, seed=self._rng.randint(0, 2**10)).rvs(),
         )
         return dict(zip(self.mu.keys(), sample_))
 
     @property
-    def mode(self) -> dict:
+    def mode(self) -> dict[typing.Any, float]:
         return self.mu

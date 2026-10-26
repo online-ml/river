@@ -9,15 +9,34 @@ from river import base, optim, utils
 
 __all__ = ["Initializer", "Scheduler", "Optimizer", "Loss"]
 
-VectorLike = typing.Union[utils.VectorDict, np.ndarray]  # noqa: UP007
+# Array-like weights/gradients: numpy arrays and `VectorDict`. These support elementwise
+# arithmetic but not necessarily feature-name indexing (a raw `np.ndarray` does not).
+VectorLike = typing.Union[  # noqa: UP007
+    "utils.VectorDict[base.typing.FeatureName, typing.Any]", np.ndarray
+]
+# The "dict" path operates on feature-keyed, dict-like containers: plain dicts and `VectorDict`
+# (which is dict-like). It explicitly excludes `np.ndarray`, which has no `.keys()`/`.items()` and
+# cannot be indexed by feature name. `VectorDict` belongs to both unions because it implements both
+# the mapping and the array protocols.
+# The values are left dynamic: linear models keep one scalar weight per feature, whereas models
+# with latent factors keep a whole vector per key. Optimizers that only support the scalar case
+# are listed in `tests/optim/test_estimator_compat.py`.
+DictLike = typing.Union[  # noqa: UP007
+    dict[base.typing.FeatureName, typing.Any],
+    "utils.VectorDict[base.typing.FeatureName, typing.Any]",
+]
 
 
 class Initializer(base.Base, abc.ABC):
     """An initializer is used to set initial weights in a model."""
 
     @abc.abstractmethod
-    def __call__(self, shape=1):
+    def __call__(self, shape: int = 1) -> typing.Any:
         """Returns a fresh set of weights.
+
+        The return type is shape-dependent (a scalar when ``shape == 1``, otherwise an array), and
+        these values are routinely used as `collections.defaultdict` factories elsewhere, so the
+        return is intentionally left dynamic.
 
         Parameters
         ----------
@@ -42,7 +61,7 @@ class Scheduler(base.Base, abc.ABC):
 
         """
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"{self.__class__.__name__}({vars(self)})"
 
 
@@ -69,14 +88,14 @@ class Optimizer(base.Base):
         self.n_iterations = 0
 
     @property
-    def _mutable_attributes(self):
+    def _mutable_attributes(self) -> set[str]:
         return {"lr"}
 
     @property
     def learning_rate(self) -> float:
         return self.lr.get(self.n_iterations)
 
-    def look_ahead(self, w: dict) -> dict:
+    def look_ahead(self, w: DictLike | VectorLike) -> DictLike | VectorLike:
         """Updates a weight vector before a prediction is made.
 
         Parameters:
@@ -88,13 +107,13 @@ class Optimizer(base.Base):
         """
         return w
 
-    def _step_with_dict(self, w: dict | VectorLike, g: dict | VectorLike) -> dict:  # type: ignore
+    def _step_with_dict(self, w: DictLike, g: DictLike) -> DictLike:
         raise NotImplementedError
 
-    def _step_with_vector(self, w: VectorLike, g: VectorLike) -> VectorLike:  # type: ignore
+    def _step_with_vector(self, w: VectorLike, g: VectorLike) -> VectorLike:
         raise NotImplementedError
 
-    def step(self, w: dict | VectorLike, g: dict | VectorLike) -> dict | VectorLike:  # type: ignore
+    def step(self, w: DictLike | VectorLike, g: DictLike | VectorLike) -> DictLike | VectorLike:
         """Updates a weight vector given a gradient.
 
         Parameters
@@ -119,23 +138,22 @@ class Optimizer(base.Base):
                 return w
             except NotImplementedError:
                 pass
-
-        w = self._step_with_dict(w, g)
+        w = self._step_with_dict(w, g)  # type: ignore[arg-type]
         self.n_iterations += 1
         return w
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"{self.__class__.__name__}({vars(self)})"
 
 
 class Loss(base.Base, abc.ABC):
     """Base class for all loss functions."""
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"{self.__class__.__name__}({vars(self)})"
 
     @abc.abstractmethod
-    def __call__(self, y_true, y_pred):
+    def __call__(self, y_true: typing.Any, y_pred: typing.Any) -> typing.Any:
         """Returns the loss.
 
         Parameters
@@ -152,7 +170,7 @@ class Loss(base.Base, abc.ABC):
         """
 
     @abc.abstractmethod
-    def gradient(self, y_true, y_pred):
+    def gradient(self, y_true: typing.Any, y_pred: typing.Any) -> typing.Any:
         """Return the gradient with respect to y_pred.
 
         Parameters
@@ -169,7 +187,7 @@ class Loss(base.Base, abc.ABC):
         """
 
     @abc.abstractmethod
-    def mean_func(self, y_pred):
+    def mean_func(self, y_pred: typing.Any) -> typing.Any:
         """Mean function.
 
         This is the inverse of the link function. Typically, a loss function takes as input the raw
@@ -188,6 +206,6 @@ class Loss(base.Base, abc.ABC):
 
         References
         ----------
-        [^1]: [Wikipedia section on link and mean function](https://www.wikiwand.com/en/Generalized_linear_model#/Link_function)
+        [^1]: [Wikipedia section on link and mean function](https://en.wikipedia.org/wiki/Generalized_linear_model#Link_function)
 
         """

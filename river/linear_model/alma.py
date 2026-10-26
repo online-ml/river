@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import collections
 import math
+import typing
 
 from river import base, utils
 
@@ -52,22 +53,28 @@ class ALMAClassifier(base.Classifier):
 
     """
 
-    def __init__(self, p=2, alpha=0.9, B=1 / 0.9, C=2**0.5):
+    def __init__(
+        self, p: float = 2, alpha: float = 0.9, B: float = 1 / 0.9, C: float = 2**0.5
+    ) -> None:
         self.p = p
         self.alpha = alpha
         self.B = B
         self.C = C
-        self.w = collections.defaultdict(float)
+        self.w: dict[base.typing.FeatureName, float] = collections.defaultdict(float)
         self.k = 1
 
-    def _raw_dot(self, x):
+    def _raw_dot(self, x: dict[base.typing.FeatureName, float]) -> float:
         return utils.math.dot(x, self.w)
 
-    def predict_proba_one(self, x):
+    def predict_proba_one(
+        self, x: dict[base.typing.FeatureName, float], **kwargs: typing.Any
+    ) -> dict[base.typing.ClfTarget, float]:
         yp = utils.math.sigmoid(self._raw_dot(x))
         return {False: 1 - yp, True: yp}
 
-    def learn_one(self, x, y):
+    def learn_one(
+        self, x: dict[base.typing.FeatureName, typing.Any], y: base.typing.ClfTarget
+    ) -> None:
         # Convert 0 to -1
         y = int(y or -1)
 

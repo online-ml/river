@@ -22,7 +22,6 @@ __all__ = [
     "Grouper",
     "Pipeline",
     "Prefixer",
-    "pure_inference_mode",
     "Renamer",
     "Select",
     "SelectType",

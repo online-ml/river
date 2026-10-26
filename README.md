@@ -27,12 +27,16 @@
   <a href="https://opensource.org/licenses/BSD-3-Clause">
     <img src="https://img.shields.io/badge/License-BSD%203--Clause-blue.svg?style=flat-square" alt="bsd_3_license">
   </a>
+  <!-- Discord -->
+  <a href="https://discord.gg/qNmrKEZMAn">
+    <img src="https://img.shields.io/badge/Discord-join%20chat-5865F2?style=flat-square&logo=discord&logoColor=white" alt="discord">
+  </a>
 </p>
 
 </br>
 
 <p align="center">
-  River is a Python library for <a href="https://www.wikiwand.com/en/Online_machine_learning">online machine learning</a>. It aims to be the most user-friendly library for doing machine learning on streaming data. River is the result of a merger between <a href="https://github.com/MaxHalford/creme">creme</a> and <a href="https://github.com/scikit-multiflow/scikit-multiflow">scikit-multiflow</a>.
+  River is a Python library for <a href="https://en.wikipedia.org/wiki/Online_machine_learning">online machine learning</a>. It aims to be the most user-friendly library for doing machine learning on streaming data. River is the result of a merger between <a href="https://github.com/MaxHalford/creme">creme</a> and <a href="https://github.com/scikit-multiflow/scikit-multiflow">scikit-multiflow</a>.
 </p>
 
 ## ⚡️ Quickstart
@@ -99,6 +103,12 @@ pip install river
 
 There are [wheels available](https://pypi.org/project/river/#files) for Linux, MacOS, and Windows. This means you most probably won't have to build River from source.
 
+River's core online interface (`learn_one` / `predict_one`) has no `pandas` dependency. The mini-batch interface (`learn_many`, `predict_many`, `predict_proba_many`, `transform_many`) is built on `pandas` and is opt-in:
+
+```sh
+pip install "river[pandas]"
+```
+
 You can install the latest development version from GitHub as so:
 
 ```sh
@@ -142,7 +152,7 @@ Check out [the API](https://riverml.xyz/latest/api/overview/) for a comprehensiv
 You should ask yourself if you need online machine learning. The answer is likely no. Most of the time batch learning does the job just fine. An online approach might fit the bill if:
 
 - You want a model that can learn from new data without having to revisit past data.
-- You want a model which is robust to [concept drift](https://www.wikiwand.com/en/Concept_drift).
+- You want a model which is robust to [concept drift](https://en.wikipedia.org/wiki/Concept_drift).
 - You want to develop your model in a way that is closer to what occurs in a production context, which is usually event-based.
 
 Some specificities of River are that:

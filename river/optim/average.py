@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import collections
+import typing
 
-from river import optim
+from river import base, optim
+from river.optim.base import DictLike, VectorLike
 
 
 class Averager(optim.base.Optimizer):
@@ -53,14 +55,16 @@ class Averager(optim.base.Optimizer):
     def __init__(self, optimizer: optim.base.Optimizer, start: int = 0):
         self.optimizer = optimizer
         self.start = start
-        self.avg_w: dict[str, float] = collections.defaultdict(float)
+        self.avg_w: dict[base.typing.FeatureName, float] = collections.defaultdict(float)
         self.n_iterations = 0
 
-    def look_ahead(self, w):
+    def look_ahead(self, w: DictLike | VectorLike) -> DictLike | VectorLike:
         return self.optimizer.look_ahead(w)
 
-    def _step_with_dict(self, w, g):
-        w = self.optimizer.step(w, g)
+    def _step_with_dict(self, w: DictLike, g: DictLike) -> DictLike:
+        # The wrapped optimizer updates `w` in place (same contract `linear_model` relies on), so we
+        # keep the original `w` reference and its `DictLike` type for the `.items()` loop below.
+        self.optimizer.step(w, g)
 
         # No averaging occurs during the first start iterations
         if self.n_iterations < self.start:
@@ -72,5 +76,5 @@ class Averager(optim.base.Optimizer):
         return self.avg_w
 
     @classmethod
-    def _unit_test_params(cls):
+    def _unit_test_params(cls) -> collections.abc.Iterator[dict[str, typing.Any]]:
         yield {"optimizer": optim.SGD()}

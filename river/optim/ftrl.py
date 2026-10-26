@@ -4,7 +4,8 @@ import collections
 
 import numpy as np
 
-from river import optim
+from river import base, optim
+from river.optim.base import DictLike
 
 __all__ = ["FTRLProximal"]
 
@@ -52,16 +53,16 @@ class FTRLProximal(optim.base.Optimizer):
 
     """
 
-    def __init__(self, alpha=0.05, beta=1.0, l1=0.0, l2=1.0):
+    def __init__(self, alpha: float = 0.05, beta: float = 1.0, l1: float = 0.0, l2: float = 1.0):
         self.alpha = alpha
         self.beta = beta
         self.l1 = l1
         self.l2 = l2
-        self.z = collections.defaultdict(float)
-        self.n = collections.defaultdict(float)
+        self.z: dict[base.typing.FeatureName, float] = collections.defaultdict(float)
+        self.n: dict[base.typing.FeatureName, float] = collections.defaultdict(float)
         self.n_iterations = 0
 
-    def _step_with_dict(self, w, g):
+    def _step_with_dict(self, w: DictLike, g: DictLike) -> DictLike:
         alpha = self.alpha
         beta = self.beta
         l1 = self.l1
@@ -73,9 +74,12 @@ class FTRLProximal(optim.base.Optimizer):
             if abs(z[i]) > l1:
                 w[i] = -(((beta + n[i] ** 0.5) / alpha + l2) ** -1) * (z[i] - np.sign(z[i]) * l1)
 
+        # `w` may be a dict-like (use `.get`) or a NumPy array, in which case every index in `g`
+        # is a valid position and can be read directly.
+        w_is_array = isinstance(w, np.ndarray)
         for i, gi in g.items():
             s = ((self.n[i] + gi**2) ** 0.5 - self.n[i] ** 0.5) / self.alpha
-            self.z[i] += gi - s * w.get(i, 0)
+            self.z[i] += gi - s * (w[i] if w_is_array else w.get(i, 0))
             self.n[i] += gi**2
 
         return w

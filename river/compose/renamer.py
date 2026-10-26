@@ -63,7 +63,8 @@ class Prefixer(base.Transformer):
         return f"{self.prefix}{s}"
 
     def transform_one(self, x):
-        return {self._rename(i): xi for i, xi in x.items()}
+        prefix = self.prefix
+        return {f"{prefix}{i}": xi for i, xi in x.items()}
 
 
 class Suffixer(base.Transformer):
@@ -91,4 +92,5 @@ class Suffixer(base.Transformer):
         return f"{s}{self.suffix}"
 
     def transform_one(self, x):
-        return {self._rename(i): xi for i, xi in x.items()}
+        suffix = self.suffix
+        return {f"{i}{suffix}": xi for i, xi in x.items()}

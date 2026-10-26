@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import typing
+
 import numpy as np
 
 from river.optim.base import Initializer as Initializer
@@ -34,7 +36,7 @@ class Constant(Initializer):
     def __init__(self, value: float):
         self.value = value
 
-    def __call__(self, shape=1):
+    def __call__(self, shape: int = 1) -> typing.Any:
         return np.full(shape, self.value, dtype=float) if shape != 1 else self.value
 
 
@@ -56,7 +58,7 @@ class Zeros(Constant):
 
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(value=0.0)
 
 
@@ -87,13 +89,13 @@ class Normal(Initializer):
 
     """
 
-    def __init__(self, mu=0.0, sigma=1.0, seed: int | None = None):
+    def __init__(self, mu: float = 0.0, sigma: float = 1.0, seed: int | None = None):
         self.mu = mu
         self.sigma = sigma
         self.seed = seed
         self._rng = np.random.RandomState(seed)
 
-    def __call__(self, shape=1):
+    def __call__(self, shape: int = 1) -> typing.Any:
         weights = self._rng.normal(loc=self.mu, scale=self.sigma, size=shape)
         if shape == 1:
             return weights[0]

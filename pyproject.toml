@@ -1,16 +1,36 @@
 [project]
 name = "river"
-version = "0.24.2"
+version = "0.26.1"
 description = "Online machine learning in Python"
 authors = [{ name = "Max Halford", email = "maxhalford25@gmail.com" }]
 requires-python = ">=3.11"
 readme = "README.md"
 license = "BSD-3-Clause"
 dependencies = [
-    "scipy>=1.16,<2",
+    "scipy>=1.14.1,<2",
+    "numpy>=2.2.5,<3",
+    "narwhals>=2.0.0",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: WebAssembly :: Emscripten",
+    "Intended Audience :: Information Technology",
+    "Intended Audience :: Science/Research",
+    "Operating System :: MacOS",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Rust",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+    "Topic :: Software Development :: Libraries",
+    "Typing :: Typed",
+]
+
+[project.optional-dependencies]
+pandas = [
     "pandas>=2.2,<3",
-    "numpy>=2.3.4,<3",
-    "altair>=5.0.0",
 ]
 
 [project.urls]
@@ -18,30 +38,39 @@ Homepage = "https://riverml.xyz/"
 Repository = "https://github.com/online-ml/river/"
 
 [build-system]
-requires = [
-    "Cython",
-    "numpy",
-    "setuptools",
-    "setuptools-rust",
+requires = ["maturin>=1.13,<2"]
+build-backend = "maturin"
+
+[tool.maturin]
+module-name = "river._river_rust"
+python-source = "."
+features = ["pyo3/extension-module"]
+include = [
+    { path = "river/datasets/*.csv", format = ["sdist", "wheel"] },
+    { path = "river/datasets/*.gz",  format = ["sdist", "wheel"] },
+    { path = "river/datasets/*.zip", format = ["sdist", "wheel"] },
+    { path = "river/drift/datasets/*.csv", format = ["sdist", "wheel"] },
 ]
-build-backend = "setuptools.build_meta"
 
 [dependency-groups]
 dev = [
-    "graphviz>=0.20.1,<0.21",
-    "gymnasium>=0.29.0,<0.30",
+    "graphviz>=0.20.1",
+    "gymnasium>=0.29.0",
     "altair>=5.0.0",
-    "mypy>=1.11.1,<2",
-    "pre-commit>=3.5.0,<4",
-    "pytest>=7.4.2,<8",
-    "ruff~=0.15.8",
-    "scikit-learn>=1.5.1,<2",
-    "sqlalchemy>=2.0.22,<3",
-    "sympy>=1.12.1,<2",
-    "pytest-xdist[psutil]>=3.3.1,<4",
-    "jupyter>=1.0.0,<2",
+    "mypy>=1.11.1",
+    "pandas>=2.2,<3",
+    "prek>=0.2",
+    "pytest>=9.0.3",
+    "ruff>=0.15.8",
+    "scikit-learn>=1.5.1",
+    "sqlalchemy>=2.0.22",
+    "sympy>=1.12.1",
+    "pytest-xdist[psutil]>=3.3.1",
+    "jupyter>=1.0.0",
     "mike @ git+https://github.com/squidfunk/mike.git",
-    "polars>=1.1.0,<2",
+    "polars>=1.1.0",
+    "pyarrow>=11.0.0",
+    "import-linter>=2.13",
 ]
 compat = [
     "scikit-learn>=1.5.1,<2",
@@ -52,14 +81,17 @@ docs = [
     "flask",
     "jupyter-client",
     "mike @ git+https://github.com/squidfunk/mike.git",
-    "pygments<2.20",
+    "pygments",
+    "altair>=5.0.0",
     "TA-Lib",
-    "zensical",
+    "zensical>=0.0.40",
     "nbconvert",
     "numpydoc",
     "plotly>=6.3.0",
     "python-slugify",
+    "matplotlib",
     "tabulate",
+    "tqdm",
     "watermark",
     "notebook<7",
     "jupyter-contrib-nbextensions>=0.7.0,<0.8",
@@ -68,11 +100,12 @@ benchmark = [
     "asv",
     "virtualenv",
 ]
+codspeed = [
+    "pytest>=9.0.3",
+    "pytest-codspeed>=5.0.3",
+]
 
 
-
-[tool.setuptools.packages.find]
-include = ["river*"]
 
 [tool.uv]
 default-groups = [
@@ -84,9 +117,9 @@ default-groups = [
 
 [tool.cibuildwheel]
 build-frontend = "build[uv]"
-# TODO: re-enable 32-bit builds once pandas is removed as a dependency
 skip = ["*_i686", "*-win32", "*-musllinux_i686"]
-test-command = "python -c \"import river\""
+test-skip = ["*-*linux_ppc64le", "cp315-*"]
+test-command = "python -c \"import river.anomaly, river.datasets, river.drift, river.stream, river.tree\""
 
 [tool.cibuildwheel.environment]
 PATH = "$HOME/.cargo/bin:$PATH"
@@ -94,19 +127,22 @@ MACOSX_DEPLOYMENT_TARGET = "10.13"
 
 [tool.cibuildwheel.linux.environment]
 PATH = "$HOME/.cargo/bin:$PATH"
-CARGO_NET_GIT_FETCH_WITH_CLI = "true"
 
 [[tool.cibuildwheel.overrides]]
 select = "*-*linux_*"
-before-build = """curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain=nightly --profile=minimal -y && rustup show"""
+before-build = "curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain=none --profile=minimal -y && rustup show"
+
+[[tool.cibuildwheel.overrides]]
+select = "*-musllinux_ppc64le"
+build-frontend = "build"
 
 [[tool.cibuildwheel.overrides]]
 select = ["*-macosx_*"]
-before-build = "rustup default nightly && rustup target add aarch64-apple-darwin && rustup target add x86_64-apple-darwin && rustup show"
+before-build = "rustup show"
 
 [[tool.cibuildwheel.overrides]]
 select = ["*-win_*", "*-win32"]
-before-build = "rustup default nightly && rustup toolchain install nightly-i686-pc-windows-msvc && rustup target add i686-pc-windows-msvc && rustup show"
+before-build = "rustup show"
 
 [tool.pytest.ini_options]
 addopts = [
@@ -134,6 +170,7 @@ norecursedirs = [
     "benchmarks",
 ]
 markers = [
+    "codspeed_heavy: CodSpeed benchmarks assigned to the heavy CI shard",
     "datasets: tests that pertain to the datasets module",
     "slow: tests that take a long time to run",
 ]
@@ -144,6 +181,9 @@ target-version = 'py310'
 extend-include = ["*.ipynb"]
 
 [tool.ruff.lint]
+preview = true
+explicit-preview-rules = true
+extend-select = ["F822"]
 select = [
     # pycodestyle
     "E",
@@ -153,6 +193,14 @@ select = [
     "UP",
     # isort
     "I",
+    # pep8-naming: class names (N801), function/method names (N802), and the
+    # cls/self convention on classmethods (N804). N803 (argument names) and
+    # N806 (local variable names) are deliberately left out — `X: pd.DataFrame`
+    # and `A_numpy = ...` are conventional in ML/scientific code and would
+    # produce hundreds of false positives.
+    "N801",
+    "N802",
+    "N804",
 ]
 ignore = ["E501"]
 fixable = ["ALL"]
@@ -160,46 +208,70 @@ fixable = ["ALL"]
 [tool.ruff.lint.isort]
 required-imports = ["from __future__ import annotations"]
 
+[tool.ruff.lint.per-file-ignores]
+"benchmarks/codspeed/python/*.py" = ["I002"]
+
 [tool.ruff.format]
 quote-style = "double"
 indent-style = "space"
 
 [tool.mypy]
-files = "river"
+files = ["river", "tests", "conftest.py"]
 strict = true
 
 [[tool.mypy.overrides]]
+# Both the bare top-level name and the `.*` submodule glob are listed: under the uv dev env
+# (where prek now runs mypy) these libraries are installed without a py.typed marker, so a bare
+# `import pandas` reports `import-untyped` unless the top-level name is ignored too.
 module = [
+    "mmh3",
     "mmh3.*",
+    "numpy",
     "numpy.*",
+    "sklearn",
     "sklearn.*",
+    "pytest",
     "pytest.*",
+    "pandas",
     "pandas.*",
+    "scipy",
     "scipy.*",
+    "graphviz",
     "graphviz.*",
+    "vaex",
     "vaex.*",
+    "torch",
     "torch.*",
-    "sqlalchemy.*",
+    "requests",
     "requests.*",
+    "gymnasium",
     "gymnasium.*",
+    "sympy",
     "sympy.*",
+    "polars",
     "polars.*",
+    "pyarrow",
+    "pyarrow.*",
 ]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+# `numpydoc` (used by docs/parse for docstring scraping) hard-depends on Sphinx, whose source
+# uses 3.12 `type` syntax that mypy rejects under `--python-version=3.11`. We build docs with
+# mkdocs/zensical, never Sphinx, and never type-check it, so don't follow imports into it.
+module = ["sphinx.*", "numpydoc.*"]
+follow_imports = "skip"
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
 # Disable strict mode for all non fully-typed modules
 module = [
     "river.metrics.*",
-    "river.stats.*",
-    "river.optim.*",
     "river.datasets.*",
     "river.tree.*",
     "river.preprocessing.*",
     "river.stream.*",
-    "river.linear_model.*",
     "river.evaluate.*",
-    "river.drift.*",
     "river.compose.*",
     "river.bandit.*",
     "river.cluster.*",
@@ -207,25 +279,19 @@ module = [
     "river.time_series.*",
     "river.feature_extraction.*",
     "river.ensemble.*",
-    "river.proba.*",
     "river.multioutput.*",
     "river.naive_bayes.*",
     "river.checks.*",
     "river.rules.*",
     "river.model_selection.*",
     "river.forest.*",
-    "river.neighbors.*",
-    "river.sketch.*",
     "river.facto.*",
-    "river.covariance.*",
-    "river.compat.*",
+    "river.compat.river_to_sklearn",
     "river.multiclass.*",
     "river.reco.*",
     "river.imblearn.*",
-    "river.feature_selection.*",
     "river.active.*",
-    "river.neural_net.*",
-    "river.test_estimators",
+    "tests.*",
 ]
 # The strict option is global, the checks must be disabled one by one
 warn_unused_ignores = false
@@ -236,3 +302,45 @@ allow_untyped_calls = true
 allow_incomplete_defs = true
 allow_untyped_defs = true
 warn_return_any = false
+
+[tool.importlinter]
+root_packages = ["river"]
+exclude_type_checking_imports = true
+
+[[tool.importlinter.contracts]]
+name = "River sub-packages form a DAG"
+type = "acyclic_siblings"
+ancestors = ["river"]
+# TODO: we ignore all these function-local imports for now
+# as refactoring them would require a lot of work.
+# import-linter has no "ignore function-local" setting
+# so we need to list them manually, which is brittle.
+# Long-term solution would be to prevent function-local imports
+# (enable ruff PLC0415) and solve all the cyclic dependencies
+# they create.
+ignore_imports = [
+    "river.active.entropy -> river.tree",
+    "river.anomaly.filter -> river.preprocessing",
+    "river.base.base -> river.utils",
+    "river.base.estimator -> river.compose",
+    "river.base.transformer -> river.compose",
+    "river.base.viz -> river.compose",
+    "river.checks.clf -> river.active.base",
+    "river.checks.common -> river.active.base",
+    "river.conf.jackknife -> river.linear_model",
+    "river.conf.jackknife -> river.preprocessing",
+    "river.drift.retrain -> river.linear_model",
+    "river.drift.retrain -> river.naive_bayes",
+    "river.drift.retrain -> river.preprocessing",
+    "river.evaluate.forecasting -> river.time_series",
+    "river.evaluate.progressive_validation -> river.active.base",
+    "river.model_selection.base -> river.compose",
+    "river.model_selection.base -> river.linear_model",
+    "river.model_selection.base -> river.optim",
+    "river.model_selection.base -> river.preprocessing",
+    "river.multioutput.chain -> river.neighbors",
+    "river.multioutput.encoder -> river.tree",
+    "river.preprocessing.pred_clipper -> river.linear_model",
+    "river.time_series -> river.evaluate",
+    "river.tree.base -> river.tree.viz",
+]

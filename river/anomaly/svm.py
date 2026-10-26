@@ -1,11 +1,9 @@
 from __future__ import annotations
 
-import pandas as pd
-
-from river import anomaly, linear_model, optim
+from river import base, linear_model, optim, utils
 
 
-class OneClassSVM(linear_model.base.GLM, anomaly.base.AnomalyDetector):
+class OneClassSVM(linear_model.base.GLM, base.AnomalyDetector):
     """One-class SVM for anomaly detection.
 
     This is a stochastic implementation of the one-class SVM algorithm, and will not exactly match
@@ -105,7 +103,12 @@ class OneClassSVM(linear_model.base.GLM, anomaly.base.AnomalyDetector):
         super().learn_one(x, y=1)
 
     def learn_many(self, X):
-        super().learn_many(X, y=pd.Series(True, index=X.index))
+        # The one-class SVM trains against a constant positive label, so the target series is just
+        # `1` repeated for every row. Build it with the same backend (and pandas index) as `X` so
+        # any narwhals-supported eager frame flows through, mirroring the GLM mini-batch boundary.
+        Xnw = utils.dataframe.into_frame(X)
+        y = utils.dataframe.to_native_series([1.0] * len(Xnw), name=None, like=Xnw)
+        super().learn_many(X, y=y)
 
     def score_one(self, x):
         return self._raw_dot_one(x) - self.intercept

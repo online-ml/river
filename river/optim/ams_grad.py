@@ -2,7 +2,8 @@ from __future__ import annotations
 
 import collections
 
-from river import optim
+from river import base, optim
+from river.optim.base import DictLike
 
 __all__ = ["AMSGrad"]
 
@@ -55,21 +56,21 @@ class AMSGrad(optim.base.Optimizer):
     def __init__(
         self,
         lr: int | float | optim.base.Scheduler = 0.1,
-        beta_1=0.9,
-        beta_2=0.999,
-        eps=1e-8,
-        correct_bias=True,
+        beta_1: float = 0.9,
+        beta_2: float = 0.999,
+        eps: float = 1e-8,
+        correct_bias: bool = True,
     ):
         super().__init__(lr)
         self.beta_1 = beta_1
         self.beta_2 = beta_2
         self.eps = eps
         self.correct_bias = correct_bias
-        self.m: dict[str, float] = collections.defaultdict(float)
-        self.v: dict[str, float] = collections.defaultdict(float)
-        self.v_hat: dict[str, float] = collections.defaultdict(float)
+        self.m: dict[base.typing.FeatureName, float] = collections.defaultdict(float)
+        self.v: dict[base.typing.FeatureName, float] = collections.defaultdict(float)
+        self.v_hat: dict[base.typing.FeatureName, float] = collections.defaultdict(float)
 
-    def _step_with_dict(self, w, g):
+    def _step_with_dict(self, w: DictLike, g: DictLike) -> DictLike:
         lr = self.learning_rate
 
         if self.correct_bias:

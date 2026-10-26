@@ -12,6 +12,30 @@ from river.base.typing import FeatureName
 from river.stats import Cov, Var
 
 
+def update_stats(left, right, subtract=False):
+    if not isinstance(left, dict):
+        if subtract:
+            left -= right
+        else:
+            left += right
+        return left
+    for key, value in right.items():
+        if key in left:
+            if subtract:
+                left[key] -= value
+            else:
+                left[key] += value
+        elif subtract:
+            left[key] = Var() - value
+        else:
+            left[key] = copy.deepcopy(value)
+    return left
+
+
+def combine_stats(left, right, subtract=False):
+    return update_stats(copy.deepcopy(left), right, subtract)
+
+
 def do_naive_bayes_prediction(x, observed_class_distribution: dict, splitters: dict):
     """Perform Naive Bayes prediction
 
@@ -155,7 +179,7 @@ class GradHess:
 
 
 @functools.total_ordering
-@dataclasses.dataclass
+@dataclasses.dataclass(slots=True)
 class GradHessMerit:
     """Class used to keep the split merit of each split candidate, accordingly to its
     gradient and hessian information.
@@ -249,8 +273,8 @@ class GradHessStats:
 
         grad_term_var = delta_pred * delta_pred * variance.gradient
         hess_term_var = 0.25 * variance.hessian * (delta_pred**4.0)
-        sigma = max(0.0, grad_term_var + hess_term_var + (delta_pred**3) * covariance)
-        return Var._from_state(n, mean, sigma)  # noqa
+        loss_var = max(0.0, grad_term_var + hess_term_var + (delta_pred**3) * covariance)
+        return Var._from_state(n, mean, loss_var)  # noqa
 
 
 def calculate_object_size(obj: typing.Any, unit: str = "byte") -> int:

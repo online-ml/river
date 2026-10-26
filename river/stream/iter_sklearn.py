@@ -1,9 +1,8 @@
 from __future__ import annotations
 
-import pandas as pd
 import sklearn.utils
 
-from river import base, stream
+from river import base, stream, utils
 
 
 def iter_sklearn_dataset(dataset: sklearn.utils.Bunch, **kwargs) -> base.typing.Stream:
@@ -52,7 +51,9 @@ def iter_sklearn_dataset(dataset: sklearn.utils.Bunch, **kwargs) -> base.typing.
     except AttributeError:
         pass
 
-    if isinstance(kwargs["X"], pd.DataFrame):
+    if utils.pandas.PANDAS_INSTALLED and isinstance(
+        kwargs["X"], utils.pandas.import_pandas().DataFrame
+    ):
         yield from stream.iter_pandas(**kwargs)
     else:
         yield from stream.iter_array(**kwargs)

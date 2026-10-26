@@ -9,6 +9,11 @@ def assert_predictions_are_close(y1, y2):
         for k in y1:
             assert_predictions_are_close(y1[k], y2[k])
     elif isinstance(y1, float):
+        # Two NaNs are considered equivalent here: estimators that have not yet
+        # observed any data may legitimately return NaN, and two clones in the
+        # same state should agree on that.
+        if math.isnan(y1) and isinstance(y2, float) and math.isnan(y2):
+            return
         assert math.isclose(y1, y2, rel_tol=1e-06)
     else:
         assert y1 == y2

@@ -2,8 +2,7 @@ from __future__ import annotations
 
 from scipy import integrate
 
-from river import metrics
-from river.anomaly.base import AnomalyDetector, AnomalyFilter
+from river import base, metrics
 
 __all__ = ["ROCAUC"]
 
@@ -16,6 +15,15 @@ class ROCAUC(metrics.base.BinaryMetric):
     error is not significant as long as the predicted probabilities are well calibrated. In any
     case, this metric can still be used to reliably compare models between each other.
 
+    The ROC curve is discretized over thresholds spanning the `[0, 1]` interval, so this metric
+    assumes `y_pred` lies in `[0, 1]` (e.g. a calibrated probability). If `y_pred` is on an
+    arbitrary scale — as with most anomaly detectors, whose scores are only meaningful relative to
+    each estimator — the thresholds miss the score range entirely and the metric degenerates (often
+    to `0`). In that case, either normalize the scores to `[0, 1]` beforehand (for instance with a
+    streaming min-max scaler, or `preprocessing.TargetMinMaxScaler` when the scored value is a
+    regression prediction), or use `metrics.RollingROCAUC`, which ranks scores within a window and
+    is therefore scale-invariant.
+
     Parameters
     ----------
     n_thresholds
@@ -27,7 +35,7 @@ class ROCAUC(metrics.base.BinaryMetric):
     Examples
     --------
 
-    >>> from river import metrics
+    >>> from river import base, metrics
 
     >>> y_true = [ 0,  0,   1,  1]
     >>> y_pred = [.1, .4, .35, .8]
@@ -64,8 +72,8 @@ class ROCAUC(metrics.base.BinaryMetric):
     def works_with(self, model) -> bool:
         return (
             super().works_with(model)
-            or isinstance(model, AnomalyDetector)
-            or isinstance(model, AnomalyFilter)
+            or isinstance(model, base.AnomalyDetector)
+            or isinstance(model, base.AnomalyFilter)
         )
 
     def update(self, y_true, y_pred, w=1.0):

@@ -1,11 +1,14 @@
 from __future__ import annotations
 
-import collections
 import types
+import typing
 
-import pandas as pd
+import narwhals.stable.v2 as nw
 
-from river import base
+from river import base, utils
+
+if typing.TYPE_CHECKING:
+    from narwhals.stable.v2.typing import IntoDataFrame, IntoSeries
 
 from . import func
 
@@ -48,6 +51,7 @@ class TransformerUnion(base.MiniBatchTransformer):
     As an example, let's assume we want to compute two aggregates of a dataset. We therefore
     define two `feature_extraction.Agg`s and initialize a `TransformerUnion` with them:
 
+    >>> import pandas as pd
     >>> from river import compose
     >>> from river import feature_extraction
     >>> from river import stats
@@ -264,19 +268,25 @@ class TransformerUnion(base.MiniBatchTransformer):
             is supervised (i.e. it inherits from `base.SupervisedTransformer`).
 
         """
+        SupervisedT = base.SupervisedTransformer
         for t in self.transformers.values():
-            if isinstance(t, base.SupervisedTransformer):
+            if isinstance(t, SupervisedT):
                 t.learn_one(x, y)
             else:
                 t.learn_one(x)
 
     def transform_one(self, x):
         """Passes the data through each transformer and packs the results together."""
-        return dict(collections.ChainMap(*(t.transform_one(x) for t in self.transformers.values())))
+        # Equivalent to `dict(ChainMap(*outputs))` (first-occurrence wins for duplicate
+        # keys) but avoids the ChainMap construction overhead.
+        result: dict = {}
+        for t in reversed(self.transformers.values()):
+            result.update(t.transform_one(x))
+        return result
 
     # Mini-batch methods
 
-    def learn_many(self, X: pd.DataFrame, y: pd.Series | None = None):
+    def learn_many(self, X: IntoDataFrame, y: IntoSeries | None = None):
         """Update each transformer.
 
         Parameters
@@ -295,10 +305,14 @@ class TransformerUnion(base.MiniBatchTransformer):
                 t.learn_many(X)
 
     def transform_many(self, X):
-        """Passes the data through each transformer and packs the results together."""
+        """Passes the data through each transformer and packs the results together.
 
-        return pd.concat(
-            (t.transform_many(X) for t in self.transformers.values()),
-            copy=False,
-            axis=1,
-        )
+        The per-transformer outputs are concatenated column-wise via narwhals, so the result is
+        rebuilt in the caller's own backend (pandas, polars, pyarrow, ...). All transformers see
+        the same rows in the same order, so a positional horizontal concat matches the historical
+        index-aligned `pandas.concat(axis=1)`.
+        """
+        frames = [
+            utils.dataframe.into_frame(t.transform_many(X)) for t in self.transformers.values()
+        ]
+        return nw.concat(frames, how="horizontal").to_native()

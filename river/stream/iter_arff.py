@@ -1,15 +1,24 @@
 from __future__ import annotations
 
+import os
+import typing
+
 import scipy.io.arff
 from scipy.io.arff._arffread import read_header
 
 from river import base
+from river.stream import utils
 
-from . import utils
+if typing.TYPE_CHECKING:
+    from river.base.typing import FeatureName
+    from river.stream.typing import Compression, FilePath
 
 
 def iter_arff(
-    filepath_or_buffer, target: str | list[str] | None = None, compression="infer", sparse=False
+    filepath_or_buffer: FilePath | typing.TextIO,
+    target: str | list[str] | None = None,
+    compression: Compression | None = "infer",
+    sparse: bool = False,
 ) -> base.typing.Stream:
     """Iterates over rows from an ARFF file.
 
@@ -148,12 +157,15 @@ def iter_arff(
     """
 
     # If a file is not opened, then we open it
-    buffer = filepath_or_buffer
-    if not hasattr(buffer, "read"):
-        buffer = utils.open_filepath(buffer, compression)
+    if isinstance(filepath_or_buffer, (str, os.PathLike)):
+        buffer = utils.open_filepath(filepath_or_buffer, compression)
+        should_close = True
+    else:
+        buffer = filepath_or_buffer
+        should_close = False
 
     try:
-        rel, attrs = read_header(buffer)
+        _rel, attrs = read_header(buffer)
     except ValueError as e:
         msg = f"Error while parsing header, error was: {e}"
         raise scipy.io.arff.ParseArffError(msg)
@@ -165,6 +177,9 @@ def iter_arff(
     for r in buffer:
         if len(r) == 0:
             continue
+
+        x: dict[FeatureName, typing.Any]
+        y: typing.Any | dict[FeatureName, typing.Any] | None
 
         # Read row
         if sparse:
@@ -180,18 +195,18 @@ def iter_arff(
             }
 
         # Handle target
-        y = None
-        if target is not None:
-            if isinstance(target, list):
-                y = {name: x.pop(name, 0) for name in target}
-            else:
-                try:
-                    y = x.pop(target) if target else None
-                except KeyError:
-                    y = None
+        if target is None:
+            y = None
+        elif isinstance(target, str):
+            try:
+                y = x.pop(target) if target else None
+            except KeyError:
+                y = None
+        else:
+            y = {name: x.pop(name, 0) for name in target}
 
         yield x, y
 
     # Close the file if we opened it
-    if buffer is not filepath_or_buffer:
+    if should_close:
         buffer.close()

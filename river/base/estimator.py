@@ -93,7 +93,7 @@ class Estimator(base.Base, abc.ABC, metaclass=EstimatorMeta):
         return tags
 
     @classmethod
-    def _unit_test_params(self) -> Iterator[dict[str, Any]]:
+    def _unit_test_params(cls) -> Iterator[dict[str, Any]]:
         """Indicates which parameters to use during unit testing.
 
         Most estimators have a default value for each of their parameters. However, in some cases,

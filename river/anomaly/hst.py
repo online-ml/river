@@ -4,94 +4,52 @@ import collections
 import functools
 import random
 
-from river import anomaly, base, tree
+from river import base
+from river.tree.padded import PaddedBranch, make_padded_tree
 
 __all__ = ["HalfSpaceTrees"]
 
 
-class HSTBranch(tree.base.Branch):
-    def __init__(self, left, right, feature, threshold, l_mass, r_mass):
-        super().__init__(left, right)
-        self.feature = feature
-        self.threshold = threshold
-        self.l_mass = l_mass
-        self.r_mass = r_mass
-
-    @property
-    def left(self):
-        return self.children[0]
-
-    @property
-    def right(self):
-        return self.children[1]
-
-    def next(self, x):
-        """
-
-        We want to handle the case where a split feature is missing. In that case, we go down the
-        child that has been the most visited in the past.
-
-        """
-        left, right = self.children
+def _walk_learn(root, x, height):
+    """Walk root-to-leaf along the path induced by x, incrementing l_mass at each node."""
+    node = root
+    for _ in range(height):
+        node.l_mass += 1
         try:
-            value = x[self.feature]
+            value = x[node.feature]
         except KeyError:
-            if left.l_mass < right.l_mass:
-                return right
-            return left
-        if value < self.threshold:
-            return left
-        return right
-
-    def most_common_path(self):
-        raise NotImplementedError
-
-    @property
-    def repr_split(self):
-        return f"{self.feature} < {self.threshold:.5f}"
+            c = node.children
+            node = c[1] if c[0].l_mass < c[1].l_mass else c[0]
+        else:
+            c = node.children
+            node = c[0] if value < node.threshold else c[1]
+    node.l_mass += 1
 
 
-class HSTLeaf(tree.base.Leaf):
-    def __repr__(self):
-        return str(self.r_mass)
+def _walk_score(root, x, height, size_limit):
+    """Walk root-to-leaf accumulating r_mass * 2**depth; stop early when r_mass < size_limit."""
+    node = root
+    depth_pow = 1
+    score = 0.0
+    for _ in range(height):
+        r = node.r_mass
+        score += r * depth_pow
+        if r < size_limit:
+            return score
+        try:
+            value = x[node.feature]
+        except KeyError:
+            c = node.children
+            node = c[1] if c[0].l_mass < c[1].l_mass else c[0]
+        else:
+            c = node.children
+            node = c[0] if value < node.threshold else c[1]
+        depth_pow <<= 1
+    score += node.r_mass * depth_pow
+    return score
 
 
-def make_padded_tree(limits, height, padding, rng=random, **node_params):
-    if height == 0:
-        return HSTLeaf(**node_params)
-
-    # Randomly pick a feature
-    # We weight each feature by the gap between each feature's limits
-    on = rng.choices(
-        population=list(limits.keys()),
-        weights=[limits[i][1] - limits[i][0] for i in limits],
-    )[0]
-
-    # Pick a split point; use padding to avoid too narrow a split
-    a = limits[on][0]
-    b = limits[on][1]
-    at = rng.uniform(a + padding * (b - a), b - padding * (b - a))
-
-    # Build the left node
-    tmp = limits[on]
-    limits[on] = (tmp[0], at)
-    left = make_padded_tree(
-        limits=limits, height=height - 1, padding=padding, rng=rng, **node_params
-    )
-    limits[on] = tmp
-
-    # Build the right node
-    tmp = limits[on]
-    limits[on] = (at, tmp[1])
-    right = make_padded_tree(
-        limits=limits, height=height - 1, padding=padding, rng=rng, **node_params
-    )
-    limits[on] = tmp
-
-    return HSTBranch(left=left, right=right, feature=on, threshold=at, **node_params)
-
-
-class HalfSpaceTrees(anomaly.base.AnomalyDetector):
+class HalfSpaceTrees(base.AnomalyDetector):
     """Half-Space Trees (HST).
 
     Half-space trees are an online variant of isolation forests. They work well when anomalies are
@@ -219,7 +177,8 @@ class HalfSpaceTrees(anomaly.base.AnomalyDetector):
         self.seed = seed
         self.rng = random.Random(seed)
 
-        self.trees: list[HSTBranch] = []
+        self.trees: list[PaddedBranch] = []
+        self._tree_nodes: list[list] = []
         self.counter = 0
         self._first_window = True
 
@@ -252,17 +211,19 @@ class HalfSpaceTrees(anomaly.base.AnomalyDetector):
                 )
                 for _ in range(self.n_trees)
             ]
+            # Flat node list per tree, used for the window-pivot step
+            self._tree_nodes = [list(t.iter_dfs()) for t in self.trees]
 
         # Update each tree
+        height = self.height
         for t in self.trees:
-            for node in t.walk(x):
-                node.l_mass += 1
+            _walk_learn(t, x, height)
 
         # Pivot the masses if necessary
         self.counter += 1
         if self.counter == self.window_size:
-            for t in self.trees:
-                for node in t.iter_dfs():
+            for nodes in self._tree_nodes:
+                for node in nodes:
                     node.r_mass = node.l_mass
                     node.l_mass = 0
             self._first_window = False
@@ -272,15 +233,11 @@ class HalfSpaceTrees(anomaly.base.AnomalyDetector):
         if self._first_window:
             return 0
 
+        size_limit = 0.1 * self.window_size
+        height = self.height
         score = 0.0
         for t in self.trees:
-            for depth, node in enumerate(t.walk(x)):
-                score += node.r_mass * 2**depth
-                if node.r_mass < self.size_limit:
-                    break
+            score += _walk_score(t, x, height, size_limit)
 
-        # Normalize the score between 0 and 1
-        score /= self._max_score
-
-        # We want high score -> anomaly, but we have high score -> normal
-        return 1 - score
+        # Normalize the score between 0 and 1 and flip (high score -> anomaly)
+        return 1 - score / self._max_score

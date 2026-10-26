@@ -10,10 +10,12 @@ from .ada_max import AdaMax
 from .adam import Adam
 from .ams_grad import AMSGrad
 from .average import Averager
+from .base import Optimizer
 from .ftrl import FTRLProximal
 from .momentum import Momentum
 from .nadam import Nadam
 from .nesterov import NesterovMomentum
+from .newton import Newton
 from .rms_prop import RMSProp
 from .sgd import SGD
 
@@ -32,6 +34,7 @@ __all__ = [
     "Momentum",
     "Nadam",
     "NesterovMomentum",
+    "Newton",
     "Optimizer",
     "RMSProp",
     "schedulers",

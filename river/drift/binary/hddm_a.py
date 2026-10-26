@@ -5,10 +5,10 @@ import math
 from river import base, stats
 
 
-class HDDM_A(base.BinaryDriftAndWarningDetector):
+class HDDMA(base.BinaryDriftAndWarningDetector):
     """Drift Detection Method based on Hoeffding's bounds with moving average-test.
 
-    HDDM_A is a drift detection method based on the Hoeffding's inequality which uses
+    HDDMA is a drift detection method based on the Hoeffding's inequality which uses
     the input average as estimator.
 
     **Input:** `x` is an entry in a stream of bits, where 1 indicates error/failure and 0
@@ -39,7 +39,7 @@ class HDDM_A(base.BinaryDriftAndWarningDetector):
     >>> from river import drift
 
     >>> rng = random.Random(42)
-    >>> hddm_a = drift.binary.HDDM_A()
+    >>> hddm_a = drift.binary.HDDMA()
 
     >>> # Simulate a data stream where the first 1000 instances come from a uniform distribution
     >>> # of 1's and 0's
@@ -69,14 +69,19 @@ class HDDM_A(base.BinaryDriftAndWarningDetector):
 
     """
 
-    def __init__(self, drift_confidence=0.001, warning_confidence=0.005, two_sided_test=False):
+    def __init__(
+        self,
+        drift_confidence: float = 0.001,
+        warning_confidence: float = 0.005,
+        two_sided_test: bool = False,
+    ) -> None:
         super().__init__()
         self.drift_confidence = drift_confidence
         self.warning_confidence = warning_confidence
         self.two_sided_test = two_sided_test
         self._reset()
 
-    def _reset(self):
+    def _reset(self) -> None:
         super()._reset()
 
         # To check if the global mean increased
@@ -86,21 +91,17 @@ class HDDM_A(base.BinaryDriftAndWarningDetector):
         # Global mean
         self._z = stats.Mean()
 
-    def _hoeffding_bound(self, n):
+    def _hoeffding_bound(self, n: float) -> float:
         return math.sqrt(1.0 / (2 * n) * math.log(1.0 / self.drift_confidence))
 
-    def update(self, x):
+    def update(self, x: bool) -> None:
         """Update the change detector with a single data point.
 
         Parameters
         ----------
-        value
+        x
             This parameter indicates whether the last sample analyzed was correctly classified or
             not. 1 indicates an error (miss-classification).
-
-        Returns
-        -------
-        self
 
         """
 
@@ -142,7 +143,7 @@ class HDDM_A(base.BinaryDriftAndWarningDetector):
                 self._warning_detected = True
 
     # Check if the global mean increased
-    def _mean_incr(self, confidence: float):
+    def _mean_incr(self, confidence: float) -> bool:
         if self._x_min.n == self._z.n:
             return False
 
@@ -151,7 +152,7 @@ class HDDM_A(base.BinaryDriftAndWarningDetector):
         return self._z.get() - self._x_min.get() >= eps
 
     # Check if the global mean decreased
-    def _mean_decr(self, confidence: float):
+    def _mean_decr(self, confidence: float) -> bool:
         if self._x_max.n == self._z.n:
             return False
 

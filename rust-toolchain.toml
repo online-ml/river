@@ -1,0 +1,9 @@
+[toolchain]
+channel = "stable"
+components = ["rustfmt", "clippy"]
+profile = "minimal"
+targets = [
+    "aarch64-apple-darwin",
+    "x86_64-apple-darwin",
+    "i686-pc-windows-msvc",
+]

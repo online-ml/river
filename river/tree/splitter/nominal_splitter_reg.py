@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-import functools
+import collections
 
 from river.stats import Var
-from river.utils import VectorDict
 
-from ..utils import BranchFactory
+from ..utils import BranchFactory, combine_stats
 from .base import Splitter
 
 
@@ -44,7 +43,7 @@ class NominalSplitterReg(Splitter):
                 estimator = self._statistics[att_val]
             except KeyError:
                 if isinstance(target_val, dict):  # Multi-target case
-                    self._statistics[att_val] = VectorDict(default_factory=functools.partial(Var))
+                    self._statistics[att_val] = collections.defaultdict(Var)
                     self._update_estimator = self._update_estimator_multivariate
                 else:
                     self._statistics[att_val] = Var()
@@ -73,7 +72,7 @@ class NominalSplitterReg(Splitter):
 
         for att_val in ordered_feature_values:
             actual_dist = self._statistics[att_val]
-            remaining_dist = pre_split_dist - actual_dist
+            remaining_dist = combine_stats(pre_split_dist, actual_dist, subtract=True)
             post_split_dist = [actual_dist, remaining_dist]
 
             merit = criterion.merit_of_split(pre_split_dist, post_split_dist)
