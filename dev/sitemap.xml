@@ -880,6 +880,12 @@
         <loc>https://riverml.xyz/dev/api/model-selection/GreedyRegressor/</loc>
       </url>
       <url>
+        <loc>https://riverml.xyz/dev/api/model-selection/HoeffdingRaceClassifier/</loc>
+      </url>
+      <url>
+        <loc>https://riverml.xyz/dev/api/model-selection/HoeffdingRaceRegressor/</loc>
+      </url>
+      <url>
         <loc>https://riverml.xyz/dev/api/model-selection/SuccessiveHalvingClassifier/</loc>
       </url>
       <url>
