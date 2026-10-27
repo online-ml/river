@@ -3,11 +3,15 @@ from __future__ import annotations
 import abc
 import math
 
-from river import base, metrics
-from river.model_selection.base import ModelSelectionClassifier, ModelSelectionRegressor
+from river import metrics
+from river.model_selection.base import (
+    ModelSelectionClassifier,
+    ModelSelectionRegressor,
+    ModelSelector,
+)
 
 
-class HoeffdingRace(base.Ensemble):
+class HoeffdingRace(ModelSelector):
     """Hoeffding Race model selection.
 
     Uses the Hoeffding bound to progressively eliminate underperforming models with
