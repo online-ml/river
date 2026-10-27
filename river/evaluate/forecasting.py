@@ -80,7 +80,7 @@ def iter_evaluate(
     horizon: int,
     agg_func: typing.Callable[[list[float]], float] | None = None,
 ):
-    """Evaluates the performance of a forecaster on a time series dataset and yields results.
+    """Evaluate the performance of a forecaster on a time series dataset and yields results.
 
     This does exactly the same as `evaluate.progressive_val_score`. The only difference is that
     this function returns an iterator, yielding results at every step. This can be useful if you
@@ -125,7 +125,7 @@ def evaluate(
     horizon: int,
     agg_func: typing.Callable[[list[float]], float] | None = None,
 ):
-    """Evaluates the performance of a forecaster on a time series dataset.
+    """Evaluate the performance of a forecaster on a time series dataset.
 
     To understand why this method is useful, it's important to understand the difference between
     nowcasting and forecasting. Nowcasting is about predicting a value at the next time step. This

@@ -635,7 +635,7 @@ def _numeric_batch(n: int = 40) -> dict[str, list[float]]:
 
 
 def _trump_columns() -> dict[str, list[float]]:
-    """The TrumpApproval dataset as a column dict (mixed int64/float64 features)."""
+    """Convert the TrumpApproval dataset as a column dict (mixed int64/float64 features)."""
     return pd.read_csv(datasets.TrumpApproval().path).to_dict(orient="list")
 
 

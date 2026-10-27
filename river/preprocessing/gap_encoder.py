@@ -11,7 +11,7 @@ __all__ = ["GapEncoder"]
 
 
 def _char_ngrams(text: str, ngram_range: tuple[int, int]) -> collections.Counter:
-    """Counts of contiguous character n-grams (spaces included).
+    """Find the counts of contiguous character n-grams (spaces included).
 
     Like sklearn's `CountVectorizer(analyzer='char')`, except whitespace runs are not collapsed.
 

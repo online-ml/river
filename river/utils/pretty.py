@@ -13,7 +13,7 @@ def print_table(
     columns: Sequence[Sequence[str]],
     order: Iterable[int] | None = None,
 ) -> str:
-    """Pretty-prints a table.
+    """Pretty-print a table.
 
     Parameters
     ----------
@@ -57,7 +57,7 @@ def print_table(
 
 
 def humanize_bytes(n_bytes: int) -> str:
-    """Returns a human-friendly byte size.
+    """Return a human-friendly byte size.
 
     Parameters
     ----------

@@ -57,7 +57,7 @@ _LAST_STEP_METHODS = ("learn_one", "predict_one", "predict_proba_one", "score_on
 
 @contextlib.contextmanager
 def learn_during_predict():
-    """A context manager for fitting unsupervised steps during prediction.
+    """Provide a context manager for fitting unsupervised steps during prediction.
 
     Usually, unsupervised parts of a pipeline are updated during `learn_one`. However, in the case
     of online learning, it is possible to update them before, during the prediction step. This
@@ -677,7 +677,7 @@ class Pipeline(base.Estimator):
         return self._last_step.forecast(horizon=horizon, xs=xs)
 
     def debug_one(self, x: dict, show_types=True, n_decimals=5) -> str:
-        """Displays the state of a set of features as it goes through the pipeline.
+        """Display the state of a set of features as it goes through the pipeline.
 
         Parameters
         ----------

@@ -26,7 +26,7 @@ Params = (
 
 
 def expand_param_grid(model: T, grid: Mapping[str, Params]) -> list[T]:
-    """Expands a grid of parameters.
+    """Expand a grid of parameters.
 
     This method can be used to generate a list of model parametrizations from a dictionary where
     each parameter is associated with a list of possible parameters. In other words, it expands a

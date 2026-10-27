@@ -58,7 +58,7 @@ def iter_csv(
     field_size_limit: int | None = None,
     **kwargs: typing.Any,
 ) -> base.typing.Stream:
-    """Iterates over rows from a CSV file.
+    """Iterate over rows from a CSV file.
 
     Reading CSV files can be quite slow. If, for whatever reason, you're going to loop through
     the same file multiple times, then we recommend that you to use the `stream.Cache` utility.

@@ -11,7 +11,7 @@ def iter_vaex(
     y: str | vaex.expression.Expression | None = None,
     features: list[str] | vaex.expression.Expression | None = None,
 ) -> base.typing.Stream:
-    """Yields rows from a ``vaex.DataFrame``.
+    """Yield rows from a ``vaex.DataFrame``.
 
     Parameters
     ----------

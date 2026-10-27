@@ -14,7 +14,7 @@ if typing.TYPE_CHECKING:
 def iter_pandas(
     X: pd.DataFrame, y: pd.Series | pd.DataFrame | None = None, **kwargs: typing.Any
 ) -> base.typing.Stream:
-    """Iterates over the rows of a `pandas.DataFrame`.
+    """Iterate over the rows of a `pandas.DataFrame`.
 
     .. deprecated::
         Use `stream.iter_frame` instead, which works with any eager dataframe (pandas, polars,

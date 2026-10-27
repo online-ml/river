@@ -30,7 +30,7 @@ class SymmetricMatrix(abc.ABC, typing.Generic[_ValueT]):
     def matrix(self) -> dict[MatrixKey, _ValueT]: ...
 
     def __getitem__(self, key: MatrixKey) -> _ValueT:
-        """A covariance matrix is symmetric. For ease of use we make the __getitem__ method symmetric."""
+        # A covariance matrix is symmetric. For ease of use we make the __getitem__ method symmetric.
         i, j = key
         try:
             return self.matrix[i, j]

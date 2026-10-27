@@ -5,7 +5,7 @@ from river._river_rust import stats as _rust_stats
 
 
 def expected_mutual_info(confusion_matrix: metrics.ConfusionMatrix) -> float:
-    """Expected Mutual Information between two clusterings.
+    """Compute the Expected Mutual Information between two clusterings.
 
     Used internally by `metrics.AdjustedMutualInfo`; see its docstring for the
     role this term plays in the AMI formula.

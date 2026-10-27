@@ -100,7 +100,7 @@ class RandomTree(datasets.base.SyntheticDataset):
 
     def _generate_random_tree(self):
         """
-        Generates the random tree, starting from the root node and following
+        Generate the random tree, starting from the root node and following
         the constraints passed as parameters to the initializer.
 
         The tree is recursively generated, node by node, until it reaches the
@@ -124,7 +124,7 @@ class RandomTree(datasets.base.SyntheticDataset):
         rng: random.Random,
     ):
         """
-        Creates a node, choosing at random the splitting feature and value.
+        Create a node, choosing at random the splitting feature and value.
 
         Then recursively generates its children. If the split feature is a
         numerical feature there will be two children nodes (left and right),

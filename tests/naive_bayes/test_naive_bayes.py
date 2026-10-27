@@ -20,7 +20,7 @@ def river_models():
 
 
 def sklearn_models():
-    """Mapping between Naives Bayes river models and sklearn models."""
+    """List the mappings between Naives Bayes river models and sklearn models."""
     yield from [
         (naive_bayes.MultinomialNB, sk_naive_bayes.MultinomialNB),
         (naive_bayes.BernoulliNB, sk_naive_bayes.BernoulliNB),

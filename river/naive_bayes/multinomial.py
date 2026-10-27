@@ -128,7 +128,7 @@ class MultinomialNB(base.BaseNB):
         return {tags.POSITIVE_INPUT}
 
     def learn_one(self, x, y):
-        """Updates the model with a single observation.
+        """Update the model with a single observation.
 
         Parameters
         ----------
@@ -166,7 +166,7 @@ class MultinomialNB(base.BaseNB):
         )
 
     def joint_log_likelihood(self, x):
-        """Computes the joint log likelihood of input features.
+        """Compute the joint log likelihood of input features.
 
         Parameters
         ----------
@@ -259,7 +259,7 @@ class MultinomialNB(base.BaseNB):
         return feature_log_prob
 
     def joint_log_likelihood_many(self, X: IntoDataFrame) -> IntoDataFrame:
-        """Computes the joint log likelihood of input features.
+        """Compute the joint log likelihood of input features.
 
         Parameters
         ----------

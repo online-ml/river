@@ -72,7 +72,7 @@ class Base:
 
     @classmethod
     def _unit_test_params(cls) -> collections.abc.Iterator[dict[str, typing.Any]]:
-        """Instantiates an object with default arguments.
+        """Instantiate an object with default arguments.
 
         Most parameters of each object have a default value. However, this isn't always the case,
         in particular for meta-models where the wrapped model is typically not given a default
@@ -472,7 +472,7 @@ def log_method_calls(
     class_condition: typing.Callable[[typing.Any], bool] | None = None,
     method_condition: typing.Callable[[typing.Any], bool] | None = None,
 ) -> collections.abc.Iterator[None]:
-    """A context manager to log method calls.
+    """Provide a context manager to log method calls.
 
     All method calls will be logged by default. This behavior can be overridden by passing filtering
     functions.

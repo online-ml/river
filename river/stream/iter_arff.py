@@ -20,7 +20,7 @@ def iter_arff(
     compression: Compression | None = "infer",
     sparse: bool = False,
 ) -> base.typing.Stream:
-    """Iterates over rows from an ARFF file.
+    """Iterate over rows from an ARFF file.
 
     Parameters
     ----------

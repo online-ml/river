@@ -48,7 +48,7 @@ class Bin:
 
 
 def coverage_ratio(x: Bin, y: Bin) -> float:
-    """Returns the amount of y covered by x.
+    """Return the amount of y covered by x.
 
     Examples
     --------
@@ -215,7 +215,7 @@ class Histogram(collections.UserList[Bin], base.Base):
             data[i] += data.pop(i + 1)  # Calls Bin.__iadd__
 
     def iter_cdf(self, X: Iterable[float], verbose: bool = False) -> Iterator[float]:
-        """Yields CDF values for a sorted iterable of values.
+        """Yield CDF values for a sorted iterable of values.
 
         This is faster than calling `cdf` with many values.
 

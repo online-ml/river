@@ -43,7 +43,7 @@ class _DummyDataset:
 
 
 def _yield_datasets(model: Estimator, scale: int = 1):
-    """Generates datasets for a given model.
+    """Generate datasets for a given model.
 
     Parameters
     ----------
@@ -142,7 +142,7 @@ def _yield_datasets(model: Estimator, scale: int = 1):
 
 
 def yield_checks(model: Estimator) -> typing.Iterator[typing.Callable]:
-    """Generates unit tests for a given model.
+    """Generate unit tests for a given model.
 
     Parameters
     ----------

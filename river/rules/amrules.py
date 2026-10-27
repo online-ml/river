@@ -424,7 +424,7 @@ class AMRules(base.Regressor):
             return self._default_rule.predict_one(x)
 
     def anomaly_score(self, x) -> tuple[float, float, float]:
-        """Aggregated anomaly score computed using all the rules that cover the input instance.
+        """Compute the aggregated anomaly score using all the rules that cover the input instance.
 
         Returns the mean anomaly score, the standard deviation of the score, and the proportion
         of rules that cover the instance (support). If the support is zero, it means that the

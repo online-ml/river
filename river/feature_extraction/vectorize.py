@@ -60,7 +60,7 @@ def remove_stop_words(tokens: typing.Iterator[str], stop_words: set[str]) -> typ
 
 
 def find_ngrams(tokens: typing.Iterator[str], n: int) -> typing.Iterator[N_GRAM]:
-    """Generates n-grams from a list of tokens.
+    """Generate n-grams from a list of tokens.
 
     From http://www.locallyoptimal.com/blog/2013/01/20/elegant-n-gram-generation-in-python/.
 
@@ -97,7 +97,7 @@ def find_ngrams(tokens: typing.Iterator[str], n: int) -> typing.Iterator[N_GRAM]
 
 
 def find_all_ngrams(tokens: list[str], ngram_range: range) -> typing.Iterator[N_GRAM]:
-    """Generates all n-grams in a given range.
+    """Generate all n-grams in a given range.
 
     Examples
     --------

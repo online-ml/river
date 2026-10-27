@@ -117,7 +117,7 @@ class Cache:
         return os.path.join(self.directory, f"{key}{CACHE_SUFFIX}")
 
     def __call__(self, stream: Iterable[T], key: str | None = None) -> Iterator[T]:
-        """Iterates over a stream, caching it along the way if it is not cached yet.
+        """Iterate over a stream, caching it along the way if it is not cached yet.
 
         Parameters
         ----------
@@ -165,7 +165,7 @@ class Cache:
         self.keys.add(key)
 
     def __getitem__(self, key: str) -> Iterator[typing.Any]:
-        """Iterates over the stream associated with the given key.
+        """Iterate over the stream associated with the given key.
 
         Parameters
         ----------

@@ -17,7 +17,7 @@ from river import metrics, utils
 
 
 def load_metrics():
-    """Yields all the metrics."""
+    """Yield all the metrics."""
     for name, obj in inspect.getmembers(importlib.import_module("river.metrics"), inspect.isclass):
         if name == "Metrics":
             continue
@@ -66,7 +66,7 @@ def test_repr(metric):
 
 
 def generate_test_cases(metric, n):
-    """Yields n (y_true, y_pred, sample_weight) triplets for a given metric."""
+    """Yield n (y_true, y_pred, sample_weight) triplets for a given metric."""
     sample_weights = [random.random() for _ in range(n)]
 
     if isinstance(metric, metrics.base.ClassificationMetric):

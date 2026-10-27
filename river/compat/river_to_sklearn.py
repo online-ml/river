@@ -47,7 +47,7 @@ SKLEARN_INPUT_Y_PARAMS = {"multi_output": False, "y_numeric": False}
 
 
 def convert_river_to_sklearn(estimator: base.Estimator):
-    """Wraps a river estimator to make it compatible with scikit-learn.
+    """Wrap a river estimator to make it compatible with scikit-learn.
 
     Parameters
     ----------

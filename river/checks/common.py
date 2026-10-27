@@ -251,7 +251,7 @@ def check_str(model):
 
 
 def check_tags(model):
-    """Checks that the `_tags` property works."""
+    """Check that the `_tags` property works."""
     assert isinstance(model._tags, set)
 
 

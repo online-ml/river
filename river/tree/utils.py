@@ -278,7 +278,7 @@ class GradHessStats:
 
 
 def calculate_object_size(obj: typing.Any, unit: str = "byte") -> int:
-    """Iteratively calculates the `obj` size in bytes.
+    """Calculate iteratively the `obj` size in bytes.
 
     Visits all the elements related to obj accounting for their respective
     sizes.

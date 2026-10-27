@@ -54,7 +54,7 @@ def convert_sklearn_to_river(
 def convert_sklearn_to_river(
     estimator: sklearn_base.BaseEstimator, classes: list[base.typing.ClfTarget] | None = None
 ) -> SKL2RiverRegressor | SKL2RiverClassifier:
-    """Wraps a scikit-learn estimator to make it compatible with river.
+    """Wrap a scikit-learn estimator to make it compatible with river.
 
     Parameters
     ----------

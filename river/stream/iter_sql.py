@@ -20,7 +20,7 @@ def iter_sql(
     conn: sqlalchemy.Connection | Session,
     target_name: str | None = None,
 ) -> base.typing.Stream:
-    """Iterates over the results from an SQL query.
+    """Iterate over the results from an SQL query.
 
     By default, SQLAlchemy prefetches results. Therefore, even though you can iterate over the
     resulting rows one by one, the results are in fact loaded in batch. You can modify this

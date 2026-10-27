@@ -177,7 +177,7 @@ def iter_progressive_val_score(
     measure_memory=False,
     yield_predictions=False,
 ) -> typing.Generator:
-    """Evaluates the performance of a model on a streaming dataset and yields results.
+    """Evaluate the performance of a model on a streaming dataset and yields results.
 
     This does exactly the same as `evaluate.progressive_val_score`. The only difference is that
     this function returns an iterator, yielding results at every step. This can be useful if you
@@ -304,7 +304,7 @@ def progressive_val_score(
     show_memory=False,
     **print_kwargs,
 ) -> metrics.base.Metric:
-    """Evaluates the performance of a model on a streaming dataset.
+    """Evaluate the performance of a model on a streaming dataset.
 
     This method is the canonical way to evaluate a model's performance. When used correctly, it
     allows you to exactly assess how a model would have performed in a production scenario.
