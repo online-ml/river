@@ -401,7 +401,10 @@ class OneHotEncoder(base.MiniBatchTransformer):
         return native
 
     def _seen_columns(self) -> set[str]:
-        """The `<feature>_<value>` dummy names for every category learned or configured so far."""
+        """Create a dummy name for every category learned or configured so far.
+
+        The dummy names take the form `<feature>_<value>`.
+        """
         return {f"{col}_{val}" for col, vals in self.values.items() for val in vals}
 
     @staticmethod

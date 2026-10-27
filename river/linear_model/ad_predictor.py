@@ -17,7 +17,11 @@ _BIAS_KEY = "__bias__"
 
 
 def _active(x: dict[base.typing.FeatureName, typing.Any]) -> list[base.typing.FeatureName]:
-    """The keys of `x` with a truthy value, i.e. the active binary indicators."""
+    """Find the keys mapping to a truthy value.
+
+    For this model, the keys of `x` with a truthy value correspond by convention
+    to the active binary indicators.
+    """
     return [f for f, v in x.items() if v]
 
 

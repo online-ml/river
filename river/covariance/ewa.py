@@ -174,7 +174,10 @@ class _EWCovariance(_EWMatrix):
         self._M2 = M2
 
     def _before_update(self, v: NDArray[np.float64]) -> None:
-        """Hook called with the new observation before the state is updated (mean/M2 are old)."""
+        """Do something with the new observation before the state is updated (mean/M2 are old).
+
+        This hook is intended to be overriden by child classes.
+        """
 
     def _learn_vector(self, v: NDArray[np.float64]) -> None:
         self._before_update(v)
