@@ -54,7 +54,7 @@ class GaussianRandomProjector(base.Transformer):
 
     References
     ----------
-    [^1]: [Gaussian random projection](https://www.wikiwand.com/en/Gaussian_random_projection#Gaussian_random_projection)
+    [^1]: [Gaussian random projection](https://en.wikipedia.org/wiki/Random_projection#Gaussian_random_projection)
     [^2]: [scikit-learn random projections module](https://scikit-learn.org/stable/modules/random_projection.html)
 
     """

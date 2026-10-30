@@ -54,7 +54,7 @@ class SEM(var.Var):
 
     References
     ----------
-    [^1]: [Wikipedia article on algorithms for calculating variance](https://www.wikiwand.com/en/Algorithms_for_calculating_variance#/Covariance)
+    [^1]: [Wikipedia article on algorithms for calculating variance](https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Covariance)
 
     """
 

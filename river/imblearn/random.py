@@ -71,7 +71,7 @@ class RandomUnderSampler(ClassificationSampler):
     References
     ----------
     [^1]: [Under-sampling a dataset with desired ratios](https://maxhalford.github.io/blog/undersampling-ratios/)
-    [^2]: [Wikipedia article on rejection sampling](https://www.wikiwand.com/en/Rejection_sampling)
+    [^2]: [Wikipedia article on rejection sampling](https://en.wikipedia.org/wiki/Rejection_sampling)
 
     """
 
