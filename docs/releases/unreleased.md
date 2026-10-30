@@ -49,6 +49,9 @@
 
 - `proba.MultivariateGaussian.cdf` now uses a consistent feature ordering, so the result no longer depends on the key order of the input dictionary.
 
+## rules
+
+- `rules.AMRules` no longer keys rules by their memory address.
 
 ## model_selection
 
