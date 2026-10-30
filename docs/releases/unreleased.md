@@ -45,6 +45,10 @@
 - `cluster.DenStream.predict_one` now expands a cluster past the direct neighbors of its first micro-cluster. The neighbors of a neighbor were only queued if they already had a label, so a chain of micro-clusters came out as several clusters.
 - New `cluster.DenStream` micro-clusters no longer reuse the key of a deleted one, which overwrote an existing micro-cluster.
 
+## rules
+
+- `rules.AMRules` no longer keys rules by their memory address.
+
 ## model_selection
 
 - Added HoeffdingRaceRegressor and HoeffdingRaceClassifier
