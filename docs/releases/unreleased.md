@@ -32,6 +32,7 @@
 - `stream.iter_sql` now closes the result it iterates, so the underlying cursor is released once the stream is exhausted or abandoned.
 - `stream.cache`, `stream.iter_csv`, and `stream.iter_sql` are now clean under strict mypy. `sqlalchemy` is type-checked rather than ignored, so the `query` and `conn` arguments of `stream.iter_sql` are checked against the SQLAlchemy 2.0 types.
 - `stream.simulate_qa` is now clean under strict mypy. Its overloads type the yields: `(i, x, y)` for a dataset of `(x, y)` pairs, with the kwargs riding along for `(x, y, kwargs)` triples. Type checkers now also accept datasets keyed by plain `str`.
+- `stream.shuffle`, `stream.TwitchChatStream`, and `stream.TwitterLiveStream` are now clean under strict mypy. `stream.shuffle` is generic over any iterable, so the shuffled stream keeps the element type of its input, and `stream.TwitchChatStream` messages are typed with a `TypedDict`.
 - `stream.simulate_qa` and `evaluate.progressive_val_score` no longer raise a `TypeError` when `moment` is given without `delay`. Without a `delay`, `moment` is ignored. See [#2058](https://github.com/online-ml/river/pull/2058).
 
 ## preprocessing
