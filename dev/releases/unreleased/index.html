@@ -1326,6 +1326,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#proba" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        proba
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#rules" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -2667,6 +2678,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#proba" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        proba
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#rules" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -2741,6 +2763,9 @@
 <li><a href="../../api/stream/iter-sql"><code>stream.iter_sql</code></a> now closes the result it iterates, so the underlying cursor is released once the stream is exhausted or abandoned.</li>
 <li><code>stream.cache</code>, <a href="../../api/stream/iter-csv"><code>stream.iter_csv</code></a>, and <a href="../../api/stream/iter-sql"><code>stream.iter_sql</code></a> are now clean under strict mypy. <code>sqlalchemy</code> is type-checked rather than ignored, so the <code>query</code> and <code>conn</code> arguments of <a href="../../api/stream/iter-sql"><code>stream.iter_sql</code></a> are checked against the SQLAlchemy 2.0 types.</li>
 <li><a href="../../api/stream/simulate-qa"><code>stream.simulate_qa</code></a> is now clean under strict mypy. Its overloads type the yields: <code>(i, x, y)</code> for a dataset of <code>(x, y)</code> pairs, with the kwargs riding along for <code>(x, y, kwargs)</code> triples. Type checkers now also accept datasets keyed by plain <code>str</code>.</li>
+<li>Added a test suite for <a href="../../api/stream/iter-array"><code>stream.iter_array</code></a> that runs every case on both NumPy arrays and Python lists.</li>
+<li>Fixed the <a href="../../api/stream/iter-array"><code>stream.iter_array</code></a> bugs reported in #2046. Python lists now work with <code>shuffle=True</code> and as multi-output targets, str enums, <code>None</code> and dicts are yielded as single targets, NumPy texts are yielded as <code>str</code> instead of <code>np.str_</code>, and an empty <code>X</code> yields an empty stream. <code>X</code> and <code>y</code> of different lengths now raise a <code>ValueError</code> instead of being padded with <code>None</code>, and so do rows of <code>X</code> that are scalars or dicts, e.g. a 1D numeric array (use <code>X.reshape(-1, 1)</code>). A list of dicts used to be accepted, with each dict's keys yielded as feature values.</li>
+<li><a href="../../api/stream/iter-array"><code>stream.iter_array</code></a> is now clean under strict mypy. Its annotations accept Python lists: <code>X</code> is a NumPy array or a list of rows (strings or collections), <code>y</code> a NumPy array or a list, and <code>feature_names</code> and <code>target_names</code> any sequence.</li>
 <li><a href="../../api/stream/shuffle"><code>stream.shuffle</code></a>, <a href="../../api/stream/TwitchChatStream"><code>stream.TwitchChatStream</code></a>, and <a href="../../api/stream/TwitterLiveStream"><code>stream.TwitterLiveStream</code></a> are now clean under strict mypy. <a href="../../api/stream/shuffle"><code>stream.shuffle</code></a> is generic over any iterable, so the shuffled stream keeps the element type of its input, and <a href="../../api/stream/TwitchChatStream"><code>stream.TwitchChatStream</code></a> messages are typed with a <code>TypedDict</code>.</li>
 <li><a href="../../api/stream/simulate-qa"><code>stream.simulate_qa</code></a> and <a href="../../api/evaluate/progressive-val-score"><code>evaluate.progressive_val_score</code></a> no longer raise a <code>TypeError</code> when <code>moment</code> is given without <code>delay</code>. Without a <code>delay</code>, <code>moment</code> is ignored. See <a href="https://github.com/online-ml/river/pull/2058">#2058</a>.</li>
 </ul>
@@ -2753,6 +2778,10 @@
 <li>Fixed the radius of <a href="../../api/cluster/DenStream"><code>cluster.DenStream</code></a> micro-clusters, which used the norm of the vector of squared sums instead of the sum of its components and was 0 away from the origin. The docstring example now uses <code>epsilon=1.0</code>.</li>
 <li><code>cluster.DenStream.predict_one</code> now expands a cluster past the direct neighbors of its first micro-cluster. The neighbors of a neighbor were only queued if they already had a label, so a chain of micro-clusters came out as several clusters.</li>
 <li>New <a href="../../api/cluster/DenStream"><code>cluster.DenStream</code></a> micro-clusters no longer reuse the key of a deleted one, which overwrote an existing micro-cluster.</li>
+</ul>
+<h2 id="proba">proba<a class="headerlink" href="#proba" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>proba.MultivariateGaussian.cdf</code> now uses a consistent feature ordering, so the result no longer depends on the key order of the input dictionary.</li>
 </ul>
 <h2 id="rules">rules<a class="headerlink" href="#rules" title="Permanent link">&para;</a></h2>
 <ul>

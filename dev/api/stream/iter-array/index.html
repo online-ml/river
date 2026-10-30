@@ -4647,24 +4647,24 @@
 <ul>
 <li>
 <p><strong>X</strong></p>
-<p><em>Type</em> → <code>np.ndarray</code></p>
+<p><em>Type</em> → <code>np.ndarray | list[_RowT]</code></p>
 <p>A 2D array of features. This can also be a 1D array of strings, which can be the case if you're working with text.</p>
 </li>
 <li>
 <p><strong>y</strong></p>
-<p><em>Type</em> → <code>np.ndarray | None</code></p>
+<p><em>Type</em> → <code>np.ndarray | list[typing.Any] | None</code></p>
 <p><em>Default</em> → <code>None</code></p>
 <p>An optional array of targets.</p>
 </li>
 <li>
 <p><strong>feature_names</strong></p>
-<p><em>Type</em> → <code>list[base.typing.FeatureName] | None</code></p>
+<p><em>Type</em> → <code>Sequence[base.typing.FeatureName] | None</code></p>
 <p><em>Default</em> → <code>None</code></p>
 <p>An optional list of feature names. The features will be labeled with integers if no names are provided.</p>
 </li>
 <li>
 <p><strong>target_names</strong></p>
-<p><em>Type</em> → <code>list[base.typing.FeatureName] | None</code></p>
+<p><em>Type</em> → <code>Sequence[base.typing.FeatureName] | None</code></p>
 <p><em>Default</em> → <code>None</code></p>
 <p>An optional list of output names. The outputs will be labeled with integers if no names are provided. Only applies if there are multiple outputs, i.e. if <code>y</code> is a 2D array.</p>
 </li>
@@ -4679,6 +4679,12 @@
 <p><em>Type</em> → <code>int | None</code></p>
 <p><em>Default</em> → <code>None</code></p>
 <p>Random seed used for shuffling the data.</p>
+</li>
+<li>
+<p><strong>chunk_size</strong></p>
+<p><em>Type</em> → <code>int</code></p>
+<p><em>Default</em> → <code>1024</code></p>
+<p>Number of rows converted at a time to native Python values. Only applies to 1D <code>numpy</code> arrays, i.e. texts and single-output targets. A larger value uses more memory while iterating.</p>
 </li>
 </ul>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
@@ -4698,12 +4704,9 @@
 <div class="language-text highlight"><pre><span></span><code>{&#39;x1&#39;: 1, &#39;x2&#39;: 2, &#39;x3&#39;: 3} True
 {&#39;x1&#39;: 11, &#39;x2&#39;: 12, &#39;x3&#39;: 13} False
 </code></pre></div></p>
-<p>This also works with a array of texts:</p>
+<p>This also works with an array of texts:</p>
 <p><div class="language-python highlight"><pre><span></span><code><span class="n">X</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="s2">&quot;bar&quot;</span><span class="p">]</span>
-<span class="n">dataset</span> <span class="o">=</span> <span class="n">stream</span><span class="o">.</span><span class="n">iter_array</span><span class="p">(</span>
-    <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span>
-    <span class="n">feature_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;x1&#39;</span><span class="p">,</span> <span class="s1">&#39;x2&#39;</span><span class="p">,</span> <span class="s1">&#39;x3&#39;</span><span class="p">]</span>
-<span class="p">)</span>
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">stream</span><span class="o">.</span><span class="n">iter_array</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">dataset</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 </code></pre></div>
