@@ -17,6 +17,13 @@
 ## naive_bayes
 
 - `MultinomialNB.learn_many`, `predict_many`, and `predict_proba_many` now accept any [narwhals](https://github.com/narwhals-dev/narwhals)-supported eager backend (pandas, polars, pyarrow, ...) instead of being pandas-only, preserving the input backend (including the pandas index) on output. A backend-agnostic `BaseNB.predict_many` was added so the argmax-over-probabilities logic is shared by all Naive Bayes variants.
+
+## sketch
+
+- The `sketch` module is now fully type-annotated.
+- `sketch.Counter.__matmul__` (often written as `Counter @ Counter`) now returns a Python integer instead of a NumPy integer. You may need to remove existing NumPy-to-Python conversions (`.item()`) to make it work again.
+- `sketch.Histogram` now consistently has integer counts, event after merging two histograms. It previously could convert values to floating-point after a merge operation.
+
 ## stream
 
 - `stream.Cache` now writes a pass to a temporary file and renames it into place once the stream is exhausted. An interrupted first pass (a `break`, an exception, an abandoned generator) used to leave a truncated file behind, which every later pass then read back as if it were the whole dataset.
@@ -25,6 +32,8 @@
 - `stream.iter_sql` now closes the result it iterates, so the underlying cursor is released once the stream is exhausted or abandoned.
 - `stream.cache`, `stream.iter_csv`, and `stream.iter_sql` are now clean under strict mypy. `sqlalchemy` is type-checked rather than ignored, so the `query` and `conn` arguments of `stream.iter_sql` are checked against the SQLAlchemy 2.0 types.
 - `stream.simulate_qa` is now clean under strict mypy. Its overloads type the yields: `(i, x, y)` for a dataset of `(x, y)` pairs, with the kwargs riding along for `(x, y, kwargs)` triples. Type checkers now also accept datasets keyed by plain `str`.
+- `stream.shuffle`, `stream.TwitchChatStream`, and `stream.TwitterLiveStream` are now clean under strict mypy. `stream.shuffle` is generic over any iterable, so the shuffled stream keeps the element type of its input, and `stream.TwitchChatStream` messages are typed with a `TypedDict`.
+- `stream.simulate_qa` and `evaluate.progressive_val_score` no longer raise a `TypeError` when `moment` is given without `delay`. Without a `delay`, `moment` is ignored. See [#2058](https://github.com/online-ml/river/pull/2058).
 
 ## preprocessing
 
@@ -35,7 +44,12 @@
 - Fixed the radius of `cluster.DenStream` micro-clusters, which used the norm of the vector of squared sums instead of the sum of its components and was 0 away from the origin. The docstring example now uses `epsilon=1.0`.
 - `cluster.DenStream.predict_one` now expands a cluster past the direct neighbors of its first micro-cluster. The neighbors of a neighbor were only queued if they already had a label, so a chain of micro-clusters came out as several clusters.
 - New `cluster.DenStream` micro-clusters no longer reuse the key of a deleted one, which overwrote an existing micro-cluster.
+
 ## proba
 
 - `proba.MultivariateGaussian.cdf` now uses a consistent feature ordering, so the result no longer depends on the key order of the input dictionary.
 
+
+## model_selection
+
+- Added HoeffdingRaceRegressor and HoeffdingRaceClassifier
