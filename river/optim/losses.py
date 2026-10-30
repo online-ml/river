@@ -385,7 +385,7 @@ class Log(BinaryLoss):
 
     References
     ----------
-    [^1]: [Logit Wikipedia page](https://www.wikiwand.com/en/Logit>)
+    [^1]: [Logit Wikipedia page](https://en.wikipedia.org/wiki/Logit)
 
     """
 
@@ -461,7 +461,7 @@ class Quantile(RegressionLoss):
 
     References
     ----------
-    [^1]: [Wikipedia article on quantile regression](https://www.wikiwand.com/en/Quantile_regression)
+    [^1]: [Wikipedia article on quantile regression](https://en.wikipedia.org/wiki/Quantile_regression)
     [^2]: [Derivative from WolframAlpha](https://www.wolframalpha.com/input/?i=derivative+(y+-+p)+*+(alpha+-+Boole(y+-+p))+wrt+p)
 
     """
@@ -525,7 +525,7 @@ class Huber(RegressionLoss):
 
     References
     ----------
-    1. [Huber loss function - Wikipedia](https://en.wikipedia.org/wiki/Huber_Loss_Function)
+    1. [Huber loss function - Wikipedia](https://en.wikipedia.org/wiki/Huber_loss)
 
     """
 

@@ -120,7 +120,7 @@ class PriorClassifier(base.Classifier):
 
     References
     ----------
-    [^1]: [Krichevsky–Trofimov estimator](https://www.wikiwand.com/en/Krichevsky%E2%80%93Trofimov_estimator)
+    [^1]: [Krichevsky–Trofimov estimator](https://en.wikipedia.org/wiki/Krichevsky%E2%80%93Trofimov_estimator)
 
     """
 

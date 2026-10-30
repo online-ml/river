@@ -32,7 +32,7 @@ use serde::{Deserialize, Serialize};
 /// assert_eq!(running_skew.get(), 0.771277809151813);
 /// ```
 /// # References
-/// [^1]: [Wikipedia article on algorithms for calculating variance](https://www.wikiwand.com/en/Algorithms_for_calculating_variance#/Covariance)
+/// [^1]: [Wikipedia article on algorithms for calculating variance](https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Covariance)
 #[derive(Clone, Copy, Debug, Serialize, Deserialize)]
 pub struct Skew<F: Float + FromPrimitive + AddAssign + SubAssign> {
     pub central_moments: CentralMoments<F>,
