@@ -72,7 +72,7 @@ def check_learn_one(model, dataset):
 
 
 def check_shuffle_features_no_impact(model, dataset):
-    """Changing the order of the features between calls should have no effect on a model."""
+    """Changing the order of the features between calls should have no effect on a model."""  # noqa: D401
     from river.active.base import ActiveLearningClassifier
 
     params = seed_params(model._get_params(), seed=42)
@@ -129,7 +129,7 @@ def check_predict_one_pure(model, dataset):
 
 
 def check_emerging_features(model, dataset):
-    """The model should work fine when new features appear."""
+    """The model should work fine when new features appear."""  # noqa: D401
     for x, y in dataset:
         features = list(x.keys())
         random.shuffle(features)
@@ -138,7 +138,7 @@ def check_emerging_features(model, dataset):
 
 
 def check_disappearing_features(model, dataset):
-    """The model should work fine when features disappear."""
+    """The model should work fine when features disappear."""  # noqa: D401
     for x, y in dataset:
         features = list(x.keys())
         random.shuffle(features)
@@ -147,7 +147,7 @@ def check_disappearing_features(model, dataset):
 
 
 def check_radically_disappearing_features(model, dataset):
-    """The model should work fine when nearly all features disappear."""
+    """The model should work fine when nearly all features disappear."""  # noqa: D401
     # First give all the data to prime the model
     for x, y in itertools.islice(dataset, 20):
         _infer(model, x)
@@ -188,7 +188,7 @@ def check_bounded_memory_growth(model, dataset):
     to police every byte. Measurement is noisy in practice — Python's garbage
     collector, dict capacity jumps, and bursty tree splits can all shift the
     numbers by tens of percent between runs.
-    """
+    """  # noqa: D401
     samples = list(dataset)
     if len(samples) < 4:
         return  # not enough data to split meaningfully
