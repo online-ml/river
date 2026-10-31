@@ -49,4 +49,11 @@ jobs:
           git pull
           git checkout main
           RIVER_VERSION=$(uv run python -c "import river; print(river.__version__)")
-          uv run mike deploy ${RIVER_VERSION} latest --update-aliases --push --remote https://${GH_TOKEN}@github.com/online-ml/river.git
+          DOCS_REMOTE=https://${GH_TOKEN}@github.com/online-ml/river.git
+          uv run mike deploy "$RIVER_VERSION" latest --update-aliases --remote "$DOCS_REMOTE"
+          git checkout gh-pages
+          test -f latest/llms.txt
+          ln -sfn latest/llms.txt llms.txt
+          git add llms.txt
+          git commit --amend --no-edit
+          git push "$DOCS_REMOTE" gh-pages

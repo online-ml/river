@@ -21,6 +21,7 @@ render-notebooks:
 doc: render-notebooks
 	python docs/parse river --out docs --verbose
 	zensical build
+	test -f site/llms.txt
 
 livedoc: doc
 	zensical serve
