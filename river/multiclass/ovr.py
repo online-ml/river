@@ -146,7 +146,7 @@ class OneVsRestClassifier(base.Wrapper[base.Classifier], base.Classifier):
 
         # Train each label's associated classifier against the one-vs-rest boolean target.
         for label, model in self.classifiers.items():
-            typing.cast("base.MiniBatchClassifier", model).learn_many(
+            typing.cast("base.typing.MiniBatchLearner", model).learn_many(
                 X, (ynw == label).to_native(), **kwargs
             )
 
@@ -166,7 +166,9 @@ class OneVsRestClassifier(base.Wrapper[base.Classifier], base.Classifier):
         columns: list[np.ndarray[typing.Any, typing.Any]] = []
         for clf in self.classifiers.values():
             proba = utils.dataframe.into_frame(
-                typing.cast("base.MiniBatchClassifier", clf).predict_proba_many(X, **kwargs)
+                typing.cast("base.typing.MiniBatchProbabilisticPredictor", clf).predict_proba_many(
+                    X, **kwargs
+                )
             )
             positive = next(j for j, col in enumerate(proba.columns) if str(col) == "True")
             columns.append(utils.dataframe.to_numpy(proba)[:, positive])
@@ -177,9 +179,8 @@ class OneVsRestClassifier(base.Wrapper[base.Classifier], base.Classifier):
     def predict_proba_many(self, X: IntoDataFrame, **kwargs: typing.Any) -> IntoDataFrame:
         Xnw, labels, P = self._positive_probas(X, **kwargs)
         totals = P.sum(axis=1, keepdims=True)
-        # Normalise each row to sum to 1. `where` leaves all-zero rows as NaN — matching the old
-        # pandas `df.div(df.sum(axis="columns"))` — without triggering a divide-by-zero warning.
-        P = np.divide(P, totals, out=np.full_like(P, np.nan), where=totals != 0)
+        default = np.full_like(P, 1 / len(labels)) if labels else P
+        P = np.divide(P, totals, out=default, where=totals != 0)
         return utils.dataframe.to_native_frame(
             {label: P[:, j] for j, label in enumerate(labels)}, like=Xnw
         )

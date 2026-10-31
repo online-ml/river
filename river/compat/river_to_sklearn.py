@@ -57,7 +57,11 @@ def convert_river_to_sklearn(estimator: base.Estimator):
 
     if isinstance(estimator, compose.Pipeline):
         return pipeline.Pipeline(
-            [(name, convert_river_to_sklearn(step)) for name, step in estimator.steps.items()]
+            [
+                (name, convert_river_to_sklearn(step))
+                for name, step in estimator.steps.items()
+                if step is not None
+            ]
         )
 
     wrappers = [
@@ -385,13 +389,15 @@ class River2SKLTransformer(sklearn_base.TransformerMixin, River2SKLBase):
         if not hasattr(self, "instance_"):
             self.instance_ = copy.deepcopy(self.river_estimator)
 
-        # Call learn_one for each observation
-        if isinstance(self.instance_, base.SupervisedTransformer):
+        if not isinstance(self.instance_, base.typing.Learner):
+            return self
+
+        if self.instance_._supervised:
             for x, yi in STREAM_METHODS[type(X)](X, y):
                 self.instance_.learn_one(x, yi)
         else:
             for x, _ in STREAM_METHODS[type(X)](X):
-                self.instance_.learn_one(x)
+                typing.cast(base.typing.UnsupervisedLearner, self.instance_).learn_one(x)
 
         return self
 

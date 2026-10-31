@@ -9,7 +9,7 @@ from collections.abc import Iterator
 from river import base, stats
 
 
-class SelectKBest(base.SupervisedTransformer):
+class SelectKBest(base.Transformer):
     """Removes all but the $k$ highest scoring features.
 
     Parameters
@@ -106,6 +106,10 @@ class SelectKBest(base.SupervisedTransformer):
     >>> selector_with_abs.transform_one({i: v for i, v in enumerate(X_abs[-1])})
     {1: 0.07524386007376704}
     """
+
+    @property
+    def _supervised(self) -> bool:
+        return True
 
     def __init__(
         self, similarity: stats.base.Bivariate, k: int = 10, use_abs: bool = False

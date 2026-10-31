@@ -58,6 +58,7 @@ def _implementation(native: IntoDataFrame | IntoSeries) -> nw.Implementation:
     [
         linear_model.LinearRegression(),
         linear_model.LogisticRegression(),
+        preprocessing.Normalizer(),
         preprocessing.StandardScaler(),
         cluster.KMeans(n_clusters=3, seed=42),
     ],

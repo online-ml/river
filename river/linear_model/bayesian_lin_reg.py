@@ -10,7 +10,7 @@ if typing.TYPE_CHECKING:
     from narwhals.stable.v2.typing import IntoDataFrame, IntoSeries
 
 
-class BayesianLinearRegression(base.MiniBatchRegressor):
+class BayesianLinearRegression(base.Regressor):
     """Bayesian linear regression.
 
     An advantage of Bayesian linear regression over standard linear regression is that features

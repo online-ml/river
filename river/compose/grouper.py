@@ -28,11 +28,14 @@ class Grouper(base.Transformer):
 
     def __init__(
         self,
-        transformer: base.BaseTransformer,
+        transformer: base.typing.Transformer,
         by: base.typing.FeatureName | list[base.typing.FeatureName],
     ):
         self.transformer = transformer
         self.by = by if isinstance(by, list) else [by]
+        self._learns = not transformer._supervised and isinstance(
+            transformer, base.typing.UnsupervisedLearner
+        )
         self.transformers: collections.defaultdict = collections.defaultdict(
             functools.partial(copy.deepcopy, transformer)
         )
@@ -42,7 +45,9 @@ class Grouper(base.Transformer):
 
     def learn_one(self, x):
         key = self._get_key(x)
-        self.transformers[key].learn_one(x)
+        transformer = self.transformers[key]
+        if self._learns:
+            transformer.learn_one(x)
 
     def transform_one(self, x):
         key = self._get_key(x)

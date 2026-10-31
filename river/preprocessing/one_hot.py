@@ -26,7 +26,7 @@ def _is_missing(value: typing.Any) -> bool:
         return False
 
 
-class OneHotEncoder(base.MiniBatchTransformer):
+class OneHotEncoder(base.Transformer):
     """One-hot encoding.
 
     This transformer will encode every feature it is provided with.
