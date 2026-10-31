@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from river import base, metrics
+from river.base.estimator import unwrap_estimator
 from river.metrics.multioutput.base import MultiOutputMetric
 
 __all__ = ["MicroAverage"]
@@ -27,8 +28,8 @@ class MicroAverage(MultiOutputMetric, metrics.base.WrapperMetric):
 
     def works_with(self, model) -> bool:
         if isinstance(self.metric, metrics.base.ClassificationMetric):
-            return isinstance(model, base.MultiLabelClassifier)
-        return isinstance(model, base.MultiTargetRegressor)
+            return isinstance(unwrap_estimator(model), base.MultiLabelClassifier)
+        return isinstance(unwrap_estimator(model), base.MultiTargetRegressor)
 
     def update(self, y_true, y_pred, w=1.0):
         for i in y_true:

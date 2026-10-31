@@ -7,6 +7,7 @@ import gc
 import inspect
 import logging
 import sys
+import threading
 import types
 import typing
 import warnings
@@ -440,23 +441,6 @@ class Base:
         return utils.pretty.humanize_bytes(self._raw_memory_usage)
 
 
-def _log_method_calls(
-    self: typing.Any,
-    name: str,
-    class_condition: typing.Callable[[typing.Any], bool],
-    method_condition: typing.Callable[[typing.Any], bool],
-) -> typing.Any:
-    method = object.__getattribute__(self, name)
-    if (
-        not name.startswith("_")
-        and inspect.ismethod(method)
-        and class_condition(self)
-        and method_condition(method)
-    ):
-        logging.debug(f"{self.__class__.__name__}.{name}")
-    return method
-
-
 @contextlib.contextmanager
 def log_method_calls(
     class_condition: typing.Callable[[typing.Any], bool] | None = None,
@@ -514,16 +498,34 @@ def log_method_calls(
     >>> logs.close()
 
     """
-    old = Base.__getattribute__
     class_condition = class_condition or (lambda x: True)
     method_condition = method_condition or (lambda x: True)
-    Base.__getattribute__ = lambda self, name: _log_method_calls(  # type: ignore
-        self, name, class_condition, method_condition
-    )
+    previous_profile = sys.getprofile()
+    previous_thread_profile = threading.getprofile()
+
+    def profile(frame: types.FrameType, event: str, arg: object) -> None:
+        if previous_profile is not None and not getattr(
+            previous_profile, "_river_log_method_calls", False
+        ):
+            previous_profile(frame, event, arg)
+        if event != "call":
+            return
+        self = frame.f_locals.get("self")
+        name = frame.f_code.co_name
+        if not isinstance(self, Base) or name.startswith("_") or not class_condition(self):
+            return
+        method = getattr(self, name, None)
+        if inspect.ismethod(method) and method_condition(method):
+            logging.debug(f"{self.__class__.__name__}.{name}")
+
+    setattr(profile, "_river_log_method_calls", True)
+    sys.setprofile(profile)
+    threading.setprofile(profile)
     try:
         yield
     finally:
-        Base.__getattribute__ = old  # type: ignore
+        sys.setprofile(previous_profile)
+        threading.setprofile(previous_thread_profile)
 
 
 def _repr_obj(obj: typing.Any, show_modules: bool = False, depth: int = 0) -> str:

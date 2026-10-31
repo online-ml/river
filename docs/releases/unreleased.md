@@ -4,6 +4,8 @@
 
 - Removed support for `pandas<=2.x`. River now requires `pandas>=3.1`.
 - In `OneHotEncoder`, missing values are not dropped anymore when `drop_first=True`, and the value that is dropped is now stable across observations.
+- Removed the combined mini-batch and supervised transformer base classes. Protocols under `base.typing` now describe these capabilities.
+- Added `base.unwrap_estimator` to access the terminal estimator in a nested composite estimator.
 
 ## datasets
 

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from river import base, metrics
 from river._river_rust.stats import RsRollingPRAUC
+from river.base.estimator import unwrap_estimator
 
 __all__ = ["RollingPRAUC"]
 
@@ -59,7 +60,7 @@ class RollingPRAUC(metrics.base.BinaryMetric):
     def works_with(self, model) -> bool:
         return (
             super().works_with(model)
-            or isinstance(model, base.AnomalyDetector)
+            or isinstance(unwrap_estimator(model), base.AnomalyDetector)
             or isinstance(model, base.AnomalyFilter)
         )
 

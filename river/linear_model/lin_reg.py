@@ -11,7 +11,7 @@ if typing.TYPE_CHECKING:
     from numpy.typing import NDArray
 
 
-class LinearRegression(linear_model.base.GLM, base.MiniBatchRegressor):
+class LinearRegression(linear_model.base.GLM, base.Regressor):
     """Linear regression.
 
     This estimator supports learning with mini-batches. On top of the single instance methods, it
@@ -110,6 +110,10 @@ class LinearRegression(linear_model.base.GLM, base.MiniBatchRegressor):
     Prediction: 32.54607
 
     """
+
+    @property
+    def _can_mini_batch(self) -> bool:
+        return True
 
     def __init__(
         self,
