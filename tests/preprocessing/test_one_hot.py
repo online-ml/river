@@ -146,11 +146,7 @@ def test_transform_many_missing_matches_pandas(
 
 
 def test_transform_many_missing_is_all_zeros_pandas() -> None:
-    """Pin the pandas contract: a missing cell encodes to all-zeros (no ``1`` in any dummy).
-
-    ``None`` is still registered as the literal ``"None"`` category, so a zero-filled ``c_None``
-    column is padded in (mirroring ``get_dummies``, which omits the missing row's ``1``).
-    """
+    """Pin the pandas contract: a missing cell encodes to all-zeros (no ``1`` in any dummy)."""
     import pandas as pd
 
     X = pd.DataFrame({"c": ["a", None, "b"]})
@@ -158,10 +154,40 @@ def test_transform_many_missing_is_all_zeros_pandas() -> None:
     encoder.learn_many(X)
 
     assert _rows(encoder.transform_many(X)) == [
-        {"c_None": 0, "c_a": 1, "c_b": 0},
-        {"c_None": 0, "c_a": 0, "c_b": 0},
-        {"c_None": 0, "c_a": 0, "c_b": 1},
+        {"c_a": 1, "c_b": 0},
+        {"c_a": 0, "c_b": 0},
+        {"c_a": 0, "c_b": 1},
     ]
+
+
+def test_missing_values_are_not_learned_one() -> None:
+    encoder = preprocessing.OneHotEncoder(drop_zeros=False)
+    encoder.learn_one({"c1": "a", "c2": 1.0})
+    encoder.learn_one({"c1": None, "c2": float("nan")})
+
+    assert encoder.values == {"c1": {"a"}, "c2": {1.0}}
+    assert encoder.transform_one({"c1": None, "c2": float("nan")}) == {
+        "c1_a": 0,
+        "c2_1.0": 0,
+    }
+    assert (
+        preprocessing.OneHotEncoder(drop_zeros=True, drop_first=True).transform_one({"c1": None})
+        == {}
+    )
+
+
+def test_missing_values_are_not_learned_many(frame_backend: FrameBackend) -> None:
+    encoder = preprocessing.OneHotEncoder(drop_zeros=False)
+    encoder.learn_many(
+        frame_backend.frame(
+            {
+                "c1": ["a", None, "b"],
+                "c2": [1.0, float("nan"), 2.0],
+            }
+        )
+    )
+
+    assert encoder.values == {"c1": {"a", "b"}, "c2": {1.0, 2.0}}
 
 
 def test_transform_many_pads_categories_from_earlier_batches(frame_backend: FrameBackend) -> None:

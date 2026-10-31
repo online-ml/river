@@ -14,6 +14,16 @@ if typing.TYPE_CHECKING:
 __all__ = ["OneHotEncoder"]
 
 
+def _is_missing(value: typing.Any) -> bool:
+    if value is None:
+        return True
+    try:
+        unequal = value != value
+        return unequal is value or bool(unequal)
+    except (TypeError, ValueError):
+        return False
+
+
 class OneHotEncoder(base.MiniBatchTransformer):
     """One-hot encoding.
 
@@ -286,10 +296,10 @@ class OneHotEncoder(base.MiniBatchTransformer):
                 vi = values[i]
                 if isinstance(xi, (list, set)):
                     for xj in xi:
-                        if xj not in vi:
+                        if not _is_missing(xj) and xj not in vi:
                             vi.add(xj)
                             zero_dict[f"{i}_{xj}"] = 0
-                elif xi not in vi:
+                elif not _is_missing(xi) and xi not in vi:
                     vi.add(xi)
                     zero_dict[f"{i}_{xi}"] = 0
 
@@ -303,8 +313,9 @@ class OneHotEncoder(base.MiniBatchTransformer):
             for i, xi in x.items():
                 if isinstance(xi, (list, set)):
                     for xj in xi:
-                        oh[f"{i}_{xj}"] = 1
-                else:
+                        if not _is_missing(xj):
+                            oh[f"{i}_{xj}"] = 1
+                elif not _is_missing(xi):
                     oh[f"{i}_{xi}"] = 1
         else:
             values = self.values
@@ -317,7 +328,7 @@ class OneHotEncoder(base.MiniBatchTransformer):
                 elif xi in vi:
                     oh[f"{i}_{xi}"] = 1
 
-        if self.drop_first:
+        if self.drop_first and oh:
             oh.pop(min(oh))
 
         return oh
@@ -332,9 +343,13 @@ class OneHotEncoder(base.MiniBatchTransformer):
             values = self.values
             zero_dict = self._zero_dict
             X_nw = utils.dataframe.into_frame(X)
+            schema = X_nw.schema
             for col in X_nw.columns:
                 vi = values[col]
-                for v in X_nw[col].unique():
+                series = X_nw[col]
+                if schema[col].is_float():
+                    series = series.fill_nan(None)
+                for v in series.drop_nulls().unique():
                     if v not in vi:
                         vi.add(v)
                         zero_dict[f"{col}_{v}"] = 0

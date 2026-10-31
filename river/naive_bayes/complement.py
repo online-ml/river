@@ -105,10 +105,8 @@ class ComplementNB(base.BaseNB):
     0  0.415129  0.361624  0.223247
     1  0.248619  0.216575  0.534807
 
-    >>> model.predict_many(unseen)
-    0    maybe
-    1      yes
-    dtype: object
+    >>> model.predict_many(unseen).tolist()
+    ['maybe', 'yes']
 
     References
     ----------
