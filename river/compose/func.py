@@ -96,17 +96,16 @@ class FuncTransformer(base.Transformer):
     def _can_mini_batch(self) -> bool:
         return True
 
-    def __init__(self, func: typing.Callable[[dict], dict]):
+    def __init__(
+        self, func: typing.Callable[[dict[typing.Any, typing.Any]], dict[typing.Any, typing.Any]]
+    ):
         self.func = func
 
-    def transform_one(self, x):
+    def transform_one(self, x: dict[typing.Any, typing.Any]) -> dict[typing.Any, typing.Any]:
         return self.func(x)
 
-    def transform_many(self, X):
+    def transform_many(self, X: typing.Any) -> typing.Any:
         return self.func(X)
 
-    def learn_many(self, X) -> None:
-        return
-
-    def __str__(self):
+    def __str__(self) -> str:
         return self.func.__name__

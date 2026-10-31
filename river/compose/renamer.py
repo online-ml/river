@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import typing
+
 from river import base
 
 __all__ = ["Renamer", "Prefixer", "Suffixer"]
@@ -28,7 +30,9 @@ class Renamer(base.Transformer):
     def __init__(self, mapping: dict[str, str]):
         self.mapping = mapping
 
-    def transform_one(self, x):
+    def transform_one(
+        self, x: dict[base.typing.FeatureName, typing.Any]
+    ) -> dict[base.typing.FeatureName, typing.Any]:
         for old_key, new_key in self.mapping.items():
             try:
                 x[new_key] = x.pop(old_key)
@@ -62,7 +66,9 @@ class Prefixer(base.Transformer):
     def _rename(self, s: str) -> str:
         return f"{self.prefix}{s}"
 
-    def transform_one(self, x):
+    def transform_one(
+        self, x: dict[base.typing.FeatureName, typing.Any]
+    ) -> dict[base.typing.FeatureName, typing.Any]:
         prefix = self.prefix
         return {f"{prefix}{i}": xi for i, xi in x.items()}
 
@@ -91,6 +97,8 @@ class Suffixer(base.Transformer):
     def _rename(self, s: str) -> str:
         return f"{s}{self.suffix}"
 
-    def transform_one(self, x):
+    def transform_one(
+        self, x: dict[base.typing.FeatureName, typing.Any]
+    ) -> dict[base.typing.FeatureName, typing.Any]:
         suffix = self.suffix
         return {f"{i}{suffix}": xi for i, xi in x.items()}
