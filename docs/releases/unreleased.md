@@ -2,8 +2,20 @@
 
 ## Breaking changes
 
-- Removed support for `pandas<3.1`. River now requires `pandas>=3.1`.
-- Missing values are not dropped anymore when `drop_first=True`, and the value that is dropped is now stable across observations.
+- Removed support for `pandas<=2.x`. River now requires `pandas>=3.1`.
+- In `OneHotEncoder`, missing values are not dropped anymore when `drop_first=True`, and the value that is dropped is now stable across observations.
+
+## datasets
+
+- Added `datasets.TwitchChat`, adding data from the [TwitchChat: A Dataset for Exploring Livestream Chat](https://doi.org/10.1609/aiide.v16i1.7439) paper.
+- Added `datasets.NewsT`, a dataset containing 11k Google News titles.
+
+## cluster
+
+- Fixed the radius of `cluster.DenStream` micro-clusters, which used the norm of the vector of squared sums instead of the sum of its components and was 0 away from the origin. The docstring example now uses `epsilon=1.0`.
+- `cluster.DenStream.predict_one` now expands a cluster past the direct neighbors of its first micro-cluster. The neighbors of a neighbor were only queued if they already had a label, so a chain of micro-clusters came out as several clusters.
+- New `cluster.DenStream` micro-clusters no longer reuse the key of a deleted one, which overwrote an existing micro-cluster.
+- Optimized `cluster.TextClust` to be rougly 3x faster.
 
 ## drift
 
@@ -47,12 +59,6 @@
 ## preprocessing
 
 - `preprocessing.Normalizer` now handles zero vectors without raising a `ZeroDivisionError`. A zero vector is returned unchanged instead.
-
-## cluster
-
-- Fixed the radius of `cluster.DenStream` micro-clusters, which used the norm of the vector of squared sums instead of the sum of its components and was 0 away from the origin. The docstring example now uses `epsilon=1.0`.
-- `cluster.DenStream.predict_one` now expands a cluster past the direct neighbors of its first micro-cluster. The neighbors of a neighbor were only queued if they already had a label, so a chain of micro-clusters came out as several clusters.
-- New `cluster.DenStream` micro-clusters no longer reuse the key of a deleted one, which overwrote an existing micro-cluster.
 
 ## proba
 
