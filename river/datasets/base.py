@@ -242,12 +242,15 @@ class RemoteDataset(FileDataset):
         Whether to unpack the download or not.
     filename
         An optional name to given to the file if the file is unpacked.
+    archive_name
+        The name to use for the downloaded archive. This is useful when the URL does not contain
+        the archive extension.
     desc
         Extra dataset parameters to pass as keyword arguments.
 
     """
 
-    def __init__(self, url, size, unpack=True, filename=None, **desc):
+    def __init__(self, url, size, unpack=True, filename=None, archive_name=None, **desc):
         if filename is None:
             filename = os.path.basename(url)
 
@@ -255,6 +258,7 @@ class RemoteDataset(FileDataset):
         self.url = url
         self.size = size
         self.unpack = unpack
+        self.archive_name = archive_name or os.path.basename(url)
 
     @property
     def path(self):
@@ -268,7 +272,7 @@ class RemoteDataset(FileDataset):
         directory = self.path.parent
         directory.mkdir(parents=True, exist_ok=True)
         if self.unpack:
-            archive_path = directory.joinpath(os.path.basename(self.url))
+            archive_path = directory.joinpath(self.archive_name)
         else:
             archive_path = directory.joinpath(os.path.basename(self.filename))
 
@@ -319,7 +323,7 @@ class RemoteDataset(FileDataset):
         if self.path.exists():
             if self.path.is_file():
                 return self.path.stat().st_size == self.size
-            return sum(f.stat().st_size for f in self.path.glob("**/*") if f.is_file())
+            return sum(f.stat().st_size for f in self.path.glob("**/*") if f.is_file()) == self.size
 
         return False
 
