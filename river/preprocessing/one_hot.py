@@ -296,10 +296,10 @@ class OneHotEncoder(base.MiniBatchTransformer):
                 vi = values[i]
                 if isinstance(xi, (list, set)):
                     for xj in xi:
-                        if not _is_missing(xj) and xj not in vi:
+                        if xj not in vi and (isinstance(xj, str) or not _is_missing(xj)):
                             vi.add(xj)
                             zero_dict[f"{i}_{xj}"] = 0
-                elif not _is_missing(xi) and xi not in vi:
+                elif xi not in vi and (isinstance(xi, str) or not _is_missing(xi)):
                     vi.add(xi)
                     zero_dict[f"{i}_{xi}"] = 0
 
@@ -313,9 +313,9 @@ class OneHotEncoder(base.MiniBatchTransformer):
             for i, xi in x.items():
                 if isinstance(xi, (list, set)):
                     for xj in xi:
-                        if not _is_missing(xj):
+                        if isinstance(xj, str) or not _is_missing(xj):
                             oh[f"{i}_{xj}"] = 1
-                elif not _is_missing(xi):
+                elif isinstance(xi, str) or not _is_missing(xi):
                     oh[f"{i}_{xi}"] = 1
         else:
             values = self.values
