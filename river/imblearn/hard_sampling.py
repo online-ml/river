@@ -1,22 +1,32 @@
 from __future__ import annotations
 
 import collections
+import collections.abc
 import random
 import typing
 
 from river import base, linear_model, optim, utils
 
+T = typing.TypeVar("T", base.Classifier, base.Regressor)
+
 
 class Triplet(collections.namedtuple("Triplet", "x y loss")):
-    def __lt__(self, other):
-        return self.loss < other.loss
+    def __lt__(self, other: typing.Any) -> bool:
+        return typing.cast(float, self.loss) < typing.cast(float, other.loss)
 
 
-class HardSampling(base.Wrapper):
+class HardSampling(base.Wrapper[T], typing.Generic[T]):
     """Hard sampler."""
 
-    def __init__(self, model, loss, size, p, seed: int | None = None):
-        self.model = model
+    def __init__(
+        self,
+        model: T,
+        loss: optim.base.Loss,
+        size: int,
+        p: float,
+        seed: int | None = None,
+    ):
+        self.model: T = model
         self.loss = loss
         self.p = p
         self.size = size
@@ -25,22 +35,29 @@ class HardSampling(base.Wrapper):
         self._rng = random.Random(seed)
 
     @property
-    def _wrapped_model(self):
+    def _wrapped_model(self) -> T:
         return self.model
 
-    def predict_one(self, x, **kwargs):
-        return self.model.predict_one(x, **kwargs)
-
     @property
-    def _model_pred_func(self) -> typing.Callable:
+    def _model_pred_func(
+        self,
+    ) -> collections.abc.Callable[[dict[base.typing.FeatureName, typing.Any]], typing.Any]:
         if isinstance(self.model, base.Classifier):
             if not self.model._multiclass:
                 return lambda x: self.model.predict_proba_one(x)[True]
             return self.model.predict_proba_one
-        return self.model.predict_one
+        return typing.cast(
+            collections.abc.Callable[[dict[base.typing.FeatureName, typing.Any]], typing.Any],
+            self.model.predict_one,
+        )
 
-    def learn_one(self, x, y, **kwargs):
-        loss = self.loss(y_true=y, y_pred=self._model_pred_func(x))
+    def learn_one(
+        self,
+        x: dict[base.typing.FeatureName, typing.Any],
+        y: typing.Any,
+        **kwargs: typing.Any,
+    ) -> None:
+        loss = typing.cast(float, self.loss(y_true=y, y_pred=self._model_pred_func(x)))
 
         # Copy x so the caller can safely mutate the input after learn_one
         # without disturbing the buffered triplets.
@@ -60,7 +77,9 @@ class HardSampling(base.Wrapper):
 
             self.model.learn_one(triplet.x, triplet.y, **kwargs)
 
-            loss = self.loss(y_true=triplet.y, y_pred=self._model_pred_func(triplet.x))
+            loss = typing.cast(
+                float, self.loss(y_true=triplet.y, y_pred=self._model_pred_func(triplet.x))
+            )
 
             self.buffer.append(Triplet(x=triplet.x, y=triplet.y, loss=loss))
 
@@ -69,7 +88,7 @@ class HardSampling(base.Wrapper):
             self.model.learn_one(x, y)
 
 
-class HardSamplingRegressor(HardSampling, base.Regressor):
+class HardSamplingRegressor(HardSampling[base.Regressor], base.Regressor):
     """Hard sampling regressor.
 
     This wrapper enables a model to retrain on past samples who's output was hard to predict.
@@ -142,15 +161,20 @@ class HardSamplingRegressor(HardSampling, base.Regressor):
         super().__init__(model=regressor, loss=loss, size=size, p=p, seed=seed)
 
     @property
-    def regressor(self):
+    def regressor(self) -> base.Regressor:
         return self.model
 
+    def predict_one(
+        self, x: dict[base.typing.FeatureName, typing.Any], **kwargs: typing.Any
+    ) -> base.typing.RegTarget:
+        return self.model.predict_one(x, **kwargs)
+
     @classmethod
-    def _unit_test_params(cls):
+    def _unit_test_params(cls) -> collections.abc.Iterator[dict[str, typing.Any]]:
         yield {"regressor": linear_model.LinearRegression(), "p": 0.1, "size": 40}
 
 
-class HardSamplingClassifier(HardSampling, base.Classifier):
+class HardSamplingClassifier(HardSampling[base.Classifier], base.Classifier):
     """Hard sampling classifier.
 
     This wrapper enables a model to retrain on past samples who's output was hard to predict.
@@ -223,16 +247,23 @@ class HardSamplingClassifier(HardSampling, base.Classifier):
         super().__init__(model=classifier, loss=loss, size=size, p=p, seed=seed)
 
     @property
-    def classifier(self):
+    def classifier(self) -> base.Classifier:
         return self.model
 
     @property
-    def _multiclass(self):
+    def _multiclass(self) -> bool:
         return self.model._multiclass
 
-    def predict_proba_one(self, x, **kwargs):
+    def predict_one(
+        self, x: dict[base.typing.FeatureName, typing.Any], **kwargs: typing.Any
+    ) -> base.typing.ClfTarget | None:
+        return self.model.predict_one(x, **kwargs)
+
+    def predict_proba_one(
+        self, x: dict[base.typing.FeatureName, typing.Any], **kwargs: typing.Any
+    ) -> dict[base.typing.ClfTarget, float]:
         return self.model.predict_proba_one(x, **kwargs)
 
     @classmethod
-    def _unit_test_params(cls):
+    def _unit_test_params(cls) -> collections.abc.Iterator[dict[str, typing.Any]]:
         yield {"classifier": linear_model.LogisticRegression(), "p": 0.1, "size": 40}

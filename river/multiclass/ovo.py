@@ -1,15 +1,17 @@
 from __future__ import annotations
 
 import collections
+import collections.abc
 import copy
 import functools
+import typing
 
 from river import base, linear_model
 
 __all__ = ["OneVsOneClassifier"]
 
 
-class OneVsOneClassifier(base.Wrapper, base.Classifier):
+class OneVsOneClassifier(base.Wrapper[base.Classifier], base.Classifier):
     """One-vs-One (OvO) multiclass strategy.
 
     This strategy consists in fitting one binary classifier for each pair of classes. Because we
@@ -55,36 +57,48 @@ class OneVsOneClassifier(base.Wrapper, base.Classifier):
 
     """
 
-    def __init__(self, classifier):
+    def __init__(self, classifier: base.Classifier):
         self.classifier = classifier
-        new_clf = functools.partial(copy.deepcopy, classifier)
-        self.classifiers = collections.defaultdict(new_clf)
-        self.classes = set()
+        new_clf: collections.abc.Callable[[], base.Classifier] = functools.partial(
+            copy.deepcopy, classifier
+        )
+        self.classifiers: collections.defaultdict[
+            tuple[base.typing.ClfTarget, base.typing.ClfTarget], base.Classifier
+        ] = collections.defaultdict(new_clf)
+        self.classes: set[base.typing.ClfTarget] = set()
 
     @property
-    def _wrapped_model(self):
+    def _wrapped_model(self) -> base.Classifier:
         return self.classifier
 
     @property
-    def _multiclass(self):
+    def _multiclass(self) -> bool:
         return True
 
     @classmethod
-    def _unit_test_params(cls):
+    def _unit_test_params(cls) -> collections.abc.Iterator[dict[str, typing.Any]]:
         yield {"classifier": linear_model.LogisticRegression()}
 
-    def learn_one(self, x, y, **kwargs):
+    def learn_one(
+        self,
+        x: dict[base.typing.FeatureName, typing.Any],
+        y: base.typing.ClfTarget,
+        **kwargs: typing.Any,
+    ) -> None:
         self.classes.add(y)
 
         for c in self.classes - {y}:
-            pair = (c, y) if c < y else (y, c)
-            self.classifiers[pair].learn_one(x, y=c < y, **kwargs)
+            is_less = typing.cast(base.typing.SupportsComparisonLesser, c) < y
+            pair = (c, y) if is_less else (y, c)
+            self.classifiers[pair].learn_one(x, y=is_less, **kwargs)
 
-    def predict_one(self, x, **kwargs):
+    def predict_one(
+        self, x: dict[base.typing.FeatureName, typing.Any], **kwargs: typing.Any
+    ) -> base.typing.ClfTarget | None:
         if not self.classifiers:  # is empty
             return None
 
-        votes = collections.defaultdict(int)
+        votes: collections.defaultdict[base.typing.ClfTarget, int] = collections.defaultdict(int)
 
         for pair, clf in self.classifiers.items():
             if clf.predict_one(x, **kwargs):
@@ -92,4 +106,4 @@ class OneVsOneClassifier(base.Wrapper, base.Classifier):
             else:
                 votes[pair[0]] += 1
 
-        return max(votes, key=votes.get)
+        return max(votes, key=votes.__getitem__)

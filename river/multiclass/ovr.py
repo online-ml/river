@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import typing
+from collections.abc import Iterator
 
 import narwhals.stable.v2 as nw
 import numpy as np
@@ -13,7 +14,7 @@ if typing.TYPE_CHECKING:
 __all__ = ["OneVsRestClassifier"]
 
 
-class OneVsRestClassifier(base.Wrapper, base.Classifier):
+class OneVsRestClassifier(base.Wrapper[base.Classifier], base.Classifier):
     """One-vs-the-rest (OvR) multiclass strategy.
 
     This strategy consists in fitting one binary classifier per class. Because we are in a
@@ -91,18 +92,23 @@ class OneVsRestClassifier(base.Wrapper, base.Classifier):
         self._y_name: str | None = None
 
     @property
-    def _wrapped_model(self):
+    def _wrapped_model(self) -> base.Classifier:
         return self.classifier
 
     @property
-    def _multiclass(self):
+    def _multiclass(self) -> bool:
         return True
 
     @classmethod
-    def _unit_test_params(cls):
+    def _unit_test_params(cls) -> Iterator[dict[str, typing.Any]]:
         yield {"classifier": linear_model.LogisticRegression()}
 
-    def learn_one(self, x, y, **kwargs):
+    def learn_one(
+        self,
+        x: dict[base.typing.FeatureName, typing.Any],
+        y: base.typing.ClfTarget,
+        **kwargs: typing.Any,
+    ) -> None:
         # Instantiate a new binary classifier if the class is new
         if y not in self.classifiers:
             self.classifiers[y] = self.classifier.clone()
@@ -111,8 +117,10 @@ class OneVsRestClassifier(base.Wrapper, base.Classifier):
         for label, model in self.classifiers.items():
             model.learn_one(x, y == label, **kwargs)
 
-    def predict_proba_one(self, x, **kwargs):
-        y_pred = {}
+    def predict_proba_one(
+        self, x: dict[base.typing.FeatureName, typing.Any], **kwargs: typing.Any
+    ) -> dict[base.typing.ClfTarget, float]:
+        y_pred: dict[base.typing.ClfTarget, float] = {}
         total = 0.0
 
         for label, model in self.classifiers.items():
@@ -124,7 +132,7 @@ class OneVsRestClassifier(base.Wrapper, base.Classifier):
             return {label: votes / total for label, votes in y_pred.items()}
         return {label: 1 / len(y_pred) for label in y_pred}
 
-    def learn_many(self, X: IntoDataFrame, y: IntoSeries, **kwargs) -> None:
+    def learn_many(self, X: IntoDataFrame, y: IntoSeries, **kwargs: typing.Any) -> None:
         # narwhals at the boundary: the per-label target is a boolean series built with the input
         # series' own backend, so each binary sub-classifier sees a native series it understands.
         ynw = utils.dataframe.into_series(y)
@@ -143,7 +151,7 @@ class OneVsRestClassifier(base.Wrapper, base.Classifier):
             )
 
     def _positive_probas(
-        self, X, **kwargs
+        self, X: IntoDataFrame, **kwargs: typing.Any
     ) -> tuple[nw.DataFrame[IntoDataFrame], list[base.typing.ClfTarget], np.ndarray]:
         """Return ``(Xnw, labels, P)`` with the raw positive-class probabilities.
 
@@ -155,7 +163,7 @@ class OneVsRestClassifier(base.Wrapper, base.Classifier):
         """
         Xnw = utils.dataframe.into_frame(X)
         labels = list(self.classifiers)
-        columns = []
+        columns: list[np.ndarray[typing.Any, typing.Any]] = []
         for clf in self.classifiers.values():
             proba = utils.dataframe.into_frame(
                 typing.cast("base.MiniBatchClassifier", clf).predict_proba_many(X, **kwargs)
@@ -166,7 +174,7 @@ class OneVsRestClassifier(base.Wrapper, base.Classifier):
         P = np.column_stack(columns) if columns else np.empty((len(Xnw), 0))
         return Xnw, labels, P
 
-    def predict_proba_many(self, X: IntoDataFrame, **kwargs) -> IntoDataFrame:
+    def predict_proba_many(self, X: IntoDataFrame, **kwargs: typing.Any) -> IntoDataFrame:
         Xnw, labels, P = self._positive_probas(X, **kwargs)
         totals = P.sum(axis=1, keepdims=True)
         # Normalise each row to sum to 1. `where` leaves all-zero rows as NaN — matching the old
@@ -176,7 +184,7 @@ class OneVsRestClassifier(base.Wrapper, base.Classifier):
             {label: P[:, j] for j, label in enumerate(labels)}, like=Xnw
         )
 
-    def predict_many(self, X: IntoDataFrame, **kwargs) -> IntoSeries:
+    def predict_many(self, X: IntoDataFrame, **kwargs: typing.Any) -> IntoSeries:
         Xnw, labels, P = self._positive_probas(X, **kwargs)
         if not labels:
             return utils.dataframe.to_native_series([None] * len(Xnw), name=self._y_name, like=Xnw)
