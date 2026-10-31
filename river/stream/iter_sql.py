@@ -105,9 +105,7 @@ def iter_sql(
 
     with conn.execute(statement) as result:
         column_names: tuple[FeatureName, ...] = tuple(result.keys())
-        duplicates = [
-            name for name, count in Counter(column_names).items() if count > 1
-        ]
+        duplicates = [name for name, count in Counter(column_names).items() if count > 1]
         if duplicates:
             raise ValueError(
                 f"SQL query returned duplicate column names: {duplicates}. "
