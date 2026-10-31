@@ -26,7 +26,7 @@
       
       
       <link rel="icon" href="../../img/favicon.ico">
-      <meta name="generator" content="zensical-0.0.73">
+      <meta name="generator" content="zensical-0.0.74">
     
     
       
@@ -2757,6 +2757,7 @@
 </ul>
 <h2 id="stream">stream<a class="headerlink" href="#stream" title="Permanent link">&para;</a></h2>
 <ul>
+<li><a href="../../api/stream/iter-csv"><code>stream.iter_csv</code></a> now preserves extra fields and fills missing columns correctly.</li>
 <li><a href="../../api/stream/Cache"><code>stream.Cache</code></a> now writes a pass to a temporary file and renames it into place once the stream is exhausted. An interrupted first pass (a <code>break</code>, an exception, an abandoned generator) used to leave a truncated file behind, which every later pass then read back as if it were the whole dataset.</li>
 <li><a href="../../api/stream/iter-csv"><code>stream.iter_csv</code></a> no longer yields an empty <code>x</code> for a blank line in the middle of a file. <code>csv.DictReader</code> skips those, and <a href="../../api/stream/iter-arff"><code>stream.iter_arff</code></a> already did.</li>
 <li><a href="../../api/stream/iter-csv"><code>stream.iter_csv</code></a> now closes the file it opened and restores <code>csv.field_size_limit</code> even when the stream is not exhausted, e.g. when the caller breaks out of the loop. Only the file <code>iter_csv</code> opened itself is closed; a buffer passed in by the caller is still left open.</li>
@@ -2873,10 +2874,10 @@
       
         
         
-      <script id="__config" type="application/json">{"annotate":null,"base":"../..","features":["content.code.copy","navigation.tabs","navigation.instant","navigation.indexes","navigation.prune"],"redirect":null,"search":"../../assets/javascripts/workers/search.c47bb847.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","clipboard.error":"Could not copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":{"provider":"mike"}}</script>
+      <script id="__config" type="application/json">{"annotate":null,"base":"../..","features":["content.code.copy","navigation.tabs","navigation.instant","navigation.indexes","navigation.prune"],"redirect":null,"search":"../../assets/javascripts/workers/search.719e0d91.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","clipboard.error":"Could not copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":{"provider":"mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.77dd0ce9.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d31f0ffa.min.js"></script>
       
         <script src="../../javascripts/config.js"></script>
       
