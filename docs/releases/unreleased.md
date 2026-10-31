@@ -2,7 +2,8 @@
 
 ## Breaking changes
 
-- Removed support for `pandas<=2`, and added support for `pandas>=3.1`.
+- Removed support for `pandas<3.1`. River now requires `pandas>=3.1`.
+- Missing values are not dropped anymore when `drop_first=True`, and the value that is dropped is now stable across observations.
 
 ## drift
 
