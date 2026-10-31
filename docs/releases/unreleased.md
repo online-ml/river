@@ -1,5 +1,9 @@
 ﻿# Unreleased
 
+## Breaking changes
+
+- Removed support for `pandas<=2`, and added support for `pandas>=3.1`.
+
 ## drift
 
 - The `river.drift` sub-package is now clean under strict mypy, and the `river.drift.*` entry was removed from the non-strict overrides in `pyproject.toml`. Public signatures and docstrings are unchanged.
