@@ -4914,8 +4914,8 @@ in the output. Otherwise, all the past features will be included in the output.<
 </code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>{&#39;c2_d&#39;: 1}
 {&#39;c2_x&#39;: 1}
-{&#39;c2_h&#39;: 1}
-{&#39;c2_e&#39;: 1}
+{&#39;c1_i&#39;: 1, &#39;c2_h&#39;: 1}
+{&#39;c1_h&#39;: 1, &#39;c2_e&#39;: 1}
 </code></pre></div></p>
 <p>Like in <code>scikit-learn</code>, you can also specify the expected categories manually.
 This is handy when you want to constrain category encoding space
@@ -5087,7 +5087,6 @@ dtype: object
 <details class="- abstract">
 <summary>transform_many</summary>
 <p>One-hot encode a mini-batch of features.</p>
-<p>Pandas keeps the historical fast path returning <code>Sparse\[uint8\]</code> columns. Every other narwhals-supported backend (polars, pyarrow, ...) is encoded via <code>narwhals.Series.to_dummies</code> and returns <strong>dense</strong> integer columns, since those backends have no sparse-array equivalent.</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>X</strong>     — <code>IntoDataFrameT</code>    </li>

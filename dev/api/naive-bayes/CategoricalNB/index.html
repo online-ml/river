@@ -4540,10 +4540,9 @@
 
 <span class="n">unseen</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([{</span><span class="s2">&quot;outlook&quot;</span><span class="p">:</span> <span class="s2">&quot;rainy&quot;</span><span class="p">,</span> <span class="s2">&quot;temp&quot;</span><span class="p">:</span> <span class="s2">&quot;cool&quot;</span><span class="p">}])</span>
 
-<span class="n">batch_model</span><span class="o">.</span><span class="n">predict_many</span><span class="p">(</span><span class="n">unseen</span><span class="p">)</span>
+<span class="n">batch_model</span><span class="o">.</span><span class="n">predict_many</span><span class="p">(</span><span class="n">unseen</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>0    yes
-dtype: object
+<div class="language-text highlight"><pre><span></span><code>[&#39;yes&#39;]
 </code></pre></div></p>
 <p><div class="language-python highlight"><pre><span></span><code><span class="n">batch_model</span><span class="o">.</span><span class="n">predict_proba_many</span><span class="p">(</span><span class="n">unseen</span><span class="p">)</span>
 </code></pre></div>

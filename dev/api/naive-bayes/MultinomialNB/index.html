@@ -4568,11 +4568,9 @@
 0  0.373272  0.294931  0.331797
 1  0.160396  0.126733  0.712871
 </code></pre></div></p>
-<p><div class="language-python highlight"><pre><span></span><code><span class="n">model</span><span class="o">.</span><span class="n">predict_many</span><span class="p">(</span><span class="n">unseen</span><span class="p">)</span>
+<p><div class="language-python highlight"><pre><span></span><code><span class="n">model</span><span class="o">.</span><span class="n">predict_many</span><span class="p">(</span><span class="n">unseen</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>0    maybe
-1      yes
-dtype: object
+<div class="language-text highlight"><pre><span></span><code>[&#39;maybe&#39;, &#39;yes&#39;]
 </code></pre></div></p>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <details class="- abstract">

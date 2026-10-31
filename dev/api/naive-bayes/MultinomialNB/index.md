@@ -119,13 +119,11 @@ model.predict_proba_many(unseen)
 ```
 
 ```python
-model.predict_many(unseen)
+model.predict_many(unseen).tolist()
 ```
 
 ```text
-0    maybe
-1      yes
-dtype: object
+['maybe', 'yes']
 ```
 
 ## Methods

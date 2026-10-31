@@ -106,8 +106,8 @@ for x in X:
 ```text
 {'c2_d': 1}
 {'c2_x': 1}
-{'c2_h': 1}
-{'c2_e': 1}
+{'c1_i': 1, 'c2_h': 1}
+{'c1_h': 1, 'c2_e': 1}
 ```
 
 Like in `scikit-learn`, you can also specify the expected categories manually. This is handy when you want to constrain category encoding space to e.g. top 20% most popular category values you've picked in advance.
@@ -334,8 +334,6 @@ df.sort_index(axis="columns")
 > **transform\_many**
 >
 > One-hot encode a mini-batch of features.
->
-> Pandas keeps the historical fast path returning `Sparse\[uint8\]` columns. Every other narwhals-supported backend (polars, pyarrow, ...) is encoded via `narwhals.Series.to_dummies` and returns **dense** integer columns, since those backends have no sparse-array equivalent.
 >
 > **Parameters**
 >

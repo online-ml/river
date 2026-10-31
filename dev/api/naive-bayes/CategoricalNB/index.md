@@ -77,12 +77,11 @@ batch_model.learn_many(df, y)
 
 unseen = pd.DataFrame([{"outlook": "rainy", "temp": "cool"}])
 
-batch_model.predict_many(unseen)
+batch_model.predict_many(unseen).tolist()
 ```
 
 ```text
-0    yes
-dtype: object
+['yes']
 ```
 
 ```python
