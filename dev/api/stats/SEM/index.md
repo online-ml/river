@@ -1,0 +1,92 @@
+# SEM
+
+Running standard error of the mean using Welford's algorithm.
+
+## Parameters
+
+- **ddof**
+
+  *Type* → `int`
+
+  *Default* → `1`
+
+  Delta Degrees of Freedom. The divisor used in calculations is `n - ddof`, where `n` is the number of seen elements.
+
+## Attributes
+
+- **n** (`int`)
+
+  Number of observations.
+
+## Examples
+
+```python
+from river import stats
+
+X = [3, 5, 4, 7, 10, 12]
+
+sem = stats.SEM()
+for x in X:
+    sem.update(x)
+    print(sem.get())
+```
+
+```text
+0.0
+1.0
+0.577350
+0.853912
+1.240967
+1.447219
+```
+
+```python
+from river import utils
+
+X = [1, 4, 2, -4, -8, 0]
+
+rolling_sem = utils.Rolling(stats.SEM, window_size=3, ddof=1)
+for x in X:
+    rolling_sem.update(x)
+    print(rolling_sem.get())
+```
+
+```text
+0.0
+1.5
+0.881917
+2.403700
+2.905932
+2.309401
+```
+
+## Methods
+
+> [!NOTE]
+>
+> **get**
+>
+> Return the current value of the statistic.
+
+> [!NOTE]
+>
+> **revert**
+
+> [!NOTE]
+>
+> **update**
+>
+> Update the called instance.
+>
+> **Parameters**
+>
+> - **x** — `float`
+> - **w** — `float` — defaults to `1.0`
+
+> [!NOTE]
+>
+> **update\_many**
+
+## References
+
+- [Wikipedia article on algorithms for calculating variance](<https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Covariance>)
