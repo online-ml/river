@@ -35,7 +35,7 @@ class Jaccard(metrics.base.BinaryMetric):
 
     References
     ----------
-    [^1]: [Jaccard index](https://www.wikiwand.com/en/Jaccard_index)
+    [^1]: [Jaccard index](https://en.wikipedia.org/wiki/Jaccard_index)
 
     """
 

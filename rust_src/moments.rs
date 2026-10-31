@@ -6,7 +6,7 @@ use crate::stats::Univariate;
 use serde::{Deserialize, Serialize};
 /// Computes central moments using Welford's algorithm.
 /// # References
-/// [^1]: [Wikipedia article on algorithms for calculating variance](https://www.wikiwand.com/en/Algorithms_for_calculating_variance#/Covariance)
+/// [^1]: [Wikipedia article on algorithms for calculating variance](https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Covariance)
 #[derive(Clone, Copy, Debug, Serialize, Deserialize)]
 pub struct CentralMoments<F: Float + FromPrimitive + AddAssign + SubAssign> {
     pub delta: F,

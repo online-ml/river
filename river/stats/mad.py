@@ -40,7 +40,7 @@ class MAD(quantile.Quantile):
 
     References
     ----------
-    [^1]: [Median absolute deviation article on Wikipedia](https://www.wikiwand.com/en/Median_absolute_deviation)
+    [^1]: [Median absolute deviation article on Wikipedia](https://en.wikipedia.org/wiki/Median_absolute_deviation)
 
     """
 

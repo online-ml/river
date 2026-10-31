@@ -17,7 +17,7 @@ def poisson(rate: float, rng: random.Random | Any = random) -> int:
 
     References
     ----------
-    [^1] [Wikipedia article](https://www.wikiwand.com/en/Poisson_distribution#/Generating_Poisson-distributed_random_variables)
+    [^1] [Wikipedia article](https://en.wikipedia.org/wiki/Poisson_distribution#Random_variate_generation)
 
     """
 
@@ -42,7 +42,7 @@ def exponential(rate: float = 1.0, rng: random.Random | Any = random) -> float:
 
     References
     ----------
-    [^1]: [Wikipedia article](https://www.wikiwand.com/en/Exponential_distribution#Random_variate_generation)
+    [^1]: [Wikipedia article](https://en.wikipedia.org/wiki/Exponential_distribution#Random_variate_generation)
 
     """
 

@@ -32,7 +32,7 @@ use serde::{Deserialize, Serialize};
 /// assert_eq!(running_kurtosis.get(), -0.6989395355484169);
 /// ```
 /// # References
-/// [^1]: [Wikipedia article on algorithms for calculating variance](https://www.wikiwand.com/en/Algorithms_for_calculating_variance#/Covariance)
+/// [^1]: [Wikipedia article on algorithms for calculating variance](https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Covariance)
 #[derive(Clone, Copy, Debug, Serialize, Deserialize)]
 pub struct Kurtosis<F: Float + FromPrimitive + AddAssign + SubAssign> {
     pub bias: bool,

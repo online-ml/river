@@ -161,7 +161,7 @@ class HoltWinters(time_series.base.Forecaster):
 
     References
     ----------
-    [^1]: [Exponential smoothing — Wikipedia](https://www.wikiwand.com/en/Exponential_smoothing)
+    [^1]: [Exponential smoothing — Wikipedia](https://en.wikipedia.org/wiki/Exponential_smoothing)
     [^2]: [Exponential smoothing — Forecasting: Principles and Practice](https://otexts.com/fpp2/expsmooth.html)
     [^3]: [What is Exponential Smoothing? — Engineering statistics handbook](https://www.itl.nist.gov/div898/handbook/pmc/section4/pmc43.htm)
 

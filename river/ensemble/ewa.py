@@ -75,7 +75,7 @@ class EWARegressor(base.Ensemble, base.Regressor):
     References
     ----------
     [^1]: [Online Learning from Experts: Weighed Majority and Hedge](https://www.shivani-agarwal.net/Teaching/E0370/Aug-2011/Lectures/20-scribe1.pdf)
-    [^2]: [Wikipedia page on the multiplicative weight update method](https://www.wikiwand.com/en/Multiplicative_weight_update_method)
+    [^2]: [Wikipedia page on the multiplicative weight update method](https://en.wikipedia.org/wiki/Multiplicative_weight_update_method)
     [^3]: [Kivinen, J. and Warmuth, M.K., 1997. Exponentiated gradient versus gradient descent for linear predictors. information and computation, 132(1), pp.1-63.](https://users.soe.ucsc.edu/~manfred/pubs/J36.pdf)
 
     """
