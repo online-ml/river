@@ -3,6 +3,7 @@ from __future__ import annotations
 import collections
 import copy
 import functools
+from typing import Any
 
 from river import base
 
@@ -28,22 +29,39 @@ class Grouper(base.Transformer):
 
     def __init__(
         self,
-        transformer: base.BaseTransformer,
+        transformer: base.typing.Transformer,
         by: base.typing.FeatureName | list[base.typing.FeatureName],
     ):
         self.transformer = transformer
         self.by = by if isinstance(by, list) else [by]
-        self.transformers: collections.defaultdict = collections.defaultdict(
-            functools.partial(copy.deepcopy, transformer)
+        self.transformers: collections.defaultdict[str, base.typing.Transformer] = (
+            collections.defaultdict(functools.partial(copy.deepcopy, transformer))
         )
 
-    def _get_key(self, x):
+    def _get_key(self, x: dict[base.typing.FeatureName, Any]) -> str:
         return "_".join(str(x[k]) for k in self.by)
 
-    def learn_one(self, x):
-        key = self._get_key(x)
-        self.transformers[key].learn_one(x)
+    @property
+    def _supervised(self) -> bool:
+        return self.transformer._supervised
 
-    def transform_one(self, x):
+    def learn_one(
+        self,
+        x: dict[base.typing.FeatureName, Any],
+        y: base.typing.Target | None = None,
+    ) -> None:
+        key = self._get_key(x)
+        transformer = self.transformers[key]
+        learn = getattr(transformer, "learn_one", None)
+        if learn is None:
+            return
+        if transformer._supervised:
+            learn(x, y)
+        else:
+            learn(x)
+
+    def transform_one(
+        self, x: dict[base.typing.FeatureName, Any]
+    ) -> dict[base.typing.FeatureName, Any]:
         key = self._get_key(x)
         return self.transformers[key].transform_one(x)

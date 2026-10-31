@@ -17,7 +17,7 @@ from __future__ import annotations
 from . import tags, typing
 from .anomaly_detector import AnomalyDetector, AnomalyFilter, SupervisedAnomalyDetector
 from .base import Base
-from .classifier import Classifier, MiniBatchClassifier
+from .classifier import Classifier
 from .clusterer import Clusterer
 from .drift_detector import (
     BinaryDriftAndWarningDetector,
@@ -26,23 +26,16 @@ from .drift_detector import (
     DriftDetector,
 )
 from .ensemble import Ensemble, WrapperEnsemble
-from .estimator import Estimator
+from .estimator import Estimator, _unwrap
 from .multi_output import MultiLabelClassifier, MultiTargetRegressor
-from .regressor import MiniBatchRegressor, Regressor
-from .transformer import (
-    BaseTransformer,
-    MiniBatchSupervisedTransformer,
-    MiniBatchTransformer,
-    SupervisedTransformer,
-    Transformer,
-)
+from .regressor import Regressor
+from .transformer import Transformer
 from .wrapper import Wrapper
 
 __all__ = [
     "AnomalyDetector",
     "AnomalyFilter",
     "Base",
-    "BaseTransformer",
     "BinaryDriftDetector",
     "BinaryDriftAndWarningDetector",
     "Classifier",
@@ -51,18 +44,14 @@ __all__ = [
     "DriftAndWarningDetector",
     "Ensemble",
     "Estimator",
-    "MiniBatchClassifier",
-    "MiniBatchSupervisedTransformer",
-    "MiniBatchTransformer",
-    "MiniBatchRegressor",
     "MultiLabelClassifier",
     "MultiTargetRegressor",
     "Regressor",
     "SupervisedAnomalyDetector",
-    "SupervisedTransformer",
     "tags",
     "Transformer",
     "typing",
     "WrapperEnsemble",
     "Wrapper",
+    "_unwrap",
 ]

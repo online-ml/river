@@ -218,7 +218,7 @@ class Agg(base.Transformer):
         return self._feature_name
 
 
-class TargetAgg(base.SupervisedTransformer, Agg):
+class TargetAgg(Agg):
     """Computes a streaming aggregate of the target values.
 
     This transformer is identical to `feature_extraction.Agg`, the only difference is that it
@@ -338,6 +338,10 @@ class TargetAgg(base.SupervisedTransformer, Agg):
     1. [Streaming groupbys in pandas for big datasets](https://maxhalford.github.io/blog/streaming-groupbys-in-pandas-for-big-datasets/)
 
     """
+
+    @property
+    def _supervised(self) -> bool:
+        return True
 
     def __init__(
         self,

@@ -38,4 +38,5 @@ class Wrapper(ABC, Generic[T]):
 
     @property
     def _multiclass(self) -> bool:
-        return isinstance(self._wrapped_model, base.Classifier) and self._wrapped_model._multiclass
+        model = base._unwrap(self._wrapped_model)
+        return isinstance(model, base.Classifier) and model._multiclass

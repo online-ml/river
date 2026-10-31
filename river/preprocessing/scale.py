@@ -84,6 +84,9 @@ class Binarizer(base.Transformer):
         self.threshold = threshold
         self.dtype = dtype
 
+    def learn_one(self, x):
+        return
+
     def transform_one(self, x):
         x_tf = x.copy()
 
@@ -94,7 +97,7 @@ class Binarizer(base.Transformer):
         return x_tf
 
 
-class StandardScaler(base.MiniBatchTransformer):
+class StandardScaler(base.Transformer):
     """Scales the data so that it has zero mean and unit variance.
 
     Under the hood, a running mean and a running variance are maintained. The scaling is slightly
@@ -201,6 +204,10 @@ class StandardScaler(base.MiniBatchTransformer):
     [^2]: [Batch updates for simple statistics](https://notmatthancock.github.io/2017/03/23/simple-batch-stat-updates.html)
 
     """
+
+    @property
+    def _can_mini_batch(self) -> bool:
+        return True
 
     def __init__(self, with_std=True, window_size: int | None = None) -> None:
         self.with_std = with_std

@@ -2,11 +2,16 @@ from __future__ import annotations
 
 import functools
 import itertools
+import typing
+from typing import Any
 
 import narwhals.stable.v2 as nw
 import numpy as np
 
-from river import utils
+from river import base, utils
+
+if typing.TYPE_CHECKING:
+    from narwhals.stable.v2.typing import IntoDataFrame
 
 from . import union
 
@@ -64,36 +69,42 @@ class TransformerProduct(union.TransformerUnion):
 
     """
 
-    def __str__(self):
-        return " * ".join(map(str, self.transformers.values()))
+    def __str__(self) -> str:
+        return " * ".join(map(str, self._transformers.values()))
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return super().__repr__().replace("Union", "Product", 1)
 
-    def __add__(self, other):
+    def __add__(self, other: object) -> union.TransformerUnion:
         from .union import TransformerUnion
 
         return TransformerUnion(self, other)
 
-    def __mul__(self, other):
-        return self._add_step(other)
+    def __mul__(self, other: object) -> TransformerProduct:
+        return self.__class__(*self._transformers.items(), other)
 
-    def transform_one(self, x):
-        outputs = [t.transform_one(x) for t in self.transformers.values()]
+    def transform_one(
+        self, x: dict[base.typing.FeatureName, Any]
+    ) -> dict[base.typing.FeatureName, Any]:
+        outputs = [transform(x) for transform in self._transform_one_funcs]
         return {
-            "*".join(combo): utils.math.prod(outputs[i][f] for i, f in enumerate(combo))
+            "*".join(map(str, combo)): utils.math.prod(outputs[i][f] for i, f in enumerate(combo))
             for combo in itertools.product(*outputs)
         }
 
-    def transform_many(self, X):
-        outputs = [t.transform_many(X) for t in self.transformers.values()]
+    def transform_many(self, X: IntoDataFrame) -> IntoDataFrame:
+        outputs = []
+        for transform in self._transform_many_funcs:
+            if transform is None:
+                raise AttributeError("A product step does not implement transform_many")
+            outputs.append(transform(X))
         # Classic pandas keeps the sparse-aware fast path (preserving the memory savings when
         # crossing one-hot encoded features); every other backend takes the agnostic path.
         if utils.dataframe.into_frame(outputs[0]).implementation.is_pandas():
-            return self._transform_many_pandas(X, outputs)
+            return typing.cast("IntoDataFrame", self._transform_many_pandas(X, outputs))
         return self._transform_many_narwhals(outputs)
 
-    def _transform_many_narwhals(self, outputs):
+    def _transform_many_narwhals(self, outputs: list[IntoDataFrame]) -> IntoDataFrame:
         # Cross every column of each output with every column of the others, multiplying them
         # element-wise. Series share the input's backend, so the products do too.
         frames = [utils.dataframe.into_frame(output) for output in outputs]
@@ -105,12 +116,12 @@ class TransformerProduct(union.TransformerUnion):
                 (frame[col] for frame, col in zip(frames, combo)),
             )
             crossed.append(product.rename(name).to_frame())
-        return nw.concat(crossed, how="horizontal").to_native()
+        return typing.cast("IntoDataFrame", nw.concat(crossed, how="horizontal").to_native())
 
-    def _transform_many_pandas(self, X, outputs):
+    def _transform_many_pandas(self, X: Any, outputs: list[Any]) -> Any:
         pd = utils.pandas.import_pandas()
 
-        def multiply(a, b):
+        def multiply(a: Any, b: Any) -> Any:
             # Fast-track for sparse[uint8] * sparse[uint8]
             if a.dtype == pd.SparseDtype("uint8") and b.dtype == pd.SparseDtype("uint8"):
                 return a & b

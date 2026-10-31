@@ -72,7 +72,7 @@ class ROCAUC(metrics.base.BinaryMetric):
     def works_with(self, model) -> bool:
         return (
             super().works_with(model)
-            or isinstance(model, base.AnomalyDetector)
+            or isinstance(base._unwrap(model), base.AnomalyDetector)
             or isinstance(model, base.AnomalyFilter)
         )
 

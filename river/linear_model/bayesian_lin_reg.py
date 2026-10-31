@@ -10,7 +10,7 @@ if typing.TYPE_CHECKING:
     from narwhals.stable.v2.typing import IntoDataFrame, IntoSeries
 
 
-class BayesianLinearRegression(base.MiniBatchRegressor):
+class BayesianLinearRegression(base.Regressor):
     """Bayesian linear regression.
 
     An advantage of Bayesian linear regression over standard linear regression is that features
@@ -139,6 +139,10 @@ class BayesianLinearRegression(base.MiniBatchRegressor):
     [^3]: [Bayesian linear regression for practitioners — Max Halford](https://maxhalford.github.io/blog/bayesian-linear-regression/)
 
     """
+
+    @property
+    def _can_mini_batch(self) -> bool:
+        return True
 
     def __init__(self, alpha: float = 1, beta: float = 1, smoothing: float | None = None) -> None:
         self.alpha = alpha

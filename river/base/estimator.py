@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import abc
 from collections.abc import Iterator
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Protocol, cast
 
 if TYPE_CHECKING:
     from river import compose
@@ -10,24 +10,21 @@ if TYPE_CHECKING:
 from . import base
 
 
-class EstimatorMeta(abc.ABCMeta):
-    """Metaclass that makes isinstance() work transparently with pipelines.
-
-    When checking isinstance(pipeline, Classifier), this metaclass automatically
-    unwraps Pipeline-like objects by checking their _last_step attribute. This
-    means isinstance(scaler | log_reg, base.Classifier) returns True.
-
-    """
-
-    def __instancecheck__(cls, instance: object) -> bool:
-        if super().__instancecheck__(instance):
-            return True
-        if hasattr(instance, "_last_step"):
-            return isinstance(instance._last_step, cls)
-        return False
+class _Composite(Protocol):
+    @property
+    def _last_step(self) -> Estimator: ...
 
 
-class Estimator(base.Base, abc.ABC, metaclass=EstimatorMeta):
+def _unwrap(estimator: Estimator) -> Estimator:
+    while hasattr(estimator, "_last_step"):
+        terminal = cast(_Composite, estimator)._last_step
+        if terminal is estimator:
+            break
+        estimator = terminal
+    return estimator
+
+
+class Estimator(base.Base, abc.ABC):
     """An estimator."""
 
     @property
@@ -40,6 +37,10 @@ class Estimator(base.Base, abc.ABC, metaclass=EstimatorMeta):
 
         """
         return True
+
+    @property
+    def _can_mini_batch(self) -> bool:
+        return False
 
     def __or__(self, other: Estimator | compose.Pipeline) -> compose.Pipeline:
         """Merge with another Transformer into a Pipeline."""

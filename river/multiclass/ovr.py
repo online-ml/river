@@ -146,7 +146,7 @@ class OneVsRestClassifier(base.Wrapper[base.Classifier], base.Classifier):
 
         # Train each label's associated classifier against the one-vs-rest boolean target.
         for label, model in self.classifiers.items():
-            typing.cast("base.MiniBatchClassifier", model).learn_many(
+            typing.cast("base.typing.MiniBatchLearner", model).learn_many(
                 X, (ynw == label).to_native(), **kwargs
             )
 
@@ -166,7 +166,9 @@ class OneVsRestClassifier(base.Wrapper[base.Classifier], base.Classifier):
         columns: list[np.ndarray[typing.Any, typing.Any]] = []
         for clf in self.classifiers.values():
             proba = utils.dataframe.into_frame(
-                typing.cast("base.MiniBatchClassifier", clf).predict_proba_many(X, **kwargs)
+                typing.cast("base.typing.MiniBatchProbabilisticPredictor", clf).predict_proba_many(
+                    X, **kwargs
+                )
             )
             positive = next(j for j, col in enumerate(proba.columns) if str(col) == "True")
             columns.append(utils.dataframe.to_numpy(proba)[:, positive])
