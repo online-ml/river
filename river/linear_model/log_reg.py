@@ -10,7 +10,7 @@ if typing.TYPE_CHECKING:
     from numpy.typing import NDArray
 
 
-class LogisticRegression(linear_model.base.GLM, base.MiniBatchClassifier):
+class LogisticRegression(linear_model.base.GLM, base.Classifier):
     """Logistic regression.
 
     This estimator supports learning with mini-batches. On top of the single instance methods, it
@@ -71,6 +71,10 @@ class LogisticRegression(linear_model.base.GLM, base.MiniBatchClassifier):
     Accuracy: 88.96%
 
     """
+
+    @property
+    def _can_mini_batch(self) -> bool:
+        return True
 
     def __init__(
         self,

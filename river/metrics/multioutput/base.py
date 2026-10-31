@@ -53,7 +53,7 @@ class MultiOutputClassificationMetric(MultiOutputMetric):
         self.cm.revert(y_true, y_pred, w)
 
     def works_with(self, model) -> bool:
-        return isinstance(model, base.MultiLabelClassifier)
+        return isinstance(base._unwrap(model), base.MultiLabelClassifier)
 
     @property
     def bigger_is_better(self):
@@ -84,7 +84,7 @@ class MultiOutputRegressionMetric(Metric):
         """Revert the metric."""
 
     def works_with(self, model) -> bool:
-        return isinstance(model, base.MultiTargetRegressor)
+        return isinstance(base._unwrap(model), base.MultiTargetRegressor)
 
     @property
     def bigger_is_better(self):

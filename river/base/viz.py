@@ -48,7 +48,8 @@ def pipeline_to_html(pipeline: compose.Pipeline) -> ET.Element:
     div = ET.Element("div", attrib={"class": "river-component river-pipeline"})
 
     for step in pipeline.steps.values():
-        div.append(to_html(step))
+        if step is not None:
+            div.append(to_html(step))
 
     return div
 

@@ -51,8 +51,8 @@ class SampleAverage(MultiOutputMetric, metrics.base.WrapperMetric):
 
     def works_with(self, model) -> bool:
         if isinstance(self.metric, metrics.base.ClassificationMetric):
-            return isinstance(model, base.MultiLabelClassifier)
-        return isinstance(model, base.MultiTargetRegressor)
+            return isinstance(base._unwrap(model), base.MultiLabelClassifier)
+        return isinstance(base._unwrap(model), base.MultiTargetRegressor)
 
     def update(self, y_true, y_pred, w=1.0):
         metric = self.metric.clone()

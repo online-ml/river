@@ -50,19 +50,21 @@ class Discard(base.Transformer):
     def __init__(self, *keys: base.typing.FeatureName):
         self.keys = set(keys)
 
-    def transform_one(self, x: dict) -> dict:
+    def transform_one(
+        self, x: dict[base.typing.FeatureName, typing.Any]
+    ) -> dict[base.typing.FeatureName, typing.Any]:
         return {i: xi for i, xi in x.items() if i not in self.keys}
 
-    def __str__(self):
-        return "~" + str(sorted(self.keys))
+    def __str__(self) -> str:
+        return "~" + str(sorted(self.keys, key=str))
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         if self.keys:
-            return "Discard (\n  " + "\n  ".join(map(str, sorted(self.keys))) + "\n)"
+            return "Discard (\n  " + "\n  ".join(map(str, sorted(self.keys, key=str))) + "\n)"
         return "Discard ()"
 
 
-class Select(base.MiniBatchTransformer):
+class Select(base.Transformer):
     """Selects features.
 
     This can be used in a pipeline when you want to select certain features. The `transform_one`
@@ -129,24 +131,33 @@ class Select(base.MiniBatchTransformer):
 
     """
 
+    @property
+    def _can_mini_batch(self) -> bool:
+        return True
+
     def __init__(self, *keys: base.typing.FeatureName):
         self.keys = set(keys)
 
-    def transform_one(self, x):
+    def transform_one(
+        self, x: dict[base.typing.FeatureName, typing.Any]
+    ) -> dict[base.typing.FeatureName, typing.Any]:
         return {i: x[i] for i in self.keys}
 
     def transform_many(self, X: IntoDataFrameT) -> IntoDataFrameT:
         # `select` returns a fresh frame in the caller's own backend (and keeps the pandas index),
         # so the method stays pure — no view aliasing back onto the input.
         keys = typing.cast("list[str]", list(self.keys))
+        if not keys and utils.dataframe.into_frame(X).implementation.is_pandas():
+            native = typing.cast(typing.Any, X)
+            return typing.cast("IntoDataFrameT", native.iloc[:, 0:0].copy())
         return utils.dataframe.into_frame(X).select(keys).to_native()
 
-    def __str__(self):
-        return str(sorted(self.keys))
+    def __str__(self) -> str:
+        return str(sorted(self.keys, key=str))
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         if self.keys:
-            return "Select (\n  " + "\n  ".join(map(str, sorted(self.keys))) + "\n)"
+            return "Select (\n  " + "\n  ".join(map(str, sorted(self.keys, key=str))) + "\n)"
         return "Select ()"
 
 
@@ -177,16 +188,18 @@ class SelectType(base.Transformer):
 
     """
 
-    def __init__(self, *types: type):
+    def __init__(self, *types: type[typing.Any]):
         self.types = types
 
-    def transform_one(self, x):
+    def transform_one(
+        self, x: dict[base.typing.FeatureName, typing.Any]
+    ) -> dict[base.typing.FeatureName, typing.Any]:
         return {i: xi for i, xi in x.items() if isinstance(xi, self.types)}
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"Select({', '.join(t.__name__ for t in self.types)})"
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         if self.types:
-            return "Select (\n  " + "\n  ".join(map(str, sorted(self.types))) + "\n)"
+            return "Select (\n  " + "\n  ".join(map(str, sorted(self.types, key=str))) + "\n)"
         return "Select ()"

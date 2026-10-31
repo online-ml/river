@@ -5,7 +5,7 @@ import typing
 from river import base
 
 
-class TargetTransformRegressor(base.Wrapper, base.Regressor):
+class TargetTransformRegressor(base.Wrapper[base.Regressor], base.Regressor):
     """Modifies the target before training.
 
     The user is expected to check that `func` and `inverse_func` are coherent with each other.
@@ -49,23 +49,24 @@ class TargetTransformRegressor(base.Wrapper, base.Regressor):
     def __init__(
         self,
         regressor: base.Regressor,
-        func: typing.Callable,
-        inverse_func: typing.Callable,
-    ):
+        func: typing.Callable[[float], float],
+        inverse_func: typing.Callable[[float], float],
+    ) -> None:
         self.regressor = regressor
         self.func = func
         self.inverse_func = inverse_func
 
     @property
-    def _wrapped_model(self):
+    def _wrapped_model(self) -> base.Regressor:
         return self.regressor
 
-    def _update(self, y): ...
+    def _update(self, y: float) -> None:
+        return
 
-    def learn_one(self, x, y):
+    def learn_one(self, x: dict[base.typing.FeatureName, typing.Any], y: float) -> None:
         self._update(y)
         self.regressor.learn_one(x, self.func(y))
 
-    def predict_one(self, x):
+    def predict_one(self, x: dict[base.typing.FeatureName, typing.Any]) -> float:
         y_pred = self.regressor.predict_one(x)
         return self.inverse_func(y_pred)

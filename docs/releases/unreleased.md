@@ -4,6 +4,13 @@
 
 - Removed support for `pandas<3.1`. River now requires `pandas>=3.1`.
 - Missing values are not dropped anymore when `drop_first=True`, and the value that is dropped is now stable across observations.
+- Removed the combined mini-batch and supervised transformer base classes. Protocols under `base.typing` now describe these capabilities.
+- Composition operators now return new pipelines, unions, and products instead of modifying existing ones.
+
+## base and compose
+
+- Strict typing for `base` and `compose`.
+- Pipelines now build their execution plans during construction. One-observation learning and prediction performance is unchanged or faster.
 
 ## drift
 

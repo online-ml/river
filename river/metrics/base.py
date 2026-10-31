@@ -99,7 +99,7 @@ class ClassificationMetric(Metric):
         return True
 
     def works_with(self, model) -> bool:
-        return isinstance(model, base.Classifier)
+        return isinstance(base._unwrap(model), base.Classifier)
 
     @property
     def requires_labels(self):
@@ -173,7 +173,7 @@ class MultiClassMetric(ClassificationMetric):
     """
 
     def works_with(self, model) -> bool:
-        return isinstance(model, base.Classifier | base.Clusterer)
+        return isinstance(base._unwrap(model), base.Classifier | base.Clusterer)
 
 
 class RegressionMetric(Metric):
@@ -194,7 +194,7 @@ class RegressionMetric(Metric):
         return False
 
     def works_with(self, model) -> bool:
-        return isinstance(model, base.Regressor)
+        return isinstance(base._unwrap(model), base.Regressor)
 
     def __add__(self, other) -> Metrics:
         if not isinstance(other, RegressionMetric):
@@ -363,7 +363,7 @@ class ClusteringMetric(base.Base, abc.ABC):
 
     def works_with(self, model: base.Estimator) -> bool:
         """Indicates whether or not a metric can work with a given model."""
-        return isinstance(model, base.Clusterer)
+        return isinstance(base._unwrap(model), base.Clusterer)
 
     def __repr__(self):
         """Returns the class name along with the current value of the metric."""

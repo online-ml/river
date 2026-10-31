@@ -16,29 +16,31 @@ from .utils import assert_predictions_are_close, seed_params
 def _inference_methods(model):
     """Yield the names of inference methods this model exposes."""
 
-    if isinstance(model, base.AnomalyDetector):
+    kind = base._unwrap(model)
+    if isinstance(kind, base.AnomalyDetector):
         yield "score_one"
-    elif isinstance(model, base.Classifier):
-        if not isinstance(model, base.MultiLabelClassifier):
+    elif isinstance(kind, base.Classifier):
+        if not isinstance(kind, base.MultiLabelClassifier):
             yield "predict_proba_one"
         yield "predict_one"
-    elif isinstance(model, base.Regressor):
+    elif isinstance(kind, base.Regressor):
         yield "predict_one"
-    elif isinstance(model, (base.Transformer, base.SupervisedTransformer)):
+    elif isinstance(kind, base.Transformer):
         yield "transform_one"
 
 
 def _infer(model, x):
     """Call the model's primary inference method on `x`."""
 
-    if isinstance(model, base.AnomalyDetector):
+    kind = base._unwrap(model)
+    if isinstance(kind, base.AnomalyDetector):
         return model.score_one(x)
-    if isinstance(model, base.Classifier):
+    if isinstance(kind, base.Classifier):
         try:
             return model.predict_proba_one(x)
         except NotImplementedError:
             return model.predict_one(x)
-    if isinstance(model, (base.Transformer, base.SupervisedTransformer)):
+    if isinstance(kind, base.Transformer):
         return model.transform_one(x)
     return model.predict_one(x)
 
@@ -46,7 +48,11 @@ def _infer(model, x):
 def _learn(model, x, y):
     """Call `learn_one` with the right signature for the model's kind."""
 
-    if isinstance(model, base.AnomalyDetector):
+    kind = base._unwrap(model)
+    learn = getattr(model, "learn_one", None)
+    if learn is None:
+        return
+    if isinstance(kind, base.AnomalyDetector):
         model.learn_one(x)
     elif model._supervised:
         model.learn_one(x, y)
@@ -56,6 +62,9 @@ def _learn(model, x, y):
 
 def check_learn_one(model, dataset):
     """learn_one should return the calling model and be pure."""
+
+    if not hasattr(model, "learn_one"):
+        return
 
     klass = model.__class__
 
@@ -450,14 +459,11 @@ def check_transform_one(model, dataset):
 
     from river import base
 
-    if not isinstance(model, (base.Transformer, base.SupervisedTransformer)):
+    if not isinstance(base._unwrap(model), base.Transformer):
         return
 
     for x, y in dataset:
-        if isinstance(model, base.SupervisedTransformer):
-            model.learn_one(x, y)
-        else:
-            model.learn_one(x)
+        _learn(model, x, y)
         out = model.transform_one(x)
         assert isinstance(out, dict), f"transform_one returned {type(out).__name__}, expected dict"
 
@@ -494,7 +500,7 @@ def check_predict_many_matches_predict_one(model, dataset):
 
     from river import base
 
-    if not isinstance(model, (base.MiniBatchClassifier, base.MiniBatchRegressor)):
+    if not isinstance(model, base.typing.MiniBatchPredictor):
         return
 
     params = seed_params(model._get_params(), seed=42)
@@ -507,15 +513,13 @@ def check_predict_many_matches_predict_one(model, dataset):
     try:
         many = model.predict_many(X).tolist()
     except (AttributeError, NotImplementedError):
-        # Mixed pipelines may declare themselves MiniBatchClassifier/Regressor
-        # but contain a step that lacks transform_many/predict_many.
         return
     one = [model.predict_one(x) for x, _ in test]
 
     for m, o in zip(many, one):
         if m is None or o is None:
             assert m == o
-        elif isinstance(model, base.Regressor):
+        elif isinstance(base._unwrap(model), base.Regressor):
             assert_predictions_are_close(float(m), float(o))
         else:
             assert m == o, f"predict_many vs predict_one disagree: {m!r} != {o!r}"
@@ -593,7 +597,7 @@ def check_predict_proba_many_matches_predict_proba_one(model, dataset):
 
     from river import base
 
-    if not isinstance(model, base.MiniBatchClassifier):
+    if not isinstance(model, base.typing.MiniBatchProbabilisticPredictor):
         return
 
     params = seed_params(model._get_params(), seed=42)
@@ -624,7 +628,7 @@ def check_transform_many_matches_transform_one(model, dataset):
 
     from river import base
 
-    if not isinstance(model, (base.MiniBatchTransformer, base.MiniBatchSupervisedTransformer)):
+    if not isinstance(model, base.typing.MiniBatchTransformer):
         return
 
     params = seed_params(model._get_params(), seed=42)

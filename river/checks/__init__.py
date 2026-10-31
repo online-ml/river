@@ -64,10 +64,12 @@ def _yield_datasets(model: Estimator, scale: int = 1):
     from river import base, compose, datasets, preprocessing, stream
     from river.time_series.base import Forecaster
 
+    kind = base._unwrap(model)
+
     # Time series forecasters have a specialized interface: learn_one(y, x=None) and
     # forecast(horizon, xs=None). The dataset still yields (x, y) pairs so checks can
     # exercise optional exogenous features.
-    if isinstance(model, Forecaster):
+    if isinstance(kind, Forecaster):
         yield _DummyDataset(
             ({"time": 1.0, "period": 1.0}, 10.0),
             ({"time": 2.0, "period": 2.0}, 12.0),
@@ -82,8 +84,8 @@ def _yield_datasets(model: Estimator, scale: int = 1):
 
     # Recommendation models can be regressors or classifiers, but they have requirements as to the
     # structure of the data
-    if isinstance(model, Ranker):
-        if isinstance(model, base.Regressor):
+    if isinstance(kind, Ranker):
+        if isinstance(kind, base.Regressor):
             yield _DummyDataset(
                 ("Alice", "Superman", 8),
                 ("Alice", "Terminator", 9),
@@ -98,7 +100,7 @@ def _yield_datasets(model: Estimator, scale: int = 1):
         return
 
     # Multi-output regression
-    elif isinstance(model, base.MultiTargetRegressor):
+    elif isinstance(kind, base.MultiTargetRegressor):
         # 1
         yield stream.iter_sklearn_dataset(sk_datasets.load_linnerud())
 
@@ -116,32 +118,31 @@ def _yield_datasets(model: Estimator, scale: int = 1):
         yield SolarFlare()
 
     # Regression
-    elif isinstance(model, base.Regressor):
+    elif isinstance(kind, base.Regressor):
         yield datasets.TrumpApproval().take(200 * scale)
 
     # Multi-output classification
-    if isinstance(model, base.MultiLabelClassifier):
+    if isinstance(kind, base.MultiLabelClassifier):
         yield datasets.Music().take(50 * scale)
 
     # Classification
-    elif isinstance(model, base.Classifier):
+    elif isinstance(kind, base.Classifier):
         yield datasets.Phishing().take(200 * scale)
         yield ((x, np.bool_(y)) for x, y in datasets.Phishing().take(200 * scale))
 
         # Multi-class classification
-        if model._multiclass and base.tags.POSITIVE_INPUT not in model._tags:  # type: ignore
+        if kind._multiclass and base.tags.POSITIVE_INPUT not in model._tags:  # type: ignore
             yield datasets.ImageSegments().take(200 * scale)
 
     # Anomaly detection
-    elif isinstance(model, base.AnomalyDetector):
+    elif isinstance(kind, base.AnomalyDetector):
         yield datasets.CreditCard().take(1000 * scale)
 
     # Plain transformers (no other base class matched above). These were
     # previously uncovered by the dataset-driven checks; TrumpApproval provides
-    # numeric features and a numeric target so both Transformer and
-    # SupervisedTransformer can be exercised. Text-input transformers expect
+    # numeric features and a numeric target. Text-input transformers expect
     # raw strings, not dicts, and are skipped for now.
-    elif isinstance(model, (base.Transformer, base.SupervisedTransformer)):
+    elif isinstance(kind, base.Transformer):
         if base.tags.TEXT_INPUT not in model._tags:
             yield datasets.TrumpApproval().take(200 * scale)
 
@@ -157,6 +158,8 @@ def yield_checks(model: Estimator) -> typing.Iterator[typing.Callable]:
 
     from river import base, utils
     from river.time_series.base import Forecaster
+
+    kind = base._unwrap(model)
 
     # General checks
     yield common.check_repr
@@ -193,18 +196,18 @@ def yield_checks(model: Estimator) -> typing.Iterator[typing.Callable]:
         common.check_clone_is_independent,
     ]
 
-    if isinstance(model, (base.Transformer, base.SupervisedTransformer)):
+    if isinstance(kind, base.Transformer):
         dataset_checks.append(common.check_transform_one)
 
     if utils.pandas.PANDAS_INSTALLED:
-        if isinstance(model, (base.MiniBatchClassifier, base.MiniBatchRegressor)):
+        if model._can_mini_batch and isinstance(model, base.typing.MiniBatchPredictor):
             dataset_checks.append(common.check_predict_many_matches_predict_one)
+        if model._can_mini_batch and isinstance(model, base.typing.MiniBatchLearner):
             dataset_checks.append(common.check_learn_many_matches_learn_one)
-        if isinstance(model, base.MiniBatchClassifier):
+        if model._can_mini_batch and isinstance(model, base.typing.MiniBatchProbabilisticPredictor):
             dataset_checks.append(common.check_predict_proba_many_matches_predict_proba_one)
-        if isinstance(model, (base.MiniBatchTransformer, base.MiniBatchSupervisedTransformer)):
+        if model._can_mini_batch and isinstance(model, base.typing.MiniBatchTransformer):
             dataset_checks.append(common.check_transform_many_matches_transform_one)
-            dataset_checks.append(common.check_learn_many_matches_learn_one)
 
     if hasattr(model, "debug_one"):
         dataset_checks.append(common.check_debug_one)
@@ -213,11 +216,11 @@ def yield_checks(model: Estimator) -> typing.Iterator[typing.Callable]:
         dataset_checks.append(common.check_seeding_is_idempotent)
 
     # Classifier checks
-    if isinstance(model, base.Classifier) and not isinstance(model, base.MultiLabelClassifier):
+    if isinstance(kind, base.Classifier) and not isinstance(kind, base.MultiLabelClassifier):
         dataset_checks.append(_allow_exception(clf.check_predict_proba_one, NotImplementedError))
         dataset_checks.append(clf.check_classifier_tracks_seen_labels)
         # Specific checks for binary classifiers
-        if not model._multiclass:  # type: ignore
+        if not kind._multiclass:  # type: ignore
             dataset_checks.append(
                 _allow_exception(clf.check_predict_proba_one_binary, NotImplementedError)
             )
@@ -228,7 +231,7 @@ def yield_checks(model: Estimator) -> typing.Iterator[typing.Callable]:
     if isinstance(model, Ranker):
         yield reco.check_reco_routine
 
-    if isinstance(model, base.AnomalyDetector):
+    if isinstance(kind, base.AnomalyDetector):
         dataset_checks.append(anomaly.check_roc_auc)
 
     if isinstance(model, Forecaster):

@@ -31,16 +31,17 @@ def _progressive_validation(
     # Using closures avoids per-sample isinstance checks and branching.
 
     # Predict closure: score_one + classify for anomaly filters, predict_proba_one or predict_one
-    if isinstance(model, base.AnomalyFilter):
+    kind = base._unwrap(model)
+    if isinstance(kind, base.AnomalyFilter):
         _score = model.score_one
         _classify = model.classify
 
         def predict(x, **kwargs):
             return _classify(_score(x, **kwargs))
 
-    elif isinstance(model, base.AnomalyDetector):
+    elif isinstance(kind, base.AnomalyDetector):
         predict = model.score_one  # type: ignore[assignment]
-    elif isinstance(model, base.Classifier) and not metric.requires_labels:  # type: ignore
+    elif isinstance(kind, base.Classifier) and not metric.requires_labels:  # type: ignore
         predict = model.predict_proba_one  # type: ignore[assignment]
     else:
         predict = model.predict_one  # type: ignore[assignment]

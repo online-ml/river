@@ -1,15 +1,11 @@
 from __future__ import annotations
 
 import abc
-import typing
 from typing import Any
 
 from river import base
 
 from . import estimator
-
-if typing.TYPE_CHECKING:
-    import pandas as pd
 
 
 class Classifier(estimator.Estimator):
@@ -80,61 +76,3 @@ class Classifier(estimator.Estimator):
     @property
     def _supervised(self) -> bool:
         return True
-
-
-class MiniBatchClassifier(Classifier):
-    """A classifier that can operate on mini-batches."""
-
-    @abc.abstractmethod
-    def learn_many(self, X: pd.DataFrame, y: pd.Series) -> None:
-        """Update the model with a mini-batch of features `X` and boolean targets `y`.
-
-        Parameters
-        ----------
-        X
-            A dataframe of features.
-        y
-            A series of boolean target values.
-
-        """
-
-    def predict_proba_many(self, X: pd.DataFrame) -> pd.DataFrame:
-        """Predict the outcome probabilities for each given sample.
-
-        Parameters
-        ----------
-        X
-            A dataframe of features.
-
-        Returns
-        -------
-        A dataframe with probabilities of `True` and `False` for each sample.
-
-        """
-
-        # Some classifiers don't have the ability to output probabilities, and instead only
-        # predict labels directly. Therefore, we cannot impose predict_proba_many as an abstract
-        # method that each classifier has to implement. Instead, we raise an exception to indicate
-        # that a classifier does not support predict_proba_many.
-        raise NotImplementedError
-
-    def predict_many(self, X: pd.DataFrame) -> pd.Series:
-        """Predict the outcome for each given sample.
-
-        Parameters
-        ----------
-        X
-            A dataframe of features.
-
-        Returns
-        -------
-        The predicted labels.
-
-        """
-
-        # The following code acts as a default for each classifier, and may be overridden on an
-        # individual basis.
-        y_pred = self.predict_proba_many(X)
-        if y_pred.empty:
-            return y_pred
-        return y_pred.idxmax(axis="columns")

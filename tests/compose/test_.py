@@ -3,9 +3,11 @@ from __future__ import annotations
 import datetime as dt
 
 import pandas as pd
+import pytest
 
 from river import compose, feature_extraction, linear_model, preprocessing, stats, utils
-from river.compose.pipeline import _method_params, _route
+from river.compose._routing import method_params as _method_params
+from river.compose._routing import route as _route
 
 
 def test_pipeline_funcs():
@@ -37,6 +39,18 @@ def test_pipeline_add_at_start():
     assert str(pipeline) == "a | StandardScaler | LinearRegression"
 
 
+def test_pipeline_composition_is_immutable():
+    pipeline = compose.Pipeline(preprocessing.StandardScaler())
+    extended = pipeline | linear_model.LinearRegression()
+
+    assert len(pipeline) == 1
+    assert len(extended) == 2
+    assert pipeline[0] is extended[0]
+
+    with pytest.raises(TypeError):
+        pipeline.steps["LinearRegression"] = linear_model.LinearRegression()
+
+
 def test_union_funcs():
     def a(x):
         pass
@@ -56,6 +70,17 @@ def test_union_funcs():
     for i, pipeline in enumerate(pipelines):
         print(i, str(pipeline))
         assert str(pipeline) == "a + b"
+
+
+def test_union_composition_is_immutable():
+    union = preprocessing.StandardScaler() + preprocessing.MinMaxScaler()
+    extended = union + compose.Select("a")
+
+    assert len(union) == 2
+    assert len(extended) == 3
+
+    with pytest.raises(TypeError):
+        union.transformers["Select"] = compose.Select("a")
 
 
 def test_learn_one_with_learn_during_predict():
