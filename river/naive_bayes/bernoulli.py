@@ -100,10 +100,8 @@ class BernoulliNB(base.BaseNB):
     0  0.116846  0.883154
     1  0.047269  0.952731
 
-    >>> model.predict_many(unseen)
-    0    yes
-    1    yes
-    dtype: object
+    >>> model.predict_many(unseen).tolist()
+    ['yes', 'yes']
 
     References
     ----------

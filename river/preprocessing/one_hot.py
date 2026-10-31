@@ -13,6 +13,18 @@ if typing.TYPE_CHECKING:
 
 __all__ = ["OneHotEncoder"]
 
+_MISSING_CATEGORY = "<NA>"
+
+
+def _is_missing(value: typing.Any) -> bool:
+    if value is None:
+        return True
+    try:
+        unequal = value != value
+        return unequal is value or bool(unequal)
+    except (TypeError, ValueError):
+        return False
+
 
 class OneHotEncoder(base.MiniBatchTransformer):
     """One-hot encoding.
@@ -101,8 +113,8 @@ class OneHotEncoder(base.MiniBatchTransformer):
     ...     pprint(oh.transform_one(x))
     {'c2_d': 1}
     {'c2_x': 1}
-    {'c2_h': 1}
-    {'c2_e': 1}
+    {'c1_i': 1, 'c2_h': 1}
+    {'c1_h': 1, 'c2_e': 1}
 
     Like in `scikit-learn`, you can also specify the expected categories manually.
     This is handy when you want to constrain category encoding space
@@ -269,14 +281,19 @@ class OneHotEncoder(base.MiniBatchTransformer):
         if self.categories is None:
             self.values = collections.defaultdict(set)
         else:
-            self.values = self.categories
+            self.values = {
+                feature: {
+                    _MISSING_CATEGORY
+                    if not isinstance(value, str) and _is_missing(value)
+                    else value
+                    for value in categories
+                }
+                for feature, categories in self.categories.items()
+            }
             if not self.drop_zeros:
                 self._zero_dict = {f"{i}_{v}": 0 for i, vals in self.values.items() for v in vals}
 
     def learn_one(self, x):
-        if self.drop_zeros:
-            return
-
         # NOTE: assume if category mappings are explicitly provided,
         # they're intended to be kept fixed.
         if self.categories is None:
@@ -286,12 +303,22 @@ class OneHotEncoder(base.MiniBatchTransformer):
                 vi = values[i]
                 if isinstance(xi, (list, set)):
                     for xj in xi:
+                        if xj in vi:
+                            continue
+                        if not isinstance(xj, str) and _is_missing(xj):
+                            xj = _MISSING_CATEGORY
                         if xj not in vi:
                             vi.add(xj)
-                            zero_dict[f"{i}_{xj}"] = 0
-                elif xi not in vi:
-                    vi.add(xi)
-                    zero_dict[f"{i}_{xi}"] = 0
+                            if not self.drop_zeros:
+                                zero_dict[f"{i}_{xj}"] = 0
+                else:
+                    if xi not in vi:
+                        if not isinstance(xi, str) and _is_missing(xi):
+                            xi = _MISSING_CATEGORY
+                        if xi not in vi:
+                            vi.add(xi)
+                            if not self.drop_zeros:
+                                zero_dict[f"{i}_{xi}"] = 0
 
     def transform_one(self, x, y=None):
         oh = {} if self.drop_zeros else self._zero_dict.copy()
@@ -303,8 +330,12 @@ class OneHotEncoder(base.MiniBatchTransformer):
             for i, xi in x.items():
                 if isinstance(xi, (list, set)):
                     for xj in xi:
+                        if not isinstance(xj, str) and _is_missing(xj):
+                            xj = _MISSING_CATEGORY
                         oh[f"{i}_{xj}"] = 1
                 else:
+                    if not isinstance(xi, str) and _is_missing(xi):
+                        xi = _MISSING_CATEGORY
                     oh[f"{i}_{xi}"] = 1
         else:
             values = self.values
@@ -312,40 +343,48 @@ class OneHotEncoder(base.MiniBatchTransformer):
                 vi = values[i]
                 if isinstance(xi, (list, set)):
                     for xj in xi:
+                        if not isinstance(xj, str) and _is_missing(xj):
+                            xj = _MISSING_CATEGORY
                         if xj in vi:
                             oh[f"{i}_{xj}"] = 1
-                elif xi in vi:
-                    oh[f"{i}_{xi}"] = 1
+                else:
+                    if not isinstance(xi, str) and _is_missing(xi):
+                        xi = _MISSING_CATEGORY
+                    if xi in vi:
+                        oh[f"{i}_{xi}"] = 1
 
         if self.drop_first:
-            oh.pop(min(oh))
+            first = self._first_category(set(oh) | self._seen_columns())
+            if first is not None:
+                oh.pop(first, None)
 
         return oh
 
     def learn_many(self, X: IntoDataFrame) -> None:
-        if self.drop_zeros:
-            return
-
         # NOTE: assume if category mappings are explicitly provided,
         # they're intended to be kept fixed.
         if self.categories is None:
             values = self.values
             zero_dict = self._zero_dict
             X_nw = utils.dataframe.into_frame(X)
+            schema = X_nw.schema
             for col in X_nw.columns:
                 vi = values[col]
-                for v in X_nw[col].unique():
+                series = X_nw[col]
+                if schema[col].is_float():
+                    series = series.fill_nan(None)
+                if series.is_null().any() and _MISSING_CATEGORY not in vi:
+                    vi.add(_MISSING_CATEGORY)
+                    if not self.drop_zeros:
+                        zero_dict[f"{col}_{_MISSING_CATEGORY}"] = 0
+                for v in series.drop_nulls().unique():
                     if v not in vi:
                         vi.add(v)
-                        zero_dict[f"{col}_{v}"] = 0
+                        if not self.drop_zeros:
+                            zero_dict[f"{col}_{v}"] = 0
 
     def transform_many(self, X: IntoDataFrameT) -> IntoDataFrameT:
         """One-hot encode a mini-batch of features.
-
-        Pandas keeps the historical fast path returning ``Sparse[uint8]`` columns.
-        Every other narwhals-supported backend (polars, pyarrow, ...) is encoded via
-        ``narwhals.Series.to_dummies`` and returns **dense** integer columns,
-        since those backends have no sparse-array equivalent.
 
         Parameters
         ----------
@@ -354,58 +393,44 @@ class OneHotEncoder(base.MiniBatchTransformer):
 
         """
         X_nw = utils.dataframe.into_frame(X)
-        native = (
-            self._transform_many_pandas(typing.cast("pd.DataFrame", X))
-            if X_nw.implementation.is_pandas()
-            else self._transform_many_narwhals(X_nw)
-        )
-        return typing.cast("IntoDataFrameT", native)
+        native = self._transform_many_narwhals(X_nw)
+        if X_nw.implementation.is_pandas():
+            pandas = utils.pandas.import_pandas()
+            native = typing.cast("pd.DataFrame", native)
+            for col in native.columns:
+                native[col] = pandas.arrays.SparseArray(native[col], dtype="uint8")
+        return native
 
     def _seen_columns(self) -> set[str]:
         """The `<feature>_<value>` dummy names for every category learned or configured so far."""
         return {f"{col}_{val}" for col, vals in self.values.items() for val in vals}
 
-    def _transform_many_pandas(self, X: pd.DataFrame) -> pd.DataFrame:
-        pd = utils.pandas.import_pandas()
-        oh = pd.get_dummies(X, columns=X.columns, sparse=True, dtype="uint8")
-        seen_in_the_past = self._seen_columns()
-
-        # NOTE: assume if category mappings are explicitly provided,
-        # no other category values are allowed for output. Aligns with `sklearn` behavior.
-        if self.categories is not None:
-            to_remove = set(oh.columns) - seen_in_the_past
-            oh.drop(columns=list(to_remove), inplace=True)
-
-        if not self.drop_zeros:
-            to_add = seen_in_the_past - set(oh.columns)
-            for col in to_add:
-                oh[col] = pd.arrays.SparseArray([0] * len(oh), dtype="uint8")
-
-        if self.drop_first:
-            oh = oh.drop(columns=min(oh.columns))
-
-        return oh
+    @staticmethod
+    def _first_category(columns: typing.Iterable[str]) -> str | None:
+        return min(
+            (col for col in columns if not col.endswith(f"_{_MISSING_CATEGORY}")), default=None
+        )
 
     def _transform_many_narwhals(self, X_nw: nw.DataFrame[IntoDataFrameT]) -> IntoDataFrameT:
         columns = X_nw.columns
         schema = X_nw.schema
 
-        # `to_dummies` names columns `<feature>_<value>`, matching `transform_one`'s `f"{i}_{xi}"`
-        # and the pandas `get_dummies` output. Null cells yield a `<feature>_null` column that
-        # `pandas.get_dummies` omits, so they are dropped below for parity. `get_dummies` also omits
-        # `NaN`; polars/pyarrow keep `NaN` distinct from null (it would otherwise leak a
-        # `<feature>_NaN` dummy), so float `NaN` is folded into null first to match pandas exactly.
-        dummies = nw.concat(
-            [
-                (X_nw[col].fill_nan(None) if schema[col].is_float() else X_nw[col]).to_dummies(
-                    separator="_"
-                )
-                for col in columns
-            ],
-            how="horizontal",
-        )
-        null_cols = {f"{col}_null" for col in columns}
-        present = set(dummies.columns) - null_cols
+        dummy_frames = []
+        for col in columns:
+            dtype = schema[col]
+            series = X_nw[col].fill_nan(None) if dtype.is_float() else X_nw[col]
+            string_category = dtype == nw.String or dtype == nw.Categorical
+            if dtype == nw.Categorical:
+                series = series.cast(nw.String)
+            if string_category:
+                series = series.fill_null(_MISSING_CATEGORY)
+            dummies = series.to_dummies(separator="_")
+            null_col = f"{col}_null"
+            if not string_category and null_col in dummies.columns:
+                dummies = dummies.rename({null_col: f"{col}_{_MISSING_CATEGORY}"})
+            dummy_frames.append(dummies)
+        dummies = nw.concat(dummy_frames, how="horizontal")
+        present = set(dummies.columns)
         seen_in_the_past = self._seen_columns()
 
         # NOTE: assume if category mappings are explicitly provided, no other category values are
@@ -415,9 +440,6 @@ class OneHotEncoder(base.MiniBatchTransformer):
             # Pad with the categories seen during past `learn_many` calls (zero columns).
             keep |= seen_in_the_past
 
-        # Materialise the padded/null columns as all-zeros. They are added to `dummies` (which
-        # still carries the row count) before any narrowing select, because selecting an empty set
-        # of columns collapses the row count to zero on some backends (e.g. polars).
         to_add = keep - set(dummies.columns)
         zero_dtype = dummies.schema[dummies.columns[0]] if dummies.columns else nw.Int64
         oh = dummies.with_columns(
@@ -425,8 +447,9 @@ class OneHotEncoder(base.MiniBatchTransformer):
         )
 
         final_columns = sorted(keep)
-        if self.drop_first and final_columns:
-            # Mirror the pandas path, which drops the lexicographically smallest column.
-            final_columns = final_columns[1:]
+        if self.drop_first:
+            first = self._first_category(final_columns)
+            if first is not None:
+                final_columns.remove(first)
 
         return oh.select(final_columns).to_native()

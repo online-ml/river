@@ -15,11 +15,6 @@ if typing.TYPE_CHECKING:
 
     from tests.frames import FrameBackend
 
-# `transform_many` mini-batching is routed through narwhals: pandas keeps the historical sparse
-# fast path, while every other backend is encoded densely via `narwhals.Series.to_dummies`. These
-# tests pin the cross-backend behaviour (values, native return type, pandas index), using the
-# pandas path as the oracle.
-
 CONFIGS: list[dict[str, typing.Any]] = [
     {},
     {"drop_zeros": True},
@@ -31,10 +26,6 @@ CONFIGS: list[dict[str, typing.Any]] = [
     {"categories": {"c1": {"a", "b"}, "c2": {"c", "d"}}, "drop_zeros": True, "drop_first": True},
 ]
 
-# Backends whose dtypes round-trip the input unchanged, so their encoded output must equal the
-# pandas `get_dummies` reference exactly (including missing values). The `pandas[nullable]` /
-# `pandas[pyarrow]` variants are excluded on purpose: `convert_dtypes` re-represents the data
-# (`1.0` -> `1`, `None` -> `pd.NA`), which legitimately changes value-derived column names.
 NATIVE_NON_PANDAS_BACKENDS = ["polars", "pyarrow"]
 
 
@@ -91,29 +82,13 @@ def test_transform_many_is_backend_agnostic(
     _assert_pandas_parity(frame_backend, config, data)
 
 
-@pytest.mark.parametrize(
-    "config",
-    [
-        {},
-        {"drop_first": True},
-        {"categories": {"c1": {"a", "b"}, "c2": {"c", "d"}}},
-        {"categories": {"c1": {"a", "b"}, "c2": {"c", "d"}}, "drop_first": True},
-    ],
-    ids=str,
-)
+@pytest.mark.parametrize("config", CONFIGS, ids=str)
 def test_transform_many_matches_transform_one(
     frame_backend: FrameBackend, config: dict[str, typing.Any]
 ) -> None:
-    """Each row of `transform_many` agrees with `transform_one` on every backend.
-
-    Pinned with ``drop_zeros=False`` so both paths materialise the full column set, which makes
-    ``transform_one``'s per-row ``min`` (used by ``drop_first``) equal the single global column
-    ``transform_many`` drops. With ``drop_zeros=True`` the present-only keys vary per row, so the
-    two paths legitimately diverge for ``drop_first``; that combination is out of scope here.
-    """
     data, rows = _categorical_batch()
 
-    encoder = preprocessing.OneHotEncoder(drop_zeros=False, **config)
+    encoder = preprocessing.OneHotEncoder(**config)
     encoder.learn_many(frame_backend.frame(data))
 
     many = _rows(encoder.transform_many(frame_backend.frame(data)))
@@ -132,11 +107,6 @@ def test_transform_many_matches_transform_one(
 def test_transform_many_missing_matches_pandas(
     backend_name: str, config: dict[str, typing.Any]
 ) -> None:
-    """Missing values (string ``None``, numeric ``NaN``) encode identically to the pandas path.
-
-    ``get_dummies`` omits both from the encoded ``1``s; polars/pyarrow keep ``NaN`` distinct from
-    null, so the encoder folds ``NaN`` into null to match pandas exactly.
-    """
     pytest.importorskip(backend_name)
     data: dict[str, list[typing.Any]] = {
         "c1": ["a", None, "b", "a"],
@@ -145,12 +115,7 @@ def test_transform_many_missing_matches_pandas(
     _assert_pandas_parity(FRAME_BACKENDS[backend_name](), config, data)
 
 
-def test_transform_many_missing_is_all_zeros_pandas() -> None:
-    """Pin the pandas contract: a missing cell encodes to all-zeros (no ``1`` in any dummy).
-
-    ``None`` is still registered as the literal ``"None"`` category, so a zero-filled ``c_None``
-    column is padded in (mirroring ``get_dummies``, which omits the missing row's ``1``).
-    """
+def test_transform_many_missing_is_category_pandas() -> None:
     import pandas as pd
 
     X = pd.DataFrame({"c": ["a", None, "b"]})
@@ -158,10 +123,105 @@ def test_transform_many_missing_is_all_zeros_pandas() -> None:
     encoder.learn_many(X)
 
     assert _rows(encoder.transform_many(X)) == [
-        {"c_None": 0, "c_a": 1, "c_b": 0},
-        {"c_None": 0, "c_a": 0, "c_b": 0},
-        {"c_None": 0, "c_a": 0, "c_b": 1},
+        {"c_<NA>": 0, "c_a": 1, "c_b": 0},
+        {"c_<NA>": 1, "c_a": 0, "c_b": 0},
+        {"c_<NA>": 0, "c_a": 0, "c_b": 1},
     ]
+
+
+def test_missing_values_are_canonicalized_one() -> None:
+    import pandas as pd
+
+    encoder = preprocessing.OneHotEncoder(drop_zeros=False)
+    encoder.learn_one({"c1": "a", "c2": 1.0})
+    encoder.learn_one({"c1": None, "c2": float("nan")})
+
+    assert encoder.values == {"c1": {"a", "<NA>"}, "c2": {1.0, "<NA>"}}
+    assert encoder.transform_one({"c1": None, "c2": float("nan")}) == {
+        "c1_a": 0,
+        "c2_1.0": 0,
+        "c1_<NA>": 1,
+        "c2_<NA>": 1,
+    }
+    assert encoder.transform_one({"c1": pd.NA})["c1_<NA>"] == 1
+    assert preprocessing.OneHotEncoder(drop_zeros=True).transform_one({"c1": None}) == {
+        "c1_<NA>": 1
+    }
+    configured = preprocessing.OneHotEncoder(categories={"c1": {float("nan")}})
+    assert configured.values == {"c1": {"<NA>"}}
+    assert configured.transform_one({"c1": None}) == {"c1_<NA>": 1}
+
+
+def test_missing_values_are_canonicalized_many(frame_backend: FrameBackend) -> None:
+    data = {
+        "c1": ["a", None, "b"],
+        "c2": [1.0, float("nan"), 2.0],
+    }
+    encoder = preprocessing.OneHotEncoder(drop_zeros=False)
+    X = frame_backend.frame(data)
+    encoder.learn_many(X)
+
+    assert encoder.values["c1"] == {"a", "b", "<NA>"}
+    assert encoder.values["c2"] == {1, 2, "<NA>"}
+
+    rows = _rows(encoder.transform_many(X))
+    assert rows[0]["c1_<NA>"] == 0
+    assert rows[1]["c1_<NA>"] == 1
+    assert rows[1]["c2_<NA>"] == 1
+    assert rows[2]["c2_<NA>"] == 0
+
+
+@pytest.mark.parametrize(
+    "config",
+    [{}, {"drop_zeros": True}, {"drop_first": True}, {"drop_zeros": True, "drop_first": True}],
+    ids=str,
+)
+def test_missing_values_match_one_many(
+    frame_backend: FrameBackend, config: dict[str, typing.Any]
+) -> None:
+    data = {"c": ["a", None, "b"]}
+    encoder = preprocessing.OneHotEncoder(**config)
+    X = frame_backend.frame(data)
+    encoder.learn_many(X)
+
+    many = _rows(encoder.transform_many(X))
+    assert many[1]["c_<NA>"] == 1
+    for value, many_row in zip(data["c"], many):
+        one = encoder.transform_one({"c": value})
+        for key in set(one) | set(many_row):
+            assert one.get(key, 0) == many_row.get(key, 0)
+
+
+def test_missing_token_matches_missing(frame_backend: FrameBackend) -> None:
+    data = {"c": ["<NA>", None, "a"]}
+    encoder = preprocessing.OneHotEncoder()
+    X = frame_backend.frame(data)
+    encoder.learn_many(X)
+
+    rows = _rows(encoder.transform_many(X))
+    assert rows[0] == rows[1]
+    assert rows[0]["c_<NA>"] == 1
+
+
+def test_configured_missing_category_matches_many(frame_backend: FrameBackend) -> None:
+    data = {"c": ["a", None, "unknown"]}
+    encoder = preprocessing.OneHotEncoder(categories={"c": {"a", None}})
+    X = frame_backend.frame(data)
+
+    many = _rows(encoder.transform_many(X))
+    for row, many_row in zip(data["c"], many):
+        one = encoder.transform_one({"c": row})
+        assert one == many_row
+
+
+def test_pandas_categorical_missing_is_category() -> None:
+    import pandas as pd
+
+    X = pd.DataFrame({"c": pd.Series(["a", None, "b"], dtype="category")})
+    encoder = preprocessing.OneHotEncoder()
+    encoder.learn_many(X)
+
+    assert _rows(encoder.transform_many(X))[1]["c_<NA>"] == 1
 
 
 def test_transform_many_pads_categories_from_earlier_batches(frame_backend: FrameBackend) -> None:
@@ -187,13 +247,10 @@ def test_transform_many_returns_native_backend(frame_backend: FrameBackend) -> N
     encoder.learn_many(X)
     out = encoder.transform_many(X)
 
-    # The pandas fast path always returns a classic pandas frame, regardless of the input's pandas
-    # dtype backend (numpy / nullable / pyarrow), so compare the top-level module only.
     assert type(out) is type(X)
 
 
 def test_transform_many_pandas_is_sparse_others_dense() -> None:
-    """Pandas keeps the sparse fast path; non-pandas backends emit dense integer columns."""
     import pandas as pd
 
     data, _ = _categorical_batch()

@@ -88,9 +88,8 @@ class CategoricalNB(base.BaseNB):
 
     >>> unseen = pd.DataFrame([{"outlook": "rainy", "temp": "cool"}])
 
-    >>> batch_model.predict_many(unseen)
-    0    yes
-    dtype: object
+    >>> batch_model.predict_many(unseen).tolist()
+    ['yes']
 
     >>> batch_model.predict_proba_many(unseen)
                no       yes
