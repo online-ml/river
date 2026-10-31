@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import typing
+from collections import Counter
 
 import sqlalchemy
 
@@ -104,6 +105,14 @@ def iter_sql(
 
     with conn.execute(statement) as result:
         column_names: tuple[FeatureName, ...] = tuple(result.keys())
+        duplicates = [
+            name for name, count in Counter(column_names).items() if count > 1
+        ]
+        if duplicates:
+            raise ValueError(
+                f"SQL query returned duplicate column names: {duplicates}. "
+                "Use SQL aliases to make the names unique."
+            )
 
         if target_name is None:
             for row in result:
