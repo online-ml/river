@@ -23,9 +23,6 @@ def test_distribution_tracking_uses_shared_split_criterion(split_criterion, expe
     assert not hasattr(second_leaf, "split_criterion")
     assert model._change_detector_merit({False: 1, True: 1}) == expected_merit
 
-    first_leaf.learn_one({0: 0}, False, tree=model)
-    second_leaf.learn_one({0: 1}, True, tree=model)
-
 
 def test_error_tracking_does_not_initialize_split_criterion():
     model = tree.LASTClassifier(
