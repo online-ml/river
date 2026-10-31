@@ -571,6 +571,7 @@ nav:
         - api/tree/splitter/StaticQuantizer.md
         - api/tree/splitter/TEBSTSplitter.md
     - utils:
+      - api/utils/CalibratedClassifier.md
       - api/utils/Rolling.md
       - api/utils/SortedWindow.md
       - api/utils/TimeRolling.md
