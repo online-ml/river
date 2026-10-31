@@ -85,3 +85,14 @@ MAE: 1.391246
 > [!NOTE]
 >
 > **predict\_one**
+>
+> Predict the output of features `x`.
+>
+> **Parameters**
+>
+> - **x** — `dict[base.typing.FeatureName, typing.Any]`
+> - **kwargs** — `typing.Any`
+>
+> **Returns**
+>
+> `base.typing.RegTarget`: The prediction.

@@ -88,9 +88,9 @@ The mini-batch methods are dataframe-agnostic: any narwhals-supported eager back
 >
 > **Parameters**
 >
-> - **x**
-> - **y**
-> - **kwargs**
+> - **x** — `dict[base.typing.FeatureName, typing.Any]`
+> - **y** — `base.typing.ClfTarget`
+> - **kwargs** — `typing.Any`
 
 > [!NOTE]
 >
@@ -123,9 +123,9 @@ The mini-batch methods are dataframe-agnostic: any narwhals-supported eager back
 >
 > **Parameters**
 >
-> - **x**
-> - **kwargs**
+> - **x** — `dict[base.typing.FeatureName, typing.Any]`
+> - **kwargs** — `typing.Any`
 >
 > **Returns**
 >
-> A dictionary that associates a probability which each label.
+> `dict&#91;base.typing.ClfTarget, float&#93;`: A dictionary that associates a probability which each label.

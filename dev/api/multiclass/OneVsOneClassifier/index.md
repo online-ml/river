@@ -10,6 +10,8 @@ The number of classifiers is `k * (k - 1) / 2`, where `k` is the number of class
 
 - **classifier**
 
+  *Type* → `base.Classifier`
+
   A binary classifier, although a multi-class classifier will work too.
 
 ## Attributes
@@ -53,9 +55,9 @@ MacroF1: 80.76%
 >
 > **Parameters**
 >
-> - **x**
-> - **y**
-> - **kwargs**
+> - **x** — `dict[base.typing.FeatureName, typing.Any]`
+> - **y** — `base.typing.ClfTarget`
+> - **kwargs** — `typing.Any`
 
 > [!NOTE]
 >
@@ -65,12 +67,12 @@ MacroF1: 80.76%
 >
 > **Parameters**
 >
-> - **x**
-> - **kwargs**
+> - **x** — `dict[base.typing.FeatureName, typing.Any]`
+> - **kwargs** — `typing.Any`
 >
 > **Returns**
 >
-> The predicted label.
+> `base.typing.ClfTarget | None`: The predicted label.
 
 > [!NOTE]
 >

@@ -79,9 +79,9 @@ MacroF1: 79.58%
 >
 > **Parameters**
 >
-> - **x**
-> - **y**
-> - **kwargs**
+> - **x** — `dict[base.typing.FeatureName, typing.Any]`
+> - **y** — `base.typing.ClfTarget`
+> - **kwargs** — `typing.Any`
 
 > [!NOTE]
 >
@@ -91,12 +91,12 @@ MacroF1: 79.58%
 >
 > **Parameters**
 >
-> - **x**
-> - **kwargs**
+> - **x** — `dict[base.typing.FeatureName, typing.Any]`
+> - **kwargs** — `typing.Any`
 >
 > **Returns**
 >
-> The predicted label.
+> `base.typing.ClfTarget | None`: The predicted label.
 
 > [!NOTE]
 >

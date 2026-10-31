@@ -62,9 +62,9 @@ MAE: 1.66253
 >
 > **Parameters**
 >
-> - **x**
-> - **y**
-> - **kwargs**
+> - **x** — `dict[base.typing.FeatureName, typing.Any]`
+> - **y** — `base.typing.RegTarget`
+> - **kwargs** — `typing.Any`
 
 > [!NOTE]
 >
@@ -74,11 +74,11 @@ MAE: 1.66253
 >
 > **Parameters**
 >
-> - **x**
-> - **kwargs**
+> - **x** — `dict[base.typing.FeatureName, typing.Any]`
+> - **kwargs** — `typing.Any`
 >
 > **Returns**
 >
-> The prediction.
+> `base.typing.RegTarget`: The prediction.
 
 [^/dev/api/imblearn/ChebyshevOverSampler/#1]: Aminian, Ehsan, Rita P. Ribeiro, and João Gama. "Chebyshev approaches for imbalanced data streams regression models." Data Mining and Knowledge Discovery 35.6 (2021): 2389-2466.

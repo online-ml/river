@@ -85,6 +85,17 @@ ROCAUC: 95.06%
 > [!NOTE]
 >
 > **predict\_one**
+>
+> Predict the label of a set of features `x`.
+>
+> **Parameters**
+>
+> - **x** — `dict[base.typing.FeatureName, typing.Any]`
+> - **kwargs** — `typing.Any`
+>
+> **Returns**
+>
+> `base.typing.ClfTarget | None`: The predicted label.
 
 > [!NOTE]
 >
@@ -94,9 +105,9 @@ ROCAUC: 95.06%
 >
 > **Parameters**
 >
-> - **x**
-> - **kwargs**
+> - **x** — `dict[base.typing.FeatureName, typing.Any]`
+> - **kwargs** — `typing.Any`
 >
 > **Returns**
 >
-> A dictionary that associates a probability which each label.
+> `dict&#91;base.typing.ClfTarget, float&#93;`: A dictionary that associates a probability which each label.

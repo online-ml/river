@@ -13,10 +13,12 @@ See [Working with imbalanced data](</user-guide/imbalanced-learning>) for exampl
   *Type* → `base.Classifier`
 - **desired\_dist**
 
-  *Type* → `dict`
+  *Type* → `dict[base.typing.ClfTarget, float] | None`
 
   The desired class distribution. The keys are the classes whilst the values are the desired class percentages. The values must sum up to 1. If set to `None`, then the observations will be sampled uniformly at random, which is strictly equivalent to using `ensemble.BaggingClassifier`.
 - **sampling\_rate**
+
+  *Type* → `float`
 
   *Default* → `1.0`
 
@@ -70,9 +72,9 @@ LogLoss: 0.09...
 >
 > **Parameters**
 >
-> - **x** — `dict[base.typing.FeatureName, Any]`
+> - **x** — `dict[base.typing.FeatureName, typing.Any]`
 > - **y** — `base.typing.ClfTarget`
-> - **kwargs**
+> - **kwargs** — `typing.Any`
 
 > [!NOTE]
 >
@@ -82,12 +84,12 @@ LogLoss: 0.09...
 >
 > **Parameters**
 >
-> - **x**
-> - **kwargs**
+> - **x** — `dict[base.typing.FeatureName, typing.Any]`
+> - **kwargs** — `typing.Any`
 >
 > **Returns**
 >
-> The predicted label.
+> `base.typing.ClfTarget | None`: The predicted label.
 
 > [!NOTE]
 >
@@ -97,9 +99,9 @@ LogLoss: 0.09...
 >
 > **Parameters**
 >
-> - **x**
-> - **kwargs**
+> - **x** — `dict[base.typing.FeatureName, typing.Any]`
+> - **kwargs** — `typing.Any`
 >
 > **Returns**
 >
-> A dictionary that associates a probability which each label.
+> `dict&#91;base.typing.ClfTarget, float&#93;`: A dictionary that associates a probability which each label.
