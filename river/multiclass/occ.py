@@ -1,18 +1,20 @@
 from __future__ import annotations
 
 import collections
+import collections.abc
 import random
+import typing
 
 from river import base, linear_model
 
 __all__ = ["OutputCodeClassifier"]
 
 
-def l1_dist(a, b):
+def l1_dist(a: collections.abc.Iterable[float], b: collections.abc.Iterable[float]) -> float:
     return sum(abs(ai - bi) for ai, bi in zip(a, b))
 
 
-class OutputCodeClassifier(base.Wrapper, base.Classifier):
+class OutputCodeClassifier(base.Wrapper[base.Classifier], base.Classifier):
     """Output-code multiclass strategy.
 
     This also referred to as "error-correcting output codes".
@@ -96,7 +98,9 @@ class OutputCodeClassifier(base.Wrapper, base.Classifier):
         self.seed = seed
         self._rng = random.Random(seed)
 
-        self.classifiers = {i: classifier.clone() for i in range(code_size)}
+        self.classifiers: dict[int, base.Classifier] = {
+            i: classifier.clone() for i in range(code_size)
+        }
 
         # We don't know how many classes there are, therefore we can't generate the code book
         # from the start. Therefore, we define a random queue of integers. When a new class
@@ -105,10 +109,12 @@ class OutputCodeClassifier(base.Wrapper, base.Classifier):
         if self.coding_method == "exact":
             integers = list(range(2**code_size))
             self._rng.shuffle(integers)
-            self._integers = iter(integers)
-        self.code_book: collections.defaultdict = collections.defaultdict(self._next_code)
+            self._integers: collections.abc.Iterator[int] = iter(integers)
+        self.code_book: collections.defaultdict[base.typing.ClfTarget, tuple[int, ...] | None] = (
+            collections.defaultdict(self._next_code)
+        )
 
-    def _next_code(self):
+    def _next_code(self) -> tuple[int, ...] | None:
         if self.coding_method == "random":
             return tuple(self._rng.randint(0, 1) for _ in range(self.code_size))
         elif self.coding_method == "exact":
@@ -116,17 +122,18 @@ class OutputCodeClassifier(base.Wrapper, base.Classifier):
             b = bin(i)[2:]  # convert to a string of 0s and 1s
             b = b.zfill(self.code_size)  # ensure the code is of length code_size
             return tuple(int(c) for c in b)
+        return None
 
     @property
-    def _multiclass(self):
+    def _multiclass(self) -> bool:
         return True
 
     @property
-    def _wrapped_model(self):
+    def _wrapped_model(self) -> base.Classifier:
         return self.classifier
 
     @classmethod
-    def _unit_test_params(cls):
+    def _unit_test_params(cls) -> collections.abc.Iterator[dict[str, typing.Any]]:
         yield {
             "classifier": linear_model.LogisticRegression(),
             "code_size": 6,
@@ -139,19 +146,32 @@ class OutputCodeClassifier(base.Wrapper, base.Classifier):
             "coding_method": "random",
         }
 
-    def learn_one(self, x, y, **kwargs):
-        code = self.code_book[y]
+    def learn_one(
+        self,
+        x: dict[base.typing.FeatureName, typing.Any],
+        y: base.typing.ClfTarget,
+        **kwargs: typing.Any,
+    ) -> None:
+        code = typing.cast(tuple[int, ...], self.code_book[y])
 
         for i, c in enumerate(code):
             self.classifiers[i].learn_one(x, c, **kwargs)
 
-    def predict_one(self, x, **kwargs):
+    def predict_one(
+        self, x: dict[base.typing.FeatureName, typing.Any], **kwargs: typing.Any
+    ) -> base.typing.ClfTarget | None:
         if not self.code_book:  # it's empty
             return None
 
-        output = [None for _ in range(self.code_size)]
+        output: list[float | None] = [None for _ in range(self.code_size)]
 
         for i, clf in self.classifiers.items():
             output[i] = clf.predict_proba_one(x, **kwargs).get(True, 0.0)
 
-        return min(self.code_book, key=lambda c: l1_dist(self.code_book[c], output))
+        return min(
+            self.code_book,
+            key=lambda c: l1_dist(
+                typing.cast(tuple[int, ...], self.code_book[c]),
+                typing.cast(list[float], output),
+            ),
+        )
