@@ -45,6 +45,40 @@ impl<F: Float + FromPrimitive + AddAssign + SubAssign> Mean<F> {
     pub fn new() -> Self {
         Self::default()
     }
+
+    #[inline(always)]
+    pub fn update_weighted(&mut self, x: F, weight: F) {
+        if weight == F::zero() {
+            return;
+        }
+        let previous = self.mean;
+        self.n.count += weight;
+        let ratio = weight / self.n.get();
+        let updated = previous + ratio * (x - previous);
+        self.mean = if updated.is_finite() {
+            updated
+        } else {
+            previous * (F::one() - ratio) + x * ratio
+        };
+    }
+
+    #[inline(always)]
+    pub fn revert_weighted(&mut self, x: F, weight: F) -> Result<(), &'static str> {
+        if weight < F::zero() || weight > self.n.get() {
+            return Err("Count cannot go below 0");
+        }
+        if weight == F::zero() {
+            return Ok(());
+        }
+        self.n.count -= weight;
+        let count = self.n.get();
+        if count == F::zero() {
+            self.mean = F::zero();
+        } else {
+            self.mean -= (weight / count) * (x - self.mean);
+        }
+        Ok(())
+    }
 }
 
 impl<F: Float + FromPrimitive + AddAssign + SubAssign> Univariate<F> for Mean<F> {

@@ -7,6 +7,8 @@ pub mod ewmean;
 pub mod ewvariance;
 pub mod expected_mutual_info;
 pub mod feature_hashing;
+pub mod gaussian;
+pub mod hoeffding_tree;
 pub mod iqr;
 pub mod iter;
 pub mod kurtosis;
@@ -28,3 +30,4 @@ pub mod variance;
 pub mod vectordict;
 
 mod pyo3_bindings;
+mod tree_arena;

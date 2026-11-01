@@ -5,6 +5,10 @@
 - Removed support for `pandas<3.1`. River now requires `pandas>=3.1`.
 - Missing values are not dropped anymore when `drop_first=True`, and the value that is dropped is now stable across observations.
 
+## base
+
+- Estimator memory usage now includes serialized state held by Rust-backed objects.
+
 ## drift
 
 - The `river.drift` sub-package is now clean under strict mypy, and the `river.drift.*` entry was removed from the non-strict overrides in `pyproject.toml`. Public signatures and docstrings are unchanged.
