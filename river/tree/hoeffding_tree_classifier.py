@@ -213,6 +213,7 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
         if not x:
             self._native_enabled = False
             return
+        native_seed = 42 if self._native_random is None else self._native_random.getrandbits(64)
         self._native_adapter = NumericAdapter(x, y, sort_features=self._native_sort_features())
         self.classes.add(y)
         self._native_model = NativeHoeffdingTreeClassifier(
@@ -230,6 +231,7 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
             min_branch_fraction=self.min_branch_fraction,
             max_share_to_split=self.max_share_to_split,
             merit_preprune=self.merit_preprune,
+            seed=native_seed,
         )
 
     def _learn_one_native(self, x, y, w):
@@ -247,13 +249,7 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
         if mutable_parameters != self._native_mutable_parameters:
             model.set_mutable_parameters(*mutable_parameters)
             self._native_mutable_parameters = mutable_parameters
-        rng = self._native_random
-        if rng is None:
-            model.learn_one_mapping(x, adapter.features, adapter.feature_names, class_index, w)
-        else:
-            model.learn_one_mapping_with_rng(
-                x, adapter.features, adapter.feature_names, class_index, rng, w
-            )
+        model.learn_one_mapping(x, adapter.features, adapter.feature_names, class_index, w)
         self._train_weight_seen_by_model += w
         return True
 

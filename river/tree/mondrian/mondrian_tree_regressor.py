@@ -1,21 +1,9 @@
 from __future__ import annotations
 
 from river import base
-from river._river_rust.tree import (
-    go_downwards_regressor as go_downwards_regressor_c,
-)
-from river._river_rust.tree import (
-    go_upwards as go_upwards_c,
-)
-from river._river_rust.tree import (
-    predict_one_regressor as predict_one_regressor_c,
-)
+from river._river_rust.tree import NativeMondrianTreeRegressor
+from river.tree._numeric_adapter import NumericAdapter
 from river.tree.mondrian.mondrian_tree import MondrianTree
-from river.tree.mondrian.mondrian_tree_nodes import (
-    MondrianBranchRegressor,
-    MondrianLeafRegressor,
-    MondrianNodeRegressor,
-)
 
 
 class MondrianTreeRegressor(MondrianTree, base.Regressor):
@@ -69,164 +57,34 @@ class MondrianTreeRegressor(MondrianTree, base.Regressor):
             max_nodes=max_nodes,
             seed=seed,
         )
-        # Controls the randomness in the tree
-        self.seed = seed
+        self._native_model: NativeMondrianTreeRegressor | None = None
+        self._native_adapter: NumericAdapter | None = None
 
-        # The current sample being proceeded
-        self._x: dict[base.typing.FeatureName, int | float]
-        # The current label index being proceeded
-        self._y: base.typing.RegTarget
-
-        # Initialization of the root of the tree
-        # It's the root so it doesn't have any parent (hence None)
-        self._root = MondrianLeafRegressor(None, 0.0, 0)
-
+    @property
     def _is_initialized(self):
         """Check if the tree has learnt at least one sample"""
         return self.iteration != 0
 
-    def _predict(self, node: MondrianNodeRegressor) -> base.typing.RegTarget:
-        """Compute the prediction.
-
-        Parameters
-        ----------
-        node
-            Node to make predictions.
-
-        """
-
-        return node.predict()  # type: ignore
-
-    def _split(
-        self,
-        node: MondrianLeafRegressor | MondrianBranchRegressor,
-        split_time: float,
-        threshold: float,
-        feature: base.typing.FeatureName,
-        is_right_extension: bool,
-    ) -> MondrianBranchRegressor:
-        """Split the given node and attributes the split time, threshold, etc... to the node.
-
-        Parameters
-        ----------
-        node
-            Target node.
-        split_time
-            Split time of the node in the Mondrian process.
-        threshold
-            Threshold of acceptance of the node.
-        feature
-            Feature of the node.
-        is_right_extension
-            Should we extend the tree in the right or left direction.
-
-        """
-
-        new_depth = node.depth + 1
-
-        # To calm down mypy
-        left: MondrianLeafRegressor | MondrianBranchRegressor
-        right: MondrianLeafRegressor | MondrianBranchRegressor
-
-        # The node is already a branch: we create a new branch above it and move the existing
-        # node one level down the tree
-        if isinstance(node, MondrianBranchRegressor):
-            old_left, old_right = node.children
-            if is_right_extension:
-                left = MondrianBranchRegressor(
-                    node, split_time, new_depth, node.feature, node.threshold
-                )
-                right = MondrianLeafRegressor(node, split_time, new_depth)
-                left.replant(node, True)
-
-                old_left.parent = left
-                old_right.parent = left
-
-                left.children = (old_left, old_right)
-            else:
-                right = MondrianBranchRegressor(
-                    node, split_time, new_depth, node.feature, node.threshold
-                )
-                left = MondrianLeafRegressor(node, split_time, new_depth)
-                right.replant(node, True)
-
-                old_left.parent = right
-                old_right.parent = right
-
-                right.children = (old_left, old_right)
-
-            # Update the level of the modified nodes
-            new_depth += 1
-            old_left.update_depth(new_depth)
-            old_right.update_depth(new_depth)
-
-            # Update split info
-            node.feature = feature
-            node.threshold = threshold
-            node.children = (left, right)
-
-            return node
-
-        # We promote the leaf to a branch
-        branch = MondrianBranchRegressor(node.parent, node.time, node.depth, feature, threshold)
-        left = MondrianLeafRegressor(branch, split_time, new_depth)
-        right = MondrianLeafRegressor(branch, split_time, new_depth)
-        branch.children = (left, right)
-
-        # Copy properties from the previous leaf
-        branch.replant(node, True)
-
-        if is_right_extension:
-            left.replant(node, True)
-        else:
-            right.replant(node, True)
-
-        # To avoid leaving garbage behind
-        del node
-
-        return branch
-
-    def _go_downwards(self):
-        """Update the tree (downward procedure)."""
-
-        rng = self._rng
-
-        leaf, new_root, nodes_added = go_downwards_regressor_c(
-            self._root,
-            self._x,
-            self._y,
-            self.use_aggregation,
-            self.step,
-            self.iteration,
-            self.max_nodes if self.max_nodes is not None else -1,
-            self._n_nodes,
-            rng.random,
-            rng.choices,
-            rng.uniform,
-            self._split,
-        )
-        self._n_nodes += nodes_added
-        if new_root is not None:
-            self._root = new_root
-        return leaf
-
-    def _go_upwards(self, leaf: MondrianLeafRegressor):
-        """Update the tree (upwards procedure)."""
-        go_upwards_c(leaf, self.iteration)
+    def _init_native(self, x, y):
+        self._native_adapter = NumericAdapter(x, y, sort_features=True)
+        self._native_model = NativeMondrianTreeRegressor(len(x), self._rng.getrandbits(64))
 
     def learn_one(self, x, y):
-        # Setting current sample. Copy x so the caller can safely mutate the
-        # input dict after learn_one without disturbing the tree's stored
-        # bounding boxes.
-        self._x = dict(x)
-        self._y = y
-
-        # Learning step
-        leaf = self._go_downwards()
-        if self.use_aggregation:
-            self._go_upwards(leaf)
-
-        # Incrementing iteration
+        if self._native_model is None:
+            self._init_native(x, y)
+        adapter = self._native_adapter
+        model = self._native_model
+        assert adapter is not None and model is not None
+        self._n_nodes += model.learn_one_mapping(
+            x,
+            adapter.features,
+            adapter.feature_names,
+            y,
+            self.iteration,
+            self.step,
+            self.use_aggregation,
+            self.max_nodes,
+        )
         self.iteration += 1
 
     def predict_one(self, x):
@@ -239,7 +97,9 @@ class MondrianTreeRegressor(MondrianTree, base.Regressor):
 
         """
 
-        if not self._is_initialized:
-            return
+        if self._native_model is None:
+            return 0.0
 
-        return predict_one_regressor_c(self._root, x, self.use_aggregation)
+        adapter = self._native_adapter
+        assert adapter is not None and self._native_model is not None
+        return self._native_model.predict_mapping(x, adapter.features, self.use_aggregation)

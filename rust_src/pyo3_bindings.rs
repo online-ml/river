@@ -12,9 +12,8 @@ use crate::{
     iqr::IQR,
     kurtosis::Kurtosis,
     mondrian::{
-        go_downwards_classifier, go_downwards_regressor, go_upwards, log_sum_2_exp,
-        predict_one_regressor, predict_proba_classifier, predict_proba_upward, predict_scores,
-        range_extension, update_ranges,
+        MondrianTreeClassifier as NativeMondrianTreeClassifier,
+        MondrianTreeRegressor as NativeMondrianTreeRegressor,
     },
     ptp::PeakToPeak,
     quantile::Quantile,
@@ -726,6 +725,7 @@ impl RsNativeHoeffdingTreeClassifier {
         Ok(py.detach(|| self.inner.predict_proba(&x)))
     }
 
+    #[allow(clippy::too_many_arguments)]
     fn predict_proba_mapping<'py>(
         &mut self,
         py: Python<'py>,
@@ -794,89 +794,6 @@ impl RsNativeHoeffdingTreeClassifier {
         self.validate_y(y)?;
         validate_weight(w)?;
         py.detach(|| self.inner.learn(&self.values, y, w));
-        Ok(())
-    }
-
-    #[pyo3(signature = (x, y, rng, w=1.0))]
-    fn learn_one_with_rng(
-        &mut self,
-        py: Python<'_>,
-        x: Vec<f64>,
-        y: usize,
-        rng: &Bound<'_, PyAny>,
-        w: f64,
-    ) -> PyResult<()> {
-        self.validate_xy(&x, y)?;
-        validate_weight(w)?;
-        let selected_features = match self.inner.feature_sample_request(&x) {
-            Some((population, size)) => {
-                let selected: Vec<usize> = rng
-                    .call_method1("sample", (population.clone(), size))?
-                    .extract()?;
-                if selected.len() != size
-                    || selected.iter().any(|feature| !population.contains(feature))
-                    || selected
-                        .iter()
-                        .enumerate()
-                        .any(|(index, feature)| selected[..index].contains(feature))
-                {
-                    return Err(pyo3::exceptions::PyValueError::new_err(
-                        "rng.sample returned an invalid feature sample",
-                    ));
-                }
-                Some(selected)
-            }
-            None => None,
-        };
-        py.detach(|| {
-            self.inner
-                .learn_with_selected_features(&x, y, w, selected_features.as_deref())
-        });
-        Ok(())
-    }
-
-    #[pyo3(signature = (x, feature_indices, feature_names, y, rng, w=1.0))]
-    fn learn_one_mapping_with_rng(
-        &mut self,
-        py: Python<'_>,
-        x: &Bound<'_, PyDict>,
-        feature_indices: &Bound<'_, PyDict>,
-        feature_names: &Bound<'_, PyList>,
-        y: usize,
-        rng: &Bound<'_, PyAny>,
-        w: f64,
-    ) -> PyResult<()> {
-        self.encode_mapping(x, feature_indices, Some(feature_names))?;
-        self.validate_y(y)?;
-        validate_weight(w)?;
-        let selected_features = match self.inner.feature_sample_request(&self.values) {
-            Some((population, size)) => {
-                let selected: Vec<usize> = rng
-                    .call_method1("sample", (population.clone(), size))?
-                    .extract()?;
-                if selected.len() != size
-                    || selected.iter().any(|feature| !population.contains(feature))
-                    || selected
-                        .iter()
-                        .enumerate()
-                        .any(|(index, feature)| selected[..index].contains(feature))
-                {
-                    return Err(pyo3::exceptions::PyValueError::new_err(
-                        "rng.sample returned an invalid feature sample",
-                    ));
-                }
-                Some(selected)
-            }
-            None => None,
-        };
-        py.detach(|| {
-            self.inner.learn_with_selected_features(
-                &self.values,
-                y,
-                w,
-                selected_features.as_deref(),
-            )
-        });
         Ok(())
     }
 
@@ -1030,6 +947,332 @@ impl RsNativeHoeffdingTreeClassifier {
     fn validate_xy(&self, x: &[f64], y: usize) -> PyResult<()> {
         self.validate_x(x)?;
         self.validate_y(y)
+    }
+}
+
+struct MondrianMapping {
+    values: Vec<f64>,
+    present: Vec<bool>,
+    feature_order: Vec<usize>,
+}
+
+impl MondrianMapping {
+    fn new(n_features: usize) -> Self {
+        Self {
+            values: vec![0.0; n_features],
+            present: vec![false; n_features],
+            feature_order: (0..n_features).collect(),
+        }
+    }
+
+    fn encode(
+        &mut self,
+        py: Python<'_>,
+        x: &Bound<'_, PyDict>,
+        feature_indices: &Bound<'_, PyDict>,
+        feature_names: Option<&Bound<'_, PyList>>,
+    ) -> PyResult<usize> {
+        self.present.fill(false);
+        let previous_features = self.values.len();
+        for (feature, value) in x.iter() {
+            let index = match feature_indices.get_item(&feature)? {
+                Some(index) => index.extract::<usize>()?,
+                None => match feature_names {
+                    Some(feature_names) => {
+                        let index = self.values.len();
+                        feature_indices.set_item(&feature, index)?;
+                        feature_names.append(&feature)?;
+                        self.values.push(0.0);
+                        self.present.push(false);
+                        index
+                    }
+                    None => continue,
+                },
+            };
+            if index >= self.values.len() {
+                return Err(pyo3::exceptions::PyIndexError::new_err(
+                    "feature index out of range",
+                ));
+            }
+            let value = value.extract::<f64>()?;
+            if value.is_infinite() {
+                return Err(pyo3::exceptions::PyValueError::new_err(
+                    "features must not contain infinite values",
+                ));
+            }
+            self.values[index] = value;
+            self.present[index] = true;
+        }
+        let added = self.values.len() - previous_features;
+        if added > 0 {
+            let feature_names = feature_names.expect("feature names are present during discovery");
+            let sorted = PyList::new(py, feature_names.iter())?;
+            sorted.sort()?;
+            self.feature_order = sorted
+                .iter()
+                .map(|feature| {
+                    feature_indices
+                        .get_item(feature)?
+                        .ok_or_else(|| {
+                            pyo3::exceptions::PyKeyError::new_err("feature index is missing")
+                        })?
+                        .extract::<usize>()
+                })
+                .collect::<PyResult<_>>()?;
+        }
+        Ok(added)
+    }
+}
+
+#[pyclass(
+    name = "NativeMondrianTreeClassifier",
+    module = "river._river_rust.tree"
+)]
+pub struct RsNativeMondrianTreeClassifier {
+    inner: NativeMondrianTreeClassifier,
+    mapping: MondrianMapping,
+}
+
+#[pymethods]
+impl RsNativeMondrianTreeClassifier {
+    #[new]
+    #[pyo3(signature = (n_features, n_classes, seed=0))]
+    fn new(n_features: usize, n_classes: usize, seed: u64) -> PyResult<Self> {
+        if n_classes == 0 {
+            return Err(pyo3::exceptions::PyValueError::new_err(
+                "n_classes must be positive",
+            ));
+        }
+        let inner = NativeMondrianTreeClassifier::seeded(n_features, n_classes, seed);
+        Ok(Self {
+            inner,
+            mapping: MondrianMapping::new(n_features),
+        })
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    #[pyo3(signature = (x, feature_indices, feature_names, y, iteration, step, use_aggregation, dirichlet, split_pure, max_nodes=None))]
+    fn learn_one_mapping(
+        &mut self,
+        py: Python<'_>,
+        x: &Bound<'_, PyDict>,
+        feature_indices: &Bound<'_, PyDict>,
+        feature_names: &Bound<'_, PyList>,
+        y: usize,
+        iteration: usize,
+        step: f64,
+        use_aggregation: bool,
+        dirichlet: f64,
+        split_pure: bool,
+        max_nodes: Option<usize>,
+    ) -> PyResult<usize> {
+        let added = self
+            .mapping
+            .encode(py, x, feature_indices, Some(feature_names))?;
+        if added > 0 {
+            self.inner.add_features(added);
+        }
+        if y >= self.inner.n_classes() {
+            return Err(pyo3::exceptions::PyIndexError::new_err(
+                "class index out of range",
+            ));
+        }
+        Ok(py.detach(|| {
+            self.inner.learn(
+                &self.mapping.values,
+                &self.mapping.present,
+                &self.mapping.feature_order,
+                y,
+                iteration,
+                step,
+                use_aggregation,
+                dirichlet,
+                split_pure,
+                max_nodes,
+            )
+        }))
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn predict_proba_mapping<'py>(
+        &mut self,
+        py: Python<'py>,
+        x: &Bound<'_, PyDict>,
+        feature_indices: &Bound<'_, PyDict>,
+        output_labels: &Bound<'_, PyList>,
+        output_indices: Vec<usize>,
+        dirichlet: f64,
+        use_aggregation: bool,
+    ) -> PyResult<Bound<'py, PyDict>> {
+        self.mapping.encode(py, x, feature_indices, None)?;
+        let probabilities = py.detach(|| {
+            self.inner.predict_proba(
+                &self.mapping.values,
+                &self.mapping.present,
+                dirichlet,
+                use_aggregation,
+            )
+        });
+        if output_labels.len() != output_indices.len()
+            || output_indices
+                .iter()
+                .any(|class_index| *class_index >= probabilities.len())
+        {
+            return Err(pyo3::exceptions::PyValueError::new_err(
+                "class output order is invalid",
+            ));
+        }
+        let output = PyDict::new(py);
+        for (label, class_index) in output_labels.iter().zip(output_indices) {
+            output.set_item(label, probabilities[class_index])?;
+        }
+        Ok(output)
+    }
+
+    fn add_class(&mut self) {
+        self.inner.add_class();
+    }
+
+    fn n_nodes(&self) -> usize {
+        self.inner.n_nodes()
+    }
+
+    fn __getstate__<'py>(&self, py: Python<'py>) -> PyResult<Bound<'py, PyBytes>> {
+        let state =
+            serialize(&(1_u8, &self.inner, &self.mapping.feature_order)).map_err(|error| {
+                pyo3::exceptions::PyValueError::new_err(format!(
+                    "could not serialize tree: {error}"
+                ))
+            })?;
+        Ok(PyBytes::new(py, &state))
+    }
+
+    fn __setstate__(&mut self, state: Bound<'_, PyBytes>) -> PyResult<()> {
+        let (version, inner, feature_order): (u8, NativeMondrianTreeClassifier, Vec<usize>) =
+            deserialize(state.as_bytes()).map_err(|error| {
+                pyo3::exceptions::PyValueError::new_err(format!(
+                    "could not deserialize tree: {error}"
+                ))
+            })?;
+        if version != 1 {
+            return Err(pyo3::exceptions::PyValueError::new_err(format!(
+                "unsupported tree state version: {version}"
+            )));
+        }
+        self.mapping = MondrianMapping::new(inner.n_features());
+        self.mapping.feature_order = feature_order;
+        self.inner = inner;
+        Ok(())
+    }
+
+    fn __getnewargs__(&self) -> (usize, usize) {
+        (self.inner.n_features(), self.inner.n_classes())
+    }
+}
+
+#[pyclass(
+    name = "NativeMondrianTreeRegressor",
+    module = "river._river_rust.tree"
+)]
+pub struct RsNativeMondrianTreeRegressor {
+    inner: NativeMondrianTreeRegressor,
+    mapping: MondrianMapping,
+}
+
+#[pymethods]
+impl RsNativeMondrianTreeRegressor {
+    #[new]
+    #[pyo3(signature = (n_features, seed=0))]
+    fn new(n_features: usize, seed: u64) -> PyResult<Self> {
+        let inner = NativeMondrianTreeRegressor::seeded(n_features, seed);
+        Ok(Self {
+            inner,
+            mapping: MondrianMapping::new(n_features),
+        })
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    #[pyo3(signature = (x, feature_indices, feature_names, y, iteration, step, use_aggregation, max_nodes=None))]
+    fn learn_one_mapping(
+        &mut self,
+        py: Python<'_>,
+        x: &Bound<'_, PyDict>,
+        feature_indices: &Bound<'_, PyDict>,
+        feature_names: &Bound<'_, PyList>,
+        y: f64,
+        iteration: usize,
+        step: f64,
+        use_aggregation: bool,
+        max_nodes: Option<usize>,
+    ) -> PyResult<usize> {
+        let added = self
+            .mapping
+            .encode(py, x, feature_indices, Some(feature_names))?;
+        if added > 0 {
+            self.inner.add_features(added);
+        }
+        Ok(py.detach(|| {
+            self.inner.learn(
+                &self.mapping.values,
+                &self.mapping.present,
+                &self.mapping.feature_order,
+                y,
+                iteration,
+                step,
+                use_aggregation,
+                max_nodes,
+            )
+        }))
+    }
+
+    fn predict_mapping(
+        &mut self,
+        py: Python<'_>,
+        x: &Bound<'_, PyDict>,
+        feature_indices: &Bound<'_, PyDict>,
+        use_aggregation: bool,
+    ) -> PyResult<f64> {
+        self.mapping.encode(py, x, feature_indices, None)?;
+        Ok(py.detach(|| {
+            self.inner
+                .predict(&self.mapping.values, &self.mapping.present, use_aggregation)
+        }))
+    }
+
+    fn n_nodes(&self) -> usize {
+        self.inner.n_nodes()
+    }
+
+    fn __getstate__<'py>(&self, py: Python<'py>) -> PyResult<Bound<'py, PyBytes>> {
+        let state =
+            serialize(&(1_u8, &self.inner, &self.mapping.feature_order)).map_err(|error| {
+                pyo3::exceptions::PyValueError::new_err(format!(
+                    "could not serialize tree: {error}"
+                ))
+            })?;
+        Ok(PyBytes::new(py, &state))
+    }
+
+    fn __setstate__(&mut self, state: Bound<'_, PyBytes>) -> PyResult<()> {
+        let (version, inner, feature_order): (u8, NativeMondrianTreeRegressor, Vec<usize>) =
+            deserialize(state.as_bytes()).map_err(|error| {
+                pyo3::exceptions::PyValueError::new_err(format!(
+                    "could not deserialize tree: {error}"
+                ))
+            })?;
+        if version != 1 {
+            return Err(pyo3::exceptions::PyValueError::new_err(format!(
+                "unsupported tree state version: {version}"
+            )));
+        }
+        self.mapping = MondrianMapping::new(inner.n_features());
+        self.mapping.feature_order = feature_order;
+        self.inner = inner;
+        Ok(())
+    }
+
+    fn __getnewargs__(&self) -> (usize,) {
+        (self.inner.n_features(),)
     }
 }
 
@@ -1199,16 +1442,8 @@ fn register_drift(_py: Python, m: &Bound<PyModule>) -> PyResult<()> {
 
 fn register_tree(_py: Python, m: &Bound<PyModule>) -> PyResult<()> {
     m.add_class::<RsNativeHoeffdingTreeClassifier>()?;
-    m.add_function(wrap_pyfunction!(log_sum_2_exp, m)?)?;
-    m.add_function(wrap_pyfunction!(update_ranges, m)?)?;
-    m.add_function(wrap_pyfunction!(range_extension, m)?)?;
-    m.add_function(wrap_pyfunction!(predict_scores, m)?)?;
-    m.add_function(wrap_pyfunction!(go_downwards_classifier, m)?)?;
-    m.add_function(wrap_pyfunction!(go_downwards_regressor, m)?)?;
-    m.add_function(wrap_pyfunction!(go_upwards, m)?)?;
-    m.add_function(wrap_pyfunction!(predict_proba_upward, m)?)?;
-    m.add_function(wrap_pyfunction!(predict_proba_classifier, m)?)?;
-    m.add_function(wrap_pyfunction!(predict_one_regressor, m)?)?;
+    m.add_class::<RsNativeMondrianTreeClassifier>()?;
+    m.add_class::<RsNativeMondrianTreeRegressor>()?;
     Ok(())
 }
 

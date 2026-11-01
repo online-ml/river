@@ -15,8 +15,8 @@ pub mod kurtosis;
 pub mod maximum;
 pub mod mean;
 pub mod minimum;
-pub mod mondrian;
 pub mod moments;
+pub mod mondrian;
 pub mod ptp;
 pub mod quantile;
 pub mod rolling;
@@ -30,4 +30,5 @@ pub mod variance;
 pub mod vectordict;
 
 mod pyo3_bindings;
+mod random;
 mod tree_arena;
