@@ -94,3 +94,7 @@ with engine.connect() as conn:
 {'shop': 'Hema', 'date': '2016-08-03'} 22
 {'shop': 'Hema', 'date': '2016-08-04'} 12
 ```
+
+```python
+engine.dispose()
+```

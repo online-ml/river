@@ -58,7 +58,7 @@ for x in X:
 
 ```python
 import pandas as pd
-X = pd.DataFrame.from_dict(X)
+X = pd.DataFrame(X)
 ```
 
 You can then call `transform_many` to transform a mini-batch of features:

@@ -33,7 +33,7 @@ X = pl.DataFrame({
 y = X.get_column('y')
 X = X.drop('y')
 
-for xi, yi in stream.iter_polars(X, y):
+for xi, yi in stream.iter_frame(X, y):
     print(xi, yi)
 ```
 

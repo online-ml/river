@@ -83,7 +83,7 @@ This transformer also supports mini-batch updates. You can call `learn_many` and
 
 ```python
 import pandas as pd
-X = pd.DataFrame.from_dict(X)
+X = pd.DataFrame(X)
 
 scaler = preprocessing.StandardScaler()
 scaler.learn_many(X[:3])

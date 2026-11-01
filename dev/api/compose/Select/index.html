@@ -4669,7 +4669,7 @@ desired features.</p>
 {&#39;x_1&#39;: 8.874551899214413, &#39;x_2&#39;: 10.021421152413449}
 </code></pre></div></p>
 <div class="language-python highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
-<span class="n">X</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 </code></pre></div>
 <p>You can then call <code>transform_many</code> to transform a mini-batch of features:</p>
 <p><div class="language-python highlight"><pre><span></span><code><span class="n">compose</span><span class="o">.</span><span class="n">Select</span><span class="p">(</span><span class="s1">&#39;x_2&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">transform_many</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>

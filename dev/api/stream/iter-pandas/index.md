@@ -32,7 +32,7 @@ X = pd.DataFrame({
 })
 y = X.pop('y')
 
-for xi, yi in stream.iter_pandas(X, y):
+for xi, yi in stream.iter_frame(X, y):
     print(xi, yi)
 ```
 

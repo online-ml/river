@@ -4899,7 +4899,7 @@ used in the default mode:</p>
 <p>This transformer also supports mini-batch updates. You can call <code>learn_many</code> and provide a
 <code>pandas.DataFrame</code>:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
-<span class="n">X</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 
 <span class="n">scaler</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">StandardScaler</span><span class="p">()</span>
 <span class="n">scaler</span><span class="o">.</span><span class="n">learn_many</span><span class="p">(</span><span class="n">X</span><span class="p">[:</span><span class="mi">3</span><span class="p">])</span>
