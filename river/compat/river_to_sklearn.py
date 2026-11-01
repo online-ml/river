@@ -206,16 +206,16 @@ class River2SKLClassifier(sklearn_base.ClassifierMixin, River2SKLBase):
         return tags
 
     def _partial_fit(self, X, y, classes, reset=False):
+        # Check the inputs
+        X, y = validate_data(
+            self, X, y, reset=reset, **SKLEARN_INPUT_X_PARAMS, **SKLEARN_INPUT_Y_PARAMS
+        )
+
         # If first _partial_fit call, set the classes, else check consistency
         if not hasattr(self, "classes_"):
             if classes is None:
                 classes = utils.multiclass.unique_labels(y)
             self.classes_ = classes
-
-        # Check the inputs
-        X, y = validate_data(
-            self, X, y, reset=reset, **SKLEARN_INPUT_X_PARAMS, **SKLEARN_INPUT_Y_PARAMS
-        )
 
         # Check the number of classes agrees with the type of classifier
         if not self.river_estimator._multiclass:
@@ -270,8 +270,7 @@ class River2SKLClassifier(sklearn_base.ClassifierMixin, River2SKLBase):
             self.__dict__.pop(attr, None)
 
         # Fit with one pass of the dataset
-        classes = utils.multiclass.unique_labels(y)
-        return self._partial_fit(X, y, classes, reset=True)
+        return self._partial_fit(X, y, classes=None, reset=True)
 
     def partial_fit(self, X, y, classes=None):
         """Fits incrementally on a portion of a dataset.

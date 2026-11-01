@@ -92,13 +92,16 @@ EXECUTOR_CASES: dict[str, Callable[[sqlalchemy.Engine], Executor]] = {
 
 
 @pytest.fixture
-def engine() -> sqlalchemy.Engine:
+def engine() -> Iterator[sqlalchemy.Engine]:
     engine = sqlalchemy.create_engine("sqlite://")  # in-memory
     METADATA.create_all(engine)
     with engine.connect() as conn:
         _ = conn.execute(T_SALES.insert(), SALES)
         conn.commit()
-    return engine
+    try:
+        yield engine
+    finally:
+        engine.dispose()
 
 
 @pytest.fixture(params=EXECUTOR_CASES.values(), ids=list(EXECUTOR_CASES))
@@ -232,7 +235,7 @@ def test_the_query_is_only_executed_once_iteration_starts(engine: sqlalchemy.Eng
 
 
 @pytest.fixture
-def pokedb() -> sqlalchemy.Engine:
+def pokedb() -> Iterator[sqlalchemy.Engine]:
     engine = sqlalchemy.create_engine("sqlite://")  # in-memory
 
     # Load the fixtures
@@ -283,7 +286,10 @@ def pokedb() -> sqlalchemy.Engine:
         _ = conn.execute(t_pokemon_types.insert(), pokemon_types)
         conn.commit()
 
-    return engine
+    try:
+        yield engine
+    finally:
+        engine.dispose()
 
 
 def test_iter_sql(pokedb: sqlalchemy.Engine) -> None:

@@ -99,6 +99,8 @@ def iter_sql(
     {'shop': 'Hema', 'date': '2016-08-03'} 22
     {'shop': 'Hema', 'date': '2016-08-04'} 12
 
+    >>> engine.dispose()
+
     """
 
     statement = sqlalchemy.text(query) if isinstance(query, str) else query

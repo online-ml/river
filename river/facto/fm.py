@@ -58,7 +58,7 @@ class FM(BaseFM):
 
     @classmethod
     def _unit_test_params(cls):
-        yield {"seed": 42}
+        yield {"sample_normalization": True, "seed": 42}
 
     def _unit_test_skips(self):
         # Latent factors are initialised lazily, the first time each feature is encountered. Their
@@ -242,7 +242,7 @@ class FMRegressor(FM, base.Regressor):
 
     def predict_one(self, x):
         x = self._ohe_cat_features(x)
-        return self._raw_dot(x).item()
+        return float(self._raw_dot(x))
 
 
 class FMClassifier(FM, base.Classifier):

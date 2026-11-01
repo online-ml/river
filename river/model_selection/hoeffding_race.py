@@ -12,7 +12,7 @@ from river.model_selection.base import (
 
 
 class HoeffdingRace(ModelSelector):
-    """Hoeffding Race model selection.
+    r"""Hoeffding Race model selection.
 
     Uses the Hoeffding bound to progressively eliminate underperforming models with
     statistical confidence. Each model is evaluated on every observation. After each

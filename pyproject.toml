@@ -9,7 +9,7 @@ license = "BSD-3-Clause"
 dependencies = [
     "scipy>=1.14.1,<2",
     "numpy>=2.2.5,<3",
-    "narwhals>=2.0.0",
+    "narwhals>=2.28.0",
 ]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -156,9 +156,7 @@ addopts = [
     "-m not datasets and not slow",
     "--color=yes",
 ]
-filterwarnings = [
-    "ignore:A single label was found in 'y_true' and 'y_pred':UserWarning:sklearn",
-]
+filterwarnings = ["error"]
 doctest_optionflags = "NORMALIZE_WHITESPACE NUMBER ELLIPSIS"
 norecursedirs = [
     "build",
