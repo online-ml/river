@@ -8,7 +8,7 @@ from river.utils.vectordict import euclidean_distance_dict
 
 
 class CluStream(base.Clusterer):
-    """CluStream
+    """The CluStream algorithm.
 
     The CluStream algorithm [^1] maintains statistical information about the
     data using micro-clusters. These micro-clusters are temporal extensions of

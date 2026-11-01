@@ -10,7 +10,7 @@ from river.utils.vectordict import euclidean_distance_dict
 
 
 class DenStream(base.Clusterer):
-    r"""DenStream
+    r"""The DenStream algorithm.
 
     DenStream [^1] is a clustering algorithm for evolving data streams.
     DenStream can discover clusters with arbitrary shape and is robust against

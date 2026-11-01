@@ -8,7 +8,7 @@ from river import base, utils
 
 
 class DBSTREAM(base.Clusterer):
-    r"""DBSTREAM
+    r"""The DBSTREAM algorithm.
 
     DBSTREAM [^1] is a clustering algorithm for evolving data streams.
     It is the first micro-cluster-based online clustering component that

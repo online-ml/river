@@ -68,7 +68,8 @@ class EntropySampler(ActiveLearningClassifier):
 
     def _p(self, y_pred):
         """
-
+        Examples
+        --------
         >>> sampler = EntropySampler(classifier=None)
         >>> sampler._p({'a': 0.5, 'b': 0.5})
         1.0

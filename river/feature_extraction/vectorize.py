@@ -37,7 +37,8 @@ def strip_accents_unicode(s: str) -> str:
 
 def tokenize_using_regex_pattern(text: str, pattern: re.Pattern | str) -> typing.Iterator[str]:
     r"""
-
+    Examples
+    --------
     >>> import re
 
     >>> text = 'iterative n-gram generation'
