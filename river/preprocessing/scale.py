@@ -167,7 +167,7 @@ class StandardScaler(base.MiniBatchTransformer):
     `pandas.DataFrame`:
 
     >>> import pandas as pd
-    >>> X = pd.DataFrame.from_dict(X)
+    >>> X = pd.DataFrame(X)
 
     >>> scaler = preprocessing.StandardScaler()
     >>> scaler.learn_many(X[:3])

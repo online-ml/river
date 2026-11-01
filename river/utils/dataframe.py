@@ -139,8 +139,8 @@ def to_native_frame(
     ----------
     data
         Either a mapping from column label to column values, or a single 2D numpy array. The
-        array form takes the fast `narwhals.from_numpy` path (no per-column slicing) and
-        requires `columns` to name its columns.
+        array form uses a contiguous native constructor and requires `columns` to name its
+        columns.
     like
         The narwhals dataframe the call received as input. Its backend determines the
         return type, and its index (pandas only) is carried over to the result.
@@ -155,16 +155,20 @@ def to_native_frame(
         # narwhals requires string column names for non-pandas backends; pandas keeps the
         # original labels (mirroring the mapping path above).
         names = list(columns) if impl.is_pandas_like() else [str(col) for col in columns]
-        # `nw.from_numpy` does not expose `orient`, so polars infers row/column orientation.
-        # For a square array with column names pinned (as here), it breaks the tie from the
-        # memory layout and reads a Fortran-contiguous array column-major: a silent transpose.
-        # `to_numpy` returns exactly such an F-contiguous array for a polars frame, and
-        # arithmetic on it (e.g. the centering/scaling in `StandardScaler`) keeps that layout.
-        # Forcing C-contiguity pins the read to row-major. Cost: a no-op (returns `data`
-        # unchanged) when `data` is already C-contiguous; otherwise a single O(rows * cols)
-        # memcpy, on the same order as building the frame, so negligible relative to the
-        # conversion itself.
-        frame = nw.from_numpy(np.ascontiguousarray(data), schema=names, backend=impl).to_native()
+        data = np.ascontiguousarray(data)
+        if impl.is_pandas_like():
+            frame = nw.get_native_namespace(like).DataFrame(data, columns=names)
+        else:
+            # `nw.from_numpy` does not expose `orient`, so polars infers row/column orientation.
+            # For a square array with column names pinned (as here), it breaks the tie from the
+            # memory layout and reads a Fortran-contiguous array column-major: a silent transpose.
+            # `to_numpy` returns exactly such an F-contiguous array for a polars frame, and
+            # arithmetic on it (e.g. the centering/scaling in `StandardScaler`) keeps that layout.
+            # Forcing C-contiguity pins the read to row-major. Cost: a no-op (returns `data`
+            # unchanged) when `data` is already C-contiguous; otherwise a single O(rows * cols)
+            # memcpy, on the same order as building the frame, so negligible relative to the
+            # conversion itself.
+            frame = nw.from_numpy(data, schema=names, backend=impl).to_native()
     else:
         if not impl.is_pandas_like():
             data = {str(key): value for key, value in data.items()}

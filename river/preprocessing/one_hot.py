@@ -415,7 +415,7 @@ class OneHotEncoder(base.MiniBatchTransformer):
         columns = X_nw.columns
         schema = X_nw.schema
 
-        dummy_frames = []
+        dummy_frames: list[nw.DataFrame[IntoDataFrameT]] = []
         for col in columns:
             dtype = schema[col]
             series = X_nw[col].fill_nan(None) if dtype.is_float() else X_nw[col]
@@ -428,7 +428,7 @@ class OneHotEncoder(base.MiniBatchTransformer):
             null_col = f"{col}_null"
             if not string_category and null_col in dummies.columns:
                 dummies = dummies.rename({null_col: f"{col}_{_MISSING_CATEGORY}"})
-            dummy_frames.append(dummies)
+            dummy_frames.append(typing.cast("nw.DataFrame[IntoDataFrameT]", dummies))
         dummies = nw.concat(dummy_frames, how="horizontal")
         present = set(dummies.columns)
         seen_in_the_past = self._seen_columns()

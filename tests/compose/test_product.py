@@ -45,7 +45,7 @@ def test_issue_1243():
     >>> rng = random.Random(42)
     >>> X = [{'x': rng.uniform(8, 12), 'z': 1 } for _ in range(6)]
 
-    >>> X = pd.DataFrame.from_dict(X)
+    >>> X = pd.DataFrame(X)
     >>> group1 = compose.Select('z')
     >>> group2 = compose.Select('x') | preprocessing.StandardScaler()
     >>> model = group1 + group2 + group1 * group2
