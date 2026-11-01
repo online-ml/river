@@ -25,6 +25,7 @@ from .keystroke import Keystroke
 from .malicious_url import MaliciousURL
 from .movielens100k import MovieLens100K
 from .music import Music
+from .news_t import NewsT
 from .phishing import Phishing
 from .restaurants import Restaurants
 from .segment import ImageSegments
@@ -36,6 +37,7 @@ from .sp500 import SP500Stocks
 from .taxis import Taxis
 from .trec07 import TREC07
 from .trump_approval import TrumpApproval
+from .twitch_chat import TwitchChat
 from .water_flow import WaterFlow
 from .web_traffic import WebTraffic
 from .yeast import Yeast
@@ -58,6 +60,7 @@ __all__ = [
     "MaliciousURL",
     "MovieLens100K",
     "Music",
+    "NewsT",
     "Phishing",
     "Restaurants",
     "Shuttle",
@@ -69,6 +72,7 @@ __all__ = [
     "Taxis",
     "TREC07",
     "TrumpApproval",
+    "TwitchChat",
     "WaterFlow",
     "WebTraffic",
     "Yeast",
