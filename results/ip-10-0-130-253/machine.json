@@ -1,0 +1,9 @@
+{
+    "arch": "x86_64",
+    "cpu": "Intel(R) Xeon(R) 6975P-C",
+    "machine": "ip-10-0-130-253",
+    "num_cpu": "4",
+    "os": "Linux 7.0.0-1014-aws",
+    "ram": "16463421440",
+    "version": 1
+}

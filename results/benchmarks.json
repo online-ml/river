@@ -68,6 +68,32 @@
         "version": "1106f9e9f212f84a6aff70f130eddfac13301f7b49483deb875d0b600e3db87d",
         "warmup_time": 0
     },
+    "bench_cluster.TextClust.time_progressive_val_score": {
+        "code": "class TextClust:\n    def time_progressive_val_score(self):\n        self._run()\n\n    def setup(self):\n        self.dataset = datasets.NewsT()\n        self.model = (\n            _extract_text\n            | feature_extraction.BagOfWords()\n            | cluster.TextClust(\n                fading_factor=0.01,\n                tgap=200,\n                real_time_fading=False,\n                min_weight=1,\n                auto_r=True,\n                sigma=0.5,\n            )\n        )",
+        "min_run_count": 1,
+        "name": "bench_cluster.TextClust.time_progressive_val_score",
+        "number": 1,
+        "param_names": [],
+        "params": [],
+        "repeat": 1,
+        "rounds": 1,
+        "sample_time": 0.01,
+        "timeout": 600,
+        "type": "time",
+        "unit": "seconds",
+        "version": "e9c48cca4a7cdd9441f91147dc79f31c5fcd7013ced60de65eed3decd076d303",
+        "warmup_time": 0
+    },
+    "bench_cluster.TextClust.track_normalized_mutual_info": {
+        "code": "class TextClust:\n    def track_normalized_mutual_info(self):\n        return self._run()\n\n    def setup(self):\n        self.dataset = datasets.NewsT()\n        self.model = (\n            _extract_text\n            | feature_extraction.BagOfWords()\n            | cluster.TextClust(\n                fading_factor=0.01,\n                tgap=200,\n                real_time_fading=False,\n                min_weight=1,\n                auto_r=True,\n                sigma=0.5,\n            )\n        )",
+        "name": "bench_cluster.TextClust.track_normalized_mutual_info",
+        "param_names": [],
+        "params": [],
+        "timeout": 600,
+        "type": "track",
+        "unit": "unit",
+        "version": "6417258e4c63877f0cfcf1f101063f0c60082709eb6ad9e26b1ed1499c39a29c"
+    },
     "bench_multiclass_clf.ADWINBagging.time_progressive_val": {
         "code": "class <locals>:\n    def time_progressive_val(self, dataset_name):\n        for _ in evaluate.iter_progressive_val_score(\n            dataset=self.dataset,\n            model=self.model,\n            metric=metric_fn(),\n            measure_time=False,\n            measure_memory=False,\n        ):\n            pass\n\n    def setup(self, dataset_name):\n        self.model = get_model(track, model_name)\n        dataset = get_dataset(track, dataset_name)\n        next(iter(dataset))\n        self.dataset = get_dataset(track, dataset_name)",
         "min_run_count": 1,
