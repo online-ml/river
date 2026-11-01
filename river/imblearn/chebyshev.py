@@ -2,11 +2,13 @@ from __future__ import annotations
 
 import math
 import random
+import typing
+from collections.abc import Iterator
 
 from river import base, linear_model, stats
 
 
-class ChebyshevUnderSampler(base.Wrapper, base.Regressor):
+class ChebyshevUnderSampler(base.Wrapper[base.Regressor], base.Regressor):
     """Under-sampling for imbalanced regression using Chebyshev's inequality.
 
     Chebyshev's inequality can be used to define the probability of target observations
@@ -82,13 +84,20 @@ class ChebyshevUnderSampler(base.Wrapper, base.Regressor):
         self._rare_c = 0
 
     @property
-    def _wrapped_model(self):
+    def _wrapped_model(self) -> base.Regressor:
         return self.regressor
 
-    def predict_one(self, x, **kwargs):
+    def predict_one(
+        self, x: dict[base.typing.FeatureName, typing.Any], **kwargs: typing.Any
+    ) -> base.typing.RegTarget:
         return self.regressor.predict_one(x, **kwargs)
 
-    def learn_one(self, x, y, **kwargs):
+    def learn_one(
+        self,
+        x: dict[base.typing.FeatureName, typing.Any],
+        y: base.typing.RegTarget,
+        **kwargs: typing.Any,
+    ) -> None:
         self._var.update(y)
         sd = self._var.get() ** 0.5
 
@@ -111,11 +120,11 @@ class ChebyshevUnderSampler(base.Wrapper, base.Regressor):
             self.regressor.learn_one(x, y, **kwargs)
 
     @classmethod
-    def _unit_test_params(cls):
+    def _unit_test_params(cls) -> Iterator[dict[str, typing.Any]]:
         yield {"regressor": linear_model.LinearRegression(), "seed": 42}
 
 
-class ChebyshevOverSampler(base.Wrapper, base.Regressor):
+class ChebyshevOverSampler(base.Wrapper[base.Regressor], base.Regressor):
     """Over-sampling for imbalanced regression using Chebyshev's inequality.
 
     Chebyshev's inequality can be used to define the probability of target observations
@@ -180,13 +189,20 @@ class ChebyshevOverSampler(base.Wrapper, base.Regressor):
         self._var = stats.Var()
 
     @property
-    def _wrapped_model(self):
+    def _wrapped_model(self) -> base.Regressor:
         return self.regressor
 
-    def predict_one(self, x, **kwargs):
+    def predict_one(
+        self, x: dict[base.typing.FeatureName, typing.Any], **kwargs: typing.Any
+    ) -> base.typing.RegTarget:
         return self.regressor.predict_one(x, **kwargs)
 
-    def learn_one(self, x, y, **kwargs):
+    def learn_one(
+        self,
+        x: dict[base.typing.FeatureName, typing.Any],
+        y: base.typing.RegTarget,
+        **kwargs: typing.Any,
+    ) -> None:
         self._var.update(y)
         var = self._var.get()
         sd = var**0.5
@@ -198,11 +214,11 @@ class ChebyshevOverSampler(base.Wrapper, base.Regressor):
 
             kappa = int(math.ceil(t))
 
-            for k in range(kappa):
+            for _ in range(kappa):
                 self.regressor.learn_one(x, y, **kwargs)
         else:
             self.regressor.learn_one(x, y, **kwargs)
 
     @classmethod
-    def _unit_test_params(cls):
+    def _unit_test_params(cls) -> Iterator[dict[str, typing.Any]]:
         yield {"regressor": linear_model.LinearRegression()}

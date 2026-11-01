@@ -110,10 +110,8 @@ class MultinomialNB(base.BaseNB):
     0  0.373272  0.294931  0.331797
     1  0.160396  0.126733  0.712871
 
-    >>> model.predict_many(unseen)
-    0    maybe
-    1      yes
-    dtype: object
+    >>> model.predict_many(unseen).tolist()
+    ['maybe', 'yes']
 
     References
     ----------

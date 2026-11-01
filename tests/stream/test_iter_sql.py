@@ -71,9 +71,9 @@ COLUMN_CASES: dict[str, tuple[str, list[Row]]] = {
         "SELECT shop, NULL AS bonus FROM sales LIMIT 1",
         [({"shop": "Hema", "bonus": None}, None)],
     ),
-    "a-duplicated-label-keeps-the-last-value": (
-        "SELECT shop AS v, amount AS v FROM sales LIMIT 1",
-        [({"v": 20}, None)],
+    "distinct-aliased-labels": (
+        "SELECT shop AS shop_name, amount AS amount_value FROM sales LIMIT 1",
+        [({"shop_name": "Hema", "amount_value": 20}, None)],
     ),
     "no-matching-row-yields-nothing": ("SELECT shop FROM sales WHERE shop = 'Zeeman'", []),
 }
@@ -128,6 +128,23 @@ def test_columns_are_mapped_to_features(
     executor: Executor, query: str, expected: list[Row]
 ) -> None:
     assert list(stream.iter_sql(query, executor)) == expected
+
+
+@pytest.mark.parametrize("target_name", [None, "v"], ids=["no-target", "target"])
+@pytest.mark.parametrize(
+    "query",
+    [
+        "SELECT shop AS v, amount AS v FROM sales LIMIT 1",
+        "SELECT shop AS v, amount AS v FROM sales WHERE 1 = 0",
+    ],
+    ids=["with-rows", "without-rows"],
+)
+def test_duplicate_column_names_raise(
+    executor: Executor, target_name: str | None, query: str
+) -> None:
+    dataset = stream.iter_sql(query, executor, target_name=target_name)
+    with pytest.raises(ValueError, match="duplicate column names:.*v"):
+        next(dataset)
 
 
 @pytest.mark.parametrize(("query", "target_name", "error"), ERROR_CASES.values(), ids=ERROR_CASES)

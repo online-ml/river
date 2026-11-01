@@ -1,7 +1,31 @@
 from __future__ import annotations
 
 import json
+import typing
 from urllib.parse import urljoin
+
+if typing.TYPE_CHECKING:
+    from collections.abc import Iterator
+
+    import requests
+
+    class _RequestOptions(typing.TypedDict, total=False):
+        json: dict[str, typing.Any]
+        params: dict[str, str]
+        stream: bool
+
+    class _Rule(typing.TypedDict):
+        id: str
+        value: str
+        tag: typing.NotRequired[str]
+
+    class _Rules(typing.TypedDict, total=False):
+        data: list[_Rule]
+        meta: dict[str, typing.Any]
+
+    class _RuleSpec(typing.TypedDict):
+        value: str
+        tag: str
 
 
 class TwitterLiveStream:
@@ -88,11 +112,13 @@ class TwitterLiveStream:
 
     """
 
-    def __init__(self, rules, bearer_token):
+    def __init__(self, rules: list[str], bearer_token: str) -> None:
         self.rules = rules
         self.bearer_token = bearer_token
 
-    def _request(self, method, endpoint, **kwargs):
+    def _request(
+        self, method: str, endpoint: str, **kwargs: typing.Unpack[_RequestOptions]
+    ) -> requests.Response:
         import requests
 
         url = urljoin("https://api.twitter.com/2/", endpoint)
@@ -108,19 +134,22 @@ class TwitterLiveStream:
         r.raise_for_status()
         return r
 
-    def _get_rules(self):
-        return self._request("GET", "tweets/search/stream/rules").json()
+    def _get_rules(self) -> _Rules:
+        return typing.cast("_Rules", self._request("GET", "tweets/search/stream/rules").json())
 
-    def _delete_rules(self, rules):
+    def _delete_rules(self, rules: _Rules) -> dict[str, typing.Any] | None:
         if rule_ids := [rule["id"] for rule in rules.get("data", [])]:
             payload = {"delete": {"ids": rule_ids}}
-            return self._request("POST", "tweets/search/stream/rules", json=payload).json()
+            response = self._request("POST", "tweets/search/stream/rules", json=payload)
+            return typing.cast("dict[str, typing.Any]", response.json())
+        return None
 
-    def _set_rules(self, rules):
+    def _set_rules(self, rules: list[_RuleSpec]) -> dict[str, typing.Any]:
         payload = {"add": rules}
-        return self._request("POST", "tweets/search/stream/rules", json=payload).json()
+        response = self._request("POST", "tweets/search/stream/rules", json=payload)
+        return typing.cast("dict[str, typing.Any]", response.json())
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[dict[str, typing.Any]]:
         existing_rules = self._get_rules()
         self._delete_rules(existing_rules)
         self._set_rules([{"value": rule, "tag": rule} for rule in existing_rules])

@@ -187,3 +187,67 @@ def test_an_abandoned_stream_releases_what_it_took(
 
     assert opened_files[0].closed
     assert csv.field_size_limit() == limit
+
+
+@pytest.mark.parametrize(
+    ("content", "kwargs"),
+    [
+        ("a,b,c\n1,2\n", {}),
+        ("a,b,c\n1,2\n", {"restval": "NA"}),
+        ("a,b\n1,2,3,4\n", {}),
+        ("a,b\n1,2,3,4\n", {"restkey": "extra"}),
+        ("1,2\n3,4,5,6\n", {"fieldnames": ["a", "b", "c"], "restkey": "extra"}),
+    ],
+)
+def test_ragged_rows_follow_csv_dict_reader(content: str, kwargs: dict[str, typing.Any]) -> None:
+    expected = [(row, None) for row in csv.DictReader(io.StringIO(content), **kwargs)]
+
+    assert list(stream.iter_csv(io.StringIO(content), **kwargs)) == expected
+
+
+@pytest.mark.parametrize("drop_nones", [False, True])
+def test_converters_skip_missing_fields_but_convert_empty_strings(drop_nones: bool) -> None:
+    content = "a,b,c\n1,2\n3,4,\n"
+    first: dict[str, str | None] = (
+        {"a": "1", "b": "2"} if drop_nones else {"a": "1", "b": "2", "c": None}
+    )
+
+    assert list(
+        stream.iter_csv(io.StringIO(content), converters={"c": len}, drop_nones=drop_nones)
+    ) == [(first, None), ({"a": "3", "b": "4", "c": 0}, None)]
+
+
+def test_custom_restval_is_converted() -> None:
+    assert list(
+        stream.iter_csv(io.StringIO("a,b\n1\n"), restval="2.5", converters={"b": float})
+    ) == [({"a": "1", "b": 2.5}, None)]
+
+
+def test_converter_for_an_unknown_column_still_raises() -> None:
+    with pytest.raises(KeyError, match="missing"):
+        list(stream.iter_csv(io.StringIO("a,b\n1,2\n"), converters={"missing": float}))
+
+
+def test_sampling_keeps_csv_row_handling_and_seed() -> None:
+    content = "a,b\n\n1\n2,3,4\n5,6\n\n7\n8,9,10\n"
+    rng = random.Random(42)
+    expected = [
+        (row, None)
+        for row in csv.DictReader(io.StringIO(content), restkey="extra")
+        if rng.random() <= 0.5
+    ]
+
+    assert (
+        list(stream.iter_csv(io.StringIO(content), fraction=0.5, seed=42, restkey="extra"))
+        == expected
+    )
+
+
+def test_dict_reader_tracks_physical_line_numbers() -> None:
+    content = 'a,b\n\n1,"two\nlines"\n3,4\n'
+    reader = DictReader(fraction=1, rng=random.Random(42), f=io.StringIO(content))
+    reference = csv.DictReader(io.StringIO(content))
+
+    for expected in reference:
+        assert next(reader) == expected
+        assert reader.line_num == reference.line_num

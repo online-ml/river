@@ -101,9 +101,9 @@ def _progressive_validation(
 
         return state
 
-    # Fast path: no delay and no moment — the common case.
+    # Fast path: no delay — the common case.
     # Iterates the dataset directly, skipping simulate_qa and the preds dict.
-    if moment is None and delay is None and not active_learning:
+    if delay is None and not active_learning:
         extra: list
         for x, y, *extra in dataset:
             kwargs: dict = extra[0] if extra else {}
@@ -207,7 +207,7 @@ def iter_progressive_val_score(
         callable is passed, then it is expected to take as input a `dict` of features and the
         target. If a `str` is passed, then it will be used to access the relevant field from the
         features. If `None` is passed, then no delay will be used, which leads to doing standard
-        online validation.
+        online validation, and `moment` is ignored.
     step
         Iteration number at which to yield results. This only takes into account the
         predictions, and not the training steps.
@@ -350,7 +350,7 @@ def progressive_val_score(
         callable is passed, then it is expected to take as input a `dict` of features and the
         target. If a `str` is passed, then it will be used to access the relevant field from the
         features. If `None` is passed, then no delay will be used, which leads to doing standard
-        online validation.
+        online validation, and `moment` is ignored.
     print_every
         Iteration number at which to print the current metric. This only takes into account the
         predictions, and not the training steps.

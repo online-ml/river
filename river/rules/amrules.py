@@ -4,7 +4,6 @@ import collections
 import functools
 import io
 import math
-import typing
 
 from river import base, drift, linear_model, stats
 from river.tree import split_criterion
@@ -306,7 +305,7 @@ class AMRules(base.Regressor):
         self.min_samples_split = min_samples_split
 
         self._default_rule = self._new_rule()
-        self._rules: dict[typing.Hashable, RegRule] = {}
+        self._rules: dict[int, RegRule] = {}
 
         self._n_drifts_detected: int = 0
 
@@ -398,8 +397,7 @@ class AMRules(base.Regressor):
 
             if expanded:
                 updated_rule.pred_model = self._default_rule.pred_model  # noqa
-                code = hash(updated_rule)
-                self._rules[code] = updated_rule
+                self._rules[max(self._rules, default=-1) + 1] = updated_rule
 
                 self._default_rule = self._new_rule()
 

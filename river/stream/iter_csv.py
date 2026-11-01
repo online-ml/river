@@ -11,7 +11,7 @@ from river import base
 from river.stream import utils
 
 if typing.TYPE_CHECKING:
-    from collections.abc import Callable, Sequence
+    from collections.abc import Callable
 
     from river.base.typing import FeatureName
     from river.stream.typing import Compression, FilePath
@@ -34,21 +34,15 @@ class DictReader(_DictReader):
         super().__init__(*args, **kwargs)
         self.fraction = fraction
         self.rng = rng
-        # NOTE: `fieldnames` reads the header row, and is `None` for an empty file,
-        # in which case the first `next(self.reader)` below stops the iteration anyway.
-        self.names: Sequence[FeatureName] = self.fieldnames or ()
 
     def __next__(self) -> dict[FeatureName, typing.Any]:
         while True:
-            values = next(self.reader)
-
-            if not values:
-                continue
+            row = super().__next__()
 
             if self.fraction < 1 and self.rng.random() > self.fraction:
                 continue
 
-            return dict(zip(self.names, values))
+            return row
 
 
 def iter_csv(
@@ -183,7 +177,8 @@ def iter_csv(
             # Cast the values to the given types
             if converters is not None:
                 for name, convert in converters.items():
-                    x[name] = convert(x[name])
+                    if x[name] is not None:
+                        x[name] = convert(x[name])
 
             # Drop Nones
             if drop_nones:
