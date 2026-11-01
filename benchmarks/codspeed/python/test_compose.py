@@ -20,6 +20,33 @@ def test_pipeline_predict_overhead(benchmark) -> None:
 
 
 @benchmark("compose")
+def test_pipeline_predict_one_overhead(benchmark) -> None:
+    stream = binary_stream()
+    model = preprocessing.StandardScaler() | linear_model.LogisticRegression()
+    for x, y in stream:
+        model.learn_one(x, y)
+    xs = [x for x, _ in stream[:N_PREDICT]]
+
+    def run() -> None:
+        for x in xs:
+            model.predict_one(x)
+
+    benchmark(run)
+
+
+@benchmark("compose")
+def test_pipeline_learn_overhead(benchmark) -> None:
+    stream = binary_stream()
+    model = preprocessing.StandardScaler() | linear_model.LogisticRegression()
+
+    def run() -> None:
+        for x, y in stream:
+            model.learn_one(x, y)
+
+    benchmark(run)
+
+
+@benchmark("compose")
 def test_transformer_union_transform(benchmark) -> None:
     stream = [x for x, _ in binary_stream()]
     model = preprocessing.StandardScaler() + feature_extraction.PolynomialExtender(degree=2)

@@ -170,6 +170,14 @@ def test_both_are_pipelines():
     }
 
 
+def test_product_composition_mutates():
+    product = compose.Select("a") * compose.Select("b")
+    extended = product * compose.Select("c")
+
+    assert extended is product
+    assert len(product) == 3
+
+
 def test_renaming():
     renamer = compose.Renamer(dict(a="z", b="y", c="x"))
     assert renamer.transform_one(dict(a=1, b=2, d=3)) == dict(z=1, y=2, d=3)

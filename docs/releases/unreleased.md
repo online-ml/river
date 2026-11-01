@@ -19,6 +19,11 @@
 - New `cluster.DenStream` micro-clusters no longer reuse the key of a deleted one, which overwrote an existing micro-cluster.
 - Optimized `cluster.TextClust` to be rougly 3x faster.
 
+## compose
+
+- Strict typing for `compose`.
+- Pipelines now build their execution plans during construction. One-observation learning and prediction performance is unchanged or faster.
+
 ## drift
 
 - The `river.drift` sub-package is now clean under strict mypy, and the `river.drift.*` entry was removed from the non-strict overrides in `pyproject.toml`. Public signatures and docstrings are unchanged.
