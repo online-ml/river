@@ -1285,17 +1285,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#naive_bayes_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        naive_bayes
-      </span>
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#sketch" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -1333,6 +1322,17 @@
     <span class="md-ellipsis">
       <span class="md-typeset">
         cluster
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tree" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        tree
       </span>
     </span>
   </a>
@@ -2648,17 +2648,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#naive_bayes_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        naive_bayes
-      </span>
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#sketch" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -2696,6 +2685,17 @@
     <span class="md-ellipsis">
       <span class="md-typeset">
         cluster
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tree" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        tree
       </span>
     </span>
   </a>
@@ -2770,14 +2770,11 @@
 <h2 id="naive_bayes">naive_bayes<a class="headerlink" href="#naive_bayes" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Added <code>CategoricalNB</code>, a Naive Bayes classifier for categorical features that maintains per-class frequencies for every value of every feature, with additive (Laplace) smoothing and support for both online and mini-batch modes.</li>
+<li><code>MultinomialNB.learn_many</code>, <code>predict_many</code>, and <code>predict_proba_many</code> now accept any <a href="https://github.com/narwhals-dev/narwhals">narwhals</a>-supported eager backend (pandas, polars, pyarrow, ...) instead of being pandas-only, preserving the input backend (including the pandas index) on output. A backend-agnostic <code>BaseNB.predict_many</code> was added so the argmax-over-probabilities logic is shared by all Naive Bayes variants.</li>
 </ul>
 <h2 id="linear_model">linear_model<a class="headerlink" href="#linear_model" title="Permanent link">&para;</a></h2>
 <ul>
 <li><code>BayesianLinearRegression.predict_dist_one</code> now replaces <code>BayesianLinearRegression.predict_one(..., with_dist=True)</code> to better respect the <code>Regressor</code> interface while still being able to predict distributions.</li>
-</ul>
-<h2 id="naive_bayes_1">naive_bayes<a class="headerlink" href="#naive_bayes_1" title="Permanent link">&para;</a></h2>
-<ul>
-<li><code>MultinomialNB.learn_many</code>, <code>predict_many</code>, and <code>predict_proba_many</code> now accept any <a href="https://github.com/narwhals-dev/narwhals">narwhals</a>-supported eager backend (pandas, polars, pyarrow, ...) instead of being pandas-only, preserving the input backend (including the pandas index) on output. A backend-agnostic <code>BaseNB.predict_many</code> was added so the argmax-over-probabilities logic is shared by all Naive Bayes variants.</li>
 </ul>
 <h2 id="sketch">sketch<a class="headerlink" href="#sketch" title="Permanent link">&para;</a></h2>
 <ul>
@@ -2809,6 +2806,10 @@
 <li>Fixed the radius of <a href="../../api/cluster/DenStream"><code>cluster.DenStream</code></a> micro-clusters, which used the norm of the vector of squared sums instead of the sum of its components and was 0 away from the origin. The docstring example now uses <code>epsilon=1.0</code>.</li>
 <li><code>cluster.DenStream.predict_one</code> now expands a cluster past the direct neighbors of its first micro-cluster. The neighbors of a neighbor were only queued if they already had a label, so a chain of micro-clusters came out as several clusters.</li>
 <li>New <a href="../../api/cluster/DenStream"><code>cluster.DenStream</code></a> micro-clusters no longer reuse the key of a deleted one, which overwrote an existing micro-cluster.</li>
+</ul>
+<h2 id="tree">tree<a class="headerlink" href="#tree" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Refactored <code>LASTClassifier</code> to reuse a single tree-level split criterion for class-distribution change detection, reducing per-leaf state without changing classifier behaviour.</li>
 </ul>
 <h2 id="proba">proba<a class="headerlink" href="#proba" title="Permanent link">&para;</a></h2>
 <ul>
