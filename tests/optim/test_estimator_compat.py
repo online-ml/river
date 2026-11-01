@@ -134,6 +134,7 @@ def _matrix():
 
 @pytest.mark.parametrize("estimator_cls, optimizer_params, optimizer", list(_matrix()))
 def test_optimizer_works_with_estimator(estimator_cls, optimizer_params, optimizer):
-    kwargs = {param: optimizer.clone() for param in optimizer_params}
+    kwargs = next(estimator_cls._unit_test_params()).copy()
+    kwargs.update({param: optimizer.clone() for param in optimizer_params})
     model = estimator_cls(**kwargs)
     _exercise(model)
