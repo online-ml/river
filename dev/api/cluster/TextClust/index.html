@@ -1979,6 +1979,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -4513,63 +4517,75 @@
 <ul>
 <li>
 <p><strong>radius</strong></p>
+<p><em>Type</em> → <code>float</code></p>
 <p><em>Default</em> → <code>0.3</code></p>
-<p>Distance threshold to merge two micro-clusters. Must be within the range <code>(0, 1]</code></p>
+<p>Distance threshold to merge two micro-clusters. The value is in the range <code>(0, 1]</code>.</p>
 </li>
 <li>
 <p><strong>fading_factor</strong></p>
+<p><em>Type</em> → <code>float</code></p>
 <p><em>Default</em> → <code>0.0005</code></p>
-<p>Fading factor of micro-clusters</p>
+<p>Non-negative fading factor for micro-clusters.</p>
 </li>
 <li>
 <p><strong>tgap</strong></p>
+<p><em>Type</em> → <code>int</code></p>
 <p><em>Default</em> → <code>100</code></p>
-<p>Time between outlier removal</p>
+<p>Positive number of observations or time units between outlier removal operations.</p>
 </li>
 <li>
 <p><strong>term_fading</strong></p>
+<p><em>Type</em> → <code>bool</code></p>
 <p><em>Default</em> → <code>True</code></p>
-<p>Determines whether individual terms should also be faded</p>
+<p>Determines whether individual terms also fade.</p>
 </li>
 <li>
 <p><strong>real_time_fading</strong></p>
-<p><em>Default</em> → <code>True</code></p>
-<p>Parameter that specifies whether natural time or the number of observations should be used for fading</p>
+<p><em>Type</em> → <code>bool</code></p>
+<p><em>Default</em> → <code>False</code></p>
+<p>Determines whether fading uses natural time or the number of observations.</p>
 </li>
 <li>
 <p><strong>micro_distance</strong></p>
+<p><em>Type</em> → <code>str</code></p>
 <p><em>Default</em> → <code>tfidf_cosine_distance</code></p>
-<p>Distance metric used for clustering macro-clusters</p>
+<p>Distance metric for micro-clusters. The available metric is <code>tfidf_cosine_distance</code>.</p>
 </li>
 <li>
 <p><strong>macro_distance</strong></p>
+<p><em>Type</em> → <code>str</code></p>
 <p><em>Default</em> → <code>tfidf_cosine_distance</code></p>
-<p>Distance metric used for clustering macro-clusters</p>
+<p>Distance metric for macro-clusters. The available metric is <code>tfidf_cosine_distance</code>.</p>
 </li>
 <li>
 <p><strong>num_macro</strong></p>
+<p><em>Type</em> → <code>int</code></p>
 <p><em>Default</em> → <code>3</code></p>
-<p>Number of macro clusters that should be identified during the reclustering phase</p>
+<p>Positive number of macro-clusters to identify during the reclustering phase.</p>
 </li>
 <li>
 <p><strong>min_weight</strong></p>
+<p><em>Type</em> → <code>float</code></p>
 <p><em>Default</em> → <code>0</code></p>
-<p>Minimum weight of micro clusters to be used for reclustering</p>
+<p>Non-negative minimum weight of the micro-clusters used for reclustering.</p>
 </li>
 <li>
 <p><strong>auto_r</strong></p>
+<p><em>Type</em> → <code>bool</code></p>
 <p><em>Default</em> → <code>False</code></p>
-<p>Parameter that specifies if  <code>radius</code> should be automatically updated</p>
+<p>Determines whether TextClust updates <code>radius</code> automatically.</p>
 </li>
 <li>
 <p><strong>auto_merge</strong></p>
+<p><em>Type</em> → <code>bool</code></p>
 <p><em>Default</em> → <code>True</code></p>
-<p>Determines, if close observations shall be merged together</p>
+<p>Determines whether TextClust merges close observations.</p>
 </li>
 <li>
 <p><strong>sigma</strong></p>
+<p><em>Type</em> → <code>float</code></p>
 <p><em>Default</em> → <code>1</code></p>
-<p>Parameter that influences the automated trheshold adaption technique</p>
+<p>Non-negative parameter for automatic threshold adaptation.</p>
 </li>
 </ul>
 <h2 id="attributes">Attributes<a class="headerlink" href="#attributes" title="Permanent link">&para;</a></h2>

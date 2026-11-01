@@ -24,6 +24,11 @@ The filename doesn't have to be provided if unpack is False. Indeed in the latte
   *Default* → `None`
 
   An optional name to given to the file if the file is unpacked.
+- **archive\_name**
+
+  *Default* → `None`
+
+  The name to use for the downloaded archive. This is useful when the URL does not contain the archive extension.
 
 ## Attributes
 

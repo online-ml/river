@@ -10,64 +10,88 @@ The result is many small preliminary clusters in the stream called `micro-cluste
 
 - **radius**
 
+  *Type* → `float`
+
   *Default* → `0.3`
 
-  Distance threshold to merge two micro-clusters. Must be within the range `(0, 1]`
+  Distance threshold to merge two micro-clusters. The value is in the range `(0, 1]`.
 - **fading\_factor**
+
+  *Type* → `float`
 
   *Default* → `0.0005`
 
-  Fading factor of micro-clusters
+  Non-negative fading factor for micro-clusters.
 - **tgap**
+
+  *Type* → `int`
 
   *Default* → `100`
 
-  Time between outlier removal
+  Positive number of observations or time units between outlier removal operations.
 - **term\_fading**
 
+  *Type* → `bool`
+
   *Default* → `True`
 
-  Determines whether individual terms should also be faded
+  Determines whether individual terms also fade.
 - **real\_time\_fading**
 
-  *Default* → `True`
-
-  Parameter that specifies whether natural time or the number of observations should be used for fading
-- **micro\_distance**
-
-  *Default* → `tfidf_cosine_distance`
-
-  Distance metric used for clustering macro-clusters
-- **macro\_distance**
-
-  *Default* → `tfidf_cosine_distance`
-
-  Distance metric used for clustering macro-clusters
-- **num\_macro**
-
-  *Default* → `3`
-
-  Number of macro clusters that should be identified during the reclustering phase
-- **min\_weight**
-
-  *Default* → `0`
-
-  Minimum weight of micro clusters to be used for reclustering
-- **auto\_r**
+  *Type* → `bool`
 
   *Default* → `False`
 
-  Parameter that specifies if `radius` should be automatically updated
+  Determines whether fading uses natural time or the number of observations.
+- **micro\_distance**
+
+  *Type* → `str`
+
+  *Default* → `tfidf_cosine_distance`
+
+  Distance metric for micro-clusters. The available metric is `tfidf_cosine_distance`.
+- **macro\_distance**
+
+  *Type* → `str`
+
+  *Default* → `tfidf_cosine_distance`
+
+  Distance metric for macro-clusters. The available metric is `tfidf_cosine_distance`.
+- **num\_macro**
+
+  *Type* → `int`
+
+  *Default* → `3`
+
+  Positive number of macro-clusters to identify during the reclustering phase.
+- **min\_weight**
+
+  *Type* → `float`
+
+  *Default* → `0`
+
+  Non-negative minimum weight of the micro-clusters used for reclustering.
+- **auto\_r**
+
+  *Type* → `bool`
+
+  *Default* → `False`
+
+  Determines whether TextClust updates `radius` automatically.
 - **auto\_merge**
+
+  *Type* → `bool`
 
   *Default* → `True`
 
-  Determines, if close observations shall be merged together
+  Determines whether TextClust merges close observations.
 - **sigma**
+
+  *Type* → `float`
 
   *Default* → `1`
 
-  Parameter that influences the automated trheshold adaption technique
+  Non-negative parameter for automatic threshold adaptation.
 
 ## Attributes
 

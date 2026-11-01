@@ -224,6 +224,8 @@ This module contains a collection of datasets for multiple tasks: classification
 | [ImageSegments](<https://riverml.xyz/dev/api/datasets/ImageSegments>) | 2,310 | 18 | 7 |
 | [Insects](<https://riverml.xyz/dev/api/datasets/Insects>) | 52,848 | 33 | 6 |
 | [Keystroke](<https://riverml.xyz/dev/api/datasets/Keystroke>) | 20,400 | 31 | 51 |
+| [NewsT](<https://riverml.xyz/dev/api/datasets/NewsT>) | 11,109 | 1 | 152 |
+| [TwitchChat](<https://riverml.xyz/dev/api/datasets/TwitchChat>) | 14,720,748 | 11 | 20 |
 
 **Multi-output binary classification**
 

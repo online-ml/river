@@ -313,6 +313,9 @@
         <loc>https://riverml.xyz/dev/api/datasets/Music/</loc>
       </url>
       <url>
+        <loc>https://riverml.xyz/dev/api/datasets/NewsT/</loc>
+      </url>
+      <url>
         <loc>https://riverml.xyz/dev/api/datasets/Phishing/</loc>
       </url>
       <url>
@@ -341,6 +344,9 @@
       </url>
       <url>
         <loc>https://riverml.xyz/dev/api/datasets/TrumpApproval/</loc>
+      </url>
+      <url>
+        <loc>https://riverml.xyz/dev/api/datasets/TwitchChat/</loc>
       </url>
       <url>
         <loc>https://riverml.xyz/dev/api/datasets/WaterFlow/</loc>
