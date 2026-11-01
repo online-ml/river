@@ -4644,12 +4644,12 @@
 
 <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">metric</span><span class="p">)</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>Accuracy: 67.97%
+<div class="language-text highlight"><pre><span></span><code>Accuracy: 73.47%
 </code></pre></div></p>
 <p>The total number of warnings and drifts detected, respectively
 <div class="language-python highlight"><pre><span></span><code><span class="n">model</span><span class="o">.</span><span class="n">n_warnings_detected</span><span class="p">(),</span> <span class="n">model</span><span class="o">.</span><span class="n">n_drifts_detected</span><span class="p">()</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>(2, 1)
+<div class="language-text highlight"><pre><span></span><code>(4, 3)
 </code></pre></div></p>
 <p>The number of warnings detected by tree number 2
 <div class="language-python highlight"><pre><span></span><code><span class="n">model</span><span class="o">.</span><span class="n">n_warnings_detected</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
@@ -4659,7 +4659,7 @@
 <p>And the corresponding number of actual concept drift detected
 <div class="language-python highlight"><pre><span></span><code><span class="n">model</span><span class="o">.</span><span class="n">n_drifts_detected</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>1
+<div class="language-text highlight"><pre><span></span><code>0
 </code></pre></div></p>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <details class="- abstract">

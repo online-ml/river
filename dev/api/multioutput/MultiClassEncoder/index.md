@@ -40,7 +40,7 @@ metric
 ```
 
 ```text
-MicroAverage(Jaccard): 95.10%
+MicroAverage(Jaccard): 95.76%
 ```
 
 ## Methods

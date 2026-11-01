@@ -1274,6 +1274,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#base" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        base
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#drift" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -2659,6 +2670,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#base" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        base
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#drift" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -2816,6 +2838,10 @@
 <li><code>cluster.DenStream.predict_one</code> now expands a cluster past the direct neighbors of its first micro-cluster. The neighbors of a neighbor were only queued if they already had a label, so a chain of micro-clusters came out as several clusters.</li>
 <li>New <a href="../../api/cluster/DenStream"><code>cluster.DenStream</code></a> micro-clusters no longer reuse the key of a deleted one, which overwrote an existing micro-cluster.</li>
 <li>Optimized <a href="../../api/cluster/TextClust"><code>cluster.TextClust</code></a> to be rougly 3x faster.</li>
+</ul>
+<h2 id="base">base<a class="headerlink" href="#base" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Estimator memory usage now includes serialized state held by Rust-backed objects.</li>
 </ul>
 <h2 id="drift">drift<a class="headerlink" href="#drift" title="Permanent link">&para;</a></h2>
 <ul>

@@ -220,12 +220,12 @@ Accuracy: 84.58%
 >
 > **Parameters**
 >
-> - **x** — `dict[base.typing.FeatureName, Any]`
-> - **kwargs** — `Any`
+> - **x**
+> - **kwargs**
 >
 > **Returns**
 >
-> `base.typing.ClfTarget | None`: The predicted label.
+> The predicted label.
 
 > [!NOTE]
 >

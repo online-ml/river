@@ -223,7 +223,7 @@ evaluate.progressive_val_score(dataset, model, metric)
 ```
 
 ```text
-Accuracy: 67.97%
+Accuracy: 73.47%
 ```
 
 The total number of warnings and drifts detected, respectively
@@ -233,7 +233,7 @@ model.n_warnings_detected(), model.n_drifts_detected()
 ```
 
 ```text
-(2, 1)
+(4, 3)
 ```
 
 The number of warnings detected by tree number 2
@@ -253,7 +253,7 @@ model.n_drifts_detected(2)
 ```
 
 ```text
-1
+0
 ```
 
 ## Methods

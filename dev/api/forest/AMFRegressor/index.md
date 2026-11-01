@@ -75,7 +75,7 @@ evaluate.progressive_val_score(dataset, model, metric)
 ```
 
 ```text
-MAE: 0.427341
+MAE: 0.4312
 ```
 
 ## Methods
