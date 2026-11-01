@@ -401,10 +401,12 @@ class Base:
         Uses :func:`gc.get_referents` to walk the object graph, which is the
         canonical stdlib recipe referenced by ``sys.getsizeof``'s documentation.
         Compared to a hand-rolled traversal, it handles ``__slots__`` instances,
-        arbitrary containers, and (critically) does not consume generators or
-        other one-shot iterators. The only special case left is
-        :class:`numpy.ndarray`, whose data buffer is not GC-tracked.
+        arbitrary containers, and does not consume generators or other one-shot
+        iterators. NumPy data buffers and serialized Rust state are counted because
+        the garbage collector cannot traverse them.
         """
+
+        import pickle
 
         import numpy as np
 
@@ -424,7 +426,19 @@ class Base:
                 if obj_id in seen:
                     continue
                 seen.add(obj_id)
-                size += sys.getsizeof(obj)
+                object_size = sys.getsizeof(obj)
+                if type(obj).__module__.startswith("river._river_rust."):
+                    try:
+                        object_size = max(
+                            object_size,
+                            len(pickle.dumps(obj, protocol=pickle.HIGHEST_PROTOCOL)),
+                        )
+                    except (pickle.PickleError, TypeError):
+                        pass
+                    else:
+                        size += object_size
+                        continue
+                size += object_size
                 if isinstance(obj, np.ndarray):
                     size += obj.nbytes
                 next_round.append(obj)

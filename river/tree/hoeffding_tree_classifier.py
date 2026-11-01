@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 from river import base
+from river._river_rust.tree import NativeHoeffdingTreeClassifier
 
+from ._numeric_adapter import NumericAdapter
 from .hoeffding_tree import HoeffdingTree
-from .nodes.branch import DTBranch
+from .nodes.branch import DTBranch, NumericBinaryBranch
 from .nodes.htc_nodes import LeafMajorityClass, LeafNaiveBayes, LeafNaiveBayesAdaptive
 from .nodes.leaf import HTLeaf
 from .split_criterion import GiniSplitCriterion, HellingerDistanceCriterion, InfoGainSplitCriterion
@@ -147,6 +149,16 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
         remove_poor_attrs: bool = False,
         merit_preprune: bool = True,
     ):
+        native_enabled = (
+            self._native_backend_is_compatible()
+            and not nominal_attributes
+            and (splitter is None or type(splitter) is GaussianSplitter)
+            and split_criterion != self._HELLINGER_SPLIT
+            and max_size == 100.0
+            and self._native_memory_estimate_period_is_compatible(memory_estimate_period)
+            and not stop_mem_management
+            and not remove_poor_attrs
+        )
         super().__init__(
             max_depth=max_depth,
             binary_split=binary_split,
@@ -176,6 +188,150 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
 
         # To keep track of the observed classes
         self.classes: set = set()
+        self._native_enabled = native_enabled
+        self._native_model: NativeHoeffdingTreeClassifier | None = None
+        self._native_adapter: NumericAdapter | None = None
+        self._native_mutable_parameters = (grace_period, delta, tau)
+        self._native_random = self._native_rng()
+
+    def _native_backend_is_compatible(self):
+        return type(self) is HoeffdingTreeClassifier
+
+    def _native_max_features(self):
+        return None
+
+    def _native_rng(self):
+        return None
+
+    def _native_sort_features(self):
+        return False
+
+    def _native_memory_estimate_period_is_compatible(self, memory_estimate_period):
+        return memory_estimate_period == 1_000_000
+
+    def _init_native(self, x, y):
+        if not x:
+            self._native_enabled = False
+            return
+        native_seed = 42 if self._native_random is None else self._native_random.getrandbits(64)
+        self._native_adapter = NumericAdapter(x, y, sort_features=self._native_sort_features())
+        self.classes.add(y)
+        self._native_model = NativeHoeffdingTreeClassifier(
+            n_features=len(x),
+            n_classes=2,
+            max_features=self._native_max_features(),
+            grace_period=self.grace_period,
+            delta=self.delta,
+            tau=self.tau,
+            n_splits=self.splitter.n_splits,
+            max_depth=self.max_depth,
+            split_criterion=self.split_criterion,
+            leaf_prediction=self.leaf_prediction,
+            nb_threshold=self.nb_threshold,
+            min_branch_fraction=self.min_branch_fraction,
+            max_share_to_split=self.max_share_to_split,
+            merit_preprune=self.merit_preprune,
+            seed=native_seed,
+        )
+
+    def _learn_one_native(self, x, y, w):
+        if self._native_model is None:
+            self._init_native(x, y)
+            if self._native_model is None:
+                return False
+        adapter = self._native_adapter
+        model = self._native_model
+        class_index, added_class = adapter.add_label(y)
+        if added_class:
+            model.insert_class(class_index, len(adapter.classes) > 2)
+            self.classes.add(y)
+        mutable_parameters = (self.grace_period, self.delta, self.tau)
+        if mutable_parameters != self._native_mutable_parameters:
+            model.set_mutable_parameters(*mutable_parameters)
+            self._native_mutable_parameters = mutable_parameters
+        model.learn_one_mapping(x, adapter.features, adapter.feature_names, class_index, w)
+        self._train_weight_seen_by_model += w
+        return True
+
+    @property
+    def height(self):
+        if self._native_model is not None:
+            return self._native_model.height()
+        return super().height
+
+    @property
+    def n_nodes(self):
+        if self._native_model is not None:
+            return self._native_model.n_nodes()
+        return super().n_nodes
+
+    @property
+    def n_branches(self):
+        if self._native_model is not None:
+            return self._native_model.n_branches()
+        return super().n_branches
+
+    @property
+    def n_leaves(self):
+        if self._native_model is not None:
+            return self._native_model.n_leaves()
+        return super().n_leaves
+
+    @property
+    def n_active_leaves(self):
+        if self._native_model is not None:
+            return self._native_model.n_active_leaves()
+        return super().n_active_leaves
+
+    @property
+    def n_inactive_leaves(self):
+        if self._native_model is not None:
+            return self._native_model.n_leaves() - self._native_model.n_active_leaves()
+        return super().n_inactive_leaves
+
+    @property
+    def summary(self):
+        if self._native_model is None:
+            return super().summary
+        return {
+            "n_nodes": self.n_nodes,
+            "n_branches": self.n_branches,
+            "n_leaves": self.n_leaves,
+            "n_active_leaves": self.n_active_leaves,
+            "n_inactive_leaves": self.n_inactive_leaves,
+            "height": self.height,
+            "total_observed_weight": self._native_model.total_weight_seen(),
+        }
+
+    def _root_for_inspection(self):
+        if self._native_model is None:
+            return self._root
+        assert self._native_adapter is not None
+        records = self._native_model.nodes()
+        nodes = [None] * len(records)
+        for index in range(len(nodes) - 1, -1, -1):
+            feature, threshold, left, right, counts, depth, active = records[index]
+            stats = {
+                label: counts[class_index]
+                for class_index, label in enumerate(self._native_adapter.classes)
+                if counts[class_index]
+            }
+            if feature < 0:
+                node = self._new_leaf(stats)
+                node.depth = depth
+                if not active:
+                    node.deactivate()
+                nodes[index] = node
+            else:
+                nodes[index] = NumericBinaryBranch(
+                    stats,
+                    self._native_adapter.feature_names[feature],
+                    threshold,
+                    depth,
+                    nodes[left],
+                    nodes[right],
+                )
+        return nodes[0]
 
     @property
     def _mutable_attributes(self):
@@ -339,6 +495,9 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
           to split.
         """
 
+        if self._native_enabled and self._learn_one_native(x, y, w):
+            return
+
         # Updates the set of observed classes
         self.classes.add(y)
 
@@ -402,6 +561,13 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
             self._estimate_model_size()
 
     def predict_proba_one(self, x):
+        if self._native_model is not None:
+            return self._native_model.predict_proba_mapping(
+                x,
+                self._native_adapter.features,
+                self._native_adapter.output_labels,
+                self._native_adapter.output_indices,
+            )
         proba = {c: 0.0 for c in sorted(self.classes)}
         if self._root is not None:
             if isinstance(self._root, DTBranch):
@@ -411,6 +577,16 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
 
             proba.update(leaf.prediction(x, tree=self))
         return proba
+
+    def predict_one(self, x, **kwargs):
+        if self._native_model is not None:
+            class_index = self._native_model.predict_mapping(
+                x,
+                self._native_adapter.features,
+                self._native_adapter.output_indices,
+            )
+            return self._native_adapter.classes[class_index]
+        return super().predict_one(x, **kwargs)
 
     @property
     def _multiclass(self):

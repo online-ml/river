@@ -42,7 +42,7 @@ class DriftRetrainingClassifier(base.Wrapper[base.Classifier], base.Classifier):
     >>> metric = metrics.Accuracy()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    Accuracy: 87.06%
+    Accuracy: 86.90%
 
     """
 

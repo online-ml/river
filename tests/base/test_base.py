@@ -1,6 +1,24 @@
 from __future__ import annotations
 
-from river import compose, datasets, linear_model, optim, preprocessing, stats, time_series
+import pickle
+
+from river import (
+    base,
+    compose,
+    datasets,
+    drift,
+    linear_model,
+    optim,
+    preprocessing,
+    stats,
+    time_series,
+    utils,
+)
+
+
+class RustStateHolder(base.Base):
+    def __init__(self, value: object) -> None:
+        self.value = value
 
 
 def test_clone_estimator() -> None:
@@ -60,6 +78,16 @@ def test_memory_usage() -> None:
     # We can't test the exact value because it depends on the platform and the Python version
     # TODO: we could create a table of expected values for each platform and Python version
     assert isinstance(model._memory_usage, str)
+
+
+def test_memory_usage_includes_rust_state() -> None:
+    model = drift.ADWIN()
+    for _ in range(1_000):
+        model.update(0.0)
+
+    states = [model._helper, utils.VectorDict({i: float(i) for i in range(1_000)})]
+    for state in states:
+        assert RustStateHolder(state)._raw_memory_usage >= len(pickle.dumps(state))
 
 
 def test_mutate() -> None:

@@ -17,6 +17,10 @@
 - New `cluster.DenStream` micro-clusters no longer reuse the key of a deleted one, which overwrote an existing micro-cluster.
 - Optimized `cluster.TextClust` to be rougly 3x faster.
 
+## base
+
+- Estimator memory usage now includes serialized state held by Rust-backed objects.
+
 ## drift
 
 - The `river.drift` sub-package is now clean under strict mypy, and the `river.drift.*` entry was removed from the non-strict overrides in `pyproject.toml`. Public signatures and docstrings are unchanged.
