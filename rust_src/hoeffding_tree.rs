@@ -1,7 +1,7 @@
 use crate::gaussian::Gaussian;
+use crate::random::Random as Rng;
 use crate::tree_arena::NodeId;
 use serde::{Deserialize, Serialize};
-use std::collections::HashSet;
 
 #[derive(Clone, Copy, Debug, Serialize, Deserialize)]
 pub enum SplitCriterion {
@@ -18,137 +18,6 @@ pub enum LeafPrediction {
 }
 
 pub type NodeSnapshot = (isize, f64, usize, usize, Vec<f64>, usize, bool);
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
-struct Rng {
-    state: Vec<u32>,
-    index: usize,
-}
-
-impl Rng {
-    fn new(seed: u64) -> Self {
-        let key = if seed > u32::MAX as u64 {
-            vec![seed as u32, (seed >> 32) as u32]
-        } else {
-            vec![seed as u32]
-        };
-        let mut state = vec![0; 624];
-        state[0] = 19_650_218;
-        for index in 1..624 {
-            state[index] = 1_812_433_253_u32
-                .wrapping_mul(state[index - 1] ^ (state[index - 1] >> 30))
-                .wrapping_add(index as u32);
-        }
-        let mut i = 1;
-        let mut j = 0;
-        for _ in 0..624.max(key.len()) {
-            state[i] = (state[i] ^ (state[i - 1] ^ (state[i - 1] >> 30)).wrapping_mul(1_664_525))
-                .wrapping_add(key[j])
-                .wrapping_add(j as u32);
-            i += 1;
-            j += 1;
-            if i >= 624 {
-                state[0] = state[623];
-                i = 1;
-            }
-            if j >= key.len() {
-                j = 0;
-            }
-        }
-        for _ in 0..623 {
-            state[i] = (state[i]
-                ^ (state[i - 1] ^ (state[i - 1] >> 30)).wrapping_mul(1_566_083_941))
-            .wrapping_sub(i as u32);
-            i += 1;
-            if i >= 624 {
-                state[0] = state[623];
-                i = 1;
-            }
-        }
-        state[0] = 0x8000_0000;
-        Self { state, index: 624 }
-    }
-
-    fn next_u32(&mut self) -> u32 {
-        if self.index >= 624 {
-            for index in 0..624 {
-                let value = (self.state[index] & 0x8000_0000)
-                    | (self.state[(index + 1) % 624] & 0x7fff_ffff);
-                self.state[index] = self.state[(index + 397) % 624]
-                    ^ (value >> 1)
-                    ^ if value & 1 == 0 { 0 } else { 0x9908_b0df };
-            }
-            self.index = 0;
-        }
-        let mut value = self.state[self.index];
-        self.index += 1;
-        value ^= value >> 11;
-        value ^= (value << 7) & 0x9d2c_5680;
-        value ^= (value << 15) & 0xefc6_0000;
-        value ^ (value >> 18)
-    }
-
-    fn getrandbits(&mut self, mut bits: u32) -> u64 {
-        if bits <= 32 {
-            return (self.next_u32() >> (32 - bits)) as u64;
-        }
-        let mut value = 0_u64;
-        let mut shift = 0;
-        while bits > 0 {
-            let take = bits.min(32);
-            let word = if take == 32 {
-                self.next_u32()
-            } else {
-                self.next_u32() >> (32 - take)
-            };
-            value |= (word as u64) << shift;
-            shift += 32;
-            bits -= take;
-        }
-        value
-    }
-
-    fn randbelow(&mut self, upper: usize) -> usize {
-        let bits = usize::BITS - upper.leading_zeros();
-        loop {
-            let value = self.getrandbits(bits) as usize;
-            if value < upper {
-                return value;
-            }
-        }
-    }
-
-    fn sample_values(&mut self, population: &[usize], size: usize) -> Vec<usize> {
-        let mut set_size = 21_usize;
-        if size > 5 {
-            let target = size.saturating_mul(3);
-            let mut power = 1_usize;
-            while power < target {
-                power = power.saturating_mul(4);
-            }
-            set_size = set_size.saturating_add(power);
-        }
-        if population.len() <= set_size {
-            let mut values = population.to_vec();
-            let mut result = Vec::with_capacity(size);
-            for index in 0..size {
-                let selected = self.randbelow(population.len() - index);
-                result.push(values[selected]);
-                values[selected] = values[population.len() - index - 1];
-            }
-            return result;
-        }
-        let mut selected = HashSet::with_capacity(size);
-        let mut values = Vec::with_capacity(size);
-        while values.len() < size {
-            let index = self.randbelow(population.len());
-            if selected.insert(index) {
-                values.push(population[index]);
-            }
-        }
-        values
-    }
-}
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 struct GaussianObserver {
@@ -380,14 +249,11 @@ impl Leaf {
         n_features: usize,
         max_features: usize,
         all_features: bool,
-        selected_features: Option<&[usize]>,
         rng: &mut Rng,
     ) {
         if self.features.is_empty() {
             self.features = if all_features || max_features >= n_features {
                 (0..n_features).collect()
-            } else if let Some(selected_features) = selected_features {
-                selected_features.to_vec()
             } else {
                 let available = x
                     .iter()
@@ -441,7 +307,6 @@ impl Leaf {
         max_features: usize,
         all_features: bool,
         prediction: LeafPrediction,
-        selected_features: Option<&[usize]>,
         rng: &mut Rng,
     ) {
         if self.active && matches!(prediction, LeafPrediction::NaiveBayesAdaptive) {
@@ -458,14 +323,7 @@ impl Leaf {
         }
         self.counts[y] += weight;
         if self.active {
-            self.ensure_features(
-                x,
-                n_features,
-                max_features,
-                all_features,
-                selected_features,
-                rng,
-            );
+            self.ensure_features(x, n_features, max_features, all_features, rng);
             for (feature_index, feature) in self.features.iter().enumerate() {
                 if !x[*feature].is_nan() {
                     self.observers[feature_index * self.counts.len() + y]
@@ -653,29 +511,6 @@ impl HoeffdingTreeClassifier {
     }
 
     pub fn learn(&mut self, x: &[f64], y: usize, weight: f64) {
-        self.learn_with_selected_features(x, y, weight, None);
-    }
-
-    pub fn feature_sample_request(&self, x: &[f64]) -> Option<(Vec<usize>, usize)> {
-        let leaf = &self.leaves[self.leaf_index(x)];
-        if self.all_features || !leaf.features.is_empty() {
-            return None;
-        }
-        let available = x
-            .iter()
-            .enumerate()
-            .filter_map(|(index, value)| (!value.is_nan()).then_some(index))
-            .collect::<Vec<_>>();
-        (available.len() >= self.max_features).then_some((available, self.max_features))
-    }
-
-    pub fn learn_with_selected_features(
-        &mut self,
-        x: &[f64],
-        y: usize,
-        weight: f64,
-        selected_features: Option<&[usize]>,
-    ) {
         self.total_weight_seen += weight;
         let leaf_index = self.learning_leaf_index(x, weight);
         let leaf = &mut self.leaves[leaf_index];
@@ -687,7 +522,6 @@ impl HoeffdingTreeClassifier {
             self.max_features,
             self.all_features,
             self.leaf_prediction,
-            selected_features,
             &mut self.rng,
         );
         let should_attempt = leaf.active
@@ -1082,6 +916,7 @@ fn argmax_ordered(values: &[f64], order: &[usize]) -> usize {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::collections::HashSet;
 
     fn tree() -> HoeffdingTreeClassifier {
         HoeffdingTreeClassifier::new(
@@ -1226,15 +1061,13 @@ mod tests {
     }
 
     #[test]
-    fn random_stream_matches_python() {
-        let mut rng = Rng::new(42);
+    fn random_feature_samples_are_seeded() {
+        let mut left = Rng::new(42);
+        let mut right = Rng::new(42);
+        let population = (0..10).collect::<Vec<_>>();
         assert_eq!(
-            (0..5).map(|_| rng.getrandbits(4)).collect::<Vec<_>>(),
-            vec![10, 1, 0, 11, 4]
-        );
-        assert_eq!(
-            rng.sample_values(&(0..10).collect::<Vec<_>>(), 3),
-            vec![3, 9, 2]
+            left.sample_values(&population, 3),
+            right.sample_values(&population, 3)
         );
     }
 

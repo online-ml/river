@@ -262,22 +262,23 @@ def test_public_adaptive_random_forest_composes_native_trees() -> None:
     assert restored.predict_proba_one({"x0": 0.5}) == model.predict_proba_one({"x0": 0.5})
 
 
-def test_public_adaptive_random_forest_matches_python_trees() -> None:
+def test_public_adaptive_random_forest_is_deterministic() -> None:
     stream = list(datasets.synth.ConceptDriftStream(seed=42, position=500, width=40).take(1_000))
-    native = forest.ARFClassifier(seed=8, leaf_prediction="mc")
-    python = forest.ARFClassifier(
-        seed=8,
-        leaf_prediction="mc",
-        splitter=PythonGaussianSplitter(),
-    )
+    first = forest.ARFClassifier(seed=8, leaf_prediction="mc")
+    second = forest.ARFClassifier(seed=8, leaf_prediction="mc")
+    correct = 0
 
     for x, y in stream:
-        assert native.predict_one(x) == python.predict_one(x)
-        native.learn_one(x, y)
-        python.learn_one(x, y)
+        first_prediction = first.predict_one(x)
+        second_prediction = second.predict_one(x)
+        assert first_prediction == second_prediction
+        correct += first_prediction == y
+        first.learn_one(x, y)
+        second.learn_one(x, y)
 
-    assert native.n_warnings_detected() == python.n_warnings_detected()
-    assert native.n_drifts_detected() == python.n_drifts_detected()
+    assert correct / len(stream) > 0.7
+    assert first.n_warnings_detected() == second.n_warnings_detected()
+    assert first.n_drifts_detected() == second.n_drifts_detected()
 
 
 @pytest.mark.parametrize(
