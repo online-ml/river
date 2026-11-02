@@ -87,5 +87,5 @@ The way this works is that each arm is assigned a [`linear_model.BayesianLinearR
 
 ## References
 
-- [A Contextual-Bandit Approach to Personalized News Article Recommendation](<https://arxiv.org/abs/1003.0146>)
+- [Li, L., Chu, W., Langford, J. and Schapire, R.E., 2010, April. A contextual-bandit approach to personalized news article recommendation. In Proceedings of the 19th international conference on World wide web (pp. 661-670).](<https://doi.org/10.1145/1772690.1772758>)
 - [Contextual Bandits Analysis of LinUCB Disjoint Algorithm with Dataset](<https://kfoofw.github.io/contextual-bandits-linear-ucb-disjoint/>)

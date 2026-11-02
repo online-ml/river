@@ -86,5 +86,5 @@ F1: 87.61%
 
 ## References
 
-- [Kingma, D.P. and Ba, J., 2014. Adam: A method for stochastic optimization. arXiv preprint arXiv:1412.6980.](<https://arxiv.org/pdf/1412.6980.pdf>)
-- [Ruder, S., 2016. An overview of gradient descent optimization algorithms. arXiv preprint arXiv:1609.04747.](<http://ruder.io/optimizing-gradient-descent/index.html#adamax>)
+- [Kingma, D.P. and Ba, J., 2015. Adam: A method for stochastic optimization. In Third International Conference on Learning Representations (ICLR 2005)](<https://arxiv.org/pdf/1412.6980.pdf>)
+- [Ruder, S., 2016. An overview of gradient descent optimization algorithms. arXiv preprint arXiv:1609.04747.](<https://www.ruder.io/optimizing-gradient-descent/#adamax>)

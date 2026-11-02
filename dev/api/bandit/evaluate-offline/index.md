@@ -88,5 +88,5 @@ As expected, the policy succeeds in roughly 10% of cases. Indeed, there are 10 a
 ## References
 
 - [Offline Evaluation of Multi-Armed Bandit Algorithms in Python using Replay](<https://jamesrledoux.com/algorithms/offline-bandit-evaluation/>)
-- [Unbiased Offline Evaluation of Contextual-bandit-based News Article Recommendation Algorithms](<https://arxiv.org/pdf/1003.5956.pdf>)
+- [Li, L., Chu, W., Langford, J. and Wang, X., 2011, February. Unbiased offline evaluation of contextual-bandit-based news article recommendation algorithms. In Proceedings of the fourth ACM international conference on Web search and data mining (pp. 297-306).](<https://doi.org/10.1145/1935826.1935878>)
 - [Understanding Inverse Propensity Score for Contextual Bandits](<https://chanind.github.io/ai/2022/03/14/inverse-propensity-score-contextual-bandits.html>)

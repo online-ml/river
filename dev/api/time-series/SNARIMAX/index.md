@@ -225,4 +225,4 @@ for x, y_pred in zip(future, forecast):
 - [ARMA - Wikipedia](<https://en.wikipedia.org/wiki/Autoregressive_moving-average_model>)
 - [NARX - Wikipedia](<https://en.wikipedia.org/wiki/Nonlinear_autoregressive_exogenous_model>)
 - [ARIMA - Forecasting: Principles and Practice](<https://otexts.com/fpp2/arima.html>)
-- [Anava, O., Hazan, E., Mannor, S. and Shamir, O., 2013, June. Online learning for time series prediction. In Conference on learning theory (pp. 172-184)](<https://arxiv.org/pdf/1302.6927.pdf>)
+- [Anava, O., Hazan, E., Mannor, S. and Shamir, O., 2013, June. Online learning for time series prediction. In Conference on learning theory (pp. 172-184)](<https://proceedings.mlr.press/v30/Anava13.html>)
