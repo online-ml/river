@@ -30,7 +30,7 @@ class Insects(base.RemoteDataset):
     References
     ----------
     [^1]: [USP DS repository](https://sites.google.com/view/uspdsrepository)
-    [^2]: [Souza, V., Reis, D.M.D., Maletzke, A.G. and Batista, G.E., 2020. Challenges in Benchmarking Stream Learning Algorithms with Real-world Data. arXiv preprint arXiv:2005.00113.](https://arxiv.org/abs/2005.00113)
+    [^2]: [Souza, V.M., Dos Reis, D.M., Maletzke, A.G. and Batista, G.E., 2020. Challenges in benchmarking stream learning algorithms with real-world data. Data Mining and Knowledge Discovery, 34(6), pp. 1805-1858.](https://arxiv.org/abs/2005.00113)
 
     """
 
