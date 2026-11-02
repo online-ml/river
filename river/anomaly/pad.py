@@ -10,14 +10,14 @@ __all__ = ["PredictiveAnomalyDetection"]
 class PredictiveAnomalyDetection(base.SupervisedAnomalyDetector):
     """Predictive Anomaly Detection.
 
-        This semi-supervised technique to anomaly detection employs a predictive model to learn the normal behavior
-        of a dataset. It forecasts future data points and compares these predictions with actual values to determine
-        anomalies. An anomaly score is calculated based on the deviation of the prediction from the actual value, with higher
-        scores indicating a higher probability of an anomaly.
+    This semi-supervised technique to anomaly detection employs a predictive model to learn the normal behavior
+    of a dataset. It forecasts future data points and compares these predictions with actual values to determine
+    anomalies. An anomaly score is calculated based on the deviation of the prediction from the actual value, with higher
+    scores indicating a higher probability of an anomaly.
 
-        The actual anomaly score is calculated by comparing the squared-error to a dynamic threshold. If the error is larger
-        than this threshold, the score will be 1.0; else, the score will be linearly distributed within the range (0.0, 1.0),
-        with a higher score indicating a higher squared error compared to the threshold.
+    The actual anomaly score is calculated by comparing the squared-error to a dynamic threshold. If the error is larger
+    than this threshold, the score will be 1.0; else, the score will be linearly distributed within the range (0.0, 1.0),
+    with a higher score indicating a higher squared error compared to the threshold.
 
     Parameters
     ----------
