@@ -28,7 +28,7 @@ class Grouper(base.Transformer):
 
     def __init__(
         self,
-        transformer: base.BaseTransformer,
+        transformer: base.typing.Transformer,
         by: base.typing.FeatureName | list[base.typing.FeatureName],
     ):
         self.transformer = transformer
@@ -42,7 +42,9 @@ class Grouper(base.Transformer):
 
     def learn_one(self, x):
         key = self._get_key(x)
-        self.transformers[key].learn_one(x)
+        learn = getattr(self.transformers[key], "learn_one", None)
+        if learn is not None:
+            learn(x)
 
     def transform_one(self, x):
         key = self._get_key(x)

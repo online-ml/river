@@ -350,11 +350,19 @@ class Pipeline(base.Estimator):
                     unsup_subs: list = []
                     for sub in step.transformers.values():
                         bucket = sup_subs if sub._supervised else unsup_subs
-                        bucket.append((sub, _method_params(sub, "learn_one")))
+                        learn = getattr(sub, "learn_one", None)
+                        if learn is not None:
+                            bucket.append((learn, _method_params(sub, "learn_one")))
                     plan.append(("union", step, sup_subs, unsup_subs))
                 else:
                     plan.append(
-                        ("transformer", step, step._supervised, _method_params(step, "learn_one"))
+                        (
+                            "transformer",
+                            step,
+                            step._supervised,
+                            getattr(step, "learn_one", None),
+                            _method_params(step, "learn_one"),
+                        )
                     )
             else:
                 plan.append(("final", step, step._supervised, _method_params(step, "learn_one")))
@@ -446,6 +454,10 @@ class Pipeline(base.Estimator):
         return any(step._supervised for step in self.steps.values())
 
     @property
+    def _can_mini_batch(self) -> bool:
+        return all(step._can_mini_batch for step in self.steps.values())
+
+    @property
     def _last_step(self):
         return list(self.steps.values())[-1]
 
@@ -535,23 +547,24 @@ class Pipeline(base.Estimator):
 
             if kind == "transformer":
                 is_supervised = item[2]
+                learn = item[3]
                 x_pre = x
-                if not learn_during_predict and not is_supervised:
-                    step.learn_one(x, **_route(item[3], params))
+                if not learn_during_predict and not is_supervised and learn is not None:
+                    learn(x, **_route(item[4], params))
                 x = step.transform_one(x)
-                if is_supervised:
-                    step.learn_one(x=x_pre, y=y, **_route(item[3], params))  # type: ignore
+                if is_supervised and learn is not None:
+                    learn(x=x_pre, y=y, **_route(item[4], params))
 
             elif kind == "union":
                 sup_subs = item[2]
                 unsup_subs = item[3]
                 x_pre = x
                 if not learn_during_predict:
-                    for sub, accepted in unsup_subs:
-                        sub.learn_one(x, **_route(accepted, params))
+                    for learn, accepted in unsup_subs:
+                        learn(x, **_route(accepted, params))
                 x = step.transform_one(x)
-                for sub, accepted in sup_subs:
-                    sub.learn_one(x=x_pre, y=y, **_route(accepted, params))
+                for learn, accepted in sup_subs:
+                    learn(x=x_pre, y=y, **_route(accepted, params))
 
             elif kind == "final":
                 if item[2]:
@@ -598,10 +611,10 @@ class Pipeline(base.Estimator):
                 continue
             step = item[1]
             if kind == "union":
-                for sub, accepted in item[3]:  # unsup_subs
-                    sub.learn_one(x, **_route(accepted, extra))
-            elif not item[2]:  # transformer, not supervised
-                step.learn_one(x, **_route(item[3], extra))
+                for learn, accepted in item[3]:
+                    learn(x, **_route(accepted, extra))
+            elif not item[2] and item[3] is not None:
+                item[3](x, **_route(item[4], extra))
             x = step.transform_one(x)
 
         return x, self._last_step_cached
@@ -617,7 +630,9 @@ class Pipeline(base.Estimator):
         x, last_step = self._transform_one(x, params)
         if isinstance(last_step, base.Transformer):
             if not last_step._supervised and self._LEARN_UNSUPERVISED_DURING_PREDICT:
-                last_step.learn_one(x, **_route(self._last_step_params["learn_one"], params))
+                learn = getattr(last_step, "learn_one", None)
+                if learn is not None:
+                    learn(x, **_route(self._last_step_params["learn_one"], params))
             return last_step.transform_one(
                 x, **_route(self._last_step_params["transform_one"], params)
             )
@@ -839,9 +854,11 @@ class Pipeline(base.Estimator):
 
         """
         X, last_step = self._transform_many(X=X)
-        if isinstance(last_step, base.MiniBatchTransformer):
+        if isinstance(last_step, base.typing.MiniBatchTransformer):
             if not last_step._supervised and self._LEARN_UNSUPERVISED_DURING_PREDICT:
-                last_step.learn_many(X)
+                learn = getattr(last_step, "learn_many", None)
+                if learn is not None:
+                    learn(X)
             return last_step.transform_many(X)
         return X
 

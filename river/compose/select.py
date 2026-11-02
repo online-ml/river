@@ -62,7 +62,7 @@ class Discard(base.Transformer):
         return "Discard ()"
 
 
-class Select(base.MiniBatchTransformer):
+class Select(base.Transformer):
     """Selects features.
 
     This can be used in a pipeline when you want to select certain features. The `transform_one`
@@ -129,6 +129,10 @@ class Select(base.MiniBatchTransformer):
 
     """
 
+    @property
+    def _can_mini_batch(self) -> bool:
+        return True
+
     def __init__(self, *keys: base.typing.FeatureName):
         self.keys = set(keys)
 
@@ -140,6 +144,9 @@ class Select(base.MiniBatchTransformer):
         # so the method stays pure — no view aliasing back onto the input.
         keys = typing.cast("list[str]", list(self.keys))
         return utils.dataframe.into_frame(X).select(keys).to_native()
+
+    def learn_many(self, X: IntoDataFrameT) -> None:
+        return
 
     def __str__(self):
         return str(sorted(self.keys))

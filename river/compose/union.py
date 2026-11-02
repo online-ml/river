@@ -15,7 +15,7 @@ from . import func
 __all__ = ["TransformerUnion"]
 
 
-class TransformerUnion(base.MiniBatchTransformer):
+class TransformerUnion(base.Transformer):
     """Packs multiple transformers into a single one.
 
     Pipelines allow you to apply steps sequentially. Therefore, the output of a step becomes the
@@ -216,6 +216,12 @@ class TransformerUnion(base.MiniBatchTransformer):
     def _supervised(self):
         return any(t._supervised for t in self.transformers.values())
 
+    @property
+    def _can_mini_batch(self) -> bool:
+        return bool(self.transformers) and all(
+            t._can_mini_batch for t in self.transformers.values()
+        )
+
     def _add_step(self, transformer):
         """Adds a transformer while taking care of the input type."""
 
@@ -268,12 +274,14 @@ class TransformerUnion(base.MiniBatchTransformer):
             is supervised (i.e. it inherits from `base.SupervisedTransformer`).
 
         """
-        SupervisedT = base.SupervisedTransformer
         for t in self.transformers.values():
-            if isinstance(t, SupervisedT):
-                t.learn_one(x, y)
+            learn = getattr(t, "learn_one", None)
+            if learn is None:
+                continue
+            if t._supervised:
+                learn(x, y)
             else:
-                t.learn_one(x)
+                learn(x)
 
     def transform_one(self, x):
         """Passes the data through each transformer and packs the results together."""
@@ -299,10 +307,13 @@ class TransformerUnion(base.MiniBatchTransformer):
 
         """
         for t in self.transformers.values():
-            if isinstance(t, base.MiniBatchSupervisedTransformer):
-                t.learn_many(X, y)
+            learn = getattr(t, "learn_many", None)
+            if learn is None:
+                continue
+            if t._supervised:
+                learn(X, y)
             else:
-                t.learn_many(X)
+                learn(X)
 
     def transform_many(self, X):
         """Passes the data through each transformer and packs the results together.

@@ -15,8 +15,12 @@ if typing.TYPE_CHECKING:
     from narwhals.stable.v2.typing import IntoDataFrame
 
 
-class BaseNB(base.MiniBatchClassifier):
+class BaseNB(base.Classifier):
     """Base Naive Bayes class."""
+
+    @property
+    def _can_mini_batch(self) -> bool:
+        return True
 
     @abc.abstractmethod
     def joint_log_likelihood(self, x: dict) -> float:

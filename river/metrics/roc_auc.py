@@ -3,6 +3,7 @@ from __future__ import annotations
 from scipy import integrate
 
 from river import base, metrics
+from river.base.estimator import unwrap_estimator
 
 __all__ = ["ROCAUC"]
 
@@ -72,7 +73,7 @@ class ROCAUC(metrics.base.BinaryMetric):
     def works_with(self, model) -> bool:
         return (
             super().works_with(model)
-            or isinstance(model, base.AnomalyDetector)
+            or isinstance(unwrap_estimator(model), base.AnomalyDetector)
             or isinstance(model, base.AnomalyFilter)
         )
 

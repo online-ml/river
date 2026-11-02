@@ -7,7 +7,7 @@ from river import base
 __all__ = ["FuncTransformer"]
 
 
-class FuncTransformer(base.MiniBatchTransformer):
+class FuncTransformer(base.Transformer):
     """Wraps a function to make it usable in a pipeline.
 
     There is often a need to apply an arbitrary transformation to a set of features. For instance,
@@ -92,6 +92,10 @@ class FuncTransformer(base.MiniBatchTransformer):
 
     """
 
+    @property
+    def _can_mini_batch(self) -> bool:
+        return True
+
     def __init__(self, func: typing.Callable[[dict], dict]):
         self.func = func
 
@@ -100,6 +104,9 @@ class FuncTransformer(base.MiniBatchTransformer):
 
     def transform_many(self, X):
         return self.func(X)
+
+    def learn_many(self, X) -> None:
+        return
 
     def __str__(self):
         return self.func.__name__
