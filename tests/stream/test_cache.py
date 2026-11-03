@@ -3,6 +3,7 @@ from __future__ import annotations
 import functools
 import gc
 import platform
+import tempfile
 import typing
 
 import pytest
@@ -16,7 +17,7 @@ if typing.TYPE_CHECKING:
 
 
 def keyless_function() -> Iterator[int]:
-    """A generator function, i.e. the only thing `Cache.__call__` guesses a key from."""
+    """A generator function, which has a name but is not a key."""
     yield 1
 
 
@@ -69,9 +70,9 @@ DISCOVERY_CASES: dict[str, tuple[list[str], set[str]]] = {
 }
 
 
-KEYLESS_CASES: dict[str, tuple[typing.Any, type[Exception], str]] = {
-    "an-iterable": ([1, 2], ValueError, "No default key could be guessed"),
-    "a-function": (keyless_function, TypeError, "'function' object is not iterable"),
+KEYLESS_CASES: dict[str, typing.Any] = {
+    "an-iterable": [1, 2],
+    "a-function": keyless_function,
 }
 
 UNKNOWN_KEY_CASES: dict[str, Callable[[stream.Cache], None]] = {
@@ -146,14 +147,12 @@ def test_dotted_key_survives_full_round_trip(tmp_path: Path) -> None:
     assert list(tmp_path.iterdir()) == []
 
 
-@pytest.mark.parametrize(("source", "error", "match"), KEYLESS_CASES.values(), ids=KEYLESS_CASES)
-def test_keyless_call_raises(
-    tmp_path: Path, source: typing.Any, error: type[Exception], match: str
-) -> None:
-    """A key is in practice mandatory: the only thing `__call__` guesses one from is a function,
-    which is not iterable. `list` because both failures need iteration to start.
+@pytest.mark.parametrize("source", KEYLESS_CASES.values(), ids=KEYLESS_CASES)
+def test_keyless_call_raises(tmp_path: Path, source: typing.Any) -> None:
+    """A key is mandatory, whatever the source is. `list` because the failure needs iteration to
+    start.
     """
-    with pytest.raises(error, match=match):
+    with pytest.raises(ValueError, match="No key was given"):
         _ = list(stream.Cache(directory=tmp_path)(source))
 
     assert list(tmp_path.iterdir()) == []
@@ -194,15 +193,20 @@ def test_cleared_key_is_streamed_from_the_source(tmp_path: Path) -> None:
     assert list(cache([4, 5, 6], key="k")) == [4, 5, 6]
 
 
-@pytest.mark.parametrize(
-    ("system", "expected"),
-    [("Linux", "/tmp"), ("Darwin", "/tmp"), ("Windows", "C:\\TEMP")],
-)
+@pytest.mark.parametrize(("system", "expected"), [("Linux", "/tmp"), ("Darwin", "/tmp")])
 def test_default_directory_from_system(
     monkeypatch: pytest.MonkeyPatch, system: str, expected: str
 ) -> None:
     patch_system(monkeypatch, system)
     assert stream.Cache().directory == expected
+
+
+def test_default_directory_on_windows_is_the_system_temp_dir(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    patch_system(monkeypatch, "Windows")
+    monkeypatch.setattr(tempfile, "tempdir", str(tmp_path))
+    assert stream.Cache().directory == str(tmp_path)
 
 
 def test_unknown_system_raises(monkeypatch: pytest.MonkeyPatch) -> None:
