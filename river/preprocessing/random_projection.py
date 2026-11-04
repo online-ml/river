@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import collections
+import math
 import random
 
 from river import base
@@ -68,7 +69,7 @@ class GaussianRandomProjector(base.Transformer):
         )
 
     def _rand_gauss(self):
-        return self._rng.gauss(0, 1 / (self.n_components**0.5))
+        return self._rng.gauss(0, 1 / math.sqrt(self.n_components))
 
     def _unit_test_skips(self):
         # The projection matrix is lazily populated from a shared RNG in the
@@ -154,7 +155,7 @@ class SparseRandomProjector(base.Transformer):
         weights = {}
         for j in range(self.n_components):
             if self._rng.random() < self.density:
-                w = (1 / (self.density * self.n_components)) ** 0.5
+                w = math.sqrt(1 / (self.density * self.n_components))
                 # Flip a coin to decide the sign
                 weights[j] = w if self._rng.random() < 0.5 else -w
         return weights

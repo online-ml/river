@@ -307,7 +307,7 @@ class StandardScaler(base.MiniBatchTransformer):
                 for i, xi in x.items():
                     m = means[i].get()
                     v = vars_[i].get()
-                    result[i] = (xi - m) / v**0.5 if v else 0.0
+                    result[i] = (xi - m) / math.sqrt(v) if v else 0.0
                 return result
             return {i: xi - means[i].get() for i, xi in x.items()}
         if self.with_std:
@@ -406,9 +406,9 @@ class StandardScaler(base.MiniBatchTransformer):
 
         if self.with_std:
             if self.window_size is None:
-                stds = np.array([self.vars[c] ** 0.5 for c in columns], dtype=dtype)
+                stds = np.array([math.sqrt(self.vars[c]) for c in columns], dtype=dtype)
             else:
-                stds = np.array([self.vars[c].get() ** 0.5 for c in columns], dtype=dtype)
+                stds = np.array([math.sqrt(self.vars[c].get()) for c in columns], dtype=dtype)
             np.divide(Xt, stds, where=stds > 0, out=Xt)
 
         native = utils.dataframe.to_native_frame(Xt, columns=columns, like=Xnw)
@@ -850,6 +850,6 @@ class AdaptiveStandardScaler(base.Transformer):
 
     def transform_one(self, x):
         return {
-            i: safe_div(x[i] - m, s2**0.5 if s2 > 0 else 0)
+            i: safe_div(x[i] - m, math.sqrt(s2) if s2 > 0 else 0)
             for i, m, s2 in ((i, self.means[i].get(), self.vars[i].get()) for i in x)
         }

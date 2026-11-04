@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import abc
 import collections
+import math
 import numbers
 from collections.abc import Iterable
 
@@ -69,7 +70,7 @@ class BaseFM:
         x = self._ohe_cat_features(x)
 
         if self.sample_normalization:
-            x_l2_norm = sum(xj**2 for xj in x.values()) ** 0.5
+            x_l2_norm = math.sqrt(sum(xj**2 for xj in x.values()))
             if x_l2_norm:
                 x = {j: xj / x_l2_norm for j, xj in x.items()}
 

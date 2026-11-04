@@ -406,7 +406,7 @@ def test_standard_scaler_window_transform_one_matches_numpy():
         out = scaler.transform_one({"x": v})
         window = values[max(0, i - window_size) : i]
         m, var = _np_population_stats(window)
-        expected = (v - m) / var**0.5 if var else 0.0
+        expected = (v - m) / math.sqrt(var) if var else 0.0
         assert math.isclose(out["x"], expected, abs_tol=1e-9)
 
 
@@ -539,7 +539,7 @@ def test_standard_scaler_window_pipeline_integration():
         pipeline.learn_one({"x": v, "ignored": 99.0})
     out = pipeline.transform_one({"x": 3.0, "ignored": 0.0})
     # mean(1,2,3)=2, popvar=2/3, std=sqrt(2/3); (3-2)/std
-    assert math.isclose(out["x"], (3.0 - 2.0) / (2.0 / 3.0) ** 0.5)
+    assert math.isclose(out["x"], (3.0 - 2.0) / math.sqrt(2.0 / 3.0))
 
 
 def test_standard_scaler_window_counts_track_cumulative_observations():
