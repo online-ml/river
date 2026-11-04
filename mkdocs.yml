@@ -692,6 +692,7 @@ theme:
   logo: img/icon.png
   favicon: img/favicon.ico
   features:
+    - content.action.copy
     - content.code.copy
     - navigation.tabs
     - navigation.instant
@@ -727,6 +728,18 @@ markdown_extensions:
 
 plugins:
   - search
+  - llmstxt:
+      sections:
+        Documentation:
+          - introduction/*.md
+          - recipes/*.md
+          - examples/*.md
+          - faq/index.md
+        API reference:
+          - api/*.md
+        Optional:
+          - benchmarks/index.md
+          - license/index.md
 
 strict: true
 

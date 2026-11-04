@@ -134,6 +134,14 @@ def pr_auc_score(y_true, y_score):
     return sk_metrics.auc(recall, precision)
 
 
+def can_compare_with_sklearn(metric, y_true, y_pred):
+    if isinstance(metric, metrics.BalancedAccuracy):
+        return len(set(y_true)) > 1 and set(y_pred).issubset(y_true)
+    if isinstance(metric, metrics.MCC):
+        return len(set(y_true) | set(y_pred)) > 1
+    return True
+
+
 TEST_CASES = [
     (metrics.Accuracy(), sk_metrics.accuracy_score),
     (metrics.BalancedAccuracy(), sk_metrics.balanced_accuracy_score),
@@ -261,11 +269,15 @@ def test_metric(metric, sk_metric):
                 m.update(y_true=yt, y_pred=yp)
 
             if i >= 1:
+                true_prefix = y_true[: i + 1]
+                pred_prefix = y_pred[: i + 1]
+                if not can_compare_with_sklearn(metric, true_prefix, pred_prefix):
+                    continue
                 if metric.works_with_weights:
                     kwargs = {"sample_weight": sample_weights[: i + 1]}
                 else:
                     kwargs = {}
-                assert abs(m.get() - sk_metric(y_true[: i + 1], y_pred[: i + 1], **kwargs)) < 1e-6
+                assert abs(m.get() - sk_metric(true_prefix, pred_prefix, **kwargs)) < 1e-6
 
 
 @pytest.mark.parametrize(
@@ -293,16 +305,11 @@ def test_rolling_metric(metric, sk_metric):
                 m.update(y_true=yt, y_pred=yp)
 
                 if i >= 2:
-                    assert (
-                        abs(
-                            m.get()
-                            - sk_metric(
-                                tail(y_true[: i + 1], n),
-                                tail(y_pred[: i + 1], n),
-                            )
-                        )
-                        < 1e-10
-                    )
+                    true_window = tail(y_true[: i + 1], n)
+                    pred_window = tail(y_pred[: i + 1], n)
+                    if not can_compare_with_sklearn(metric, true_window, pred_window):
+                        continue
+                    assert abs(m.get() - sk_metric(true_window, pred_window)) < 1e-10
 
 
 def test_compose():
@@ -369,5 +376,4 @@ def test_balanced_accuracy_ignores_unseen_predicted_classes():
         metric.update(yt, yp)
 
     # recall(0) = 1/2, recall(1) = 2/2, class 2 dropped -> (0.5 + 1.0) / 2
-    assert metric.get() == pytest.approx(sk_metrics.balanced_accuracy_score(y_true, y_pred))
     assert metric.get() == pytest.approx(0.75)

@@ -50,7 +50,7 @@ class AdaBound(optim.base.Optimizer):
 
     References
     ----------
-    [^1]: [Luo, L., Xiong, Y., Liu, Y. and Sun, X., 2019. Adaptive gradient methods with dynamic bound of learning rate. arXiv preprint arXiv:1902.09843](https://arxiv.org/abs/1902.09843)
+    [^1]: [Luo, L., Xiong, Y., Liu, Y. and Sun, X., 2019. Adaptive gradient methods with dynamic bound of learning rate. In Seventh International Conference on Learning Representations (ICLR 2019)](https://arxiv.org/abs/1902.09843)
 
     """
 

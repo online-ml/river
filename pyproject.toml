@@ -9,7 +9,7 @@ license = "BSD-3-Clause"
 dependencies = [
     "scipy>=1.14.1,<2",
     "numpy>=2.2.5,<3",
-    "narwhals>=2.0.0",
+    "narwhals>=2.28.0",
 ]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -30,7 +30,7 @@ classifiers = [
 
 [project.optional-dependencies]
 pandas = [
-    "pandas>=2.2,<3",
+    "pandas>=3.1,<4",
 ]
 
 [project.urls]
@@ -58,7 +58,7 @@ dev = [
     "gymnasium>=0.29.0",
     "altair>=5.0.0",
     "mypy>=1.11.1",
-    "pandas>=2.2,<3",
+    "pandas>=3.1,<4",
     "prek>=0.2",
     "pytest>=9.0.3",
     "ruff>=0.15.8",
@@ -84,7 +84,7 @@ docs = [
     "pygments",
     "altair>=5.0.0",
     "TA-Lib",
-    "zensical>=0.0.40",
+    "zensical>=0.0.74",
     "nbconvert",
     "numpydoc",
     "plotly>=6.3.0",
@@ -156,9 +156,7 @@ addopts = [
     "-m not datasets and not slow",
     "--color=yes",
 ]
-filterwarnings = [
-    "ignore:A single label was found in 'y_true' and 'y_pred':UserWarning:sklearn",
-]
+filterwarnings = ["error"]
 doctest_optionflags = "NORMALIZE_WHITESPACE NUMBER ELLIPSIS"
 norecursedirs = [
     "build",
@@ -287,9 +285,7 @@ module = [
     "river.forest.*",
     "river.facto.*",
     "river.compat.river_to_sklearn",
-    "river.multiclass.*",
     "river.reco.*",
-    "river.imblearn.*",
     "river.active.*",
     "tests.*",
 ]

@@ -4,7 +4,7 @@ download-datasets:
 	python -c "from river import datasets, bandit; datasets.Elec2().download(); datasets.SMSSpam().download(); datasets.CreditCard().download(); datasets.Music().download(); datasets.CriteoAds().download(); bandit.datasets.NewsArticles().download()"
 
 format:
-	pre-commit run --all-files
+	prek run --all-files
 
 execute-notebooks:
 	jupyter nbconvert --execute --to notebook --inplace docs/introduction/*/*.ipynb --ExecutePreprocessor.timeout=-1
@@ -21,6 +21,7 @@ render-notebooks:
 doc: render-notebooks
 	python docs/parse river --out docs --verbose
 	zensical build
+	test -f site/llms.txt
 
 livedoc: doc
 	zensical serve

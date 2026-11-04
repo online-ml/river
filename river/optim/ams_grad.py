@@ -50,7 +50,7 @@ class AMSGrad(optim.base.Optimizer):
 
     References
     ----------
-    [^1]: [Reddi, S.J., Kale, S. and Kumar, S., 2019. On the convergence of adam and beyond. arXiv preprint arXiv:1904.09237](https://arxiv.org/pdf/1904.09237.pdf)
+    [^1]: [Reddi, S.J., Kale, S. and Kumar, S., 2018. On the convergence of Adam and beyond. In Sixth International Conference on Learning Representations (ICLR 2018)](https://arxiv.org/pdf/1904.09237.pdf)
 
     """
 

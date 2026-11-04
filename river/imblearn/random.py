@@ -7,20 +7,24 @@ import typing
 from river import base, utils
 
 
-class ClassificationSampler(base.Wrapper, base.Classifier):
-    def __init__(self, classifier, seed: int | None = None):
+class ClassificationSampler(base.Wrapper[base.Classifier], base.Classifier):
+    def __init__(self, classifier: base.Classifier, seed: int | None = None):
         self.classifier = classifier
         self.seed = seed
         self._rng = random.Random(seed)
 
     @property
-    def _wrapped_model(self):
+    def _wrapped_model(self) -> base.Classifier:
         return self.classifier
 
-    def predict_proba_one(self, x, **kwargs):
+    def predict_proba_one(
+        self, x: dict[base.typing.FeatureName, typing.Any], **kwargs: typing.Any
+    ) -> dict[base.typing.ClfTarget, float]:
         return self.classifier.predict_proba_one(x, **kwargs)
 
-    def predict_one(self, x, **kwargs):
+    def predict_one(
+        self, x: dict[base.typing.FeatureName, typing.Any], **kwargs: typing.Any
+    ) -> base.typing.ClfTarget | None:
         return self.classifier.predict_one(x, **kwargs)
 
 
@@ -75,14 +79,24 @@ class RandomUnderSampler(ClassificationSampler):
 
     """
 
-    def __init__(self, classifier: base.Classifier, desired_dist: dict, seed: int | None = None):
+    def __init__(
+        self,
+        classifier: base.Classifier,
+        desired_dist: dict[base.typing.ClfTarget, float],
+        seed: int | None = None,
+    ):
         super().__init__(classifier=classifier, seed=seed)
         self.desired_dist = desired_dist
-        self._actual_dist: typing.Counter = collections.Counter()
-        self._trained_on_dist: typing.Counter = collections.Counter()
-        self._pivot = None
+        self._actual_dist: typing.Counter[base.typing.ClfTarget] = collections.Counter()
+        self._trained_on_dist: typing.Counter[base.typing.ClfTarget] = collections.Counter()
+        self._pivot: base.typing.ClfTarget | None = None
 
-    def learn_one(self, x, y, **kwargs):
+    def learn_one(
+        self,
+        x: dict[base.typing.FeatureName, typing.Any],
+        y: base.typing.ClfTarget,
+        **kwargs: typing.Any,
+    ) -> None:
         self._actual_dist[y] += 1
         f = self.desired_dist
         g = self._actual_dist
@@ -151,14 +165,24 @@ class RandomOverSampler(ClassificationSampler):
 
     """
 
-    def __init__(self, classifier: base.Classifier, desired_dist: dict, seed: int | None = None):
+    def __init__(
+        self,
+        classifier: base.Classifier,
+        desired_dist: dict[base.typing.ClfTarget, float],
+        seed: int | None = None,
+    ):
         super().__init__(classifier=classifier, seed=seed)
         self.desired_dist = desired_dist
-        self._trained_on_dist: typing.Counter = collections.Counter()
-        self._actual_dist: typing.Counter = collections.Counter()
-        self._pivot = None
+        self._trained_on_dist: typing.Counter[base.typing.ClfTarget] = collections.Counter()
+        self._actual_dist: typing.Counter[base.typing.ClfTarget] = collections.Counter()
+        self._pivot: base.typing.ClfTarget | None = None
 
-    def learn_one(self, x, y, **kwargs):
+    def learn_one(
+        self,
+        x: dict[base.typing.FeatureName, typing.Any],
+        y: base.typing.ClfTarget,
+        **kwargs: typing.Any,
+    ) -> None:
         self._actual_dist[y] += 1
         f = self.desired_dist
         g = self._actual_dist
@@ -233,20 +257,25 @@ class RandomSampler(ClassificationSampler):
     def __init__(
         self,
         classifier: base.Classifier,
-        desired_dist: dict,
-        sampling_rate=1.0,
+        desired_dist: dict[base.typing.ClfTarget, float] | None,
+        sampling_rate: float = 1.0,
         seed: int | None = None,
     ):
         super().__init__(classifier=classifier, seed=seed)
         self.sampling_rate = sampling_rate
-        self._trained_on_dist: typing.Counter = collections.Counter()
-        self._actual_dist: typing.Counter = collections.Counter()
-        if desired_dist is None:
-            desired_dist = self._actual_dist
-        self.desired_dist = desired_dist
+        self._trained_on_dist: typing.Counter[base.typing.ClfTarget] = collections.Counter()
+        self._actual_dist: typing.Counter[base.typing.ClfTarget] = collections.Counter()
+        self.desired_dist: typing.Mapping[base.typing.ClfTarget, float] = (
+            self._actual_dist if desired_dist is None else desired_dist
+        )
         self._n = 0
 
-    def learn_one(self, x, y, **kwargs):
+    def learn_one(
+        self,
+        x: dict[base.typing.FeatureName, typing.Any],
+        y: base.typing.ClfTarget,
+        **kwargs: typing.Any,
+    ) -> None:
         self._actual_dist[y] += 1
         self._n += 1
         f = self.desired_dist

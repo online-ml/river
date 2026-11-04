@@ -7,6 +7,7 @@ import numpy as np
 from scipy.stats import multivariate_normal
 
 from river import covariance, stats, utils
+from river._river_rust.stats import RsGaussian
 from river.proba import base
 
 if typing.TYPE_CHECKING:
@@ -14,8 +15,6 @@ if typing.TYPE_CHECKING:
     from numpy.typing import NDArray
 
 __all__ = ["Gaussian", "MultivariateGaussian"]
-
-_HALF_LOG_TAU = 0.5 * math.log(math.tau)
 
 
 class Gaussian(base.ContinuousDistribution):
@@ -49,50 +48,61 @@ class Gaussian(base.ContinuousDistribution):
 
     def __init__(self, seed: int | None = None):
         super().__init__(seed)
-        self._var = stats.Var(ddof=1)
+        self._gaussian = RsGaussian()
 
     @classmethod
     def _from_state(
         cls, n: float, m: float, var: float, ddof: int, seed: int | None = None
     ) -> typing.Self:
         new = cls(seed=seed)
-        new._var = stats.Var._from_state(n, m, var, ddof=ddof)
+        new._gaussian = RsGaussian(ddof=ddof, n=n, mean=m, variance=var)
         return new
 
     @property
     def n_samples(self) -> float:
-        return self._var.mean.n
+        return self._gaussian.n_samples
 
     @property
     def mu(self) -> float:
-        return self._var.mean.get()
+        return self._gaussian.mean
 
     @property
     def sigma(self) -> float:
-        return math.sqrt(self._var.get())
+        return self._gaussian.standard_deviation
+
+    @property
+    def _variance(self) -> float:
+        return self._gaussian.variance
 
     def __repr__(self) -> str:
         return f"𝒩(μ={self.mu:.3f}, σ={self.sigma:.3f})"
 
     def update(self, x: float, w: float = 1.0) -> None:
-        self._var.update(x, w)
+        self._gaussian.update(x, w)
+
+    def _update_many(self, X: np.ndarray) -> None:
+        if len(X):
+            mean = np.mean(X).item()
+            self._gaussian.update_batch(
+                len(X),
+                mean,
+                np.sum(np.square(X - mean)).item(),
+            )
+
+    def _pdf_many(self, X: np.ndarray) -> np.ndarray:
+        variance = self._variance
+        if variance <= 0.0:
+            return np.zeros(X.shape)
+        with np.errstate(over="ignore", under="ignore", invalid="ignore"):
+            density = np.exp(-np.square(X - self.mu) / (2.0 * variance))
+            density /= math.sqrt(math.tau * variance)
+        return density
 
     def revert(self, x: float, w: float = 1.0) -> None:
-        self._var.revert(x, w)
+        self._gaussian.revert(x, w)
 
     def __call__(self, x: float) -> float:
-        var = self._var
-        n = var.mean.n
-        if n > var.ddof:
-            variance = var._S / (n - var.ddof)
-            if variance > 0.0:
-                mu = var.mean._mean
-                try:
-                    sigma = math.sqrt(variance)
-                    return utils.math.norm_pdf((x - mu) / sigma) / sigma
-                except (ValueError, OverflowError):
-                    return 0.0
-        return 0.0
+        return self._gaussian.pdf(x)
 
     def log_pdf(self, x: float) -> float:
         """Log of the probability density function.
@@ -100,20 +110,10 @@ class Gaussian(base.ContinuousDistribution):
         This is more efficient and numerically stable than ``math.log(self(x))``
         because it avoids the ``exp`` / ``sqrt`` round-trip.
         """
-        var = self._var
-        n = var.mean.n
-        if n > var.ddof:
-            variance = var._S / (n - var.ddof)
-            if variance > 0.0:
-                mu = var.mean._mean
-                return (x - mu) ** 2 / (-2.0 * variance) - _HALF_LOG_TAU - 0.5 * math.log(variance)
-        return -math.inf
+        return self._gaussian.log_pdf(x)
 
     def cdf(self, x: float) -> float:
-        try:
-            return utils.math.norm_cdf((x - self.mu) / self.sigma)
-        except ZeroDivisionError:
-            return 0.0
+        return self._gaussian.cdf(x)
 
     def sample(self) -> float:
         return self._rng.gauss(self.mu, self.sigma)
@@ -190,7 +190,7 @@ class MultivariateGaussian(base.MultivariateContinuousDistribution):
     >>> p(x)
     0.97967...
     >>> p.cdf(x)
-    0.00787...
+    0.005096...
 
     To sample data from distribution:
 
@@ -329,10 +329,10 @@ class MultivariateGaussian(base.MultivariateContinuousDistribution):
         return 0.0  # pragma: no cover
 
     def cdf(self, x: dict[str, float]) -> float:
-        x_ = list(x.values())
+        x_ = [x[i] for i in self.mu]
         _, cov = self._covariance_array()
         cdf_ = multivariate_normal(
-            [self.mu[i] for i in x],
+            list(self.mu.values()),
             cov,
             allow_singular=True,
         ).cdf(x_)

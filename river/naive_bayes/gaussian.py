@@ -123,30 +123,14 @@ class GaussianNB(base.BaseNB):
                 values = values[~np.isnan(values)]
 
                 if len(values):
-                    self.gaussians[c][col]._var.update_many(values)
+                    self.gaussians[c][col]._update_many(values)
 
     @staticmethod
     def _log_gaussian_pdf_many(gaussian: proba.Gaussian | None, values: np.ndarray) -> np.ndarray:
         if gaussian is None:
             return np.full(values.shape, _LOG_PDF_EPS)
 
-        var = gaussian._var
-        n = var.mean.n
-        if n <= var.ddof:
-            return np.full(values.shape, _LOG_PDF_EPS)
-
-        variance = var._S / (n - var.ddof)
-
-        if variance <= 0:
-            return np.full(values.shape, _LOG_PDF_EPS)
-
-        mu = var.mean._mean
-
-        with np.errstate(over="ignore", under="ignore", invalid="ignore"):
-            pdf = np.exp(-((values - mu) ** 2) / (2 * variance))
-            pdf /= math.sqrt(math.tau * variance)
-
-        return np.log(_PDF_EPS + pdf)
+        return np.log(_PDF_EPS + gaussian._pdf_many(values))
 
     def joint_log_likelihood_many(self, X: IntoDataFrame) -> IntoDataFrame:
         """Compute the joint log-likelihoods for a batch of feature vectors.
@@ -200,9 +184,7 @@ class GaussianNB(base.BaseNB):
 
     @staticmethod
     def _make_gaussian():
-        g = proba.Gaussian()
-        g._var.ddof = 0
-        return g
+        return proba.Gaussian._from_state(n=0, m=0, var=0, ddof=0)
 
     def _unit_test_skips(self):
         return set()

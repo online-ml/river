@@ -66,7 +66,7 @@ class FwFM(BaseFM):
 
     @classmethod
     def _unit_test_params(cls):
-        yield {"seed": 42}
+        yield {"sample_normalization": True, "seed": 42}
 
     def _unit_test_skips(self):
         # Latent factors are initialised lazily, the first time each feature is encountered. Their
@@ -238,7 +238,7 @@ class FwFMRegressor(FwFM, base.Regressor):
 
     References
     ----------
-    [^1]: [Junwei Pan, Jian Xu, Alfonso Lobos Ruiz, Wenliang Zhao, Shengjun Pan, Yu Sun, and Quan Lu, 2018, April. Field-weighted Factorization Machines for Click-Through Rate Prediction in Display Advertising. In Proceedings of the 2018 World Wide Web Conference on World Wide Web. International World Wide Web Conferences Steering Committee, (pp. 1349–1357).](https://arxiv.org/abs/1806.03514)
+    [^1]: [Junwei Pan, Jian Xu, Alfonso Lobos Ruiz, Wenliang Zhao, Shengjun Pan, Yu Sun, and Quan Lu, 2018, April. Field-weighted Factorization Machines for Click-Through Rate Prediction in Display Advertising. In Proceedings of the 2018 World Wide Web Conference on World Wide Web. International World Wide Web Conferences Steering Committee, (pp. 1349–1357).](https://doi.org/10.1145/3178876.3186040)
 
     """
 
@@ -282,7 +282,7 @@ class FwFMRegressor(FwFM, base.Regressor):
 
     def predict_one(self, x):
         x = self._ohe_cat_features(x)
-        return self._raw_dot(x).item()
+        return float(self._raw_dot(x))
 
 
 class FwFMClassifier(FwFM, base.Classifier):
@@ -377,7 +377,7 @@ class FwFMClassifier(FwFM, base.Classifier):
 
     References
     ----------
-    [^1]: [Junwei Pan, Jian Xu, Alfonso Lobos Ruiz, Wenliang Zhao, Shengjun Pan, Yu Sun, and Quan Lu, 2018, April. Field-weighted Factorization Machines for Click-Through Rate Prediction in Display Advertising. In Proceedings of the 2018 World Wide Web Conference on World Wide Web. International World Wide Web Conferences Steering Committee, (pp. 1349–1357).](https://arxiv.org/abs/1806.03514)
+    [^1]: [Junwei Pan, Jian Xu, Alfonso Lobos Ruiz, Wenliang Zhao, Shengjun Pan, Yu Sun, and Quan Lu, 2018, April. Field-weighted Factorization Machines for Click-Through Rate Prediction in Display Advertising. In Proceedings of the 2018 World Wide Web Conference on World Wide Web. International World Wide Web Conferences Steering Committee, (pp. 1349–1357).](https://doi.org/10.1145/3178876.3186040)
 
     """
 

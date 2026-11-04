@@ -71,7 +71,8 @@ class BaseFM:
 
         if self.sample_normalization:
             x_l2_norm = math.sqrt(sum(xj**2 for xj in x.values()))
-            x = {j: xj / x_l2_norm for j, xj in x.items()}
+            if x_l2_norm:
+                x = {j: xj / x_l2_norm for j, xj in x.items()}
 
         self._learn_one(x, y, w=w)
 

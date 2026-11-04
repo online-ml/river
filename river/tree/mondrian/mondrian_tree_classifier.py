@@ -1,21 +1,9 @@
 from __future__ import annotations
 
 from river import base
-from river._river_rust.tree import (
-    go_downwards_classifier as go_downwards_classifier_c,
-)
-from river._river_rust.tree import (
-    go_upwards as go_upwards_c,
-)
-from river._river_rust.tree import (
-    predict_proba_classifier as predict_proba_classifier_c,
-)
+from river._river_rust.tree import NativeMondrianTreeClassifier
+from river.tree._numeric_adapter import NumericAdapter
 from river.tree.mondrian.mondrian_tree import MondrianTree
-from river.tree.mondrian.mondrian_tree_nodes import (
-    MondrianBranchClassifier,
-    MondrianLeafClassifier,
-    MondrianNodeClassifier,
-)
 
 
 class MondrianTreeClassifier(MondrianTree, base.Classifier):
@@ -73,12 +61,11 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
         >>> metric = metrics.Accuracy()
 
         >>> evaluate.progressive_val_score(dataset, model, metric)
-        Accuracy: 70.64%
+        Accuracy: 72.24%
 
         References
         ----------
-        [^1]: Balaji Lakshminarayanan, Daniel M. Roy, Yee Whye Teh. Mondrian Forests: Efficient Online Random Forests.
-            arXiv:1406.2673, pages 2-4
+        [^1]: [Lakshminarayanan, B., Roy, D.M. and Teh, Y.W., 2014. Mondrian forests: Efficient online random forests. Advances in neural information processing systems, 27. (pages 2-4)](https://proceedings.neurips.cc/paper_files/paper/2014/hash/195c9c0797f42473f2c2f922c4cf52cf-Abstract.html)
 
     """
 
@@ -108,172 +95,52 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
         # The previously observed classes set
         self._classes: set[base.typing.ClfTarget] = set()
 
-        # Class-to-index mapping for list-based storage
         self._class_to_idx: dict = {}
         self._idx_to_class: list = []
-
-        # Initialization of the root of the tree
-        # It's the root so it doesn't have any parent (hence None)
-        self._root = MondrianLeafClassifier(None, 0.0, 0)
+        self._native_class_indices: list[int] = []
+        self._native_model: NativeMondrianTreeClassifier | None = None
+        self._native_adapter: NumericAdapter | None = None
 
     @property
     def _is_initialized(self):
         """Check if the tree has learnt at least one sample"""
         return len(self._classes) != 0
 
-    def _predict(self, node: MondrianNodeClassifier) -> dict[base.typing.ClfTarget, float]:
-        """Compute the prediction scores as a dict.
-
-        Parameters
-        ----------
-        node
-            Node to make predictions.
-
-        """
-
-        n_classes = len(self._classes)
-        scores = node.predict(self.dirichlet, n_classes)
-        return {self._idx_to_class[i]: scores[i] for i in range(n_classes)}
-
-    def _split(
-        self,
-        node: MondrianLeafClassifier | MondrianBranchClassifier,
-        split_time: float,
-        threshold: float,
-        feature: base.typing.FeatureName,
-        is_right_extension: bool,
-    ) -> MondrianBranchClassifier:
-        """Split the given node and set the split time, threshold, etc., to the node.
-
-        Parameters
-        ----------
-        node
-            Target node.
-        split_time
-            Split time of the node in the Mondrian process.
-        threshold
-            Threshold of acceptance of the node.
-        feature
-            Feature of the node.
-        is_right_extension
-            Should we extend the tree in the right or left direction.
-
-        """
-
-        new_depth = node.depth + 1
-
-        # To calm down mypy
-        left: MondrianLeafClassifier | MondrianBranchClassifier
-        right: MondrianLeafClassifier | MondrianBranchClassifier
-
-        # The node is already a branch: we create a new branch above it and move the existing
-        # node one level down the tree
-        if isinstance(node, MondrianBranchClassifier):
-            old_left, old_right = node.children
-            if is_right_extension:
-                left = MondrianBranchClassifier(
-                    node, split_time, new_depth, node.feature, node.threshold
-                )
-                right = MondrianLeafClassifier(node, split_time, new_depth)
-                left.replant(node, True)
-
-                old_left.parent = left
-                old_right.parent = left
-
-                left.children = (old_left, old_right)
-            else:
-                right = MondrianBranchClassifier(
-                    node, split_time, new_depth, node.feature, node.threshold
-                )
-                left = MondrianLeafClassifier(node, split_time, new_depth)
-                right.replant(node, True)
-
-                old_left.parent = right
-                old_right.parent = right
-
-                right.children = (old_left, old_right)
-
-            # Update the level of the modified nodes
-            new_depth += 1
-            old_left.update_depth(new_depth)
-            old_right.update_depth(new_depth)
-
-            # Update split info
-            node.feature = feature
-            node.threshold = threshold
-            node.children = (left, right)
-
-            return node
-
-        # We promote the leaf to a branch
-        branch = MondrianBranchClassifier(node.parent, node.time, node.depth, feature, threshold)
-        left = MondrianLeafClassifier(branch, split_time, new_depth)
-        right = MondrianLeafClassifier(branch, split_time, new_depth)
-        branch.children = (left, right)
-
-        # Copy properties from the previous leaf
-        branch.replant(node, True)
-
-        if is_right_extension:
-            left.replant(node, True)
-        else:
-            right.replant(node, True)
-
-        # To avoid leaving garbage behind
-        del node
-
-        return branch
-
-    def _go_downwards(self, x, y):
-        """Update the tree (downward procedure)."""
-
-        rng = self._rng
-
-        leaf, new_root, nodes_added = go_downwards_classifier_c(
-            self._root,
-            x,
-            self._class_to_idx[y],
-            len(self._classes),
-            self.dirichlet,
-            self.use_aggregation,
-            self.step,
-            self.split_pure,
-            self.iteration,
-            self.max_nodes if self.max_nodes is not None else -1,
-            self._n_nodes,
-            rng.random,
-            rng.choices,
-            rng.uniform,
-            self._split,
-        )
-        self._n_nodes += nodes_added
-        if new_root is not None:
-            self._root = new_root
-        return leaf
-
-    def _go_upwards(self, leaf: MondrianLeafClassifier):
-        """Update the tree (upwards procedure)."""
-        go_upwards_c(leaf, self.iteration)
+    def _init_native(self, x, y):
+        adapter = NumericAdapter(x, y, sort_features=True)
+        self._native_adapter = adapter
+        self._class_to_idx = adapter.labels
+        self._idx_to_class = adapter.classes
+        self._native_class_indices = [0]
+        self._native_model = NativeMondrianTreeClassifier(len(x), 1, self._rng.getrandbits(64))
 
     @property
     def _multiclass(self):
         return True
 
     def learn_one(self, x, y):
-        # Handle new class
-        if y not in self._class_to_idx:
-            self._class_to_idx[y] = len(self._idx_to_class)
-            self._idx_to_class.append(y)
-
-        # Updating the previously seen classes with the new sample
+        if self._native_model is None:
+            self._init_native(x, y)
+        adapter = self._native_adapter
+        model = self._native_model
+        assert adapter is not None and model is not None
+        y_index, added = adapter.add_label(y)
+        if added:
+            model.add_class()
+            self._native_class_indices.append(y_index)
         self._classes.add(y)
-
-        # Learning step
-        leaf = self._go_downwards(x, y)
-        if self.use_aggregation:
-            self._go_upwards(leaf)
-
-        # Incrementing iteration
+        self._n_nodes += model.learn_one_mapping(
+            x,
+            adapter.features,
+            adapter.feature_names,
+            y_index,
+            self.iteration,
+            self.step,
+            self.use_aggregation,
+            self.dirichlet,
+            self.split_pure,
+            self.max_nodes,
+        )
         self.iteration += 1
 
     def predict_proba_one(self, x):
@@ -289,8 +156,13 @@ class MondrianTreeClassifier(MondrianTree, base.Classifier):
         if not self._is_initialized:
             return {}
 
-        n_classes = len(self._classes)
-        scores = predict_proba_classifier_c(
-            self._root, x, n_classes, self.dirichlet, self.use_aggregation
+        adapter = self._native_adapter
+        assert adapter is not None and self._native_model is not None
+        return self._native_model.predict_proba_mapping(
+            x,
+            adapter.features,
+            self._idx_to_class,
+            self._native_class_indices,
+            self.dirichlet,
+            self.use_aggregation,
         )
-        return {self._idx_to_class[i]: scores[i] for i in range(n_classes)}

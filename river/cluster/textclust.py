@@ -3,8 +3,10 @@ from __future__ import annotations
 import math
 
 import numpy as np
+from scipy.cluster import hierarchy
+from scipy.spatial import distance as spatial_distance
 
-from river import base
+from river import base, utils
 
 __all__ = ["TextClust"]
 
@@ -27,30 +29,29 @@ class TextClust(base.Clusterer):
     Parameters
     ----------
     radius
-        Distance threshold to merge two micro-clusters. Must be within the range `(0, 1]`
+        Distance threshold to merge two micro-clusters. The value is in the range `(0, 1]`.
     fading_factor
-        Fading factor of micro-clusters
+        Non-negative fading factor for micro-clusters.
     tgap
-       Time between outlier removal
+        Positive number of observations or time units between outlier removal operations.
     term_fading
-        Determines whether individual terms should also be faded
+        Determines whether individual terms also fade.
     real_time_fading
-        Parameter that specifies whether natural time or the number of observations should be used
-        for fading
+        Determines whether fading uses natural time or the number of observations.
     micro_distance
-         Distance metric used for clustering macro-clusters
+        Distance metric for micro-clusters. The available metric is `tfidf_cosine_distance`.
     macro_distance
-        Distance metric used for clustering macro-clusters
+        Distance metric for macro-clusters. The available metric is `tfidf_cosine_distance`.
     num_macro
-        Number of macro clusters that should be identified during the reclustering phase
+        Positive number of macro-clusters to identify during the reclustering phase.
     min_weight
-        Minimum weight of micro clusters to be used for reclustering
+        Non-negative minimum weight of the micro-clusters used for reclustering.
     auto_r
-        Parameter that specifies if  `radius` should be automatically updated
+        Determines whether TextClust updates `radius` automatically.
     auto_merge
-        Determines, if close observations shall be merged together
+        Determines whether TextClust merges close observations.
     sigma
-        Parameter that influences the automated trheshold adaption technique
+        Non-negative parameter for automatic threshold adaptation.
 
      Attributes
     ----------
@@ -106,18 +107,18 @@ class TextClust(base.Clusterer):
     # constructor with default specification
     def __init__(
         self,
-        radius=0.3,
-        fading_factor=0.0005,
-        tgap=100,
-        term_fading=True,
-        real_time_fading=True,
-        micro_distance="tfidf_cosine_distance",
-        macro_distance="tfidf_cosine_distance",
-        num_macro=3,
-        min_weight=0,
-        auto_r=False,
-        auto_merge=True,
-        sigma=1,
+        radius: float = 0.3,
+        fading_factor: float = 0.0005,
+        tgap: int = 100,
+        term_fading: bool = True,
+        real_time_fading: bool = False,
+        micro_distance: str = "tfidf_cosine_distance",
+        macro_distance: str = "tfidf_cosine_distance",
+        num_macro: int = 3,
+        min_weight: float = 0,
+        auto_r: bool = False,
+        auto_merge: bool = True,
+        sigma: float = 1,
     ):
         self.radius = radius
         self.fading_factor = fading_factor
@@ -135,10 +136,10 @@ class TextClust(base.Clusterer):
         # Initialize important values
 
         self.t = None
-        self.last_cleanup = 0
+        self.last_cleanup = None if self.real_time_fading else 0
         self.n = 1
-        self.omega = 2 ** (-1 * self.fading_factor * self.tgap)
-        self.micro_clusters = dict()
+        self.omega = 2 ** (-1 * self.fading_factor * self.tgap) if self.fading_factor > 0 else 0
+        self.micro_clusters: dict[int, TextClust.MicroCluster] = {}
         self.micro_to_macro = None
         self.realtime = None
 
@@ -146,6 +147,8 @@ class TextClust(base.Clusterer):
         self._up_to_date = False
         self._dist_mean = 0
         self._num_merged_obs = 0
+        self._document_frequency = None
+        self._idf = None
 
         # create a new distance instance for micro and macro distances. Keep
         # the original string parameters on the public attributes so clone /
@@ -154,19 +157,15 @@ class TextClust(base.Clusterer):
         self._macro_distance = self.Distances(self.macro_distance)
 
     def learn_one(self, x, t=None, w=None):
-        localdict = {}
-        for key in x.keys():
-            new_key = key
-            localdict[new_key] = {}
-            localdict[new_key]["tf"] = x[key]
-        ngrams = localdict
-        ngrams = dict(ngrams)
+        ngrams = dict(x)
 
         # set up to date variable. it is set when everything is faded
         self._up_to_date = False
 
         # check if realtime fading is on or not. specify current time accordingly
         if self.real_time_fading:
+            if t is None:
+                raise ValueError("t must be provided when real_time_fading is enabled")
             self.t = t
         else:
             self.t = self.n
@@ -181,17 +180,14 @@ class TextClust(base.Clusterer):
             mc = self.MicroCluster(ngrams, self.t, 1, self.realtime, self._cluster_id)
 
             # calculate idf
-            idf = self._calculate_idf(self.micro_clusters.values())
+            idf = self._get_idf()
 
             cluster_id, min_dist = self._get_closest_mc(mc, idf, self._micro_distance)
 
             # if we found a cluster that is close enough we merge our incoming data into it
             if cluster_id is not None:
                 self._num_merged_obs += 1
-                ## add number of observations
-                self.micro_clusters[cluster_id].n += 1
-
-                self.micro_clusters[cluster_id].merge(
+                added_terms, removed_terms = self.micro_clusters[cluster_id].merge(
                     mc,
                     self.t,
                     self.omega,
@@ -199,17 +195,22 @@ class TextClust(base.Clusterer):
                     self.term_fading,
                     self.realtime,
                 )
+                self._update_document_frequency(added_terms, removed_terms)
                 self._dist_mean += min_dist
 
             # if no close cluster is found we  create a new one
             else:
-                self._dist_mean += min_dist
                 cluster_id = self._cluster_id
                 self.micro_clusters[cluster_id] = mc
                 self._cluster_id += 1
+                self._update_document_frequency(mc.tf, ())
 
         # cleanup every tgap
-        if self.last_cleanup is None or self.t - self.last_cleanup >= self.tgap:
+        if self.real_time_fading and self.last_cleanup is None:
+            self.last_cleanup = self.t
+        elif (self.real_time_fading and self.t - self.last_cleanup >= self.tgap) or (
+            not self.real_time_fading and self.n % self.tgap == 0
+        ):
             self._cleanup()
 
         ## increment observation counter
@@ -218,14 +219,7 @@ class TextClust(base.Clusterer):
     ## predicts the cluster number. The type specifies whether this should happen on micro-cluster
     ## or macro-cluster level
     def predict_one(self, x, w=None, type="micro"):
-        localdict = {}
-        for key in x.keys():
-            new_key = key
-            localdict[new_key] = {}
-            localdict[new_key]["tf"] = x[key]
-
-        ngrams = localdict
-        ngrams = dict(ngrams)
+        ngrams = dict(x)
 
         return self.get_assignment(ngrams, type=type)
 
@@ -235,15 +229,15 @@ class TextClust(base.Clusterer):
 
         ## initial variable values
         cluster_id = None
-        min_dist = 1
+        min_dist = math.inf
         smallest_key = None
         sumdist = 0
         squaresum = 0
         counter = 0
 
         # calculate distances and choose the smallest one
-        for key in self.micro_clusters.keys():
-            dist = distance.dist(mc, self.micro_clusters[key], idf)
+        for key, micro_cluster in self.micro_clusters.items():
+            dist = distance.dist(mc, micro_cluster, idf)
 
             counter = counter + 1
             sumdist += dist
@@ -260,12 +254,13 @@ class TextClust(base.Clusterer):
             if counter > 1:
                 ## our threshold
                 mu = (sumdist - min_dist) / (counter - 1)
-                threshold = mu - self.sigma * math.sqrt(squaresum / (counter - 1) - mu**2)
+                variance = max(0, squaresum / (counter - 1) - mu**2)
+                threshold = mu - self.sigma * math.sqrt(variance)
 
-                if min_dist < threshold:
+                if min_dist <= threshold:
                     cluster_id = smallest_key
         else:
-            if min_dist < self.radius:
+            if min_dist <= self.radius:
                 cluster_id = smallest_key
 
         return cluster_id, min_dist
@@ -274,27 +269,53 @@ class TextClust(base.Clusterer):
     def _calculate_idf(self, micro_clusters):
         result = {}
         for micro in micro_clusters:
-            for k in list(micro.tf.keys()):
-                if k not in result:
-                    result[k] = 1
-                else:
-                    result[k] += 1
-        for k in list(result.keys()):
-            result[k] = 1 + math.log(len(micro_clusters) / result[k])
-        return result
+            for term in micro.tf:
+                result[term] = result.get(term, 0) + 1
+        n_clusters = len(micro_clusters)
+        return {term: 1 + math.log(n_clusters / frequency) for term, frequency in result.items()}
+
+    def _get_idf(self):
+        if self._document_frequency is None:
+            self._document_frequency = {}
+            for micro_cluster in self.micro_clusters.values():
+                for term in micro_cluster.tf:
+                    self._document_frequency[term] = self._document_frequency.get(term, 0) + 1
+        if self._idf is None:
+            n_clusters = len(self.micro_clusters)
+            self._idf = {
+                term: 1 + math.log(n_clusters / frequency)
+                for term, frequency in self._document_frequency.items()
+            }
+        return self._idf
+
+    def _update_document_frequency(self, added_terms, removed_terms):
+        if not added_terms and not removed_terms:
+            return
+        if self._document_frequency is None:
+            self._get_idf()
+        for term in added_terms:
+            self._document_frequency[term] = self._document_frequency.get(term, 0) + 1
+        for term in removed_terms:
+            frequency = self._document_frequency[term] - 1
+            if frequency:
+                self._document_frequency[term] = frequency
+            else:
+                del self._document_frequency[term]
+        self._idf = None
 
     # update weights according to the fading factor
     def _updateweights(self):
-        for micro in self.micro_clusters.values():
-            micro.fade(self.t, self.omega, self.fading_factor, self.term_fading, self.realtime)
-
-        # delete micro clusters with a weight smaller omega
-        for key in list(self.micro_clusters.keys()):
-            if (
-                self.micro_clusters[key].weight <= self.omega
-                or len(self.micro_clusters[key].tf) == 0
-            ):
+        self._get_idf()
+        removed_terms = []
+        for key, micro in list(self.micro_clusters.items()):
+            removed_terms.extend(
+                micro.fade(self.t, self.omega, self.fading_factor, self.term_fading, self.realtime)
+            )
+            if micro.weight <= self.omega or not micro.tf:
+                removed_terms.extend(micro.tf)
                 del self.micro_clusters[key]
+        self._update_document_frequency((), removed_terms)
+        self._up_to_date = False
 
     # cleanup procedure
     def _cleanup(self):
@@ -322,8 +343,9 @@ class TextClust(base.Clusterer):
     def _mergemicroclusters(self):
         micro_keys = [*self.micro_clusters]
 
-        idf = self._calculate_idf(self.micro_clusters.values())
+        idf = self._get_idf()
         i = 0
+        merged = False
         if self.auto_r:
             threshold = self._dist_mean / (self._num_merged_obs + 1)
         else:
@@ -339,7 +361,7 @@ class TextClust(base.Clusterer):
                 )
 
                 ## lets merge them
-                if m_dist < threshold:
+                if m_dist <= threshold:
                     self.micro_clusters[micro_keys[i]].merge(
                         self.micro_clusters[micro_keys[j]],
                         self.t,
@@ -355,9 +377,13 @@ class TextClust(base.Clusterer):
                     )
                     del self.micro_clusters[micro_keys[j]]
                     del micro_keys[j]
+                    merged = True
                 else:
                     j = j + 1
             i = i + 1
+        if merged:
+            self._document_frequency = None
+            self._idf = None
 
     # calculate a distance matrix from all provided micro clusters
     def _get_distance_matrix(self, clusters):
@@ -370,53 +396,29 @@ class TextClust(base.Clusterer):
 
         # initialize all distances to 0
         distances = np.zeros((num_clusters, num_clusters))
-        positions = {cluster_id: pos for pos, cluster_id in enumerate(ids)}
 
-        for idx, row in enumerate(ids):
-            for col in ids[idx + 1 :]:
+        for row_pos, row in enumerate(ids):
+            for col_pos in range(row_pos + 1, num_clusters):
+                col = ids[col_pos]
                 # use the macro-distance metric to calculate the distances to different micro-clusters
                 dist = self._macro_distance.dist(clusters[row], clusters[col], idf)
-                row_pos = positions[row]
-                col_pos = positions[col]
                 distances[row_pos, col_pos] = dist
                 distances[col_pos, row_pos] = dist
 
         return ids, distances
 
-    # This is a greedy implementation of single linkage agglomerative clustering. In the future we
-    # will make this function more flexible
     def _agglomerative_clustering(self, micros, k):
-        clusters = []
-
-        ## calculate distance matrix
         indices, distm = self._get_distance_matrix(micros)
-        positions = {cluster_id: pos for pos, cluster_id in enumerate(indices)}
-
-        ## init empty clusters
-        for i in range(0, len(micros)):
-            clusters.append([indices[i]])
-
-        ## repeat until the number of clusters k are formed
-        while len(clusters) != k:
-            min_dist = math.inf
-            min_pair = ()
-
-            ## iterate over all current sets
-            for i in range(0, len(clusters) - 1):
-                for j in range(i + 1, len(clusters)):
-                    ## iterate over all clusters in sets
-                    for c_i in clusters[i]:
-                        for c_j in clusters[j]:
-                            dist = distm[positions[c_i], positions[c_j]]
-                            if dist < min_dist:
-                                min_dist = dist
-                                min_pair = (i, j)
-
-            ## now merge
-            clusters[min_pair[0]] = clusters[min_pair[0]] + clusters[min_pair[1]]
-            del clusters[min_pair[1]]
-
-        return clusters
+        if len(indices) == k:
+            return [[index] for index in indices]
+        linkage = hierarchy.linkage(
+            spatial_distance.squareform(distm, checks=False), method="complete"
+        )
+        labels = hierarchy.cut_tree(linkage, n_clusters=[k]).ravel()
+        return [
+            [index for index, label in zip(indices, labels) if label == cluster_id]
+            for cluster_id in range(k)
+        ]
 
     def update_macro_clusters(self):
         # check if something changed since last reclustering
@@ -433,23 +435,24 @@ class TextClust(base.Clusterer):
 
             ## if the number of micro clusters is smaller than num_macro, we have to adjust
             num_clusters = min([self.num_macro, len(micros)])
+            self.micro_to_macro = {}
 
             if (len(micros)) > 1:
-                # right now we use hierarchical clustering single linkage.
                 assigned_clusters = self._agglomerative_clustering(micros, num_clusters)
 
                 # build micro to macro cluster assignment based on key and clustering result
-                self.micro_to_macro = {}
                 for i in range(0, len(assigned_clusters)):
                     for x in assigned_clusters[i]:
                         self.micro_to_macro[x] = i
+            elif len(micros) == 1:
+                self.micro_to_macro[next(iter(micros))] = 0
 
-                self._up_to_date = True
+            self._up_to_date = True
 
     # here we get macro cluster representatives by merging according to micro_to_macro assignments
     def get_macroclusters(self):
         self.update_macro_clusters()
-        num_clusters = min([self.num_macro, len(self.micro_clusters)])
+        num_clusters = min([self.num_macro, len(self.micro_to_macro)])
 
         # create empty clusters
         macros = {
@@ -491,17 +494,7 @@ class TextClust(base.Clusterer):
                 print("merged micro clusters: " + str(micro.merged_ids))
 
             # get indices of top terms
-            indices = sorted(
-                range(len([i["tf"] for i in micro.tf.values()])),
-                key=[i["tf"] for i in micro.tf.values()].__getitem__,
-                reverse=True,
-            )
-
-            # get representative and weight for micro cluster (room for improvement here?)
-            representatives = [
-                (list(micro.tf.keys())[i], micro.tf[list(micro.tf.keys())[i]]["tf"])
-                for i in indices[0 : min(len(micro.tf.keys()), num)]
-            ]
+            representatives = sorted(micro.tf.items(), key=lambda item: item[1], reverse=True)[:num]
             for rep in representatives:
                 print(
                     "weight: " + str(round(rep[1], 2)) + "\t token: " + str(rep[0]).expandtabs(10)
@@ -516,7 +509,7 @@ class TextClust(base.Clusterer):
         assignment = None
         idf = None
 
-        idf = self._calculate_idf(self.micro_clusters.values())
+        idf = self._get_idf()
 
         # proceed, if the processed text is not empty
         if len(x) > 0:
@@ -544,7 +537,7 @@ class TextClust(base.Clusterer):
             ## if type is macro then get macro cluster assignment
             else:
                 self.update_macro_clusters()
-                return self.micro_to_macro[assignment] if assignment else None
+                return self.micro_to_macro.get(assignment) if assignment is not None else None
 
     ## tf container
     class TfContainer:
@@ -559,71 +552,111 @@ class TextClust(base.Clusterer):
             self.id = clusterid
             self.weight = weight
             self.time = time
-            self.tf = tf
+            self.tf = {
+                term: value["tf"] if isinstance(value, dict) else value
+                for term, value in tf.items()
+            }
+            self._vector = utils.VectorDict(self.tf, copy=False)
             self.oldweight = 0
             self.deltaweight = 0
             self.realtime = realtime
             self.n = 1
             self.merged_ids = []
+            self._version = 0
+            self._norm_version = None
+            self._norm_idf = None
+            self._norm = None
+            self._weights_version = None
+            self._weights_idf = None
+            self._tfidf_weights = None
+
+        def __getstate__(self):
+            state = self.__dict__.copy()
+            del state["_vector"]
+            return state
+
+        def __setstate__(self, state):
+            self.__dict__.update(state)
+            self._vector = utils.VectorDict(self.tf, copy=False)
+
+        def tfidf_norm(self, idf):
+            if self._norm_version != self._version or self._norm_idf is not idf:
+                norm = 0
+                for term, term_frequency in self.tf.items():
+                    term_idf = idf.get(term)
+                    if term_idf is not None:
+                        weighted_frequency = term_frequency * term_idf * term_idf
+                        norm += term_frequency * weighted_frequency
+                self._norm = math.sqrt(norm)
+                self._norm_version = self._version
+                self._norm_idf = idf
+            return self._norm
+
+        def tfidf_weights(self, idf):
+            if self._weights_version != self._version or self._weights_idf is not idf:
+                self._tfidf_weights = {
+                    term: term_frequency * term_idf * term_idf
+                    for term, term_frequency in self.tf.items()
+                    if (term_idf := idf.get(term)) is not None
+                }
+                self._weights_version = self._version
+                self._weights_idf = idf
+            return self._tfidf_weights
 
         ## fading micro cluster weights and also term weights, if activated
         def fade(self, tnow, omega, fading_factor, term_fading, realtime):
-            self.weight = self.weight * pow(2, -fading_factor * (tnow - self.time))
+            factor = pow(2, -fading_factor * (tnow - self.time))
+            self.weight *= factor
+            removed_terms = []
             if term_fading:
                 for k in list(self.tf.keys()):
-                    self.tf[k]["tf"] = self.tf[k]["tf"] * pow(
-                        2, -fading_factor * (tnow - self.time)
-                    )
-                    if self.tf[k]["tf"] <= omega:
+                    self.tf[k] *= factor
+                    if self.tf[k] <= omega:
                         del self.tf[k]
+                        removed_terms.append(k)
+                if factor != 1:
+                    self._version += 1
+                    self._tfidf_weights = None
             self.time = tnow
             self.realtime = realtime
+            return removed_terms
 
         ## merging two microclusters into one
         def merge(self, microcluster, t, omega, fading_factor, term_fading, realtime):
             self.realtime = realtime
 
-            self.weight = self.weight + microcluster.weight
-
-            self.fade(t, omega, fading_factor, term_fading, realtime)
+            self.weight += microcluster.weight
+            removed_terms = set(self.fade(t, omega, fading_factor, term_fading, realtime))
             microcluster.fade(t, omega, fading_factor, term_fading, realtime)
+            self.n += microcluster.n
 
             self.time = t
             # here we merge an existing mc with the current mc. The tf values as well as the ids have to be transferred
+            added_terms = set()
             for k in list(microcluster.tf.keys()):
                 if k in self.tf:
-                    self.tf[k]["tf"] += microcluster.tf[k]["tf"]
+                    self.tf[k] += microcluster.tf[k]
                 else:
-                    self.tf[k] = {}
-                    self.tf[k]["tf"] = microcluster.tf[k]["tf"]
+                    self.tf[k] = microcluster.tf[k]
+                    added_terms.add(k)
+            if microcluster.tf:
+                self._version += 1
+                self._tfidf_weights = None
+            return added_terms - removed_terms, removed_terms - added_terms
 
     ## distance class to implement different micro/macro distance metrics
     class Distances:
         ## constructor
         def __init__(self, type):
             self.type = type
-
-        ## generic method that is called for each distance
-        def dist(self, m1, m2, idf):
-            return getattr(self, self.type, lambda: "Invalid distance measure")(m1, m2, idf)
+            self.dist = getattr(self, type)
 
         ##calculate cosine similarity directly and fast
         def tfidf_cosine_distance(self, mc, microcluster, idf):
-            sum = 0
-            tfidflen = 0
-            microtfidflen = 0
-            for k in list(mc.tf.keys()):
-                if k in idf:
-                    if k in microcluster.tf:
-                        sum += (mc.tf[k]["tf"] * idf[k]) * (microcluster.tf[k]["tf"] * idf[k])
-                    tfidflen += mc.tf[k]["tf"] * idf[k] * mc.tf[k]["tf"] * idf[k]
-            tfidflen = math.sqrt(tfidflen)
-            for k in list(microcluster.tf.keys()):
-                microtfidflen += (
-                    microcluster.tf[k]["tf"] * idf[k] * microcluster.tf[k]["tf"] * idf[k]
-                )
-            microtfidflen = math.sqrt(microtfidflen)
-            if tfidflen == 0 or microtfidflen == 0:
+            tfidf_length = mc.tfidf_norm(idf)
+            micro_tfidf_length = microcluster.tfidf_norm(idf)
+            if tfidf_length == 0 or micro_tfidf_length == 0:
                 return 1
-            else:
-                return round((1 - sum / (tfidflen * microtfidflen)), 10)
+            dot_product = microcluster._vector.dot(mc.tfidf_weights(idf))
+            cosine_distance = 1 - dot_product / (tfidf_length * micro_tfidf_length)
+            return min(1, max(0, cosine_distance))
