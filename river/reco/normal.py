@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import math
+
 from river import reco, stats
 
 __all__ = ["RandomNormal"]
@@ -63,5 +65,5 @@ class RandomNormal(reco.base.Ranker):
 
     def predict_one(self, user, item, x=None):
         μ = self.mean.get() or 0
-        σ = (self.variance.get() or 1) ** 0.5
+        σ = math.sqrt(self.variance.get() or 1)
         return self._rng.gauss(μ, σ)
