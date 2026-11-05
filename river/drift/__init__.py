@@ -16,6 +16,7 @@ from .kswin import KSWIN
 from .no_drift import NoDrift
 from .page_hinkley import PageHinkley
 from .retrain import DriftRetrainingClassifier
+from .shewhart import Shewhart
 
 __all__ = [
     "binary",
@@ -26,4 +27,5 @@ __all__ = [
     "KSWIN",
     "NoDrift",
     "PageHinkley",
+    "Shewhart",
 ]

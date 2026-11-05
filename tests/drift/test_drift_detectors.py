@@ -128,3 +128,76 @@ def perform_test(drift_detector, data_stream):
         if drift_detector.drift_detected:
             detected_indices.append(i)
     return detected_indices
+
+
+def test_shewhart():
+    detected_indices = perform_test(drift.Shewhart(), data_stream_1)
+
+    assert len(detected_indices) >= 1
+    assert any(1000 <= idx <= 1100 for idx in detected_indices)
+
+
+def test_shewhart_modes():
+    # Shewhart judges each sample against fixed limits, so it needs a continuous stream: on a
+    # binary one the center line sits between the two values and nothing can fall outside.
+    low = [float(i % 2) * 0.1 for i in range(200)]
+    high = [10.0 + (i % 2) * 0.1 for i in range(200)]
+
+    detected_indices = perform_test(drift.Shewhart(mode="up"), low + high)
+
+    assert any(200 <= idx < 400 for idx in detected_indices)
+    assert not any(idx < 200 for idx in detected_indices)
+
+    # A one-sided chart only re-baselines when it detects something, so the falling case needs
+    # the high regime first: a chart that never saw the rise would still be centred on the low
+    # values and would not read the return to them as a drop.
+    detected_indices = perform_test(drift.Shewhart(mode="down"), high + low)
+
+    assert any(200 <= idx < 400 for idx in detected_indices)
+    assert not any(idx < 200 for idx in detected_indices)
+
+
+def test_shewhart_coverage():
+    with pytest.raises(ValueError):
+        drift.Shewhart(k=0)
+
+    with pytest.raises(ValueError):
+        drift.Shewhart(k=-1)
+
+    with pytest.raises(ValueError):
+        drift.Shewhart(min_instances=0)
+
+    with pytest.raises(ValueError):
+        drift.Shewhart(mode="sideways")
+
+    # A constant stream has no spread, so nothing can fall outside the limits.
+    detector = drift.Shewhart(min_instances=3)
+
+    for _ in range(100):
+        detector.update(1.0)
+
+    assert detector.drift_detected is False
+
+    # Nothing is flagged before the limits exist.
+    detector = drift.Shewhart(min_instances=50, k=0.5)
+
+    for _ in range(40):
+        detector.update(100.0)
+
+    assert detector.drift_detected is False
+
+    # A point well outside the frozen limits is flagged.
+    detector = drift.Shewhart(min_instances=5, k=3.0)
+
+    for _ in range(20):
+        detector.update(0.0)
+    for _ in range(5):
+        detector.update(0.0)
+        assert detector.drift_detected is False
+
+    for _ in range(50):
+        detector.update(100.0)
+        if detector.drift_detected:
+            break
+
+    assert detector.drift_detected is True
