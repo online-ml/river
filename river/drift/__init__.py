@@ -11,6 +11,7 @@ from __future__ import annotations
 
 from . import binary, datasets
 from .adwin import ADWIN
+from .d3 import D3
 from .dummy import DummyDriftDetector
 from .kswin import KSWIN
 from .no_drift import NoDrift
@@ -21,6 +22,7 @@ __all__ = [
     "binary",
     "datasets",
     "ADWIN",
+    "D3",
     "DriftRetrainingClassifier",
     "DummyDriftDetector",
     "KSWIN",
