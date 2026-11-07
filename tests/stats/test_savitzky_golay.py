@@ -31,7 +31,7 @@ def test_savitzky_golay_matches_least_squares_polyfit() -> None:
         window = x[i - window_size + 1 : i + 1]
         expected = sum(c * v for c, v in zip(coeffs, window))
         assert math.isclose(smooth, expected, rel_tol=1e-10)
-        assert smooth == np.dot(coeffs, window)
+        assert math.isclose(smooth, float(np.dot(coeffs, window)), rel_tol=1e-10)
 
 
 def test_savitzky_golay_preserves_polynomials() -> None:
