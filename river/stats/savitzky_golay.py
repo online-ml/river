@@ -65,8 +65,8 @@ class SavitzkyGolay(stats.base.RollingUnivariate):
     >>> stat.get() is None
     True
 
-    Use case
-    --------
+    Notes
+    -----
 
     The filter is useful when you want to follow a slow-moving trend in a noisy signal.
     Consider a temperature probe that drifts upward over time but whose readings jump
