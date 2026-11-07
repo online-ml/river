@@ -38,8 +38,8 @@ class CalibratedClassifier(base.Wrapper[T], base.Classifier):
     This wrapper is meant for binary classifiers. Its `predict_proba_one` output is always keyed
     on `False` and `True`.
 
-    Use case
-    --------
+    Notes
+    -----
 
     A classifier can be very good at picking the right label while still returning probabilities
     that are off. For instance, it may routinely report `p = 0.9` for samples that only come out
