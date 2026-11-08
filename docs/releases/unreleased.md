@@ -82,3 +82,7 @@
 ## model_selection
 
 - Added HoeffdingRaceRegressor and HoeffdingRaceClassifier
+
+## time_series
+
+- Fixed seasonal initialization in time_series.HoltWinters, which incorrectly used ratios for additive seasonality, flattening the seasonal pattern. Additive mode now uses differences (y - level), while multiplicative mode retains ratios (y / level).
