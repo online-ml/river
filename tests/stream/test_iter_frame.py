@@ -127,3 +127,29 @@ def test_deprecated_wrapper_forwards_shuffle(
     with pytest.warns(DeprecationWarning):
         rows = list(iter_fn(b.frame(FEATURES), b.series(TARGET), shuffle=True, seed=42))
     assert sorted(rows, key=lambda row: row[0]["x1"]) == EXPECTED
+
+
+@pytest.mark.parametrize(("n_x", "n_y"), [(3, 2), (2, 3)])
+@pytest.mark.parametrize("shuffle", [False, True])
+@pytest.mark.parametrize("multioutput", [False, True])
+def test_mismatched_feature_target_lengths(
+    frame_backend: FrameBackend,
+    n_x: int,
+    n_y: int,
+    shuffle: bool,
+    multioutput: bool,
+) -> None:
+    X = frame_backend.frame({"x": list(range(n_x))})
+
+    if multioutput:
+        y = frame_backend.frame(
+            {
+                "y1": list(range(n_y)),
+                "y2": list(range(n_y)),
+            }
+        )
+    else:
+        y = frame_backend.series(list(range(n_y)))
+
+    with pytest.raises(ValueError, match="X and y must have the same length"):
+        list(stream.iter_frame(X, y, shuffle=shuffle, seed=42))
