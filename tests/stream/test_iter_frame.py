@@ -141,6 +141,7 @@ def test_mismatched_feature_target_lengths(
 ) -> None:
     X = frame_backend.frame({"x": list(range(n_x))})
 
+    y: typing.Any
     if multioutput:
         y = frame_backend.frame(
             {
