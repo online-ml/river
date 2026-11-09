@@ -1,0 +1,9 @@
+{
+    "arch": "x86_64",
+    "cpu": "AMD EPYC 7763 64-Core Processor",
+    "machine": "runnervmwuk1x",
+    "num_cpu": "4",
+    "os": "Linux 7.0.0-1019-azure",
+    "ram": "16759431168",
+    "version": 1
+}
