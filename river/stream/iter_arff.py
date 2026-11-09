@@ -106,14 +106,14 @@ def iter_arff(
     >>> for x, y in arff_stream:
     ...     print(x)
     ...     print(y)
-    {'X0': '0.863382', 'X2': '0.820094'}
-    {'y0': 0, 'y1': 0, 'y2': 0, 'y3': '1', 'y4': 0, 'y5': 0}
-    {'X0': '0.659761'}
-    {'y0': 0, 'y1': 0, 'y2': '1', 'y3': 0, 'y4': 0, 'y5': 0}
-    {'X0': '0.437881', 'X2': '0.818882'}
-    {'y0': '1', 'y1': 0, 'y2': 0, 'y3': '1', 'y4': 0, 'y5': 0}
-    {'X0': '0.676477', 'X1': '0.724635', 'X2': '0.755123'}
-    {'y0': 0, 'y1': 0, 'y2': '1', 'y3': 0, 'y4': 0, 'y5': 0}
+    {'X0': 0.863382, 'X2': 0.820094}
+    {'y0': '0', 'y1': '0', 'y2': '0', 'y3': '1', 'y4': '0', 'y5': '0'}
+    {'X0': 0.659761}
+    {'y0': '0', 'y1': '0', 'y2': '1', 'y3': '0', 'y4': '0', 'y5': '0'}
+    {'X0': 0.437881, 'X2': 0.818882}
+    {'y0': '1', 'y1': '0', 'y2': '0', 'y3': '1', 'y4': '0', 'y5': '0'}
+    {'X0': 0.676477, 'X1': 0.724635, 'X2': 0.755123}
+    {'y0': '0', 'y1': '0', 'y2': '1', 'y3': '0', 'y4': '0', 'y5': '0'}
 
     This function can also deal with missing features in non-sparse data. These are indicated with
     a question mark.
@@ -173,6 +173,16 @@ def iter_arff(
     names = [attr.name for attr in attrs]
     # HACK: it's a bit hacky to rely on class name to determine what casting to apply
     casts = [float if attr.__class__.__name__ == "NumericAttribute" else None for attr in attrs]
+    target_names = {target} if isinstance(target, str) else set(target or [])
+    defaults = (
+        {
+            attr.name: attr.values[0] if attr.type_name == "nominal" else 0.0
+            for attr in attrs
+            if attr.name in target_names
+        }
+        if sparse
+        else {}
+    )
 
     for r in buffer:
         if len(r) == 0:
@@ -184,9 +194,20 @@ def iter_arff(
         # Read row
         if sparse:
             x = {}
-            for s in r.rstrip()[1:-1].strip().split(","):
-                name_index, val = s.split(" ", 1)
-                x[names[int(name_index)]] = val
+            row = r.strip()
+            if not row or row.startswith("%"):
+                continue
+            entries = row[1:-1].strip()
+            for s in entries.split(",") if entries else []:
+                name_index, val = s.strip().split(maxsplit=1)
+                index = int(name_index)
+                name = names[index]
+                if val == "?":
+                    if name in target_names:
+                        x[name] = None
+                else:
+                    cast = casts[index]
+                    x[name] = cast(val) if cast else val
         else:
             x = {
                 name: cast(val) if cast else val
@@ -198,12 +219,9 @@ def iter_arff(
         if target is None:
             y = None
         elif isinstance(target, str):
-            try:
-                y = x.pop(target) if target else None
-            except KeyError:
-                y = None
+            y = x.pop(target, defaults.get(target)) if target else None
         else:
-            y = {name: x.pop(name, 0) for name in target}
+            y = {name: x.pop(name, defaults.get(name)) for name in target}
 
         yield x, y
 

@@ -2,6 +2,7 @@
 
 ## Breaking changes
 
+- `stream.iter_arff` now casts sparse numeric values to floats and uses the first declared category for omitted nominal targets. Explicitly missing targets now return `None` with either string or list target arguments.
 - Removed support for `pandas<=2.x`. River now requires `pandas>=3.1`.
 - In `OneHotEncoder`, missing values are not dropped anymore when `drop_first=True`, and the value that is dropped is now stable across observations.
 
@@ -44,6 +45,7 @@
 
 ## stream
 
+- `stream.iter_arff` now accepts empty sparse rows and whitespace around sparse entries, and skips blank and comment lines in sparse data. Omitted features remain omitted.
 - `stream.iter_csv` now preserves extra fields and fills missing columns correctly.
 - `stream.Cache` now writes a pass to a temporary file and renames it into place once the stream is exhausted. An interrupted first pass (a `break`, an exception, an abandoned generator) used to leave a truncated file behind, which every later pass then read back as if it were the whole dataset.
 - `stream.iter_csv` no longer yields an empty `x` for a blank line in the middle of a file. `csv.DictReader` skips those, and `stream.iter_arff` already did.
