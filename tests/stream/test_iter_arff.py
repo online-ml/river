@@ -43,7 +43,7 @@ DENSE_CASES: dict[str, tuple[str | list[str] | None, list[Row]]] = {
     "absent-target": ("nope", UNTOUCHED),
     "targets": (
         ["b", "c"],
-        [({"a": 1.0}, {"b": 2.0, "c": "x"}), ({"a": 3.0}, {"b": 0, "c": "y"})],
+        [({"a": 1.0}, {"b": 2.0, "c": "x"}), ({"a": 3.0}, {"b": None, "c": "y"})],
     ),
 }
 
@@ -59,8 +59,8 @@ def test_sparse_rows_only_carry_the_features_they_list() -> None:
     dataset = stream.iter_arff(io.StringIO(SPARSE), target=["y0", "y1"], sparse=True)
 
     assert list(dataset) == [
-        ({"X0": "0.5"}, {"y0": 0, "y1": "1"}),
-        ({"X1": "0.25"}, {"y0": "1", "y1": 0}),
+        ({"X0": 0.5}, {"y0": "0", "y1": "1"}),
+        ({"X1": 0.25}, {"y0": "1", "y1": "0"}),
     ]
 
 
@@ -104,3 +104,185 @@ def test_an_unparsable_header_is_reported_as_a_parse_error() -> None:
 
     with pytest.raises(scipy.io.arff.ParseArffError):
         next(dataset)
+
+
+SPARSE_HEADER = """@relation test
+@attribute a numeric
+@attribute score numeric
+@attribute label {negative,positive}
+@data
+"""
+
+STRING_SPARSE_HEADER = """@relation test
+@attribute a numeric
+@attribute label string
+@data
+"""
+
+
+@pytest.mark.parametrize(
+    "row",
+    [
+        "{0 1.5,1 2.5,2 positive}",
+        "{0 1.5, 1 2.5, 2 positive}",
+        "  { 0 1.5, 1 2.5, 2 positive }  ",
+        "{0\t1.5,\t1\t2.5,\t2\tpositive}",
+        "{2 positive ,0 1.5,1 2.5}",
+    ],
+)
+def test_sparse_values_are_cast_with_whitespace_between_entries(row: str) -> None:
+    dataset = stream.iter_arff(io.StringIO(SPARSE_HEADER + row + "\n"), target="label", sparse=True)
+
+    assert list(dataset) == [({"a": 1.5, "score": 2.5}, "positive")]
+
+
+@pytest.mark.parametrize(
+    ("row", "expected"),
+    [
+        ("{0 1.5,1 'class A'}", "class A"),
+        ("{0 1.5,1 'class,A'}", "class,A"),
+        ('{0 1.5,1 "class,A"}', "class,A"),
+        ("{1 'class,A'   ,0 1.5}", "class,A"),
+        ("{0 1.5,1 '?'}", "?"),
+        (r"{0 1.5,1 '\''}", "'"),
+        (r"{0 1.5,1 '\\'}", "\\"),
+        (r"{0 1.5,1 '\\\''}", "\\'"),
+        (r"{0 1.5,1 '\n'}", "\n"),
+        (r"{0 1.5,1 '\r'}", "\r"),
+        (r"{0 1.5,1 '\t'}", "\t"),
+        (r"{0 1.5,1 '\b'}", "\b"),
+        (r"{0 1.5,1 '\f'}", "\f"),
+        (r"{0 1.5,1 '\0'}", "\0"),
+        (r"{0 1.5,1 '\01'}", "\01"),
+        (r"{0 1.5,1 '\011'}", "\t"),
+        (r"{0 1.5,1 '\u123a'}", "ሺ"),
+        (r"{0 1.5,1 '\%'}", "%"),
+    ],
+)
+def test_sparse_quoted_values_are_unquoted(row: str, expected: str) -> None:
+    dataset = stream.iter_arff(
+        io.StringIO(STRING_SPARSE_HEADER + row + "\n"), target="label", sparse=True
+    )
+
+    assert list(dataset) == [({"a": 1.5}, expected)]
+
+
+@pytest.mark.parametrize(
+    "row",
+    [
+        r"{1 \'A' }",
+        r"{1 \'A }",
+        "{1 'A }",
+        '{1 "A }',
+        '{1 A" }',
+        "{1 A' }",
+        r"{1 'A\' }",
+        r'{1 "A\" }',
+        r"{1 '\x00'}",
+        r"{1 '\u1'}",
+        r"{1 '\uzzzz'}",
+        r"{1 '\N'}",
+        r"{1 '\T'}",
+        "{1 A B}",
+        "{1 5 6}",
+        "{1 '5' '6'}",
+        "0 {1 A }",
+        "0, {1 A }",
+        "{1 A } 0",
+        "{1 A }, 0",
+        "{1 A",
+        "1 A}",
+    ],
+)
+def test_invalid_sparse_layouts_raise(row: str) -> None:
+    dataset = stream.iter_arff(io.StringIO(STRING_SPARSE_HEADER + row + "\n"), sparse=True)
+
+    with pytest.raises(ValueError):
+        next(dataset)
+
+
+@pytest.mark.parametrize("row", ["{0 nope}", "{2 unknown}", "{3 1}", "{-1 1}"])
+def test_invalid_sparse_values_raise(row: str) -> None:
+    dataset = stream.iter_arff(io.StringIO(SPARSE_HEADER + row + "\n"), sparse=True)
+
+    with pytest.raises(ValueError):
+        next(dataset)
+
+
+@pytest.mark.parametrize(
+    ("row", "expected_features"), [("{}", {}), ("{ }", {}), ("{0 1.5}", {"a": 1.5})]
+)
+@pytest.mark.parametrize(
+    ("target", "expected"),
+    [
+        ("score", 0.0),
+        ("label", "negative"),
+        (["score", "label"], {"score": 0.0, "label": "negative"}),
+    ],
+)
+def test_sparse_omitted_targets_use_the_attribute_default(
+    row: str, expected_features: dict[str, float], target: str | list[str], expected: typing.Any
+) -> None:
+    dataset = stream.iter_arff(io.StringIO(SPARSE_HEADER + row + "\n"), target=target, sparse=True)
+
+    features, actual = next(dataset)
+    assert actual == expected
+    assert features == expected_features
+
+
+@pytest.mark.parametrize("sparse", [False, True])
+@pytest.mark.parametrize(
+    ("target", "expected"),
+    [
+        ("score", None),
+        ("label", None),
+        (["score", "label"], {"score": None, "label": None}),
+    ],
+)
+def test_explicitly_missing_targets_are_none(
+    sparse: bool, target: str | list[str], expected: typing.Any
+) -> None:
+    row = "{0 1.5,1 ?,2 ?}" if sparse else "1.5,?,?"
+    dataset = stream.iter_arff(
+        io.StringIO(SPARSE_HEADER + row + "\n"), target=target, sparse=sparse
+    )
+
+    assert list(dataset) == [({"a": 1.5}, expected)]
+
+
+def test_sparse_missing_features_are_not_reported_as_values() -> None:
+    dataset = stream.iter_arff(
+        io.StringIO(SPARSE_HEADER + "{0 ?,1 2.5,2 positive}\n"), target="label", sparse=True
+    )
+
+    assert list(dataset) == [({"score": 2.5}, "positive")]
+
+
+def test_sparse_omitted_features_remain_omitted() -> None:
+    assert list(stream.iter_arff(io.StringIO(SPARSE_HEADER + "{}\n"), sparse=True)) == [({}, None)]
+
+
+def test_sparse_blank_and_comment_lines_do_not_yield_observations() -> None:
+    dataset = stream.iter_arff(
+        io.StringIO(SPARSE_HEADER + "\n  \n% comment\n   % comment\n{0 1.5}\n"), sparse=True
+    )
+
+    assert list(dataset) == [({"a": 1.5}, None)]
+
+
+@pytest.mark.parametrize(
+    ("row", "expected_features", "expected_targets"),
+    [
+        ("{1 ? ,0 1.5}", {"a": 1.5}, {"score": None, "label": "negative"}),
+        ("{2 ? ,0 1.5}", {"a": 1.5}, {"score": 0.0, "label": None}),
+        ("{0 ? ,1 2.5,2 positive}", {}, {"score": 2.5, "label": "positive"}),
+    ],
+)
+def test_sparse_missing_values_with_padding(
+    row: str, expected_features: dict[str, float], expected_targets: dict[str, typing.Any]
+) -> None:
+    dataset = stream.iter_arff(
+        io.StringIO(SPARSE_HEADER + row + "\n"), target=["score", "label"], sparse=True
+    )
+
+    assert list(dataset) == [(expected_features, expected_targets)]
