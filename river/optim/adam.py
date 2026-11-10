@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import collections
+import math
 import typing
 
 import numpy as np
@@ -77,7 +78,7 @@ class Adam(optim.base.Optimizer):
             self.v = collections.defaultdict(float)
 
         # Correct bias for `v`
-        lr = self.learning_rate * (1 - self.beta_2 ** (self.n_iterations + 1)) ** 0.5
+        lr = self.learning_rate * math.sqrt(1 - self.beta_2 ** (self.n_iterations + 1))
         # Correct bias for `m`
         lr /= 1 - self.beta_1 ** (self.n_iterations + 1)
 
@@ -97,7 +98,7 @@ class Adam(optim.base.Optimizer):
                 self.m = utils.VectorDict()
                 self.v = utils.VectorDict()
 
-        lr = self.learning_rate * (1 - self.beta_2 ** (self.n_iterations + 1)) ** 0.5
+        lr = self.learning_rate * math.sqrt(1 - self.beta_2 ** (self.n_iterations + 1))
         lr /= 1 - self.beta_1 ** (self.n_iterations + 1)
 
         if isinstance(g, utils.VectorDict):

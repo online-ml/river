@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import math
+
 from river import base, stats
 
 
@@ -114,7 +116,7 @@ class EDDM(base.BinaryDriftAndWarningDetector):
         # Number of observed errors/failures
         self._n_errors = 0
 
-        self._p2s_prime_max = -1
+        self._p2s_prime_max = -1.0
 
     def update(self, x: bool) -> None:
         """Update the change detector with a single data point.
@@ -142,7 +144,7 @@ class EDDM(base.BinaryDriftAndWarningDetector):
             if self._n > self.warm_start:
                 # Mean and variance of the intervals between errors
                 pi_prime = self._error_distances.mean.get()
-                si_prime = self._error_distances.get() ** 0.5
+                si_prime = math.sqrt(self._error_distances.get())
 
                 p2s_prime = pi_prime + 2 * si_prime
                 if p2s_prime > self._p2s_prime_max:

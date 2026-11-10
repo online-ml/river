@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import math
+
 from river import base, stats
 
 __all__ = ["StandardAbsoluteDeviation"]
@@ -68,6 +70,6 @@ class StandardAbsoluteDeviation(base.SupervisedAnomalyDetector):
         self.sub_stat.update(y)
 
     def score_one(self, x, y):
-        score = (y - self.sub_stat.get()) / (self.variance.get() ** 0.5 + 1e-10)
+        score = (y - self.sub_stat.get()) / (math.sqrt(self.variance.get()) + 1e-10)
 
         return abs(score)
