@@ -74,6 +74,13 @@ Reading CSV files can be quite slow. If, for whatever reason, you're going to lo
   *Default* → `None`
 
   If not `None`, this will be passed to the `csv.field_size_limit` function.
+- **encoding**
+
+  *Type* → `str`
+
+  *Default* → `utf-8`
+
+  Encoding used to open file paths. Defaults to UTF-8. Ignored when a text buffer is supplied.
 
 ## Examples
 

@@ -25,6 +25,13 @@ The LIBSVM format is a popular way in the machine learning community to store sp
   *Default* → `infer`
 
   For on-the-fly decompression of on-disk data. If this is set to 'infer' and `filepath_or_buffer` is a path, then the decompression method is inferred for the following extensions: '.gz', '.zip'.
+- **encoding**
+
+  *Type* → `str`
+
+  *Default* → `utf-8`
+
+  Encoding used to open file paths. Defaults to UTF-8. Ignored when a text buffer is supplied.
 
 ## Examples
 

@@ -30,6 +30,13 @@ Iterates over rows from an ARFF file.
   *Default* → `False`
 
   Whether the data is sparse or not.
+- **encoding**
+
+  *Type* → `str`
+
+  *Default* → `utf-8`
+
+  Encoding used to open file paths. Defaults to UTF-8. Ignored when a text buffer is supplied.
 
 ## Examples
 

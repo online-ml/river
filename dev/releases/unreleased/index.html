@@ -2886,6 +2886,9 @@
 </ul>
 <h2 id="stream">stream<a class="headerlink" href="#stream" title="Permanent link">&para;</a></h2>
 <ul>
+<li>Added an <code>encoding</code> parameter to <a href="../../api/stream/iter-csv"><code>stream.iter_csv</code></a>, <a href="../../api/stream/iter-arff"><code>stream.iter_arff</code></a> and <a href="../../api/stream/iter-libsvm"><code>stream.iter_libsvm</code></a>, defaulting to UTF-8.</li>
+<li>Compression inference now recognizes <code>.gz</code> and <code>.zip</code> extensions regardless of case.</li>
+<li>ZIP input must contain exactly one file. Empty archives and archives with multiple files now raise <code>ValueError</code>.</li>
 <li><a href="../../api/stream/iter-arff"><code>stream.iter_arff</code></a> now accepts empty sparse rows and whitespace around sparse entries, and skips blank and comment lines in sparse data. Omitted features remain omitted.</li>
 <li><a href="../../api/stream/iter-csv"><code>stream.iter_csv</code></a> now preserves extra fields and fills missing columns correctly.</li>
 <li><a href="../../api/stream/Cache"><code>stream.Cache</code></a> now writes a pass to a temporary file and renames it into place once the stream is exhausted. An interrupted first pass (a <code>break</code>, an exception, an abandoned generator) used to leave a truncated file behind, which every later pass then read back as if it were the whole dataset.</li>
