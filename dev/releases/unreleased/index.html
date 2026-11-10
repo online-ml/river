@@ -1405,6 +1405,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#time_series" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        time_series
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2801,6 +2812,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#time_series" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        time_series
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2901,6 +2923,10 @@
 <h2 id="model_selection">model_selection<a class="headerlink" href="#model_selection" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Added HoeffdingRaceRegressor and HoeffdingRaceClassifier</li>
+</ul>
+<h2 id="time_series">time_series<a class="headerlink" href="#time_series" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Fixed seasonal initialization in <a href="../../api/time-series/HoltWinters">time_series.HoltWinters</a>, which incorrectly used ratios for additive seasonality, flattening the seasonal pattern. Additive mode now uses differences (y - level), while multiplicative mode retains ratios (y / level).</li>
 </ul>
 
 
