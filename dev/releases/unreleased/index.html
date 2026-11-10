@@ -2918,6 +2918,7 @@
 <h2 id="tree">tree<a class="headerlink" href="#tree" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Refactored <code>LASTClassifier</code> to reuse a single tree-level split criterion for class-distribution change detection, reducing per-leaf state without changing classifier behaviour.</li>
+<li>Fixed underestimated memory usage in trees using <code>ExhaustiveSplitter</code>, which could let models exceed their configured <code>max_size</code> without deactivating leaves.</li>
 </ul>
 <h2 id="proba">proba<a class="headerlink" href="#proba" title="Permanent link">&para;</a></h2>
 <ul>
