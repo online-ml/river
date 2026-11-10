@@ -2843,6 +2843,7 @@
 <h1 id="unreleased">Unreleased<a class="headerlink" href="#unreleased" title="Permanent link">&para;</a></h1>
 <h2 id="breaking-changes">Breaking changes<a class="headerlink" href="#breaking-changes" title="Permanent link">&para;</a></h2>
 <ul>
+<li><a href="../../api/stream/iter-arff"><code>stream.iter_arff</code></a> now casts sparse numeric values to floats and uses the first declared category for omitted nominal targets. Explicitly missing targets now return <code>None</code> with either string or list target arguments.</li>
 <li>Removed support for <code>pandas&lt;=2.x</code>. River now requires <code>pandas&gt;=3.1</code>.</li>
 <li>In <code>OneHotEncoder</code>, missing values are not dropped anymore when <code>drop_first=True</code>, and the value that is dropped is now stable across observations.</li>
 </ul>
@@ -2885,6 +2886,7 @@
 </ul>
 <h2 id="stream">stream<a class="headerlink" href="#stream" title="Permanent link">&para;</a></h2>
 <ul>
+<li><a href="../../api/stream/iter-arff"><code>stream.iter_arff</code></a> now accepts empty sparse rows and whitespace around sparse entries, and skips blank and comment lines in sparse data. Omitted features remain omitted.</li>
 <li><a href="../../api/stream/iter-csv"><code>stream.iter_csv</code></a> now preserves extra fields and fills missing columns correctly.</li>
 <li><a href="../../api/stream/Cache"><code>stream.Cache</code></a> now writes a pass to a temporary file and renames it into place once the stream is exhausted. An interrupted first pass (a <code>break</code>, an exception, an abandoned generator) used to leave a truncated file behind, which every later pass then read back as if it were the whole dataset.</li>
 <li><a href="../../api/stream/iter-csv"><code>stream.iter_csv</code></a> no longer yields an empty <code>x</code> for a blank line in the middle of a file. <code>csv.DictReader</code> skips those, and <a href="../../api/stream/iter-arff"><code>stream.iter_arff</code></a> already did.</li>
