@@ -15,6 +15,7 @@ def iter_libsvm(
     filepath_or_buffer: FilePath | typing.TextIO,
     target_type: type[typing.Any] = float,
     compression: Compression | None = "infer",
+    encoding: str = "utf-8",
 ) -> base.typing.Stream:
     """Iterates over a dataset in LIBSVM format.
 
@@ -32,6 +33,8 @@ def iter_libsvm(
         For on-the-fly decompression of on-disk data. If this is set to 'infer' and
         `filepath_or_buffer` is a path, then the decompression method is inferred for the
         following extensions: '.gz', '.zip'.
+    encoding
+        Encoding used to open file paths. Defaults to UTF-8. Ignored when a text buffer is supplied.
 
     Examples
     --------
@@ -58,7 +61,7 @@ def iter_libsvm(
 
     # If a file is not opened, then we open it
     if isinstance(filepath_or_buffer, (str, os.PathLike)):
-        buffer = utils.open_filepath(filepath_or_buffer, compression)
+        buffer = utils.open_filepath(filepath_or_buffer, compression, encoding=encoding)
         should_close = True
     else:
         buffer = filepath_or_buffer

@@ -63,6 +63,7 @@ def iter_arff(
     target: str | list[str] | None = None,
     compression: Compression | None = "infer",
     sparse: bool = False,
+    encoding: str = "utf-8",
 ) -> base.typing.Stream:
     """Iterates over rows from an ARFF file.
 
@@ -80,6 +81,8 @@ def iter_arff(
         following extensions: '.gz', '.zip'.
     sparse
         Whether the data is sparse or not.
+    encoding
+        Encoding used to open file paths. Defaults to UTF-8. Ignored when a text buffer is supplied.
 
     Examples
     --------
@@ -202,7 +205,7 @@ def iter_arff(
 
     # If a file is not opened, then we open it
     if isinstance(filepath_or_buffer, (str, os.PathLike)):
-        buffer = utils.open_filepath(filepath_or_buffer, compression)
+        buffer = utils.open_filepath(filepath_or_buffer, compression, encoding=encoding)
         should_close = True
     else:
         buffer = filepath_or_buffer

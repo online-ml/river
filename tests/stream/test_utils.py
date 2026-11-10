@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import typing
+import zipfile
 
 import pytest
 
@@ -63,3 +64,57 @@ def test_a_zip_member_outlives_the_archive_object(
     finally:
         handle.close()
     assert handle.closed
+
+
+@pytest.mark.parametrize("members", [[], ["folder/"], ["first.csv", "second.csv"]])
+def test_a_zip_must_contain_exactly_one_file(tmp_path: pathlib.Path, members: list[str]) -> None:
+    path = tmp_path / "data.zip"
+    with zipfile.ZipFile(path, "w") as archive:
+        for name in members:
+            archive.writestr(name, CONTENT)
+
+    with pytest.raises(ValueError, match="exactly one file"):
+        utils.open_filepath(path, "infer")
+
+
+def test_a_zip_can_contain_directory_entries(tmp_path: pathlib.Path) -> None:
+    path = tmp_path / "data.zip"
+    with zipfile.ZipFile(path, "w") as archive:
+        archive.writestr("folder/", "")
+        archive.writestr("folder/data.csv", CONTENT)
+
+    with utils.open_filepath(path, "infer") as handle:
+        assert handle.read() == CONTENT
+
+
+@pytest.mark.parametrize("encoding", ["utf-8", "latin-1"])
+def test_a_file_is_decoded_with_the_requested_encoding(
+    tmp_path: pathlib.Path,
+    write_file: WriteFile,
+    compression_case: CompressionCase,
+    encoding: str,
+) -> None:
+    content = "name\ncafé\n"
+    path = write_file(
+        tmp_path / f"data.csv{compression_case.suffix}",
+        content,
+        compression_case.written_as,
+        encoding=encoding,
+    )
+
+    with utils.open_filepath(path, compression_case.read_as, encoding=encoding) as handle:
+        assert handle.read() == content
+
+
+def test_decoding_errors_are_not_suppressed(
+    tmp_path: pathlib.Path, write_file: WriteFile, compression_case: CompressionCase
+) -> None:
+    path = write_file(
+        tmp_path / f"data.csv{compression_case.suffix}",
+        "café\n",
+        compression_case.written_as,
+    )
+
+    with utils.open_filepath(path, compression_case.read_as, encoding="ascii") as handle:
+        with pytest.raises(UnicodeDecodeError):
+            handle.read()

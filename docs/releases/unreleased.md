@@ -45,6 +45,9 @@
 
 ## stream
 
+- Added an `encoding` parameter to `stream.iter_csv`, `stream.iter_arff` and `stream.iter_libsvm`, defaulting to UTF-8.
+- Compression inference now recognizes `.gz` and `.zip` extensions regardless of case.
+- ZIP input must contain exactly one file. Empty archives and archives with multiple files now raise `ValueError`.
 - `stream.iter_arff` now accepts empty sparse rows and whitespace around sparse entries, and skips blank and comment lines in sparse data. Omitted features remain omitted.
 - `stream.iter_csv` now preserves extra fields and fills missing columns correctly.
 - `stream.Cache` now writes a pass to a temporary file and renames it into place once the stream is exhausted. An interrupted first pass (a `break`, an exception, an abandoned generator) used to leave a truncated file behind, which every later pass then read back as if it were the whole dataset.
