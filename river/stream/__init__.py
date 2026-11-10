@@ -14,6 +14,7 @@ from .iter_frame import iter_frame
 from .iter_libsvm import iter_libsvm
 from .iter_pandas import iter_pandas
 from .iter_polars import iter_polars
+from .iter_sklearn import iter_sklearn_dataset
 from .qa import simulate_qa
 from .shuffling import shuffle
 from .tweet_stream import TwitterLiveStream
@@ -28,18 +29,12 @@ __all__ = [
     "iter_libsvm",
     "iter_pandas",
     "iter_polars",
+    "iter_sklearn_dataset",
     "simulate_qa",
     "shuffle",
     "TwitterLiveStream",
     "TwitchChatStream",
 ]
-
-try:
-    from .iter_sklearn import iter_sklearn_dataset
-
-    __all__ += ["iter_sklearn_dataset"]
-except ImportError:
-    pass
 
 try:
     from .iter_sql import iter_sql
