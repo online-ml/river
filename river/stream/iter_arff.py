@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import functools
 import os
+import re
 import typing
 
 import scipy.io.arff
@@ -12,6 +14,48 @@ from river.stream import utils
 if typing.TYPE_CHECKING:
     from river.base.typing import FeatureName
     from river.stream.typing import Compression, FilePath
+
+
+_ESCAPE_PATTERN = re.compile(r"\\([0-9]{1,3}|u[0-9a-f]{4}|.)")
+_ESCAPES = {
+    "\\": "\\",
+    '"': '"',
+    "'": "'",
+    "t": "\t",
+    "n": "\n",
+    "r": "\r",
+    "b": "\b",
+    "f": "\f",
+    "%": "%",
+}
+
+
+def _replace_escape(match: re.Match[str]) -> str:
+    code = match[1]
+    if code.isdecimal():
+        return chr(int(code, 8))
+    if code.startswith("u"):
+        return chr(int(code[1:], 16))
+    try:
+        return _ESCAPES[code]
+    except KeyError as error:
+        raise ValueError from error
+
+
+@functools.lru_cache(maxsize=256)
+def _parse_quoted_value(value: str) -> str:
+    quote = value[0]
+    escaped = False
+    for char in value[1:-1]:
+        if escaped:
+            escaped = False
+        elif char == "\\":
+            escaped = True
+        elif char == quote:
+            raise ValueError
+    if escaped:
+        raise ValueError
+    return _ESCAPE_PATTERN.sub(_replace_escape, value[1:-1])
 
 
 def iter_arff(
@@ -171,8 +215,10 @@ def iter_arff(
         raise scipy.io.arff.ParseArffError(msg)
 
     names = [attr.name for attr in attrs]
+    n_attrs = len(names)
     # HACK: it's a bit hacky to rely on class name to determine what casting to apply
     casts = [float if attr.__class__.__name__ == "NumericAttribute" else None for attr in attrs]
+    nominal_values = [set(attr.values) if attr.type_name == "nominal" else None for attr in attrs]
     target_names = {target} if isinstance(target, str) else set(target or [])
     defaults = (
         {
@@ -197,17 +243,51 @@ def iter_arff(
             row = r.strip()
             if not row or row.startswith("%"):
                 continue
+            if row[0] != "{" or row[-1] != "}":
+                raise ValueError
             entries = row[1:-1].strip()
-            for s in entries.split(",") if entries else []:
-                name_index, val = s.strip().split(maxsplit=1)
+            sparse_entries = iter(entries.split(",") if entries else [])
+            for entry in sparse_entries:
+                name_index, val = entry.split(maxsplit=1)
                 index = int(name_index)
+                if not 0 <= index < n_attrs:
+                    raise ValueError
                 name = names[index]
+                cast = casts[index]
+                if cast is not None:
+                    if val[0] == "?" and val.strip() == "?":
+                        if name in target_names:
+                            x[name] = None
+                    else:
+                        x[name] = cast(val)
+                    continue
+
+                val = val.strip()
                 if val == "?":
                     if name in target_names:
                         x[name] = None
+                    continue
+
+                allowed_values = nominal_values[index]
+                if allowed_values is not None and val in allowed_values:
+                    x[name] = val
+                    continue
+
+                quoted = val[0] in "'\""
+                if quoted:
+                    quote = val[0]
+                    while not val.rstrip().endswith(quote):
+                        try:
+                            val += "," + next(sparse_entries)
+                        except StopIteration as error:
+                            raise ValueError from error
+                    val = _parse_quoted_value(val.rstrip())
                 else:
-                    cast = casts[index]
-                    x[name] = cast(val) if cast else val
+                    if " " in val or "\t" in val or "'" in val or '"' in val:
+                        raise ValueError
+                if allowed_values is not None and val not in allowed_values:
+                    raise ValueError
+                x[name] = val
         else:
             x = {
                 name: cast(val) if cast else val

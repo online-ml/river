@@ -113,6 +113,12 @@ SPARSE_HEADER = """@relation test
 @data
 """
 
+STRING_SPARSE_HEADER = """@relation test
+@attribute a numeric
+@attribute label string
+@data
+"""
+
 
 @pytest.mark.parametrize(
     "row",
@@ -128,6 +134,79 @@ def test_sparse_values_are_cast_with_whitespace_between_entries(row: str) -> Non
     dataset = stream.iter_arff(io.StringIO(SPARSE_HEADER + row + "\n"), target="label", sparse=True)
 
     assert list(dataset) == [({"a": 1.5, "score": 2.5}, "positive")]
+
+
+@pytest.mark.parametrize(
+    ("row", "expected"),
+    [
+        ("{0 1.5,1 'class A'}", "class A"),
+        ("{0 1.5,1 'class,A'}", "class,A"),
+        ('{0 1.5,1 "class,A"}', "class,A"),
+        ("{1 'class,A'   ,0 1.5}", "class,A"),
+        ("{0 1.5,1 '?'}", "?"),
+        (r"{0 1.5,1 '\''}", "'"),
+        (r"{0 1.5,1 '\\'}", "\\"),
+        (r"{0 1.5,1 '\\\''}", "\\'"),
+        (r"{0 1.5,1 '\n'}", "\n"),
+        (r"{0 1.5,1 '\r'}", "\r"),
+        (r"{0 1.5,1 '\t'}", "\t"),
+        (r"{0 1.5,1 '\b'}", "\b"),
+        (r"{0 1.5,1 '\f'}", "\f"),
+        (r"{0 1.5,1 '\0'}", "\0"),
+        (r"{0 1.5,1 '\01'}", "\01"),
+        (r"{0 1.5,1 '\011'}", "\t"),
+        (r"{0 1.5,1 '\u123a'}", "ሺ"),
+        (r"{0 1.5,1 '\%'}", "%"),
+    ],
+)
+def test_sparse_quoted_values_are_unquoted(row: str, expected: str) -> None:
+    dataset = stream.iter_arff(
+        io.StringIO(STRING_SPARSE_HEADER + row + "\n"), target="label", sparse=True
+    )
+
+    assert list(dataset) == [({"a": 1.5}, expected)]
+
+
+@pytest.mark.parametrize(
+    "row",
+    [
+        r"{1 \'A' }",
+        r"{1 \'A }",
+        "{1 'A }",
+        '{1 "A }',
+        '{1 A" }',
+        "{1 A' }",
+        r"{1 'A\' }",
+        r'{1 "A\" }',
+        r"{1 '\x00'}",
+        r"{1 '\u1'}",
+        r"{1 '\uzzzz'}",
+        r"{1 '\N'}",
+        r"{1 '\T'}",
+        "{1 A B}",
+        "{1 5 6}",
+        "{1 '5' '6'}",
+        "0 {1 A }",
+        "0, {1 A }",
+        "{1 A } 0",
+        "{1 A }, 0",
+        "{1 A",
+        "1 A}",
+    ],
+)
+def test_invalid_sparse_layouts_raise(row: str) -> None:
+    dataset = stream.iter_arff(io.StringIO(STRING_SPARSE_HEADER + row + "\n"), sparse=True)
+
+    with pytest.raises(ValueError):
+        next(dataset)
+
+
+@pytest.mark.parametrize("row", ["{0 nope}", "{2 unknown}", "{3 1}", "{-1 1}"])
+def test_invalid_sparse_values_raise(row: str) -> None:
+    dataset = stream.iter_arff(io.StringIO(SPARSE_HEADER + row + "\n"), sparse=True)
+
+    with pytest.raises(ValueError):
+        next(dataset)
 
 
 @pytest.mark.parametrize(
