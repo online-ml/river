@@ -77,6 +77,7 @@
 ## tree
 
 - Refactored `LASTClassifier` to reuse a single tree-level split criterion for class-distribution change detection, reducing per-leaf state without changing classifier behaviour.
+- Fixed underestimated memory usage in trees using `ExhaustiveSplitter`, which could let models exceed their configured `max_size` without deactivating leaves.
 
 ## proba
 
