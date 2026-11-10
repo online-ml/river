@@ -58,6 +58,8 @@
 - `stream.iter_array` is now clean under strict mypy. Its annotations accept Python lists: `X` is a NumPy array or a list of rows (strings or collections), `y` a NumPy array or a list, and `feature_names` and `target_names` any sequence.
 - `stream.shuffle`, `stream.TwitchChatStream`, and `stream.TwitterLiveStream` are now clean under strict mypy. `stream.shuffle` is generic over any iterable, so the shuffled stream keeps the element type of its input, and `stream.TwitchChatStream` messages are typed with a `TypedDict`.
 - `stream.simulate_qa` and `evaluate.progressive_val_score` no longer raise a `TypeError` when `moment` is given without `delay`. Without a `delay`, `moment` is ignored. See [#2058](https://github.com/online-ml/river/pull/2058).
+- `stream.iter_sklearn_dataset` is now clean under strict mypy, which makes the whole `river.stream` sub-package strict, and the `river.stream.*` entry was removed from the non-strict overrides in `pyproject.toml`.
+- `stream.iter_sklearn_dataset` is now always exported from `river.stream`, even when scikit-learn is not installed, and importing `river.stream` no longer imports scikit-learn.
 
 ## preprocessing
 

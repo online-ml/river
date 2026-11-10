@@ -268,7 +268,6 @@ module = [
     "river.datasets.*",
     "river.tree.*",
     "river.preprocessing.*",
-    "river.stream.*",
     "river.evaluate.*",
     "river.compose.*",
     "river.bandit.*",
