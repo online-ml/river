@@ -45,6 +45,7 @@
 
 ## stream
 
+- stream.TwitchChatStream now reconstructs messages split across socket reads and raises ConnectionError when the server disconnects.
 - Added an `encoding` parameter to `stream.iter_csv`, `stream.iter_arff` and `stream.iter_libsvm`, defaulting to UTF-8.
 - Compression inference now recognizes `.gz` and `.zip` extensions regardless of case.
 - ZIP input must contain exactly one file. Empty archives and archives with multiple files now raise `ValueError`.
