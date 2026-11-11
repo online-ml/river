@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import gc
 import io
+import types
 import typing
 
 import pytest
@@ -286,3 +288,101 @@ def test_sparse_missing_values_with_padding(
     )
 
     assert list(dataset) == [(expected_features, expected_targets)]
+
+
+@pytest.mark.parametrize("termination", ["close", "finalize"])
+def test_interrupted_owned_files_are_closed(
+    tmp_path: pathlib.Path,
+    write_file: WriteFile,
+    compression_case: CompressionCase,
+    opened_files: list[typing.TextIO],
+    termination: str,
+) -> None:
+    path = write_file(
+        tmp_path / f"data.arff{compression_case.suffix}",
+        DENSE,
+        compression_case.written_as,
+    )
+    dataset = stream.iter_arff(path, compression=compression_case.read_as)
+    _ = next(dataset)
+    assert len(opened_files) == 1
+    assert not opened_files[0].closed
+
+    if termination == "close":
+        assert isinstance(dataset, types.GeneratorType)
+        dataset.close()
+    else:
+        del dataset
+        _ = gc.collect()
+
+    assert opened_files[0].closed
+
+
+@pytest.mark.parametrize("termination", ["close", "finalize"])
+def test_interrupted_caller_buffers_are_left_open(termination: str) -> None:
+    buffer = io.StringIO(DENSE)
+    dataset = stream.iter_arff(buffer)
+    _ = next(dataset)
+
+    if termination == "close":
+        assert isinstance(dataset, types.GeneratorType)
+        dataset.close()
+    else:
+        del dataset
+        _ = gc.collect()
+
+    assert not buffer.closed
+
+
+@pytest.mark.parametrize(
+    ("content", "sparse", "error"),
+    [
+        ("@relation test\n@attribute a bogus\n@data\n1\n", False, scipy.io.arff.ParseArffError),
+        (DENSE + "bad,2,x\n", False, ValueError),
+        (SPARSE + "{ 2 bad }\n", True, ValueError),
+        (SPARSE + "bad row\n", True, ValueError),
+    ],
+)
+def test_owned_files_are_closed_after_errors(
+    tmp_path: pathlib.Path,
+    write_file: WriteFile,
+    compression_case: CompressionCase,
+    opened_files: list[typing.TextIO],
+    content: str,
+    sparse: bool,
+    error: type[Exception],
+) -> None:
+    path = write_file(
+        tmp_path / f"data.arff{compression_case.suffix}",
+        content,
+        compression_case.written_as,
+    )
+    dataset = stream.iter_arff(path, compression=compression_case.read_as, sparse=sparse)
+
+    with pytest.raises(error):
+        list(dataset)
+
+    assert len(opened_files) == 1
+    assert opened_files[0].closed
+
+
+@pytest.mark.parametrize(
+    ("content", "sparse", "error"),
+    [
+        ("@relation test\n@attribute a bogus\n@data\n1\n", False, scipy.io.arff.ParseArffError),
+        (DENSE + "bad,2,x\n", False, ValueError),
+        (SPARSE + "{ 2 bad }\n", True, ValueError),
+        (SPARSE + "bad row\n", True, ValueError),
+    ],
+)
+def test_caller_buffers_are_left_open_after_errors(
+    content: str,
+    sparse: bool,
+    error: type[Exception],
+) -> None:
+    buffer = io.StringIO(content)
+
+    with pytest.raises(error):
+        list(stream.iter_arff(buffer, sparse=sparse))
+
+    assert not buffer.closed
