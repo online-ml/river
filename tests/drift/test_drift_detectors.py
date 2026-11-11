@@ -128,3 +128,64 @@ def perform_test(drift_detector, data_stream):
         if drift_detector.drift_detected:
             detected_indices.append(i)
     return detected_indices
+
+
+def test_cusum():
+    detected_indices = perform_test(drift.CUSUM(), data_stream_1)
+
+    assert len(detected_indices) >= 1
+    assert any(1000 <= idx <= 1200 for idx in detected_indices)
+
+    detected_indices = perform_test(drift.CUSUM(), data_stream_3)
+
+    assert any(500 <= idx <= 700 for idx in detected_indices)
+    assert any(1500 <= idx <= 1700 for idx in detected_indices)
+
+    # data_stream_3 alternates low / high / low / high, so "up" must fire on the rises and
+    # "down" on the falls. After a detection the reference is re-estimated from the current
+    # regime, so a segment that matches the reference must not trigger.
+    detected_indices = perform_test(drift.CUSUM(mode="up"), data_stream_3)
+
+    assert any(500 <= idx < 1000 for idx in detected_indices)
+    assert not any(idx < 500 for idx in detected_indices)
+    assert not any(1000 <= idx < 1500 for idx in detected_indices)
+
+    detected_indices = perform_test(drift.CUSUM(mode="down"), data_stream_3)
+
+    assert any(1000 <= idx < 1500 for idx in detected_indices)
+    assert not any(500 <= idx < 1000 for idx in detected_indices)
+    assert not any(idx >= 1500 for idx in detected_indices)
+
+
+def test_cusum_coverage():
+    with pytest.raises(ValueError):
+        drift.CUSUM(slack=-1)
+
+    with pytest.raises(ValueError):
+        drift.CUSUM(threshold=0)
+
+    with pytest.raises(ValueError):
+        drift.CUSUM(min_instances=0)
+
+    with pytest.raises(ValueError):
+        drift.CUSUM(mode="sideways")
+
+    # A constant stream has no variation, so nothing can accumulate past the limit.
+    detector = drift.CUSUM(min_instances=3)
+
+    for _ in range(100):
+        detector.update(1.0)
+
+    assert detector.drift_detected is False
+
+    # An abrupt step is caught once the slack has been absorbed.
+    detector = drift.CUSUM(min_instances=5, slack=0.5, threshold=4.0)
+    detected = False
+
+    for _ in range(50):
+        detector.update(0.0)
+    for _ in range(50):
+        detector.update(10.0)
+        detected = detected or detector.drift_detected
+
+    assert detected is True
