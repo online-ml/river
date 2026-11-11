@@ -20,7 +20,8 @@ class Yt(sympy.IndexedBase):
 
 def test_diff_formula():
     """
-
+    Example
+    -------
     >>> import sympy
     >>> from river.time_series.snarimax import Differencer
 

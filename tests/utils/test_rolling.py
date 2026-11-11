@@ -9,6 +9,8 @@ from river import proba, stats, utils
 
 def test_with_counter() -> None:
     """
+    Example
+    -------
     >>> from river import utils
     >>> import collections
     >>> collections.Counter.revert = collections.Counter.subtract

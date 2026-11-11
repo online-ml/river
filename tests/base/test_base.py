@@ -92,7 +92,8 @@ def test_memory_usage_includes_rust_state() -> None:
 
 def test_mutate() -> None:
     """
-
+    Example
+    ------
     >>> from river import datasets, linear_model, optim, preprocessing
 
     >>> model = (

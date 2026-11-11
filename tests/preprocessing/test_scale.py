@@ -593,7 +593,10 @@ def test_maxabs_scaler_unpickle_missing_window_size():
 
 
 def test_issue_1313():
-    """>>> import numpy as np
+    """
+    Example
+    -------
+    >>> import numpy as np
     >>> import pandas as pd
     >>> from sklearn import datasets
     >>> from river import preprocessing

@@ -87,7 +87,8 @@ def test_agg_lag():
 
 def test_target_agg_lag():
     """
-
+    Example
+    -------
     >>> dataset = [
     ...     ({'country': 'France'}, 42),
     ...     ({'country': 'Sweden'}, 16),

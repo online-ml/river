@@ -18,7 +18,8 @@ def test_issue_1443():
 
 def test_confusion_and_other_metrics():
     """
-
+    Example
+    -------
     >>> dataset = datasets.Phishing()
 
     >>> model = preprocessing.StandardScaler() | linear_model.LogisticRegression(
