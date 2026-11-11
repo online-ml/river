@@ -111,7 +111,7 @@ def test_univariate(stat: stats.base.Univariate, func: typing.Callable[..., typi
 def test_univariate_frequency_weights(
     stat: stats.base.Univariate, func: typing.Callable[..., typing.Any]
 ) -> None:
-    """https://en.wikipedia.org/wiki/Weighted_arithmetic_mean"""
+    """See https://en.wikipedia.org/wiki/Weighted_arithmetic_mean."""
     X = [random.random() for _ in range(30)]
     W = [random.randint(1, 5) for _ in range(30)]
 
@@ -130,7 +130,7 @@ def test_univariate_frequency_weights(
 def test_univariate_reliability_weights(
     stat: stats.base.Univariate, func: typing.Callable[..., typing.Any]
 ) -> None:
-    """https://en.wikipedia.org/wiki/Weighted_arithmetic_mean"""
+    """See https://en.wikipedia.org/wiki/Weighted_arithmetic_mean."""
     X = [random.random() for _ in range(30)]
     W = [random.random() for _ in range(30)]
 

@@ -7,8 +7,7 @@ from river import stats
 
 def test_issue_1178() -> None:
     """
-
-    https://github.com/online-ml/river/issues/1178
+    See https://github.com/online-ml/river/issues/1178.
 
     >>> from river import stats
 

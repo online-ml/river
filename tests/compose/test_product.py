@@ -10,8 +10,7 @@ from river import compat, compose, datasets, preprocessing, stream
 
 def test_issue_1238():
     """
-
-    https://github.com/online-ml/river/issues/1238
+    See https://github.com/online-ml/river/issues/1238.
 
     >>> from river import compose
 
@@ -35,8 +34,7 @@ def test_issue_1238():
 
 def test_issue_1243():
     """
-
-    https://github.com/online-ml/river/issues/1243
+    See https://github.com/online-ml/river/issues/1243.
 
     >>> import random
     >>> import pandas as pd
@@ -64,8 +62,7 @@ def test_issue_1243():
 
 def test_issue_1253():
     """
-
-    https://github.com/online-ml/river/issues/1253
+    See https://github.com/online-ml/river/issues/1253.
 
     >>> import numpy as np
     >>> import pandas as pd

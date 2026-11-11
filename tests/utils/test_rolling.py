@@ -63,7 +63,7 @@ def test_rolling_rejects_kwargs_alongside_instance() -> None:
 
 
 def test_issue_1343() -> None:
-    """https://github.com/online-ml/river/issues/1343"""
+    """See https://github.com/online-ml/river/issues/1343."""
     rmean = utils.TimeRolling(proba.MultivariateGaussian, period=dt.timedelta(microseconds=1))
     t = dt.datetime.now()
     rmean.update({"a": 0}, t=t)

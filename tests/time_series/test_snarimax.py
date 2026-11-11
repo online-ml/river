@@ -63,7 +63,7 @@ def test_diff_formula():
 
 
 def test_diff_example():
-    """https://people.duke.edu/~rnau/411sdif.htm
+    """See https://people.duke.edu/~rnau/411sdif.htm.
 
     >>> import pandas as pd
     >>> from river.time_series.snarimax import Differencer

@@ -8,11 +8,9 @@ from river import stats
 
 def test_weighted_variance_with_close_numbers() -> None:
     """
-
-    Origin of this test: https://github.com/online-ml/river/issues/732
+    Origin of this test: https://github.com/online-ml/river/issues/732.
 
     This test would fail if Var were implemented with a numerically unstable algorithm.
-
     """
     D = [
         (99.99999978143265, 6),
