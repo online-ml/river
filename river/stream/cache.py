@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import contextlib
 import glob
-import inspect
 import os
 import pickle
 import platform
@@ -21,7 +20,7 @@ T = typing.TypeVar("T")
 CACHE_SUFFIX = ".river_cache.pkl"
 """Extension of a cached stream, which is also what identifies one in a shared directory."""
 
-_SYSTEM_TO_TMP_DIR: dict[str, str] = {"Linux": "/tmp", "Darwin": "/tmp", "Windows": "C:\\TEMP"}
+_SYSTEM_TO_TMP_DIR: dict[str, str] = {"Linux": "/tmp", "Darwin": "/tmp"}
 """Where to cache streams on each `platform.system()`."""
 
 
@@ -98,7 +97,9 @@ class Cache:
         # Guess the directory from the system
         if directory is None:
             system = platform.system()
-            if (directory := _SYSTEM_TO_TMP_DIR.get(system)) is None:
+            if system == "Windows":
+                directory = tempfile.gettempdir()
+            elif (directory := _SYSTEM_TO_TMP_DIR.get(system)) is None:
                 raise ValueError(
                     f"There is no default directory defined for {system} systems, "
                     "please provide one manually"
@@ -132,16 +133,11 @@ class Cache:
         Raises
         ------
         ValueError
-            If no `key` is given and none can be guessed from `stream`.
+            If no `key` is given.
 
         """
-        # Try to guess a key from the stream object
         if key is None:
-            if inspect.isfunction(stream):
-                key = stream.__name__
-
-        if key is None:
-            msg = "No default key could be guessed for the given stream, please provide one"
+            msg = "No key was given for the stream, please provide one"
             raise ValueError(msg)
 
         path = self._get_path(key)
