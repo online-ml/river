@@ -1,11 +1,29 @@
 from __future__ import annotations
 
-import sklearn.utils
+import typing
 
 from river import base, stream, utils
 
+if typing.TYPE_CHECKING:
+    from collections.abc import Sequence
 
-def iter_sklearn_dataset(dataset: sklearn.utils.Bunch, **kwargs) -> base.typing.Stream:
+    import sklearn.utils
+
+    class _Options(typing.TypedDict, total=False):
+        feature_names: Sequence[base.typing.FeatureName] | None
+        target_names: Sequence[base.typing.FeatureName] | None
+        shuffle: bool
+        seed: int | None
+        chunk_size: int
+
+    class _Params(_Options):
+        X: typing.Any
+        y: typing.Any
+
+
+def iter_sklearn_dataset(
+    dataset: sklearn.utils.Bunch, **kwargs: typing.Unpack[_Options]
+) -> base.typing.Stream:
     """Iterate rows from one of the datasets provided by scikit-learn.
 
     This allows you to use any dataset from [scikit-learn's `datasets` module](https://scikit-learn.org/stable/modules/classes.html#module-sklearn.datasets). For instance, you can use the `fetch_openml` function to get access to all of the
@@ -43,16 +61,15 @@ def iter_sklearn_dataset(dataset: sklearn.utils.Bunch, **kwargs) -> base.typing.
     151.0
 
     """
-    kwargs["X"] = dataset.data
-    kwargs["y"] = dataset.target
+    params: _Params = {**kwargs, "X": dataset.data, "y": dataset.target}
     try:
-        kwargs["feature_names"] = dataset.feature_names
+        params["feature_names"] = dataset.feature_names
     except AttributeError:
         pass
 
     if utils.pandas.PANDAS_INSTALLED and isinstance(
-        kwargs["X"], utils.pandas.import_pandas().DataFrame
+        params["X"], utils.pandas.import_pandas().DataFrame
     ):
-        yield from stream.iter_pandas(**kwargs)
+        yield from stream.iter_pandas(**params)
     else:
-        yield from stream.iter_array(**kwargs)
+        yield from stream.iter_array(**params)

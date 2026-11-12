@@ -17,7 +17,12 @@ if typing.TYPE_CHECKING:
         """Writes `content` to `path`, compressed as `compression` ("infer" uses the extension)."""
 
         def __call__(
-            self, path: pathlib.Path, content: str, compression: Compression | None = "infer"
+            self,
+            path: pathlib.Path,
+            content: str,
+            compression: Compression | None = "infer",
+            *,
+            encoding: str = "utf-8",
         ) -> pathlib.Path: ...
 
 
@@ -38,7 +43,10 @@ COMPRESSION_CASES = {
     "plain": CompressionCase("", "infer", "infer"),
     "gzip-inferred": CompressionCase(".gz", "infer", "infer"),
     "zip-inferred": CompressionCase(".zip", "infer", "infer"),
+    "gzip-uppercase": CompressionCase(".GZ", "gzip", "infer"),
+    "zip-mixed-case": CompressionCase(".ZiP", "zip", "infer"),
     "gzip-explicit": CompressionCase("", "gzip", "gzip"),
+    "zip-explicit": CompressionCase("", "zip", "zip"),
     "none-explicit": CompressionCase(".gz", None, None),
 }
 
@@ -51,17 +59,21 @@ def compression_case(request: pytest.FixtureRequest) -> CompressionCase:
 @pytest.fixture
 def write_file() -> WriteFile:
     def write(
-        path: pathlib.Path, content: str, compression: Compression | None = "infer"
+        path: pathlib.Path,
+        content: str,
+        compression: Compression | None = "infer",
+        *,
+        encoding: str = "utf-8",
     ) -> pathlib.Path:
         match EXT_TO_FORMAT.get(path.suffix) if compression == "infer" else compression:
             case "gzip":
-                with gzip.open(path, mode="wt") as f:
+                with gzip.open(path, mode="wt", encoding=encoding) as f:
                     _ = f.write(content)
             case "zip":
                 with zipfile.ZipFile(path, mode="w") as archive:
-                    archive.writestr(path.stem, content)
+                    archive.writestr(path.stem, content.encode(encoding))
             case _:
-                _ = path.write_text(content)
+                _ = path.write_text(content, encoding=encoding)
         return path
 
     return write
@@ -73,8 +85,10 @@ def opened_files(monkeypatch: pytest.MonkeyPatch) -> list[typing.TextIO]:
     handles: list[typing.TextIO] = []
     open_filepath = utils.open_filepath
 
-    def spy(filepath: FilePath, compression: Compression | None) -> typing.TextIO:
-        handle = open_filepath(filepath, compression)
+    def spy(
+        filepath: FilePath, compression: Compression | None, encoding: str = "utf-8"
+    ) -> typing.TextIO:
+        handle = open_filepath(filepath, compression, encoding=encoding)
         handles.append(handle)
         return handle
 

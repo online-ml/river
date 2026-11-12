@@ -222,7 +222,10 @@ class HoltWinters(time_series.base.Forecaster):
         if self.trend is not None:
             self.trend.append(statistics.mean(diffs))
         if self.season is not None:
-            self.season.extend([y / self.level[-1] for y in self._first_values])
+            if self.multiplicative:
+                self.season.extend([y / self.level[-1] for y in self._first_values])
+            else:
+                self.season.extend([y - self.level[-1] for y in self._first_values])
 
         self._initialized = True
 

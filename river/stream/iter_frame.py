@@ -125,6 +125,10 @@ def iter_frame(
         rows = ((x_row, None) for x_row in x_iter)
     else:
         target = nw.from_native(y, eager_only=True, allow_series=True)
+        if len(frame) != len(target):
+            raise ValueError(
+                f"X and y must have the same length, got {len(frame)} and {len(target)}"
+            )
         y_iter = target.iter_rows(named=True) if isinstance(target, nw.DataFrame) else target
         rows = zip(x_iter, y_iter)
 

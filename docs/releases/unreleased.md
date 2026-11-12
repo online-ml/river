@@ -2,6 +2,7 @@
 
 ## Breaking changes
 
+- `stream.iter_arff` now casts sparse numeric values to floats and uses the first declared category for omitted nominal targets. Explicitly missing targets now return `None` with either string or list target arguments.
 - Removed support for `pandas<=2.x`. River now requires `pandas>=3.1`.
 - In `OneHotEncoder`, missing values are not dropped anymore when `drop_first=True`, and the value that is dropped is now stable across observations.
 
@@ -44,6 +45,10 @@
 
 ## stream
 
+- Added an `encoding` parameter to `stream.iter_csv`, `stream.iter_arff` and `stream.iter_libsvm`, defaulting to UTF-8.
+- Compression inference now recognizes `.gz` and `.zip` extensions regardless of case.
+- ZIP input must contain exactly one file. Empty archives and archives with multiple files now raise `ValueError`.
+- `stream.iter_arff` now accepts empty sparse rows and whitespace around sparse entries, and skips blank and comment lines in sparse data. Omitted features remain omitted.
 - `stream.iter_csv` now preserves extra fields and fills missing columns correctly.
 - `stream.Cache` now writes a pass to a temporary file and renames it into place once the stream is exhausted. An interrupted first pass (a `break`, an exception, an abandoned generator) used to leave a truncated file behind, which every later pass then read back as if it were the whole dataset.
 - `stream.iter_csv` no longer yields an empty `x` for a blank line in the middle of a file. `csv.DictReader` skips those, and `stream.iter_arff` already did.
@@ -56,6 +61,8 @@
 - `stream.iter_array` is now clean under strict mypy. Its annotations accept Python lists: `X` is a NumPy array or a list of rows (strings or collections), `y` a NumPy array or a list, and `feature_names` and `target_names` any sequence.
 - `stream.shuffle`, `stream.TwitchChatStream`, and `stream.TwitterLiveStream` are now clean under strict mypy. `stream.shuffle` is generic over any iterable, so the shuffled stream keeps the element type of its input, and `stream.TwitchChatStream` messages are typed with a `TypedDict`.
 - `stream.simulate_qa` and `evaluate.progressive_val_score` no longer raise a `TypeError` when `moment` is given without `delay`. Without a `delay`, `moment` is ignored. See [#2058](https://github.com/online-ml/river/pull/2058).
+- `stream.iter_sklearn_dataset` is now clean under strict mypy.
+- `stream.iter_sklearn_dataset` is now always exported from `river.stream`, even when scikit-learn is not installed, and importing `river.stream` no longer imports scikit-learn.
 
 ## preprocessing
 
@@ -70,6 +77,7 @@
 ## tree
 
 - Refactored `LASTClassifier` to reuse a single tree-level split criterion for class-distribution change detection, reducing per-leaf state without changing classifier behaviour.
+- Fixed underestimated memory usage in trees using `ExhaustiveSplitter`, which could let models exceed their configured `max_size` without deactivating leaves.
 
 ## proba
 
@@ -82,3 +90,7 @@
 ## model_selection
 
 - Added HoeffdingRaceRegressor and HoeffdingRaceClassifier
+
+## time_series
+
+- Fixed seasonal initialization in time_series.HoltWinters, which incorrectly used ratios for additive seasonality, flattening the seasonal pattern. Additive mode now uses differences (y - level), while multiplicative mode retains ratios (y / level).

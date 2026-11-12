@@ -58,7 +58,7 @@ class RMSE(MSE):
     """
 
     def get(self):
-        return super().get() ** 0.5
+        return math.sqrt(super().get())
 
 
 class RMSLE(RMSE):

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import collections
+import math
 
 from river import base, optim
 from river.optim.base import DictLike
@@ -74,7 +75,7 @@ class AMSGrad(optim.base.Optimizer):
 
         if self.correct_bias:
             # Correct bias for `v`
-            lr *= (1 - self.beta_2 ** (self.n_iterations + 1)) ** 0.5
+            lr *= math.sqrt(1 - self.beta_2 ** (self.n_iterations + 1))
             # Correct bias for `m`
             lr /= 1 - self.beta_1 ** (self.n_iterations + 1)
 

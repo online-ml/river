@@ -56,6 +56,7 @@ def iter_csv(
     compression: Compression | None = "infer",
     seed: int | None = None,
     field_size_limit: int | None = None,
+    encoding: str = "utf-8",
     **kwargs: typing.Any,
 ) -> base.typing.Stream:
     """Iterate over rows from a CSV file.
@@ -94,6 +95,8 @@ def iter_csv(
         If specified, the sampling will be deterministic.
     field_size_limit
         If not `None`, this will be passed to the `csv.field_size_limit` function.
+    encoding
+        Encoding used to open file paths. Defaults to UTF-8. Ignored when a text buffer is supplied.
     kwargs
         All other keyword arguments are passed to the underlying `csv.DictReader`.
 
@@ -160,7 +163,9 @@ def iter_csv(
 
         # If a file is not opened, then we open it
         if isinstance(filepath_or_buffer, (str, os.PathLike)):
-            buffer = stack.enter_context(utils.open_filepath(filepath_or_buffer, compression))
+            buffer = stack.enter_context(
+                utils.open_filepath(filepath_or_buffer, compression, encoding=encoding)
+            )
         else:
             buffer = filepath_or_buffer
 

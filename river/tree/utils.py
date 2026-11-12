@@ -4,8 +4,10 @@ import collections
 import copy
 import dataclasses
 import functools
+import gc
 import math
 import sys
+import types
 import typing
 
 from river.base.typing import FeatureName
@@ -301,6 +303,7 @@ def calculate_object_size(obj: typing.Any, unit: str = "byte") -> int:
     byte_size = 0
 
     to_visit.append(obj)
+    blacklist = (type, types.ModuleType, types.FunctionType)
 
     while True:
         try:
@@ -309,7 +312,7 @@ def calculate_object_size(obj: typing.Any, unit: str = "byte") -> int:
             break
 
         # If element was already covered, skip it
-        if id(obj) in seen:
+        if isinstance(obj, blacklist) or id(obj) in seen:
             continue
 
         # Update size accounting
@@ -318,20 +321,7 @@ def calculate_object_size(obj: typing.Any, unit: str = "byte") -> int:
         # Mark element as seen
         seen.add(id(obj))
 
-        # Add keys and values for size account
-        if isinstance(obj, dict):
-            for v in obj.values():
-                to_visit.append(v)
-
-            for k in obj.keys():
-                to_visit.append(k)
-        elif hasattr(obj, "__dict__"):
-            to_visit.append(obj.__dict__)
-        elif hasattr(obj, "__iter__") and not (
-            isinstance(obj, str) or isinstance(obj, bytes) or isinstance(obj, bytearray)
-        ):
-            for i in obj:
-                to_visit.append(i)
+        to_visit.extend(gc.get_referents(obj))
 
     if unit == "KiB":
         final_size = byte_size / 1024

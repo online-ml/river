@@ -392,3 +392,24 @@ t  | y        | level    | trend    | seasonality | y_pred
 52 |          |          |          |             |    71.23"""
 
     assert repr(printer).strip() == expected.strip()
+
+
+@pytest.mark.parametrize("multiplicative", [False, True])
+def test_initialization_recovers_repeating_season(multiplicative):
+    model = HoltWinters(
+        alpha=0.3, beta=0.1, gamma=0.3, seasonality=3, multiplicative=multiplicative
+    )
+    for y in [10.0, 20.0, 10.0]:
+        model.learn_one(y)
+
+    assert model.forecast(3) == pytest.approx([10.0, 20.0, 10.0])
+
+
+def test_additive_initial_season_is_centered_on_level():
+    model = HoltWinters(alpha=0.3, beta=0.1, gamma=0.3, seasonality=4)
+    for y in [3.0, 7.0, 5.0, 9.0]:
+        model.learn_one(y)
+
+    assert model.level[-1] == pytest.approx(6.0)
+    assert list(model.season) == pytest.approx([-3.0, 1.0, -1.0, 3.0])
+    assert sum(model.season) == pytest.approx(0.0)

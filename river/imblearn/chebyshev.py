@@ -99,7 +99,7 @@ class ChebyshevUnderSampler(base.Wrapper[base.Regressor], base.Regressor):
         **kwargs: typing.Any,
     ) -> None:
         self._var.update(y)
-        sd = self._var.get() ** 0.5
+        sd = math.sqrt(self._var.get())
 
         if sd > 0:
             mean = self._var.mean.get()
@@ -205,7 +205,7 @@ class ChebyshevOverSampler(base.Wrapper[base.Regressor], base.Regressor):
     ) -> None:
         self._var.update(y)
         var = self._var.get()
-        sd = var**0.5
+        sd = math.sqrt(var)
 
         if sd > 0:
             mean = self._var.mean.get()
