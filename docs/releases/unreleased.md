@@ -45,6 +45,7 @@
 
 ## stream
 
+- Fixed dense ARFF parsing so quoted values containing commas stay in the correct fields. Blank lines and comments are skipped.
 - Added an `encoding` parameter to `stream.iter_csv`, `stream.iter_arff` and `stream.iter_libsvm`, defaulting to UTF-8.
 - Compression inference now recognizes `.gz` and `.zip` extensions regardless of case.
 - ZIP input must contain exactly one file. Empty archives and archives with multiple files now raise `ValueError`.
