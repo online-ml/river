@@ -1726,6 +1726,9 @@
         <loc>https://riverml.xyz/dev/releases/0.26.1/</loc>
       </url>
       <url>
+        <loc>https://riverml.xyz/dev/releases/0.27.0/</loc>
+      </url>
+      <url>
         <loc>https://riverml.xyz/dev/releases/0.3.0/</loc>
       </url>
       <url>
@@ -1760,8 +1763,5 @@
       </url>
       <url>
         <loc>https://riverml.xyz/dev/releases/0.9.0/</loc>
-      </url>
-      <url>
-        <loc>https://riverml.xyz/dev/releases/unreleased/</loc>
       </url>
 </urlset>
