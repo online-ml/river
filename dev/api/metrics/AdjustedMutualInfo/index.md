@@ -35,7 +35,7 @@ However, due to the complexity of the Expected Mutual Info Score, the computatio
   Indicates if labels are required, rather than probabilities.
 - **works\_with\_weights**
 
-  Indicate whether the model takes into consideration the effect of sample weights
+  Indicate whether the model takes into consideration the effect of sample weights.
 
 ## Examples
 
@@ -114,7 +114,7 @@ AdjustedMutualInfo: 0.298792
 >
 > **works\_with**
 >
-> Indicates whether or not a metric can work with a given model.
+> Indicate whether or not a metric can work with a given model.
 >
 > **Parameters**
 >

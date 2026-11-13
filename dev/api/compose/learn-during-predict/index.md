@@ -1,6 +1,6 @@
 # learn\_during\_predict
 
-A context manager for fitting unsupervised steps during prediction.
+Provide a context manager for fitting unsupervised steps during prediction.
 
 Usually, unsupervised parts of a pipeline are updated during `learn_one`. However, in the case of online learning, it is possible to update them before, during the prediction step. This context manager allows you to do so.
 

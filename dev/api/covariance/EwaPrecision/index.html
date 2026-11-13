@@ -4530,8 +4530,16 @@
 
 <h1 id="ewaprecision">EwaPrecision<a class="headerlink" href="#ewaprecision" title="Permanent link">&para;</a></h1>
 <p>Exponentially weighted precision (inverse covariance) matrix.</p>
-<p>The recency-weighted analogue of <code>EmpiricalPrecision</code>. It maintains the inverse of an exponentially weighted second-moment matrix online via a forgetting-factor Sherman-Morrison update (the recursive-least-squares trick), and applies the mean centering on read. It is genuinely online: the per-step cost is O(d^2) and the matrix is never explicitly inverted. </p>
-<p><strong>When to use it.</strong> Several methods need the <em>precision</em> matrix rather than the covariance: the Mahalanobis distance (anomaly detection), the Gaussian log-likelihood, and the weights of a Gaussian graphical model. Use this when those quantities must track a non-stationary stream, where inverting a stale covariance would lag. Like <code>EmpiricalPrecision</code>, the result is not guaranteed identical to inverting the matching covariance (there is a decaying identity prior), but the difference shrinks as observations accumulate. Requires <code>0 &lt; fading_factor &lt; 1</code>.</p>
+<p>The recency-weighted analogue of <code>EmpiricalPrecision</code>. It maintains the inverse of an
+exponentially weighted second-moment matrix online via a forgetting-factor Sherman-Morrison
+update (the recursive-least-squares trick), and applies the mean centering on read. It is
+genuinely online: the per-step cost is O(d^2) and the matrix is never explicitly inverted.</p>
+<p><strong>When to use it.</strong> Several methods need the <em>precision</em> matrix rather than the covariance:
+the Mahalanobis distance (anomaly detection), the Gaussian log-likelihood, and the weights of a
+Gaussian graphical model. Use this when those quantities must track a non-stationary stream,
+where inverting a stale covariance would lag. Like <code>EmpiricalPrecision</code>, the result is not
+guaranteed identical to inverting the matching covariance (there is a decaying identity prior),
+but the difference shrinks as observations accumulate. Requires <code>0 &lt; fading_factor &lt; 1</code>.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>

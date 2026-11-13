@@ -4498,9 +4498,22 @@
 
 <h1 id="set">Set<a class="headerlink" href="#set" title="Permanent link">&para;</a></h1>
 <p>Approximate tracking of observed items using Bloom filters.</p>
-<p>Bloom filters enable using a limited amount of memory to check whether a given item was already observed in a stream. They can be used similarly to Python's built-in sets with the difference that items are not explicitly stored. For that reason, element removal and set difference are not currently supported. </p>
-<p>Bloom filters store a bit array and map incoming items to <code>k</code> index positions in the such array. The selected positions are set to <code>True</code>. Therefore, a binary code representation is created for each item. Membership works by projecting the query item and checking if every position of its binary code is <code>True</code>. If that is not the case, the item was not observed yet. A nice property of Bloom filters is that they do not yield false negatives: unobserved items might be signalized as observed, but observed items are never signalized as unobserved. </p>
-<p>If more than one item has the same binary code, i.e., hash collisions happen, the accuracy of the Bloom filter decreases, and false positives are produced. For instance, a previously unobserved item is signalized as observed. Increasing the size of the binary array and the value of <code>k</code> increase the filter's accuracy as hash collisions are avoided. Nonetheless, even using an increased number of hash functions, hash collisions will frequently happen if the array capacity is too small. The length of the bit array and the number of hash functions are inferred automatically from the supplied <code>capacity</code> and <code>fp_rate</code>.</p>
+<p>Bloom filters enable using a limited amount of memory to check whether a given item was already
+observed in a stream. They can be used similarly to Python's built-in sets with the difference
+that items are not explicitly stored. For that reason, element removal and set difference are not
+currently supported.</p>
+<p>Bloom filters store a bit array and map incoming items to <code>k</code> index positions in the such array.
+The selected positions are set to <code>True</code>. Therefore, a binary code representation is created for each item.
+Membership works by projecting the query item and checking if every position of its binary code is
+<code>True</code>. If that is not the case, the item was not observed yet. A nice property of Bloom filters is
+that they do not yield false negatives: unobserved items might be signalized as observed, but observed
+items are never signalized as unobserved.</p>
+<p>If more than one item has the same binary code, i.e., hash collisions happen, the accuracy of the Bloom
+filter decreases, and false positives are produced. For instance, a previously unobserved item is signalized
+as observed. Increasing the size of the binary array and the value of <code>k</code> increase the filter's accuracy as
+hash collisions are avoided. Nonetheless, even using an increased number of hash functions, hash collisions
+will frequently happen if the array capacity is too small. The length of the bit array and the number of
+hash functions are inferred automatically from the supplied <code>capacity</code> and <code>fp_rate</code>.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>

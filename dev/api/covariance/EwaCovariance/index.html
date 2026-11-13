@@ -4530,8 +4530,17 @@
 
 <h1 id="ewacovariance">EwaCovariance<a class="headerlink" href="#ewacovariance" title="Permanent link">&para;</a></h1>
 <p>Exponentially weighted covariance matrix.</p>
-<p>A recency-weighted estimate of the covariance: each new observation is blended into the estimate with weight <code>fading_factor</code>, so the influence of past observations decays geometrically. This is the streaming analogue of the RiskMetrics covariance and the matrix counterpart of <a href="../../stats/EWVar"><code>stats.EWVar</code></a> / <a href="../../stats/EWCov"><code>stats.EWCov</code></a> (the diagonal is exactly <a href="../../stats/EWVar"><code>stats.EWVar</code></a> and each off-diagonal is exactly <a href="../../stats/EWCov"><code>stats.EWCov</code></a>). </p>
-<p><strong>When to use it.</strong> Reach for this over <code>EmpiricalCovariance</code> when the relationships between your variables change over time. The textbook example is asset returns, whose volatilities and correlations move with the market regime: a plain empirical covariance weights a return from years ago the same as yesterday's, whereas an exponentially weighted one forgets the distant past so the risk estimate tracks current conditions. Larger <code>fading_factor</code> reacts faster (shorter memory); smaller is smoother.</p>
+<p>A recency-weighted estimate of the covariance: each new observation is blended into the
+estimate with weight <code>fading_factor</code>, so the influence of past observations decays
+geometrically. This is the streaming analogue of the RiskMetrics covariance and the matrix
+counterpart of <a href="../../stats/EWVar"><code>stats.EWVar</code></a> / <a href="../../stats/EWCov"><code>stats.EWCov</code></a> (the diagonal is exactly <a href="../../stats/EWVar"><code>stats.EWVar</code></a> and each
+off-diagonal is exactly <a href="../../stats/EWCov"><code>stats.EWCov</code></a>).</p>
+<p><strong>When to use it.</strong> Reach for this over <code>EmpiricalCovariance</code> when the relationships between
+your variables change over time. The textbook example is asset returns, whose volatilities and
+correlations move with the market regime: a plain empirical covariance weights a return from
+years ago the same as yesterday's, whereas an exponentially weighted one forgets the distant
+past so the risk estimate tracks current conditions. Larger <code>fading_factor</code> reacts faster
+(shorter memory); smaller is smoother.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>

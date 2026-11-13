@@ -38,6 +38,8 @@ This splitter cannot perform probability density estimations, so it does not wor
 >
 > **cond\_proba**
 >
+> Return always 0.
+>
 > The underlying data structure used to monitor the input does not allow probability density estimations. Hence, it always returns zero for any given input.
 >
 > **Parameters**

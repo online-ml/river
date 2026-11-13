@@ -4422,7 +4422,10 @@
 
 <h1 id="sdft">SDFT<a class="headerlink" href="#sdft" title="Permanent link">&para;</a></h1>
 <p>Sliding Discrete Fourier Transform (SDFT).</p>
-<p>Initially, the coefficients are all equal to 0, up until enough values have been seen. A call to <code>numpy.fft.fft</code> is triggered once <code>window_size</code> values have been seen. Subsequent values will update the coefficients online. This is much faster than recomputing an FFT from scratch for every new value.</p>
+<p>Initially, the coefficients are all equal to 0, up until enough values have been seen. A call
+to <code>numpy.fft.fft</code> is triggered once <code>window_size</code> values have been seen. Subsequent values
+will update the coefficients online. This is much faster than recomputing an FFT from scratch
+for every new value.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>

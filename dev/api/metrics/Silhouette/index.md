@@ -84,7 +84,7 @@ Silhouette: 0.32145
 >
 > **works\_with**
 >
-> Indicates whether or not a metric can work with a given model.
+> Indicate whether or not a metric can work with a given model.
 >
 > **Parameters**
 >

@@ -4652,10 +4652,16 @@
 
 
 <h1 id="iter_frame">iter_frame<a class="headerlink" href="#iter_frame" title="Permanent link">&para;</a></h1>
-<p>Iterates over the rows of a dataframe.</p>
-<p>This is a dataframe-agnostic iterator: it works with any eager dataframe supported by <a href="https://narwhals-dev.github.io/narwhals/">Narwhals</a> (pandas, polars, PyArrow, Modin, cuDF, ...). It supersedes <a href="../../stream/iter-pandas"><code>stream.iter_pandas</code></a> and <a href="../../stream/iter-polars"><code>stream.iter_polars</code></a>. </p>
-<p>Rows are read directly from the dataframe via Narwhals, so each cell keeps its native per-column type (no conversion to a single <code>numpy</code> array, which would otherwise coerce a mixed-type frame to a common dtype). </p>
-<p>Note that vaex is <em>not</em> supported here: Narwhals only exposes it through the dataframe interchange protocol, which cannot iterate rows without materializing the whole frame. Use <code>stream.iter_vaex</code> instead, which streams a vaex dataframe lazily.</p>
+<p>Iterate over the rows of a dataframe.</p>
+<p>This is a dataframe-agnostic iterator: it works with any eager dataframe supported by
+<a href="https://narwhals-dev.github.io/narwhals/">Narwhals</a> (pandas, polars, PyArrow, Modin, cuDF,
+...). It supersedes <a href="../../stream/iter-pandas"><code>stream.iter_pandas</code></a> and <a href="../../stream/iter-polars"><code>stream.iter_polars</code></a>.</p>
+<p>Rows are read directly from the dataframe via Narwhals, so each cell keeps its native
+per-column type (no conversion to a single <code>numpy</code> array, which would otherwise coerce a
+mixed-type frame to a common dtype).</p>
+<p>Note that vaex is <em>not</em> supported here: Narwhals only exposes it through the dataframe
+interchange protocol, which cannot iterate rows without materializing the whole frame. Use
+<code>stream.iter_vaex</code> instead, which streams a vaex dataframe lazily.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>

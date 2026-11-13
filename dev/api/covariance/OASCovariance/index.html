@@ -4530,8 +4530,14 @@
 
 <h1 id="oascovariance">OASCovariance<a class="headerlink" href="#oascovariance" title="Permanent link">&para;</a></h1>
 <p>Online Oracle Approximating Shrinkage (OAS) covariance.</p>
-<p>Like <code>LedoitWolfCovariance</code>, OAS shrinks the exponentially weighted sample covariance towards a scaled identity, but uses the Chen, Wiesel, Eldar &amp; Hero (2010) shrinkage intensity, which is often better conditioned for approximately Gaussian data. The intensity is a closed form in the traces of the running covariance, applied on read; the per-step update is a plain O(d^2) exponentially weighted covariance update. </p>
-<p><strong>When to use it.</strong> The same high-dimensional / few-sample situations as <code>LedoitWolfCovariance</code>. OAS tends to shrink slightly more aggressively and is a good choice when the data are close to Gaussian; otherwise the two are interchangeable and worth comparing.</p>
+<p>Like <code>LedoitWolfCovariance</code>, OAS shrinks the exponentially weighted sample covariance towards a
+scaled identity, but uses the Chen, Wiesel, Eldar &amp; Hero (2010) shrinkage intensity, which is
+often better conditioned for approximately Gaussian data. The intensity is a closed form in the
+traces of the running covariance, applied on read; the per-step update is a plain O(d^2)
+exponentially weighted covariance update.</p>
+<p><strong>When to use it.</strong> The same high-dimensional / few-sample situations as
+<code>LedoitWolfCovariance</code>. OAS tends to shrink slightly more aggressively and is a good choice when
+the data are close to Gaussian; otherwise the two are interchangeable and worth comparing.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>

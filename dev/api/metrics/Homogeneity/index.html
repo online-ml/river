@@ -5805,11 +5805,24 @@
 
 <h1 id="homogeneity">Homogeneity<a class="headerlink" href="#homogeneity" title="Permanent link">&para;</a></h1>
 <p>Homogeneity Score.</p>
-<p>Homogeneity metric <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> of a cluster labeling given a ground truth. </p>
-<p>In order to satisfy the homogeneity criteria, a clustering must assign only those data points that are members of a single class to a single cluster. That is, the class distribution within each cluster should be skewed to a single class, that is, zero entropy. We determine how close a given clustering is to this ideal by examining the conditional entropy of the class distribution given the proposed clustering. </p>
-<p>However, in an imperfect situation, the size of this value is dependent on the size of the dataset and the distribution of class sizes. Therefore, instead of taking the raw conditional entropy, we normalize by the maximum reduction in entropy the clustering information could provide. </p>
-<p>As such, we define homogeneity as: </p>
-<div class="arithmatex">\[ h = \begin{cases} 1 if H(C) = 0, \\ 1 - \frac{H(C|K)}{H(C)} otherwise. \end{cases}. \]</div>
+<p>Homogeneity metric <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> of a cluster labeling given a ground truth.</p>
+<p>In order to satisfy the homogeneity criteria, a clustering must assign only
+those data points that are members of a single class to a single cluster. That
+is, the class distribution within each cluster should be skewed to a single
+class, that is, zero entropy. We determine how close a given clustering is to
+this ideal by examining the conditional entropy of the class distribution given
+the proposed clustering.</p>
+<p>However, in an imperfect situation, the size of this value is dependent on the
+size of the dataset and the distribution of class sizes. Therefore, instead of
+taking the raw conditional entropy, we normalize by the maximum reduction in
+entropy the clustering information could provide.</p>
+<p>As such, we define homogeneity as:</p>
+<div class="arithmatex">\[
+h = \begin{cases}
+1 if H(C) = 0, \\
+1 - \frac{H(C|K)}{H(C)} otherwise.
+\end{cases}.
+\]</div>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
@@ -5830,7 +5843,7 @@
 </li>
 <li>
 <p><strong>works_with_weights</strong></p>
-<p>Indicate whether the model takes into consideration the effect of sample weights</p>
+<p>Indicate whether the model takes into consideration the effect of sample weights.</p>
 </li>
 </ul>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
@@ -5894,7 +5907,7 @@
 <p><span /></p>
 <details class="- abstract">
 <summary>works_with</summary>
-<p>Indicates whether or not a metric can work with a given model.</p>
+<p>Indicate whether or not a metric can work with a given model.</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>model</strong>     — <code>base.Estimator</code>    </li>

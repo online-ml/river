@@ -4486,10 +4486,17 @@
 
 <h1 id="chebyshevoversampler">ChebyshevOverSampler<a class="headerlink" href="#chebyshevoversampler" title="Permanent link">&para;</a></h1>
 <p>Over-sampling for imbalanced regression using Chebyshev's inequality.</p>
-<p>Chebyshev's inequality can be used to define the probability of target observations being frequent values (w.r.t. the distribution mean). </p>
-<p>Let <span class="arithmatex">\(Y\)</span> be a random variable with finite expected value <span class="arithmatex">\(\overline{y}\)</span> and non-zero variance <span class="arithmatex">\(\sigma^2\)</span>. For any real number <span class="arithmatex">\(t &gt; 0\)</span>, the Chebyshev's inequality states that, for a wide class of unimodal probability distributions: <span class="arithmatex">\(Pr(|y-\overline{y}| \ge t\sigma) \le \dfrac{1}{t^2}\)</span>. </p>
-<p>Taking <span class="arithmatex">\(t=\dfrac{|y-\overline{y}|}{\sigma}\)</span>, and assuming <span class="arithmatex">\(t &gt; 1\)</span>, the Chebyshev’s inequality for an observation <span class="arithmatex">\(y\)</span> becomes: <span class="arithmatex">\(P(|y - \overline{y}|=t) = \dfrac{\sigma^2}{|y-\overline{y}|}\)</span>. </p>
-<p>Alternatively, one can use <span class="arithmatex">\(t\)</span> directly to estimate a frequency weight <span class="arithmatex">\(\kappa = \lceil t\rceil\)</span> and define an over-sampling strategy for extreme and rare target values<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>. Each incoming instance is used <span class="arithmatex">\(\kappa\)</span> times to update the underlying regressor. Frequent target values contribute only once to the underlying regressor, whereas rares cases are used multiple times for training.</p>
+<p>Chebyshev's inequality can be used to define the probability of target observations
+being frequent values (w.r.t. the distribution mean).</p>
+<p>Let <span class="arithmatex">\(Y\)</span> be a random variable with finite expected value <span class="arithmatex">\(\overline{y}\)</span> and non-zero variance
+<span class="arithmatex">\(\sigma^2\)</span>. For any real number <span class="arithmatex">\(t &gt; 0\)</span>, the Chebyshev's inequality states that, for a wide class of
+unimodal probability distributions: <span class="arithmatex">\(Pr(|y-\overline{y}| \ge t\sigma) \le \dfrac{1}{t^2}\)</span>.</p>
+<p>Taking <span class="arithmatex">\(t=\dfrac{|y-\overline{y}|}{\sigma}\)</span>, and assuming <span class="arithmatex">\(t &gt; 1\)</span>, the Chebyshev’s inequality
+for an observation <span class="arithmatex">\(y\)</span> becomes: <span class="arithmatex">\(P(|y - \overline{y}|=t) = \dfrac{\sigma^2}{|y-\overline{y}|}\)</span>.</p>
+<p>Alternatively, one can use <span class="arithmatex">\(t\)</span> directly to estimate a frequency weight <span class="arithmatex">\(\kappa = \lceil t\rceil\)</span>
+and define an over-sampling strategy for extreme and rare target values<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>. Each incoming instance is
+used <span class="arithmatex">\(\kappa\)</span> times to update the underlying regressor. Frequent target values contribute only once
+to the underlying regressor, whereas rares cases are used multiple times for training.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>

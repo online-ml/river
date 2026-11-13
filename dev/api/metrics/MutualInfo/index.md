@@ -34,7 +34,7 @@ where \\(H(U)\\) and \\(H(V)\\) are the marginal entropies, \\(H(U | V)\\) and \
   Indicates if labels are required, rather than probabilities.
 - **works\_with\_weights**
 
-  Indicate whether the model takes into consideration the effect of sample weights
+  Indicate whether the model takes into consideration the effect of sample weights.
 
 ## Examples
 
@@ -113,7 +113,7 @@ MutualInfo: 0.462098
 >
 > **works\_with**
 >
-> Indicates whether or not a metric can work with a given model.
+> Indicate whether or not a metric can work with a given model.
 >
 > **Parameters**
 >

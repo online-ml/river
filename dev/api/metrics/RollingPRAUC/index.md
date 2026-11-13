@@ -33,7 +33,7 @@ This implementation is based on the paper "Efficient Prequential AUC-PR Computat
   Indicates if labels are required, rather than probabilities.
 - **works\_with\_weights**
 
-  Indicate whether the model takes into consideration the effect of sample weights
+  Indicate whether the model takes into consideration the effect of sample weights.
 
 ## Examples
 
@@ -99,7 +99,7 @@ RollingPRAUC: 83.33%
 >
 > **works\_with**
 >
-> Indicates whether or not a metric can work with a given model.
+> Indicate whether or not a metric can work with a given model.
 >
 > **Parameters**
 >

@@ -4410,7 +4410,10 @@
 
 <h1 id="gaussiannb">GaussianNB<a class="headerlink" href="#gaussiannb" title="Permanent link">&para;</a></h1>
 <p>Gaussian Naive Bayes.</p>
-<p>A Gaussian distribution <span class="arithmatex">\(G_{cf}\)</span> is maintained for each class <span class="arithmatex">\(c\)</span> and each feature <span class="arithmatex">\(f\)</span>. Each Gaussian is updated using the amount associated with each feature; the details can be be found in <a href="../../proba/Gaussian"><code>proba.Gaussian</code></a>. The joint log-likelihood is then obtained by summing the log probabilities of each feature associated with each class.</p>
+<p>A Gaussian distribution <span class="arithmatex">\(G_{cf}\)</span> is maintained for each class <span class="arithmatex">\(c\)</span> and each feature <span class="arithmatex">\(f\)</span>. Each
+Gaussian is updated using the amount associated with each feature; the details can be be found
+in <a href="../../proba/Gaussian"><code>proba.Gaussian</code></a>. The joint log-likelihood is then obtained by summing the log probabilities
+of each feature associated with each class.</p>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
 <p><div class="language-python highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">river</span><span class="w"> </span><span class="kn">import</span> <span class="n">naive_bayes</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">river</span><span class="w"> </span><span class="kn">import</span> <span class="n">stream</span>

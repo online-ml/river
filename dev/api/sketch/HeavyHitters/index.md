@@ -6,10 +6,7 @@ Keep track of the most frequent item(set)s in a data stream and apply a forgetti
 
 Considering a data stream where `n` elements were observed so far, the Lossy Count algorithm has the following properties:
 
-- All item(set)s whose true frequency exceeds `support * n` are output. There are no
-
-false negatives;
-
+- All item(set)s whose true frequency exceeds `support * n` are output. There are no false negatives;
 - No item(set) whose true frequency is less than `(support - epsilon) * n` is outputted;
 - Estimated frequencies are less than the true frequencies by at most `epsilon * n`.
 

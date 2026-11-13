@@ -5288,8 +5288,15 @@
 
 <h1 id="criteoads">CriteoAds<a class="headerlink" href="#criteoads" title="Permanent link">&para;</a></h1>
 <p>Criteo Display Advertising Challenge.</p>
-<p>This is a 100,000-row sample of the Criteo Display Advertising Challenge dataset: real ad-impression logs where the goal is to predict whether an ad was clicked. Each row has a binary <code>click</code> target, 13 integer features (<code>I1</code> to <code>I13</code>, mostly anonymised counts, frequently missing) and 26 categorical features (<code>C1</code> to <code>C26</code>, hashed to opaque strings). The categorical fields are extremely high-cardinality, which makes this a natural fit for one-hot models such as <a href="../../linear-model/AdPredictor"><code>linear_model.AdPredictor</code></a>. </p>
-<p>Integer features are returned as <code>int</code> (or <code>None</code> when missing) and categorical features as <code>str</code> (or <code>None</code> when missing).</p>
+<p>This is a 100,000-row sample of the Criteo Display Advertising Challenge
+dataset: real ad-impression logs where the goal is to predict whether an ad
+was clicked. Each row has a binary <code>click</code> target, 13 integer features (<code>I1</code>
+to <code>I13</code>, mostly anonymised counts, frequently missing) and 26 categorical
+features (<code>C1</code> to <code>C26</code>, hashed to opaque strings). The categorical fields are
+extremely high-cardinality, which makes this a natural fit for one-hot models
+such as <a href="../../linear-model/AdPredictor"><code>linear_model.AdPredictor</code></a>.</p>
+<p>Integer features are returned as <code>int</code> (or <code>None</code> when missing) and
+categorical features as <code>str</code> (or <code>None</code> when missing).</p>
 <h2 id="attributes">Attributes<a class="headerlink" href="#attributes" title="Permanent link">&para;</a></h2>
 <ul>
 <li>

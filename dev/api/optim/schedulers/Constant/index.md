@@ -14,7 +14,7 @@ Always uses the same learning rate.
 >
 > **get**
 >
-> Returns the learning rate at a given iteration.
+> Return the learning rate at a given iteration.
 >
 > **Parameters**
 >

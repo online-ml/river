@@ -8,7 +8,7 @@ A loss appropriate for multi-class classification tasks.
 >
 > ****call****
 >
-> Returns the loss.
+> Return the loss.
 >
 > **Parameters**
 >

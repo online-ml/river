@@ -17,7 +17,7 @@ A container class for handling multiple metrics at once.
 - **requires\_labels**
 - **works\_with\_weights**
 
-  Indicate whether the model takes into consideration the effect of sample weights
+  Indicate whether the model takes into consideration the effect of sample weights.
 
 ## Methods
 
@@ -47,7 +47,7 @@ A container class for handling multiple metrics at once.
 >
 > **works\_with**
 >
-> Indicates whether or not a metric can work with a given model.
+> Indicate whether or not a metric can work with a given model.
 >
 > **Parameters**
 >

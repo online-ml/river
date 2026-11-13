@@ -29,7 +29,7 @@ You can wrap a [`metrics.ClassificationReport`](<https://riverml.xyz/dev/api/met
   Indicates if labels are required, rather than probabilities.
 - **works\_with\_weights**
 
-  Indicate whether the model takes into consideration the effect of sample weights
+  Indicate whether the model takes into consideration the effect of sample weights.
 
 ## Examples
 
@@ -107,7 +107,7 @@ Weighted      60.00%   40.00%   48.00%
 >
 > **works\_with**
 >
-> Indicates whether or not a metric can work with a given model.
+> Indicate whether or not a metric can work with a given model.
 >
 > **Parameters**
 >

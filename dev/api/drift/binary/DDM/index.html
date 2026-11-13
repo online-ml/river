@@ -4780,38 +4780,48 @@
 
 <h1 id="ddm">DDM<a class="headerlink" href="#ddm" title="Permanent link">&para;</a></h1>
 <p>Drift Detection Method.</p>
-<p>DDM (Drift Detection Method) is a concept change detection method based on the PAC learning model premise, that the learner's error rate will decrease as the number of analysed samples increase, as long as the data distribution is stationary. </p>
-<p>If the algorithm detects an increase in the error rate, that surpasses a calculated threshold, either change is detected or the algorithm will warn the user that change may occur in the near future, which is called the warning zone. </p>
-<p>The detection threshold is calculated in function of two statistics, obtained when <span class="arithmatex">\((p_i + s_i)\)</span> is minimum: </p>
+<p>DDM (Drift Detection Method) is a concept change detection method
+based on the PAC learning model premise, that the learner's error rate
+will decrease as the number of analysed samples increase, as long as the
+data distribution is stationary.</p>
+<p>If the algorithm detects an increase in the error rate, that surpasses
+a calculated threshold, either change is detected or the algorithm will
+warn the user that change may occur in the near future, which is called
+the warning zone.</p>
+<p>The detection threshold is calculated in function of two statistics,
+obtained when <span class="arithmatex">\((p_i + s_i)\)</span> is minimum:</p>
 <ul>
 <li>
-<p><span class="arithmatex">\(p_{min}\)</span>: The minimum recorded error rate. </p>
+<p><span class="arithmatex">\(p_{min}\)</span>: The minimum recorded error rate.</p>
 </li>
 <li>
-<p><span class="arithmatex">\(s_{min}\)</span>: The minimum recorded standard deviation. </p>
+<p><span class="arithmatex">\(s_{min}\)</span>: The minimum recorded standard deviation.</p>
 </li>
 </ul>
-<p>At instant <span class="arithmatex">\(i\)</span>, the detection algorithm uses: </p>
+<p>At instant <span class="arithmatex">\(i\)</span>, the detection algorithm uses:</p>
 <ul>
 <li>
-<p><span class="arithmatex">\(p_i\)</span>: The error rate at instant <span class="arithmatex">\(i\)</span>. </p>
+<p><span class="arithmatex">\(p_i\)</span>: The error rate at instant <span class="arithmatex">\(i\)</span>.</p>
 </li>
 <li>
-<p><span class="arithmatex">\(s_i\)</span>: The standard deviation at instant <span class="arithmatex">\(i\)</span>. </p>
+<p><span class="arithmatex">\(s_i\)</span>: The standard deviation at instant <span class="arithmatex">\(i\)</span>.</p>
 </li>
 </ul>
-<p>The conditions for entering the warning zone and detecting change are as follows [see implementation note below]: </p>
+<p>The conditions for entering the warning zone and detecting change are
+as follows [see implementation note below]:</p>
 <ul>
 <li>
-<p>if <span class="arithmatex">\(p_i + s_i \geq p_{min} + w_l * s_{min}\)</span> -&gt; Warning zone </p>
+<p>if <span class="arithmatex">\(p_i + s_i \geq p_{min} + w_l * s_{min}\)</span> -&gt; Warning zone</p>
 </li>
 <li>
-<p>if <span class="arithmatex">\(p_i + s_i \geq p_{min} + d_l * s_{min}\)</span> -&gt; Change detected </p>
+<p>if <span class="arithmatex">\(p_i + s_i \geq p_{min} + d_l * s_{min}\)</span> -&gt; Change detected</p>
 </li>
 </ul>
-<p>In the above expressions, <span class="arithmatex">\(w_l\)</span> and <span class="arithmatex">\(d_l\)</span> represent, respectively, the warning and drift thresholds. </p>
-<p><strong>Input:</strong> <code>x</code> is an entry in a stream of bits, where 1 indicates error/failure and 0 represents correct/normal values. </p>
-<p>For example, if a classifier's prediction <span class="arithmatex">\(y'\)</span> is right or wrong w.r.t. the true target label <span class="arithmatex">\(y\)</span>: </p>
+<p>In the above expressions, <span class="arithmatex">\(w_l\)</span> and <span class="arithmatex">\(d_l\)</span> represent, respectively, the warning and drift thresholds.</p>
+<p><strong>Input:</strong> <code>x</code> is an entry in a stream of bits, where 1 indicates error/failure and 0
+represents correct/normal values.</p>
+<p>For example, if a classifier's prediction <span class="arithmatex">\(y'\)</span> is right or wrong w.r.t. the
+true target label <span class="arithmatex">\(y\)</span>:</p>
 <ul>
 <li>
 <p>0: Correct, <span class="arithmatex">\(y=y'\)</span></p>
@@ -4832,13 +4842,13 @@
 <p><strong>warning_threshold</strong></p>
 <p><em>Type</em> → <code>float</code></p>
 <p><em>Default</em> → <code>2.0</code></p>
-<p>Threshold to decide if the detector is in a warning zone. The default value gives 95\% of confidence level to the warning assessment.</p>
+<p>Threshold to decide if the detector is in a warning zone. The default value gives 95% of confidence level to the warning assessment.</p>
 </li>
 <li>
 <p><strong>drift_threshold</strong></p>
 <p><em>Type</em> → <code>float</code></p>
 <p><em>Default</em> → <code>3.0</code></p>
-<p>Threshold to decide if a drift was detected. The default value gives a 99\% of confidence level to the drift assessment.</p>
+<p>Threshold to decide if a drift was detected. The default value gives a 99% of confidence level to the drift assessment.</p>
 </li>
 </ul>
 <h2 id="attributes">Attributes<a class="headerlink" href="#attributes" title="Permanent link">&para;</a></h2>

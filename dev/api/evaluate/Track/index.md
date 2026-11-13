@@ -4,9 +4,8 @@ A track evaluate a model's performance.
 
 The following metrics are recorded:
 
-- Time, which should be interpreted with wisdom. Indeed time can depend on the architecture
-
-  and local resource situations. Comparison via FLOPS should be preferred. - The model's memory footprint.
+- Time, which should be interpreted with wisdom. Indeed time can depend on the architecture and local resource situations. Comparison via FLOPS should be preferred.
+- The model's memory footprint.
 - The model's predictive performance on the track's dataset.
 
 ## Parameters

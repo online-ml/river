@@ -4832,8 +4832,12 @@
 
 <h1 id="featurehasher">FeatureHasher<a class="headerlink" href="#featurehasher" title="Permanent link">&para;</a></h1>
 <p>Implements the hashing trick.</p>
-<p>Each pair of (name, value) features is hashed into a random integer in <code>[0, n_features)</code>, using the signed 32-bit MurmurHash3 of the feature's token. String values are hashed as <code>"name=value"</code> tokens and contribute <code>1</code>; numeric values are hashed under <code>"name"</code> and contribute the value itself. </p>
-<p>The hashing is performed in Rust, so the whole transform of an example happens in a single native call.</p>
+<p>Each pair of (name, value) features is hashed into a random integer in <code>[0, n_features)</code>,
+using the signed 32-bit MurmurHash3 of the feature's token. String values are hashed as
+<code>"name=value"</code> tokens and contribute <code>1</code>; numeric values are hashed under <code>"name"</code> and
+contribute the value itself.</p>
+<p>The hashing is performed in Rust, so the whole transform of an example happens in a single
+native call.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>

@@ -5782,10 +5782,16 @@
 
 
 <h1 id="r2">R2<a class="headerlink" href="#r2" title="Permanent link">&para;</a></h1>
-<p>Coefficient of determination (<span class="arithmatex">\(R^2\)</span>) score</p>
-<p>The coefficient of determination, denoted <span class="arithmatex">\(R^2\)</span> or <span class="arithmatex">\(r^2\)</span>, is the proportion of the variance in the dependent variable that is predictable from the independent variable(s). <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> </p>
-<p>Best possible score is 1.0 and it can be negative (because the model can be arbitrarily worse). A constant model that always predicts the expected value of <span class="arithmatex">\(y\)</span>, disregarding the input features, would get a <span class="arithmatex">\(R^2\)</span> score of 0.0. </p>
-<p><span class="arithmatex">\(R^2\)</span> is not defined when less than 2 samples have been observed. This implementation returns 0.0 in this case.</p>
+<p>Coefficient of determination (<span class="arithmatex">\(R^2\)</span>) score.</p>
+<p>The coefficient of determination, denoted <span class="arithmatex">\(R^2\)</span> or <span class="arithmatex">\(r^2\)</span>, is the proportion
+of the variance in the dependent variable that is predictable from the
+independent variable(s). <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup></p>
+<p>Best possible score is 1.0 and it can be negative (because the model can be
+arbitrarily worse). A constant model that always predicts the expected
+value of <span class="arithmatex">\(y\)</span>, disregarding the input features, would get a <span class="arithmatex">\(R^2\)</span> score of
+0.0.</p>
+<p><span class="arithmatex">\(R^2\)</span> is not defined when less than 2 samples have been observed. This
+implementation returns 0.0 in this case.</p>
 <h2 id="attributes">Attributes<a class="headerlink" href="#attributes" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
@@ -5794,7 +5800,7 @@
 </li>
 <li>
 <p><strong>works_with_weights</strong></p>
-<p>Indicate whether the model takes into consideration the effect of sample weights</p>
+<p>Indicate whether the model takes into consideration the effect of sample weights.</p>
 </li>
 </ul>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
@@ -5853,7 +5859,7 @@
 <p><span /></p>
 <details class="- abstract">
 <summary>works_with</summary>
-<p>Indicates whether or not a metric can work with a given model.</p>
+<p>Indicate whether or not a metric can work with a given model.</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>model</strong>     — <code>base.Estimator</code>    </li>

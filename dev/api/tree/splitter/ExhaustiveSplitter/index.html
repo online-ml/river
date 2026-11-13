@@ -4929,9 +4929,12 @@
 
 
 <h1 id="exhaustivesplitter">ExhaustiveSplitter<a class="headerlink" href="#exhaustivesplitter" title="Permanent link">&para;</a></h1>
-<p>Numeric attribute observer for classification tasks that is based on a Binary Search Tree.</p>
-<p>This algorithm<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> is also referred to as exhaustive attribute observer, since it ends up storing all the observations between split attempts<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup>. </p>
-<p>This splitter cannot perform probability density estimations, so it does not work well when coupled with tree leaves using naive bayes models.</p>
+<p>Numeric attribute observer for classification tasks that is based on
+a Binary Search Tree.</p>
+<p>This algorithm<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> is also referred to as exhaustive attribute observer,
+since it ends up storing all the observations between split attempts<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup>.</p>
+<p>This splitter cannot perform probability density estimations, so it does not work well
+when coupled with tree leaves using naive bayes models.</p>
 <h2 id="attributes">Attributes<a class="headerlink" href="#attributes" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
@@ -4960,6 +4963,7 @@
 <p><span /></p>
 <details class="- abstract">
 <summary>cond_proba</summary>
+<p>Return always 0.</p>
 <p>The underlying data structure used to monitor the input does not allow probability density estimations. Hence, it always returns zero for any given input.</p>
 <p><strong>Parameters</strong></p>
 <ul>

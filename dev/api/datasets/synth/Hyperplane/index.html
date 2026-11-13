@@ -5855,10 +5855,11 @@
 
 <h1 id="hyperplane">Hyperplane<a class="headerlink" href="#hyperplane" title="Permanent link">&para;</a></h1>
 <p>Hyperplane stream generator.</p>
-<p>Generates a problem of prediction class of a rotation hyperplane. It was used as testbed for CVFDT and VFDT in <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>. </p>
-<p>A hyperplane in d-dimensional space is the set of points <span class="arithmatex">\(x\)</span> that satisfy </p>
+<p>Generates a problem of prediction class of a rotation hyperplane. It was
+used as testbed for CVFDT and VFDT in <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>.</p>
+<p>A hyperplane in d-dimensional space is the set of points <span class="arithmatex">\(x\)</span> that satisfy</p>
 <div class="arithmatex">\[\sum^{d}_{i=1} w_i x_i = w_0 = \sum^{d}_{i=1} w_i\]</div>
-<p>where <span class="arithmatex">\(x_i\)</span> is the i-th coordinate of <span class="arithmatex">\(x\)</span>. </p>
+<p>where <span class="arithmatex">\(x_i\)</span> is the i-th coordinate of <span class="arithmatex">\(x\)</span>.</p>
 <ul>
 <li>
 <p>Examples for which <span class="arithmatex">\(\sum^{d}_{i=1} w_i x_i &gt; w_0\)</span>, are labeled positive.</p>
@@ -5867,7 +5868,13 @@
 <p>Examples for which <span class="arithmatex">\(\sum^{d}_{i=1} w_i x_i \leq w_0\)</span>, are labeled negative.</p>
 </li>
 </ul>
-<p>Hyperplanes are useful for simulating time-changing concepts because we can change the orientation and position of the hyperplane in a smooth manner by changing the relative size of the weights. We introduce change to this dataset by adding drift to each weighted feature <span class="arithmatex">\(w_i = w_i + d \sigma\)</span>, where <span class="arithmatex">\(\sigma\)</span> is the probability that the direction of change is reversed and <span class="arithmatex">\(d\)</span> is the change applied to each example.</p>
+<p>Hyperplanes are useful for simulating time-changing concepts because we
+can change the orientation and position of the hyperplane in a smooth
+manner by changing the relative size of the weights. We introduce change
+to this dataset by adding drift to each weighted feature
+<span class="arithmatex">\(w_i = w_i + d \sigma\)</span>, where <span class="arithmatex">\(\sigma\)</span> is the probability that the
+direction of change is reversed and <span class="arithmatex">\(d\)</span> is the change applied to each
+example.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>

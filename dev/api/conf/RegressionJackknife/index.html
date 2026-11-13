@@ -4373,9 +4373,15 @@
 
 <h1 id="regressionjackknife">RegressionJackknife<a class="headerlink" href="#regressionjackknife" title="Permanent link">&para;</a></h1>
 <p>Jackknife method for regression.</p>
-<p>This is a conformal prediction method for regression. It is based on the jackknife method. The idea is to compute the quantiles of the residuals of the regressor. The prediction interval is then computed as the prediction of the regressor plus the quantiles of the residuals. </p>
-<p>This works naturally online, as the quantiles of the residuals are updated at each iteration. Each residual is produced before the regressor is updated, which ensures the predicted intervals are not optimistic. </p>
-<p>Note that the produced intervals are marginal and not conditional. This means that the intervals are not adjusted for the features <code>x</code>. This is a limitation of the jackknife method. However, the jackknife method is very simple and efficient. It is also very robust to outliers.</p>
+<p>This is a conformal prediction method for regression. It is based on the jackknife method. The
+idea is to compute the quantiles of the residuals of the regressor. The prediction interval is
+then computed as the prediction of the regressor plus the quantiles of the residuals.</p>
+<p>This works naturally online, as the quantiles of the residuals are updated at each iteration.
+Each residual is produced before the regressor is updated, which ensures the predicted intervals
+are not optimistic.</p>
+<p>Note that the produced intervals are marginal and not conditional. This means that the intervals
+are not adjusted for the features <code>x</code>. This is a limitation of the jackknife method. However,
+the jackknife method is very simple and efficient. It is also very robust to outliers.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>

@@ -4648,9 +4648,17 @@
 
 <h1 id="functransformer">FuncTransformer<a class="headerlink" href="#functransformer" title="Permanent link">&para;</a></h1>
 <p>Wraps a function to make it usable in a pipeline.</p>
-<p>There is often a need to apply an arbitrary transformation to a set of features. For instance, this could involve parsing a date and then extracting the hour from said date. If you're processing a stream of data, then you can do this yourself by calling the necessary code at your leisure. On the other hand, if you want to do this as part of a pipeline, then you need to follow a simple convention. </p>
-<p>To use a function as part of a pipeline, take as input a <code>dict</code> of features and output a <code>dict</code>. Once you have initialized this class with your function, then you can use it like you would use any other (unsupervised) transformer. </p>
-<p>It is up to you if you want your function to be pure or not. By pure we refer to a function that doesn't modify its input. However, we recommend writing pure functions because this reduces the chances of inserting bugs into your pipeline.</p>
+<p>There is often a need to apply an arbitrary transformation to a set of features. For instance,
+this could involve parsing a date and then extracting the hour from said date. If you're
+processing a stream of data, then you can do this yourself by calling the necessary code at
+your leisure. On the other hand, if you want to do this as part of a pipeline, then you need to
+follow a simple convention.</p>
+<p>To use a function as part of a pipeline, take as input a <code>dict</code> of features and output a <code>dict</code>.
+Once you have initialized this class with your function, then you can use it like you would use
+any other (unsupervised) transformer.</p>
+<p>It is up to you if you want your function to be pure or not. By pure we refer to a function
+that doesn't modify its input. However, we recommend writing pure functions because this
+reduces the chances of inserting bugs into your pipeline.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>

@@ -4780,9 +4780,12 @@
 
 <h1 id="fhddm">FHDDM<a class="headerlink" href="#fhddm" title="Permanent link">&para;</a></h1>
 <p>Fast Hoeffding Drift Detection Method.</p>
-<p>FHDDM is a drift detection method based on the Hoeffding's inequality which uses the input average as estimator. </p>
-<p><strong>Input:</strong> <code>x</code> is an entry in a stream of bits, where 1 indicates error/failure and 0 represents correct/normal values. </p>
-<p>For example, if a classifier's prediction <span class="arithmatex">\(y'\)</span> is right or wrong w.r.t. the true target label <span class="arithmatex">\(y\)</span>: </p>
+<p>FHDDM is a drift detection method based on the Hoeffding's inequality which uses
+the input average as estimator.</p>
+<p><strong>Input:</strong> <code>x</code> is an entry in a stream of bits, where 1 indicates error/failure and 0
+represents correct/normal values.</p>
+<p>For example, if a classifier's prediction <span class="arithmatex">\(y'\)</span> is right or wrong w.r.t. the
+true target label <span class="arithmatex">\(y\)</span>:</p>
 <ul>
 <li>
 <p>0: Correct, <span class="arithmatex">\(y=y'\)</span></p>
@@ -4804,7 +4807,7 @@
 <p><strong>confidence_level</strong></p>
 <p><em>Type</em> → <code>float</code></p>
 <p><em>Default</em> → <code>1e-06</code></p>
-<p>Confidence level used to determine the epsilon coefficient in Hoeffding’s inequality. The default value gives a 99\% of confidence level to the drift assessment.</p>
+<p>Confidence level used to determine the epsilon coefficient in Hoeffding’s inequality. The default value gives a 99% of confidence level to the drift assessment.</p>
 </li>
 <li>
 <p><strong>short_window_size</strong></p>

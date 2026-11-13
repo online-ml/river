@@ -7,13 +7,13 @@ Thompson sampling is often used with a Beta distribution. However, any probabili
 The randomness of a distribution is controlled by its seed. The seed should not set within the distribution, but should rather be defined in the policy parametrization. In other words, you should do this:
 
 ```python
-policy = ThompsonSampling(dist=proba.Beta(1, 1), seed=42) 
+policy = ThompsonSampling(dist=proba.Beta(1, 1), seed=42)
 ```
 
 and not this:
 
 ```python
-policy = ThompsonSampling(dist=proba.Beta(1, 1, seed=42)) 
+policy = ThompsonSampling(dist=proba.Beta(1, 1, seed=42))
 ```
 
 ## Parameters

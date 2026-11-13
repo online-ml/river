@@ -5010,7 +5010,10 @@
 
 <h1 id="averager">Averager<a class="headerlink" href="#averager" title="Permanent link">&para;</a></h1>
 <p>Averaged stochastic gradient descent.</p>
-<p>This is a wrapper that can be applied to any stochastic gradient descent optimiser. Note that this implementation differs than what may be found elsewhere. Essentially, the average of the weights is usually only used at the end of the optimisation, once all the data has been seen. However, in this implementation the optimiser returns the current averaged weights.</p>
+<p>This is a wrapper that can be applied to any stochastic gradient descent optimiser. Note that
+this implementation differs than what may be found elsewhere. Essentially, the average of the
+weights is usually only used at the end of the optimisation, once all the data has been seen.
+However, in this implementation the optimiser returns the current averaged weights.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
@@ -5052,17 +5055,18 @@
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <details class="- abstract">
 <summary>look_ahead</summary>
-<p>Updates a weight vector before a prediction is made.</p>
-<p>Parameters:     w (dict): A dictionary of weight parameters. The weights are modified in-place.  Returns:     The updated weights.</p>
+<p>Update a weight vector before a prediction is made.</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>w</strong>     — <code>DictLike | VectorLike</code>    </li>
 </ul>
+<p><strong>Returns</strong></p>
+<p><code>DictLike | VectorLike</code>:     The updated weights.</p>
 </details>
 <p><span /></p>
 <details class="- abstract">
 <summary>step</summary>
-<p>Updates a weight vector given a gradient.</p>
+<p>Update a weight vector given a gradient.</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>w</strong>     — <code>DictLike | VectorLike</code>    </li>

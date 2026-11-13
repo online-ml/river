@@ -45,14 +45,14 @@ For example, if a classifier's prediction \\(y'\\) is right or wrong w.r.t. the 
 
   *Default* → `2.0`
 
-  Threshold to decide if the detector is in a warning zone. The default value gives 95\\% of confidence level to the warning assessment.
+  Threshold to decide if the detector is in a warning zone. The default value gives 95% of confidence level to the warning assessment.
 - **drift\_threshold**
 
   *Type* → `float`
 
   *Default* → `3.0`
 
-  Threshold to decide if a drift was detected. The default value gives a 99\\% of confidence level to the drift assessment.
+  Threshold to decide if a drift was detected. The default value gives a 99% of confidence level to the drift assessment.
 
 ## Attributes
 

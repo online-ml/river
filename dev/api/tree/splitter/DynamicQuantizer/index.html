@@ -4929,8 +4929,12 @@
 
 
 <h1 id="dynamicquantizer">DynamicQuantizer<a class="headerlink" href="#dynamicquantizer" title="Permanent link">&para;</a></h1>
-<p>Adapted version of the Quantizer Observer (QO)<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> that is applied to Stochastic Gradient Trees (SGT).</p>
-<p>This feature quantizer starts by partitioning the inputs using the passed <code>radius</code> value. As more splits are created in the SGTs, new feature quantizers will use <code>std * std_prop</code> as the quantization radius. In the expression, <code>std</code> represents the standard deviation of the input data, which is calculated incrementally.</p>
+<p>Adapted version of the Quantizer Observer (QO)<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> that is applied to Stochastic Gradient
+Trees (SGT).</p>
+<p>This feature quantizer starts by partitioning the inputs using the passed <code>radius</code> value.
+As more splits are created in the SGTs, new feature quantizers will use <code>std * std_prop</code> as
+the quantization radius. In the expression, <code>std</code> represents the standard deviation of the
+input data, which is calculated incrementally.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>

@@ -4507,10 +4507,19 @@
 
 
 <h1 id="odac">ODAC<a class="headerlink" href="#odac" title="Permanent link">&para;</a></h1>
-<p>The Online Divisive-Agglomerative Clustering (ODAC)<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> aims at continuously maintaining a hierarchical cluster structure from evolving time series data streams.</p>
-<p>The distance between time-series a and b is given by <code>rnomc(a, b) = sqrt((1 - corr(a, b)) / 2)</code>, where <code>corr(a, b)</code> is the Pearson Correlation coefficient. If the cluster has only one time-series, the diameter is given by the time-series variance. The cluster's diameter is given by the largest distance between the cluster's time-series. </p>
-<p>ODAC continuously monitors the evolution of diameters, only of the leaves, and splits or merges them by gathering more data or reacting to concept drift - a confidence level from the Hoeffding bound supports such changes. </p>
-<p>So, the split operator, where the Hoeffding bound is applied, occurs when the difference between the largest distance (diameter) and the second largest difference is greater than a constant. Furthermore, the merge operator checks if one of the cluster's children has a diameter bigger than their parent - applying the Hoeffding bound again.</p>
+<p>The Online Divisive-Agglomerative Clustering (ODAC)<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> aims at continuously maintaining
+a hierarchical cluster structure from evolving time series data streams.</p>
+<p>The distance between time-series a and b is given by <code>rnomc(a, b) = sqrt((1 - corr(a, b)) / 2)</code>,
+where <code>corr(a, b)</code> is the Pearson Correlation coefficient. If the cluster has only one time-series,
+the diameter is given by the time-series variance. The cluster's diameter is given by the largest
+distance between the cluster's time-series.</p>
+<p>ODAC continuously monitors the evolution of diameters, only of the leaves, and splits or merges them
+by gathering more data or reacting to concept drift - a confidence level from the Hoeffding bound
+supports such changes.</p>
+<p>So, the split operator, where the Hoeffding bound is applied, occurs when the difference between
+the largest distance (diameter) and the second largest difference is greater than a constant.
+Furthermore, the merge operator checks if one of the cluster's children has a diameter bigger
+than their parent - applying the Hoeffding bound again.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
@@ -4592,7 +4601,7 @@ Structure changed at observation 300
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <details class="- abstract">
 <summary>draw</summary>
-<p>Method to draw the hierarchical cluster's structure as a Graphviz graph.</p>
+<p>Draw the hierarchical cluster's structure as a Graphviz graph.</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>max_depth</strong>     — <code>int | None</code>     — defaults to <code>None</code>    </li>
@@ -4612,6 +4621,7 @@ Structure changed at observation 300
 <p><span /></p>
 <details class="- abstract">
 <summary>predict_one</summary>
+<p>Raise an error.</p>
 <p>This algorithm does not predict anything. It builds a hierarchical cluster's structure.</p>
 <p><strong>Parameters</strong></p>
 <ul>
@@ -4621,7 +4631,7 @@ Structure changed at observation 300
 <p><span /></p>
 <details class="- abstract">
 <summary>render_ascii</summary>
-<p>Method to render the hierarchical cluster's structure in text format.</p>
+<p>Render the hierarchical cluster's structure in text format.</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>n_decimal_places</strong>     — <code>int</code>     — defaults to <code>2</code>    </li>

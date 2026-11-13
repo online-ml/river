@@ -126,7 +126,7 @@ model.predict_many(unseen).tolist()
 >
 > **joint\_log\_likelihood**
 >
-> Computes the joint log likelihood of input features.
+> Compute the joint log likelihood of input features.
 >
 > **Parameters**
 >
@@ -140,7 +140,7 @@ model.predict_many(unseen).tolist()
 >
 > **joint\_log\_likelihood\_many**
 >
-> Computes the joint log likelihood of input features.
+> Compute the joint log likelihood of input features.
 >
 > **Parameters**
 >
@@ -165,7 +165,7 @@ model.predict_many(unseen).tolist()
 >
 > **learn\_one**
 >
-> Updates the model with a single observation.
+> Update the model with a single observation.
 >
 > **Parameters**
 >

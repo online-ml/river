@@ -5805,16 +5805,25 @@
 
 <h1 id="fowlkesmallows">FowlkesMallows<a class="headerlink" href="#fowlkesmallows" title="Permanent link">&para;</a></h1>
 <p>Fowlkes-Mallows Index.</p>
-<p>The Fowlkes-Mallows Index <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> <sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup> is an external evaluation method that is used to determine the similarity between two clusterings, and also a metric to measure confusion matrices. The measure of similarity could be either between two hierarchical clusterings or a clustering and a benchmark classification. A higher value for the Fowlkes-Mallows index indicates a greater similarity between the clusters and the benchmark classifications. </p>
-<p>The Fowlkes-Mallows Index, for two cluster algorithms, is defined as: </p>
-<div class="arithmatex">\[ FM = \sqrt{PPV \times TPR} = \sqrt{\frac{TP}{TP+FP} \times \frac{TP}{TP+FN}} \]</div>
-<p>where </p>
+<p>The Fowlkes-Mallows Index <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> <sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup> is an external evaluation method that is
+used to determine the similarity between two clusterings, and also a metric
+to measure confusion matrices. The measure of similarity could be either between
+two hierarchical clusterings or a clustering and a benchmark classification. A
+higher value for the Fowlkes-Mallows index indicates a greater similarity between
+the clusters and the benchmark classifications.</p>
+<p>The Fowlkes-Mallows Index, for two cluster algorithms, is defined as:</p>
+<div class="arithmatex">\[
+FM = \sqrt{PPV \times TPR} = \sqrt{\frac{TP}{TP+FP} \times \frac{TP}{TP+FN}}
+\]</div>
+<p>where</p>
 <ul>
 <li>
-<p>TP, FP, FN are respectively the number of true positives, false positives and false negatives; </p>
+<p>TP, FP, FN are respectively the number of true positives, false positives and
+false negatives;</p>
 </li>
 <li>
-<p>TPR is the True Positive Rate (or Sensitivity/Recall), PPV is the Positive Predictive Rate (or Precision).</p>
+<p>TPR is the True Positive Rate (or Sensitivity/Recall), PPV is the Positive Predictive
+Rate (or Precision).</p>
 </li>
 </ul>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
@@ -5837,7 +5846,7 @@
 </li>
 <li>
 <p><strong>works_with_weights</strong></p>
-<p>Indicate whether the model takes into consideration the effect of sample weights</p>
+<p>Indicate whether the model takes into consideration the effect of sample weights.</p>
 </li>
 </ul>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
@@ -5898,7 +5907,7 @@ FowlkesMallows: 47.14%
 <p><span /></p>
 <details class="- abstract">
 <summary>works_with</summary>
-<p>Indicates whether or not a metric can work with a given model.</p>
+<p>Indicate whether or not a metric can work with a given model.</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>model</strong>     — <code>base.Estimator</code>    </li>

@@ -5855,22 +5855,27 @@
 
 <h1 id="stagger">STAGGER<a class="headerlink" href="#stagger" title="Permanent link">&para;</a></h1>
 <p>STAGGER concepts stream generator.</p>
-<p>This generator is an implementation of the dara stream with abrupt concept drift, as described in <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>. </p>
-<p>The STAGGER concepts are boolean functions <code>f</code> with three features describing objects: size (small, medium and large), shape (circle, square and triangle) and colour (red, blue and green). </p>
-<p><code>f</code> options: </p>
+<p>This generator is an implementation of the dara stream with abrupt concept
+drift, as described in <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>.</p>
+<p>The STAGGER concepts are boolean functions <code>f</code> with three features
+describing objects: size (small, medium and large), shape (circle, square
+and triangle) and colour (red, blue and green).</p>
+<p><code>f</code> options:</p>
 <ol>
 <li>
-<p><code>True</code> if the size is small and the color is red. </p>
+<p><code>True</code> if the size is small and the color is red.</p>
 </li>
 <li>
-<p><code>True</code> if the color is green or the shape is a circle. </p>
+<p><code>True</code> if the color is green or the shape is a circle.</p>
 </li>
 <li>
-<p><code>True</code> if the size is medium or large </p>
+<p><code>True</code> if the size is medium or large</p>
 </li>
 </ol>
-<p>Concept drift can be introduced by changing the classification function. This can be done manually or using <a href="../../../datasets/synth/ConceptDriftStream"><code>datasets.synth.ConceptDriftStream</code></a>. </p>
-<p>One important feature is the possibility to balance classes, which means the class distribution will tend to a uniform one.</p>
+<p>Concept drift can be introduced by changing the classification function.
+This can be done manually or using <a href="../../../datasets/synth/ConceptDriftStream"><code>datasets.synth.ConceptDriftStream</code></a>.</p>
+<p>One important feature is the possibility to balance classes, which
+means the class distribution will tend to a uniform one.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>

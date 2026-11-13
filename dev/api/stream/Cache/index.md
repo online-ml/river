@@ -93,7 +93,7 @@ cache.clear_all()
 >
 > ****call****
 >
-> Iterates over a stream, caching it along the way if it is not cached yet.
+> Iterate over a stream, caching it along the way if it is not cached yet.
 >
 > **Parameters**
 >

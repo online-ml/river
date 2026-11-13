@@ -1,6 +1,6 @@
 # evaluate
 
-Evaluates the performance of a forecaster on a time series dataset.
+Evaluate the performance of a forecaster on a time series dataset.
 
 To understand why this method is useful, it's important to understand the difference between nowcasting and forecasting. Nowcasting is about predicting a value at the next time step. This can be seen as a special case of regression, where the value to predict is the value at the next time step. In this case, the [`evaluate.progressive_val_score`](<https://riverml.xyz/dev/api/evaluate/progressive-val-score>) function may be used to evaluate a model via progressive validation.
 

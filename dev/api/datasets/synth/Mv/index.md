@@ -17,10 +17,7 @@ The features are generated using the following expressions:
   - if \\(x\_3 =\\) `'green'`, \\(x\_4 \\leftarrow x\_1 + 2 x\_2\\)
   - else \\(x\_4 = \\frac{x\_1}{2}\\) with probability \\(0.3\\) and \\(x\_4 = \\frac{x\_2}{2}\\) with probability \\(0.7\\).
 - \\(x\_5\\): uniformly distributed over `\[-1, 1\]`.
-- \\(x\_6 \\leftarrow x\_4 \\times \\epsilon\\), where \\(\\epsilon\\) is uniformly distributed
-
-over `\[0, 5\]`.
-
+- \\(x\_6 \\leftarrow x\_4 \\times \\epsilon\\), where \\(\\epsilon\\) is uniformly distributed over `\[0, 5\]`.
 - \\(x\_7\\): `'yes'` with probability \\(0.3\\), and `'no'` with probability \\(0.7\\).
 - \\(x\_8\\): `'normal'` if \\(x\_5 \< 0.5\\) else `'large'`.
 - \\(x\_9\\): uniformly distributed over `\[100, 500\]`.

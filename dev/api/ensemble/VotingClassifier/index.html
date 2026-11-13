@@ -4643,7 +4643,11 @@
 
 <h1 id="votingclassifier">VotingClassifier<a class="headerlink" href="#votingclassifier" title="Permanent link">&para;</a></h1>
 <p>Voting classifier.</p>
-<p>A classification is made by aggregating the predictions of each model in the ensemble. The probabilities for each class are summed up if <code>use_probabilities</code> is set to <code>True</code>. If not, the probabilities are ignored and each prediction is weighted the same. In this case, it's important that you use an odd number of classifiers. A random class will be picked if the number of classifiers is even.</p>
+<p>A classification is made by aggregating the predictions of each model in the ensemble. The
+probabilities for each class are summed up if <code>use_probabilities</code> is set to <code>True</code>. If not,
+the probabilities are ignored and each prediction is weighted the same. In this case, it's
+important that you use an odd number of classifiers. A random class will be picked if the
+number of classifiers is even.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>

@@ -4530,8 +4530,14 @@
 
 <h1 id="shrunkcovariance">ShrunkCovariance<a class="headerlink" href="#shrunkcovariance" title="Permanent link">&para;</a></h1>
 <p>Fixed-intensity shrinkage covariance, towards a constant-correlation or identity target.</p>
-<p>Where <code>LedoitWolfCovariance</code> and <code>OASCovariance</code> estimate the shrinkage intensity from the data, <code>ShrunkCovariance</code> uses a fixed <code>delta</code> (transparent and predictable, mirroring <code>sklearn.covariance.ShrunkCovariance</code>) and offers a choice of target. </p>
-<p><strong>When to use it.</strong> When you want explicit, reproducible control over how much regularisation is applied rather than letting the data decide. The <strong>constant-correlation</strong> target (every pair shrunk towards the average sample correlation) is the finance-relevant default: assets share a positive baseline correlation, so pulling towards that is more sensible than pulling towards the zero-correlation identity target.</p>
+<p>Where <code>LedoitWolfCovariance</code> and <code>OASCovariance</code> estimate the shrinkage intensity from the
+data, <code>ShrunkCovariance</code> uses a fixed <code>delta</code> (transparent and predictable, mirroring
+<code>sklearn.covariance.ShrunkCovariance</code>) and offers a choice of target.</p>
+<p><strong>When to use it.</strong> When you want explicit, reproducible control over how much regularisation is
+applied rather than letting the data decide. The <strong>constant-correlation</strong> target (every pair
+shrunk towards the average sample correlation) is the finance-relevant default: assets share a
+positive baseline correlation, so pulling towards that is more sensible than pulling towards the
+zero-correlation identity target.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>

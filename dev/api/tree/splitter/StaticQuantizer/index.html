@@ -4930,7 +4930,10 @@
 
 <h1 id="staticquantizer">StaticQuantizer<a class="headerlink" href="#staticquantizer" title="Permanent link">&para;</a></h1>
 <p>Quantization strategy originally used in Stochastic Gradient Trees (SGT)<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>.</p>
-<p>Firstly, a buffer of size <code>warm_start</code> is stored. The data stored in the buffer is then used to quantize the input feature into <code>n_bins</code> intervals. These intervals will be replicated to every new quantizer. Feature values lying outside of the limits defined by the initial buffer will be mapped to the head or tail of the list of intervals.</p>
+<p>Firstly, a buffer of size <code>warm_start</code> is stored. The data stored in the buffer is then used
+to quantize the input feature into <code>n_bins</code> intervals. These intervals will be replicated
+to every new quantizer. Feature values lying outside of the limits defined by the initial
+buffer will be mapped to the head or tail of the list of intervals.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>

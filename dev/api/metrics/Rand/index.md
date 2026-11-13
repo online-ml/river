@@ -11,7 +11,7 @@ The Rand Index [^/dev/api/metrics/Rand/#1] [^/dev/api/metrics/Rand/#2] is a meas
 
 The Rand index, R, is
 
-\\\[ R = rac{a+b}{a+b+c+d} = rac{a+b}{ rac{n(n-1)}{2}}. \\\]
+\\\[ R = \\frac{a+b}{a+b+c+d} = \\frac{a+b}{\\frac{n(n-1)}{2}}. \\\]
 
 ## Parameters
 
@@ -31,7 +31,7 @@ The Rand index, R, is
   Indicates if labels are required, rather than probabilities.
 - **works\_with\_weights**
 
-  Indicate whether the model takes into consideration the effect of sample weights
+  Indicate whether the model takes into consideration the effect of sample weights.
 
 ## Examples
 
@@ -99,7 +99,7 @@ Rand: 0.666667
 >
 > **works\_with**
 >
-> Indicates whether or not a metric can work with a given model.
+> Indicate whether or not a metric can work with a given model.
 >
 > **Parameters**
 >

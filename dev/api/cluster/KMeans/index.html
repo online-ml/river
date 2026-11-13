@@ -4530,8 +4530,14 @@
 
 <h1 id="kmeans">KMeans<a class="headerlink" href="#kmeans" title="Permanent link">&para;</a></h1>
 <p>Incremental k-means.</p>
-<p>The most common way to implement batch k-means is to use Lloyd's algorithm, which consists in assigning all the data points to a set of cluster centers and then moving the centers accordingly. This requires multiple passes over the data and thus isn't applicable in a streaming setting. </p>
-<p>In this implementation we start by finding the cluster that is closest to the current observation. We then move the cluster's central position towards the new observation. The <code>halflife</code> parameter determines by how much to move the cluster toward the new observation. You will get better results if you scale your data appropriately.</p>
+<p>The most common way to implement batch k-means is to use Lloyd's algorithm, which consists in
+assigning all the data points to a set of cluster centers and then moving the centers
+accordingly. This requires multiple passes over the data and thus isn't applicable in a
+streaming setting.</p>
+<p>In this implementation we start by finding the cluster that is closest to the current
+observation. We then move the cluster's central position towards the new observation. The
+<code>halflife</code> parameter determines by how much to move the cluster toward the new observation.
+You will get better results if you scale your data appropriately.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>

@@ -1,6 +1,6 @@
 # humanize\_bytes
 
-Returns a human-friendly byte size.
+Return a human-friendly byte size.
 
 ## Parameters
 

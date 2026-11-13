@@ -4675,11 +4675,15 @@
 
 <h1 id="twitterlivestream">TwitterLiveStream<a class="headerlink" href="#twitterlivestream" title="Permanent link">&para;</a></h1>
 <p>Twitter API v2 live stream client.</p>
-<p>This client gives access to a live stream of Tweets. That is, Tweets that have just been     published. This is different to <code>stream.TwitterRecentStream</code>, which also covers Tweets that     have been published over recent days, and not necessarily in real-time. </p>
-<p>A list of filtering rules has to be provided. For instance, this allows focusing on a subset of     topics and/or users. </p>
+<p>This client gives access to a live stream of Tweets. That is, Tweets that have just been
+published. This is different to <code>stream.TwitterRecentStream</code>, which also covers Tweets that
+have been published over recent days, and not necessarily in real-time.</p>
+<p>A list of filtering rules has to be provided. For instance, this allows focusing on a subset of
+topics and/or users.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Using this requires having the <a href="https://requests.readthedocs.io/en/latest/"><code>requests</code></a>         package installed.</p>
+<p>Using this requires having the <a href="https://requests.readthedocs.io/en/latest/"><code>requests</code></a>
+package installed.</p>
 </div>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
@@ -4696,7 +4700,7 @@
 </ul>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
 <p>The live stream is instantiated by passing a list of filtering rules, as well as a bearer
-    token. For instance, we can listen to all the breaking news Tweets from the BBC and CNN.</p>
+token. For instance, we can listen to all the breaking news Tweets from the BBC and CNN.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">river</span><span class="w"> </span><span class="kn">import</span> <span class="n">stream</span>
 
 <span class="n">tweets</span> <span class="o">=</span> <span class="n">stream</span><span class="o">.</span><span class="n">TwitterLiveStream</span><span class="p">(</span>
@@ -4704,47 +4708,41 @@
     <span class="n">bearer_token</span><span class="o">=</span><span class="s2">&quot;&lt;insert_bearer_token&gt;&quot;</span>
 <span class="p">)</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>The stream can then be iterated over, possibly in an infinite loop. This will listen to the
-live feed of Tweets and produce a Tweet right after it&#39;s been published.
+<p>The stream can then be iterated over, possibly in an infinite loop. This will listen to the
+live feed of Tweets and produce a Tweet right after it's been published.</p>
+<div class="language-py highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 
-```py
-import logging
-
-while True:
-    try:
-        for tweet in tweets:
-            print(tweet)
-    except requests.exceptions.RequestException as e:
-        logging.warning(str(e))
-        time.sleep(10)
-```
-
-Here&#39;s a Tweet example:
-
-```py
-{
-    &#39;data&#39;: {
-        &#39;author_id&#39;: &#39;428333&#39;,
-        &#39;created_at&#39;: &#39;2022-08-26T12:59:48.000Z&#39;,
-        &#39;id&#39;: &#39;1563149212774445058&#39;,
-        &#39;text&#39;: &quot;Ukraine&#39;s Zaporizhzhia nuclear power plant, which is currently held by
+<span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">tweet</span> <span class="ow">in</span> <span class="n">tweets</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">tweet</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">RequestException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
 </code></pre></div>
-<p>Russian forces, has been reconnected to Ukraine's electricity grid, according to the
-country's nuclear operator https://t.co/xfylkBs4JR"
-        },
-        'includes': {
-            'users': [
-                {
-                    'created_at': '2007-01-02T01:48:14.000Z',
-                    'id': '428333',
-                    'name': 'CNN Breaking News',
-                    'username': 'cnnbrk'
-                }
-            ]
-        },
-        'matching_rules': [{'id': '1563148866333151233', 'tag': 'from:cnnbrk'}]
-    }
-    ```</p>
+<p>Here's a Tweet example:</p>
+<div class="language-py highlight"><pre><span></span><code><span class="p">{</span>
+    <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;author_id&#39;</span><span class="p">:</span> <span class="s1">&#39;428333&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;created_at&#39;</span><span class="p">:</span> <span class="s1">&#39;2022-08-26T12:59:48.000Z&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="s1">&#39;1563149212774445058&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;text&#39;</span><span class="p">:</span> <span class="s2">&quot;Ukraine&#39;s Zaporizhzhia nuclear power plant, which is currently held by</span>
+        <span class="n">Russian</span> <span class="n">forces</span><span class="p">,</span> <span class="n">has</span> <span class="n">been</span> <span class="n">reconnected</span> <span class="n">to</span> <span class="n">Ukraine</span><span class="s1">&#39;s electricity grid, according to the</span>
+        <span class="n">country</span><span class="s1">&#39;s nuclear operator https://t.co/xfylkBs4JR&quot;</span>
+    <span class="p">},</span>
+    <span class="s1">&#39;includes&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;users&#39;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">{</span>
+                <span class="s1">&#39;created_at&#39;</span><span class="p">:</span> <span class="s1">&#39;2007-01-02T01:48:14.000Z&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="s1">&#39;428333&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;CNN Breaking News&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="s1">&#39;cnnbrk&#39;</span>
+            <span class="p">}</span>
+        <span class="p">]</span>
+    <span class="p">},</span>
+    <span class="s1">&#39;matching_rules&#39;</span><span class="p">:</span> <span class="p">[{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="s1">&#39;1563148866333151233&#39;</span><span class="p">,</span> <span class="s1">&#39;tag&#39;</span><span class="p">:</span> <span class="s1">&#39;from:cnnbrk&#39;</span><span class="p">}]</span>
+<span class="p">}</span>
+</code></pre></div>
 <h2 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h2>
 <ul>
 <li>

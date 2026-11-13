@@ -5833,8 +5833,9 @@
 
 <h1 id="mv">Mv<a class="headerlink" href="#mv" title="Permanent link">&para;</a></h1>
 <p>Mv artificial dataset.</p>
-<p>Artificial dataset composed of both nominal and numeric features, whose features present co-dependencies. Originally described in <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>. </p>
-<p>The features are generated using the following expressions: </p>
+<p>Artificial dataset composed of both nominal and numeric features, whose features
+present co-dependencies. Originally described in <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>.</p>
+<p>The features are generated using the following expressions:</p>
 <ul>
 <li>
 <p><span class="arithmatex">\(x_1\)</span>: uniformly distributed over <code>\[-5, 5\]</code>.</p>
@@ -5846,10 +5847,11 @@
 <p><span class="arithmatex">\(x_3\)</span>:</p>
 <ul>
 <li>
-<p>if <span class="arithmatex">\(x_1 &gt; 0\)</span>, <span class="arithmatex">\(x_3 \leftarrow\)</span> <code>'green'</code> </p>
+<p>if <span class="arithmatex">\(x_1 &gt; 0\)</span>, <span class="arithmatex">\(x_3 \leftarrow\)</span> <code>'green'</code></p>
 </li>
 <li>
-<p>else <span class="arithmatex">\(x_3 \leftarrow\)</span> <code>'red'</code> with probability <span class="arithmatex">\(0.4\)</span> and <span class="arithmatex">\(x_3 \leftarrow\)</span> <code>'brown'</code>     with probability <span class="arithmatex">\(0.6\)</span>. </p>
+<p>else <span class="arithmatex">\(x_3 \leftarrow\)</span> <code>'red'</code> with probability <span class="arithmatex">\(0.4\)</span> and <span class="arithmatex">\(x_3 \leftarrow\)</span> <code>'brown'</code>
+with probability <span class="arithmatex">\(0.6\)</span>.</p>
 </li>
 </ul>
 </li>
@@ -5857,10 +5859,11 @@
 <p><span class="arithmatex">\(x_4\)</span>:</p>
 <ul>
 <li>
-<p>if <span class="arithmatex">\(x_3 =\)</span> <code>'green'</code>, <span class="arithmatex">\(x_4 \leftarrow x_1 + 2 x_2\)</span> </p>
+<p>if <span class="arithmatex">\(x_3 =\)</span> <code>'green'</code>, <span class="arithmatex">\(x_4 \leftarrow x_1 + 2 x_2\)</span></p>
 </li>
 <li>
-<p>else <span class="arithmatex">\(x_4 = \frac{x_1}{2}\)</span> with probability <span class="arithmatex">\(0.3\)</span> and <span class="arithmatex">\(x_4 = \frac{x_2}{2}\)</span>     with probability <span class="arithmatex">\(0.7\)</span>. </p>
+<p>else <span class="arithmatex">\(x_4 = \frac{x_1}{2}\)</span> with probability <span class="arithmatex">\(0.3\)</span> and <span class="arithmatex">\(x_4 = \frac{x_2}{2}\)</span>
+with probability <span class="arithmatex">\(0.7\)</span>.</p>
 </li>
 </ul>
 </li>
@@ -5868,11 +5871,9 @@
 <p><span class="arithmatex">\(x_5\)</span>: uniformly distributed over <code>\[-1, 1\]</code>.</p>
 </li>
 <li>
-<p><span class="arithmatex">\(x_6 \leftarrow x_4 \times \epsilon\)</span>, where <span class="arithmatex">\(\epsilon\)</span> is uniformly distributed</p>
+<p><span class="arithmatex">\(x_6 \leftarrow x_4 \times \epsilon\)</span>, where <span class="arithmatex">\(\epsilon\)</span> is uniformly distributed
+over <code>\[0, 5\]</code>.</p>
 </li>
-</ul>
-<p>over <code>\[0, 5\]</code>. </p>
-<ul>
 <li>
 <p><span class="arithmatex">\(x_7\)</span>: <code>'yes'</code> with probability <span class="arithmatex">\(0.3\)</span>, and <code>'no'</code> with probability <span class="arithmatex">\(0.7\)</span>.</p>
 </li>
@@ -5886,7 +5887,7 @@
 <p><span class="arithmatex">\(x_{10}\)</span>: uniformly distributed integer over the interval <code>\[1000, 1200\]</code>.</p>
 </li>
 </ul>
-<p>The target value is generated using the following rules: </p>
+<p>The target value is generated using the following rules:</p>
 <ul>
 <li>
 <p>if <span class="arithmatex">\(x_2 &gt; 2\)</span>, <span class="arithmatex">\(y \leftarrow 35 - 0.5 x_4\)</span></p>

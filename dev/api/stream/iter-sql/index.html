@@ -4652,8 +4652,12 @@
 
 
 <h1 id="iter_sql">iter_sql<a class="headerlink" href="#iter_sql" title="Permanent link">&para;</a></h1>
-<p>Iterates over the results from an SQL query.</p>
-<p>By default, SQLAlchemy prefetches results. Therefore, even though you can iterate over the resulting rows one by one, the results are in fact loaded in batch. You can modify this behavior by configuring the connection you pass to <code>iter_sql</code>. For instance, you can set the <code>stream_results</code> parameter to <code>True</code>, as <a href="https://docs.sqlalchemy.org/en/20/core/connections.html#sqlalchemy.engine.Connection.execution_options">explained in SQLAlchemy's documentation</a>. Note, however, that this isn't available for all database engines.</p>
+<p>Iterate over the results from an SQL query.</p>
+<p>By default, SQLAlchemy prefetches results. Therefore, even though you can iterate over the
+resulting rows one by one, the results are in fact loaded in batch. You can modify this
+behavior by configuring the connection you pass to <code>iter_sql</code>. For instance, you can set
+the <code>stream_results</code> parameter to <code>True</code>, as <a href="https://docs.sqlalchemy.org/en/20/core/connections.html#sqlalchemy.engine.Connection.execution_options">explained in SQLAlchemy's documentation</a>. Note, however,
+that this isn't available for all database engines.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>

@@ -4530,7 +4530,10 @@
 
 <h1 id="targetagg">TargetAgg<a class="headerlink" href="#targetagg" title="Permanent link">&para;</a></h1>
 <p>Computes a streaming aggregate of the target values.</p>
-<p>This transformer is identical to <a href="../../feature-extraction/Agg"><code>feature_extraction.Agg</code></a>, the only difference is that it operates on the target rather than on a feature. At each step, the running statistic <code>how</code> of target values in group <code>by</code> is updated with the target. It is therefore a supervised transformer.</p>
+<p>This transformer is identical to <a href="../../feature-extraction/Agg"><code>feature_extraction.Agg</code></a>, the only difference is that it
+operates on the target rather than on a feature. At each step, the running statistic <code>how</code> of
+target values in group <code>by</code> is updated with the target. It is therefore a supervised
+transformer.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>

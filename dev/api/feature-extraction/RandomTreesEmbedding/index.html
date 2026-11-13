@@ -4508,9 +4508,17 @@
 
 <h1 id="randomtreesembedding">RandomTreesEmbedding<a class="headerlink" href="#randomtreesembedding" title="Permanent link">&para;</a></h1>
 <p>Embed samples according to the leaves of random trees.</p>
-<p>This transformer builds an ensemble of totally random trees and encodes each sample with the leaf reached in every tree. The output is sparse: exactly one binary feature is active per tree. </p>
-<p>This is the online counterpart of feeding a linear model with random-tree leaf indicators. By default, this implementation assumes that each feature has values comprised between 0 and 1. If this is not the case, then you can manually specify the limits via the <code>limits</code> argument. If you do not know the limits in advance, then you can use a <a href="../../preprocessing/MinMaxScaler"><code>preprocessing.MinMaxScaler</code></a> as an initial preprocessing step. </p>
-<p>The trees are built lazily from the first sample that is observed, either via <code>transform_one</code> or <code>learn_one</code>. If new features appear later in the stream, then the forest is rebuilt so that future splits may use them. Unless specified in <code>limits</code>, newly observed features are also assumed to lie in the range <code>\[0, 1\]</code>.</p>
+<p>This transformer builds an ensemble of totally random trees and encodes each sample with the
+leaf reached in every tree. The output is sparse: exactly one binary feature is active per tree.</p>
+<p>This is the online counterpart of feeding a linear model with random-tree leaf indicators.
+By default, this implementation assumes that each feature has values comprised between 0 and
+1. If this is not the case, then you can manually specify the limits via the <code>limits</code>
+argument. If you do not know the limits in advance, then you can use a
+<a href="../../preprocessing/MinMaxScaler"><code>preprocessing.MinMaxScaler</code></a> as an initial preprocessing step.</p>
+<p>The trees are built lazily from the first sample that is observed, either via <code>transform_one</code>
+or <code>learn_one</code>. If new features appear later in the stream, then the forest is rebuilt so that
+future splits may use them. Unless specified in <code>limits</code>, newly observed features are also
+assumed to lie in the range <code>\[0, 1\]</code>.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>

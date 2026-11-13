@@ -4476,8 +4476,10 @@
 
 <h1 id="counter">Counter<a class="headerlink" href="#counter" title="Permanent link">&para;</a></h1>
 <p>Counting using the Count-Min Sketch (CMS) algorithm.</p>
-<p>Contrary to an exhaustive approach, e.g., using a <code>collections.Counter</code>, CMS uses a limited and fixed amount of memory. The CMS algorithm uses a sketch structure consisting of a matrix <span class="arithmatex">\(w \times d\)</span>. </p>
-<p>These dimensions are obtained via: </p>
+<p>Contrary to an exhaustive approach, e.g., using a <code>collections.Counter</code>, CMS uses a
+limited and fixed amount of memory. The CMS algorithm uses a sketch structure consisting of a
+matrix <span class="arithmatex">\(w \times d\)</span>.</p>
+<p>These dimensions are obtained via:</p>
 <ul>
 <li>
 <p><span class="arithmatex">\(w = \lceil \frac{e}{\epsilon} \rceil\)</span>, where <span class="arithmatex">\(e\)</span> is the Euler number.</p>
@@ -4486,9 +4488,16 @@
 <p><span class="arithmatex">\(d = \lceil \ln\left(\frac{1}{\delta} \right) \rceil\)</span>.</p>
 </li>
 </ul>
-<p>Decreasing the values of <span class="arithmatex">\(\epsilon\)</span> (<code>epsilon</code>) and <span class="arithmatex">\(\delta\)</span> (<code>delta</code>) increase the accuracy of the algorithm, at the cost of increased memory usage. The values of <code>w</code> and <code>d</code> control the hash tables' capability and the amount of hash collisions, respectively. </p>
-<p>CMS works by keeping <code>d</code> hash tables with <code>w</code> slots each. Elements are mapped to a slot in each hash table. These tables store the counting estimates. This implementation assumes the turnstile case described in the paper, i.e., count values and updates can be negative. </p>
-<p>The count values obtained by CMS are always overestimates. Suppose <span class="arithmatex">\(c_i\)</span> and <span class="arithmatex">\(\hat{c}_i\)</span> are the ground truth and estimated count values, respectively, for a given element <span class="arithmatex">\(i\)</span>. CMS guarantees that <span class="arithmatex">\(c_i \le \hat{c}_i\)</span> and, with probability <span class="arithmatex">\(1 - \delta\)</span>, <span class="arithmatex">\(\hat{c}_i \le c_i + \epsilon||\mathbf{c}||_1\)</span>. In the expression, <span class="arithmatex">\(||\mathbf{c}||_1 = \sum_i |c_i|\)</span>.</p>
+<p>Decreasing the values of <span class="arithmatex">\(\epsilon\)</span> (<code>epsilon</code>) and <span class="arithmatex">\(\delta\)</span> (<code>delta</code>) increase the accuracy of the
+algorithm, at the cost of increased memory usage. The values of <code>w</code> and <code>d</code> control the hash tables' capability
+and the amount of hash collisions, respectively.</p>
+<p>CMS works by keeping <code>d</code> hash tables with <code>w</code> slots each. Elements are mapped to a slot in each hash table.
+These tables store the counting estimates. This implementation assumes the turnstile case described in the paper,
+i.e., count values and updates can be negative.</p>
+<p>The count values obtained by CMS are always overestimates. Suppose <span class="arithmatex">\(c_i\)</span> and <span class="arithmatex">\(\hat{c}_i\)</span> are the ground truth and
+estimated count values, respectively, for a given element <span class="arithmatex">\(i\)</span>. CMS guarantees that <span class="arithmatex">\(c_i \le \hat{c}_i\)</span> and,
+with probability <span class="arithmatex">\(1 - \delta\)</span>, <span class="arithmatex">\(\hat{c}_i \le c_i + \epsilon||\mathbf{c}||_1\)</span>. In the expression,
+<span class="arithmatex">\(||\mathbf{c}||_1 = \sum_i |c_i|\)</span>.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>

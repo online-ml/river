@@ -5855,24 +5855,35 @@
 
 <h1 id="sine">Sine<a class="headerlink" href="#sine" title="Permanent link">&para;</a></h1>
 <p>Sine generator.</p>
-<p>This generator is an implementation of the dara stream with abrupt concept drift, as described in Gama, Joao, et al. <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>. </p>
-<p>It generates up to 4 relevant numerical features, that vary from 0 to 1, where only 2 of them are relevant to the classification task and the other 2 are optionally added by as noise. A classification function is chosen among four options: </p>
+<p>This generator is an implementation of the dara stream with abrupt
+concept drift, as described in Gama, Joao, et al. <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>.</p>
+<p>It generates up to 4 relevant numerical features, that vary from 0 to 1,
+where only 2 of them are relevant to the classification task and the other
+2 are optionally added by as noise. A classification function is chosen
+among four options:</p>
 <ol>
 <li>
-<p><code>SINE1</code>. Abrupt concept drift, noise-free examples. It has two relevant    attributes. Each attributes has values uniformly distributed in [0, 1].    In the first context all points below the curve <span class="arithmatex">\(y = sin(x)\)</span> are    classified as positive. </p>
+<p><code>SINE1</code>. Abrupt concept drift, noise-free examples. It has two relevant
+   attributes. Each attributes has values uniformly distributed in [0, 1].
+   In the first context all points below the curve <span class="arithmatex">\(y = sin(x)\)</span> are
+   classified as positive.</p>
 </li>
 <li>
-<p><code>Reversed SINE1</code>. The reversed classification of <code>SINE1</code>. </p>
+<p><code>Reversed SINE1</code>. The reversed classification of <code>SINE1</code>.</p>
 </li>
 <li>
-<p><code>SINE2</code>. The same two relevant attributes. The classification function    is <span class="arithmatex">\(y &lt; 0.5 + 0.3 sin(3 \pi  x)\)</span>. </p>
+<p><code>SINE2</code>. The same two relevant attributes. The classification function
+   is <span class="arithmatex">\(y &lt; 0.5 + 0.3 sin(3 \pi  x)\)</span>.</p>
 </li>
 <li>
-<p><code>Reversed SINE2</code>. The reversed classification of <code>SINE2</code>. </p>
+<p><code>Reversed SINE2</code>. The reversed classification of <code>SINE2</code>.</p>
 </li>
 </ol>
-<p>Concept drift can be introduced by changing the classification function. This can be done manually or using <code>ConceptDriftStream</code>. </p>
-<p>Two important features are the possibility to balance classes, which means the class distribution will tend to a uniform one, and the possibility to add noise, which will, add two non relevant attributes.</p>
+<p>Concept drift can be introduced by changing the classification function.
+This can be done manually or using <code>ConceptDriftStream</code>.</p>
+<p>Two important features are the possibility to balance classes, which means
+the class distribution will tend to a uniform one, and the possibility
+to add noise, which will, add two non relevant attributes.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>

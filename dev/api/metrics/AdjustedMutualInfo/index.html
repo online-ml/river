@@ -5827,11 +5827,20 @@
 
 <h1 id="adjustedmutualinfo">AdjustedMutualInfo<a class="headerlink" href="#adjustedmutualinfo" title="Permanent link">&para;</a></h1>
 <p>Adjusted Mutual Information between two clusterings.</p>
-<p>Adjusted Mutual Information (AMI) is an adjustment of the Mutual Information score that accounts for chance. It corrects the effect of agreement solely due to chance between clusterings, similar to the way the Adjusted Rand Index corrects the Rand Index. It is closely related to variation of information. The adjusted measure, however, is no longer metrical. </p>
-<p>For two clusterings <span class="arithmatex">\(U\)</span> and <span class="arithmatex">\(V\)</span>, the Adjusted Mutual Information is calculated as: </p>
-<div class="arithmatex">\[ AMI(U, V) = \frac{MI(U, V) - E(MI(U, V))}{avg(H(U), H(V)) - E(MI(U, V))} \]</div>
-<p>This metric is independent of the permutation of the class or cluster label values; furthermore, it is also symmetric. This can be useful to measure the agreement of two label assignments strategies on the same dataset, regardless of the ground truth. </p>
-<p>However, due to the complexity of the Expected Mutual Info Score, the computation of this metric is an order of magnitude slower than most other metrics, in general.</p>
+<p>Adjusted Mutual Information (AMI) is an adjustment of the Mutual Information score
+that accounts for chance. It corrects the effect of agreement solely due to chance
+between clusterings, similar to the way the Adjusted Rand Index corrects the Rand Index.
+It is closely related to variation of information. The adjusted measure, however, is
+no longer metrical.</p>
+<p>For two clusterings <span class="arithmatex">\(U\)</span> and <span class="arithmatex">\(V\)</span>, the Adjusted Mutual Information is calculated as:</p>
+<div class="arithmatex">\[
+AMI(U, V) = \frac{MI(U, V) - E(MI(U, V))}{avg(H(U), H(V)) - E(MI(U, V))}
+\]</div>
+<p>This metric is independent of the permutation of the class or cluster label values;
+furthermore, it is also symmetric. This can be useful to measure the agreement of
+two label assignments strategies on the same dataset, regardless of the ground truth.</p>
+<p>However, due to the complexity of the Expected Mutual Info Score, the computation of
+this metric is an order of magnitude slower than most other metrics, in general.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
@@ -5857,7 +5866,7 @@
 </li>
 <li>
 <p><strong>works_with_weights</strong></p>
-<p>Indicate whether the model takes into consideration the effect of sample weights</p>
+<p>Indicate whether the model takes into consideration the effect of sample weights.</p>
 </li>
 </ul>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
@@ -5921,7 +5930,7 @@
 <p><span /></p>
 <details class="- abstract">
 <summary>works_with</summary>
-<p>Indicates whether or not a metric can work with a given model.</p>
+<p>Indicate whether or not a metric can work with a given model.</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>model</strong>     — <code>base.Estimator</code>    </li>

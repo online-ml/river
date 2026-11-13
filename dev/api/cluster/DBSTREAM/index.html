@@ -4529,33 +4529,54 @@
 
 
 <h1 id="dbstream">DBSTREAM<a class="headerlink" href="#dbstream" title="Permanent link">&para;</a></h1>
-<p>DBSTREAM</p>
-<p>DBSTREAM <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> is a clustering algorithm for evolving data streams. It is the first micro-cluster-based online clustering component that explicitly captures the density between micro-clusters via a shared density graph. The density information in the graph is then exploited for reclustering based on actual density between adjacent micro clusters. </p>
-<p>The algorithm is divided into two parts: </p>
-<p><strong>Online micro-cluster maintenance (learning)</strong> </p>
-<p>For a new point <code>p</code>: </p>
+<p>The DBSTREAM algorithm.</p>
+<p>DBSTREAM <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> is a clustering algorithm for evolving data streams.
+It is the first micro-cluster-based online clustering component that
+explicitly captures the density between micro-clusters via a shared
+density graph. The density information in the graph is then exploited
+for reclustering based on actual density between adjacent micro clusters.</p>
+<p>The algorithm is divided into two parts:</p>
+<p><strong>Online micro-cluster maintenance (learning)</strong></p>
+<p>For a new point <code>p</code>:</p>
 <ul>
 <li>
-<p>Find all micro clusters for which <code>p</code> falls within the fixed radius (clustering threshold). If no neighbor is found, a new micro cluster with a weight of 1 is created for <code>p</code>. </p>
+<p>Find all micro clusters for which <code>p</code> falls within the fixed radius
+(clustering threshold). If no neighbor is found, a new micro cluster
+with a weight of 1 is created for <code>p</code>.</p>
 </li>
 <li>
-<p>If no neighbor is found, a new micro cluster with a weight of 1 is created for <code>p</code>. If one or more neighbors of <code>p</code> are found, we update the micro clusters by applying the appropriate fading, increasing their weight and then we try to move them closer to <code>p</code> using the Gaussian neighborhood function. </p>
+<p>If no neighbor is found, a new micro cluster with a weight of 1 is
+created for <code>p</code>. If one or more neighbors of <code>p</code> are found, we update
+the micro clusters by applying the appropriate fading, increasing
+their weight and then we try to move them closer to <code>p</code> using the
+Gaussian neighborhood function.</p>
 </li>
 <li>
-<p>Next, the shared density graph is updated. To prevent collapsing micro clusters, we will restrict the movement for micro clusters in case they come closer than <span class="arithmatex">\(r\)</span> (clustering threshold) to each other. Finishing this process, the time stamp is also increased by 1. </p>
+<p>Next, the shared density graph is updated. To prevent collapsing
+micro clusters, we will restrict the movement for micro clusters in case
+they come closer than <span class="arithmatex">\(r\)</span> (clustering threshold) to each other. Finishing
+this process, the time stamp is also increased by 1.</p>
 </li>
 <li>
-<p>Finally, the cleanup will be processed. It is executed every <code>t_gap</code> time steps, removing weak micro clusters and weak entries in the shared density graph to recover memory and improve the clustering algorithm's processing speed. </p>
+<p>Finally, the cleanup will be processed. It is executed every <code>t_gap</code>
+time steps, removing weak micro clusters and weak entries in the
+shared density graph to recover memory and improve the clustering algorithm's
+processing speed.</p>
 </li>
 </ul>
-<p><strong>Offline generation of macro clusters (clustering)</strong> </p>
-<p>The offline generation of macro clusters is generated through the two following steps: </p>
+<p><strong>Offline generation of macro clusters (clustering)</strong></p>
+<p>The offline generation of macro clusters is generated through the two following steps:</p>
 <ul>
 <li>
-<p>The connectivity graph <code>C</code> is constructed using shared density entries between strong micro clusters. The edges in this connectivity graph with a connectivity value greater than the intersection threshold (<span class="arithmatex">\(\alpha\)</span>) are used to find connected components representing the final cluster. </p>
+<p>The connectivity graph <code>C</code> is constructed using shared density entries
+between strong micro clusters. The edges in this connectivity graph with
+a connectivity value greater than the intersection threshold (<span class="arithmatex">\(\alpha\)</span>)
+are used to find connected components representing the final cluster.</p>
 </li>
 <li>
-<p>After the connectivity graph is generated, a variant of the DBSCAN algorithm proposed by Ester et al. is applied to form all macro clusters from <span class="arithmatex">\(\alpha\)</span>-connected micro clusters.</p>
+<p>After the connectivity graph is generated, a variant of the DBSCAN algorithm
+proposed by Ester et al. is applied to form all macro clusters
+from <span class="arithmatex">\(\alpha\)</span>-connected micro clusters.</p>
 </li>
 </ul>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>

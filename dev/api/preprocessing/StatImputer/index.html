@@ -4788,7 +4788,10 @@
 
 <h1 id="statimputer">StatImputer<a class="headerlink" href="#statimputer" title="Permanent link">&para;</a></h1>
 <p>Replaces missing values with a statistic.</p>
-<p>This transformer allows you to replace missing values with the value of a running statistic. During a call to <code>learn_one</code>, for each feature, a statistic is updated whenever a numeric feature is observed. When <code>transform_one</code> is called, each feature with a <code>None</code> value is replaced with the current value of the corresponding statistic.</p>
+<p>This transformer allows you to replace missing values with the value of a running statistic.
+During a call to <code>learn_one</code>, for each feature, a statistic is updated whenever a numeric feature
+is observed. When <code>transform_one</code> is called, each feature with a <code>None</code> value is replaced with
+the current value of the corresponding statistic.</p>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
 <div class="language-python highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">river</span><span class="w"> </span><span class="kn">import</span> <span class="n">preprocessing</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">river</span><span class="w"> </span><span class="kn">import</span> <span class="n">stats</span>

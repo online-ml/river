@@ -93,7 +93,7 @@ evaluate.evaluate(
 >
 > **forecast**
 >
-> Makes forecast at each step of the given horizon.
+> Make a forecast at each step of the given horizon.
 >
 > **Parameters**
 >
@@ -104,7 +104,7 @@ evaluate.evaluate(
 >
 > **learn\_one**
 >
-> Updates the model.
+> Update the model.
 >
 > **Parameters**
 >

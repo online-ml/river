@@ -58,7 +58,7 @@ for yt, yp in zip(y_true, y_pred):
 >
 > ****call****
 >
-> Returns the loss.
+> Return the loss.
 >
 > **Parameters**
 >

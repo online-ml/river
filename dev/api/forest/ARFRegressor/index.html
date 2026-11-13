@@ -4454,19 +4454,27 @@
 
 <h1 id="arfregressor">ARFRegressor<a class="headerlink" href="#arfregressor" title="Permanent link">&para;</a></h1>
 <p>Adaptive Random Forest regressor.</p>
-<p>The 3 most important aspects of Adaptive Random Forest <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> are: </p>
+<p>The 3 most important aspects of Adaptive Random Forest <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> are:</p>
 <ol>
 <li>
-<p>inducing diversity through re-sampling </p>
+<p>inducing diversity through re-sampling</p>
 </li>
 <li>
-<p>inducing diversity through randomly selecting subsets of features for    node splits </p>
+<p>inducing diversity through randomly selecting subsets of features for
+   node splits</p>
 </li>
 <li>
-<p>drift detectors per base tree, which cause selective resets in response    to drifts </p>
+<p>drift detectors per base tree, which cause selective resets in response
+   to drifts</p>
 </li>
 </ol>
-<p>Notice that this implementation is slightly different from the original algorithm proposed in <sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup>. The <code>HoeffdingTreeRegressor</code> is used as base learner, instead of <code>FIMT-DD</code>. It also adds a new strategy to monitor the predictions and check for concept drifts. The deviations of the predictions to the target are monitored and normalized in the [0, 1] range to fulfill ADWIN's requirements. We assume that the data subjected to the normalization follows a normal distribution, and thus, lies within the interval of the mean <span class="arithmatex">\(\pm3\sigma\)</span>.</p>
+<p>Notice that this implementation is slightly different from the original
+algorithm proposed in <sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup>. The <code>HoeffdingTreeRegressor</code> is used as base
+learner, instead of <code>FIMT-DD</code>. It also adds a new strategy to monitor the
+predictions and check for concept drifts. The deviations of the predictions
+to the target are monitored and normalized in the [0, 1] range to fulfill ADWIN's
+requirements. We assume that the data subjected to the normalization follows
+a normal distribution, and thus, lies within the interval of the mean <span class="arithmatex">\(\pm3\sigma\)</span>.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>

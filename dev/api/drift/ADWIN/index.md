@@ -61,7 +61,7 @@ ADWIN (ADaptive WINdowing) is a popular drift detection method with mathematical
   The sample variance within the stored (adaptive) window.
 - **width**
 
-  Window size
+  Window size.
 
 ## Examples
 

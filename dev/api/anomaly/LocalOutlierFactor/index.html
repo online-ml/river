@@ -4562,9 +4562,18 @@
 
 <h1 id="localoutlierfactor">LocalOutlierFactor<a class="headerlink" href="#localoutlierfactor" title="Permanent link">&para;</a></h1>
 <p>Local Outlier Factor (LOF).</p>
-<p>The LOF of a sample measures how isolated it is relative to the density of its neighbors: a value around 1 means the sample lies in a region as dense as its neighborhood, while a value substantially above 1 flags an outlier sitting in a comparatively sparse region (Breunig et al., 2000). </p>
-<p>Samples are stored in a fixed-size sliding window managed by a nearest-neighbor <code>engine</code> (see <code>river.neighbors</code>). <code>learn_one</code> simply adds a sample to the window, so it runs in constant time and the memory footprint is bounded by the window size. <code>score_one</code> computes the LOF of a sample against the current window on demand, without modifying it. The natural streaming pattern is therefore to call <code>score_one</code> and then <code>learn_one</code> on each sample. </p>
-<p>Because scoring is done against the window only, the result matches the static LOF computed on those samples (e.g. scikit-learn's <code>LocalOutlierFactor(novelty=True)</code> fitted on the same window).</p>
+<p>The LOF of a sample measures how isolated it is relative to the density of its neighbors:
+a value around 1 means the sample lies in a region as dense as its neighborhood, while a
+value substantially above 1 flags an outlier sitting in a comparatively sparse region
+(Breunig et al., 2000).</p>
+<p>Samples are stored in a fixed-size sliding window managed by a nearest-neighbor <code>engine</code>
+(see <code>river.neighbors</code>). <code>learn_one</code> simply adds a sample to the window, so it runs in
+constant time and the memory footprint is bounded by the window size. <code>score_one</code> computes
+the LOF of a sample against the current window on demand, without modifying it. The natural
+streaming pattern is therefore to call <code>score_one</code> and then <code>learn_one</code> on each sample.</p>
+<p>Because scoring is done against the window only, the result matches the static LOF computed
+on those samples (e.g. scikit-learn's <code>LocalOutlierFactor(novelty=True)</code> fitted on the same
+window).</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>

@@ -4539,8 +4539,11 @@
 
 
 <h1 id="iter_progressive_val_score">iter_progressive_val_score<a class="headerlink" href="#iter_progressive_val_score" title="Permanent link">&para;</a></h1>
-<p>Evaluates the performance of a model on a streaming dataset and yields results.</p>
-<p>This does exactly the same as <a href="../../evaluate/progressive-val-score"><code>evaluate.progressive_val_score</code></a>. The only difference is that this function returns an iterator, yielding results at every step. This can be useful if you want to have control over what you do with the results. For instance, you might want to plot the results.</p>
+<p>Evaluate the performance of a model on a streaming dataset and yields results.</p>
+<p>This does exactly the same as <a href="../../evaluate/progressive-val-score"><code>evaluate.progressive_val_score</code></a>. The only difference is that
+this function returns an iterator, yielding results at every step. This can be useful if you
+want to have control over what you do with the results. For instance, you might want to plot
+the results.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>

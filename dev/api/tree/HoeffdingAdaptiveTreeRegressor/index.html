@@ -4716,7 +4716,11 @@
 
 <h1 id="hoeffdingadaptivetreeregressor">HoeffdingAdaptiveTreeRegressor<a class="headerlink" href="#hoeffdingadaptivetreeregressor" title="Permanent link">&para;</a></h1>
 <p>Hoeffding Adaptive Tree regressor (HATR).</p>
-<p>This class implements a regression version of the Hoeffding Adaptive Tree Classifier. Hence, it also uses an ADWIN concept-drift detector instance at each decision node to monitor possible changes in the data distribution. If a drift is detected in a node, an alternate tree begins to be induced in the background. When enough information is gathered, HATR swaps the node where the change was detected by its alternate tree.</p>
+<p>This class implements a regression version of the Hoeffding Adaptive Tree Classifier. Hence,
+it also uses an ADWIN concept-drift detector instance at each decision node to monitor
+possible changes in the data distribution. If a drift is detected in a node, an alternate
+tree begins to be induced in the background. When enough information is gathered, HATR
+swaps the node where the change was detected by its alternate tree.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>

@@ -4653,7 +4653,11 @@
 
 <h1 id="simulate_qa">simulate_qa<a class="headerlink" href="#simulate_qa" title="Permanent link">&para;</a></h1>
 <p>Simulate a time-ordered question and answer session.</p>
-<p>This method allows looping through a dataset in the order in which it arrived. Indeed, it usually is the case that labels arrive after features. Being able to go through a dataset in arrival order enables assessing a model's performance in a reliable manner. For instance, the <a href="../../evaluate/progressive-val-score"><code>evaluate.progressive_val_score</code></a> is a high-level method that can be used to score a model on a dataset. Under the hood it uses this method to determine the correct arrival order.</p>
+<p>This method allows looping through a dataset in the order in which it arrived. Indeed, it
+usually is the case that labels arrive after features. Being able to go through a dataset in
+arrival order enables assessing a model's performance in a reliable manner. For instance, the
+<a href="../../evaluate/progressive-val-score"><code>evaluate.progressive_val_score</code></a> is a high-level method that can be used to score a model on a
+dataset. Under the hood it uses this method to determine the correct arrival order.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>

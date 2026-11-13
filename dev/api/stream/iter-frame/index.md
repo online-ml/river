@@ -1,6 +1,6 @@
 # iter\_frame
 
-Iterates over the rows of a dataframe.
+Iterate over the rows of a dataframe.
 
 This is a dataframe-agnostic iterator: it works with any eager dataframe supported by [Narwhals](<https://narwhals-dev.github.io/narwhals/>) (pandas, polars, PyArrow, Modin, cuDF, ...). It supersedes [`stream.iter_pandas`](<https://riverml.xyz/dev/api/stream/iter-pandas>) and [`stream.iter_polars`](<https://riverml.xyz/dev/api/stream/iter-polars>).
 

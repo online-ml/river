@@ -1,6 +1,6 @@
 # Apple
 
-Apple Stock
+Apple Stock.
 
 This dataset concerns the daily close price and volume of Apple stock around the year 2000. The dataset is sampled every 3 observations to reduce the length of the time series. This dataset is retrieved from Yahoo Finance.
 

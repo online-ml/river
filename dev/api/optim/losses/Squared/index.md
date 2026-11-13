@@ -47,7 +47,7 @@ loss.gradient(5, -4)
 >
 > ****call****
 >
-> Returns the loss.
+> Return the loss.
 >
 > **Parameters**
 >

@@ -18,7 +18,7 @@ Its gradient w.r.t. to \\(p\_i\\) is
 >
 > ****call****
 >
-> Returns the loss.
+> Return the loss.
 >
 > **Parameters**
 >

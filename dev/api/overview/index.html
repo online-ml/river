@@ -5985,8 +5985,8 @@ pipelines are not the only way to process a stream of data, we highly encourage 
 <li><a href="../compose/learn-during-predict">learn_during_predict</a></li>
 </ul>
 <h2 id="conf">conf<a class="headerlink" href="#conf" title="Permanent link">&para;</a></h2>
-<p>Conformal predictions. This modules contains wrappers to enable conformal predictions on any
-regressor or classifier.</p>
+<p>Conformal predictions.</p>
+<p>This modules contains wrappers to enable conformal predictions on any regressor or classifier.</p>
 <ul>
 <li><a href="../conf/Interval">Interval</a></li>
 <li><a href="../conf/RegressionJackknife">RegressionJackknife</a></li>
@@ -6518,7 +6518,7 @@ be processed by a particular machine learning algorithm.</p>
 <li><a href="../feature-selection/VarianceThreshold">VarianceThreshold</a></li>
 </ul>
 <h2 id="forest">forest<a class="headerlink" href="#forest" title="Permanent link">&para;</a></h2>
-<p>This module implements forest-based classifiers and regressors.</p>
+<p>Implement forest-based classifiers and regressors.</p>
 <ul>
 <li><a href="../forest/AMFClassifier">AMFClassifier</a></li>
 <li><a href="../forest/AMFRegressor">AMFRegressor</a></li>
@@ -6868,7 +6868,7 @@ of memory and processing time.</p>
 <li><a href="../sketch/Set">Set</a></li>
 </ul>
 <h2 id="stats">stats<a class="headerlink" href="#stats" title="Permanent link">&para;</a></h2>
-<p>Running statistics</p>
+<p>Running statistics.</p>
 <ul>
 <li><a href="../stats/AbsMax">AbsMax</a></li>
 <li><a href="../stats/AutoCorr">AutoCorr</a></li>
@@ -6956,6 +6956,7 @@ of memory and processing time.</p>
 <li><a href="../time-series/base/Forecaster">Forecaster</a></li>
 </ul>
 <h2 id="tree">tree<a class="headerlink" href="#tree" title="Permanent link">&para;</a></h2>
+<p>Incremental decision trees.</p>
 <p>This module implements incremental Decision Tree (iDT) algorithms for handling classification
 and regression tasks.</p>
 <p>Each family of iDT will be presented in a dedicated section.</p>
@@ -7015,6 +7016,7 @@ dynamic and static feature quantizers to deal with numerical inputs.</p>
 <li><a href="../tree/SGTRegressor">SGTRegressor</a></li>
 </ul>
 <h3 id="base_13">base<a class="headerlink" href="#base_13" title="Permanent link">&para;</a></h3>
+<p>Generic branches and leaves for decision trees.</p>
 <p>This module defines generic branch and leaf implementations. These should be used in River by each
 tree-based model. Using these classes makes the code more DRY. The only exception for not doing so
 would be for performance, whereby a tree-based model uses a bespoke implementation.</p>
@@ -7025,6 +7027,7 @@ intention is to provide utilities for walking over a tree and visualizing it.</p
 <li><a href="../tree/base/Leaf">Leaf</a></li>
 </ul>
 <h3 id="splitter">splitter<a class="headerlink" href="#splitter" title="Permanent link">&para;</a></h3>
+<p>Leaf splitters for decision trees.</p>
 <p>This module implements the Attribute Observers (AO) (or tree splitters) that are used by the
 Hoeffding Trees (HT). It also implements the feature quantizers (FQ) used by Stochastic Gradient
 Trees (SGT). AOs are a core aspect of the HTs construction, and might represent one of the major
@@ -7049,7 +7052,7 @@ when choosing the correct feature splitter.</p>
 <li><a href="../tree/splitter/TEBSTSplitter">TEBSTSplitter</a></li>
 </ul>
 <h2 id="utils">utils<a class="headerlink" href="#utils" title="Permanent link">&para;</a></h2>
-<p>Shared utility classes and functions</p>
+<p>Shared utility classes and functions.</p>
 <p><strong>Classes</strong></p>
 <ul>
 <li><a href="../utils/Rolling">Rolling</a></li>

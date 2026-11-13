@@ -25,7 +25,7 @@ Confusion Matrix for binary and multi-class classification.
 - **total\_true\_positives**
 - **works\_with\_weights**
 
-  Indicate whether the model takes into consideration the effect of sample weights
+  Indicate whether the model takes into consideration the effect of sample weights.
 
 ## Examples
 
@@ -124,7 +124,7 @@ cm['bird']['cat']
 >
 > **works\_with**
 >
-> Indicates whether or not a metric can work with a given model.
+> Indicate whether or not a metric can work with a given model.
 >
 > **Parameters**
 >

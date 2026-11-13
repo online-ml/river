@@ -18,7 +18,7 @@ Variant of the squared loss that is robust to outliers.
 >
 > ****call****
 >
-> Returns the loss.
+> Return the loss.
 >
 > **Parameters**
 >

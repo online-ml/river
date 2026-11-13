@@ -4626,7 +4626,8 @@
 
 <h1 id="transformerproduct">TransformerProduct<a class="headerlink" href="#transformerproduct" title="Permanent link">&para;</a></h1>
 <p>Computes interactions between the outputs of a set transformers.</p>
-<p>This is for when you want to add interaction terms between groups of features. It may also be used an alternative to <a href="../../feature-extraction/PolynomialExtender"><code>feature_extraction.PolynomialExtender</code></a> when the latter is overkill.</p>
+<p>This is for when you want to add interaction terms between groups of features. It may also
+be used an alternative to <a href="../../feature-extraction/PolynomialExtender"><code>feature_extraction.PolynomialExtender</code></a> when the latter is overkill.</p>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
 <p>Let's say we have a certain set of features with two groups. In practice these may be different
 namespaces, such one for items and the other for users.</p>
@@ -4684,7 +4685,7 @@ namespaces, such one for items and the other for users.</p>
 <p><span /></p>
 <details class="- abstract">
 <summary>transform_many</summary>
-<p>Passes the data through each transformer and packs the results together.</p>
+<p>Pass the data through each transformer and packs the results together.</p>
 <p>The per-transformer outputs are concatenated column-wise via narwhals, so the result is rebuilt in the caller's own backend (pandas, polars, pyarrow, ...). All transformers see the same rows in the same order, so a positional horizontal concat matches the historical index-aligned <code>pandas.concat(axis=1)</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
@@ -4694,7 +4695,7 @@ namespaces, such one for items and the other for users.</p>
 <p><span /></p>
 <details class="- abstract">
 <summary>transform_one</summary>
-<p>Passes the data through each transformer and packs the results together.</p>
+<p>Pass the data through each transformer and packs the results together.</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>x</strong>     — <code>dict[base.typing.FeatureName, Any]</code>    </li>

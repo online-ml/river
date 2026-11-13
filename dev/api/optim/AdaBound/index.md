@@ -73,19 +73,21 @@ F1: 88.06%
 >
 > **look\_ahead**
 >
-> Updates a weight vector before a prediction is made.
->
-> Parameters: w (dict): A dictionary of weight parameters. The weights are modified in-place. Returns: The updated weights.
+> Update a weight vector before a prediction is made.
 >
 > **Parameters**
 >
 > - **w** — `DictLike | VectorLike`
+>
+> **Returns**
+>
+> `DictLike | VectorLike`: The updated weights.
 
 > [!NOTE]
 >
 > **step**
 >
-> Updates a weight vector given a gradient.
+> Update a weight vector given a gradient.
 >
 > **Parameters**
 >

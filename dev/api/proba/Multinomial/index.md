@@ -165,7 +165,7 @@ P(red) = 0.000
 >
 > **update**
 >
-> Updates the parameters of the distribution given a new observation.
+> Update the parameters of the distribution given a new observation.
 >
 > **Parameters**
 >

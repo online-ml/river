@@ -23,7 +23,7 @@ This implements the "star" algorithm from the appendix of the focal loss paper.
 >
 > ****call****
 >
-> Returns the loss.
+> Return the loss.
 >
 > **Parameters**
 >

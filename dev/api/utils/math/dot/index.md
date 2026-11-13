@@ -1,6 +1,6 @@
 # dot
 
-Returns the dot product of two vectors represented as dicts.
+Return the dot product of two vectors represented as dicts.
 
 ## Parameters
 

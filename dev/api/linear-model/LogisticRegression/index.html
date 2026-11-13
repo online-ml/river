@@ -4618,8 +4618,11 @@
 
 <h1 id="logisticregression">LogisticRegression<a class="headerlink" href="#logisticregression" title="Permanent link">&para;</a></h1>
 <p>Logistic regression.</p>
-<p>This estimator supports learning with mini-batches. On top of the single instance methods, it provides the following methods: <code>learn_many</code>, <code>predict_many</code>, <code>predict_proba_many</code>. Each method takes as input a <code>pandas.DataFrame</code> where each column represents a feature. </p>
-<p>It is generally a good idea to scale the data beforehand in order for the optimizer to converge. You can do this online with a <a href="../../preprocessing/StandardScaler"><code>preprocessing.StandardScaler</code></a>.</p>
+<p>This estimator supports learning with mini-batches. On top of the single instance methods, it
+provides the following methods: <code>learn_many</code>, <code>predict_many</code>, <code>predict_proba_many</code>. Each method
+takes as input a <code>pandas.DataFrame</code> where each column represents a feature.</p>
+<p>It is generally a good idea to scale the data beforehand in order for the optimizer to
+converge. You can do this online with a <a href="../../preprocessing/StandardScaler"><code>preprocessing.StandardScaler</code></a>.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>

@@ -4832,9 +4832,18 @@
 
 <h1 id="standardscaler">StandardScaler<a class="headerlink" href="#standardscaler" title="Permanent link">&para;</a></h1>
 <p>Scales the data so that it has zero mean and unit variance.</p>
-<p>Under the hood, a running mean and a running variance are maintained. The scaling is slightly different than when scaling the data in batch because the exact means and variances are not known in advance. However, this doesn't have a detrimental impact on performance in the long run. </p>
-<p>This transformer supports mini-batches as well as single instances. In the mini-batch case, the number of columns and the ordering of the columns are allowed to change between subsequent calls. In other words, this transformer will keep working even if you add and/or remove features every time you call <code>learn_many</code> and <code>transform_many</code>. </p>
-<p>When <code>window_size</code> is set, the running mean and variance are replaced by rolling versions computed over the last <code>window_size</code> observations via <a href="../../utils/Rolling"><code>utils.Rolling</code></a> wrapping <a href="../../stats/Mean"><code>stats.Mean</code></a> and <a href="../../stats/Var"><code>stats.Var</code></a>. In this mode, <code>learn_many</code> is processed row by row because the mini-batch merge formula for variance does not yield a correct rolling estimate.</p>
+<p>Under the hood, a running mean and a running variance are maintained. The scaling is slightly
+different than when scaling the data in batch because the exact means and variances are not
+known in advance. However, this doesn't have a detrimental impact on performance in the long
+run.</p>
+<p>This transformer supports mini-batches as well as single instances. In the mini-batch case, the
+number of columns and the ordering of the columns are allowed to change between subsequent
+calls. In other words, this transformer will keep working even if you add and/or remove
+features every time you call <code>learn_many</code> and <code>transform_many</code>.</p>
+<p>When <code>window_size</code> is set, the running mean and variance are replaced by rolling versions
+computed over the last <code>window_size</code> observations via <a href="../../utils/Rolling"><code>utils.Rolling</code></a> wrapping <a href="../../stats/Mean"><code>stats.Mean</code></a>
+and <a href="../../stats/Var"><code>stats.Var</code></a>. In this mode, <code>learn_many</code> is processed row by row because the mini-batch
+merge formula for variance does not yield a correct rolling estimate.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>

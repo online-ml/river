@@ -5301,8 +5301,12 @@
 
 <h1 id="shift">Shift<a class="headerlink" href="#shift" title="Permanent link">&para;</a></h1>
 <p>Shifts a data stream by returning past values.</p>
-<p>This can be used to compute statistics over past data. For instance, if you're computing daily averages, then shifting by 7 will be equivalent to computing averages from a week ago. </p>
-<p>Shifting values is useful when you're calculating an average over a target value. Indeed, in this case it's important to shift the values in order not to introduce leakage. The recommended way to do this is to <a href="../../feature-extraction/TargetAgg"><code>feature_extraction.TargetAgg</code></a>, which already takes care of shifting the target values once.</p>
+<p>This can be used to compute statistics over past data. For instance, if you're computing daily
+averages, then shifting by 7 will be equivalent to computing averages from a week ago.</p>
+<p>Shifting values is useful when you're calculating an average over a target value. Indeed,
+in this case it's important to shift the values in order not to introduce leakage. The
+recommended way to do this is to <a href="../../feature-extraction/TargetAgg"><code>feature_extraction.TargetAgg</code></a>, which already takes care
+of shifting the target values once.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>

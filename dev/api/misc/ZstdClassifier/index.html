@@ -4422,8 +4422,14 @@
 
 <h1 id="zstdclassifier">ZstdClassifier<a class="headerlink" href="#zstdclassifier" title="Permanent link">&para;</a></h1>
 <p>Compression-based text classifier using Zstandard.</p>
-<p>For each class, a byte buffer is maintained by appending every text seen with that label. The buffer is bounded to <code>window</code> bytes; oldest bytes are evicted FIFO once the buffer is full. A <code>ZstdCompressor</code> is built lazily from each class's buffer (used as a raw prefix dictionary). Classification scores a document by compressing it with every class's compressor; the class whose compressor produces the shortest output wins. </p>
-<p>The intuition is that compression length approximates Kolmogorov complexity: a compressor seeded with text from class <code>c</code> produces shorter output for documents that share patterns with that class. </p>
+<p>For each class, a byte buffer is maintained by appending every text seen with that label.
+The buffer is bounded to <code>window</code> bytes; oldest bytes are evicted FIFO once the buffer is
+full. A <code>ZstdCompressor</code> is built lazily from each class's buffer (used as a raw prefix
+dictionary). Classification scores a document by compressing it with every class's
+compressor; the class whose compressor produces the shortest output wins.</p>
+<p>The intuition is that compression length approximates Kolmogorov complexity: a compressor
+seeded with text from class <code>c</code> produces shorter output for documents that share patterns
+with that class.</p>
 <p>This requires Python 3.14 or later (<code>compression.zstd</code> is only available there).</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>

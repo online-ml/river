@@ -158,7 +158,9 @@ This module contains utilities for merging multiple modeling steps into a single
 
 ## conf
 
-Conformal predictions. This modules contains wrappers to enable conformal predictions on any regressor or classifier.
+Conformal predictions.
+
+This modules contains wrappers to enable conformal predictions on any regressor or classifier.
 
 - [Interval](<https://riverml.xyz/dev/api/conf/Interval>)
 - [RegressionJackknife](<https://riverml.xyz/dev/api/conf/RegressionJackknife>)
@@ -415,7 +417,7 @@ Feature selection.
 
 ## forest
 
-This module implements forest-based classifiers and regressors.
+Implement forest-based classifiers and regressors.
 
 - [AMFClassifier](<https://riverml.xyz/dev/api/forest/AMFClassifier>)
 - [AMFRegressor](<https://riverml.xyz/dev/api/forest/AMFRegressor>)
@@ -778,7 +780,7 @@ This module has summary and sketch structures that operate with constrained amou
 
 ## stats
 
-Running statistics
+Running statistics.
 
 - [AbsMax](<https://riverml.xyz/dev/api/stats/AbsMax>)
 - [AutoCorr](<https://riverml.xyz/dev/api/stats/AutoCorr>)
@@ -872,6 +874,8 @@ Time series forecasting.
 
 ## tree
 
+Incremental decision trees.
+
 This module implements incremental Decision Tree (iDT) algorithms for handling classification and regression tasks.
 
 Each family of iDT will be presented in a dedicated section.
@@ -909,6 +913,8 @@ SGTs can deal with binary classification and single-target regression. They also
 
 ### base
 
+Generic branches and leaves for decision trees.
+
 This module defines generic branch and leaf implementations. These should be used in River by each tree-based model. Using these classes makes the code more DRY. The only exception for not doing so would be for performance, whereby a tree-based model uses a bespoke implementation.
 
 This module defines a bunch of methods to ease the manipulation and diagnostic of trees. Its intention is to provide utilities for walking over a tree and visualizing it.
@@ -917,6 +923,8 @@ This module defines a bunch of methods to ease the manipulation and diagnostic o
 - [Leaf](<https://riverml.xyz/dev/api/tree/base/Leaf>)
 
 ### splitter
+
+Leaf splitters for decision trees.
 
 This module implements the Attribute Observers (AO) (or tree splitters) that are used by the Hoeffding Trees (HT). It also implements the feature quantizers (FQ) used by Stochastic Gradient Trees (SGT). AOs are a core aspect of the HTs construction, and might represent one of the major bottlenecks when building the trees. The same holds for SGTs and FQs. The correct choice and setup of a splitter might result in significant differences in the running time and memory usage of the incremental decision trees.
 
@@ -935,7 +943,7 @@ AOs for classification and regression trees can be differentiated by using the p
 
 ## utils
 
-Shared utility classes and functions
+Shared utility classes and functions.
 
 **Classes**
 

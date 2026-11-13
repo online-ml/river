@@ -5805,9 +5805,23 @@
 
 <h1 id="rollingrocauc">RollingROCAUC<a class="headerlink" href="#rollingrocauc" title="Permanent link">&para;</a></h1>
 <p>Rolling version of the Receiver Operating Characteristic Area Under the Curve.</p>
-<p>The RollingROCAUC calculates the metric using the instances in its window of size S. It keeps a queue of the instances, when an instance is added and the queue length is equal to S, the last instance is removed. The metric has a tree with ordered instances, in order to calculate the AUC efficiently. It was implemented based on the algorithm presented in Brzezinski and Stefanowski, 2017. </p>
-<p>The difference between this metric and the standard ROCAUC is that the latter calculates an approximation of the real metric considering all data from the beginning of the stream, while the RollingROCAUC calculates the exact value considering only the last S instances. This approach may be beneficial if it's necessary to evaluate the model's performance over time, since calculating the metric using the entire stream may hide the current performance of the classifier. </p>
-<p>Because the AUC is computed by ranking the scores within the window, this metric is invariant to the scale of <code>y_pred</code> and needs no normalization. This makes it convenient for anomaly-detector scores, which are unbounded — unlike <a href="../../metrics/ROCAUC"><code>metrics.ROCAUC</code></a>, whose thresholds assume <code>y_pred</code> lies in <code>\[0, 1\]</code>.</p>
+<p>The RollingROCAUC calculates the metric using the instances in its window
+of size S. It keeps a queue of the instances, when an instance is added and
+the queue length is equal to S, the last instance is removed. The metric has
+a tree with ordered instances, in order to calculate the AUC efficiently.
+It was implemented based on the algorithm presented in Brzezinski and
+Stefanowski, 2017.</p>
+<p>The difference between this metric and the standard ROCAUC is that the latter
+calculates an approximation of the real metric considering all data from the
+beginning of the stream, while the RollingROCAUC calculates the exact value
+considering only the last S instances. This approach may be beneficial if
+it's necessary to evaluate the model's performance over time, since
+calculating the metric using the entire stream may hide the current
+performance of the classifier.</p>
+<p>Because the AUC is computed by ranking the scores within the window, this metric is invariant to
+the scale of <code>y_pred</code> and needs no normalization. This makes it convenient for anomaly-detector
+scores, which are unbounded — unlike <a href="../../metrics/ROCAUC"><code>metrics.ROCAUC</code></a>, whose thresholds assume <code>y_pred</code> lies in
+<code>\[0, 1\]</code>.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
@@ -5833,7 +5847,7 @@
 </li>
 <li>
 <p><strong>works_with_weights</strong></p>
-<p>Indicate whether the model takes into consideration the effect of sample weights</p>
+<p>Indicate whether the model takes into consideration the effect of sample weights.</p>
 </li>
 </ul>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
@@ -5888,7 +5902,7 @@
 <p><span /></p>
 <details class="- abstract">
 <summary>works_with</summary>
-<p>Indicates whether or not a metric can work with a given model.</p>
+<p>Indicate whether or not a metric can work with a given model.</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>model</strong>     — <code>base.Estimator</code>    </li>

@@ -4588,11 +4588,19 @@
 
 <h1 id="successivehalvingclassifier">SuccessiveHalvingClassifier<a class="headerlink" href="#successivehalvingclassifier" title="Permanent link">&para;</a></h1>
 <p>Successive halving algorithm for classification.</p>
-<p>Successive halving is a method for performing model selection without having to train each model on all the dataset. At certain points in time (called "rungs"), the worst performing will be discarded and the best ones will keep competing between each other. The rung values are designed so that at most <code>budget</code> model updates will be performed in total. </p>
-<p>If you have <code>k</code> combinations of hyperparameters and that your dataset contains <code>n</code> observations, then the maximal budget you can allocate is: </p>
+<p>Successive halving is a method for performing model selection without having to train each
+model on all the dataset. At certain points in time (called "rungs"), the worst performing will
+be discarded and the best ones will keep competing between each other. The rung values are
+designed so that at most <code>budget</code> model updates will be performed in total.</p>
+<p>If you have <code>k</code> combinations of hyperparameters and that your dataset contains <code>n</code>
+observations, then the maximal budget you can allocate is:</p>
 <div class="arithmatex">\[\frac{2kn}{eta}\]</div>
-<p>It is recommended that you check this beforehand. This bound can't be checked by the function because the size of the dataset is not known. In fact it is potentially infinite, in which case the algorithm will terminate once all the budget has been spent. </p>
-<p>If you have a budget of <code>B</code>, and that your dataset contains <code>n</code> observations, then the number of hyperparameter combinations that will spend all the budget and go through all the data is: </p>
+<p>It is recommended that you check this beforehand. This bound can't be checked by the function
+because the size of the dataset is not known. In fact it is potentially infinite, in which case
+the algorithm will terminate once all the budget has been spent.</p>
+<p>If you have a budget of <code>B</code>, and that your dataset contains <code>n</code> observations, then the
+number of hyperparameter combinations that will spend all the budget and go through all the
+data is:</p>
 <div class="arithmatex">\[\left\lceil\left\lfloor\frac{B}{2n}\right\rfloor \times eta \right\rceil\]</div>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>

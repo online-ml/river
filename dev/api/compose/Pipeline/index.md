@@ -156,7 +156,7 @@ True: 0.80779
 >
 > **debug\_one**
 >
-> Displays the state of a set of features as it goes through the pipeline.
+> Display the state of a set of features as it goes through the pipeline.
 >
 > **Parameters**
 >

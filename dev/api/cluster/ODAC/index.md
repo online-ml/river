@@ -121,7 +121,7 @@ model.summary
 >
 > **draw**
 >
-> Method to draw the hierarchical cluster's structure as a Graphviz graph.
+> Draw the hierarchical cluster's structure as a Graphviz graph.
 >
 > **Parameters**
 >
@@ -143,6 +143,8 @@ model.summary
 >
 > **predict\_one**
 >
+> Raise an error.
+>
 > This algorithm does not predict anything. It builds a hierarchical cluster's structure.
 >
 > **Parameters**
@@ -153,7 +155,7 @@ model.summary
 >
 > **render\_ascii**
 >
-> Method to render the hierarchical cluster's structure in text format.
+> Render the hierarchical cluster's structure in text format.
 >
 > **Parameters**
 >

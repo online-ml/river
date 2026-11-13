@@ -1,6 +1,6 @@
 # iter\_csv
 
-Iterates over rows from a CSV file.
+Iterate over rows from a CSV file.
 
 Reading CSV files can be quite slow. If, for whatever reason, you're going to loop through the same file multiple times, then we recommend that you to use the [`stream.Cache`](<https://riverml.xyz/dev/api/stream/Cache>) utility.
 

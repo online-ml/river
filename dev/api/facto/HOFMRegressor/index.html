@@ -4557,9 +4557,10 @@
 
 <h1 id="hofmregressor">HOFMRegressor<a class="headerlink" href="#hofmregressor" title="Permanent link">&para;</a></h1>
 <p>Higher-Order Factorization Machine for regression.</p>
-<p>The model equation is defined as: </p>
+<p>The model equation is defined as:</p>
 <div class="arithmatex">\[\hat{y}(x) = w_{0} + \sum_{j=1}^{p} w_{j} x_{j}  + \sum_{l=2}^{d} \sum_{j_1=1}^{p} \cdots \sum_{j_l=j_{l-1}+1}^{p} \left(\prod_{j'=1}^{l} x_{j_{j'}} \right) \left(\sum_{f=1}^{k_l} \prod_{j'=1}^{l} v_{j_{j'}, f}^{(l)} \right)\]</div>
-<p>For more efficiency, this model automatically one-hot encodes strings features considering them as categorical variables.</p>
+<p>For more efficiency, this model automatically one-hot encodes strings features considering
+them as categorical variables.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>

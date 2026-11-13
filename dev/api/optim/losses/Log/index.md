@@ -23,7 +23,7 @@ This loss function expects each provided `y_pred` to be a logit. In other words 
 >
 > ****call****
 >
-> Returns the loss.
+> Return the loss.
 >
 > **Parameters**
 >

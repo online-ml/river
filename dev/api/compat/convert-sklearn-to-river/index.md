@@ -1,6 +1,6 @@
 # convert\_sklearn\_to\_river
 
-Wraps a scikit-learn estimator to make it compatible with river.
+Wrap a scikit-learn estimator to make it compatible with river.
 
 ## Parameters
 

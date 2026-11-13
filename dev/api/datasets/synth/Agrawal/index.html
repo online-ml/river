@@ -5855,32 +5855,38 @@
 
 <h1 id="agrawal">Agrawal<a class="headerlink" href="#agrawal" title="Permanent link">&para;</a></h1>
 <p>Agrawal stream generator.</p>
-<p>The generator was introduced by Agrawal et al. <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>, and was a common source of data for early work on scaling up decision tree learners. The generator produces a stream containing nine features, six numeric and three categorical. There are 10 functions defined for generating binary class labels from the features. Presumably these determine whether the loan should be approved. Classification functions are listed in the original paper <sup id="fnref2:1"><a class="footnote-ref" href="#fn:1">1</a></sup>. </p>
-<p><strong>Feature</strong> | <strong>Description</strong> | <strong>Values</strong> </p>
+<p>The generator was introduced by Agrawal et al. <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>, and was a common
+source of data for early work on scaling up decision tree learners.
+The generator produces a stream containing nine features, six numeric and
+three categorical.
+There are 10 functions defined for generating binary class labels from the
+features. Presumably these determine whether the loan should be approved.
+Classification functions are listed in the original paper <sup id="fnref2:1"><a class="footnote-ref" href="#fn:1">1</a></sup>.</p>
+<p><strong>Feature</strong> | <strong>Description</strong> | <strong>Values</strong></p>
 <ul>
 <li>
-<p><code>salary</code> | salary | uniformly distributed from 20k to 150k </p>
+<p><code>salary</code> | salary | uniformly distributed from 20k to 150k</p>
 </li>
 <li>
-<p><code>commission</code> | commission | 0 if <code>salary</code> &lt; 75k else uniformly distributed from 10k to 75k </p>
+<p><code>commission</code> | commission | 0 if <code>salary</code> &lt; 75k else uniformly distributed from 10k to 75k</p>
 </li>
 <li>
-<p><code>age</code> | age | uniformly distributed from 20 to 80 </p>
+<p><code>age</code> | age | uniformly distributed from 20 to 80</p>
 </li>
 <li>
-<p><code>elevel</code> | education level | uniformly chosen from 0 to 4 </p>
+<p><code>elevel</code> | education level | uniformly chosen from 0 to 4</p>
 </li>
 <li>
-<p><code>car</code> | car maker | uniformly chosen from 1 to 20 </p>
+<p><code>car</code> | car maker | uniformly chosen from 1 to 20</p>
 </li>
 <li>
-<p><code>zipcode</code> | zip code of the town | uniformly chosen from 0 to 8 </p>
+<p><code>zipcode</code> | zip code of the town | uniformly chosen from 0 to 8</p>
 </li>
 <li>
-<p><code>hvalue</code> | house value | uniformly distributed from 50k x zipcode to 100k x zipcode </p>
+<p><code>hvalue</code> | house value | uniformly distributed from 50k x zipcode to 100k x zipcode</p>
 </li>
 <li>
-<p><code>hyears</code> | years house owned | uniformly distributed from 1 to 30 </p>
+<p><code>hyears</code> | years house owned | uniformly distributed from 1 to 30</p>
 </li>
 <li>
 <p><code>loan</code> | total loan amount | uniformly distributed from 0 to 500k</p>

@@ -1,6 +1,6 @@
 # iter\_sql
 
-Iterates over the results from an SQL query.
+Iterate over the results from an SQL query.
 
 By default, SQLAlchemy prefetches results. Therefore, even though you can iterate over the resulting rows one by one, the results are in fact loaded in batch. You can modify this behavior by configuring the connection you pass to `iter_sql`. For instance, you can set the `stream_results` parameter to `True`, as [explained in SQLAlchemy's documentation](<https://docs.sqlalchemy.org/en/20/core/connections.html#sqlalchemy.engine.Connection.execution_options>). Note, however, that this isn't available for all database engines.
 

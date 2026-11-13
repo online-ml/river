@@ -1,6 +1,6 @@
 # DBSTREAM
 
-DBSTREAM
+The DBSTREAM algorithm.
 
 DBSTREAM [^/dev/api/cluster/DBSTREAM/#1] is a clustering algorithm for evolving data streams. It is the first micro-cluster-based online clustering component that explicitly captures the density between micro-clusters via a shared density graph. The density information in the graph is then exploited for reclustering based on actual density between adjacent micro clusters.
 

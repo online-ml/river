@@ -4586,27 +4586,27 @@
 
 <h1 id="snarimax">SNARIMAX<a class="headerlink" href="#snarimax" title="Permanent link">&para;</a></h1>
 <p>SNARIMAX model.</p>
-<p>SNARIMAX stands for (S)easonal (N)on-linear (A)uto(R)egressive (I)ntegrated (M)oving-(A)verage with e(X)ogenous inputs model. </p>
-<p>This model generalizes many established time series models in a single interface that can be trained online. It assumes that the provided training data is ordered in time and is uniformly spaced. It is made up of the following components: </p>
+<p>SNARIMAX stands for (S)easonal (N)on-linear (A)uto(R)egressive (I)ntegrated (M)oving-(A)verage
+with e(X)ogenous inputs model.</p>
+<p>This model generalizes many established time series models in a single interface that can be
+trained online. It assumes that the provided training data is ordered in time and is uniformly
+spaced. It is made up of the following components:</p>
 <ul>
-<li>
-<p>S (Seasonal)</p>
-</li>
-<li>
-<p>N (Non-linear): Any online regression model can be used, not necessarily a linear regression</p>
-<p>as is done in textbooks. - AR (Autoregressive): Lags of the target variable are used as features.</p>
-</li>
-<li>
-<p>I (Integrated): The model can be fitted on a differenced version of a time series. In this</p>
-<p>context, integration is the reverse of differencing. - MA (Moving average): Lags of the errors are used as features.</p>
-</li>
-<li>
-<p>X (Exogenous): Users can provide additional features. Care has to be taken to include</p>
-<p>features that will be available both at training and prediction time. </p>
-</li>
+<li>S (Seasonal)</li>
+<li>N (Non-linear): Any online regression model can be used, not necessarily a linear regression
+    as is done in textbooks.</li>
+<li>AR (Autoregressive): Lags of the target variable are used as features.</li>
+<li>I (Integrated): The model can be fitted on a differenced version of a time series. In this
+    context, integration is the reverse of differencing.</li>
+<li>MA (Moving average): Lags of the errors are used as features.</li>
+<li>X (Exogenous): Users can provide additional features. Care has to be taken to include
+    features that will be available both at training and prediction time.</li>
 </ul>
-<p>Each of these components can be switched on and off by specifying the appropriate parameters. Classical time series models such as AR, MA, ARMA, and ARIMA can thus be seen as special parametrizations of the SNARIMAX model. </p>
-<p>This model is tailored for time series that are homoskedastic. In other words, it might not work well if the variance of the time series varies widely along time.</p>
+<p>Each of these components can be switched on and off by specifying the appropriate parameters.
+Classical time series models such as AR, MA, ARMA, and ARIMA can thus be seen as special
+parametrizations of the SNARIMAX model.</p>
+<p>This model is tailored for time series that are homoskedastic. In other words, it might not
+work well if the variance of the time series varies widely along time.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
@@ -4775,7 +4775,7 @@ built at each step.</p>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <details class="- abstract">
 <summary>forecast</summary>
-<p>Makes forecast at each step of the given horizon.</p>
+<p>Make a forecast at each step of the given horizon.</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>horizon</strong>     — <code>int</code>    </li>
@@ -4785,7 +4785,7 @@ built at each step.</p>
 <p><span /></p>
 <details class="- abstract">
 <summary>learn_one</summary>
-<p>Updates the model.</p>
+<p>Update the model.</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>y</strong>     — <code>float</code>    </li>

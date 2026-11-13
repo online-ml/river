@@ -4714,8 +4714,12 @@
 
 <h1 id="evaluate_offline">evaluate_offline<a class="headerlink" href="#evaluate_offline" title="Permanent link">&para;</a></h1>
 <p>Evaluate a policy on historical logs using replay.</p>
-<p>This is a high-level utility function for evaluating a policy using the replay methodology. This methodology is an off-policy evaluation method. It does not require an environment, and is instead data-driven. </p>
-<p>At each step, an arm is pulled from the provided policy. If the arm is the same as the arm that was pulled in the historical data, the reward is used to update the policy. If the arm is different, the reward is ignored. This is the off-policy aspect of the evaluation.</p>
+<p>This is a high-level utility function for evaluating a policy using the replay methodology.
+This methodology is an off-policy evaluation method. It does not require an environment, and is
+instead data-driven.</p>
+<p>At each step, an arm is pulled from the provided policy. If the arm is the same as the arm
+that was pulled in the historical data, the reward is used to update the policy. If the arm is
+different, the reward is ignored. This is the off-policy aspect of the evaluation.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>

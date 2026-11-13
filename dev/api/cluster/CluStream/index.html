@@ -4507,28 +4507,40 @@
 
 
 <h1 id="clustream">CluStream<a class="headerlink" href="#clustream" title="Permanent link">&para;</a></h1>
-<p>CluStream</p>
-<p>The CluStream algorithm <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> maintains statistical information about the data using micro-clusters. These micro-clusters are temporal extensions of cluster feature vectors. The micro-clusters are stored at snapshots in time following a pyramidal pattern. This pattern allows to recall summary statistics from different time horizons. </p>
-<p>Training with a new point <code>p</code> is performed in two main tasks: </p>
+<p>The CluStream algorithm.</p>
+<p>The CluStream algorithm <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> maintains statistical information about the
+data using micro-clusters. These micro-clusters are temporal extensions of
+cluster feature vectors. The micro-clusters are stored at snapshots in time
+following a pyramidal pattern. This pattern allows to recall summary
+statistics from different time horizons.</p>
+<p>Training with a new point <code>p</code> is performed in two main tasks:</p>
 <ul>
 <li>
-<p>Determinate the closest micro-cluster to <code>p</code>. </p>
+<p>Determinate the closest micro-cluster to <code>p</code>.</p>
 </li>
 <li>
-<p>Check whether <code>p</code> fits (memory) into the closest micro-cluster: </p>
+<p>Check whether <code>p</code> fits (memory) into the closest micro-cluster:</p>
 <ul>
 <li>
 <p>if <code>p</code> fits, put into micro-cluster</p>
 </li>
 <li>
-<p>if <code>p</code> does not fit, free some space to insert a new micro-cluster.</p>
+<p>if <code>p</code> does not fit, free some space to insert a new micro-cluster.
+  This is done in two ways, delete an old micro-cluster or merge the
+  two micro-clusters closest to each other.</p>
 </li>
 </ul>
-<p>This is done in two ways, delete an old micro-cluster or merge the       two micro-clusters closest to each other. </p>
 </li>
 </ul>
-<p>This implementation is an improved version from the original algorithm. Instead of calculating the traditional cluster feature vector of the number of observations, linear sum and sum of squares of data points and time stamps, this implementation adopts the use of Welford's algorithm <sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup> to calculate the incremental variance, facilitated through <a href="../../stats/Var"><code>stats.Var</code></a> available within River. </p>
-<p>Since River does not support an actual "off-line" phase of the clustering algorithm (as data points are assumed to arrive continuously, one at a time), a <code>time_gap</code> parameter is introduced. After each <code>time_gap</code>, an incremental K-Means clustering algorithm will be initialized and applied on currently available micro-clusters to form the final solution, i.e. macro-clusters.</p>
+<p>This implementation is an improved version from the original algorithm. Instead
+of calculating the traditional cluster feature vector of the number of observations,
+linear sum and sum of squares of data points and time stamps, this implementation adopts
+the use of Welford's algorithm <sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup> to calculate the incremental variance, facilitated
+through <a href="../../stats/Var"><code>stats.Var</code></a> available within River.</p>
+<p>Since River does not support an actual "off-line" phase of the clustering algorithm (as data
+points are assumed to arrive continuously, one at a time), a <code>time_gap</code> parameter is introduced.
+After each <code>time_gap</code>, an incremental K-Means clustering algorithm will be initialized and
+applied on currently available micro-clusters to form the final solution, i.e. macro-clusters.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>

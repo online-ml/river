@@ -8,7 +8,7 @@ A loss appropriate for regression tasks.
 >
 > ****call****
 >
-> Returns the loss.
+> Return the loss.
 >
 > **Parameters**
 >

@@ -4405,20 +4405,32 @@
 
 <h1 id="swinn">SWINN<a class="headerlink" href="#swinn" title="Permanent link">&para;</a></h1>
 <p>Sliding WIndow-based Nearest Neighbor (SWINN) search using Graphs.</p>
-<p>Extends the NNDescent algorithm<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> to handle vertex addition and removal in a FIFO data ingestion policy. SWINN builds and keeps a directed graph where edges connect the nearest neighbors. Any distance metric can be used to build the graph. By using a directed graph, the user must set the desired number of neighbors. More neighbors imply more accurate search queries at the cost of increased running time and memory usage. Note that although the number of directed neighbors is limited by the user, there is no direct control on the number of reverse neighbors, i.e., the number of vertices that have an edge to a given vertex. </p>
-<p>The basic idea of SWINN and NNDescent is that "the neighbor of my neighbors might as well be my neighbor". Hence, the connections are constantly revisited to improve the graph structure. The algorithm for creating and maintaining the search graph can be described in general lines as follows: </p>
+<p>Extends the NNDescent algorithm<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> to handle vertex addition and removal in a FIFO data
+ingestion policy. SWINN builds and keeps a directed graph where edges connect the nearest
+neighbors. Any distance metric can be used to build the graph. By using a directed graph,
+the user must set the desired number of neighbors. More neighbors imply more accurate
+search queries at the cost of increased running time and memory usage. Note that although
+the number of directed neighbors is limited by the user, there is no direct control on the
+number of reverse neighbors, i.e., the number of vertices that have an edge to a given vertex.</p>
+<p>The basic idea of SWINN and NNDescent is that "the neighbor of my neighbors might as well be
+my neighbor". Hence, the connections are constantly revisited to improve the graph structure.
+The algorithm for creating and maintaining the search graph can be described
+in general lines as follows:</p>
 <ul>
 <li>
-<p>Start with a random neighborhood graph; </p>
+<p>Start with a random neighborhood graph;</p>
 </li>
 <li>
-<p>For each node in the search graph: refine the current neighborhood by checking if there are better neighborhood options among the neighbors of the current neighbors; </p>
+<p>For each node in the search graph: refine the current neighborhood by checking if there
+are better neighborhood options among the neighbors of the current neighbors;</p>
 </li>
 <li>
-<p>If the total number of neighborhood changes is smaller than a given stopping criterion, then stop. </p>
+<p>If the total number of neighborhood changes is smaller than a given stopping criterion, then stop.</p>
 </li>
 </ul>
-<p>SWINN adds strategies to remove vertices from the search graph and pruning redundant edges. SWINN is more efficient when the selected <code>maxlen</code> is greater than 500. For small sized data windows, using the lazy/exhaustive search, i.e., <a href="../../neighbors/LazySearch"><code>neighbors.LazySearch</code></a> might be a better idea.</p>
+<p>SWINN adds strategies to remove vertices from the search graph and pruning redundant edges. SWINN is
+more efficient when the selected <code>maxlen</code> is greater than 500. For small sized data windows, using
+the lazy/exhaustive search, i.e., <a href="../../neighbors/LazySearch"><code>neighbors.LazySearch</code></a> might be a better idea.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>

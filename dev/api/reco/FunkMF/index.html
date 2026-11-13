@@ -4505,10 +4505,11 @@
 
 <h1 id="funkmf">FunkMF<a class="headerlink" href="#funkmf" title="Permanent link">&para;</a></h1>
 <p>Funk Matrix Factorization for recommender systems.</p>
-<p>The model equation is defined as: </p>
+<p>The model equation is defined as:</p>
 <div class="arithmatex">\[\hat{y}(x) = \langle \mathbf{v}_u, \mathbf{v}_i \rangle = \sum_{f=1}^{k} \mathbf{v}_{u, f} \cdot \mathbf{v}_{i, f}\]</div>
-<p>where <span class="arithmatex">\(k\)</span> is the number of latent factors. </p>
-<p>This model expects a dict input with a <code>user</code> and an <code>item</code> entries without any type constraint on their values (i.e. can be strings or numbers). Other entries are ignored.</p>
+<p>where <span class="arithmatex">\(k\)</span> is the number of latent factors.</p>
+<p>This model expects a dict input with a <code>user</code> and an <code>item</code> entries without any type
+constraint on their values (i.e. can be strings or numbers). Other entries are ignored.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>

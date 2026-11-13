@@ -1,6 +1,6 @@
 # Bitcoin
 
-Bitcoin Market Price
+Bitcoin Market Price.
 
 This is a regression task, where the goal is to predict the average USD market price across major bitcoin exchanges. This data was collected from the official Blockchain website. There is only one feature given, the day of exchange, which is in increments of three. The first 500 lines have been removed because they are not interesting.
 

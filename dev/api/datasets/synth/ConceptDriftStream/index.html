@@ -5855,8 +5855,14 @@
 
 <h1 id="conceptdriftstream">ConceptDriftStream<a class="headerlink" href="#conceptdriftstream" title="Permanent link">&para;</a></h1>
 <p>Generates a stream with concept drift.</p>
-<p>A stream generator that adds concept drift or change by joining two streams. This is done by building a weighted combination of two pure distributions that characterizes the target concepts before and after the change. </p>
-<p>The sigmoid function is an elegant and practical solution to define the probability that each new instance of the stream belongs to the new concept after the drift. The sigmoid function introduces a gradual, smooth transition whose duration is controlled with two parameters: </p>
+<p>A stream generator that adds concept drift or change by joining two
+streams. This is done by building a weighted combination of two pure
+distributions that characterizes the target concepts before and after
+the change.</p>
+<p>The sigmoid function is an elegant and practical solution to define the
+probability that each new instance of the stream belongs to the new
+concept after the drift. The sigmoid function introduces a gradual, smooth
+transition whose duration is controlled with two parameters:</p>
 <ul>
 <li>
 <p><span class="arithmatex">\(p\)</span>, the position of the change.</p>
@@ -5865,7 +5871,7 @@
 <p><span class="arithmatex">\(w\)</span>, the width of the transition.</p>
 </li>
 </ul>
-<p>The sigmoid function at sample <span class="arithmatex">\(t\)</span> is </p>
+<p>The sigmoid function at sample <span class="arithmatex">\(t\)</span> is</p>
 <div class="arithmatex">\[f(t) = 1/(1+e^{-4(t-p)/w})\]</div>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>

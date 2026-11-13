@@ -1,6 +1,6 @@
 # STREAMKMeans
 
-STREAMKMeans
+The STREAMKMeans algorithm.
 
 STREAMKMeans is an alternative version of the original algorithm STREAMLSEARCH proposed by O'Callaghan et al. [^/dev/api/cluster/STREAMKMeans/#1], by replacing the k-medians using `LSEARCH` by the k-means algorithm.
 
@@ -11,10 +11,7 @@ At first, the cluster centers are initialized with a `KMeans` instance. For a ne
 - If the size of chunk is less than the maximum size allowed, add the new point to the temporary chunk.
 - When the size of chunk reaches the maximum value size allowed
 
-  - A new incremental `KMeans` instance is created. The latter will process all points in the
-
-  temporary chunk. The centers of this new instance then become the new centers.
-
+  - A new incremental `KMeans` instance is created. The latter will process all points in the temporary chunk. The centers of this new instance then become the new centers.
   - All points are deleted from the temporary chunk so that new points can be added.
 - When a prediction request arrives, the centers of the algorithm will be exactly the same as the centers of the original `KMeans` at the time of retrieval.
 

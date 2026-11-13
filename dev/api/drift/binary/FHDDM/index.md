@@ -28,7 +28,7 @@ For example, if a classifier's prediction \\(y'\\) is right or wrong w.r.t. the 
 
   *Default* → `1e-06`
 
-  Confidence level used to determine the epsilon coefficient in Hoeffding’s inequality. The default value gives a 99\\% of confidence level to the drift assessment.
+  Confidence level used to determine the epsilon coefficient in Hoeffding’s inequality. The default value gives a 99% of confidence level to the drift assessment.
 - **short\_window\_size**
 
   *Type* → `int | None`

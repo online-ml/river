@@ -1,6 +1,6 @@
 # print\_table
 
-Pretty-prints a table.
+Pretty-print a table.
 
 ## Parameters
 

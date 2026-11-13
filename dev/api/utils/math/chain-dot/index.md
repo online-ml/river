@@ -1,6 +1,6 @@
 # chain\_dot
 
-Returns the dot product of multiple vectors represented as dicts.
+Return the dot product of multiple vectors represented as dicts.
 
 ## Examples
 

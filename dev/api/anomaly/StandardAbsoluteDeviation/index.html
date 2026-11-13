@@ -4540,9 +4540,14 @@
 
 <h1 id="standardabsolutedeviation">StandardAbsoluteDeviation<a class="headerlink" href="#standardabsolutedeviation" title="Permanent link">&para;</a></h1>
 <p>Standard Absolute Deviation (SAD).</p>
-<p>SAD is the model that calculates the anomaly score by using the deviation from the mean/median, divided by the standard deviation of all the points seen within the data stream. The idea of this model is based on the <span class="arithmatex">\(3 \times \sigma\)</span> rule described in <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>. </p>
-<p>This implementation is adapted from the <a href="https://github.com/selimfirat/pysad/blob/master/pysad/models/standard_absolute_deviation.py">implementation</a> within PySAD (Python Streaming Anomaly Detection) <sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup>. </p>
-<p>As a univariate anomaly detection algorithm, this implementation is adapted to <code>River</code> in a similar way as that of the <code>GaussianScorer</code> algorithm, with the variable taken into the account at the learning phase and scoring phase under variable <code>y</code>, ignoring <code>x</code>.</p>
+<p>SAD is the model that calculates the anomaly score by using the deviation from the mean/median, divided by the
+standard deviation of all the points seen within the data stream. The idea of this model is based on
+the <span class="arithmatex">\(3 \times \sigma\)</span> rule described in <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>.</p>
+<p>This implementation is adapted from the <a href="https://github.com/selimfirat/pysad/blob/master/pysad/models/standard_absolute_deviation.py">implementation</a>
+within PySAD (Python Streaming Anomaly Detection) <sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup>.</p>
+<p>As a univariate anomaly detection algorithm, this implementation is adapted to <code>River</code> in a similar way as that of
+the <code>GaussianScorer</code> algorithm, with the variable taken into the account at the learning phase and scoring phase
+under variable <code>y</code>, ignoring <code>x</code>.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>

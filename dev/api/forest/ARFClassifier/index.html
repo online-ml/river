@@ -4454,19 +4454,23 @@
 
 <h1 id="arfclassifier">ARFClassifier<a class="headerlink" href="#arfclassifier" title="Permanent link">&para;</a></h1>
 <p>Adaptive Random Forest classifier.</p>
-<p>The 3 most important aspects of Adaptive Random Forest <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> are: </p>
+<p>The 3 most important aspects of Adaptive Random Forest <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> are:</p>
 <ol>
 <li>
-<p>inducing diversity through re-sampling </p>
+<p>inducing diversity through re-sampling</p>
 </li>
 <li>
-<p>inducing diversity through randomly selecting subsets of features for    node splits </p>
+<p>inducing diversity through randomly selecting subsets of features for
+   node splits</p>
 </li>
 <li>
-<p>drift detectors per base tree, which cause selective resets in response    to drifts </p>
+<p>drift detectors per base tree, which cause selective resets in response
+   to drifts</p>
 </li>
 </ol>
-<p>It also allows training background trees, which start training if a warning is detected and replace the active tree if the warning escalates to a drift.</p>
+<p>It also allows training background trees, which start training if a
+warning is detected and replace the active tree if the warning escalates
+to a drift.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>

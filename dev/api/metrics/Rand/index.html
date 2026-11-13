@@ -5805,23 +5805,31 @@
 
 <h1 id="rand">Rand<a class="headerlink" href="#rand" title="Permanent link">&para;</a></h1>
 <p>Rand Index.</p>
-<p>The Rand Index <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> <sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup> is a measure of the similarity between two data clusterings. Given a set of elements <code>S</code> and two partitions of <code>S</code> to compare, <code>X</code> and <code>Y</code>, define the following: </p>
+<p>The Rand Index <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> <sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup> is a measure of the similarity between two data clusterings.
+Given a set of elements <code>S</code> and two partitions of <code>S</code> to compare, <code>X</code> and <code>Y</code>,
+define the following:</p>
 <ul>
 <li>
-<p>a, the number of pairs of elements in <code>S</code> that are in the <strong>same</strong> subset in <code>X</code> and in the <strong>same</strong> subset in <code>Y</code> </p>
+<p>a, the number of pairs of elements in <code>S</code> that are in the <strong>same</strong> subset in <code>X</code>
+and in the <strong>same</strong> subset in <code>Y</code></p>
 </li>
 <li>
-<p>b, the number of pairs of elements in <code>S</code> that are in the <strong>different</strong> subset in <code>X</code> and in <strong>different</strong> subsets in <code>Y</code> </p>
+<p>b, the number of pairs of elements in <code>S</code> that are in the <strong>different</strong> subset in <code>X</code>
+and in <strong>different</strong> subsets in <code>Y</code></p>
 </li>
 <li>
-<p>c, the number of pairs of elements in <code>S</code> that are in the <strong>same</strong> subset in <code>X</code> and in <strong>different</strong> subsets in <code>Y</code> </p>
+<p>c, the number of pairs of elements in <code>S</code> that are in the <strong>same</strong> subset in <code>X</code>
+and in <strong>different</strong> subsets in <code>Y</code></p>
 </li>
 <li>
-<p>d, the number of pairs of elements in <code>S</code> that are in the <strong>different</strong> subset in <code>X</code> and in the <strong>same</strong> subset in <code>Y</code> </p>
+<p>d, the number of pairs of elements in <code>S</code> that are in the <strong>different</strong> subset in <code>X</code>
+and in the <strong>same</strong> subset in <code>Y</code></p>
 </li>
 </ul>
-<p>The Rand index, R, is </p>
-<div class="arithmatex">\[ R = rac{a+b}{a+b+c+d} = rac{a+b}{rac{n(n-1)}{2}}. \]</div>
+<p>The Rand index, R, is</p>
+<div class="arithmatex">\[
+R = \frac{a+b}{a+b+c+d} = \frac{a+b}{\frac{n(n-1)}{2}}.
+\]</div>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
@@ -5842,7 +5850,7 @@
 </li>
 <li>
 <p><strong>works_with_weights</strong></p>
-<p>Indicate whether the model takes into consideration the effect of sample weights</p>
+<p>Indicate whether the model takes into consideration the effect of sample weights.</p>
 </li>
 </ul>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
@@ -5899,7 +5907,7 @@
 <p><span /></p>
 <details class="- abstract">
 <summary>works_with</summary>
-<p>Indicates whether or not a metric can work with a given model.</p>
+<p>Indicate whether or not a metric can work with a given model.</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>model</strong>     — <code>base.Estimator</code>    </li>

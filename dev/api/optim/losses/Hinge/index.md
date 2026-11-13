@@ -8,7 +8,7 @@ Mathematically, it is defined as
 
 Its gradient w.r.t. to \\(p\_i\\) is
 
-\\\[ \\\\frac{\\\\partial L}{\\\\partial y\_i} = \\\\left\\{ \\\\begin{array}{ll} \\\\ 0 &amp; p\_iy\_i \\geqslant 1 \\\\\\\\ \\\\ - y\_i &amp; p\_iy\_i \< 1 \\\\end{array} \\\\right. \\\]
+\\\[ \\frac{\\partial L}{\\partial y\_i} = \\left\\{ \\begin{array}{ll} \\ 0 &amp; p\_iy\_i \\geqslant 1 \\\\ \\ - y\_i &amp; p\_iy\_i \< 1 \\end{array} \\right. \\\]
 
 ## Parameters
 
@@ -47,7 +47,7 @@ loss.gradient(1, .2)
 >
 > ****call****
 >
-> Returns the loss.
+> Return the loss.
 >
 > **Parameters**
 >

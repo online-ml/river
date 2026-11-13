@@ -4675,8 +4675,13 @@
 
 <h1 id="shuffle">shuffle<a class="headerlink" href="#shuffle" title="Permanent link">&para;</a></h1>
 <p>Shuffles a stream of data.</p>
-<p>This works by maintaining a buffer of elements. The first <code>buffer_size</code> elements are stored in memory. Once the buffer is full, a random element inside the buffer is yielded. Every time an element is yielded, the next element in the stream replaces it and the buffer is sampled again. Increasing <code>buffer_size</code> will improve the quality of the shuffling. </p>
-<p>If you really want to stream over your dataset in a "good" random order, the best way is to split your dataset into smaller datasets and loop over them in a round-robin fashion. You may do this by using the <code>roundrobin</code> recipe from the <code>itertools</code> module.</p>
+<p>This works by maintaining a buffer of elements. The first <code>buffer_size</code> elements are stored in
+memory. Once the buffer is full, a random element inside the buffer is yielded. Every time an
+element is yielded, the next element in the stream replaces it and the buffer is sampled again.
+Increasing <code>buffer_size</code> will improve the quality of the shuffling.</p>
+<p>If you really want to stream over your dataset in a "good" random order, the best way is to
+split your dataset into smaller datasets and loop over them in a round-robin fashion. You may
+do this by using the <code>roundrobin</code> recipe from the <code>itertools</code> module.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>

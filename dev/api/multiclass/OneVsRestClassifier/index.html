@@ -4400,9 +4400,14 @@
 
 <h1 id="onevsrestclassifier">OneVsRestClassifier<a class="headerlink" href="#onevsrestclassifier" title="Permanent link">&para;</a></h1>
 <p>One-vs-the-rest (OvR) multiclass strategy.</p>
-<p>This strategy consists in fitting one binary classifier per class. Because we are in a streaming context, the number of classes isn't known from the start. Hence, new classifiers are instantiated on the fly. Likewise, the predicted probabilities will only include the classes seen up to a given point in time. </p>
-<p>Note that this classifier supports mini-batches as well as single instances. </p>
-<p>The computational complexity for both learning and predicting grows linearly with the number of classes. If you have a very large number of classes, then you might want to consider using an <a href="../../multiclass/OutputCodeClassifier"><code>multiclass.OutputCodeClassifier</code></a> instead.</p>
+<p>This strategy consists in fitting one binary classifier per class. Because we are in a
+streaming context, the number of classes isn't known from the start. Hence, new classifiers are
+instantiated on the fly. Likewise, the predicted probabilities will only include the classes
+seen up to a given point in time.</p>
+<p>Note that this classifier supports mini-batches as well as single instances.</p>
+<p>The computational complexity for both learning and predicting grows linearly with the number of
+classes. If you have a very large number of classes, then you might want to consider using an
+<a href="../../multiclass/OutputCodeClassifier"><code>multiclass.OutputCodeClassifier</code></a> instead.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>

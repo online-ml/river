@@ -4476,8 +4476,16 @@
 
 <h1 id="oxtregressor">OXTRegressor<a class="headerlink" href="#oxtregressor" title="Permanent link">&para;</a></h1>
 <p>Online Extra Trees regressor.</p>
-<p>The online Extra Trees<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> ensemble takes some steps further into randomization when compared to Adaptive Random Forests (ARF). A subspace of the feature space is considered at each split attempt, as ARF does, and online bagging or subbagging can also be (optionally) used. Nonetheless, Extra Trees randomizes the split candidates evaluated by each leaf node (just a single split is tested by numerical feature, which brings significant speedups to the ensemble), and might also randomize the maximum depth of the forest members, as well as the size of the feature subspace processed by each of its trees' leaves. </p>
-<p>On the other hand, OXT suffers from a cold-start problem. As the splits are random, the predictive performance in small samples is usually worse than using a deterministic split approach, such as the one used by ARF.</p>
+<p>The online Extra Trees<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> ensemble takes some steps further into randomization when
+compared to Adaptive Random Forests (ARF). A subspace of the feature space is considered
+at each split attempt, as ARF does, and online bagging or subbagging can also be
+(optionally) used. Nonetheless, Extra Trees randomizes the split candidates evaluated by each
+leaf node (just a single split is tested by numerical feature, which brings significant
+speedups to the ensemble), and might also randomize the maximum depth of the forest members,
+as well as the size of the feature subspace processed by each of its trees' leaves.</p>
+<p>On the other hand, OXT suffers from a cold-start problem. As the splits are random, the
+predictive performance in small samples is usually worse than using a deterministic
+split approach, such as the one used by ARF.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>

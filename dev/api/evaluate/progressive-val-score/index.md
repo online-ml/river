@@ -1,6 +1,6 @@
 # progressive\_val\_score
 
-Evaluates the performance of a model on a streaming dataset.
+Evaluate the performance of a model on a streaming dataset.
 
 This method is the canonical way to evaluate a model's performance. When used correctly, it allows you to exactly assess how a model would have performed in a production scenario.
 

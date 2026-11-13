@@ -4584,9 +4584,16 @@
 
 <h1 id="halfspacetrees">HalfSpaceTrees<a class="headerlink" href="#halfspacetrees" title="Permanent link">&para;</a></h1>
 <p>Half-Space Trees (HST).</p>
-<p>Half-space trees are an online variant of isolation forests. They work well when anomalies are spread out. However, they do not work well if anomalies are packed together in windows. </p>
-<p>By default, this implementation assumes that each feature has values that are comprised between 0 and 1. If this isn't the case, then you can manually specify the limits via the <code>limits</code> argument. If you do not know the limits in advance, then you can use a <a href="../../preprocessing/MinMaxScaler"><code>preprocessing.MinMaxScaler</code></a> as an initial preprocessing step. </p>
-<p>The current implementation builds the trees the first time the <code>learn_one</code> method is called. Therefore, the first <code>learn_one</code> call might be slow, whereas subsequent calls will be very fast in comparison. In general, the computation time of both <code>learn_one</code> and <code>score_one</code> scales linearly with the number of trees, and exponentially with the height of each tree. </p>
+<p>Half-space trees are an online variant of isolation forests. They work well when anomalies are
+spread out. However, they do not work well if anomalies are packed together in windows.</p>
+<p>By default, this implementation assumes that each feature has values that are comprised
+between 0 and 1. If this isn't the case, then you can manually specify the limits via the
+<code>limits</code> argument. If you do not know the limits in advance, then you can use a
+<a href="../../preprocessing/MinMaxScaler"><code>preprocessing.MinMaxScaler</code></a> as an initial preprocessing step.</p>
+<p>The current implementation builds the trees the first time the <code>learn_one</code> method is called.
+Therefore, the first <code>learn_one</code> call might be slow, whereas subsequent calls will be very fast
+in comparison. In general, the computation time of both <code>learn_one</code> and <code>score_one</code> scales
+linearly with the number of trees, and exponentially with the height of each tree.</p>
 <p>Note that high scores indicate anomalies, whereas low scores indicate normal observations.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
@@ -4622,7 +4629,7 @@
 <ul>
 <li>
 <p><strong>size_limit</strong></p>
-<p>This is the threshold under which the node search stops during the scoring phase.  The value .1 is a magic constant indicated in the original paper.</p>
+<p>Threshold under which the node search stops during the scoring phase.  The value .1 is a magic constant indicated in the original paper.</p>
 </li>
 </ul>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>

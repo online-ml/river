@@ -5805,13 +5805,25 @@
 
 <h1 id="mutualinfo">MutualInfo<a class="headerlink" href="#mutualinfo" title="Permanent link">&para;</a></h1>
 <p>Mutual Information between two clusterings.</p>
-<p>The Mutual Information <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> is a measure of the similarity between two labels of the same data. Where <span class="arithmatex">\(|U_i|\)</span> is the number of samples in cluster <span class="arithmatex">\(U_i\)</span> and <span class="arithmatex">\(|V_j|\)</span> is the number of the samples in cluster <span class="arithmatex">\(V_j\)</span>, the Mutual Information between clusterings <span class="arithmatex">\(U\)</span> and <span class="arithmatex">\(V\)</span> can be calculated as: </p>
-<div class="arithmatex">\[ MI(U,V) = \sum_{i=1}^{|U|} \sum_{v=1}^{|V|} \frac{|U_i \cup V_j|}{N} \log \frac{N |U_i \cup V_j|}{|U_i| |V_j|} \]</div>
-<p>This metric is independent of the absolute values of the labels: a permutation of the class or cluster label values won't change the score. </p>
-<p>This metric is furthermore symmetric: switching <code>y_true</code> and <code>y_pred</code> will return the same score value. This can be useful to measure the agreement of two independent label assignments strategies on the same dataset when the real ground truth is not known. </p>
-<p>The Mutual Information can be equivalently expressed as: </p>
-<div class="arithmatex">\[ MI(U,V) = H(U) - H(U | V) = H(V) - H(V | U) \]</div>
-<p>where <span class="arithmatex">\(H(U)\)</span> and <span class="arithmatex">\(H(V)\)</span> are the marginal entropies, <span class="arithmatex">\(H(U | V)\)</span> and <span class="arithmatex">\(H(V | U)\)</span> are the conditional entropies.</p>
+<p>The Mutual Information <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> is a measure of the similarity between two labels of
+the same data. Where <span class="arithmatex">\(|U_i|\)</span> is the number of samples in cluster <span class="arithmatex">\(U_i\)</span> and <span class="arithmatex">\(|V_j|\)</span>
+is the number of the samples in cluster <span class="arithmatex">\(V_j\)</span>, the Mutual Information between
+clusterings <span class="arithmatex">\(U\)</span> and <span class="arithmatex">\(V\)</span> can be calculated as:</p>
+<div class="arithmatex">\[
+MI(U,V) = \sum_{i=1}^{|U|} \sum_{v=1}^{|V|} \frac{|U_i \cup V_j|}{N} \log \frac{N |U_i \cup V_j|}{|U_i| |V_j|}
+\]</div>
+<p>This metric is independent of the absolute values of the labels: a permutation
+of the class or cluster label values won't change the score.</p>
+<p>This metric is furthermore symmetric: switching <code>y_true</code> and <code>y_pred</code> will return
+the same score value. This can be useful to measure the agreement of two independent
+label assignments strategies on the same dataset when the real ground truth is
+not known.</p>
+<p>The Mutual Information can be equivalently expressed as:</p>
+<div class="arithmatex">\[
+MI(U,V) = H(U) - H(U | V) = H(V) - H(V | U)
+\]</div>
+<p>where <span class="arithmatex">\(H(U)\)</span> and <span class="arithmatex">\(H(V)\)</span> are the marginal entropies, <span class="arithmatex">\(H(U | V)\)</span> and <span class="arithmatex">\(H(V | U)\)</span> are the
+conditional entropies.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
@@ -5832,7 +5844,7 @@
 </li>
 <li>
 <p><strong>works_with_weights</strong></p>
-<p>Indicate whether the model takes into consideration the effect of sample weights</p>
+<p>Indicate whether the model takes into consideration the effect of sample weights.</p>
 </li>
 </ul>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
@@ -5896,7 +5908,7 @@
 <p><span /></p>
 <details class="- abstract">
 <summary>works_with</summary>
-<p>Indicates whether or not a metric can work with a given model.</p>
+<p>Indicate whether or not a metric can work with a given model.</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>model</strong>     — <code>base.Estimator</code>    </li>

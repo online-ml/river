@@ -4564,13 +4564,16 @@
 
 <h1 id="holtwinters">HoltWinters<a class="headerlink" href="#holtwinters" title="Permanent link">&para;</a></h1>
 <p>Holt-Winters forecaster.</p>
-<p>This is a standard implementation of the Holt-Winters forecasting method. Certain parametrisations result in special cases, such as simple exponential smoothing. </p>
-<p>Optimal parameters and initialisation values can be determined in a batch setting. However, in an online setting, it is necessary to wait and observe enough values. The first <code>k = max(2, seasonality)</code> values are indeed used to initialize the components. </p>
-<p><strong>Level initialization</strong> </p>
+<p>This is a standard implementation of the Holt-Winters forecasting method. Certain
+parametrisations result in special cases, such as simple exponential smoothing.</p>
+<p>Optimal parameters and initialisation values can be determined in a batch setting. However, in
+an online setting, it is necessary to wait and observe enough values. The first
+<code>k = max(2, seasonality)</code> values are indeed used to initialize the components.</p>
+<p><strong>Level initialization</strong></p>
 <div class="arithmatex">\[l = \frac{1}{k} \sum_{i=1}{k} y_i\]</div>
-<p><strong>Trend initialization</strong> </p>
+<p><strong>Trend initialization</strong></p>
 <div class="arithmatex">\[t = \frac{1}{k - 1} \sum_{i=2}{k} y_i - y_{i-1}\]</div>
-<p><strong>Trend initialization</strong> </p>
+<p><strong>Trend initialization</strong></p>
 <div class="arithmatex">\[s_i = \frac{y_i}{k}\]</div>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
@@ -4640,7 +4643,7 @@
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <details class="- abstract">
 <summary>forecast</summary>
-<p>Makes forecast at each step of the given horizon.</p>
+<p>Make a forecast at each step of the given horizon.</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>horizon</strong>     — <code>int</code>    </li>
@@ -4650,7 +4653,7 @@
 <p><span /></p>
 <details class="- abstract">
 <summary>learn_one</summary>
-<p>Updates the model.</p>
+<p>Update the model.</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>y</strong>     — <code>float</code>    </li>

@@ -214,7 +214,7 @@ Accuracy: 87.29%
 >
 > **learn\_one**
 >
-> Incrementally train the model
+> Incrementally train the model.
 >
 > **Parameters**
 >

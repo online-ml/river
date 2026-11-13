@@ -5855,17 +5855,24 @@
 
 <h1 id="mixed">Mixed<a class="headerlink" href="#mixed" title="Permanent link">&para;</a></h1>
 <p>Mixed data stream generator.</p>
-<p>This generator is an implementation of a data stream with abrupt concept drift and boolean noise-free examples as described in <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>. </p>
-<p>It has four relevant attributes, two boolean attributes <span class="arithmatex">\(v, w\)</span> and two numeric attributes <span class="arithmatex">\(x, y\)</span> uniformly distributed from 0 to 1. The examples are labeled depending on the classification function chosen from below. </p>
+<p>This generator is an implementation of a data stream with abrupt concept
+drift and boolean noise-free examples as described in <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>.</p>
+<p>It has four relevant attributes, two boolean attributes <span class="arithmatex">\(v, w\)</span> and two
+numeric attributes <span class="arithmatex">\(x, y\)</span> uniformly distributed from 0 to 1. The examples
+are labeled depending on the classification function chosen from below.</p>
 <ul>
 <li>
-<p><code>function 0</code>:   if <span class="arithmatex">\(v\)</span> and <span class="arithmatex">\(w\)</span> are true or <span class="arithmatex">\(v\)</span> and <span class="arithmatex">\(z\)</span> are true or <span class="arithmatex">\(w\)</span> and <span class="arithmatex">\(z\)</span> are true   then 0 else 1, where <span class="arithmatex">\(z\)</span> is <span class="arithmatex">\(y &lt; 0.5 + 0.3 sin(3 \pi  x)\)</span> </p>
+<p><code>function 0</code>:
+  if <span class="arithmatex">\(v\)</span> and <span class="arithmatex">\(w\)</span> are true or <span class="arithmatex">\(v\)</span> and <span class="arithmatex">\(z\)</span> are true or <span class="arithmatex">\(w\)</span> and <span class="arithmatex">\(z\)</span> are true
+  then 0 else 1, where <span class="arithmatex">\(z\)</span> is <span class="arithmatex">\(y &lt; 0.5 + 0.3 sin(3 \pi  x)\)</span></p>
 </li>
 <li>
-<p><code>function 1</code>:    The opposite of <code>function 0</code>. </p>
+<p><code>function 1</code>:
+   The opposite of <code>function 0</code>.</p>
 </li>
 </ul>
-<p>Concept drift can be introduced by changing the classification function. This can be done manually or using <code>ConceptDriftStream</code>.</p>
+<p>Concept drift can be introduced by changing the classification function.
+This can be done manually or using <code>ConceptDriftStream</code>.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>

@@ -54,7 +54,7 @@ array([-0.1382643 ,  0.64768854])
 >
 > ****call****
 >
-> Returns a fresh set of weights.
+> Return a fresh set of weights.
 >
 > The return type is shape-dependent (a scalar when `shape == 1`, otherwise an array), and these values are routinely used as `collections.defaultdict` factories elsewhere, so the return is intentionally left dynamic.
 >

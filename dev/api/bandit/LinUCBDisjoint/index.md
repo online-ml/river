@@ -76,7 +76,7 @@ The way this works is that each arm is assigned a [`linear_model.BayesianLinearR
 >
 > **update**
 >
-> Rewrite update function
+> Rewrite update function.
 >
 > **Parameters**
 >

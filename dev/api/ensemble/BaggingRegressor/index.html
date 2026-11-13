@@ -4665,7 +4665,11 @@
 
 <h1 id="baggingregressor">BaggingRegressor<a class="headerlink" href="#baggingregressor" title="Permanent link">&para;</a></h1>
 <p>Online bootstrap aggregation for regression.</p>
-<p>For each incoming observation, each model's <code>learn_one</code> method is called <code>k</code> times where <code>k</code> is sampled from a Poisson distribution of parameter 1. <code>k</code> thus has a 36% chance of being equal to 0, a 36% chance of being equal to 1, an 18% chance of being equal to 2, a 6% chance of being equal to 3, a 1% chance of being equal to 4, etc. You can do <code>scipy.stats.utils.random.poisson(1).pmf(k)</code> for more detailed values.</p>
+<p>For each incoming observation, each model's <code>learn_one</code> method is called <code>k</code> times where
+<code>k</code> is sampled from a Poisson distribution of parameter 1. <code>k</code> thus has a 36% chance of
+being equal to 0, a 36% chance of being equal to 1, an 18% chance of being equal to 2, a 6%
+chance of being equal to 3, a 1% chance of being equal to 4, etc. You can do
+<code>scipy.stats.utils.random.poisson(1).pmf(k)</code> for more detailed values.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>

@@ -7,15 +7,11 @@ SNARIMAX stands for (S)easonal (N)on-linear (A)uto(R)egressive (I)ntegrated (M)o
 This model generalizes many established time series models in a single interface that can be trained online. It assumes that the provided training data is ordered in time and is uniformly spaced. It is made up of the following components:
 
 - S (Seasonal)
-- N (Non-linear): Any online regression model can be used, not necessarily a linear regression
-
-  as is done in textbooks. - AR (Autoregressive): Lags of the target variable are used as features.
-- I (Integrated): The model can be fitted on a differenced version of a time series. In this
-
-  context, integration is the reverse of differencing. - MA (Moving average): Lags of the errors are used as features.
-- X (Exogenous): Users can provide additional features. Care has to be taken to include
-
-  features that will be available both at training and prediction time.
+- N (Non-linear): Any online regression model can be used, not necessarily a linear regression as is done in textbooks.
+- AR (Autoregressive): Lags of the target variable are used as features.
+- I (Integrated): The model can be fitted on a differenced version of a time series. In this context, integration is the reverse of differencing.
+- MA (Moving average): Lags of the errors are used as features.
+- X (Exogenous): Users can provide additional features. Care has to be taken to include features that will be available both at training and prediction time.
 
 Each of these components can be switched on and off by specifying the appropriate parameters. Classical time series models such as AR, MA, ARMA, and ARIMA can thus be seen as special parametrizations of the SNARIMAX model.
 
@@ -202,7 +198,7 @@ for x, y_pred in zip(future, forecast):
 >
 > **forecast**
 >
-> Makes forecast at each step of the given horizon.
+> Make a forecast at each step of the given horizon.
 >
 > **Parameters**
 >
@@ -213,7 +209,7 @@ for x, y_pred in zip(future, forecast):
 >
 > **learn\_one**
 >
-> Updates the model.
+> Update the model.
 >
 > **Parameters**
 >

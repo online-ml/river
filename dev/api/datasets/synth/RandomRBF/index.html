@@ -5833,8 +5833,14 @@
 
 <h1 id="randomrbf">RandomRBF<a class="headerlink" href="#randomrbf" title="Permanent link">&para;</a></h1>
 <p>Random Radial Basis Function generator.</p>
-<p>Produces a radial basis function stream. A number of centroids, having a random central position, a standard deviation, a class label and weight are generated. A new sample is created by choosing one of the centroids at random, taking into account their weights, and offsetting the attributes in a random direction from the centroid's center. The offset length is drawn from a Gaussian distribution. </p>
-<p>This process will create a normally distributed hypersphere of samples on the surrounds of each centroid.</p>
+<p>Produces a radial basis function stream. A number of centroids, having a
+random central position, a standard deviation, a class label and weight
+are generated. A new sample is created by choosing one of the centroids at
+random, taking into account their weights, and offsetting the attributes
+in a random direction from the centroid's center. The offset length is
+drawn from a Gaussian distribution.</p>
+<p>This process will create a normally distributed hypersphere of samples on
+the surrounds of each centroid.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>

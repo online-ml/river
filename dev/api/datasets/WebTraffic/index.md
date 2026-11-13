@@ -8,7 +8,12 @@ The data consists of 15 minute interval traffic values between '2023-06-16 00:00
 
 Things to consider:
 
-- region `R5` captures sessions in backup mode. Strictly speaking, `R5` is not necessary to predict. \* Can `sessionsA` and `sessionsB` events be predicted accurately for each region over the next day (next 96 intervals)? \* What is the best way to deal with the missing values? \* How can model selection be used (a multi-model approach)? \* Can dependence (correlation) between regions be utilised for more accurate predictions? \* Can both `sessionA` and `sessionB` be predicted simultaneously with one model?
+- region `R5` captures sessions in backup mode. Strictly speaking, `R5` is not necessary to predict.
+- Can `sessionsA` and `sessionsB` events be predicted accurately for each region over the next day (next 96 intervals)?
+- What is the best way to deal with the missing values?
+- How can model selection be used (a multi-model approach)?
+- Can dependence (correlation) between regions be utilised for more accurate predictions?
+- Can both `sessionA` and `sessionB` be predicted simultaneously with one model?
 
 This dataset is well suited for time series forecasting models, as well as anomaly detection methods. Ideally, the goal is to build a time series forecasting model that is robust to the anomalous events and generalise well on normal operating conditions.
 

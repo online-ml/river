@@ -1,6 +1,6 @@
 # AirlinePassengers
 
-JFK Airline Passengers
+JFK Airline Passengers.
 
 This dataset gives the number of passengers arriving and departing at JFK. The data is obtained from New York State's official Kaggle page for this dataset.
 

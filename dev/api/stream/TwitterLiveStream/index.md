@@ -36,9 +36,7 @@ tweets = stream.TwitterLiveStream(
 )
 ```
 
-````text
-The stream can then be iterated over, possibly in an infinite loop. This will listen to the
-live feed of Tweets and produce a Tweet right after it's been published.
+The stream can then be iterated over, possibly in an infinite loop. This will listen to the live feed of Tweets and produce a Tweet right after it's been published.
 
 ```py
 import logging
@@ -61,9 +59,22 @@ Here's a Tweet example:
         'created_at': '2022-08-26T12:59:48.000Z',
         'id': '1563149212774445058',
         'text': "Ukraine's Zaporizhzhia nuclear power plant, which is currently held by
-````
-
-Russian forces, has been reconnected to Ukraine's electricity grid, according to the country's nuclear operator https://t.co/xfylkBs4JR" }, 'includes': { 'users': \[ { 'created\_at': '2007-01-02T01:48:14.000Z', 'id': '428333', 'name': 'CNN Breaking News', 'username': 'cnnbrk' } \] }, 'matching\_rules': \[{'id': '1563148866333151233', 'tag': 'from:cnnbrk'}\] } \`\`\`
+        Russian forces, has been reconnected to Ukraine's electricity grid, according to the
+        country's nuclear operator https://t.co/xfylkBs4JR"
+    },
+    'includes': {
+        'users': [
+            {
+                'created_at': '2007-01-02T01:48:14.000Z',
+                'id': '428333',
+                'name': 'CNN Breaking News',
+                'username': 'cnnbrk'
+            }
+        ]
+    },
+    'matching_rules': [{'id': '1563148866333151233', 'tag': 'from:cnnbrk'}]
+}
+```
 
 ## References
 

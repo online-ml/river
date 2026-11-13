@@ -1,6 +1,6 @@
 # softmax
 
-Normalizes a dictionary of predicted probabilities, in-place.
+Normalize a dictionary of predicted probabilities, in-place.
 
 ## Parameters
 

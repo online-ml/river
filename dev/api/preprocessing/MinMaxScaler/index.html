@@ -4832,7 +4832,9 @@
 
 <h1 id="minmaxscaler">MinMaxScaler<a class="headerlink" href="#minmaxscaler" title="Permanent link">&para;</a></h1>
 <p>Scales the data to a fixed range from 0 to 1.</p>
-<p>Under the hood a running min and a running peak to peak (max - min) are maintained. When <code>window_size</code> is set, the scaler tracks the min and max over the last <code>window_size</code> observations via <a href="../../stats/RollingMin"><code>stats.RollingMin</code></a> and <a href="../../stats/RollingMax"><code>stats.RollingMax</code></a> instead.</p>
+<p>Under the hood a running min and a running peak to peak (max - min) are maintained.
+When <code>window_size</code> is set, the scaler tracks the min and max over the last
+<code>window_size</code> observations via <a href="../../stats/RollingMin"><code>stats.RollingMin</code></a> and <a href="../../stats/RollingMax"><code>stats.RollingMax</code></a> instead.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>

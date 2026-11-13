@@ -5805,20 +5805,28 @@
 
 <h1 id="vbeta">VBeta<a class="headerlink" href="#vbeta" title="Permanent link">&para;</a></h1>
 <p>VBeta.</p>
-<p>VBeta (or V-Measure) <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> is an external entropy-based cluster evaluation measure. It provides an elegant solution to many problems that affect previously defined cluster evaluation measures including </p>
+<p>VBeta (or V-Measure) <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> is an external entropy-based cluster evaluation measure.
+It provides an elegant solution to many problems that affect previously defined
+cluster evaluation measures including</p>
 <ul>
 <li>
-<p>Dependence of clustering algorithm or dataset, </p>
+<p>Dependence of clustering algorithm or dataset,</p>
 </li>
 <li>
-<p>The "problem of matching", where the clustering of only a portion of data points are evaluated, and </p>
+<p>The "problem of matching", where the clustering of only a portion of data
+points are evaluated, and</p>
 </li>
 <li>
-<p>Accurate evaluation and combination of two desirable aspects of clustering, homogeneity and completeness. </p>
+<p>Accurate evaluation and combination of two desirable aspects of clustering,
+homogeneity and completeness.</p>
 </li>
 </ul>
-<p>Based upon the calculations of homogeneity and completeness, a clustering solution's V-measure is calculated by computing the weighted harmonic mean of homogeneity and completeness, </p>
-<div class="arithmatex">\[ V_{\beta} = \frac{(1 + \beta) \times h \times c}{\beta \times h + c}. \]</div>
+<p>Based upon the calculations of homogeneity and completeness, a clustering
+solution's V-measure is calculated by computing the weighted harmonic mean
+of homogeneity and completeness,</p>
+<div class="arithmatex">\[
+V_{\beta} = \frac{(1 + \beta) \times h \times c}{\beta \times h + c}.
+\]</div>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
@@ -5845,7 +5853,7 @@
 </li>
 <li>
 <p><strong>works_with_weights</strong></p>
-<p>Indicate whether the model takes into consideration the effect of sample weights</p>
+<p>Indicate whether the model takes into consideration the effect of sample weights.</p>
 </li>
 </ul>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
@@ -5909,7 +5917,7 @@
 <p><span /></p>
 <details class="- abstract">
 <summary>works_with</summary>
-<p>Indicates whether or not a metric can work with a given model.</p>
+<p>Indicate whether or not a metric can work with a given model.</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>model</strong>     — <code>base.Estimator</code>    </li>

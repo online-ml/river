@@ -16,7 +16,7 @@ Epsilon-insensitive hinge loss.
 >
 > ****call****
 >
-> Returns the loss.
+> Return the loss.
 >
 > **Parameters**
 >

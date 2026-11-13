@@ -4486,8 +4486,11 @@
 
 <h1 id="peroutputclassifier">PerOutputClassifier<a class="headerlink" href="#peroutputclassifier" title="Permanent link">&para;</a></h1>
 <p>A multi-output model that trains one independent classifier per output.</p>
-<p>This model does not use the prediction of one output as a feature for the next. Each output is modelled by its own copy of the base classifier, trained independently. (This is the streaming equivalent of scikit-learn's <code>MultiOutputClassifier</code>). </p>
-<p>The set of outputs isn't known from the start in a streaming setting, new classifiers are instantiated on the fly, one per output key encountered in <code>y</code>.</p>
+<p>This model does not use the prediction of one output as a feature for the next. Each output is
+modelled by its own copy of the base classifier, trained independently. (This is the streaming
+equivalent of scikit-learn's <code>MultiOutputClassifier</code>).</p>
+<p>The set of outputs isn't known from the start in a streaming setting, new classifiers are
+instantiated on the fly, one per output key encountered in <code>y</code>.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>

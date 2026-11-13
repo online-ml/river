@@ -4562,10 +4562,23 @@
 
 <h1 id="loda">LODA<a class="headerlink" href="#loda" title="Permanent link">&para;</a></h1>
 <p>LODA (Lightweight on-line detector of anomalies).</p>
-<p>LODA <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> is an ensemble of one-dimensional histograms. Each histogram approximates the probability density of the data once it has been projected onto a sparse random vector. The anomaly score of a sample is the average negative log-likelihood of its projections across the ensemble: rare projected values yield low densities and therefore high scores. </p>
-<p>Pevný showed that aggregating many such deliberately weak detectors yields a strong anomaly detector, competitive with much heavier methods while remaining cheap to update online. </p>
-<p>Each projection vector is sparse: only <code>⌊√d⌋</code> of the <code>d</code> features have a non-zero weight, drawn from a standard normal distribution. The feature set and the projections are fixed the first time <code>learn_one</code> is called. Features that appear later are ignored, and missing features are treated as zeros. </p>
-<p>Unlike the histograms used in the original paper, this implementation relies on River's streaming <a href="../../sketch/Histogram"><code>sketch.Histogram</code></a>, which maintains a bounded number of adaptive-width bins. The density of a projected value is estimated as <code>(count / n) / width</code> of the bin that contains it, where <code>width</code> is the bin's span (or, for not-yet-merged singleton bins, the distance to the nearest neighbouring bin). Projected values that fall outside every bin are assigned a floor density, making them maximally anomalous. This keeps the detector fully online and free of any numpy dependency.</p>
+<p>LODA <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> is an ensemble of one-dimensional histograms. Each histogram approximates the
+probability density of the data once it has been projected onto a sparse random vector. The
+anomaly score of a sample is the average negative log-likelihood of its projections across the
+ensemble: rare projected values yield low densities and therefore high scores.</p>
+<p>Pevný showed that aggregating many such deliberately weak detectors yields a strong anomaly
+detector, competitive with much heavier methods while remaining cheap to update online.</p>
+<p>Each projection vector is sparse: only <code>⌊√d⌋</code> of the <code>d</code> features have a non-zero weight, drawn
+from a standard normal distribution. The feature set and the projections are fixed the first
+time <code>learn_one</code> is called. Features that appear later are ignored, and missing features are
+treated as zeros.</p>
+<p>Unlike the histograms used in the original paper, this implementation relies on River's
+streaming <a href="../../sketch/Histogram"><code>sketch.Histogram</code></a>, which maintains a bounded number of adaptive-width bins. The
+density of a projected value is estimated as <code>(count / n) / width</code> of the bin that contains it,
+where <code>width</code> is the bin's span (or, for not-yet-merged singleton bins, the distance to the
+nearest neighbouring bin). Projected values that fall outside every bin are assigned a floor
+density, making them maximally anomalous. This keeps the detector fully online and free of any
+numpy dependency.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>

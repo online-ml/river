@@ -68,7 +68,7 @@ Sum: 841.
 >
 > **compute\_index**
 >
-> the p-th quantile of the beta distribution for the arm
+> Compute the p-th quantile of the beta distribution for the arm.
 >
 > **Parameters**
 >
@@ -94,7 +94,7 @@ Sum: 841.
 >
 > **update**
 >
-> Rewrite update function
+> Rewrite update function.
 >
 > **Parameters**
 >

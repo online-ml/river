@@ -99,7 +99,7 @@ batch_model.predict_proba_many(unseen)
 >
 > **joint\_log\_likelihood**
 >
-> Computes the joint log likelihood of input features.
+> Compute the joint log likelihood of input features.
 >
 > **Parameters**
 >
@@ -113,7 +113,7 @@ batch_model.predict_proba_many(unseen)
 >
 > **joint\_log\_likelihood\_many**
 >
-> Computes the joint log likelihood of input features.
+> Compute the joint log likelihood of input features.
 >
 > **Parameters**
 >
@@ -138,7 +138,7 @@ batch_model.predict_proba_many(unseen)
 >
 > **learn\_one**
 >
-> Updates the model with a single observation.
+> Update the model with a single observation.
 >
 > **Parameters**
 >

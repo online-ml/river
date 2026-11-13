@@ -1,8 +1,12 @@
 # iter\_pandas
 
-Iterates over the rows of a `pandas.DataFrame`.
+Iterate over the rows of a `pandas.DataFrame`.
 
-.. deprecated:: Use [`stream.iter_frame`](<https://riverml.xyz/dev/api/stream/iter-frame>) instead, which works with any eager dataframe (pandas, polars, PyArrow, ...). [`stream.iter_pandas`](<https://riverml.xyz/dev/api/stream/iter-pandas>) will be removed in a future release.
+> [!WARNING]
+>
+> **Deprecated**
+>
+> Use `stream.iter_frame` instead, which works with any eager dataframe (pandas, polars, PyArrow, ...). `stream.iter_pandas` will be removed in a future release.
 
 ## Parameters
 

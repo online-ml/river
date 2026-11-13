@@ -1,6 +1,6 @@
 # iter\_arff
 
-Iterates over rows from an ARFF file.
+Iterate over rows from an ARFF file.
 
 ## Parameters
 

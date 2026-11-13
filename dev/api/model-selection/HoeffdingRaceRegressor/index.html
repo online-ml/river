@@ -4588,8 +4588,14 @@
 
 <h1 id="hoeffdingraceregressor">HoeffdingRaceRegressor<a class="headerlink" href="#hoeffdingraceregressor" title="Permanent link">&para;</a></h1>
 <p>Hoeffding Race model selection for regression.</p>
-<p>Uses the Hoeffding bound to progressively eliminate underperforming models with statistical confidence. All active models are trained on each observation. After each observation, models whose performance is statistically worse than the current best are eliminated from the race. </p>
-<p>This is more efficient than greedy selection when there are many candidate models, because eliminated models no longer consume computation. It is more principled than successive halving because elimination is based on statistical evidence rather than a fixed schedule.</p>
+<p>Uses the Hoeffding bound to progressively eliminate underperforming models with
+statistical confidence. All active models are trained on each observation. After
+each observation, models whose performance is statistically worse than the current
+best are eliminated from the race.</p>
+<p>This is more efficient than greedy selection when there are many candidate models,
+because eliminated models no longer consume computation. It is more principled than
+successive halving because elimination is based on statistical evidence rather than
+a fixed schedule.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>

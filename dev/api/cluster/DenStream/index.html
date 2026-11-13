@@ -4507,22 +4507,37 @@
 
 
 <h1 id="denstream">DenStream<a class="headerlink" href="#denstream" title="Permanent link">&para;</a></h1>
-<p>DenStream</p>
-<p>DenStream <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> is a clustering algorithm for evolving data streams. DenStream can discover clusters with arbitrary shape and is robust against noise (outliers). </p>
-<p>"Dense" micro-clusters (named core-micro-clusters) summarise the clusters of arbitrary shape. A pruning strategy based on the concepts of potential and outlier micro-clusters guarantees the precision of the weights of the micro-clusters with limited memory. </p>
-<p>The algorithm is divided into two parts: </p>
-<p><strong>Online micro-cluster maintenance (learning)</strong> </p>
-<p>For a new point <code>p</code>: </p>
+<p>The DenStream algorithm.</p>
+<p>DenStream <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> is a clustering algorithm for evolving data streams.
+DenStream can discover clusters with arbitrary shape and is robust against
+noise (outliers).</p>
+<p>"Dense" micro-clusters (named core-micro-clusters) summarise the clusters
+of arbitrary shape. A pruning strategy based on the concepts of potential
+and outlier micro-clusters guarantees the precision of the weights of the
+micro-clusters with limited memory.</p>
+<p>The algorithm is divided into two parts:</p>
+<p><strong>Online micro-cluster maintenance (learning)</strong></p>
+<p>For a new point <code>p</code>:</p>
 <ul>
 <li>
-<p>Try to merge <code>p</code> into either the nearest <code>p-micro-cluster</code> (potential), <code>o-micro-cluster</code> (outlier), or create a new <code>o-micro-cluster</code> and insert it into the outlier buffer. </p>
+<p>Try to merge <code>p</code> into either the nearest <code>p-micro-cluster</code> (potential),
+<code>o-micro-cluster</code> (outlier), or create a new <code>o-micro-cluster</code> and insert it
+into the outlier buffer.</p>
 </li>
 <li>
-<p>For each <code>T_p</code> iterations, consider the weights of all potential and outlier micro-clusters. If their weights are smaller than a certain threshold (different for each type of micro-clusters), the micro-cluster is deleted. </p>
+<p>For each <code>T_p</code> iterations, consider the weights of all potential and
+outlier micro-clusters. If their weights are smaller than a certain
+threshold (different for each type of micro-clusters), the micro-cluster is
+deleted.</p>
 </li>
 </ul>
-<p><strong>Offline generation of clusters on-demand (clustering)</strong> </p>
-<p>A variant of the DBSCAN algorithm <sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup> is used, such that all density-connected p-micro-clusters determine the final clusters. Moreover, in order for the algorithm to always be able to generate clusters, a certain number of points must be passed through the algorithm with a suitable streaming speed (number of points passed through within a unit time), indicated by <code>n_samples_init</code> and <code>stream_speed</code>.</p>
+<p><strong>Offline generation of clusters on-demand (clustering)</strong></p>
+<p>A variant of the DBSCAN algorithm <sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup> is used, such that all
+density-connected p-micro-clusters determine the final clusters. Moreover,
+in order for the algorithm to always be able to generate clusters, a certain
+number of points must be passed through the algorithm with a suitable streaming
+speed (number of points passed through within a unit time), indicated by
+<code>n_samples_init</code> and <code>stream_speed</code>.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>

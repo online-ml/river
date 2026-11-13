@@ -1,6 +1,6 @@
 # BrentSpotPrice
 
-Brent Spot Price
+Brent Spot Price.
 
 This is the USD price for Brent Crude oil, measured daily. We include the time series from 2000 onwards. The data is sampled at every 10 original observations to reduce the length of the series.
 

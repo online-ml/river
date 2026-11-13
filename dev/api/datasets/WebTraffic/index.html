@@ -5266,13 +5266,23 @@
 
 <h1 id="webtraffic">WebTraffic<a class="headerlink" href="#webtraffic" title="Permanent link">&para;</a></h1>
 <p>Web sessions information from an events company based in South Africa.</p>
-<p>The goal is to predict the number of web sessions in 4 different regions in South Africa. </p>
-<p>The data consists of 15 minute interval traffic values between '2023-06-16 00:00:00' and '2023-09-15 23:45:00' for each region. Two types of sessions are captured <code>sessionsA</code> and <code>sessionsB</code>. The <code>isMissing</code> flag is equal to 1 if any of the servers failed to capture sessions, otherwise if all servers functioned properly this flag is equal to 0. </p>
-<p>Things to consider: </p>
+<p>The goal is to predict the number of web sessions in 4 different regions in South Africa.</p>
+<p>The data consists of 15 minute interval traffic values between '2023-06-16 00:00:00' and
+'2023-09-15 23:45:00' for each region. Two types of sessions are captured <code>sessionsA</code> and
+<code>sessionsB</code>. The <code>isMissing</code> flag is equal to 1 if any of the servers failed to capture
+sessions, otherwise if all servers functioned properly this flag is equal to 0.</p>
+<p>Things to consider:</p>
 <ul>
-<li>region <code>R5</code> captures sessions in backup mode. Strictly speaking, <code>R5</code> is not necessary to predict. * Can <code>sessionsA</code> and <code>sessionsB</code> events be predicted accurately for each region over the next day (next 96 intervals)? * What is the best way to deal with the missing values? * How can model selection be used (a multi-model approach)? * Can dependence (correlation) between regions be utilised for more accurate predictions? * Can both <code>sessionA</code> and <code>sessionB</code> be predicted simultaneously with one model? </li>
+<li>region <code>R5</code> captures sessions in backup mode. Strictly speaking, <code>R5</code> is not necessary to predict.</li>
+<li>Can <code>sessionsA</code> and <code>sessionsB</code> events be predicted accurately for each region over the next day (next 96 intervals)?</li>
+<li>What is the best way to deal with the missing values?</li>
+<li>How can model selection be used (a multi-model approach)?</li>
+<li>Can dependence (correlation) between regions be utilised for more accurate predictions?</li>
+<li>Can both <code>sessionA</code> and <code>sessionB</code> be predicted simultaneously with one model?</li>
 </ul>
-<p>This dataset is well suited for time series forecasting models, as well as anomaly detection methods. Ideally, the goal is to build a time series forecasting model that is robust to the anomalous events and generalise well on normal operating conditions.</p>
+<p>This dataset is well suited for time series forecasting models, as well as anomaly detection
+methods. Ideally, the goal is to build a time series forecasting model that is robust to the
+anomalous events and generalise well on normal operating conditions.</p>
 <h2 id="attributes">Attributes<a class="headerlink" href="#attributes" title="Permanent link">&para;</a></h2>
 <ul>
 <li>

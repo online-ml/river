@@ -1,6 +1,6 @@
 # log\_method\_calls
 
-A context manager to log method calls.
+Provide a context manager to log method calls.
 
 All method calls will be logged by default. This behavior can be overridden by passing filtering functions.
 

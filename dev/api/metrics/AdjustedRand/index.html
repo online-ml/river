@@ -5805,9 +5805,16 @@
 
 <h1 id="adjustedrand">AdjustedRand<a class="headerlink" href="#adjustedrand" title="Permanent link">&para;</a></h1>
 <p>Adjusted Rand Index.</p>
-<p>The Adjusted Rand Index is the corrected-for-chance version of the Rand Index <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> <sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup>. Such a correction for chance establishes a baseline by using the expected similarity of all pair-wise comparisons between clusterings specified by a random model. </p>
-<p>Traditionally, the Rand Index was corrected using the Permutation Model for Clustering. However, the premises of the permutation model are frequently violated; in many clustering scenarios, either the number of clusters or the size distribution of those clusters vary drastically. Variations of the adjusted Rand Index account for different models of random clusterings. </p>
-<p>Though the Rand Index may only yield a value between 0 and 1, the Adjusted Rand index can yield negative values if the index is less than the expected index.</p>
+<p>The Adjusted Rand Index is the corrected-for-chance version of the Rand Index <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> <sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup>.
+Such a correction for chance establishes a baseline by using the expected similarity
+of all pair-wise comparisons between clusterings specified by a random model.</p>
+<p>Traditionally, the Rand Index was corrected using the Permutation Model for Clustering.
+However, the premises of the permutation model are frequently violated; in many
+clustering scenarios, either the number of clusters or the size distribution of those
+clusters vary drastically. Variations of the adjusted Rand Index account for different
+models of random clusterings.</p>
+<p>Though the Rand Index may only yield a value between 0 and 1, the Adjusted Rand index
+can yield negative values if the index is less than the expected index.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
@@ -5828,7 +5835,7 @@
 </li>
 <li>
 <p><strong>works_with_weights</strong></p>
-<p>Indicate whether the model takes into consideration the effect of sample weights</p>
+<p>Indicate whether the model takes into consideration the effect of sample weights.</p>
 </li>
 </ul>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
@@ -5893,7 +5900,7 @@
 <p><span /></p>
 <details class="- abstract">
 <summary>works_with</summary>
-<p>Indicates whether or not a metric can work with a given model.</p>
+<p>Indicate whether or not a metric can work with a given model.</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>model</strong>     — <code>base.Estimator</code>    </li>

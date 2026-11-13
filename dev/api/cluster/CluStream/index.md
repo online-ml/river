@@ -1,6 +1,6 @@
 # CluStream
 
-CluStream
+The CluStream algorithm.
 
 The CluStream algorithm [^/dev/api/cluster/CluStream/#1] maintains statistical information about the data using micro-clusters. These micro-clusters are temporal extensions of cluster feature vectors. The micro-clusters are stored at snapshots in time following a pyramidal pattern. This pattern allows to recall summary statistics from different time horizons.
 
@@ -10,9 +10,7 @@ Training with a new point `p` is performed in two main tasks:
 - Check whether `p` fits (memory) into the closest micro-cluster:
 
   - if `p` fits, put into micro-cluster
-  - if `p` does not fit, free some space to insert a new micro-cluster.
-
-  This is done in two ways, delete an old micro-cluster or merge the two micro-clusters closest to each other.
+  - if `p` does not fit, free some space to insert a new micro-cluster. This is done in two ways, delete an old micro-cluster or merge the two micro-clusters closest to each other.
 
 This implementation is an improved version from the original algorithm. Instead of calculating the traditional cluster feature vector of the number of observations, linear sum and sum of squares of data points and time stamps, this implementation adopts the use of Welford's algorithm [^/dev/api/cluster/CluStream/#2] to calculate the incremental variance, facilitated through [`stats.Var`](<https://riverml.xyz/dev/api/stats/Var>) available within River.
 

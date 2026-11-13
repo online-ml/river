@@ -5782,9 +5782,15 @@
 
 
 <h1 id="silhouette">Silhouette<a class="headerlink" href="#silhouette" title="Permanent link">&para;</a></h1>
-<p>Silhouette coefficient <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>, roughly speaking, is the ratio between cohesion and the average distances from the points to their second-closest centroid. It rewards the clustering algorithm where points are very close to their assigned centroids and far from any other centroids, that is, clustering results with good cohesion and good separation.</p>
-<p>It rewards clusterings where points are very close to their assigned centroids and far from any other centroids, that is clusterings with good cohesion and good separation. <sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup> </p>
-<p>The definition of Silhouette coefficient for online clustering evaluation is different from that of batch learning. It does not store information and calculate pairwise distances between all points at the same time, since the practice is too expensive for an incremental metric.</p>
+<p>Silhouette coefficient <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>, roughly speaking, is the ratio between cohesion and the average distances
+from the points to their second-closest centroid. It rewards the clustering algorithm where
+points are very close to their assigned centroids and far from any other centroids,
+that is, clustering results with good cohesion and good separation.</p>
+<p>It rewards clusterings where points are very close to their assigned centroids and far from any other
+centroids, that is clusterings with good cohesion and good separation. <sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup></p>
+<p>The definition of Silhouette coefficient for online clustering evaluation is different from that of
+batch learning. It does not store information and calculate pairwise distances between all points at the
+same time, since the practice is too expensive for an incremental metric.</p>
 <h2 id="attributes">Attributes<a class="headerlink" href="#attributes" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
@@ -5853,7 +5859,7 @@
 <p><span /></p>
 <details class="- abstract">
 <summary>works_with</summary>
-<p>Indicates whether or not a metric can work with a given model.</p>
+<p>Indicate whether or not a metric can work with a given model.</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>model</strong>     — <code>base.Estimator</code>    </li>

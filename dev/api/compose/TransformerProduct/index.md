@@ -84,7 +84,7 @@ pprint(product.transform_one(x))
 >
 > **transform\_many**
 >
-> Passes the data through each transformer and packs the results together.
+> Pass the data through each transformer and packs the results together.
 >
 > The per-transformer outputs are concatenated column-wise via narwhals, so the result is rebuilt in the caller's own backend (pandas, polars, pyarrow, ...). All transformers see the same rows in the same order, so a positional horizontal concat matches the historical index-aligned `pandas.concat(axis=1)`.
 >
@@ -96,7 +96,7 @@ pprint(product.transform_one(x))
 >
 > **transform\_one**
 >
-> Passes the data through each transformer and packs the results together.
+> Pass the data through each transformer and packs the results together.
 >
 > **Parameters**
 >

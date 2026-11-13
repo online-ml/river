@@ -17,11 +17,11 @@ The provided metric is updated with the value of each output.
   Indicate if a high value is better than a low one or not.
 - **metric**
 
-  Gives access to the wrapped metric.
+  Give access to the wrapped metric.
 - **requires\_labels**
 - **works\_with\_weights**
 
-  Indicate whether the model takes into consideration the effect of sample weights
+  Indicate whether the model takes into consideration the effect of sample weights.
 
 ## Methods
 
@@ -69,7 +69,7 @@ The provided metric is updated with the value of each output.
 >
 > **works\_with**
 >
-> Indicates whether or not a metric can work with a given model.
+> Indicate whether or not a metric can work with a given model.
 >
 > **Parameters**
 >

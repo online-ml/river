@@ -4652,8 +4652,12 @@
 
 
 <h1 id="iter_polars">iter_polars<a class="headerlink" href="#iter_polars" title="Permanent link">&para;</a></h1>
-<p>Iterates over the rows of a <code>polars.DataFrame</code>.</p>
-<p>.. deprecated::     Use <a href="../../stream/iter-frame"><code>stream.iter_frame</code></a> instead, which works with any eager dataframe (pandas, polars,     PyArrow, ...). <a href="../../stream/iter-polars"><code>stream.iter_polars</code></a> will be removed in a future release.</p>
+<p>Iterate over the rows of a <code>polars.DataFrame</code>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Deprecated</p>
+<p>Use <code>stream.iter_frame</code> instead, which works with any eager dataframe (pandas, polars,
+PyArrow, ...). <code>stream.iter_polars</code> will be removed in a future release.</p>
+</div>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>

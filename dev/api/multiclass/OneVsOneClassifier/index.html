@@ -4400,8 +4400,13 @@
 
 <h1 id="onevsoneclassifier">OneVsOneClassifier<a class="headerlink" href="#onevsoneclassifier" title="Permanent link">&para;</a></h1>
 <p>One-vs-One (OvO) multiclass strategy.</p>
-<p>This strategy consists in fitting one binary classifier for each pair of classes. Because we are in a streaming context, the number of classes isn't known from the start, hence new classifiers are instantiated on the fly. </p>
-<p>The number of classifiers is <code>k * (k - 1) / 2</code>, where <code>k</code> is the number of classes. However, each call to <code>learn_one</code> only requires training <code>k - 1</code> models. Indeed, only the models that pertain to the given label have to be trained. Meanwhile, making a prediction requires going through each and every model.</p>
+<p>This strategy consists in fitting one binary classifier for each pair of classes. Because we
+are in a streaming context, the number of classes isn't known from the start, hence new
+classifiers are instantiated on the fly.</p>
+<p>The number of classifiers is <code>k * (k - 1) / 2</code>, where <code>k</code> is the number of classes. However,
+each call to <code>learn_one</code> only requires training <code>k - 1</code> models. Indeed, only the models that
+pertain to the given label have to be trained. Meanwhile, making a prediction requires going
+through each and every model.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>

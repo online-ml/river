@@ -4476,13 +4476,26 @@
 
 <h1 id="amfclassifier">AMFClassifier<a class="headerlink" href="#amfclassifier" title="Permanent link">&para;</a></h1>
 <p>Aggregated Mondrian Forest classifier for online learning.</p>
-<p>This implementation is truly online<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>, in the sense that a single pass is performed, and that predictions can be produced anytime. </p>
-<p>Each node in a tree predicts according to the distribution of the labels it contains. This distribution is regularized using a "Jeffreys" prior with parameter <code>dirichlet</code>. For each class with <code>count</code> labels in the node and <code>n_samples</code> samples in it, the prediction of a node is given by </p>
-<p><span class="arithmatex">\(\frac{count + dirichlet}{n_{samples} + dirichlet \times n_{classes}}\)</span>. </p>
-<p>The prediction for a sample is computed as the aggregated predictions of all the subtrees along the path leading to the leaf node containing the sample. The aggregation weights are exponential weights with learning rate <code>step</code> and log-loss when <code>use_aggregation</code> is <code>True</code>. </p>
-<p>This computation is performed exactly thanks to a context tree weighting algorithm. More details can be found in the paper cited in the references below. </p>
-<p>The final predictions are the average class probabilities predicted by each of the <code>n_estimators</code> trees in the forest. </p>
-<p>By default, this implementation assumes that all feature values are scaled between 0 and 1. If you cannot assume the minimum and maximum values for each feature, you can use <a href="../../preprocessing/MinMaxScaler">preprocessing.MinMaxScaler</a> as an initial preprocessing step. This is important because Mondrian trees are highly sensitive to feature scaling, as the distance between a sample and the node's bounding box is calculated as the sum of the distances across all features.</p>
+<p>This implementation is truly online<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>, in the sense that a single pass is performed, and that
+predictions can be produced anytime.</p>
+<p>Each node in a tree predicts according to the distribution of the labels
+it contains. This distribution is regularized using a "Jeffreys" prior
+with parameter <code>dirichlet</code>. For each class with <code>count</code> labels in the
+node and <code>n_samples</code> samples in it, the prediction of a node is given by</p>
+<p><span class="arithmatex">\(\frac{count + dirichlet}{n_{samples} + dirichlet \times n_{classes}}\)</span>.</p>
+<p>The prediction for a sample is computed as the aggregated predictions of all the
+subtrees along the path leading to the leaf node containing the sample. The
+aggregation weights are exponential weights with learning rate <code>step</code> and log-loss
+when <code>use_aggregation</code> is <code>True</code>.</p>
+<p>This computation is performed exactly thanks to a context tree weighting algorithm.
+More details can be found in the paper cited in the references below.</p>
+<p>The final predictions are the average class probabilities predicted by each of the
+<code>n_estimators</code> trees in the forest.</p>
+<p>By default, this implementation assumes that all feature values are scaled between 0 and 1.
+If you cannot assume the minimum and maximum values for each feature,
+you can use <a href="../../preprocessing/MinMaxScaler">preprocessing.MinMaxScaler</a> as an initial preprocessing step.
+This is important because Mondrian trees are highly sensitive to feature scaling, as
+the distance between a sample and the node's bounding box is calculated as the sum of the distances across all features.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>

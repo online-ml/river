@@ -8,7 +8,7 @@ A loss appropriate for binary classification tasks.
 >
 > ****call****
 >
-> Returns the loss.
+> Return the loss.
 >
 > **Parameters**
 >

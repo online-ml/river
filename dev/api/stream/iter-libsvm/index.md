@@ -1,6 +1,6 @@
 # iter\_libsvm
 
-Iterates over a dataset in LIBSVM format.
+Iterate over a dataset in LIBSVM format.
 
 The LIBSVM format is a popular way in the machine learning community to store sparse datasets. Only numerical feature values are supported. The feature names will be considered as strings.
 

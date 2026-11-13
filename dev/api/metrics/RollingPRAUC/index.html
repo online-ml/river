@@ -5805,10 +5805,17 @@
 
 <h1 id="rollingprauc">RollingPRAUC<a class="headerlink" href="#rollingprauc" title="Permanent link">&para;</a></h1>
 <p>Rolling version of the Area Under the Precision-Recall Area Under Curve metric.</p>
-<p>The RollingPRAUC calculates the AUC-PR using the instances in its window of size S. It keeps a queue of the instances, when an instance is added and the queue length is equal to S, the last instance is removed. </p>
-<p>The AUC-PR is suitable for evaluating models under unbalanced environments. For now, the implementation can deal only with binary scenarios. </p>
-<p>Internally, this class maintains a self-balancing binary search tree to efficiently and precisely (i.e., the result is not an approximation) compute the AUC-PR considering the current window. </p>
-<p>This implementation is based on the paper "Efficient Prequential AUC-PR Computation" (Gomes, Grégio, Alves, and Almeida, 2023): https://doi.org/10.1109/ICMLA58977.2023.00335.</p>
+<p>The RollingPRAUC calculates the AUC-PR using the instances in its window
+of size S. It keeps a queue of the instances, when an instance is added
+and the queue length is equal to S, the last instance is removed.</p>
+<p>The AUC-PR is suitable for evaluating models under unbalanced environments.
+For now, the implementation can deal only with binary scenarios.</p>
+<p>Internally, this class maintains a self-balancing binary search tree to
+efficiently and precisely (i.e., the result is not an approximation)
+compute the AUC-PR considering the current window.</p>
+<p>This implementation is based on the paper "Efficient Prequential AUC-PR
+Computation" (Gomes, Grégio, Alves, and Almeida, 2023):
+https://doi.org/10.1109/ICMLA58977.2023.00335.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
@@ -5834,7 +5841,7 @@
 </li>
 <li>
 <p><strong>works_with_weights</strong></p>
-<p>Indicate whether the model takes into consideration the effect of sample weights</p>
+<p>Indicate whether the model takes into consideration the effect of sample weights.</p>
 </li>
 </ul>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
@@ -5889,7 +5896,7 @@
 <p><span /></p>
 <details class="- abstract">
 <summary>works_with</summary>
-<p>Indicates whether or not a metric can work with a given model.</p>
+<p>Indicate whether or not a metric can work with a given model.</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>model</strong>     — <code>base.Estimator</code>    </li>

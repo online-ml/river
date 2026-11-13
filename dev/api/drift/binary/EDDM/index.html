@@ -4780,27 +4780,37 @@
 
 <h1 id="eddm">EDDM<a class="headerlink" href="#eddm" title="Permanent link">&para;</a></h1>
 <p>Early Drift Detection Method.</p>
-<p>EDDM (Early Drift Detection Method) aims to improve the detection rate of gradual concept drift in DDM, while keeping a good performance against abrupt concept drift. </p>
-<p>This method works by keeping track of the average distance between two errors instead of only the error rate. For this, it is necessary to keep track of the running average distance and the running standard deviation, as well as the maximum distance and the maximum standard deviation. </p>
-<p>The algorithm works similarly to the DDM algorithm, by keeping track of statistics only. It works with the running average distance (<span class="arithmatex">\(p_i'\)</span>) and the running standard deviation (<span class="arithmatex">\(s_i'\)</span>), as well as <span class="arithmatex">\(p'_{max}\)</span> and <span class="arithmatex">\(s'_{max}\)</span>, which are the values of <span class="arithmatex">\(p_i'\)</span> and <span class="arithmatex">\(s_i'\)</span> when <span class="arithmatex">\((p_i' + 2 * s_i')\)</span> reaches its maximum. </p>
-<p>Like DDM, there are two threshold values that define the borderline between no change, warning zone, and drift detected. These are as follows: </p>
+<p>EDDM (Early Drift Detection Method) aims to improve the detection rate of gradual
+concept drift in DDM, while keeping a good performance against abrupt concept drift.</p>
+<p>This method works by keeping track of the average distance between two errors instead
+of only the error rate. For this, it is necessary to keep track of the running average
+distance and the running standard deviation, as well as the maximum distance and the maximum
+standard deviation.</p>
+<p>The algorithm works similarly to the DDM algorithm, by keeping track of statistics only. It works
+with the running average distance (<span class="arithmatex">\(p_i'\)</span>) and the running standard deviation (<span class="arithmatex">\(s_i'\)</span>), as
+well as <span class="arithmatex">\(p'_{max}\)</span> and <span class="arithmatex">\(s'_{max}\)</span>, which are the values of <span class="arithmatex">\(p_i'\)</span> and <span class="arithmatex">\(s_i'\)</span> when
+<span class="arithmatex">\((p_i' + 2 * s_i')\)</span> reaches its maximum.</p>
+<p>Like DDM, there are two threshold values that define the borderline between no change, warning zone,
+and drift detected. These are as follows:</p>
 <ul>
 <li>
-<p>if <span class="arithmatex">\((p_i' + 2 * s_i') / (p'_{max} + 2 * s'_{max}) &lt; \alpha\)</span> -&gt; Warning zone </p>
+<p>if <span class="arithmatex">\((p_i' + 2 * s_i') / (p'_{max} + 2 * s'_{max}) &lt; \alpha\)</span> -&gt; Warning zone</p>
 </li>
 <li>
-<p>if <span class="arithmatex">\((p_i' + 2 * s_i') / (p'_{max} + 2 * s'_{max}) &lt; \beta\)</span> -&gt; Change detected </p>
+<p>if <span class="arithmatex">\((p_i' + 2 * s_i') / (p'_{max} + 2 * s'_{max}) &lt; \beta\)</span> -&gt; Change detected</p>
 </li>
 </ul>
-<p><span class="arithmatex">\(\alpha\)</span> and <span class="arithmatex">\(\beta\)</span> are set to 0.95 and 0.9, respectively. </p>
-<p><strong>Input:</strong> <code>x</code> is an entry in a stream of bits, where 1 indicates error/failure and 0 represents correct/normal values. </p>
-<p>For example, if a classifier's prediction <span class="arithmatex">\(y'\)</span> is right or wrong w.r.t. the true target label <span class="arithmatex">\(y\)</span>: </p>
+<p><span class="arithmatex">\(\alpha\)</span> and <span class="arithmatex">\(\beta\)</span> are set to 0.95 and 0.9, respectively.</p>
+<p><strong>Input:</strong> <code>x</code> is an entry in a stream of bits, where 1 indicates error/failure and 0
+represents correct/normal values.</p>
+<p>For example, if a classifier's prediction <span class="arithmatex">\(y'\)</span> is right or wrong w.r.t. the
+true target label <span class="arithmatex">\(y\)</span>:</p>
 <ul>
 <li>
 <p>0: Correct, <span class="arithmatex">\(y=y'\)</span></p>
 </li>
 <li>
-<p>1: Error, <span class="arithmatex">\(y \\neq y'\)</span></p>
+<p>1: Error, <span class="arithmatex">\(y \neq y'\)</span></p>
 </li>
 </ul>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>

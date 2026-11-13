@@ -5323,8 +5323,13 @@
 
 <h1 id="ewcov">EWCov<a class="headerlink" href="#ewcov" title="Permanent link">&para;</a></h1>
 <p>Exponentially weighted covariance.</p>
-<p>This is the bivariate counterpart of <a href="../../stats/EWVar"><code>stats.EWVar</code></a>. It tracks the covariance between two variables while giving more weight to recent observations, which is what you want when the relationship between the variables drifts over time (e.g. the co-movement of two asset returns during a changing market regime). </p>
-<p>Internally it uses the identity <span class="arithmatex">\(Cov(x, y) = E\[xy\] - E\[x\]E\[y\]\)</span>, with each expectation estimated by an exponentially weighted mean (<a href="../../stats/EWMean"><code>stats.EWMean</code></a>). Using the same <code>fading_factor</code> on the diagonal recovers <a href="../../stats/EWVar"><code>stats.EWVar</code></a> exactly.</p>
+<p>This is the bivariate counterpart of <a href="../../stats/EWVar"><code>stats.EWVar</code></a>. It tracks the covariance between two
+variables while giving more weight to recent observations, which is what you want when the
+relationship between the variables drifts over time (e.g. the co-movement of two asset
+returns during a changing market regime).</p>
+<p>Internally it uses the identity <span class="arithmatex">\(Cov(x, y) = E\[xy\] - E\[x\]E\[y\]\)</span>, with each expectation
+estimated by an exponentially weighted mean (<a href="../../stats/EWMean"><code>stats.EWMean</code></a>). Using the same <code>fading_factor</code>
+on the diagonal recovers <a href="../../stats/EWVar"><code>stats.EWVar</code></a> exactly.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>

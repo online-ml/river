@@ -4626,8 +4626,14 @@
 
 <h1 id="transformerunion">TransformerUnion<a class="headerlink" href="#transformerunion" title="Permanent link">&para;</a></h1>
 <p>Packs multiple transformers into a single one.</p>
-<p>Pipelines allow you to apply steps sequentially. Therefore, the output of a step becomes the input of the next one. In many cases, you may want to pass the output of a step to multiple steps. This simple transformer allows you to do so. In other words, it enables you to apply particular steps to different parts of an input. A typical example is when you want to scale numeric features and one-hot encode categorical features. </p>
-<p>This transformer is essentially a list of transformers. Whenever it is updated, it loops through each transformer and updates them. Meanwhile, calling <code>transform_one</code> collects the output of each transformer and merges them into a single dictionary.</p>
+<p>Pipelines allow you to apply steps sequentially. Therefore, the output of a step becomes the
+input of the next one. In many cases, you may want to pass the output of a step to multiple
+steps. This simple transformer allows you to do so. In other words, it enables you to apply
+particular steps to different parts of an input. A typical example is when you want to scale
+numeric features and one-hot encode categorical features.</p>
+<p>This transformer is essentially a list of transformers. Whenever it is updated, it loops
+through each transformer and updates them. Meanwhile, calling <code>transform_one</code> collects the
+output of each transformer and merges them into a single dictionary.</p>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
 <p>Take the following dataset:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">X</span> <span class="o">=</span> <span class="p">[</span>
@@ -4766,7 +4772,7 @@ a <code>StandardScaler</code>.</p>
 <p><span /></p>
 <details class="- abstract">
 <summary>transform_many</summary>
-<p>Passes the data through each transformer and packs the results together.</p>
+<p>Pass the data through each transformer and packs the results together.</p>
 <p>The per-transformer outputs are concatenated column-wise via narwhals, so the result is rebuilt in the caller's own backend (pandas, polars, pyarrow, ...). All transformers see the same rows in the same order, so a positional horizontal concat matches the historical index-aligned <code>pandas.concat(axis=1)</code>.</p>
 <p><strong>Parameters</strong></p>
 <ul>
@@ -4776,7 +4782,7 @@ a <code>StandardScaler</code>.</p>
 <p><span /></p>
 <details class="- abstract">
 <summary>transform_one</summary>
-<p>Passes the data through each transformer and packs the results together.</p>
+<p>Pass the data through each transformer and packs the results together.</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>x</strong>     — <code>dict[base.typing.FeatureName, Any]</code>    </li>

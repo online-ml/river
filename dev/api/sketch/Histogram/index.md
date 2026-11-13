@@ -78,7 +78,7 @@ for bin in hist:
 >
 > **iter\_cdf**
 >
-> Yields CDF values for a sorted iterable of values.
+> Yield CDF values for a sorted iterable of values.
 >
 > This is faster than calling `cdf` with many values.
 >

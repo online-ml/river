@@ -5827,9 +5827,14 @@
 
 <h1 id="geometricmean">GeometricMean<a class="headerlink" href="#geometricmean" title="Permanent link">&para;</a></h1>
 <p>Geometric mean score.</p>
-<p>The geometric mean is a good indicator of a classifier's performance in the presence of class imbalance because it is independent of the distribution of examples between classes. This implementation computes the geometric mean of class-wise sensitivity (recall). </p>
-<div class="arithmatex">\[ gm = \sqrt\[n\]{s_1\cdot s_2\cdot s_3\cdot \ldots\cdot s_n} \]</div>
-<p>where <span class="arithmatex">\(s_i\)</span> is the sensitivity (recall) of class <span class="arithmatex">\(i\)</span> and <span class="arithmatex">\(n\)</span> is the number of classes.</p>
+<p>The geometric mean is a good indicator of a classifier's performance in the presence of class
+imbalance because it is independent of the distribution of examples between classes. This
+implementation computes the geometric mean of class-wise sensitivity (recall).</p>
+<div class="arithmatex">\[
+gm = \sqrt\[n\]{s_1\cdot s_2\cdot s_3\cdot \ldots\cdot s_n}
+\]</div>
+<p>where <span class="arithmatex">\(s_i\)</span> is the sensitivity (recall) of class <span class="arithmatex">\(i\)</span> and <span class="arithmatex">\(n\)</span> is the
+number of classes.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
@@ -5850,7 +5855,7 @@
 </li>
 <li>
 <p><strong>works_with_weights</strong></p>
-<p>Indicate whether the model takes into consideration the effect of sample weights</p>
+<p>Indicate whether the model takes into consideration the effect of sample weights.</p>
 </li>
 </ul>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
@@ -5907,7 +5912,7 @@
 <p><span /></p>
 <details class="- abstract">
 <summary>works_with</summary>
-<p>Indicates whether or not a metric can work with a given model.</p>
+<p>Indicate whether or not a metric can work with a given model.</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>model</strong>     — <code>base.Estimator</code>    </li>

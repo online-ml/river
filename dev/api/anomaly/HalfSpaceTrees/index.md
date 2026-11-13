@@ -46,7 +46,7 @@ Note that high scores indicate anomalies, whereas low scores indicate normal obs
 
 - **size\_limit**
 
-  This is the threshold under which the node search stops during the scoring phase. The value .1 is a magic constant indicated in the original paper.
+  Threshold under which the node search stops during the scoring phase. The value .1 is a magic constant indicated in the original paper.
 
 ## Examples
 

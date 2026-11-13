@@ -4400,11 +4400,19 @@
 
 <h1 id="outputcodeclassifier">OutputCodeClassifier<a class="headerlink" href="#outputcodeclassifier" title="Permanent link">&para;</a></h1>
 <p>Output-code multiclass strategy.</p>
-<p>This also referred to as "error-correcting output codes". </p>
-<p>This class allows to learn a multi-class classification problem with a binary classifier. Each class is converted to a code of 0s and 1s. The length of the code is called  the code size. A copy of the classifier made for code. The codes associated with the classes are stored in a code book. </p>
-<p>When a new sample arrives, the label's code is retrieved from the code book. Then, each classifier is trained on the relevant part of code, which is either a 0 or a 1. </p>
-<p>For predicting, each classifier outputs a probability. These are then compared to each code in the code book, and the label which is the "closest" is chosen as the most likely class. Closeness is determined in terms of Manhattan distance. </p>
-<p>One specificity of online learning is that we don't how many classes there are initially. Therefore, a random procedure generates random codes on the fly whenever a previously unseed label appears.</p>
+<p>This also referred to as "error-correcting output codes".</p>
+<p>This class allows to learn a multi-class classification problem with a binary classifier. Each
+class is converted to a code of 0s and 1s. The length of the code is called  the code size. A
+copy of the classifier made for code. The codes associated with the classes are stored in a
+code book.</p>
+<p>When a new sample arrives, the label's code is retrieved from the code book. Then, each
+classifier is trained on the relevant part of code, which is either a 0 or a 1.</p>
+<p>For predicting, each classifier outputs a probability. These are then compared to each code in
+the code book, and the label which is the "closest" is chosen as the most likely class.
+Closeness is determined in terms of Manhattan distance.</p>
+<p>One specificity of online learning is that we don't how many classes there are initially.
+Therefore, a random procedure generates random codes on the fly whenever a previously unseed
+label appears.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>

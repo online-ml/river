@@ -5833,16 +5833,20 @@
 
 <h1 id="sea">SEA<a class="headerlink" href="#sea" title="Permanent link">&para;</a></h1>
 <p>SEA synthetic dataset.</p>
-<p>Implementation of the data stream with abrupt drift described in <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>. Each observation is composed of 3 features. Only the first two features are relevant. The target is binary, and is positive if the sum of the features exceeds a certain threshold. There are 4 thresholds to choose from. Concept drift can be introduced by switching the threshold anytime during the stream. </p>
+<p>Implementation of the data stream with abrupt drift described in <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>. Each observation is
+composed of 3 features. Only the first two features are relevant. The target is binary, and is
+positive if the sum of the features exceeds a certain threshold. There are 4 thresholds to
+choose from. Concept drift can be introduced by switching the threshold anytime during the
+stream.</p>
 <ul>
 <li>
-<p><strong>Variant 0</strong>: <code>True</code> if <span class="arithmatex">\(att1 + att2 &gt; 8\)</span> </p>
+<p><strong>Variant 0</strong>: <code>True</code> if <span class="arithmatex">\(att1 + att2 &gt; 8\)</span></p>
 </li>
 <li>
-<p><strong>Variant 1</strong>: <code>True</code> if <span class="arithmatex">\(att1 + att2 &gt; 9\)</span> </p>
+<p><strong>Variant 1</strong>: <code>True</code> if <span class="arithmatex">\(att1 + att2 &gt; 9\)</span></p>
 </li>
 <li>
-<p><strong>Variant 2</strong>: <code>True</code> if <span class="arithmatex">\(att1 + att2 &gt; 7\)</span> </p>
+<p><strong>Variant 2</strong>: <code>True</code> if <span class="arithmatex">\(att1 + att2 &gt; 7\)</span></p>
 </li>
 <li>
 <p><strong>Variant 3</strong>: <code>True</code> if <span class="arithmatex">\(att1 + att2 &gt; 9.5\)</span></p>

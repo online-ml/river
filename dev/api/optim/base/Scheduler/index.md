@@ -8,7 +8,7 @@ Can be used to program the learning rate schedule of an [`optim.base.Optimizer`]
 >
 > **get**
 >
-> Returns the learning rate at a given iteration.
+> Return the learning rate at a given iteration.
 >
 > **Parameters**
 >

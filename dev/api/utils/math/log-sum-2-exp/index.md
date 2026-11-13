@@ -1,6 +1,6 @@
 # log\_sum\_2\_exp
 
-Computation of log( (e^a + e^b) / 2) in an overflow-proof way
+Compute log( (e^a + e^b) / 2) in an overflow-proof way.
 
 ## Parameters
 

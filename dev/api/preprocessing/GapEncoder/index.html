@@ -4854,9 +4854,21 @@
 
 <h1 id="gapencoder">GapEncoder<a class="headerlink" href="#gapencoder" title="Permanent link">&para;</a></h1>
 <p>Online Gamma-Poisson encoder for fuzzy string categories.</p>
-<p>This is an online version of <a href="https://skrub-data.org/stable/reference/generated/skrub.GapEncoder.html">skrub's <code>GapEncoder</code></a>, learning one string at a time instead of in batches. Each string is turned into its character n-gram counts <code>v</code>, and we look for a small set of latent topics that explain those counts: <code>v ≈ h @ W</code>, where <code>W</code> holds the topic/n-gram weights and <code>h</code> says how strongly each topic is activated by the string. The counts are treated as Poisson with a Gamma prior on <code>h</code>, and both <code>h</code> and <code>W</code> are refined with multiplicative updates as data comes in. </p>
-<p>The point is fuzzy matching. Strings that mean the same thing usually share most of their n-grams ("london", "London, UK", "Lomdon"), so they light up the same topics even when they have no exact token in common. That makes the encoder handy for messy categorical text: hand-typed city names, job titles, chat messages full of typos, and so on. </p>
-<p>The n-gram vocabulary is not fixed ahead of time; it grows as new strings show up, the same way <a href="../../preprocessing/LDA"><code>preprocessing.LDA</code></a> grows its word vocabulary. Topics are kept up to date through two accumulators <code>A</code> and <code>B</code>, with a <code>half_life</code> (in samples) that lets old observations decay. <code>transform_one</code> is read-only: it only looks at n-grams it has already seen and never changes the model.</p>
+<p>This is an online version of <a href="https://skrub-data.org/stable/reference/generated/skrub.GapEncoder.html">skrub's <code>GapEncoder</code></a>,
+learning one string at a time instead of in batches. Each string is turned into its character
+n-gram counts <code>v</code>, and we look for a small set of latent topics that explain those counts:
+<code>v ≈ h @ W</code>, where <code>W</code> holds the topic/n-gram weights and <code>h</code> says how strongly each topic is
+activated by the string. The counts are treated as Poisson with a Gamma prior on <code>h</code>, and both
+<code>h</code> and <code>W</code> are refined with multiplicative updates as data comes in.</p>
+<p>The point is fuzzy matching. Strings that mean the same thing usually share most of their
+n-grams ("london", "London, UK", "Lomdon"), so they light up the same topics even when they
+have no exact token in common. That makes the encoder handy for messy categorical text:
+hand-typed city names, job titles, chat messages full of typos, and so on.</p>
+<p>The n-gram vocabulary is not fixed ahead of time; it grows as new strings show up, the same
+way <a href="../../preprocessing/LDA"><code>preprocessing.LDA</code></a> grows its word vocabulary. Topics are kept up to date through two
+accumulators <code>A</code> and <code>B</code>, with a <code>half_life</code> (in samples) that lets old observations decay.
+<code>transform_one</code> is read-only: it only looks at n-grams it has already seen and never changes
+the model.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>

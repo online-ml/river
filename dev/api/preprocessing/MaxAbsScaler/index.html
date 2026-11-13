@@ -4832,8 +4832,12 @@
 
 <h1 id="maxabsscaler">MaxAbsScaler<a class="headerlink" href="#maxabsscaler" title="Permanent link">&para;</a></h1>
 <p>Scales the data to a [-1, 1] range based on absolute maximum.</p>
-<p>Under the hood a running absolute max is maintained. This scaler is meant for data that is already centered at zero or sparse data. It does not shift/center the data, and thus does not destroy any sparsity. </p>
-<p>When <code>window_size</code> is set, the scaler tracks the absolute max over the last <code>window_size</code> observations via <a href="../../stats/RollingAbsMax"><code>stats.RollingAbsMax</code></a> instead of the entire stream.</p>
+<p>Under the hood a running absolute max is maintained. This scaler is meant for
+data that is already centered at zero or sparse data. It does not shift/center
+the data, and thus does not destroy any sparsity.</p>
+<p>When <code>window_size</code> is set, the scaler tracks the absolute max over the last
+<code>window_size</code> observations via <a href="../../stats/RollingAbsMax"><code>stats.RollingAbsMax</code></a> instead of the entire
+stream.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>

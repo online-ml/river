@@ -8,7 +8,7 @@ Base class for all loss functions.
 >
 > ****call****
 >
-> Returns the loss.
+> Return the loss.
 >
 > **Parameters**
 >

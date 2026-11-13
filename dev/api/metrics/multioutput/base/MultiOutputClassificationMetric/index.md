@@ -20,7 +20,7 @@ Mother class for all multi-output classification metrics.
 - **requires\_labels**
 - **works\_with\_weights**
 
-  Indicate whether the model takes into consideration the effect of sample weights
+  Indicate whether the model takes into consideration the effect of sample weights.
 
 ## Methods
 
@@ -68,7 +68,7 @@ Mother class for all multi-output classification metrics.
 >
 > **works\_with**
 >
-> Indicates whether or not a metric can work with a given model.
+> Indicate whether or not a metric can work with a given model.
 >
 > **Parameters**
 >

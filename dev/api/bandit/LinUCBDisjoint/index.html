@@ -4736,8 +4736,12 @@
 
 <h1 id="linucbdisjoint">LinUCBDisjoint<a class="headerlink" href="#linucbdisjoint" title="Permanent link">&para;</a></h1>
 <p>LinUCB, disjoint variant.</p>
-<p>Although it works, as of yet it is too slow to realistically be used in practice. </p>
-<p>The way this works is that each arm is assigned a <a href="../../linear-model/BayesianLinearRegression"><code>linear_model.BayesianLinearRegression</code></a> instance. This instance is updated every time the arm is pulled. The context is used as features for the regression. The reward is used as the target. The posterior distribution is used to compute the upper confidence bound. The arm with the highest upper confidence bound is pulled.</p>
+<p>Although it works, as of yet it is too slow to realistically be used in practice.</p>
+<p>The way this works is that each arm is assigned a <a href="../../linear-model/BayesianLinearRegression"><code>linear_model.BayesianLinearRegression</code></a>
+instance. This instance is updated every time the arm is pulled. The context is used as
+features for the regression. The reward is used as the target. The posterior distribution
+is used to compute the upper confidence bound. The arm with the highest upper confidence
+bound is pulled.</p>
 <h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
@@ -4798,7 +4802,7 @@
 <p><span /></p>
 <details class="- abstract">
 <summary>update</summary>
-<p>Rewrite update function</p>
+<p>Rewrite update function.</p>
 <p><strong>Parameters</strong></p>
 <ul>
 <li><strong>arm_id</strong>    </li>

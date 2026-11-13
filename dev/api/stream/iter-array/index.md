@@ -1,6 +1,6 @@
 # iter\_array
 
-Iterates over the rows from an array of features and an array of targets.
+Iterate over the rows from an array of features and an array of targets.
 
 This method is intended to work with `numpy` arrays, but should also work with Python lists.
 

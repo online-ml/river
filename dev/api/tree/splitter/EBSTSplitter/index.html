@@ -4930,9 +4930,19 @@
 
 <h1 id="ebstsplitter">EBSTSplitter<a class="headerlink" href="#ebstsplitter" title="Permanent link">&para;</a></h1>
 <p>iSOUP-Tree's Extended Binary Search Tree (E-BST).</p>
-<p>This class implements the Extended Binary Search Tree<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> (E-BST) structure, using the variant employed by Osojnik et al.<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup> in the iSOUP-Tree algorithm. This structure is employed to observe the target space distribution. </p>
-<p>Proposed along with Fast Incremental Model Tree with Drift Detection<sup id="fnref2:1"><a class="footnote-ref" href="#fn:1">1</a></sup> (FIMT-DD), E-BST was the first attribute observer (AO) proposed for incremental Hoeffding Tree regressors. This AO works by storing all observations between splits in an extended binary search tree structure. E-BST stores the input feature realizations and statistics of the target(s) that enable calculating the split heuristic at any time. To alleviate time and memory costs, E-BST implements a memory management routine, where the worst split candidates are pruned from the binary tree. </p>
-<p>In this variant, only the left branch statistics are stored and the complete split-enabling statistics are calculated with an in-order traversal of the binary search tree.</p>
+<p>This class implements the Extended Binary Search Tree<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> (E-BST)
+structure, using the variant employed by Osojnik et al.<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup> in the
+iSOUP-Tree algorithm. This structure is employed to observe the target
+space distribution.</p>
+<p>Proposed along with Fast Incremental Model Tree with Drift Detection<sup id="fnref2:1"><a class="footnote-ref" href="#fn:1">1</a></sup> (FIMT-DD), E-BST was
+the first attribute observer (AO) proposed for incremental Hoeffding Tree regressors. This
+AO works by storing all observations between splits in an extended binary search tree
+structure. E-BST stores the input feature realizations and statistics of the target(s) that
+enable calculating the split heuristic at any time. To alleviate time and memory costs, E-BST
+implements a memory management routine, where the worst split candidates are pruned from the
+binary tree.</p>
+<p>In this variant, only the left branch statistics are stored and the complete split-enabling
+statistics are calculated with an in-order traversal of the binary search tree.</p>
 <h2 id="attributes">Attributes<a class="headerlink" href="#attributes" title="Permanent link">&para;</a></h2>
 <ul>
 <li>

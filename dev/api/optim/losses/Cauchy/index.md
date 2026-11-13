@@ -16,7 +16,7 @@ Cauchy loss function.
 >
 > ****call****
 >
-> Returns the loss.
+> Return the loss.
 >
 > **Parameters**
 >
