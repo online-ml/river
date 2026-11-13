@@ -37,6 +37,10 @@
 
 - `BayesianLinearRegression.predict_dist_one` now replaces `BayesianLinearRegression.predict_one(..., with_dist=True)` to better respect the `Regressor` interface while still being able to predict distributions.
 
+## metrics
+
+- Fix RMSLE reversion in rolling windows.
+
 ## sketch
 
 - The `sketch` module is now fully type-annotated.
