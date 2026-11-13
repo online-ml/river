@@ -65,11 +65,11 @@ for x, y in stream.iter_arff('cars.arff', target='price'):
 ```
 
 ```text
-{'make': 'Toyota', 'model': ' Corolla', 'year': 2018.0, 'mpg': 30.5} 15000.0
-{'make': 'Honda', 'model': ' Civic', 'year': 2019.0, 'mpg': 32.2} 16000.0
-{'make': 'Ford', 'model': ' Mustang', 'year': 2020.0, 'mpg': 25.0} 25000.0
-{'make': 'Chevrolet', 'model': ' Malibu', 'year': 2017.0, 'mpg': 28.9} 18000.0
-{'make': 'Toyota', 'model': ' Camry', 'year': 2019.0, 'mpg': 29.8} 22000.0
+{'make': 'Toyota', 'model': 'Corolla', 'year': 2018.0, 'mpg': 30.5} 15000.0
+{'make': 'Honda', 'model': 'Civic', 'year': 2019.0, 'mpg': 32.2} 16000.0
+{'make': 'Ford', 'model': 'Mustang', 'year': 2020.0, 'mpg': 25.0} 25000.0
+{'make': 'Chevrolet', 'model': 'Malibu', 'year': 2017.0, 'mpg': 28.9} 18000.0
+{'make': 'Toyota', 'model': 'Camry', 'year': 2019.0, 'mpg': 29.8} 22000.0
 ```
 
 Finally, let's delete the example file.
