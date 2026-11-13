@@ -11,7 +11,7 @@ from .snarimax import SNARIMAX
 
 
 def iter_evaluate(*args, **kwargs):
-    """Deprecated: use `evaluate.iter_evaluate` instead."""
+    """Deprecated: use `evaluate.iter_evaluate` instead."""  # noqa: D401
     warnings.warn(
         "`time_series.iter_evaluate` is deprecated and will be removed in a future release; "
         "use `evaluate.iter_evaluate` instead.",
@@ -24,7 +24,7 @@ def iter_evaluate(*args, **kwargs):
 
 
 def evaluate(*args, **kwargs):
-    """Deprecated: use `evaluate.evaluate` instead."""
+    """Deprecated: use `evaluate.evaluate` instead."""  # noqa: D401
     warnings.warn(
         "`time_series.evaluate` is deprecated and will be removed in a future release; "
         "use `evaluate.evaluate` instead.",

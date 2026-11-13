@@ -9,7 +9,7 @@ from river.datasets import synth
 
 
 class ConceptDriftStream(datasets.base.SyntheticDataset):
-    """Generates a stream with concept drift.
+    r"""Generates a stream with concept drift.
 
     A stream generator that adds concept drift or change by joining two
     streams. This is done by building a weighted combination of two pure
@@ -72,10 +72,10 @@ class ConceptDriftStream(datasets.base.SyntheticDataset):
     Notes
     -----
     An optional way to estimate the width of the transition $w$ is based on
-    the angle $\\alpha$, $w = 1/ tan(\\alpha)$. Since width corresponds to
+    the angle $\alpha$, $w = 1/ tan(\alpha)$. Since width corresponds to
     the number of samples for the transition, the width is rounded to the
-    nearest smaller integer. Notice that larger values of $\\alpha$ result in
-    smaller widths. For $\\alpha > 45.0$, the width is smaller than 1 so values
+    nearest smaller integer. Notice that larger values of $\alpha$ result in
+    smaller widths. For $\alpha > 45.0$, the width is smaller than 1 so values
     are rounded to 1 to avoid division by zero errors.
 
     """

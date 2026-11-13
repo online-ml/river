@@ -12,7 +12,6 @@ class PreviousImputer(base.Transformer):
 
     Examples
     --------
-
     >>> from river import preprocessing
 
     >>> imputer = preprocessing.PreviousImputer()
@@ -62,7 +61,6 @@ class StatImputer(base.Transformer):
 
     Examples
     --------
-
     >>> from river import preprocessing
     >>> from river import stats
 

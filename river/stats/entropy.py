@@ -28,7 +28,6 @@ class Entropy(stats.base.Univariate):
 
     Examples
     --------
-
     >>> import math
     >>> import random
     >>> import numpy as np

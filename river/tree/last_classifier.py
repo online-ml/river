@@ -79,14 +79,12 @@ class LASTClassifier(HoeffdingTreeClassifier, base.Classifier):
 
     References
     ----------
-
     [^1]: Daniel Nowak Assis, Jean Paul Barddal, and Fabrício Enembreck.
     Just Change on Change: Adaptive Splitting Time for Decision Trees in
     Data Stream Classification . In Proceedings of ACM SAC Conference (SAC’24).
 
     Examples
     --------
-
     >>> from river.datasets import synth
     >>> from river import evaluate
     >>> from river import metrics
@@ -303,7 +301,6 @@ class LASTClassifier(HoeffdingTreeClassifier, base.Classifier):
         * If growth is allowed then attempt
           to split.
         """
-
         # Updates the set of observed classes
         self.classes.add(y)
 

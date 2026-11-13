@@ -78,7 +78,6 @@ def _iter_policies():
 @pytest.mark.skip(reason="flaky")  # type: ignore[misc]
 def test_better_than_random_policy(policy: bandit.base.Policy, env: gym.Env):
     """Test that the policy is better than random."""
-
     n_trials = 30
     n_successes = 0
 

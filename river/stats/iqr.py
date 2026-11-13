@@ -16,7 +16,6 @@ class IQR(stats.base.Univariate):
 
     Examples
     --------
-
     >>> from river import stats
 
     >>> iqr = stats.IQR(q_inf=0.25, q_sup=0.75)
@@ -92,7 +91,6 @@ class RollingIQR(stats.base.RollingUnivariate):
 
     Examples
     --------
-
     >>> from river import stats
     >>> rolling_iqr = stats.RollingIQR(
     ...     q_inf=0.25,

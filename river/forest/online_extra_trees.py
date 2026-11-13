@@ -425,9 +425,9 @@ class ETRegressor(tree.HoeffdingTreeRegressor):
 
     def _new_learning_node(self, initial_stats=None, parent=None):  # noqa
         """Create a new learning node.
+
         The type of learning node depends on the tree configuration.
         """
-
         if parent is not None:
             depth = parent.depth + 1
         else:
@@ -601,7 +601,6 @@ class OXTRegressor(ExtraTrees, base.Regressor):
 
     Examples
     --------
-
     >>> from river import datasets
     >>> from river import evaluate
     >>> from river import metrics

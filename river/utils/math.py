@@ -50,7 +50,6 @@ def dotvecmat(x: Mapping[Any, float], A: Mapping[tuple[Any, Any], float]) -> dic
 
     Examples
     --------
-
     >>> from river import utils
 
     >>> x = {0: 4, 1: 5}
@@ -65,7 +64,6 @@ def dotvecmat(x: Mapping[Any, float], A: Mapping[tuple[Any, Any], float]) -> dic
     {0: 10.0, 1: 19.0}
 
     """
-
     C: dict[Any, float] = {}
 
     for (i, xi), ((j, k), ai) in itertools.product(x.items(), A.items()):
@@ -89,7 +87,6 @@ def matmul2d(
 
     Examples
     --------
-
     >>> import pprint
     >>> from river import utils
 
@@ -136,7 +133,6 @@ def outer(u: Mapping[Any, float], v: Mapping[Any, float]) -> dict[tuple[Any, Any
 
     Examples
     --------
-
     >>> import pprint
     >>> from river import utils
 
@@ -190,14 +186,13 @@ def _manhattan_distance(a: Mapping[Any, float], b: Mapping[Any, float]) -> float
 
 
 def softmax(y_pred: MutableMapping[Any, float]) -> MutableMapping[Any, float]:
-    """Normalizes a dictionary of predicted probabilities, in-place.
+    """Normalize a dictionary of predicted probabilities, in-place.
 
     Parameters
     ----------
     y_pred
 
     """
-
     if not y_pred:
         return y_pred
 
@@ -226,7 +221,7 @@ def prod(iterable: Iterable[Any]) -> Any:
 
 
 def dot(x: Mapping[Any, float], y: Mapping[Any, float]) -> float:
-    """Returns the dot product of two vectors represented as dicts.
+    """Return the dot product of two vectors represented as dicts.
 
     Parameters
     ----------
@@ -235,7 +230,6 @@ def dot(x: Mapping[Any, float], y: Mapping[Any, float]) -> float:
 
     Examples
     --------
-
     >>> from river import utils
 
     >>> x = {'x0': 1, 'x1': 2}
@@ -245,14 +239,13 @@ def dot(x: Mapping[Any, float], y: Mapping[Any, float]) -> float:
     42
 
     """
-
     if len(x) < len(y):
         return sum(xi * y[i] for i, xi in x.items() if i in y)
     return sum(x[i] * yi for i, yi in y.items() if i in x)
 
 
 def chain_dot(*xs: Mapping[Any, float]) -> float:
-    """Returns the dot product of multiple vectors represented as dicts.
+    """Return the dot product of multiple vectors represented as dicts.
 
     Parameters
     ----------
@@ -260,7 +253,6 @@ def chain_dot(*xs: Mapping[Any, float]) -> float:
 
     Examples
     --------
-
     >>> from river import utils
 
     >>> x = {'x0': 1, 'x1': 2, 'x2': 1}
@@ -416,7 +408,7 @@ def woodbury_matrix(A: npt.NDArray[Any], U: npt.NDArray[Any], V: npt.NDArray[Any
 
 
 def log_sum_2_exp(a: float, b: float) -> float:
-    """Computation of log( (e^a + e^b) / 2) in an overflow-proof way
+    """Compute log( (e^a + e^b) / 2) in an overflow-proof way.
 
     Parameters
     ----------

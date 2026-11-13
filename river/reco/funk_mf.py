@@ -13,11 +13,11 @@ __all__ = ["FunkMF"]
 
 
 class FunkMF(reco.base.Ranker):
-    """Funk Matrix Factorization for recommender systems.
+    r"""Funk Matrix Factorization for recommender systems.
 
     The model equation is defined as:
 
-    $$\\hat{y}(x) = \\langle \\mathbf{v}_u, \\mathbf{v}_i \\rangle = \\sum_{f=1}^{k} \\mathbf{v}_{u, f} \\cdot \\mathbf{v}_{i, f}$$
+    $$\hat{y}(x) = \langle \mathbf{v}_u, \mathbf{v}_i \rangle = \sum_{f=1}^{k} \mathbf{v}_{u, f} \cdot \mathbf{v}_{i, f}$$
 
     where $k$ is the number of latent factors.
 
@@ -54,7 +54,6 @@ class FunkMF(reco.base.Ranker):
 
     Examples
     --------
-
     >>> from river import optim
     >>> from river import reco
 

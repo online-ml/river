@@ -12,7 +12,6 @@ class MultiLabelConfusionMatrix:
 
     Examples
     --------
-
     >>> from river import metrics
 
     >>> cm = metrics.multioutput.MultiLabelConfusionMatrix()

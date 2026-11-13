@@ -44,7 +44,6 @@ class CategoricalNB(base.BaseNB):
 
     Examples
     --------
-
     >>> from river import naive_bayes
 
     >>> X = [
@@ -107,7 +106,7 @@ class CategoricalNB(base.BaseNB):
         self.feature_counts = collections.defaultdict(_feature_counts)
 
     def learn_one(self, x, y):
-        """Updates the model with a single observation.
+        """Update the model with a single observation.
 
         Parameters
         ----------
@@ -140,7 +139,7 @@ class CategoricalNB(base.BaseNB):
         )
 
     def joint_log_likelihood(self, x):
-        """Computes the joint log likelihood of input features.
+        """Compute the joint log likelihood of input features.
 
         Parameters
         ----------
@@ -193,7 +192,7 @@ class CategoricalNB(base.BaseNB):
                     self.feature_counts[col][v].update({c: 1})
 
     def joint_log_likelihood_many(self, X: IntoDataFrame) -> IntoDataFrame:
-        """Computes the joint log likelihood of input features.
+        """Compute the joint log likelihood of input features.
 
         Parameters
         ----------

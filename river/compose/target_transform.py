@@ -21,7 +21,6 @@ class TargetTransformRegressor(base.Wrapper, base.Regressor):
 
     Examples
     --------
-
     >>> import math
     >>> from river import compose
     >>> from river import datasets

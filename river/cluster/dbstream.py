@@ -8,7 +8,7 @@ from river import base, utils
 
 
 class DBSTREAM(base.Clusterer):
-    r"""DBSTREAM
+    r"""The DBSTREAM algorithm.
 
     DBSTREAM [^1] is a clustering algorithm for evolving data streams.
     It is the first micro-cluster-based online clustering component that
@@ -100,7 +100,6 @@ class DBSTREAM(base.Clusterer):
 
     Examples
     --------
-
     >>> from river import cluster
     >>> from river import stream
 
@@ -435,7 +434,7 @@ class DBSTREAM(base.Clusterer):
 
 
 class DBSTREAMMicroCluster(metaclass=ABCMeta):
-    """DBStream Micro-cluster class"""
+    """DBStream Micro-cluster class."""
 
     __slots__ = ("center", "last_update", "weight")
 

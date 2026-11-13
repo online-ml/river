@@ -81,7 +81,7 @@ def write_file() -> WriteFile:
 
 @pytest.fixture
 def opened_files(monkeypatch: pytest.MonkeyPatch) -> list[typing.TextIO]:
-    """Records the files the readers open themselves, so tests can check they close them."""
+    """Record the files the readers open themselves, so tests can check they close them."""
     handles: list[typing.TextIO] = []
     open_filepath = utils.open_filepath
 

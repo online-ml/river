@@ -1,4 +1,4 @@
-"""Shared utility classes and functions"""
+"""Shared utility classes and functions."""
 
 from __future__ import annotations
 

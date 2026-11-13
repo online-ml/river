@@ -20,7 +20,6 @@ class Multinomial(base.DiscreteDistribution):
 
     Examples
     --------
-
     >>> from river import proba
 
     >>> p = proba.Multinomial(['green'] * 3)

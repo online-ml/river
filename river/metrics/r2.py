@@ -6,7 +6,7 @@ __all__ = ["R2"]
 
 
 class R2(metrics.base.RegressionMetric):
-    """Coefficient of determination ($R^2$) score
+    """Coefficient of determination ($R^2$) score.
 
     The coefficient of determination, denoted $R^2$ or $r^2$, is the proportion
     of the variance in the dependent variable that is predictable from the

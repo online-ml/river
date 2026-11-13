@@ -36,7 +36,6 @@ class RollingMin(stats.base.RollingUnivariate):
 
     Examples
     --------
-
     >>> from river import stats
 
     >>> X = [1, -4, 3, -2, 2, 1]

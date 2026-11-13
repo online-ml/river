@@ -81,7 +81,6 @@ class Estimator(base.Base, abc.ABC, metaclass=EstimatorMeta):
         TODO: this could be a cachedproperty.
 
         """
-
         tags = self._more_tags()
 
         for parent in self.__class__.__mro__:
@@ -94,7 +93,7 @@ class Estimator(base.Base, abc.ABC, metaclass=EstimatorMeta):
 
     @classmethod
     def _unit_test_params(cls) -> Iterator[dict[str, Any]]:
-        """Indicates which parameters to use during unit testing.
+        """Indicate which parameters to use during unit testing.
 
         Most estimators have a default value for each of their parameters. However, in some cases,
         no default value is specified. This class method allows to circumvent this issue when the
@@ -107,7 +106,7 @@ class Estimator(base.Base, abc.ABC, metaclass=EstimatorMeta):
         yield {}
 
     def _unit_test_skips(self) -> set[str]:
-        """Indicates which checks to skip during unit testing.
+        """Indicate which checks to skip during unit testing.
 
         Most estimators pass the full test suite. However, in some cases, some estimators might not
         be able to pass certain checks.

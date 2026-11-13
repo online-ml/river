@@ -36,7 +36,6 @@ class TransformerUnion(base.MiniBatchTransformer):
 
     Examples
     --------
-
     Take the following dataset:
 
     >>> X = [
@@ -217,8 +216,7 @@ class TransformerUnion(base.MiniBatchTransformer):
         return any(t._supervised for t in self.transformers.values())
 
     def _add_step(self, transformer):
-        """Adds a transformer while taking care of the input type."""
-
+        """Add a transformer while taking care of the input type."""
         name = None
         if isinstance(transformer, tuple):
             name, transformer = transformer
@@ -276,7 +274,7 @@ class TransformerUnion(base.MiniBatchTransformer):
                 t.learn_one(x)
 
     def transform_one(self, x):
-        """Passes the data through each transformer and packs the results together."""
+        """Pass the data through each transformer and packs the results together."""
         # Equivalent to `dict(ChainMap(*outputs))` (first-occurrence wins for duplicate
         # keys) but avoids the ChainMap construction overhead.
         result: dict = {}
@@ -305,7 +303,7 @@ class TransformerUnion(base.MiniBatchTransformer):
                 t.learn_many(X)
 
     def transform_many(self, X):
-        """Passes the data through each transformer and packs the results together.
+        """Pass the data through each transformer and packs the results together.
 
         The per-transformer outputs are concatenated column-wise via narwhals, so the result is
         rebuilt in the caller's own backend (pandas, polars, pyarrow, ...). All transformers see

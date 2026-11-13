@@ -5,7 +5,6 @@ import copy
 
 def check_learn_one(model, dataset):
     """learn_one should accept a target followed by optional exogenous features."""
-
     for x, y in dataset:
         xx, yy = copy.deepcopy(x), copy.deepcopy(y)
 
@@ -16,8 +15,7 @@ def check_learn_one(model, dataset):
 
 
 def check_forecast(model, dataset):
-    """forecast should return one prediction for each requested horizon step."""
-
+    """Forecast should return one prediction for each requested horizon step."""
     horizon = 3
     xs = [
         {"time": 100.0, "period": 0.0},

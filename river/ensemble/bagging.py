@@ -40,7 +40,6 @@ class BaggingClassifier(BaseBagging, base.Classifier):
 
     Examples
     --------
-
     In the following example three logistic regressions are bagged together. The performance is
     slightly better than when using a single logistic regression.
 
@@ -86,7 +85,6 @@ class BaggingClassifier(BaseBagging, base.Classifier):
 
     def predict_proba_one(self, x, **kwargs):
         """Averages the predictions of each classifier."""
-
         y_pred = collections.Counter()
         for classifier in self:
             y_pred.update(classifier.predict_proba_one(x, **kwargs))
@@ -117,7 +115,6 @@ class BaggingRegressor(BaseBagging, base.Regressor):
 
     Examples
     --------
-
     In the following example three logistic regressions are bagged together. The performance is
     slightly better than when using a single logistic regression.
 
@@ -283,7 +280,6 @@ class LeveragingBaggingClassifier(BaggingClassifier):
 
     Examples
     --------
-
     >>> from river import datasets
     >>> from river import ensemble
     >>> from river import evaluate

@@ -102,7 +102,6 @@ class Policy(base.Base, abc.ABC):
             Keyword arguments to pass to the reward object.
 
         """
-
         if self.reward_scaler:
             reward = reward_args[0]
             self.reward_scaler._update(y=reward)
@@ -202,7 +201,6 @@ class ContextualPolicy(Policy):
             Keyword arguments to pass to the reward object.
 
         """
-
         if self.reward_scaler:
             reward = reward_args[0]
             self.reward_scaler._update(y=reward)

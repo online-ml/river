@@ -48,11 +48,10 @@ class Bin:
 
 
 def coverage_ratio(x: Bin, y: Bin) -> float:
-    """Returns the amount of y covered by x.
+    """Return the amount of y covered by x.
 
     Examples
     --------
-
     >>> coverage_ratio(Bin(1, 2, 0), Bin(1, 2, 0))
     1.0
 
@@ -100,7 +99,6 @@ class Histogram(collections.UserList[Bin], base.Base):
 
     Examples
     --------
-
     >>> from river import sketch
     >>> import numpy as np
 
@@ -186,7 +184,6 @@ class Histogram(collections.UserList[Bin], base.Base):
 
     def _shrink(self, k: int) -> None:
         """Shrinks the histogram by merging the k closest pairs of bins."""
-
         data = self.data
 
         if k == 1:
@@ -218,7 +215,7 @@ class Histogram(collections.UserList[Bin], base.Base):
             data[i] += data.pop(i + 1)  # Calls Bin.__iadd__
 
     def iter_cdf(self, X: Iterable[float], verbose: bool = False) -> Iterator[float]:
-        """Yields CDF values for a sorted iterable of values.
+        """Yield CDF values for a sorted iterable of values.
 
         This is faster than calling `cdf` with many values.
 
@@ -231,7 +228,6 @@ class Histogram(collections.UserList[Bin], base.Base):
 
         Examples
         --------
-
         >>> from river import sketch
 
         >>> hist = sketch.Histogram()
@@ -259,7 +255,6 @@ class Histogram(collections.UserList[Bin], base.Base):
         [0.0, 0.0]
 
         """
-
         # Nothing has been seen yet: the CDF is identically zero.
         if not self.n:
             for _ in X:
@@ -288,7 +283,6 @@ class Histogram(collections.UserList[Bin], base.Base):
 
         Examples
         --------
-
         >>> from river import sketch
 
         >>> hist = sketch.Histogram()
@@ -342,7 +336,6 @@ class Histogram(collections.UserList[Bin], base.Base):
 
         Examples
         --------
-
         >>> h1 = Histogram()
         >>> for b in [Bin(0, 2, 4), Bin(4, 5, 9)]:
         ...     h1.append(b)

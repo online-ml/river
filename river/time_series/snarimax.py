@@ -160,7 +160,6 @@ class SNARIMAX(time_series.base.Forecaster):
 
     Examples
     --------
-
     >>> import datetime as dt
     >>> from river import datasets
     >>> from river import time_series

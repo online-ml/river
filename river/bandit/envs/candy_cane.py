@@ -24,7 +24,6 @@ class CandyCaneContest(gym.Env):
 
     Examples
     --------
-
     >>> import gymnasium as gym
     >>> from river import stats
 

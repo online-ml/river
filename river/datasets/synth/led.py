@@ -49,7 +49,6 @@ class LED(datasets.base.SyntheticDataset):
 
     References
     ----------
-
     [^1]: Leo Breiman, Jerome Friedman, R. Olshen, and Charles J. Stone.
           Classification and Regression Trees. Wadsworth and Brooks,
           Monterey, CA,1984.

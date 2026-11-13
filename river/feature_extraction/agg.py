@@ -38,7 +38,6 @@ class Agg(base.Transformer):
 
     Examples
     --------
-
     Consider the following dataset:
 
     >>> X = [
@@ -238,7 +237,6 @@ class TargetAgg(base.SupervisedTransformer, Agg):
 
     Examples
     --------
-
     Consider the following dataset, where the second value of each value is the target:
 
     >>> dataset = [

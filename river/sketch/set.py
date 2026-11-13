@@ -42,7 +42,6 @@ class Set(base.Base):
 
     Examples
     --------
-
     >>> import random
     >>> from river import sketch
 

@@ -19,7 +19,6 @@ class SortedWindow(collections.UserList[T]):
 
     Examples
     --------
-
     >>> from river import utils
 
     >>> window = utils.SortedWindow(size=3)

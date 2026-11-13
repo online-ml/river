@@ -11,7 +11,7 @@ __all__ = ["GapEncoder"]
 
 
 def _char_ngrams(text: str, ngram_range: tuple[int, int]) -> collections.Counter:
-    """Counts of contiguous character n-grams (spaces included).
+    """Find the counts of contiguous character n-grams (spaces included).
 
     Like sklearn's `CountVectorizer(analyzer='char')`, except whitespace runs are not collapsed.
 
@@ -89,7 +89,6 @@ class GapEncoder(base.Transformer):
 
     Examples
     --------
-
     Say people type in city names by hand. The same city shows up spelled several different ways,
     with typos and extra bits, and no two spellings need to share a whole word. The encoder still
     groups the variants under the same topic:

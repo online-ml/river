@@ -25,7 +25,6 @@ class PerOutputClassifier(base.Wrapper, base.MultiLabelClassifier, collections.U
 
     Examples
     --------
-
     >>> import random
 
     >>> from river import datasets

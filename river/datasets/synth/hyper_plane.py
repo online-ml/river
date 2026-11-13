@@ -46,7 +46,6 @@ class Hyperplane(datasets.base.SyntheticDataset):
 
     Examples
     --------
-
     >>> from river.datasets import synth
 
     >>> dataset = synth.Hyperplane(seed=42, n_features=2)

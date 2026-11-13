@@ -82,7 +82,6 @@ class Link(Univariate[_ChainedOutT], Generic[_OutT, _ChainedOutT]):
 
     Examples
     --------
-
     >>> from river import stats
     >>> stat = stats.Shift(1) | stats.Mean()
 

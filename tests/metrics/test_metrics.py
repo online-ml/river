@@ -18,8 +18,7 @@ from river import metrics, utils
 
 
 def load_metrics():
-    """Yields all the metrics."""
-
+    """Yield all the metrics."""
     for name, obj in inspect.getmembers(importlib.import_module("river.metrics"), inspect.isclass):
         if name == "Metrics":
             continue
@@ -68,8 +67,7 @@ def test_repr(metric):
 
 
 def generate_test_cases(metric, n):
-    """Yields n (y_true, y_pred, sample_weight) triplets for a given metric."""
-
+    """Yield n (y_true, y_pred, sample_weight) triplets for a given metric."""
     sample_weights = [random.random() for _ in range(n)]
 
     if isinstance(metric, metrics.base.ClassificationMetric):
@@ -102,7 +100,8 @@ def partial(f, **kwargs):
 
 def roc_auc_score(y_true, y_score):
     """
-    This functions is a wrapper to the scikit-learn roc_auc_score function.
+    Wrap the scikit-learn roc_auc_score function.
+
     It was created because the scikit version utilizes array of scores and
     may raise a ValueError if there is only one class present in y_true.
     This wrapper returns 0 if y_true has only one class and
@@ -119,8 +118,9 @@ def roc_auc_score(y_true, y_score):
 
 def pr_auc_score(y_true, y_score):
     """
-    This function is a wrapper to the scikit-learn precision_recall_curve and
-    auc functions. Returns 0 if y_true has only one class.
+    Wrap the scikit-learn precision_recall_curve and auc functions.
+
+    Returns 0 if y_true has only one class.
     """
     nonzero = np.count_nonzero(y_true)
     if nonzero == 0 or nonzero == len(y_true):

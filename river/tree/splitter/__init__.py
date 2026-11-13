@@ -1,4 +1,5 @@
-"""
+"""Leaf splitters for decision trees.
+
 This module implements the Attribute Observers (AO) (or tree splitters) that are used by the
 Hoeffding Trees (HT). It also implements the feature quantizers (FQ) used by Stochastic Gradient
 Trees (SGT). AOs are a core aspect of the HTs construction, and might represent one of the major

@@ -135,7 +135,6 @@ class SuccessiveHalvingRegressor(SuccessiveHalving, ModelSelectionRegressor):
 
     Examples
     --------
-
     As an example, let's use successive halving to tune the optimizer of a linear regression.
     We'll first define the model.
 
@@ -293,7 +292,6 @@ class SuccessiveHalvingClassifier(SuccessiveHalving, ModelSelectionClassifier):
 
     Examples
     --------
-
     As an example, let's use successive halving to tune the optimizer of a logistic regression.
     We'll first define the model.
 

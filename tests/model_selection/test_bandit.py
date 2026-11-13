@@ -19,8 +19,7 @@ from river import (
 
 def test_1259():
     """
-
-    https://github.com/online-ml/river/issues/1259
+    See https://github.com/online-ml/river/issues/1259.
 
     >>> from river import bandit
     >>> from river import datasets

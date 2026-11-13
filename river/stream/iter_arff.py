@@ -99,7 +99,7 @@ def iter_arff(
     sparse: bool = False,
     encoding: str = "utf-8",
 ) -> base.typing.Stream:
-    """Iterates over rows from an ARFF file.
+    """Iterate over rows from an ARFF file.
 
     Parameters
     ----------
@@ -120,7 +120,6 @@ def iter_arff(
 
     Examples
     --------
-
     >>> cars = '''
     ... @relation CarData
     ... @attribute make {Toyota, Honda, Ford, Chevrolet}
@@ -236,7 +235,6 @@ def iter_arff(
     [^1]: [ARFF format description from Weka](https://waikato.github.io/weka-wiki/formats_and_processing/arff_stable/)
 
     """
-
     # If a file is not opened, then we open it
     if isinstance(filepath_or_buffer, (str, os.PathLike)):
         buffer = utils.open_filepath(filepath_or_buffer, compression, encoding=encoding)

@@ -23,7 +23,7 @@ from .splitter import Splitter
 
 
 class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
-    """Hoeffding Adaptive Tree regressor (HATR).
+    r"""Hoeffding Adaptive Tree regressor (HATR).
 
     This class implements a regression version of the Hoeffding Adaptive Tree Classifier. Hence,
     it also uses an ADWIN concept-drift detector instance at each decision node to monitor
@@ -109,7 +109,7 @@ class HoeffdingAdaptiveTreeRegressor(HoeffdingTreeRegressor):
     strategy based on the empiral rule of Gaussian distributions. We assume the deviations
     of the predictions from the expected values follow a normal distribution. Hence, we subject
     these errors to a min-max normalization assuming that most of the data lies in the
-    $\\left[-3\\sigma, 3\\sigma\\right]$ range. These normalized errors are passed to the ADWIN
+    $\left[-3\sigma, 3\sigma\right]$ range. These normalized errors are passed to the ADWIN
     instances. This is the same strategy used by Adaptive Random Forest Regressor.
 
     References

@@ -14,7 +14,7 @@ class Forecaster(base.Estimator):
 
     @abc.abstractmethod
     def learn_one(self, y: float, x: dict | None = None) -> None:
-        """Updates the model.
+        """Update the model.
 
         Parameters
         ----------
@@ -29,7 +29,7 @@ class Forecaster(base.Estimator):
 
     @abc.abstractmethod
     def forecast(self, horizon: int, xs: list[dict] | None = None) -> list:
-        """Makes forecast at each step of the given horizon.
+        """Make a forecast at each step of the given horizon.
 
         Parameters
         ----------

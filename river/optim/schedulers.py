@@ -34,7 +34,7 @@ class InverseScaling(optim.base.Scheduler):
 
     Assuming an initial learning rate $\eta$, the learning rate at step $t$ is:
 
-    $$\\frac{eta}{(t + 1) ^ p}$$
+    $$\frac{eta}{(t + 1) ^ p}$$
 
     where $p$ is a user-defined parameter.
 

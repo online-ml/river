@@ -30,7 +30,7 @@ def test_radius():
 
 
 def test_radius_does_not_depend_on_position():
-    """See https://github.com/online-ml/river/issues/2004"""
+    """See https://github.com/online-ml/river/issues/2004."""
     for cx, cy in [(1000, 0), (0, 1000), (1000, 1000), (-23000, 1700)]:
         mc = build_micro_cluster(square(cx, cy))
         assert mc.center == pytest.approx({0: cx, 1: cy})
@@ -61,7 +61,7 @@ def test_far_point_makes_a_new_micro_cluster():
 
 
 def test_clusters_expand_past_the_first_hop():
-    """See https://github.com/online-ml/river/issues/2006"""
+    """See https://github.com/online-ml/river/issues/2006."""
     denstream = cluster.DenStream(decaying_factor=0.01, beta=1, mu=1.0005, epsilon=0.4)
     denstream.initialized = True
 
@@ -78,7 +78,7 @@ def test_clusters_expand_past_the_first_hop():
 
 
 def test_promoted_micro_cluster_does_not_overwrite_another():
-    """See point 2 of https://github.com/online-ml/river/discussions/1555"""
+    """See point 2 of https://github.com/online-ml/river/discussions/1555."""
     denstream = cluster.DenStream(decaying_factor=0.01, beta=1, mu=1.0005, epsilon=1)
     denstream.initialized = True
     denstream.p_micro_clusters = {

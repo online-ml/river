@@ -30,7 +30,6 @@ class RBFSampler(base.Transformer):
 
     Examples
     --------
-
     >>> from river import feature_extraction as fx
     >>> from river import linear_model as lm
     >>> from river import optim
@@ -133,7 +132,6 @@ class RandomTreesEmbedding(base.Transformer):
 
     Examples
     --------
-
     >>> from river import feature_extraction as fx
     >>> from river import linear_model as lm
     >>> from river import optim

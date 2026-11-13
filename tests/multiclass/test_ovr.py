@@ -65,7 +65,11 @@ def test_online_batch_consistent():
 
 
 def _multiclass_batch(n: int = 90) -> tuple[dict[str, list[float]], list[str]]:
-    """A reproducible, linearly-separable-ish 3-class batch as (feature columns, labels)."""
+    """
+    Generate an easily-classified multiclass batch.
+
+    A reproducible, linearly-separable-ish 3-class batch as (feature columns, labels).
+    """
     rng = np.random.RandomState(42)
     classes = ["cat", "dog", "fish"]
     y = [classes[i % 3] for i in range(n)]

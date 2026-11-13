@@ -17,7 +17,6 @@ class Accuracy(metrics.base.MultiClassMetric):
 
     Examples
     --------
-
     >>> from river import metrics
 
     >>> y_true = [True, False, True, True, True]

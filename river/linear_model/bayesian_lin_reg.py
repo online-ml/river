@@ -34,7 +34,6 @@ class BayesianLinearRegression(base.MiniBatchRegressor):
 
     Examples
     --------
-
     >>> from river import datasets
     >>> from river import evaluate
     >>> from river import linear_model
@@ -281,7 +280,6 @@ class BayesianLinearRegression(base.MiniBatchRegressor):
         The prediction.
 
         """
-
         # Bishop equation 3.58
         y_pred_mean = 0.0
         if self._idx:

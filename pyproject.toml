@@ -199,8 +199,11 @@ select = [
     "N801",
     "N802",
     "N804",
+    # pydocstyle
+    "D",
 ]
-ignore = ["E501"]
+# D10x and D205 raise too many errors but should ideally be enabled at some point.
+ignore = ["E501", "D10", "D205"]
 fixable = ["ALL"]
 
 [tool.ruff.lint.isort]
@@ -208,6 +211,9 @@ required-imports = ["from __future__ import annotations"]
 
 [tool.ruff.lint.per-file-ignores]
 "benchmarks/codspeed/python/*.py" = ["I002"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
 
 [tool.ruff.format]
 quote-style = "double"

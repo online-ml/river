@@ -80,7 +80,6 @@ class ISOUPTreeRegressor(tree.HoeffdingTreeRegressor, base.MultiTargetRegressor)
 
     Examples
     --------
-
     >>> import numbers
     >>> from river import compose
     >>> from river import datasets
@@ -177,8 +176,9 @@ class ISOUPTreeRegressor(tree.HoeffdingTreeRegressor, base.MultiTargetRegressor)
         return IntraClusterVarianceReductionSplitCriterion(min_samples_split=self.min_samples_split)
 
     def _new_leaf(self, initial_stats=None, parent=None):
-        """Create a new learning node. The type of learning node depends on
-        the tree configuration.
+        """Create a new learning node.
+
+        The type of learning node depends on the tree configuration.
         """
         if parent is not None:
             depth = parent.depth + 1
