@@ -118,7 +118,7 @@ def iter_frame(
     # `dict` keys are invariant, hence the cast.
     x_iter = typing.cast(
         "typing.Iterator[dict[base.typing.FeatureName, typing.Any]]",
-        frame.iter_rows(named=True),
+        _iter_native_rows(frame),
     )
 
     rows: typing.Iterable[tuple[dict[base.typing.FeatureName, typing.Any], typing.Any]]
@@ -130,7 +130,11 @@ def iter_frame(
             raise ValueError(
                 f"X and y must have the same length, got {len(frame)} and {len(target)}"
             )
-        y_iter = target.iter_rows(named=True) if isinstance(target, nw.DataFrame) else target
+        y_iter = (
+            _iter_native_rows(target)
+            if isinstance(target, nw.DataFrame)
+            else _iter_native_values(target)
+        )
         rows = zip(x_iter, y_iter)
 
     if shuffle:
@@ -139,3 +143,21 @@ def iter_frame(
         random.Random(seed).shuffle(rows)
 
     yield from rows
+
+
+def _iter_native_rows(frame: nw.DataFrame[typing.Any]) -> typing.Iterator[dict[str, typing.Any]]:
+    if nw.get_native_namespace(frame).__name__ != "pandas":
+        return frame.iter_rows(named=True)
+    return (
+        row
+        for start in range(0, len(frame), 512)
+        for row in frame[start : start + 512].rows(named=True)
+    )
+
+
+def _iter_native_values(series: nw.Series[typing.Any]) -> typing.Iterator[typing.Any]:
+    if nw.get_native_namespace(series).__name__ != "pandas":
+        return iter(series)
+    frame = series.to_frame()
+    name = frame.columns[0]
+    return (row[name] for row in _iter_native_rows(frame))
