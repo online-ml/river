@@ -49,6 +49,8 @@ def _replace_escape(match: re.Match[str]) -> str:
 @functools.lru_cache(maxsize=256)
 def _parse_quoted_value(value: str) -> str:
     quote = value[0]
+    if value[-1] != quote:
+        raise ValueError
     escaped = False
     for char in value[1:-1]:
         if escaped:
@@ -63,6 +65,11 @@ def _parse_quoted_value(value: str) -> str:
 
 
 def _parse_dense_row(row: str, n_attrs: int) -> list[str]:
+    if row.count(",") == n_attrs - 1 and "%" not in row and "{" not in row and "}" not in row:
+        values = row.split(",")
+        if " " not in row and "\t" not in row:
+            return values
+        return [value.strip() for value in values]
     if _DENSE_UNQUOTED_PATTERN.fullmatch(row):
         values = [value.strip() for value in row.split(",")]
         if len(values) != n_attrs:
@@ -326,8 +333,12 @@ def iter_arff(
             for name, cast, val in zip(names, casts, _parse_dense_row(row, n_attrs)):
                 if val == "?":
                     continue
+                if not val:
+                    raise ValueError
                 if val[0] in "'\"":
                     val = _parse_quoted_value(val)
+                elif cast is None and (" " in val or "\t" in val or "'" in val or '"' in val):
+                    raise ValueError
                 x[name] = cast(val) if cast else val
 
         # Handle target
