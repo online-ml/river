@@ -73,6 +73,45 @@ def test_cluster_formation_and_cleanup():
     assert dbstream.s == dbstream.s_t == {}
 
 
+def test_automatic_cleanup_can_be_disabled():
+    automatic = DBSTREAM(clustering_threshold=1, fading_factor=0.5, cleanup_interval=2)
+    manual = DBSTREAM(
+        clustering_threshold=1, fading_factor=0.5, cleanup_interval=2, auto_cleanup=False
+    )
+
+    for x in [{0: 0}, {0: 10}, {0: 10}, {0: 10}]:
+        automatic.learn_one(x)
+        manual.learn_one(x)
+
+    assert len(automatic.micro_clusters) == 1
+    assert len(manual.micro_clusters) == 2
+
+
+def test_manual_cleanup_removes_weak_micro_clusters_without_advancing_time():
+    dbstream = DBSTREAM(
+        clustering_threshold=1, fading_factor=0.5, cleanup_interval=2, auto_cleanup=False
+    )
+
+    for x in [{0: 0}, {0: 10}, {0: 10}, {0: 10}]:
+        dbstream.learn_one(x)
+
+    time_stamp = dbstream._time_stamp
+    assert dbstream.n_clusters == 2
+    assert dbstream.clustering_is_up_to_date
+
+    dbstream.cleanup()
+
+    assert dbstream._time_stamp == time_stamp
+    assert len(dbstream.micro_clusters) == 1
+    assert not dbstream.clustering_is_up_to_date
+    assert dbstream.n_clusters == 1
+
+    dbstream.cleanup()
+
+    assert dbstream._time_stamp == time_stamp
+    assert len(dbstream.micro_clusters) == 1
+
+
 def test_with_two_micro_clusters():
     dbstream = build_dbstream()
 
