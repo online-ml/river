@@ -6,6 +6,7 @@ import random
 import typing
 
 from river import base, linear_model, optim, utils
+from river.base.estimator import unwrap_estimator
 
 T = typing.TypeVar("T", base.Classifier, base.Regressor)
 
@@ -42,10 +43,12 @@ class HardSampling(base.Wrapper[T], typing.Generic[T]):
     def _model_pred_func(
         self,
     ) -> collections.abc.Callable[[dict[base.typing.FeatureName, typing.Any]], typing.Any]:
-        if isinstance(self.model, base.Classifier):
-            if not self.model._multiclass:
-                return lambda x: self.model.predict_proba_one(x)[True]
-            return self.model.predict_proba_one
+        terminal = unwrap_estimator(self.model)
+        if isinstance(terminal, base.Classifier):
+            model = typing.cast(base.typing.ProbabilisticPredictor, self.model)
+            if not terminal._multiclass:
+                return lambda x: model.predict_proba_one(x)[True]
+            return model.predict_proba_one
         return typing.cast(
             collections.abc.Callable[[dict[base.typing.FeatureName, typing.Any]], typing.Any],
             self.model.predict_one,

@@ -5,6 +5,8 @@
 - `stream.iter_arff` now casts sparse numeric values to floats and uses the first declared category for omitted nominal targets. Explicitly missing targets now return `None` with either string or list target arguments.
 - Removed support for `pandas<=2.x`. River now requires `pandas>=3.1`.
 - In `OneHotEncoder`, missing values are not dropped anymore when `drop_first=True`, and the value that is dropped is now stable across observations.
+- Removed the combined mini-batch and supervised transformer base classes. Protocols under `base.typing` now describe these capabilities.
+- Added `base.unwrap_estimator` to access the terminal estimator in a nested composite estimator.
 
 ## datasets
 

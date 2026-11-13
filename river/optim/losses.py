@@ -74,7 +74,7 @@ class BinaryLoss(Loss):
 
     def mean_func(self, y_pred: typing.Any) -> typing.Any:
         if isinstance(y_pred, np.ndarray):
-            return 1.0 / (1.0 + np.exp(-y_pred))
+            return np.where(y_pred < -30, 0.0, np.where(y_pred > 30, 1.0, special.expit(y_pred)))
         return utils.math.sigmoid(y_pred)
 
 

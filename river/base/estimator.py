@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import abc
 from collections.abc import Iterator
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Protocol, runtime_checkable
 
 if TYPE_CHECKING:
     from river import compose
@@ -10,24 +10,31 @@ if TYPE_CHECKING:
 from . import base
 
 
-class EstimatorMeta(abc.ABCMeta):
-    """Metaclass that makes isinstance() work transparently with pipelines.
+@runtime_checkable
+class _Composite(Protocol):
+    @property
+    def _last_step(self) -> Estimator: ...
 
-    When checking isinstance(pipeline, Classifier), this metaclass automatically
-    unwraps Pipeline-like objects by checking their _last_step attribute. This
-    means isinstance(scaler | log_reg, base.Classifier) returns True.
+
+def unwrap_estimator(estimator: Estimator) -> Estimator:
+    """Return the terminal estimator in a nested composite estimator.
+
+    Parameters
+    ----------
+    estimator
+        An estimator that can contain nested estimators.
+
+    Returns
+    -------
+    The terminal estimator.
 
     """
-
-    def __instancecheck__(cls, instance: object) -> bool:
-        if super().__instancecheck__(instance):
-            return True
-        if hasattr(instance, "_last_step"):
-            return isinstance(instance._last_step, cls)
-        return False
+    while isinstance(estimator, _Composite):
+        estimator = estimator._last_step
+    return estimator
 
 
-class Estimator(base.Base, abc.ABC, metaclass=EstimatorMeta):
+class Estimator(base.Base, abc.ABC):
     """An estimator."""
 
     @property

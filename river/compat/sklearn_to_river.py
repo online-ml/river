@@ -114,6 +114,9 @@ class SKL2RiverBase:
             "check_emerging_features",
             "check_disappearing_features",
             "check_radically_disappearing_features",
+            "check_predict_many_matches_predict_one",
+            "check_learn_many_matches_learn_one",
+            "check_predict_proba_many_matches_predict_proba_one",
         }
 
 

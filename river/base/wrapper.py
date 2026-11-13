@@ -5,7 +5,7 @@ from typing import Generic, TypeVar
 
 from river import base
 
-from .estimator import Estimator  # Prevent a circular import of module base
+from .estimator import Estimator, unwrap_estimator  # Prevent a circular import of module base
 
 T = TypeVar("T", bound=Estimator)
 
@@ -38,4 +38,8 @@ class Wrapper(ABC, Generic[T]):
 
     @property
     def _multiclass(self) -> bool:
-        return isinstance(self._wrapped_model, base.Classifier) and self._wrapped_model._multiclass
+        model = unwrap_estimator(self._wrapped_model)
+        return isinstance(model, base.Classifier) and model._multiclass
+
+    def _unit_test_skips(self) -> set[str]:
+        return self._wrapped_model._unit_test_skips()

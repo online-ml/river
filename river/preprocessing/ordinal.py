@@ -11,7 +11,7 @@ if typing.TYPE_CHECKING:
     from narwhals.stable.v2.typing import IntoDataFrame, IntoDataFrameT, IntoSeries
 
 
-class OrdinalEncoder(base.MiniBatchTransformer):
+class OrdinalEncoder(base.Transformer):
     """Ordinal encoder.
 
     This transformer maps each feature to integers. It can useful when a feature has string values

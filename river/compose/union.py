@@ -15,7 +15,7 @@ from . import func
 __all__ = ["TransformerUnion"]
 
 
-class TransformerUnion(base.MiniBatchTransformer):
+class TransformerUnion(base.Transformer):
     """Packs multiple transformers into a single one.
 
     Pipelines allow you to apply steps sequentially. Therefore, the output of a step becomes the
@@ -162,6 +162,8 @@ class TransformerUnion(base.MiniBatchTransformer):
 
     def __init__(self, *transformers) -> None:
         self.transformers: dict = {}
+        self._learn_one: list[tuple[typing.Callable, bool]] = []
+        self._learn_many: list[tuple[typing.Callable, bool]] = []
         for transformer in transformers:
             if transformer.__class__ == self.__class__:
                 for t in transformer:
@@ -249,7 +251,12 @@ class TransformerUnion(base.MiniBatchTransformer):
             name = f"{name}{counter}"
 
         # Store the transformer
-        self.transformers[name] = transformer.clone(include_attributes=True)
+        transformer = transformer.clone(include_attributes=True)
+        self.transformers[name] = transformer
+        if isinstance(transformer, base.typing.Learner):
+            self._learn_one.append((transformer.learn_one, transformer._supervised))
+        if isinstance(transformer, base.typing.MiniBatchLearner):
+            self._learn_many.append((transformer.learn_many, transformer._supervised))
 
         return self
 
@@ -265,15 +272,14 @@ class TransformerUnion(base.MiniBatchTransformer):
             Features.
         y
             An optional target, this is expected to be provided if at least one of the transformers
-            is supervised (i.e. it inherits from `base.SupervisedTransformer`).
+            is supervised.
 
         """
-        SupervisedT = base.SupervisedTransformer
-        for t in self.transformers.values():
-            if isinstance(t, SupervisedT):
-                t.learn_one(x, y)
+        for learn, is_supervised in self._learn_one:
+            if is_supervised:
+                learn(x, y)
             else:
-                t.learn_one(x)
+                learn(x)
 
     def transform_one(self, x):
         """Passes the data through each transformer and packs the results together."""
@@ -295,14 +301,14 @@ class TransformerUnion(base.MiniBatchTransformer):
             Features.
         y
             An optional target, this is expected to be provided if at least one of the transformers
-            is supervised (i.e. it inherits from `base.SupervisedTransformer`).
+            is supervised.
 
         """
-        for t in self.transformers.values():
-            if isinstance(t, base.MiniBatchSupervisedTransformer):
-                t.learn_many(X, y)
+        for learn, is_supervised in self._learn_many:
+            if is_supervised:
+                learn(X, y)
             else:
-                t.learn_many(X)
+                learn(X)
 
     def transform_many(self, X):
         """Passes the data through each transformer and packs the results together.
@@ -316,3 +322,18 @@ class TransformerUnion(base.MiniBatchTransformer):
             utils.dataframe.into_frame(t.transform_many(X)) for t in self.transformers.values()
         ]
         return nw.concat(frames, how="horizontal").to_native()
+
+    def _unit_test_skips(self) -> set[str]:
+        skips = set().union(*(t._unit_test_skips() for t in self.transformers.values()))
+        if any(
+            isinstance(t, base.typing.Learner) != isinstance(t, base.typing.MiniBatchLearner)
+            for t in self.transformers.values()
+        ):
+            skips.add("check_learn_many_matches_learn_one")
+        if any(
+            isinstance(t, base.typing.Transformer)
+            != isinstance(t, base.typing.MiniBatchTransformer)
+            for t in self.transformers.values()
+        ):
+            skips.add("check_transform_many_matches_transform_one")
+        return skips
