@@ -25,7 +25,6 @@ class PoissonInclusion(base.Transformer):
 
     Examples
     --------
-
     >>> from river import datasets
     >>> from river import feature_selection
     >>> from river import stream

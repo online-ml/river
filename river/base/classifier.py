@@ -43,7 +43,6 @@ class Classifier(estimator.Estimator):
         A dictionary that associates a probability which each label.
 
         """
-
         # Some classifiers don't have the ability to output probabilities, and instead only
         # predict labels directly. Therefore, we cannot impose predict_proba_one as an abstract
         # method that each classifier has to implement. Instead, we raise an exception to indicate
@@ -65,7 +64,6 @@ class Classifier(estimator.Estimator):
         The predicted label.
 
         """
-
         # The following code acts as a default for each classifier, and may be overridden on an
         # individual basis.
         y_pred = self.predict_proba_one(x, **kwargs)
@@ -111,7 +109,6 @@ class MiniBatchClassifier(Classifier):
         A dataframe with probabilities of `True` and `False` for each sample.
 
         """
-
         # Some classifiers don't have the ability to output probabilities, and instead only
         # predict labels directly. Therefore, we cannot impose predict_proba_many as an abstract
         # method that each classifier has to implement. Instead, we raise an exception to indicate
@@ -131,7 +128,6 @@ class MiniBatchClassifier(Classifier):
         The predicted labels.
 
         """
-
         # The following code acts as a default for each classifier, and may be overridden on an
         # individual basis.
         y_pred = self.predict_proba_many(X)

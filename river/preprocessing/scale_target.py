@@ -11,7 +11,7 @@ __all__ = [
 
 
 def safe_div(a, b):
-    """Returns a if b is nil, else divides a by b.
+    """Return a if b is nil, else divides a by b.
 
     When scaling, sometimes a denominator might be nil. For instance, during standard scaling
     the denominator can be nil if a feature has no variance.
@@ -30,7 +30,6 @@ class TargetStandardScaler(compose.TargetTransformRegressor):
 
     Examples
     --------
-
     >>> from river import datasets
     >>> from river import evaluate
     >>> from river import linear_model
@@ -75,7 +74,6 @@ class TargetMinMaxScaler(compose.TargetTransformRegressor):
 
     Examples
     --------
-
     >>> from river import datasets
     >>> from river import evaluate
     >>> from river import linear_model

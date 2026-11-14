@@ -53,7 +53,6 @@ class PARegressor(BasePA, base.Regressor):
 
     Examples
     --------
-
     The following example is taken from [this blog post](https://www.bonaccorso.eu/2017/10/06/ml-algorithms-addendum-passive-aggressive-algorithms/).
 
     >>> from river import linear_model
@@ -123,7 +122,6 @@ class PAClassifier(BasePA, base.Classifier):
 
     Examples
     --------
-
     The following example is taken from [this blog post](https://www.bonaccorso.eu/2017/10/06/ml-algorithms-addendum-passive-aggressive-algorithms/).
 
     >>> from river import linear_model

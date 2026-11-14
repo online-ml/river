@@ -122,7 +122,6 @@ class HoltWinters(time_series.base.Forecaster):
 
     Examples
     --------
-
     >>> from river import datasets
     >>> from river import evaluate
     >>> from river import metrics

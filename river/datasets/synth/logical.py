@@ -73,7 +73,7 @@ class Logical(datasets.base.SyntheticDataset):
             )
 
     def _make_logical(self, n_tiles: int = 1, shuffle: bool = True):
-        """Make toy dataset"""
+        """Make a toy dataset."""
         base_pattern = np.array(
             [
                 # A  B  OR  XOR  AND

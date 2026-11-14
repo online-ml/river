@@ -174,7 +174,10 @@ class _EWCovariance(_EWMatrix):
         self._M2 = M2
 
     def _before_update(self, v: NDArray[np.float64]) -> None:
-        """Hook called with the new observation before the state is updated (mean/M2 are old)."""
+        """Do something with the new observation before the state is updated (mean/M2 are old).
+
+        This hook is intended to be overriden by child classes.
+        """
 
     def _learn_vector(self, v: NDArray[np.float64]) -> None:
         self._before_update(v)
@@ -222,7 +225,6 @@ class EwaCovariance(_EWCovariance):
 
     Examples
     --------
-
     We estimate the covariance of daily returns (in percent) for a few stocks from the
     `datasets.SP500Stocks` dataset.
 
@@ -287,7 +289,6 @@ class LedoitWolfCovariance(_EWCovariance):
 
     Examples
     --------
-
     On the ten stocks of `datasets.SP500Stocks` with a short effective memory, the raw covariance is
     poorly conditioned; Ledoit-Wolf shrinkage tames it.
 
@@ -364,7 +365,6 @@ class OASCovariance(_EWCovariance):
 
     Examples
     --------
-
     >>> import numpy as np
     >>> from river import covariance, datasets
 
@@ -422,7 +422,6 @@ class ShrunkCovariance(_EWCovariance):
 
     Examples
     --------
-
     >>> from river import covariance, datasets
 
     >>> tickers = ["AAPL", "JPM", "XOM"]
@@ -494,7 +493,6 @@ class EwaPrecision(_EWMatrix):
 
     Examples
     --------
-
     >>> from river import covariance, datasets
 
     >>> tickers = ["AAPL", "JPM", "XOM"]

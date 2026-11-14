@@ -69,7 +69,7 @@ def iter_array(
     seed: int | None = None,
     chunk_size: int = 1024,
 ) -> base.typing.Stream:
-    """Iterates over the rows from an array of features and an array of targets.
+    """Iterate over the rows from an array of features and an array of targets.
 
     This method is intended to work with `numpy` arrays, but should also work with Python lists.
 
@@ -97,7 +97,6 @@ def iter_array(
 
     Examples
     --------
-
     >>> from river import stream
     >>> import numpy as np
 
@@ -123,7 +122,6 @@ def iter_array(
     bar False
 
     """
-
     if chunk_size < 1:
         raise ValueError(f"chunk_size must be a positive integer, got {chunk_size}")
 

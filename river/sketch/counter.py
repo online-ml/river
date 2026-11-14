@@ -10,19 +10,19 @@ from river import base
 
 
 class Counter(base.Base):
-    """Counting using the Count-Min Sketch (CMS) algorithm.
+    r"""Counting using the Count-Min Sketch (CMS) algorithm.
 
     Contrary to an exhaustive approach, e.g., using a `collections.Counter`, CMS uses a
     limited and fixed amount of memory. The CMS algorithm uses a sketch structure consisting of a
-    matrix $w \\times d$.
+    matrix $w \times d$.
 
     These dimensions are obtained via:
 
-    - $w = \\lceil \\frac{e}{\\epsilon} \\rceil$, where $e$ is the Euler number.
+    - $w = \lceil \frac{e}{\epsilon} \rceil$, where $e$ is the Euler number.
 
-    - $d = \\lceil \\ln\\left(\\frac{1}{\\delta} \\right) \\rceil$.
+    - $d = \lceil \ln\left(\frac{1}{\delta} \right) \rceil$.
 
-    Decreasing the values of $\\epsilon$ (`epsilon`) and $\\delta$ (`delta`) increase the accuracy of the
+    Decreasing the values of $\epsilon$ (`epsilon`) and $\delta$ (`delta`) increase the accuracy of the
     algorithm, at the cost of increased memory usage. The values of `w` and `d` control the hash tables' capability
     and the amount of hash collisions, respectively.
 
@@ -30,10 +30,10 @@ class Counter(base.Base):
     These tables store the counting estimates. This implementation assumes the turnstile case described in the paper,
     i.e., count values and updates can be negative.
 
-    The count values obtained by CMS are always overestimates. Suppose $c_i$ and $\\hat{c}_i$ are the ground truth and
-    estimated count values, respectively, for a given element $i$. CMS guarantees that $c_i \\le \\hat{c}_i$ and,
-    with probability $1 - \\delta$, $\\hat{c}_i \\le c_i + \\epsilon||\\mathbf{c}||_1$. In the expression,
-    $||\\mathbf{c}||_1 = \\sum_i |c_i|$.
+    The count values obtained by CMS are always overestimates. Suppose $c_i$ and $\hat{c}_i$ are the ground truth and
+    estimated count values, respectively, for a given element $i$. CMS guarantees that $c_i \le \hat{c}_i$ and,
+    with probability $1 - \delta$, $\hat{c}_i \le c_i + \epsilon||\mathbf{c}||_1$. In the expression,
+    $||\mathbf{c}||_1 = \sum_i |c_i|$.
 
     Parameters
     ----------
@@ -48,7 +48,6 @@ class Counter(base.Base):
 
     Examples
     --------
-
     >>> import collections
     >>> from river import sketch
 

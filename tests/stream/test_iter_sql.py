@@ -106,7 +106,7 @@ def engine() -> Iterator[sqlalchemy.Engine]:
 
 @pytest.fixture(params=EXECUTOR_CASES.values(), ids=list(EXECUTOR_CASES))
 def executor(engine: sqlalchemy.Engine, request: pytest.FixtureRequest) -> Iterator[Executor]:
-    """A connection and a session, so that every query runs against both `execute` overloads."""
+    """Yield the test executors, so that every query runs against both `execute` overloads."""
     open_executor = typing.cast("Callable[[sqlalchemy.Engine], Executor]", request.param)
     conn = open_executor(engine)
     try:
@@ -191,7 +191,7 @@ def test_a_returning_statement_is_iterated(executor: Executor) -> None:
 def executed_results(
     executor: Executor, monkeypatch: pytest.MonkeyPatch
 ) -> list[sqlalchemy.Result[typing.Any]]:
-    """Records the results `iter_sql` gets back, so tests can check it closes them."""
+    """Record the results `iter_sql` gets back, so tests can check it closes them."""
     results: list[sqlalchemy.Result[typing.Any]] = []
     execute = executor.execute
 

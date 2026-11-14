@@ -42,7 +42,6 @@ class Homogeneity(metrics.base.MultiClassMetric):
 
     Examples
     --------
-
     >>> from river import metrics
 
     >>> y_true = [1, 1, 2, 2, 3, 3]
@@ -138,7 +137,6 @@ class Completeness(metrics.base.MultiClassMetric):
 
     Examples
     --------
-
     >>> from river import metrics
 
     >>> y_true = [1, 1, 2, 2, 3, 3]
@@ -236,7 +234,6 @@ class VBeta(metrics.base.MultiClassMetric):
 
     Examples
     --------
-
     >>> from river import metrics
 
     >>> y_true = [1, 1, 2, 2, 3, 3]

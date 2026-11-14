@@ -37,7 +37,9 @@ class ChangePointFileDataset(base.FileDataset, abc.ABC):
         return repr_content
 
     def _annotations_aggregated(self, annotator_aggregation: str) -> set[int] | dict[int, int]:
-        """The function `annotations_aggregated` takes an annotator aggregation method as input and returns
+        """Aggregate the annotations with a given method.
+
+        The function `annotations_aggregated` takes an annotator aggregation method as input and returns
         the aggregated annotations based on that method.
 
         Parameters
@@ -45,6 +47,9 @@ class ChangePointFileDataset(base.FileDataset, abc.ABC):
         annotator_aggregation
             The parameter "annotator_aggregation" is a string that specifies the method of aggregating
         annotations from different annotators. It can take one of the following values:
+            - `"union"`,
+            - `"intersection"`,
+            - `"majority"`.
 
         Returns
         -------

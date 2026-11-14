@@ -10,7 +10,6 @@ class SMAPE(metrics.base.MeanMetric, metrics.base.RegressionMetric):
 
     Examples
     --------
-
     >>> from river import metrics
 
     >>> y_true = [0, 0.07533, 0.07533, 0.07533, 0.07533, 0.07533, 0.07533, 0.0672, 0.0672]

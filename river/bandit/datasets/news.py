@@ -15,7 +15,6 @@ class NewsArticles(datasets.base.RemoteDataset, BanditDataset):
 
     Examples
     --------
-
     >>> from river import bandit
 
     >>> dataset = bandit.datasets.NewsArticles()

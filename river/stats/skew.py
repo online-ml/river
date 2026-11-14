@@ -14,7 +14,6 @@ class Skew(stats.base.Univariate):
 
     Examples
     --------
-
     >>> from river import stats
     >>> import numpy as np
 

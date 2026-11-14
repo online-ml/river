@@ -18,7 +18,6 @@ class Shuttle(base.FileDataset):
 
     Examples
     --------
-
     We can compare two anomaly detectors on this dataset. The features are min-max scaled online,
     and performance is measured with a scale-invariant rolling ROC AUC (anomaly scores are unbounded,
     so a plain `metrics.ROCAUC` would not be appropriate).

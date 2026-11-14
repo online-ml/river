@@ -39,11 +39,11 @@ class Metric(base.Base, abc.ABC):
 
     @abc.abstractmethod
     def works_with(self, model: base.Estimator) -> bool:
-        """Indicates whether or not a metric can work with a given model."""
+        """Indicate whether or not a metric can work with a given model."""
 
     @property
     def works_with_weights(self) -> bool:
-        """Indicate whether the model takes into consideration the effect of sample weights"""
+        """Indicate whether the model takes into consideration the effect of sample weights."""
         return True
 
     def is_better_than(self, other) -> bool:
@@ -288,7 +288,7 @@ class WrapperMetric(Metric):
     @property
     @abc.abstractmethod
     def metric(self):
-        """Gives access to the wrapped metric."""
+        """Give access to the wrapped metric."""
 
     def get(self):
         return self.metric.get()
@@ -337,9 +337,7 @@ class MeanMetric(abc.ABC):
 
 
 class ClusteringMetric(base.Base, abc.ABC):
-    """
-    Mother class of all internal clustering metrics.
-    """
+    """Mother class of all internal clustering metrics."""
 
     # Define the format specification used for string representation.
     _fmt = ",.6f"  # Use commas to separate big numbers and show 6 decimals
@@ -362,9 +360,9 @@ class ClusteringMetric(base.Base, abc.ABC):
         """Indicates if a high value is better than a low one or not."""
 
     def works_with(self, model: base.Estimator) -> bool:
-        """Indicates whether or not a metric can work with a given model."""
+        """Indicate whether or not a metric can work with a given model."""
         return isinstance(model, base.Clusterer)
 
     def __repr__(self):
-        """Returns the class name along with the current value of the metric."""
+        """Return the class name along with the current value of the metric."""
         return f"{self.__class__.__name__}: {self.get():{self._fmt}}".rstrip("0")

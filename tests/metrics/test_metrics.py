@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import collections
 import copy
+import datetime as dt
 import functools
 import importlib
 import inspect
@@ -17,8 +18,7 @@ from river import metrics, utils
 
 
 def load_metrics():
-    """Yields all the metrics."""
-
+    """Yield all the metrics."""
     for name, obj in inspect.getmembers(importlib.import_module("river.metrics"), inspect.isclass):
         if name == "Metrics":
             continue
@@ -67,8 +67,7 @@ def test_repr(metric):
 
 
 def generate_test_cases(metric, n):
-    """Yields n (y_true, y_pred, sample_weight) triplets for a given metric."""
-
+    """Yield n (y_true, y_pred, sample_weight) triplets for a given metric."""
     sample_weights = [random.random() for _ in range(n)]
 
     if isinstance(metric, metrics.base.ClassificationMetric):
@@ -101,7 +100,8 @@ def partial(f, **kwargs):
 
 def roc_auc_score(y_true, y_score):
     """
-    This functions is a wrapper to the scikit-learn roc_auc_score function.
+    Wrap the scikit-learn roc_auc_score function.
+
     It was created because the scikit version utilizes array of scores and
     may raise a ValueError if there is only one class present in y_true.
     This wrapper returns 0 if y_true has only one class and
@@ -118,8 +118,9 @@ def roc_auc_score(y_true, y_score):
 
 def pr_auc_score(y_true, y_score):
     """
-    This function is a wrapper to the scikit-learn precision_recall_curve and
-    auc functions. Returns 0 if y_true has only one class.
+    Wrap the scikit-learn precision_recall_curve and auc functions.
+
+    Returns 0 if y_true has only one class.
     """
     nonzero = np.count_nonzero(y_true)
     if nonzero == 0 or nonzero == len(y_true):
@@ -197,6 +198,8 @@ TEST_CASES = [
     (metrics.MCC(), sk_metrics.matthews_corrcoef),
     (metrics.MAE(), sk_metrics.mean_absolute_error),
     (metrics.MSE(), sk_metrics.mean_squared_error),
+    (metrics.RMSE(), sk_metrics.root_mean_squared_error),
+    (metrics.RMSLE(), sk_metrics.root_mean_squared_log_error),
     (metrics.Homogeneity(), sk_metrics.homogeneity_score),
     (metrics.Completeness(), sk_metrics.completeness_score),
     (metrics.VBeta(beta=0.5), partial(sk_metrics.v_measure_score, beta=0.5)),
@@ -310,6 +313,46 @@ def test_rolling_metric(metric, sk_metric):
                     if not can_compare_with_sklearn(metric, true_window, pred_window):
                         continue
                     assert abs(m.get() - sk_metric(true_window, pred_window)) < 1e-10
+
+
+@pytest.mark.parametrize(
+    "y_true, weights",
+    [([10, 1, 1], (1.0, 1.0, 1.0)), ([10, 1, 2], (0.5, 2.0, 3.0))],
+)
+@pytest.mark.parametrize("rolling_cls", [utils.Rolling, utils.TimeRolling])
+def test_rmsle_rolling_reverts_logarithmic_errors(y_true, weights, rolling_cls):
+    if rolling_cls is utils.Rolling:
+        metric = rolling_cls(metrics.RMSLE, window_size=2)
+    else:
+        metric = rolling_cls(metrics.RMSLE, period=dt.timedelta(days=2))
+
+    y_pred = [1, 1, 1]
+    for i, (yt, yp, w) in enumerate(zip(y_true, y_pred, weights)):
+        kwargs = (
+            {"t": dt.datetime(2026, 1, 1) + dt.timedelta(days=i)}
+            if rolling_cls is utils.TimeRolling
+            else {}
+        )
+        metric.update(yt, yp, w=w, **kwargs)
+        start = max(0, i - 1)
+        expected = sk_metrics.root_mean_squared_log_error(
+            y_true[start : i + 1],
+            y_pred[start : i + 1],
+            sample_weight=weights[start : i + 1],
+        )
+        assert metric.get() == pytest.approx(expected, abs=1e-7)
+
+
+@pytest.mark.parametrize("w", [1.0, 2.5])
+def test_rmsle_revert_preserves_remaining_observations(w):
+    metric = metrics.RMSLE()
+    metric.update(-0.5, 0, w=0.5)
+    expected = metric.get()
+    metric.update(10, 1, w=w)
+    metric.revert(10, 1, w=w)
+    assert metric.get() == pytest.approx(expected)
+    metric.revert(-0.5, 0, w=0.5)
+    assert metric.get() == 0
 
 
 def test_compose():

@@ -6,7 +6,7 @@ from river import datasets
 
 
 class Mv(datasets.base.SyntheticDataset):
-    """Mv artificial dataset.
+    r"""Mv artificial dataset.
 
     Artificial dataset composed of both nominal and numeric features, whose features
     present co-dependencies. Originally described in [^1].
@@ -19,21 +19,21 @@ class Mv(datasets.base.SyntheticDataset):
 
     - $x_3$:
 
-        * if $x_1 > 0$, $x_3 \\leftarrow$ `'green'`
+        * if $x_1 > 0$, $x_3 \leftarrow$ `'green'`
 
-        * else $x_3 \\leftarrow$ `'red'` with probability $0.4$ and $x_3 \\leftarrow$ `'brown'`
+        * else $x_3 \leftarrow$ `'red'` with probability $0.4$ and $x_3 \leftarrow$ `'brown'`
         with probability $0.6$.
 
     - $x_4$:
 
-        * if $x_3 =$ `'green'`, $x_4 \\leftarrow x_1 + 2 x_2$
+        * if $x_3 =$ `'green'`, $x_4 \leftarrow x_1 + 2 x_2$
 
-        * else $x_4 = \\frac{x_1}{2}$ with probability $0.3$ and $x_4 = \\frac{x_2}{2}$
+        * else $x_4 = \frac{x_1}{2}$ with probability $0.3$ and $x_4 = \frac{x_2}{2}$
         with probability $0.7$.
 
     - $x_5$: uniformly distributed over `[-1, 1]`.
 
-    - $x_6 \\leftarrow x_4 \\times \\epsilon$, where $\\epsilon$ is uniformly distributed
+    - $x_6 \leftarrow x_4 \times \epsilon$, where $\epsilon$ is uniformly distributed
     over `[0, 5]`.
 
     - $x_7$: `'yes'` with probability $0.3$, and `'no'` with probability $0.7$.
@@ -46,15 +46,15 @@ class Mv(datasets.base.SyntheticDataset):
 
     The target value is generated using the following rules:
 
-    - if $x_2 > 2$, $y \\leftarrow 35 - 0.5 x_4$
+    - if $x_2 > 2$, $y \leftarrow 35 - 0.5 x_4$
 
-    - else if $-2 \\le x_4 \\le 2$, $y \\leftarrow 10 - 2 x_1$
+    - else if $-2 \le x_4 \le 2$, $y \leftarrow 10 - 2 x_1$
 
-    - else if $x_7 =$ `'yes'`, $y \\leftarrow 3 - \\frac{x_1}{x_4}$
+    - else if $x_7 =$ `'yes'`, $y \leftarrow 3 - \frac{x_1}{x_4}$
 
-    - else if $x_8 =$ `'normal'`, $y \\leftarrow x_6 + x_1$
+    - else if $x_8 =$ `'normal'`, $y \leftarrow x_6 + x_1$
 
-    - else $y \\leftarrow \\frac{x_1}{2}$.
+    - else $y \leftarrow \frac{x_1}{2}$.
 
     Parameters
     ----------

@@ -22,7 +22,6 @@ class SDFT(base.Base):
 
     Examples
     --------
-
     >>> import numpy as np
     >>> from river import misc
 

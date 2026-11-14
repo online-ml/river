@@ -88,7 +88,6 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
 
     References
     ----------
-
     [^1]: G. Hulten, L. Spencer, and P. Domingos. Mining time-changing data streams.
        In KDD’01, pages 97–106, San Francisco, CA, 2001. ACM Press.
 
@@ -97,7 +96,6 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
 
     Examples
     --------
-
     >>> from river.datasets import synth
     >>> from river import evaluate
     >>> from river import metrics
@@ -494,7 +492,6 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
           observed between split attempts exceed the grace period then attempt
           to split.
         """
-
         if self._native_enabled and self._learn_one_native(x, y, w):
             return
 

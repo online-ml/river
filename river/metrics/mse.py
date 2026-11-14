@@ -12,7 +12,6 @@ class MSE(metrics.base.MeanMetric, metrics.base.RegressionMetric):
 
     Examples
     --------
-
     >>> from river import metrics
 
     >>> y_true = [3, -0.5, 2, 7]
@@ -39,7 +38,6 @@ class RMSE(MSE):
 
     Examples
     --------
-
     >>> from river import metrics
 
     >>> y_true = [3, -0.5, 2, 7]
@@ -68,7 +66,6 @@ class RMSLE(RMSE):
 
     Examples
     --------
-
     >>> from river import metrics
 
     >>> y_true = [3, -0.5, 2, 7]
@@ -83,5 +80,5 @@ class RMSLE(RMSE):
 
     """
 
-    def update(self, y_true, y_pred, w=1.0):
-        super().update(math.log(y_true + 1), math.log(y_pred + 1), w)
+    def _eval(self, y_true, y_pred):
+        return super()._eval(math.log(y_true + 1), math.log(y_pred + 1))

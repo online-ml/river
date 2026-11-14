@@ -24,7 +24,7 @@ if typing.TYPE_CHECKING:
 def iter_sklearn_dataset(
     dataset: sklearn.utils.Bunch, **kwargs: typing.Unpack[_Options]
 ) -> base.typing.Stream:
-    """Iterates rows from one of the datasets provided by scikit-learn.
+    """Iterate rows from one of the datasets provided by scikit-learn.
 
     This allows you to use any dataset from [scikit-learn's `datasets` module](https://scikit-learn.org/stable/modules/classes.html#module-sklearn.datasets). For instance, you can use the `fetch_openml` function to get access to all of the
     datasets from the OpenML website.
@@ -38,7 +38,6 @@ def iter_sklearn_dataset(
 
     Examples
     --------
-
     >>> import pprint
     >>> from sklearn import datasets
     >>> from river import stream
@@ -62,15 +61,15 @@ def iter_sklearn_dataset(
     151.0
 
     """
-    params: _Params = {**kwargs, "X": dataset.data, "y": dataset.target}
-    try:
-        params["feature_names"] = dataset.feature_names
-    except AttributeError:
-        pass
-
     if utils.pandas.PANDAS_INSTALLED and isinstance(
-        params["X"], utils.pandas.import_pandas().DataFrame
+        dataset.data, utils.pandas.import_pandas().DataFrame
     ):
-        yield from stream.iter_pandas(**params)
+        frame_params: dict[str, typing.Any] = {**kwargs, "X": dataset.data, "y": dataset.target}
+        yield from stream.iter_frame(**frame_params)
     else:
+        params: _Params = {**kwargs, "X": dataset.data, "y": dataset.target}
+        try:
+            params["feature_names"] = dataset.feature_names
+        except AttributeError:
+            pass
         yield from stream.iter_array(**params)

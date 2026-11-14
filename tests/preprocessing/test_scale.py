@@ -593,7 +593,10 @@ def test_maxabs_scaler_unpickle_missing_window_size():
 
 
 def test_issue_1313():
-    """>>> import numpy as np
+    """
+    Example
+    -------
+    >>> import numpy as np
     >>> import pandas as pd
     >>> from sklearn import datasets
     >>> from river import preprocessing
@@ -635,7 +638,7 @@ def _numeric_batch(n: int = 40) -> dict[str, list[float]]:
 
 
 def _trump_columns() -> dict[str, list[float]]:
-    """The TrumpApproval dataset as a column dict (mixed int64/float64 features)."""
+    """Convert the TrumpApproval dataset as a column dict (mixed int64/float64 features)."""
     return pd.read_csv(datasets.TrumpApproval().path).to_dict(orient="list")
 
 

@@ -17,7 +17,6 @@ class EWVar(stats.base.Univariate):
 
     Examples
     --------
-
     >>> from river import stats
 
     >>> X = [1, 3, 5, 4, 6, 8, 7, 9, 11]

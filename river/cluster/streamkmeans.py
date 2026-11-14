@@ -5,7 +5,7 @@ from river.utils.vectordict import euclidean_distance_dict
 
 
 class STREAMKMeans(base.Clusterer):
-    r"""STREAMKMeans
+    r"""The STREAMKMeans algorithm.
 
     STREAMKMeans is an alternative version of the original algorithm STREAMLSEARCH proposed by
     O'Callaghan et al. [^1], by replacing the k-medians using `LSEARCH` by the k-means algorithm.
@@ -52,7 +52,6 @@ class STREAMKMeans(base.Clusterer):
 
     Examples
     --------
-
     >>> from river import cluster
     >>> from river import stream
 

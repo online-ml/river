@@ -47,7 +47,6 @@ class HorizonMetric(ForecastingMetric):
 
     Examples
     --------
-
     This is used internally by the `evaluate.evaluate` function.
 
     >>> from river import evaluate
@@ -111,7 +110,6 @@ class HorizonAggMetric(HorizonMetric):
 
     Examples
     --------
-
     This is used internally by the `evaluate.evaluate` function when you pass an `agg_func`.
 
     >>> import statistics

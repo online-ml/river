@@ -23,7 +23,6 @@ class GaussianRandomProjector(base.Transformer):
 
     Examples
     --------
-
     >>> from river import datasets
     >>> from river import evaluate
     >>> from river import linear_model
@@ -105,7 +104,6 @@ class SparseRandomProjector(base.Transformer):
 
     Examples
     --------
-
     >>> from river import datasets
     >>> from river import evaluate
     >>> from river import linear_model

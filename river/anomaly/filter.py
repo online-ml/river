@@ -23,7 +23,6 @@ class ThresholdFilter(base.AnomalyFilter):
 
     Examples
     --------
-
     Anomaly filters can be used as part of a pipeline. For instance, we might want to filter out
     anomalous observations so as not to corrupt a supervised model. As an example, let's take
     the `datasets.WaterFlow` dataset. Some of the samples have anomalous target variables because
@@ -126,7 +125,6 @@ class QuantileFilter(base.AnomalyFilter):
 
     Examples
     --------
-
     >>> from river import anomaly
     >>> from river import compose
     >>> from river import datasets

@@ -51,7 +51,6 @@ class LinearRegression(linear_model.base.GLM, base.MiniBatchRegressor):
 
     Examples
     --------
-
     >>> from river import datasets
     >>> from river import evaluate
     >>> from river import linear_model

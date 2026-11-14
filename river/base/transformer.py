@@ -46,7 +46,7 @@ class BaseTransformer(abc.ABC):
         | base.typing.FeatureName
         | list[base.typing.FeatureName],
     ) -> compose.Grouper | compose.TransformerProduct:
-        """Creates a Grouper."""
+        """Create a Grouper."""
         return self * other
 
     @abc.abstractmethod

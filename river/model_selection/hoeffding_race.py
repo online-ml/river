@@ -167,7 +167,6 @@ class HoeffdingRaceRegressor(HoeffdingRace, ModelSelectionRegressor):
 
     Examples
     --------
-
     >>> from river import datasets
     >>> from river import evaluate
     >>> from river import linear_model
@@ -255,7 +254,6 @@ class HoeffdingRaceClassifier(HoeffdingRace, ModelSelectionClassifier):
 
     Examples
     --------
-
     >>> from river import datasets
     >>> from river import evaluate
     >>> from river import linear_model

@@ -16,7 +16,7 @@ from river.utils.random import poisson
 
 
 class BaseSRPEnsemble(base.Wrapper, base.Ensemble):
-    """Base class for the sRP ensemble family"""
+    """Base class for the sRP ensemble family."""
 
     _TRAIN_RANDOM_SUBSPACES = "subspaces"
     _TRAIN_RESAMPLING = "resampling"
@@ -218,7 +218,7 @@ class BaseSRPEnsemble(base.Wrapper, base.Ensemble):
 
 
 class BaseSRPEstimator:
-    """Base class for estimators (classifiers or regressors) in SRP"""
+    """Base class for estimators (classifiers or regressors) in SRP."""
 
     def __init__(
         self,
@@ -317,7 +317,7 @@ class BaseSRPEstimator:
 
 
 def random_subspace(all_features: list, k: int, rng: random.Random):
-    """Utility function to generate a random feature subspace of length k.
+    """Generate a random feature subspace of length k.
 
     If the number of features is smaller than k , the result is a shuffled version of the input list.
 
@@ -386,7 +386,6 @@ class SRPClassifier(BaseSRPEnsemble, base.Classifier):
 
     Examples
     --------
-
     >>> from river import ensemble
     >>> from river import evaluate
     >>> from river import metrics
@@ -654,7 +653,6 @@ class SRPRegressor(BaseSRPEnsemble, base.Regressor):
 
     Examples
     --------
-
     >>> from river import ensemble
     >>> from river import evaluate
     >>> from river import metrics

@@ -11,35 +11,34 @@ __all__ = ["Newton"]
 
 
 class Newton(optim.base.Optimizer):
-    """Online Newton Step (ONS) optimizer.
+    r"""Online Newton Step (ONS) optimizer.
 
     This optimizer uses second-order information (i.e. the Hessian of the cost function) in
     addition to first-order information (i.e. the gradient of the cost function). It maintains the
     matrix
 
-    $$A_t = \\epsilon I + \\sum_{s=1}^{t} g_s g_s^\\intercal$$
+    $$A_t = \epsilon I + \sum_{s=1}^{t} g_s g_s^\intercal$$
 
     where $g_s$ is the gradient at step $s$, and applies the update
 
-    $$w_{t+1} = w_t - \\eta A_t^{-1} g_t.$$
+    $$w_{t+1} = w_t - \eta A_t^{-1} g_t.$$
 
     The inverse $A_t^{-1}$ is never computed from scratch. Instead it is updated in-place at each
     step with the Sherman-Morrison formula (see `utils.math.sherman_morrison`), which turns the
-    rank-1 update $A_t = A_{t-1} + g_t g_t^\\intercal$ into a single rank-1 update of the inverse.
+    rank-1 update $A_t = A_{t-1} + g_t g_t^\intercal$ into a single rank-1 update of the inverse.
     This costs $O(d^2)$ time and memory, where $d$ is the number of features seen so far.
 
     Parameters
     ----------
     lr
-        Learning rate. This corresponds to $1 / \\gamma$ in the paper.
+        Learning rate. This corresponds to $1 / \gamma$ in the paper.
     eps
-        Regularization term used to initialize the Hessian to $\\epsilon I$. Its inverse
-        $1 / \\epsilon$ is used as the starting value of $A_t^{-1}$, so a smaller `eps` allows
+        Regularization term used to initialize the Hessian to $\epsilon I$. Its inverse
+        $1 / \epsilon$ is used as the starting value of $A_t^{-1}$, so a smaller `eps` allows
         larger steps early on.
 
     Examples
     --------
-
     >>> from river import datasets
     >>> from river import evaluate
     >>> from river import linear_model

@@ -28,11 +28,7 @@ def _allow_exception(func, exception):
 
 
 def _wrapped_partial(func, *args, **kwargs):
-    """
-
-    Taken from http://louistiao.me/posts/adding-__name__-and-__doc__-attributes-to-functoolspartial-objects/
-
-    """
+    """Taken from http://louistiao.me/posts/adding-__name__-and-__doc__-attributes-to-functoolspartial-objects/."""
     partial = functools.partial(func, *args, **kwargs)
     functools.update_wrapper(partial, func)
     return partial
@@ -47,7 +43,7 @@ class _DummyDataset:
 
 
 def _yield_datasets(model: Estimator, scale: int = 1):
-    """Generates datasets for a given model.
+    """Generate datasets for a given model.
 
     Parameters
     ----------
@@ -58,7 +54,6 @@ def _yield_datasets(model: Estimator, scale: int = 1):
         long stream — for instance to reliably observe whether memory plateaus.
 
     """
-
     from sklearn import datasets as sk_datasets
 
     from river import base, compose, datasets, preprocessing, stream
@@ -104,7 +99,7 @@ def _yield_datasets(model: Estimator, scale: int = 1):
 
         # 2
         class SolarFlare:
-            """One-hot encoded version of `datasets.SolarFlare"""
+            """One-hot encoded version of `datasets.SolarFlare."""
 
             def __iter__(self):
                 oh = (compose.SelectType(str) | preprocessing.OneHotEncoder()) + compose.SelectType(
@@ -147,14 +142,13 @@ def _yield_datasets(model: Estimator, scale: int = 1):
 
 
 def yield_checks(model: Estimator) -> typing.Iterator[typing.Callable]:
-    """Generates unit tests for a given model.
+    """Generate unit tests for a given model.
 
     Parameters
     ----------
     model
 
     """
-
     from river import base, utils
     from river.time_series.base import Forecaster
 

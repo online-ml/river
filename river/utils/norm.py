@@ -72,7 +72,6 @@ def scale_values_in_dict(dictionary: T, multiplier: float, inplace: bool = True)
         If True, perform operation in-place
 
     """
-
     if not inplace:
         dictionary = copy.deepcopy(dictionary)
 

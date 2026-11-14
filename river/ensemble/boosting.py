@@ -26,7 +26,6 @@ class AdaBoostClassifier(base.WrapperEnsemble, base.Classifier):
 
     Examples
     --------
-
     In the following example three tree classifiers are boosted together. The performance is
     slightly better than when using a single tree.
 
@@ -130,7 +129,6 @@ class ADWINBoostingClassifier(AdaBoostClassifier):
 
     Examples
     --------
-
     >>> from river import datasets
     >>> from river import ensemble
     >>> from river import evaluate
@@ -229,7 +227,6 @@ class BOLEClassifier(AdaBoostClassifier):
 
     Examples
     --------
-
     >>> from river import datasets
     >>> from river import ensemble
     >>> from river import evaluate

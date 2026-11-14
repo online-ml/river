@@ -20,7 +20,7 @@ def assert_predictions_are_close(y1, y2):
 
 
 def seed_params(params, seed):
-    """Looks for "seed" keys and sets the value."""
+    """Look for "seed" keys and sets the value."""
 
     def is_class_param(param):
         return isinstance(param, tuple) and inspect.isclass(param[0]) and isinstance(param[1], dict)

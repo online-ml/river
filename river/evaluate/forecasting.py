@@ -23,7 +23,6 @@ def _iter_with_horizon(dataset: base.typing.Dataset, horizon: int) -> TimeSeries
 
     Examples
     --------
-
     >>> from river import datasets
     >>> from river.evaluate.forecasting import _iter_with_horizon
 
@@ -56,7 +55,6 @@ def _iter_with_horizon(dataset: base.typing.Dataset, horizon: int) -> TimeSeries
     ---
 
     """
-
     x_horizon: collections.deque[dict] = collections.deque(maxlen=horizon)
     y_horizon: collections.deque = collections.deque(maxlen=horizon)
 
@@ -82,7 +80,7 @@ def iter_evaluate(
     horizon: int,
     agg_func: typing.Callable[[list[float]], float] | None = None,
 ):
-    """Evaluates the performance of a forecaster on a time series dataset and yields results.
+    """Evaluate the performance of a forecaster on a time series dataset and yields results.
 
     This does exactly the same as `evaluate.progressive_val_score`. The only difference is that
     this function returns an iterator, yielding results at every step. This can be useful if you
@@ -100,7 +98,6 @@ def iter_evaluate(
     horizon
     agg_func
     """
-
     from river import time_series
 
     horizon_metric = (
@@ -128,7 +125,7 @@ def evaluate(
     horizon: int,
     agg_func: typing.Callable[[list[float]], float] | None = None,
 ):
-    """Evaluates the performance of a forecaster on a time series dataset.
+    """Evaluate the performance of a forecaster on a time series dataset.
 
     To understand why this method is useful, it's important to understand the difference between
     nowcasting and forecasting. Nowcasting is about predicting a value at the next time step. This
@@ -151,7 +148,6 @@ def evaluate(
     horizon
     agg_func
     """
-
     horizon_metric = None
     steps = iter_evaluate(dataset, model, metric, horizon, agg_func)
     for *_, horizon_metric in steps:

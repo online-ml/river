@@ -59,7 +59,7 @@ def iter_csv(
     encoding: str = "utf-8",
     **kwargs: typing.Any,
 ) -> base.typing.Stream:
-    """Iterates over rows from a CSV file.
+    """Iterate over rows from a CSV file.
 
     Reading CSV files can be quite slow. If, for whatever reason, you're going to loop through
     the same file multiple times, then we recommend that you to use the `stream.Cache` utility.
@@ -102,13 +102,11 @@ def iter_csv(
 
     Returns
     -------
-
     By default each feature value will be of type `str`. You can use the `converters` and
     `parse_dates` parameters to convert them as you see fit.
 
     Examples
     --------
-
     Although this function is designed to handle different kinds of inputs, the most common
     use case is to read a file on the disk. We'll first create a little CSV file to illustrate.
 
@@ -157,7 +155,6 @@ def iter_csv(
     >>> import os; os.remove('tv_shows.csv')
 
     """
-
     with contextlib.ExitStack() as stack:
         # Set the field size limit
         if field_size_limit is not None:

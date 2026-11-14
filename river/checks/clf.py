@@ -6,7 +6,6 @@ import math
 
 def check_predict_proba_one(classifier, dataset):
     """predict_proba_one should return a valid probability distribution and be pure."""
-
     from river.active.base import ActiveLearningClassifier
 
     if not hasattr(classifier, "predict_proba_one"):
@@ -34,7 +33,6 @@ def check_predict_proba_one(classifier, dataset):
 
 def check_predict_proba_one_binary(classifier, dataset):
     """predict_proba_one should return a dict with True and False keys."""
-
     for x, y in dataset:
         y_pred = classifier.predict_proba_one(x)
         classifier.learn_one(x, y)
@@ -50,7 +48,6 @@ def check_classifier_tracks_seen_labels(classifier, dataset):
 
     Catches classifiers that silently drop labels they have already observed.
     """
-
     from river.active.base import ActiveLearningClassifier
 
     if not hasattr(classifier, "predict_proba_one"):

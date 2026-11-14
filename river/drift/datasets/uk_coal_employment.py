@@ -6,7 +6,7 @@ from .base import ChangePointFileDataset
 
 
 class UKCoalEmploy(ChangePointFileDataset):
-    """Historic Employment in UK Coal Mines
+    """Historic Employment in UK Coal Mines.
 
     This is historic data obtained from the UK government.
         We use the employment column for the number of workers employed in the British coal mines

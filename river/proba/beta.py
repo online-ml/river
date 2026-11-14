@@ -11,7 +11,7 @@ __all__ = ["Beta"]
 
 
 def _beta_func(a: float, b: float) -> float:
-    """
+    """Compute the value of the Beta function.
 
     A naive implementation with (math.gamma(a) + math.gamma(b)) / math.gamma(a + b) would
     overflow for large values of a and b.
@@ -43,7 +43,6 @@ class Beta(base.ContinuousDistribution):
 
     Examples
     --------
-
     >>> from river import proba
 
     >>> successes = 81

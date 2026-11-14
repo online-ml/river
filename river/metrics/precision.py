@@ -18,7 +18,6 @@ class Precision(metrics.base.BinaryMetric):
 
     Examples
     --------
-
     >>> from river import metrics
 
     >>> y_true = [True, False, True, True, True]
@@ -58,7 +57,6 @@ class MacroPrecision(metrics.base.MultiClassMetric):
 
     Examples
     --------
-
     >>> from river import metrics
 
     >>> y_true = [0, 1, 2, 2, 2]
@@ -107,7 +105,6 @@ class MicroPrecision(metrics.base.MultiClassMetric):
 
     Examples
     --------
-
     >>> from river import metrics
 
     >>> y_true = [0, 1, 2, 2, 2]
@@ -154,7 +151,6 @@ class WeightedPrecision(metrics.base.MultiClassMetric):
 
     Examples
     --------
-
     >>> from river import metrics
 
     >>> y_true = [0, 1, 2, 2, 2]

@@ -15,7 +15,6 @@ class Renamer(base.Transformer):
 
     Examples
     --------
-
     >>> from river import compose
 
     >>> mapping = {'a': 'v', 'c': 'o'}
@@ -47,7 +46,6 @@ class Prefixer(base.Transformer):
 
     Examples
     --------
-
     >>> from river import compose
 
     >>> x = {'a': 42, 'b': 12}
@@ -76,7 +74,6 @@ class Suffixer(base.Transformer):
 
     Examples
     --------
-
     >>> from river import compose
 
     >>> x = {'a': 42, 'b': 12}

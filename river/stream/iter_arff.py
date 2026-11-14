@@ -17,6 +17,10 @@ if typing.TYPE_CHECKING:
 
 
 _ESCAPE_PATTERN = re.compile(r"\\([0-9]{1,3}|u[0-9a-f]{4}|.)")
+_DENSE_VALUE_PATTERN = re.compile(
+    r"""\s*('(?:\\.|[^'\\])*'|"(?:\\.|[^"\\])*"|[^\s,'"%{}]+|\{[^{}]*\})\s*(,|(?=%|$))"""
+)
+_DENSE_UNQUOTED_PATTERN = re.compile(r"""\s*[^\s,'"%{}]+\s*(?:,\s*[^\s,'"%{}]+\s*)*""")
 _ESCAPES = {
     "\\": "\\",
     '"': '"',
@@ -45,6 +49,8 @@ def _replace_escape(match: re.Match[str]) -> str:
 @functools.lru_cache(maxsize=256)
 def _parse_quoted_value(value: str) -> str:
     quote = value[0]
+    if value[-1] != quote:
+        raise ValueError
     escaped = False
     for char in value[1:-1]:
         if escaped:
@@ -58,6 +64,34 @@ def _parse_quoted_value(value: str) -> str:
     return _ESCAPE_PATTERN.sub(_replace_escape, value[1:-1])
 
 
+def _parse_dense_row(row: str, n_attrs: int) -> list[str]:
+    if row.count(",") == n_attrs - 1 and "%" not in row and "{" not in row and "}" not in row:
+        values = row.split(",")
+        if " " not in row and "\t" not in row:
+            return values
+        return [value.strip() for value in values]
+    if _DENSE_UNQUOTED_PATTERN.fullmatch(row):
+        values = [value.strip() for value in row.split(",")]
+        if len(values) != n_attrs:
+            raise ValueError
+        return values
+    values = []
+    position = 0
+    while True:
+        match = _DENSE_VALUE_PATTERN.match(row, position)
+        if match is None:
+            raise ValueError
+        values.append(match[1])
+        position = match.end()
+        if match[2] != ",":
+            break
+    if len(values) == n_attrs + 1 and values[-1].startswith("{"):
+        float(values.pop()[1:-1])
+    if len(values) != n_attrs or any(value.startswith("{") for value in values):
+        raise ValueError
+    return values
+
+
 def iter_arff(
     filepath_or_buffer: FilePath | typing.TextIO,
     target: str | list[str] | None = None,
@@ -65,7 +99,7 @@ def iter_arff(
     sparse: bool = False,
     encoding: str = "utf-8",
 ) -> base.typing.Stream:
-    """Iterates over rows from an ARFF file.
+    """Iterate over rows from an ARFF file.
 
     Parameters
     ----------
@@ -86,7 +120,6 @@ def iter_arff(
 
     Examples
     --------
-
     >>> cars = '''
     ... @relation CarData
     ... @attribute make {Toyota, Honda, Ford, Chevrolet}
@@ -108,11 +141,11 @@ def iter_arff(
 
     >>> for x, y in stream.iter_arff('cars.arff', target='price'):
     ...     print(x, y)
-    {'make': 'Toyota', 'model': ' Corolla', 'year': 2018.0, 'mpg': 30.5} 15000.0
-    {'make': 'Honda', 'model': ' Civic', 'year': 2019.0, 'mpg': 32.2} 16000.0
-    {'make': 'Ford', 'model': ' Mustang', 'year': 2020.0, 'mpg': 25.0} 25000.0
-    {'make': 'Chevrolet', 'model': ' Malibu', 'year': 2017.0, 'mpg': 28.9} 18000.0
-    {'make': 'Toyota', 'model': ' Camry', 'year': 2019.0, 'mpg': 29.8} 22000.0
+    {'make': 'Toyota', 'model': 'Corolla', 'year': 2018.0, 'mpg': 30.5} 15000.0
+    {'make': 'Honda', 'model': 'Civic', 'year': 2019.0, 'mpg': 32.2} 16000.0
+    {'make': 'Ford', 'model': 'Mustang', 'year': 2020.0, 'mpg': 25.0} 25000.0
+    {'make': 'Chevrolet', 'model': 'Malibu', 'year': 2017.0, 'mpg': 28.9} 18000.0
+    {'make': 'Toyota', 'model': 'Camry', 'year': 2019.0, 'mpg': 29.8} 22000.0
 
     Finally, let's delete the example file.
 
@@ -202,7 +235,6 @@ def iter_arff(
     [^1]: [ARFF format description from Weka](https://waikato.github.io/weka-wiki/formats_and_processing/arff_stable/)
 
     """
-
     # If a file is not opened, then we open it
     if isinstance(filepath_or_buffer, (str, os.PathLike)):
         buffer = utils.open_filepath(filepath_or_buffer, compression, encoding=encoding)
@@ -292,11 +324,20 @@ def iter_arff(
                     raise ValueError
                 x[name] = val
         else:
-            x = {
-                name: cast(val) if cast else val
-                for name, cast, val in zip(names, casts, r.rstrip().split(","))
-                if val != "?" and val != ""
-            }
+            row = r.strip()
+            if not row or row.startswith("%"):
+                continue
+            x = {}
+            for name, cast, val in zip(names, casts, _parse_dense_row(row, n_attrs)):
+                if val == "?":
+                    continue
+                if not val:
+                    raise ValueError
+                if val[0] in "'\"":
+                    val = _parse_quoted_value(val)
+                elif cast is None and (" " in val or "\t" in val or "'" in val or '"' in val):
+                    raise ValueError
+                x[name] = cast(val) if cast else val
 
         # Handle target
         if target is None:

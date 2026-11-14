@@ -3,8 +3,7 @@ from __future__ import annotations
 
 def test_issue_1272():
     """
-
-    https://github.com/online-ml/river/issues/1272
+    See https://github.com/online-ml/river/issues/1272.
 
     >>> import river
     >>> from river import forest, metrics

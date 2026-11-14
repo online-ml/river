@@ -18,7 +18,6 @@ class Jaccard(metrics.base.BinaryMetric):
 
     Examples
     --------
-
     >>> from river import metrics
 
     >>> y_true = [False, True, True]
@@ -61,7 +60,6 @@ class MacroJaccard(metrics.base.MultiClassMetric):
 
     Examples
     --------
-
     >>> from river import metrics
 
     >>> y_true = [0, 1, 2, 2, 2]
@@ -108,7 +106,6 @@ class MicroJaccard(metrics.base.MultiClassMetric):
 
     Examples
     --------
-
     >>> from river import metrics
 
     >>> y_true = [0, 1, 2, 2, 2]
@@ -150,7 +147,6 @@ class WeightedJaccard(metrics.base.MultiClassMetric):
 
     Examples
     --------
-
     >>> from river import metrics
 
     >>> y_true = [0, 1, 2, 2, 2]

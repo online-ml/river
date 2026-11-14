@@ -56,7 +56,6 @@ class BanditRegressor(BanditModelSection, model_selection.base.ModelSelectionReg
 
     Examples
     --------
-
     >>> from river import bandit
     >>> from river import datasets
     >>> from river import evaluate
@@ -153,7 +152,6 @@ class BanditClassifier(BanditModelSection, model_selection.base.ModelSelectionCl
 
     Examples
     --------
-
     >>> from river import bandit
     >>> from river import datasets
     >>> from river import evaluate

@@ -85,7 +85,7 @@ class LinUCBDisjoint(bandit.base.ContextualPolicy):
         return self._rng.choice(candidates) if len(candidates) > 1 else candidates[0]
 
     def update(self, arm_id, context, *reward_args, **reward_kwargs):
-        """Rewrite update function"""
+        """Rewrite update function."""
         super().update(arm_id, None, *reward_args, **reward_kwargs)
         reward = reward_args[0]
         self._bayes_lin_regs[arm_id].learn_one(x=context, y=reward)

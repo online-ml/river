@@ -22,7 +22,6 @@ class Silhouette(metrics.base.ClusteringMetric):
 
     Examples
     --------
-
     >>> from river import cluster
     >>> from river import stream
     >>> from river import metrics

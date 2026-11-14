@@ -44,7 +44,6 @@ class FBeta(metrics.base.BinaryMetric):
 
     Examples
     --------
-
     >>> from river import metrics
 
     >>> y_true = [False, False, False, True, True, True]
@@ -91,7 +90,6 @@ class MacroFBeta(metrics.base.MultiClassMetric):
 
     Examples
     --------
-
     >>> from river import metrics
 
     >>> y_true = [0, 1, 2, 2, 2]
@@ -157,7 +155,6 @@ class MicroFBeta(metrics.base.MultiClassMetric):
 
     Examples
     --------
-
     >>> from river import metrics
 
     >>> y_true = [0, 1, 2, 2, 0]
@@ -209,7 +206,6 @@ class WeightedFBeta(metrics.base.MultiClassMetric):
 
     Examples
     --------
-
     >>> from river import metrics
 
     >>> y_true = [0, 1, 2, 2, 2]
@@ -277,7 +273,6 @@ class MultiFBeta(metrics.base.MultiClassMetric):
 
     Examples
     --------
-
     >>> from river import metrics
 
     >>> y_true = [0, 1, 2, 2, 2]
@@ -347,7 +342,6 @@ class F1(FBeta):
 
     Examples
     --------
-
     >>> from river import metrics
 
     >>> y_true = [False, False, False, True, True, True]
@@ -381,7 +375,6 @@ class MacroF1(MacroFBeta):
 
     Examples
     --------
-
     >>> from river import metrics
 
     >>> y_true = [0, 1, 2, 2, 2]
@@ -419,7 +412,6 @@ class MicroF1(MicroFBeta):
 
     Examples
     --------
-
     >>> from river import metrics
 
     >>> y_true = [0, 1, 2, 2, 0]
@@ -459,7 +451,6 @@ class WeightedF1(WeightedFBeta):
 
     Examples
     --------
-
     >>> from river import metrics
 
     >>> y_true = [0, 1, 2, 2, 2]

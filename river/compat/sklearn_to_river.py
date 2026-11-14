@@ -54,7 +54,7 @@ def convert_sklearn_to_river(
 def convert_sklearn_to_river(
     estimator: sklearn_base.BaseEstimator, classes: list[base.typing.ClfTarget] | None = None
 ) -> SKL2RiverRegressor | SKL2RiverClassifier:
-    """Wraps a scikit-learn estimator to make it compatible with river.
+    """Wrap a scikit-learn estimator to make it compatible with river.
 
     Parameters
     ----------
@@ -63,7 +63,6 @@ def convert_sklearn_to_river(
         Class names. Required for classifiers, and not accepted for regressors.
 
     """
-
     if not hasattr(estimator, "partial_fit"):
         raise ValueError(f"{estimator} does not have a partial_fit method")
 
@@ -127,7 +126,6 @@ class SKL2RiverRegressor(SKL2RiverBase, base.Regressor):
 
     Examples
     --------
-
     >>> from river import compat
     >>> from river import evaluate
     >>> from river import metrics
@@ -195,7 +193,6 @@ class SKL2RiverClassifier(SKL2RiverBase, base.Classifier):
 
     Examples
     --------
-
     >>> from river import compat
     >>> from river import evaluate
     >>> from river import metrics

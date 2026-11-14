@@ -97,6 +97,8 @@ class HistogramSplitter(Splitter):
 
 def decimal_range(start, stop, num):
     """
+    Generate equally-spaced floating-point values in an interval.
+
     Example
     -------
     >>> for x in decimal_range(0, 1, 4):

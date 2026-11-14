@@ -249,7 +249,12 @@ def _native_columns(native) -> dict[str, list[float]]:
 
 
 def _one_columns(transformer, docs: list[str], *, on: str | None) -> dict[str, list[float]]:
-    """The same mapping, built from a row-by-row `transform_one` loop (the reference)."""
+    """
+    Transform a list row-by-row.
+
+    This is the same mapping as _native_columns, built from a row-by-row `transform_one`
+    loop (the reference).
+    """
     rows = [transformer.transform_one(doc if on is None else {on: doc}) for doc in docs]
     terms = {term for row in rows for term in row}
     return {str(term): [float(row.get(term, 0.0)) for row in rows] for term in terms}

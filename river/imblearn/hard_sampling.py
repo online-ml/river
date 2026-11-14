@@ -116,7 +116,6 @@ class HardSamplingRegressor(HardSampling[base.Regressor], base.Regressor):
 
     Examples
     --------
-
     >>> from river import datasets
     >>> from river import evaluate
     >>> from river import imblearn
@@ -202,7 +201,6 @@ class HardSamplingClassifier(HardSampling[base.Classifier], base.Classifier):
 
     Examples
     --------
-
     >>> from river import datasets
     >>> from river import evaluate
     >>> from river import imblearn

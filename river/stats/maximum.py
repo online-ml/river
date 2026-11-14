@@ -15,7 +15,6 @@ class Max(stats.base.Univariate):
 
     Examples
     --------
-
     >>> from river import stats
 
     >>> X = [1, -4, 3, -2, 5, -6]
@@ -53,7 +52,6 @@ class RollingMax(stats.base.RollingUnivariate):
 
     Examples
     --------
-
     >>> from river import stats
 
     >>> X = [1, -4, 3, -2, 2, 1]
@@ -97,7 +95,6 @@ class AbsMax(stats.base.Univariate):
 
     Examples
     --------
-
     >>> from river import stats
 
     >>> X = [1, -4, 3, -2, 5, -6]
@@ -135,7 +132,6 @@ class RollingAbsMax(stats.base.RollingUnivariate):
 
     Examples
     --------
-
     >>> from river import stats
 
     >>> X = [1, -4, 3, -2, 2, 1]

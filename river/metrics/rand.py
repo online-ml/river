@@ -37,7 +37,7 @@ def _pair_confusion(cm):
 
 
 class Rand(metrics.base.MultiClassMetric):
-    """Rand Index.
+    r"""Rand Index.
 
     The Rand Index [^1] [^2] is a measure of the similarity between two data clusterings.
     Given a set of elements `S` and two partitions of `S` to compare, `X` and `Y`,

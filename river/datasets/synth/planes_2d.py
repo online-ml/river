@@ -6,22 +6,22 @@ from river import datasets
 
 
 class Planes2D(datasets.base.SyntheticDataset):
-    """2D Planes synthetic dataset.
+    r"""2D Planes synthetic dataset.
 
     This dataset is described in [^1] and was adapted from [^2]. The features are generated
     using the following probabilities:
 
-    $$P(x_1 = -1) = P(x_1 = 1) = \\frac{1}{2}$$
+    $$P(x_1 = -1) = P(x_1 = 1) = \frac{1}{2}$$
 
-    $$P(x_m = -1) = P(x_m = 0) = P(x_m = 1) = \\frac{1}{3}, m=2,\\ldots, 10$$
+    $$P(x_m = -1) = P(x_m = 0) = P(x_m = 1) = \frac{1}{3}, m=2,\ldots, 10$$
 
     The target value is defined by the following rule:
 
-    $$\\text{if}~x_1 = 1, y \\leftarrow 3 + 3x_2 + 2x_3 + x_4 + \\epsilon$$
+    $$\text{if}~x_1 = 1, y \leftarrow 3 + 3x_2 + 2x_3 + x_4 + \epsilon$$
 
-    $$\\text{if}~x_1 = -1, y \\leftarrow -3 + 3x_5 + 2x_6 + x_7 + \\epsilon$$
+    $$\text{if}~x_1 = -1, y \leftarrow -3 + 3x_5 + 2x_6 + x_7 + \epsilon$$
 
-    In the expressions, $\\epsilon \\sim \\mathcal{N}(0, 1)$, is the noise.
+    In the expressions, $\epsilon \sim \mathcal{N}(0, 1)$, is the noise.
 
     Parameters
     ----------

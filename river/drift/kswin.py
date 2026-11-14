@@ -124,7 +124,6 @@ class KSWIN(DriftDetector):
             New data sample the sliding window should add.
 
         """
-
         if self.drift_detected:
             self._reset()
 

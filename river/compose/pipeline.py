@@ -57,7 +57,7 @@ _LAST_STEP_METHODS = ("learn_one", "predict_one", "predict_proba_one", "score_on
 
 @contextlib.contextmanager
 def learn_during_predict():
-    """A context manager for fitting unsupervised steps during prediction.
+    """Provide a context manager for fitting unsupervised steps during prediction.
 
     Usually, unsupervised parts of a pipeline are updated during `learn_one`. However, in the case
     of online learning, it is possible to update them before, during the prediction step. This
@@ -69,7 +69,6 @@ def learn_during_predict():
 
     Examples
     --------
-
     Let's first see what methods are called if we just call `predict_one`.
 
     >>> import io
@@ -183,7 +182,6 @@ class Pipeline(base.Estimator):
 
     Examples
     --------
-
     The recommended way to declare a pipeline is to use the `|` operator. The latter allows you
     to chain estimators in a very terse manner:
 
@@ -460,7 +458,6 @@ class Pipeline(base.Estimator):
         then it will be wrapped with a `compose.FuncTransformer`.
 
         """
-
         name = None
         if isinstance(obj, tuple):
             name, obj = obj
@@ -521,7 +518,6 @@ class Pipeline(base.Estimator):
             A target value.
 
         """
-
         plan = self._plan if self._plan is not None else self._build_plan()
         learn_during_predict = self._LEARN_UNSUPERVISED_DURING_PREDICT
 
@@ -572,7 +568,9 @@ class Pipeline(base.Estimator):
                     break
 
     def _transform_one(self, x: dict, params: dict | None = None):
-        """This methods takes care of applying the first n - 1 steps of the pipeline, which are
+        """Apply the transformer steps of the pipeline.
+
+        This methods takes care of applying the first n - 1 steps of the pipeline, which are
         supposedly transformers. It also returns the final step so that other functions can do
         something with it.
 
@@ -581,7 +579,6 @@ class Pipeline(base.Estimator):
         unsupervised step exactly as in `learn_one`.
 
         """
-
         plan = self._plan if self._plan is not None else self._build_plan()
 
         # Fast path: typical inference, no learn-during-predict.
@@ -680,7 +677,7 @@ class Pipeline(base.Estimator):
         return self._last_step.forecast(horizon=horizon, xs=xs)
 
     def debug_one(self, x: dict, show_types=True, n_decimals=5) -> str:
-        """Displays the state of a set of features as it goes through the pipeline.
+        """Display the state of a set of features as it goes through the pipeline.
 
         Parameters
         ----------
@@ -692,7 +689,6 @@ class Pipeline(base.Estimator):
             Number of decimals to display for each floating point value.
 
         """
-
         tab = " " * 4
 
         # We'll redirect all the print statement to a buffer, we'll return the content of the
@@ -774,7 +770,6 @@ class Pipeline(base.Estimator):
             A series of target values.
 
         """
-
         steps = iter(self.steps.values())
 
         # Loop over the first n - 1 steps, which should all be transformers
@@ -807,12 +802,13 @@ class Pipeline(base.Estimator):
             last_step.learn_many(X=X, **params)
 
     def _transform_many(self, X: IntoDataFrame):
-        """This methods takes care of applying the first n - 1 steps of the pipeline, which are
+        """Apply the transformer steps of the pipeline.
+
+        This methods takes care of applying the first n - 1 steps of the pipeline, which are
         supposedly transformers. It also returns the final step so that other functions can do
         something with it.
 
         """
-
         steps = iter(self.steps.values())
 
         for t in itertools.islice(steps, len(self) - 1):

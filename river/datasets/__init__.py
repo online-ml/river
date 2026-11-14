@@ -81,7 +81,6 @@ __all__ = [
 
 def _docs_overview(print):
     """For website documentation purposes."""
-
     import collections
 
     import pandas as pd

@@ -117,7 +117,6 @@ class BaseForest(base.Ensemble):
             The number of concept drift warnings detected.
 
         """
-
         if self._warning_detection_disabled:
             return 0
 
@@ -141,7 +140,6 @@ class BaseForest(base.Ensemble):
             The number of concept drifts detected.
 
         """
-
         if self._drift_detection_disabled:
             return 0
 
@@ -410,7 +408,6 @@ class BaseTreeRegressor(HoeffdingTreeRegressor):
 
         The type of learning node depends on the tree configuration.
         """
-
         if parent is not None:
             depth = parent.depth + 1
         else:
@@ -564,7 +561,6 @@ class ARFClassifier(BaseForest, base.Classifier):
 
     Examples
     --------
-
     >>> from river import evaluate
     >>> from river import forest
     >>> from river import metrics
@@ -728,7 +724,7 @@ class ARFClassifier(BaseForest, base.Classifier):
 
 
 class ARFRegressor(BaseForest, base.Regressor):
-    """Adaptive Random Forest regressor.
+    r"""Adaptive Random Forest regressor.
 
     The 3 most important aspects of Adaptive Random Forest [^1] are:
 
@@ -746,7 +742,7 @@ class ARFRegressor(BaseForest, base.Regressor):
     predictions and check for concept drifts. The deviations of the predictions
     to the target are monitored and normalized in the [0, 1] range to fulfill ADWIN's
     requirements. We assume that the data subjected to the normalization follows
-    a normal distribution, and thus, lies within the interval of the mean $\\pm3\\sigma$.
+    a normal distribution, and thus, lies within the interval of the mean $\pm3\sigma$.
 
     Parameters
     ----------
@@ -850,7 +846,6 @@ class ARFRegressor(BaseForest, base.Regressor):
 
     Examples
     --------
-
     >>> from river import datasets
     >>> from river import evaluate
     >>> from river import forest

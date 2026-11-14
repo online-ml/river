@@ -54,10 +54,6 @@ nav:
       - api/anomaly/QuantileFilter.md
       - api/anomaly/StandardAbsoluteDeviation.md
       - api/anomaly/ThresholdFilter.md
-      - base:
-        - api/anomaly/base/AnomalyDetector.md
-        - api/anomaly/base/AnomalyFilter.md
-        - api/anomaly/base/SupervisedAnomalyDetector.md
     - bandit:
       - api/bandit/BayesUCB.md
       - api/bandit/EpsilonGreedy.md
@@ -78,6 +74,8 @@ nav:
         - api/bandit/envs/CandyCaneContest.md
         - api/bandit/envs/KArmedTestbed.md
     - base:
+      - api/base/AnomalyDetector.md
+      - api/base/AnomalyFilter.md
       - api/base/Base.md
       - api/base/BaseTransformer.md
       - api/base/BinaryDriftAndWarningDetector.md
@@ -95,6 +93,7 @@ nav:
       - api/base/MultiLabelClassifier.md
       - api/base/MultiTargetRegressor.md
       - api/base/Regressor.md
+      - api/base/SupervisedAnomalyDetector.md
       - api/base/SupervisedTransformer.md
       - api/base/Transformer.md
       - api/base/Wrapper.md
@@ -158,6 +157,7 @@ nav:
       - api/datasets/MaliciousURL.md
       - api/datasets/MovieLens100K.md
       - api/datasets/Music.md
+      - api/datasets/NewsT.md
       - api/datasets/Phishing.md
       - api/datasets/Restaurants.md
       - api/datasets/SMSSpam.md
@@ -168,6 +168,7 @@ nav:
       - api/datasets/TREC07.md
       - api/datasets/Taxis.md
       - api/datasets/TrumpApproval.md
+      - api/datasets/TwitchChat.md
       - api/datasets/WaterFlow.md
       - api/datasets/WebTraffic.md
       - api/datasets/Yeast.md
@@ -368,6 +369,8 @@ nav:
       - api/model-selection/BanditClassifier.md
       - api/model-selection/BanditRegressor.md
       - api/model-selection/GreedyRegressor.md
+      - api/model-selection/HoeffdingRaceClassifier.md
+      - api/model-selection/HoeffdingRaceRegressor.md
       - api/model-selection/SuccessiveHalvingClassifier.md
       - api/model-selection/SuccessiveHalvingRegressor.md
       - base:
@@ -387,6 +390,7 @@ nav:
       - api/multioutput/RegressorChain.md
     - naive_bayes:
       - api/naive-bayes/BernoulliNB.md
+      - api/naive-bayes/CategoricalNB.md
       - api/naive-bayes/ComplementNB.md
       - api/naive-bayes/GaussianNB.md
       - api/naive-bayes/MultinomialNB.md
@@ -443,6 +447,7 @@ nav:
       - api/preprocessing/AdaptiveStandardScaler.md
       - api/preprocessing/Binarizer.md
       - api/preprocessing/FeatureHasher.md
+      - api/preprocessing/GapEncoder.md
       - api/preprocessing/GaussianRandomProjector.md
       - api/preprocessing/LDA.md
       - api/preprocessing/MaxAbsScaler.md
@@ -520,6 +525,9 @@ nav:
       - api/stats/Var.md
       - base:
         - api/stats/base/Bivariate.md
+        - api/stats/base/Link.md
+        - api/stats/base/RollingUnivariate.md
+        - api/stats/base/Statistic.md
         - api/stats/base/Univariate.md
     - stream:
       - api/stream/Cache.md
@@ -620,6 +628,8 @@ nav:
     - examples/on-hoeffding-trees.md
   - FAQ: faq
   - Releases:
+    - Unreleased: releases/unreleased.md
+    - "0.27.0": releases/0.27.0.md
     - "0.26.1": releases/0.26.1.md
     - "0.26.0": releases/0.26.0.md
     - "0.25.0": releases/0.25.0.md
