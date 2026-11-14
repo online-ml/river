@@ -33,7 +33,6 @@ class SoftmaxRegression(base.Classifier):
 
     Examples
     --------
-
     >>> from river import datasets
     >>> from river import evaluate
     >>> from river import linear_model

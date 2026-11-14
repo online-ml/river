@@ -8,7 +8,7 @@ from river import base
 
 
 class FHDDM(base.BinaryDriftAndWarningDetector):
-    """Fast Hoeffding Drift Detection Method.
+    r"""Fast Hoeffding Drift Detection Method.
 
     FHDDM is a drift detection method based on the Hoeffding's inequality which uses
     the input average as estimator.
@@ -21,7 +21,7 @@ class FHDDM(base.BinaryDriftAndWarningDetector):
 
     - 0: Correct, $y=y'$
 
-    - 1: Error, $y \\neq y'$
+    - 1: Error, $y \neq y'$
 
     *Implementation based on MOA.*
 
@@ -30,7 +30,7 @@ class FHDDM(base.BinaryDriftAndWarningDetector):
     sliding_window_size
         The minimum required number of analyzed samples so change can be detected.
     confidence_level
-        Confidence level used to determine the epsilon coefficient in Hoeffding’s inequality. The default value gives a 99\\% of confidence
+        Confidence level used to determine the epsilon coefficient in Hoeffding’s inequality. The default value gives a 99% of confidence
         level to the drift assessment.
     short_window_size
         The size of the short window size that it is used in a Stacking version of FHDDM.

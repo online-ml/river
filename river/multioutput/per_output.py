@@ -26,7 +26,6 @@ class PerOutputRegressor(base.Wrapper, base.MultiTargetRegressor, collections.Us
 
     Examples
     --------
-
     >>> from river import evaluate
     >>> from river import linear_model
     >>> from river import metrics

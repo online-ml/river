@@ -152,7 +152,7 @@ class KNNClassifier(base.Classifier):
         self._run_class_cleanup()
 
     def _run_class_cleanup(self) -> None:
-        """Helper function to run class cleanup, accounting for _cleanup_counter."""
+        """Run class cleanup, accounting for _cleanup_counter."""
         # clean up classes every cleanup_every steps
         if self.cleanup_every:
             self._cleanup_counter -= 1

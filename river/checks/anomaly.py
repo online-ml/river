@@ -7,8 +7,7 @@ def check_roc_auc(anomaly_detector, dataset):
     Each sample is scored *before* it is learned (prequential evaluation), so the detector is
     never asked to score a point it has already memorised — which would leak the label and
     inflate the score.
-    """
-
+    """  # noqa: D401
     from sklearn import metrics
 
     scores = []

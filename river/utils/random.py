@@ -20,7 +20,6 @@ def poisson(rate: float, rng: random.Random | Any = random) -> int:
     [^1] [Wikipedia article](https://en.wikipedia.org/wiki/Poisson_distribution#Random_variate_generation)
 
     """
-
     L = math.exp(-rate)
     k = 0
     p = 1.0
@@ -45,7 +44,6 @@ def exponential(rate: float = 1.0, rng: random.Random | Any = random) -> float:
     [^1]: [Wikipedia article](https://en.wikipedia.org/wiki/Exponential_distribution#Random_variate_generation)
 
     """
-
     u = rng.random()
 
     # Retrieve the λ value from the rate (β): β = 1 / λ

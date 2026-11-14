@@ -26,7 +26,6 @@ class Shift(stats.base.Univariate):
 
     Examples
     --------
-
     It is rare to have to use `Shift` by itself. A more common usage is to compose it with
     other statistics. This can be done via the `|` operator.
 

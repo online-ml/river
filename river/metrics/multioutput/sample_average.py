@@ -19,7 +19,6 @@ class SampleAverage(MultiOutputMetric, metrics.base.WrapperMetric):
 
     Examples
     --------
-
     >>> from river import metrics
 
     >>> y_true = [

@@ -24,7 +24,6 @@ class Discard(base.Transformer):
 
     Examples
     --------
-
     >>> from river import compose
 
     >>> x = {'a': 42, 'b': 12, 'c': 13}
@@ -76,7 +75,6 @@ class Select(base.MiniBatchTransformer):
 
     Examples
     --------
-
     >>> from river import compose
 
     >>> x = {'a': 42, 'b': 12, 'c': 13}
@@ -165,7 +163,6 @@ class SelectType(base.Transformer):
 
     Examples
     --------
-
     >>> import numbers
     >>> from river import compose
     >>> from river import linear_model

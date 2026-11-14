@@ -29,7 +29,6 @@ class NoChangeClassifier(base.Classifier):
 
     Examples
     --------
-
     Taken from example 2.1 from
     [this page](https://www.cms.waikato.ac.nz/~abifet/book/chapter_2.html).
 
@@ -94,7 +93,6 @@ class PriorClassifier(base.Classifier):
 
     Examples
     --------
-
     Taken from example 2.1 from
     [this page](https://www.cms.waikato.ac.nz/~abifet/book/chapter_2.html)
 
@@ -149,7 +147,6 @@ class StatisticRegressor(base.Regressor):
 
     Examples
     --------
-
     >>> from pprint import pprint
     >>> from river import dummy
     >>> from river import stats

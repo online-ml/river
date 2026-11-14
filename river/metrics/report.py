@@ -25,7 +25,6 @@ class ClassificationReport(metrics.base.MultiClassMetric):
 
     Examples
     --------
-
     >>> from river import metrics
 
     >>> y_true = ['pear', 'apple', 'banana', 'banana', 'banana']

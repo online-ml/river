@@ -17,7 +17,6 @@ class AutoCorr(stats.base.Univariate):
 
     Examples
     --------
-
     The following examples are taken from the [pandas documentation](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.autocorr.html).
 
     >>> from river import stats

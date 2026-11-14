@@ -8,7 +8,7 @@ from river.utils.vectordict import euclidean_distance_dict
 
 
 class CluStream(base.Clusterer):
-    """CluStream
+    """The CluStream algorithm.
 
     The CluStream algorithm [^1] maintains statistical information about the
     data using micro-clusters. These micro-clusters are temporal extensions of
@@ -75,7 +75,6 @@ class CluStream(base.Clusterer):
 
     Examples
     --------
-
     In the following example, `max_micro_clusters` is set relatively low due to the
     limited number of training points. Moreover, all points are learnt before any predictions are made.
     The `halflife` is set at 0.4, to show that you can pass `cluster.KMeans` parameters via keyword arguments.

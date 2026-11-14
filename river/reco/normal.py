@@ -28,7 +28,6 @@ class RandomNormal(reco.base.Ranker):
 
     Examples
     --------
-
     >>> from river import reco
 
     >>> dataset = (

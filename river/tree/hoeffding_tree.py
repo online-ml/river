@@ -89,14 +89,14 @@ class HoeffdingTree(ABC):
         -----
         The Hoeffding bound is defined as:
 
-        $\\epsilon = \\sqrt{\\frac{R^2\\ln(1/\\delta))}{2n}}$
+        $\epsilon = \sqrt{\frac{R^2\ln(1/\delta))}{2n}}$
 
         where:
 
-        $\\epsilon$: Hoeffding bound.
+        $\epsilon$: Hoeffding bound.
         $R$: Range of a random variable. For a probability the range is 1, and for an
         information gain the range is log *c*, where *c* is the number of classes.
-        $\\delta$: Confidence. 1 minus the desired probability of choosing the correct
+        $\delta$: Confidence. 1 minus the desired probability of choosing the correct
         attribute at any given node.
         $n$: Number of samples.
 
@@ -499,6 +499,7 @@ def _color_brew(n: int) -> list[tuple[int, int, int]]:
     Returns
     -------
         List of n tuples of form (R, G, B) being the components of each color.
+
     References
     ----------
     https://github.com/scikit-learn/scikit-learn/blob/master/sklearn/tree/_export.py

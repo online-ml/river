@@ -33,7 +33,6 @@ def shuffle(
 
     Examples
     --------
-
     >>> from river import stream
 
     >>> for i in stream.shuffle(range(15), buffer_size=5, seed=42):
@@ -59,7 +58,6 @@ def shuffle(
     [^1]: [Visualizing TensorFlow's streaming shufflers](http://www.moderndescartes.com/essays/shuffle_viz/)
 
     """
-
     rng = random.Random(seed)
 
     iterator = iter(stream)

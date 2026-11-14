@@ -36,16 +36,17 @@ def strip_accents_unicode(s: str) -> str:
 
 
 def tokenize_using_regex_pattern(text: str, pattern: re.Pattern | str) -> typing.Iterator[str]:
-    """
-
+    r"""
+    Examples
+    --------
     >>> import re
 
     >>> text = 'iterative n-gram generation'
 
-    >>> list(tokenize_using_regex_pattern(text, pattern=re.compile(r'[a-z\\-]+')))
+    >>> list(tokenize_using_regex_pattern(text, pattern=re.compile(r'[a-z\-]+')))
     ['iterative', 'n-gram', 'generation']
 
-    >>> list(tokenize_using_regex_pattern(text, pattern=r'[a-z\\-]+'))
+    >>> list(tokenize_using_regex_pattern(text, pattern=r'[a-z\-]+'))
     ['iterative', 'n-gram', 'generation']
 
     """
@@ -60,13 +61,12 @@ def remove_stop_words(tokens: typing.Iterator[str], stop_words: set[str]) -> typ
 
 
 def find_ngrams(tokens: typing.Iterator[str], n: int) -> typing.Iterator[N_GRAM]:
-    """Generates n-grams from a list of tokens.
+    """Generate n-grams from a list of tokens.
 
     From http://www.locallyoptimal.com/blog/2013/01/20/elegant-n-gram-generation-in-python/.
 
     Examples
     --------
-
     >>> tokens = ['a', 'b', 'c']
 
     >>> list(find_ngrams(tokens, 0))
@@ -98,11 +98,10 @@ def find_ngrams(tokens: typing.Iterator[str], n: int) -> typing.Iterator[N_GRAM]
 
 
 def find_all_ngrams(tokens: list[str], ngram_range: range) -> typing.Iterator[N_GRAM]:
-    """Generates all n-grams in a given range.
+    """Generate all n-grams in a given range.
 
     Examples
     --------
-
     >>> tokens = ['a', 'b', 'c']
 
     >>> list(find_all_ngrams(tokens, range(2)))
@@ -284,7 +283,6 @@ class BagOfWords(base.Transformer, VectorizerMixin):
 
     Examples
     --------
-
     By default, `BagOfWords` will take as input a sentence, preprocess it, tokenize the
     preprocessed text, and then return a `collections.Counter` containing the number of
     occurrences of each token.
@@ -436,7 +434,6 @@ class TFIDF(BagOfWords):
 
     Examples
     --------
-
     >>> from river import feature_extraction
 
     >>> tfidf = feature_extraction.TFIDF()

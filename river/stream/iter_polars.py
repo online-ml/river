@@ -14,9 +14,10 @@ if typing.TYPE_CHECKING:
 def iter_polars(
     X: pl.DataFrame, y: pl.Series | pl.DataFrame | None = None, **kwargs: typing.Any
 ) -> base.typing.Stream:
-    """Iterates over the rows of a `polars.DataFrame`.
+    """Iterate over the rows of a `polars.DataFrame`.
 
-    .. deprecated::
+    !!! warning "Deprecated"
+
         Use `stream.iter_frame` instead, which works with any eager dataframe (pandas, polars,
         PyArrow, ...). `stream.iter_polars` will be removed in a future release.
 
@@ -32,7 +33,6 @@ def iter_polars(
 
     Examples
     --------
-
     >>> import polars as pl
     >>> from river import stream
 

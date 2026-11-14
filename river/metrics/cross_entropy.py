@@ -12,7 +12,6 @@ class CrossEntropy(metrics.base.MeanMetric, metrics.base.MultiClassMetric):
 
     Examples
     --------
-
     >>> from river import metrics
 
     >>> y_true = [0, 1, 2, 2]

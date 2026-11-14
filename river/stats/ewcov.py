@@ -22,7 +22,6 @@ class EWCov(stats.base.Bivariate):
 
     Examples
     --------
-
     >>> from river import stats
 
     >>> x = [1, 3, 5, 4]

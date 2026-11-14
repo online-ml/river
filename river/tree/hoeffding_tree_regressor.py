@@ -229,7 +229,6 @@ class HoeffdingTreeRegressor(HoeffdingTree, base.Regressor):
             The weight of the sample.
 
         """
-
         self._train_weight_seen_by_model += w
 
         if self._root is None:

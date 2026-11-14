@@ -49,7 +49,7 @@ def _values(frame: IntoDataFrame) -> NDArray[np.float64]:
 
 
 def _implementation(native: IntoDataFrame | IntoSeries) -> nw.Implementation:
-    """The dataframe library a native frame or series belongs to."""
+    """Return the dataframe library a native frame or series belongs to."""
     return nw.from_native(native, allow_series=True).implementation
 
 

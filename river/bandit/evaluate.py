@@ -51,7 +51,6 @@ def evaluate(
 
     Examples
     --------
-
     >>> import gymnasium as gym
     >>> from river import bandit
 
@@ -114,7 +113,6 @@ def evaluate(
     1000
 
     """
-
     reward_stat = reward_stat or stats.Sum()
     rng = random.Random(seed)
 
@@ -196,7 +194,6 @@ def evaluate_offline(
 
     Examples
     --------
-
     >>> import random
     >>> from river import bandit
 
@@ -247,7 +244,6 @@ def evaluate_offline(
     [^3]: [Understanding Inverse Propensity Score for Contextual Bandits](https://chanind.github.io/ai/2022/03/14/inverse-propensity-score-contextual-bandits.html)
 
     """
-
     if isinstance(history, bandit.datasets.BanditDataset):
         arms = history.arms
         history = ((arms, context, arm, reward) for context, arm, reward in history)

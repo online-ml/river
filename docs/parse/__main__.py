@@ -310,16 +310,6 @@ def _escape_bare_brackets(text: str) -> str:
     return s.replace(_BRACKET_OPEN, "\\[").replace(_BRACKET_CLOSE, "\\]")
 
 
-def concat_lines(lines):
-    return inspect.cleandoc(
-        " ".join(
-            # Either empty space or list item
-            f"{l}\n\n" if (l == "") or (l.strip().startswith("-")) else l
-            for l in lines
-        )
-    )
-
-
 def print_docstring(obj, file):
     """Prints a classes's docstring to a file."""
 
@@ -328,8 +318,8 @@ def print_docstring(obj, file):
     printf = functools.partial(print, file=file)
 
     printf(h1(obj.__name__))
-    printf(md_line(_escape_bare_brackets(concat_lines(doc["Summary"]))))
-    printf(md_line(_escape_bare_brackets(concat_lines(doc["Extended Summary"]))))
+    printf(md_line(_escape_bare_brackets("\n".join(doc["Summary"]))))
+    printf(md_line(_escape_bare_brackets("\n".join(doc["Extended Summary"]))))
 
     # We infer the type annotations from the signatures, and therefore rely on the signature
     # instead of the docstring for documenting parameters

@@ -127,7 +127,7 @@ class EBSTSplitter(Splitter):
         last_check_e: float,
         pre_split_dist: list | dict,
     ):
-        """Remove bad splits.
+        r"""Remove bad splits.
 
         Based on FIMT-DD's procedure to remove bad split candidates from the E-BST. This
         mechanism is triggered every time a split attempt fails. The rationale is to remove
@@ -136,9 +136,9 @@ class EBSTSplitter(Splitter):
 
         Let $m_1$ be the merit of the best split point and $m_2$ be the merit of the
         second best split candidate. The ratio $r = m_2/m_1$ along with the Hoeffding bound
-        ($\\epsilon$) are used to decide upon creating a split. A split occurs when
-        $r < 1 - \\epsilon$. A split candidate, with merit $m_i$, is considered badr
-        if $m_i / m_1 < r - 2\\epsilon$. The rationale is the following: if the merit ratio
+        ($\epsilon$) are used to decide upon creating a split. A split occurs when
+        $r < 1 - \epsilon$. A split candidate, with merit $m_i$, is considered badr
+        if $m_i / m_1 < r - 2\epsilon$. The rationale is the following: if the merit ratio
         for this point is smaller than the lower bound of $r$, then the true merit of that
         split relative to the best one is small. Hence, this candidate can be safely removed.
 
@@ -165,7 +165,6 @@ class EBSTSplitter(Splitter):
         [^1]: Ikonomovska, E., Gama, J., & Džeroski, S. (2011). Learning model trees from evolving
         data streams. Data mining and knowledge discovery, 23(1), 128-168.
         """
-
         if self._root is None:
             return
 

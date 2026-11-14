@@ -50,7 +50,6 @@ class LogisticRegression(linear_model.base.GLM, base.MiniBatchClassifier):
 
     Examples
     --------
-
     >>> from river import datasets
     >>> from river import evaluate
     >>> from river import linear_model

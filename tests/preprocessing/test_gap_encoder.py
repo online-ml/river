@@ -39,7 +39,8 @@ def _train_city_encoder(n_components=2, **params):
 
 def test_fuzzy_variants_cluster():
     """Morphological variants of the same city, including unseen typos, activate the same
-    topic, and the two cities activate different topics."""
+    topic, and the two cities activate different topics.
+    """
     enc = _train_city_encoder()
 
     def argmax(x):
@@ -56,7 +57,8 @@ def test_fuzzy_variants_cluster():
 
 def test_transform_one_is_pure():
     """transform_one never mutates the model, even on strings with unseen n-grams, and is
-    idempotent."""
+    idempotent.
+    """
     enc = _train_city_encoder()
 
     vocab_size = len(enc.vocab)
@@ -75,7 +77,8 @@ def test_transform_one_is_pure():
 
 def test_seed_reproducibility():
     """Two encoders with the same seed and stream are interchangeable; a different seed leads
-    to different topics."""
+    to different topics.
+    """
     stream = CITY_SET * 5
 
     enc_a = preprocessing.GapEncoder(n_components=2, seed=1)
@@ -96,7 +99,8 @@ def test_seed_reproducibility():
 
 def test_unseen_input_transforms_to_zeros():
     """Inputs without any known n-gram, including before any learning, map to all-zero
-    activations."""
+    activations.
+    """
     enc = preprocessing.GapEncoder(n_components=2, seed=42)
     assert enc.transform_one("anything") == {0: 0.0, 1: 0.0}
 
@@ -110,7 +114,8 @@ def test_unseen_input_transforms_to_zeros():
 
 def test_vocabulary_growth():
     """The vocabulary and W grow with unseen n-grams, and inputs too short to produce any
-    n-gram are no-ops."""
+    n-gram are no-ops.
+    """
     enc = preprocessing.GapEncoder(n_components=2, ngram_range=(2, 2), seed=42)
 
     enc.learn_one("ab")
@@ -132,7 +137,8 @@ def test_vocabulary_growth():
 
 def test_on_param_matches_plain_strings():
     """With `on` set, the encoder reads the text from a dict field and behaves exactly like
-    the plain string encoder."""
+    the plain string encoder.
+    """
     enc_str = preprocessing.GapEncoder(n_components=2, seed=7)
     enc_dict = preprocessing.GapEncoder(on="city", n_components=2, seed=7)
 
@@ -157,7 +163,8 @@ def test_output_keys_and_positivity():
 def test_strip_accents_and_lowercase():
     """Default preprocessing folds case and accents before n-gram extraction, so casing and
     accent variants encode identically; with `lowercase=False` case is preserved, leaving an
-    all-caps query with no n-gram in common with a lowercase-trained vocabulary."""
+    all-caps query with no n-gram in common with a lowercase-trained vocabulary.
+    """
     enc = _train_city_encoder()
     london = enc.transform_one("london")
 

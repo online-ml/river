@@ -84,7 +84,6 @@ class HalfSpaceTrees(base.AnomalyDetector):
 
     Examples
     --------
-
     >>> from river import anomaly
 
     >>> X = [0.5, 0.45, 0.43, 0.44, 0.445, 0.45, 0.0]
@@ -184,7 +183,7 @@ class HalfSpaceTrees(base.AnomalyDetector):
 
     @property
     def size_limit(self):
-        """This is the threshold under which the node search stops during the scoring phase.
+        """Threshold under which the node search stops during the scoring phase.
 
         The value .1 is a magic constant indicated in the original paper.
 

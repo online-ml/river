@@ -5,9 +5,9 @@ use pyo3::IntoPyObjectExt;
 
 /// A dictionary-like object that supports vector-like operations.
 ///
-/// Supports addition (+), subtraction (-), multiplication (*) and division (/)
+/// Supports addition (`+`), subtraction (`-`), multiplication (`*`) and division (`/`)
 /// with a VectorDict or a scalar.
-/// Supports dot product (@) with a VectorDict.
+/// Supports dot product (`@`) with a VectorDict.
 /// A scalar is any object that supports the four arithmetic operations
 /// with the dictionary's values.
 ///
@@ -16,11 +16,11 @@ use pyo3::IntoPyObjectExt;
 /// said to be unmasked.
 ///
 /// If default_factory is not None, it is called whenever an unmasked missing
-/// key is accessed, either externally with __getitem__ or internally as part of
+/// key is accessed, either externally with `__getitem__` or internally as part of
 /// an element-wise numeric operation such as addition, and the result is
 /// inserted as the value for that key. If a masked key, or an unmasked missing
 /// key when default_factory is None, is accessed externally through
-/// __getitem__, a KeyError exception is raised, and if it is accessed
+/// `__getitem__`, a KeyError exception is raised, and if it is accessed
 /// internally as part of an operation, its value is taken as 0, but is not
 /// inserted for that key.
 ///
@@ -39,7 +39,7 @@ use pyo3::IntoPyObjectExt;
 /// mask
 ///     A VectorDict or set-like object such that keys not in mask will not be
 ///     considered in operations and will always result in a KeyError if
-///     accessed by __getitem__, or None.
+///     accessed by `__getitem__`, or None.
 /// copy
 ///     If data and/or mask are specified, whether to store a copy of the
 ///     underlying dictionaries or references at initialization.

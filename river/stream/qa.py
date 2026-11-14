@@ -128,7 +128,6 @@ def simulate_qa(
 
     Examples
     --------
-
     The arrival delay isn't usually indicated in a dataset, but it might be able to be inferred
     from the features. As an example, we'll simulate the departure and arrival time of taxi
     trips. Let's first create a time table which records the departure time and the duration of
@@ -183,7 +182,6 @@ def simulate_qa(
     evaluating models in an online manner.
 
     """
-
     # Fast path: no delay (the common case).
     # Skip all memento/queue machinery and yield question then answer directly.
     if delay is None:

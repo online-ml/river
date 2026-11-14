@@ -31,7 +31,6 @@ class FuncTransformer(base.MiniBatchTransformer):
 
     Examples
     --------
-
     >>> from pprint import pprint
     >>> import datetime as dt
     >>> from river import compose

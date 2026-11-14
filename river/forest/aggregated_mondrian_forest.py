@@ -75,7 +75,7 @@ class AMFLearner(base.Ensemble, abc.ABC):
 
 
 class AMFClassifier(AMFLearner, base.Classifier):
-    """Aggregated Mondrian Forest classifier for online learning.
+    r"""Aggregated Mondrian Forest classifier for online learning.
 
     This implementation is truly online[^1], in the sense that a single pass is performed, and that
     predictions can be produced anytime.
@@ -85,7 +85,7 @@ class AMFClassifier(AMFLearner, base.Classifier):
     with parameter `dirichlet`. For each class with `count` labels in the
     node and `n_samples` samples in it, the prediction of a node is given by
 
-    $\\frac{count + dirichlet}{n_{samples} + dirichlet \\times n_{classes}}$.
+    $\frac{count + dirichlet}{n_{samples} + dirichlet \times n_{classes}}$.
 
     The prediction for a sample is computed as the aggregated predictions of all the
     subtrees along the path leading to the leaf node containing the sample. The
@@ -137,7 +137,6 @@ class AMFClassifier(AMFLearner, base.Classifier):
 
     Examples
     --------
-
     >>> from river import datasets
     >>> from river import evaluate
     >>> from river import forest
@@ -283,7 +282,6 @@ class AMFRegressor(AMFLearner, base.Regressor):
 
     Examples
     --------
-
     >>> from river import datasets
     >>> from river import evaluate
     >>> from river import forest
@@ -329,7 +327,6 @@ class AMFRegressor(AMFLearner, base.Regressor):
 
     def _initialize_trees(self) -> None:
         """Initialize the forest."""
-
         self.data: list[MondrianTreeRegressor] = []
         for _ in range(self.n_estimators):
             # We don't want to have the same stochastic scheme for each tree, or it'll break the randomness

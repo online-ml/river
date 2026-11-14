@@ -206,7 +206,7 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
                 return EFDTNominalMultiwayBranch
 
     def learn_one(self, x, y, *, w=1.0):
-        """Incrementally train the model
+        """Incrementally train the model.
 
         Parameters
         ----------
@@ -589,11 +589,11 @@ class ExtremelyFastDecisionTreeClassifier(HoeffdingTreeClassifier):
         ----------
         node
             The node to reevaluate.
+
         Returns
         -------
             The new leaf.
         """
-
         leaf = self._new_leaf()
         leaf.depth = node.depth  # type: ignore
         leaf.stats = node.stats

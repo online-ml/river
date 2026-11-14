@@ -23,7 +23,6 @@ class VotingClassifier(base.Classifier, base.Ensemble):
 
     Examples
     --------
-
     >>> from river import datasets
     >>> from river import ensemble
     >>> from river import evaluate

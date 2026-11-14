@@ -52,7 +52,6 @@ class Agrawal(datasets.base.SyntheticDataset):
 
     Examples
     --------
-
     >>> from river.datasets import synth
 
     >>> dataset = synth.Agrawal(
@@ -209,10 +208,7 @@ class Agrawal(datasets.base.SyntheticDataset):
         return val
 
     def generate_drift(self):
-        """
-        Generate drift by switching the classification function randomly.
-
-        """
+        """Generate drift by switching the classification function randomly."""
         new_function = self._rng.randint(0, 9)
         while new_function == self.classification_function:
             new_function = self._rng.randint(0, 9)

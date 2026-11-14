@@ -40,7 +40,6 @@ class OneVsRestClassifier(base.Wrapper[base.Classifier], base.Classifier):
 
     Examples
     --------
-
     >>> import pandas as pd
     >>> from river import datasets
     >>> from river import evaluate

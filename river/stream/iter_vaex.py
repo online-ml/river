@@ -11,7 +11,7 @@ def iter_vaex(
     y: str | vaex.expression.Expression | None = None,
     features: list[str] | vaex.expression.Expression | None = None,
 ) -> base.typing.Stream:
-    """Yields rows from a ``vaex.DataFrame``.
+    """Yield rows from a ``vaex.DataFrame``.
 
     Parameters
     ----------
@@ -24,7 +24,6 @@ def iter_vaex(
         specifying in `y` are ignored.
 
     """
-
     features = _ensure_strings_from_expressions(features)
     feature_names = features or X.get_column_names()
 

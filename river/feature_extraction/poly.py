@@ -8,7 +8,14 @@ __all__ = ["PolynomialExtender"]
 
 
 def powerset(iterable, min_size, max_size, with_replacement=False):
-    """powerset([A, B, C], 1, 2) --> (A,) (B,) (C,) (A, B) (A, C) (B, C)"""
+    """
+    Create combinations of elements with the given sizes.
+
+    Examples
+    --------
+    >>> list(powerset(["A", "B", "C"], 1, 2))
+    [('A',), ('B',), ('C',), ('A', 'B'), ('A', 'C'), ('B', 'C')]
+    """
     combiner = (
         itertools.combinations_with_replacement if with_replacement else itertools.combinations
     )
@@ -38,7 +45,6 @@ class PolynomialExtender(base.Transformer):
 
     Examples
     --------
-
     >>> from river import feature_extraction as fx
 
     >>> X = [

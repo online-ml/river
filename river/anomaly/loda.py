@@ -48,7 +48,6 @@ class LODA(base.AnomalyDetector):
 
     Examples
     --------
-
     >>> from river import anomaly
     >>> from river import datasets
 

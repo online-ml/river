@@ -23,7 +23,6 @@ class VarianceThreshold(base.Transformer):
 
     Examples
     --------
-
     >>> from river import feature_selection
     >>> from river import stream
 

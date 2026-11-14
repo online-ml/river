@@ -10,7 +10,6 @@ class MAE(metrics.base.MeanMetric, metrics.base.RegressionMetric):
 
     Examples
     --------
-
     >>> from river import metrics
 
     >>> y_true = [3, -0.5, 2, 7]

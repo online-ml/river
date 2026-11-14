@@ -49,7 +49,6 @@ class ZstdClassifier(base.Classifier):
 
     Examples
     --------
-
     >>> import sys
     >>> if sys.version_info >= (3, 14):
     ...     from river import misc

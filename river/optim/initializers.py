@@ -20,7 +20,6 @@ class Constant(Initializer):
 
     Examples
     --------
-
     >>> from river import optim
 
     >>> init = optim.initializers.Constant(value=3.14)
@@ -45,7 +44,6 @@ class Zeros(Constant):
 
     Examples
     --------
-
     >>> from river import optim
 
     >>> init = optim.initializers.Zeros()
@@ -76,7 +74,6 @@ class Normal(Initializer):
 
     Examples
     --------
-
     >>> from river import optim
 
     >>> init = optim.initializers.Normal(mu=0, sigma=1, seed=42)

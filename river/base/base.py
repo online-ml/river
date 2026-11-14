@@ -72,7 +72,7 @@ class Base:
 
     @classmethod
     def _unit_test_params(cls) -> collections.abc.Iterator[dict[str, typing.Any]]:
-        """Instantiates an object with default arguments.
+        """Instantiate an object with default arguments.
 
         Most parameters of each object have a default value. However, this isn't always the case,
         in particular for meta-models where the wrapped model is typically not given a default
@@ -85,7 +85,6 @@ class Base:
 
     def _get_params(self) -> dict[str, typing.Any]:
         """Return the parameters that were used during initialization."""
-
         params = {}
 
         for name, param in inspect.signature(self.__init__).parameters.items():  # type: ignore
@@ -138,7 +137,6 @@ class Base:
 
         Examples
         --------
-
         >>> from river import linear_model
         >>> from river import optim
 
@@ -265,7 +263,6 @@ class Base:
 
         Examples
         --------
-
         >>> from river import linear_model
         >>> from river import optim
 
@@ -405,7 +402,6 @@ class Base:
         iterators. NumPy data buffers and serialized Rust state are counted because
         the garbage collector cannot traverse them.
         """
-
         import pickle
 
         import numpy as np
@@ -476,7 +472,7 @@ def log_method_calls(
     class_condition: typing.Callable[[typing.Any], bool] | None = None,
     method_condition: typing.Callable[[typing.Any], bool] | None = None,
 ) -> collections.abc.Iterator[None]:
-    """A context manager to log method calls.
+    """Provide a context manager to log method calls.
 
     All method calls will be logged by default. This behavior can be overridden by passing filtering
     functions.
@@ -542,7 +538,6 @@ def log_method_calls(
 
 def _repr_obj(obj: typing.Any, show_modules: bool = False, depth: int = 0) -> str:
     """Return a pretty representation of an object."""
-
     rep = f"{obj.__class__.__name__} ("
     if show_modules:
         rep = f"{obj.__class__.__module__}.{rep}"

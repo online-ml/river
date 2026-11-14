@@ -38,7 +38,6 @@ class RegressionJackknife(base.Wrapper[T], base.Regressor):
 
     Examples
     --------
-
     >>> from river import conf
     >>> from river import datasets
     >>> from river import linear_model

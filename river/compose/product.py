@@ -27,7 +27,6 @@ class TransformerProduct(union.TransformerUnion):
 
     Examples
     --------
-
     Let's say we have a certain set of features with two groups. In practice these may be different
     namespaces, such one for items and the other for users.
 

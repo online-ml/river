@@ -18,7 +18,6 @@ class Recall(metrics.base.BinaryMetric):
 
     Examples
     --------
-
     >>> from river import metrics
 
     >>> y_true = [True, False, True, True, True]
@@ -57,7 +56,6 @@ class MacroRecall(metrics.base.MultiClassMetric):
 
     Examples
     --------
-
     >>> from river import metrics
 
     >>> y_true = [0, 1, 2, 2, 2]
@@ -103,7 +101,6 @@ class MicroRecall(metrics.MicroPrecision):
 
     Examples
     --------
-
     >>> from river import metrics
 
     >>> y_true = [0, 1, 2, 2, 2]
@@ -141,7 +138,6 @@ class WeightedRecall(metrics.base.MultiClassMetric):
 
     Examples
     --------
-
     >>> from river import metrics
 
     >>> y_true = [0, 1, 2, 2, 2]

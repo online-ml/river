@@ -116,13 +116,13 @@ class HoeffdingRule(base.Estimator, metaclass=abc.ABCMeta):
         -----
         The Hoeffding bound is defined as:
 
-        $\\epsilon = \\sqrt{\\frac{R^2\\ln(1/\\delta))}{2n}}$
+        $\epsilon = \sqrt{\frac{R^2\ln(1/\delta))}{2n}}$
 
         where:
 
-        $\\epsilon$: Hoeffding bound.
+        $\epsilon$: Hoeffding bound.
         $R$: Range of a random variable.
-        $\\delta$: significance level.
+        $\delta$: significance level.
         $n$: Number of samples.
 
         Parameters

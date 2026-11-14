@@ -12,12 +12,12 @@ from river.utils.vectordict import euclidean_distance_tuple
 
 
 def _fast_path_engine(window_size=100):
-    """A `LazySearch` wired to the Rust Euclidean fast path, exactly as KNN/LOF wire it."""
+    """Create a `LazySearch` with the Rust Euclidean fast path, exactly as KNN/LOF wire it."""
     return LazySearch(window_size=window_size, dist_func=euclidean_distance_tuple)
 
 
 def _brute_force(query, points, k):
-    """Indices of the k nearest points to `query`, sorted by (distance, insertion order)."""
+    """Find the indices of the k nearest points to `query`, sorted by (distance, insertion order)."""
     keys = list(query)
     dists = [math.sqrt(sum((query[c] - p[c]) ** 2 for c in keys)) for p in points]
     order = sorted(range(len(points)), key=lambda i: (dists[i], i))[:k]

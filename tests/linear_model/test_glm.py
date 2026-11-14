@@ -47,7 +47,6 @@ def _pd_split(df, n):
 
 def iter_perturbations(keys, n=10):
     """Enumerate perturbations that will be applied to the weights."""
-
     # Enumerate unit vectors
     for i in keys:
         yield {j: int(i == j) for j in keys}
@@ -103,7 +102,6 @@ def test_finite_differences(lm, dataset):
     [^2]: [Stochastic Gradient Descent Tricks](https://cilvr.cs.nyu.edu/diglib/lsml/bottou-sgd-tricks-2012.pdf)
 
     """
-
     scaler = preprocessing.StandardScaler()
     eps = 1e-6
 
@@ -143,7 +141,6 @@ def test_finite_differences(lm, dataset):
 
 def test_one_many_consistent():
     """Checks that using learn_one or learn_many produces the same result."""
-
     X = pd.read_csv(datasets.TrumpApproval().path)
     Y = X.pop("five_thirty_eight")
 
@@ -161,7 +158,6 @@ def test_one_many_consistent():
 
 def test_shuffle_columns():
     """Checks that learn_many works identically whether columns are shuffled or not."""
-
     X = pd.read_csv(datasets.TrumpApproval().path)
     Y = X.pop("five_thirty_eight")
 
@@ -180,7 +176,6 @@ def test_shuffle_columns():
 
 def test_add_remove_columns():
     """Checks that no exceptions are raised whenever columns are dropped and/or added."""
-
     X = pd.read_csv(datasets.TrumpApproval().path)
     Y = X.pop("five_thirty_eight")
 
@@ -238,7 +233,6 @@ lin_reg_tests = {
 )
 def test_lin_reg_sklearn_coherence(river_params, sklearn_params):
     """Checks that the sklearn and river implementations produce the same results."""
-
     ss = preprocessing.StandardScaler()
     rv = lm.LinearRegression(**river_params)
     sk = sklm.SGDRegressor(**sklearn_params)
@@ -262,8 +256,8 @@ def test_lin_reg_sklearn_coherence(river_params, sklearn_params):
 )
 def test_lin_reg_sklearn_learn_many_coherence(river_params, sklearn_params):
     """Checks that the sklearn and river implementations produce the same results
-    when learn_many is used."""
-
+    when learn_many is used.
+    """
     ss = preprocessing.StandardScaler()
     rv = lm.LinearRegression(**river_params)
     sk = sklm.SGDRegressor(**sklearn_params)
@@ -346,7 +340,6 @@ log_reg_tests = {
 )
 def test_log_reg_sklearn_coherence(river_params, sklearn_params):
     """Checks that the sklearn and river implementations produce the same results."""
-
     ss = preprocessing.StandardScaler()
     rv = lm.LogisticRegression(**river_params)
     sk = sklm.SGDClassifier(**sklearn_params)
@@ -387,7 +380,6 @@ perceptron_tests = {
 )
 def test_perceptron_sklearn_coherence(river_params, sklearn_params):
     """Checks that the sklearn and river implementations produce the same results."""
-
     ss = preprocessing.StandardScaler()
     rv = lm.Perceptron(**river_params)
     sk = sklm.Perceptron(**sklearn_params)
@@ -406,7 +398,6 @@ def test_perceptron_sklearn_coherence(river_params, sklearn_params):
 
 def test_lin_reg_sklearn_l1_non_regression():
     """Checks that the river L1 implementation results are no worse than sklearn L1."""
-
     X, y, true_coeffs = make_regression(
         n_samples=1000,
         n_features=20,
@@ -454,7 +445,6 @@ def test_lin_reg_sklearn_l1_non_regression():
 
 def test_log_reg_sklearn_l1_non_regression():
     """Checks that the river L1 implementation results are no worse than sklearn L1."""
-
     (
         X,
         y,
@@ -539,7 +529,6 @@ def test_learn_many_is_backend_agnostic(
     clf_batch: Columnar,
 ) -> None:
     """`learn_many` must produce identical weights regardless of the input backend."""
-
     data, targets, _ = reg_batch if Model is lm.LinearRegression else clf_batch
 
     pandas = FRAME_BACKENDS["pandas"]()
@@ -557,7 +546,6 @@ def test_learn_many_is_backend_agnostic(
 
 def test_learn_many_matches_learn_one(frame_backend: FrameBackend, reg_batch: Columnar) -> None:
     """Row-by-row `learn_many` must match `learn_one` on every backend."""
-
     data, targets, feats = reg_batch
 
     one = lm.LinearRegression()
@@ -577,7 +565,6 @@ def test_predict_many_returns_native_backend(
     frame_backend: FrameBackend, reg_batch: Columnar
 ) -> None:
     """`predict_many` returns the input backend's native type, with matching values."""
-
     data, targets, feats = reg_batch
     X = frame_backend.frame(data)
     y = frame_backend.series(targets)
@@ -597,7 +584,6 @@ def test_bayesian_predict_many_returns_native_backend(
     frame_backend: FrameBackend, reg_batch: Columnar
 ) -> None:
     """`BayesianLinearRegression.predict_many` returns the input backend's native type."""
-
     data, targets, feats = reg_batch
     X = frame_backend.frame(data)
 
@@ -624,7 +610,6 @@ def test_bayesian_learn_many_matches_learn_one(
     frame_backend: FrameBackend, reg_batch: Columnar, smoothing: float | None
 ) -> None:
     """A single `learn_many` must reproduce the row-by-row `learn_one` loop on every backend."""
-
     data, targets, feats = reg_batch
 
     one = lm.BayesianLinearRegression(smoothing=smoothing)
@@ -654,7 +639,6 @@ def test_bayesian_learn_many_chunks_match_single_batch(
     With smoothing this also pins the geometric per-row weighting: chunk boundaries must not
     shift the decay applied to earlier rows.
     """
-
     data, targets, feats = reg_batch
     pandas = FRAME_BACKENDS["pandas"]()
 
@@ -675,7 +659,6 @@ def test_logreg_predict_many_matches_predict_one(
     frame_backend: FrameBackend, clf_batch: Columnar
 ) -> None:
     """Logistic `predict_many` labels must match `predict_one` on every backend."""
-
     data, targets, feats = clf_batch
     X = frame_backend.frame(data)
     y = frame_backend.series(targets)
@@ -698,7 +681,6 @@ def test_logreg_predict_proba_many_matches_predict_proba_one(
     Column order is always (False, True); only the labels differ across backends
     (booleans for pandas, their string form elsewhere).
     """
-
     data, targets, feats = clf_batch
     X = frame_backend.frame(data)
 
@@ -723,7 +705,6 @@ def test_logreg_predict_proba_many_matches_predict_proba_one(
 
 def test_predict_many_preserves_pandas_index() -> None:
     """The pandas index contract is kept for series and frame outputs."""
-
     index = [100, 200, 300, 400]
     X = pd.DataFrame({"a": [1.0, 2, 3, 4], "b": [4.0, 3, 2, 1]}, index=index)
 

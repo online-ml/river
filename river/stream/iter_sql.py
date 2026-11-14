@@ -20,7 +20,7 @@ def iter_sql(
     conn: sqlalchemy.Connection | Session,
     target_name: str | None = None,
 ) -> base.typing.Stream:
-    """Iterates over the results from an SQL query.
+    """Iterate over the results from an SQL query.
 
     By default, SQLAlchemy prefetches results. Therefore, even though you can iterate over the
     resulting rows one by one, the results are in fact loaded in batch. You can modify this
@@ -41,7 +41,6 @@ def iter_sql(
 
     Examples
     --------
-
     As an example we'll create an in-memory database with SQLAlchemy.
 
     >>> import datetime as dt
@@ -102,7 +101,6 @@ def iter_sql(
     >>> engine.dispose()
 
     """
-
     statement = sqlalchemy.text(query) if isinstance(query, str) else query
 
     with conn.execute(statement) as result:

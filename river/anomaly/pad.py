@@ -10,17 +10,17 @@ __all__ = ["PredictiveAnomalyDetection"]
 class PredictiveAnomalyDetection(base.SupervisedAnomalyDetector):
     """Predictive Anomaly Detection.
 
-        This semi-supervised technique to anomaly detection employs a predictive model to learn the normal behavior
-        of a dataset. It forecasts future data points and compares these predictions with actual values to determine
-        anomalies. An anomaly score is calculated based on the deviation of the prediction from the actual value, with higher
-        scores indicating a higher probability of an anomaly.
+    This semi-supervised technique to anomaly detection employs a predictive model to learn the normal behavior
+    of a dataset. It forecasts future data points and compares these predictions with actual values to determine
+    anomalies. An anomaly score is calculated based on the deviation of the prediction from the actual value, with higher
+    scores indicating a higher probability of an anomaly.
 
-        The actual anomaly score is calculated by comparing the squared-error to a dynamic threshold. If the error is larger
-        than this threshold, the score will be 1.0; else, the score will be linearly distributed within the range (0.0, 1.0),
-        with a higher score indicating a higher squared error compared to the threshold.
+    The actual anomaly score is calculated by comparing the squared-error to a dynamic threshold. If the error is larger
+    than this threshold, the score will be 1.0; else, the score will be linearly distributed within the range (0.0, 1.0),
+    with a higher score indicating a higher squared error compared to the threshold.
 
-        Parameters
-        ----------
+    Parameters
+    ----------
         predictive_model
             The underlying model that learns the normal behavior of the data and makes predictions on future behavior.
             This can be an estimator of any type, depending on the type of problem (e.g. some Forecaster for Time-Series Data).
@@ -35,8 +35,8 @@ class PredictiveAnomalyDetection(base.SupervisedAnomalyDetector):
             a warm-up period is necessary to discard the first seen instances.
             While the model is within the warm-up period, no score will be calculated and the score_one method will return 0.0.
 
-        Attributes
-        ----------
+    Attributes
+    ----------
         dynamic_mae : stats.Mean
              The running mean of the (squared) errors from the predictions of the model to update the dynamic threshold.
         dynamic_se_variance : stats.Var
@@ -44,9 +44,8 @@ class PredictiveAnomalyDetection(base.SupervisedAnomalyDetector):
         iter : int
             The number of iterations (data points) passed.
 
-        Examples
-        --------
-
+    Examples
+    --------
         >>> from river import datasets
         >>> from river import time_series
         >>> from river import anomaly
@@ -86,8 +85,8 @@ class PredictiveAnomalyDetection(base.SupervisedAnomalyDetector):
     >>> print(scores[-1])
     0.0532923612345562
 
-        References
-        ----------
+    References
+    ----------
         [^1]: Laptev N, Amizadeh S, Flint I. Generic and scalable framework for Automated Time-series Anomaly Detection.
         Proceedings of the 21st ACM SIGKDD International Conference on Knowledge Discovery and Data Mining 2015.
         doi:10.1145/2783258.2788611.

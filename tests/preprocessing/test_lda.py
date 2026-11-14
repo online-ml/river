@@ -111,7 +111,6 @@ def test_extraction_words_ids():
     Assert that input words are split.
     Assert that indexes are updated and extractable.
     """
-
     lda = preprocessing.LDA(2, number_of_documents=5, seed=42)
 
     word_indexes_list = []
@@ -127,9 +126,7 @@ def test_extraction_words_ids():
 
 
 def test_statistics_two_components():
-    """
-    Assert that online lda extracts waited statistics on current document.
-    """
+    """Assert that online lda extracts waited statistics on current document."""
     n_components = 2
 
     lda = preprocessing.LDA(n_components, number_of_documents=60, seed=42)
@@ -158,10 +155,7 @@ def test_statistics_two_components():
 
 
 def test_statistics_five_components():
-    """
-    Assert that online lda extracts waited statistics on current document.
-    """
-
+    """Assert that online lda extracts waited statistics on current document."""
     n_components = 5
 
     lda = preprocessing.LDA(
@@ -197,10 +191,7 @@ def test_statistics_five_components():
 
 
 def test_five_components():
-    """
-    Assert that components computed are identical to the original version for n dimensions.
-    """
-
+    """Assert that components computed are identical to the original version for n dimensions."""
     n_components = 5
 
     lda = preprocessing.LDA(
@@ -228,7 +219,6 @@ def test_prunning_vocabulary():
     You can perform vocabulary prunning with parameters vocab_prune_interval (int) and
     maximum_size_vocabulary (int).
     """
-
     lda = preprocessing.LDA(
         n_components=2,
         number_of_documents=60,
@@ -250,10 +240,7 @@ def test_prunning_vocabulary():
 
 
 def test_learn_transform():
-    """
-    Assert that learn_one and transform_one methods returns waited output.
-    """
-
+    """Assert that learn_one and transform_one methods returns waited output."""
     lda = preprocessing.LDA(
         n_components=2,
         number_of_documents=60,

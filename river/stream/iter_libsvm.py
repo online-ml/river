@@ -18,7 +18,7 @@ def iter_libsvm(
     compression: Compression | None = "infer",
     encoding: str = "utf-8",
 ) -> base.typing.Stream:
-    """Iterates over a dataset in LIBSVM format.
+    """Iterate over a dataset in LIBSVM format.
 
     The LIBSVM format is a popular way in the machine learning community to store sparse datasets.
     Only numerical feature values are supported. The feature names will be considered as strings.
@@ -39,7 +39,6 @@ def iter_libsvm(
 
     Examples
     --------
-
     >>> import io
     >>> from river import stream
 
@@ -59,7 +58,6 @@ def iter_libsvm(
     [^1]: [LIBSVM documentation](https://www.csie.ntu.edu.tw/~cjlin/libsvm/)
 
     """
-
     with contextlib.ExitStack() as stack:
         # If a file is not opened, then we open it
         if isinstance(filepath_or_buffer, (str, os.PathLike)):

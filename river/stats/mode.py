@@ -23,7 +23,6 @@ class Mode(stats.base.Univariate[Hashable]):
 
     Examples
     --------
-
     >>> from river import stats
 
     >>> X = ['sunny', 'cloudy', 'cloudy', 'rainy', 'rainy', 'rainy']
@@ -84,7 +83,6 @@ class RollingMode(stats.base.RollingUnivariate[Hashable]):
 
     Examples
     --------
-
     >>> from river import stats
 
     >>> X = ['sunny', 'sunny', 'sunny', 'rainy', 'rainy', 'rainy', 'rainy']

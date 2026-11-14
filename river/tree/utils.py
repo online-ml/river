@@ -39,7 +39,7 @@ def combine_stats(left, right, subtract=False):
 
 
 def do_naive_bayes_prediction(x, observed_class_distribution: dict, splitters: dict):
-    """Perform Naive Bayes prediction
+    """Perform Naive Bayes prediction.
 
     Parameters
     ----------
@@ -280,7 +280,7 @@ class GradHessStats:
 
 
 def calculate_object_size(obj: typing.Any, unit: str = "byte") -> int:
-    """Iteratively calculates the `obj` size in bytes.
+    """Calculate iteratively the `obj` size in bytes.
 
     Visits all the elements related to obj accounting for their respective
     sizes.

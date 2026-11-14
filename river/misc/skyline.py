@@ -23,7 +23,6 @@ class Skyline(collections.UserList[dict[base.typing.FeatureName, Any]], base.Bas
 
     Examples
     --------
-
     Here is an example taken from [this](https://maxhalford.github.io/blog/skyline-queries/) blog post.
 
     >>> import random

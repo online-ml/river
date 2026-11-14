@@ -155,7 +155,8 @@ def test_learn_one_routes_extra_params_to_supervised_transformer():
 
 def test_learn_one_routes_extra_params_to_unsupervised_transformer_in_union():
     """An unsupervised ``feature_extraction.Agg`` nested in a ``TransformerUnion`` should also
-    receive a routed ``t``."""
+    receive a routed ``t``.
+    """
     agg = feature_extraction.Agg(
         on="v", by="group", how=utils.TimeRolling(stats.Mean, dt.timedelta(days=7))
     )
@@ -179,7 +180,8 @@ def test_learn_one_without_extra_params_is_unaffected():
 
 def test_learn_one_rejects_unknown_param_for_final_estimator():
     """A genuinely unknown argument that no step accepts is dropped rather than raising; the
-    final estimator only receives what its ``learn_one`` declares."""
+    final estimator only receives what its ``learn_one`` declares.
+    """
     model = preprocessing.StandardScaler() | linear_model.LinearRegression()
     # ``t`` is accepted by no step here, so it must be silently ignored everywhere.
     model.learn_one({"a": 1.0}, 1.0, t=dt.datetime(2023, 1, 1))
@@ -204,7 +206,8 @@ def test_learn_one_forwards_all_params_to_kwargs_accepting_step():
 def test_predict_one_routes_extra_params_during_learn_during_predict():
     """In ``learn_during_predict`` mode, ``predict_one(x, t=...)`` must route ``t`` to the
     unsupervised ``TimeRolling``-backed step learning during predict, and must not leak it into
-    the final estimator's ``predict_one``."""
+    the final estimator's ``predict_one``.
+    """
     agg = feature_extraction.Agg(
         on="v", by="g", how=utils.TimeRolling(stats.Mean, dt.timedelta(days=7))
     )

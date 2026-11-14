@@ -16,35 +16,39 @@ if typing.TYPE_CHECKING:
 
 
 def keyless_function() -> Iterator[int]:
-    """A generator function, i.e. the only thing `Cache.__call__` guesses a key from."""
+    """
+    Implement a keyless generator function.
+
+    A generator function, i.e. the only thing `Cache.__call__` guesses a key from.
+    """
     yield 1
 
 
 def fill(cache: stream.Cache, key: str, elements: list[typing.Any]) -> None:
-    """Runs a full first pass, so that `key` ends up cached."""
+    """Run a full first pass, so that `key` ends up cached."""
     assert list(cache(elements, key=key)) == elements
 
 
 def recording_source(consumed: list[int], n: int = 3) -> Iterator[int]:
-    """A stream of `n` integers that appends to `consumed` as it is iterated."""
+    """Simulate a stream of `n` integers that appends to `consumed` as it is iterated."""
     for i in range(n):
         consumed.append(i)
         yield i
 
 
 def failing_source() -> Iterator[int]:
-    """A stream that dies halfway through, i.e. after the cache file has been created."""
+    """Simulate a stream that dies halfway through, i.e. after the cache file has been created."""
     yield 1
     yield 1 // 0
 
 
 def read_key(cache: stream.Cache, key: str) -> None:
-    """Iterates a cached stream, which is when its file is actually opened."""
+    """Iterate a cached stream, which is when its file is actually opened."""
     _ = list(cache[key])
 
 
 def patch_system(monkeypatch: pytest.MonkeyPatch, system: str) -> None:
-    """Makes `platform.system` report `system`, whatever the host actually is."""
+    """Make `platform.system` report `system`, whatever the host actually is."""
 
     def fake_system() -> str:
         return system

@@ -17,7 +17,6 @@ class MAD(quantile.Quantile):
 
     Examples
     --------
-
     >>> from river import stats
 
     >>> X = [4, 2, 5, 3, 0, 4]

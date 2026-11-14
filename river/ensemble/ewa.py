@@ -23,7 +23,6 @@ class EWARegressor(base.Ensemble, base.Regressor):
 
     Examples
     --------
-
     >>> from river import datasets
     >>> from river import ensemble
     >>> from river import evaluate

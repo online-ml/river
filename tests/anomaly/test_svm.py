@@ -33,7 +33,6 @@ tests = {
 )
 def test_sklearn_coherence(river_params, sklearn_params):
     """Checks that the sklearn and river implementations produce the same results."""
-
     rv = anomaly.OneClassSVM(**river_params)
     sk = sklm.SGDOneClassSVM(**sklearn_params)
 
@@ -58,7 +57,6 @@ def _columnar(n: int = 80) -> tuple[dict[str, list[Any]], list[dict[str, Any]]]:
 
 def test_learn_many_is_backend_agnostic(frame_backend: FrameBackend) -> None:
     """`learn_many` must produce identical weights regardless of the input backend."""
-
     data, _ = _columnar()
 
     pandas = FRAME_BACKENDS["pandas"]()
@@ -82,7 +80,6 @@ def test_learn_many_matches_learn_one(frame_backend: FrameBackend) -> None:
     margin boundary the same way in its scalar and vectorised branches (the very first sample
     sits exactly on the margin, since `intercept_init=1.0` and the weights start at zero).
     """
-
     data, feats = _columnar()
 
     one = anomaly.OneClassSVM()

@@ -32,7 +32,7 @@ class Initializer(base.Base, abc.ABC):
 
     @abc.abstractmethod
     def __call__(self, shape: int = 1) -> typing.Any:
-        """Returns a fresh set of weights.
+        """Return a fresh set of weights.
 
         The return type is shape-dependent (a scalar when ``shape == 1``, otherwise an array), and
         these values are routinely used as `collections.defaultdict` factories elsewhere, so the
@@ -52,7 +52,7 @@ class Scheduler(base.Base, abc.ABC):
 
     @abc.abstractmethod
     def get(self, t: int) -> float:
-        """Returns the learning rate at a given iteration.
+        """Return the learning rate at a given iteration.
 
         Parameters
         ----------
@@ -96,12 +96,14 @@ class Optimizer(base.Base):
         return self.lr.get(self.n_iterations)
 
     def look_ahead(self, w: DictLike | VectorLike) -> DictLike | VectorLike:
-        """Updates a weight vector before a prediction is made.
+        """Update a weight vector before a prediction is made.
 
-        Parameters:
+        Parameters
+        ----------
             w (dict): A dictionary of weight parameters. The weights are modified in-place.
 
-        Returns:
+        Returns
+        -------
             The updated weights.
 
         """
@@ -114,7 +116,7 @@ class Optimizer(base.Base):
         raise NotImplementedError
 
     def step(self, w: DictLike | VectorLike, g: DictLike | VectorLike) -> DictLike | VectorLike:
-        """Updates a weight vector given a gradient.
+        """Update a weight vector given a gradient.
 
         Parameters
         ----------
@@ -128,7 +130,6 @@ class Optimizer(base.Base):
         The updated weights.
 
         """
-
         if (isinstance(w, utils.VectorDict) or isinstance(w, np.ndarray)) and (
             isinstance(g, utils.VectorDict) or isinstance(g, np.ndarray)
         ):
@@ -154,7 +155,7 @@ class Loss(base.Base, abc.ABC):
 
     @abc.abstractmethod
     def __call__(self, y_true: typing.Any, y_pred: typing.Any) -> typing.Any:
-        """Returns the loss.
+        """Return the loss.
 
         Parameters
         ----------

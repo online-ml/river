@@ -23,7 +23,6 @@ class RandomSplitter(Splitter):
 
     def clone(self, new_params: dict | None = None, include_attributes=False):
         """Change the behavior of clone to allow copies to have a different rng."""
-
         new_params = new_params or {}
         new_params["seed"] = self._rng.randint(0, sys.maxsize)
         return super().clone(new_params, include_attributes)
@@ -33,7 +32,10 @@ class RandomSplitter(Splitter):
         pass
 
     def cond_proba(self, att_val, class_val) -> float:
-        """This attribute observer does not support probability density estimation."""
+        """Not implemented.
+
+        This attribute observer does not support probability density estimation.
+        """
         raise NotImplementedError
 
     def update(self, att_val, target_val, w) -> None:

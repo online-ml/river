@@ -1,4 +1,4 @@
-"""This module implements forest-based classifiers and regressors."""
+"""Implement forest-based classifiers and regressors."""
 
 from __future__ import annotations
 

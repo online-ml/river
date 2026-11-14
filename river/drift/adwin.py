@@ -92,7 +92,7 @@ class ADWIN(DriftDetector):
 
     @property
     def width(self) -> float:
-        """Window size"""
+        """Window size."""
         return self._helper.get_width()
 
     @property

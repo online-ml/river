@@ -1,4 +1,4 @@
-"""
+"""Generic branches and leaves for decision trees.
 
 This module defines generic branch and leaf implementations. These should be used in River by each
 tree-based model. Using these classes makes the code more DRY. The only exception for not doing so
@@ -101,7 +101,6 @@ class Branch(base.Base, abc.ABC):
 
     def iter_bfs(self):
         """Iterate over nodes in breadth-first order."""
-
         queue = Queue()
 
         queue.put(self)

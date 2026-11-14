@@ -8,7 +8,7 @@ from river import stats
 
 
 class Cov(stats.base.Bivariate):
-    """Covariance.
+    r"""Covariance.
 
     Parameters
     ----------
@@ -17,7 +17,6 @@ class Cov(stats.base.Bivariate):
 
     Examples
     --------
-
     >>> from river import stats
 
     >>> x = [-2.1,  -1,  4.3]
@@ -55,7 +54,7 @@ class Cov(stats.base.Bivariate):
     Notes
     -----
     The outcomes of the incremental and parallel updates are consistent with numpy's
-    batch processing when $\\text{ddof} \\le 1$.
+    batch processing when $\text{ddof} \le 1$.
 
     References
     ----------

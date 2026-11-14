@@ -29,7 +29,6 @@ class OneClassSVM(linear_model.base.GLM, base.AnomalyDetector):
 
     Examples
     --------
-
     >>> from river import anomaly
     >>> from river import compose
     >>> from river import datasets

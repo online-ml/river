@@ -43,7 +43,6 @@ class ODAC(base.Clusterer):
 
     Examples
     --------
-
     >>> from river import cluster
     >>> from river.datasets import synth
 
@@ -216,7 +215,9 @@ class ODAC(base.Clusterer):
 
     # This algorithm does not predict anything. It builds a hierarchical cluster's structure
     def predict_one(self, x: dict):
-        """This algorithm does not predict anything. It builds a hierarchical cluster's structure.
+        """Raise an error.
+
+        This algorithm does not predict anything. It builds a hierarchical cluster's structure.
 
         Parameters
         ----------
@@ -227,7 +228,7 @@ class ODAC(base.Clusterer):
         raise NotImplementedError()
 
     def render_ascii(self, n_decimal_places: int = 2) -> str:
-        """Method to render the hierarchical cluster's structure in text format.
+        """Render the hierarchical cluster's structure in text format.
 
         Parameters
         ----------
@@ -247,7 +248,7 @@ class ODAC(base.Clusterer):
         show_clusters_info: list[typing.Hashable] = ["timeseries_names", "d1", "d2", "e"],
         n_decimal_places: int = 2,
     ):
-        """Method to draw the hierarchical cluster's structure as a Graphviz graph.
+        """Draw the hierarchical cluster's structure as a Graphviz graph.
 
         Parameters
         ----------
@@ -464,7 +465,7 @@ class ODACCluster(base.Base):
 
     # TODO: not sure if this is the best design
     def __call__(self, ts_names: list[typing.Hashable]):
-        """Method that associates the time-series into the cluster and initiates the statistics."""
+        """Associate the time-series into the cluster and initiates the statistics."""
         self.timeseries_names = sorted(ts_names)  # type: ignore
         self._statistics = self._init_stats()
 
