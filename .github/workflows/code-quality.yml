@@ -72,7 +72,7 @@ jobs:
 
       # Some tests depend on having the fully-built documentation available.
       - name: Build the documentation
-        run: make doc
+        run: uv run make doc
 
       - name: Run tests
         run: uv run --no-sync pytest
