@@ -54,6 +54,31 @@ def test_linear_regression_learn(benchmark) -> None:
 
 
 @benchmark("linear_model")
+def test_bayesian_linear_regression_smoothing_learn(benchmark) -> None:
+    stream = regression_stream()
+
+    def run() -> None:
+        model = linear_model.BayesianLinearRegression(smoothing=0.8)
+        for x, y in stream:
+            model.learn_one(x, y)
+
+    benchmark(run)
+
+
+@benchmark("linear_model")
+def test_bayesian_linear_regression_smoothing_progressive(benchmark) -> None:
+    stream = regression_stream()
+
+    def run() -> None:
+        model = linear_model.BayesianLinearRegression(smoothing=0.8)
+        for x, y in stream:
+            model.predict_one(x)
+            model.learn_one(x, y)
+
+    benchmark(run)
+
+
+@benchmark("linear_model")
 def test_alma_learn(benchmark) -> None:
     stream = binary_stream()
 
