@@ -99,7 +99,7 @@ MAE: 1.284...
 And here's how it performs with some smoothing:
 
 ```python
-model = linear_model.BayesianLinearRegression(smoothing=0.8)
+model = linear_model.BayesianLinearRegression(alpha=0.001, smoothing=0.8)
 dataset = itertools.chain(
     random_data([0.1, 3], 100),
     random_data([10, -2], 100)
@@ -109,7 +109,7 @@ evaluate.progressive_val_score(dataset, model, metric)
 ```
 
 ```text
-MAE: 0.159...
+MAE: 0.133...
 ```
 
 Smoothing allows the model to gradually "forget" the past, and focus on the more recent data.

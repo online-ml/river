@@ -1764,4 +1764,7 @@
       <url>
         <loc>https://riverml.xyz/dev/releases/0.9.0/</loc>
       </url>
+      <url>
+        <loc>https://riverml.xyz/dev/releases/unreleased/</loc>
+      </url>
 </urlset>
