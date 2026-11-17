@@ -577,7 +577,7 @@ class ARFClassifier(BaseForest, base.Classifier):
     >>> metric = metrics.Accuracy()
 
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    Accuracy: 73.47%
+    Accuracy: 74.17%
 
     The total number of warnings and drifts detected, respectively
     >>> model.n_warnings_detected(), model.n_drifts_detected()
