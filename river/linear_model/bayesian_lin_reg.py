@@ -80,14 +80,14 @@ class BayesianLinearRegression(base.MiniBatchRegressor):
 
     And here's how it performs with some smoothing:
 
-    >>> model = linear_model.BayesianLinearRegression(alpha=0.001, smoothing=0.8)
+    >>> model = linear_model.BayesianLinearRegression(smoothing=0.8)
     >>> dataset = itertools.chain(
     ...     random_data([0.1, 3], 100),
     ...     random_data([10, -2], 100)
     ... )
     >>> metric = metrics.MAE()
     >>> evaluate.progressive_val_score(dataset, model, metric)
-    MAE: 0.133...
+    MAE: 0.159...
 
     Smoothing allows the model to gradually "forget" the past, and focus on the more recent data.
 
@@ -183,8 +183,21 @@ class BayesianLinearRegression(base.MiniBatchRegressor):
             else:
                 n = len(self._idx)
                 self._m_arr = np.zeros(self._cap)
-                self._m_arr[:n] = np.linalg.solve(self._ss_arr[:n, :n], self._eta_arr[:n])
+                self._m_arr[:n] = self._solve_smoothed(self._eta_arr[:n])
         self._m_dirty = False
+
+    def _solve_smoothed(self, rhs: np.ndarray) -> np.ndarray:
+        n = len(self._idx)
+        precision = self._ss_arr[:n, :n]
+        try:
+            return np.linalg.solve(precision, rhs)
+        except np.linalg.LinAlgError:
+            pass
+        eigenvalues, eigenvectors = np.linalg.eigh(precision)
+        scale = max(float(eigenvalues[-1]), np.sqrt(np.finfo(np.float64).tiny))
+        floor = np.sqrt(np.finfo(np.float64).eps) * scale
+        eigenvalues = np.maximum(eigenvalues, floor)
+        return typing.cast(np.ndarray, eigenvectors @ ((eigenvectors.T @ rhs) / eigenvalues))
 
     def learn_one(
         self, x: dict[base.typing.FeatureName, typing.Any], y: base.typing.RegTarget
@@ -210,7 +223,6 @@ class BayesianLinearRegression(base.MiniBatchRegressor):
             active_x = x_arr[:n]
             active_ss *= s
             active_ss += (1 - s) * np.outer(active_bx, active_x)
-            active_ss.flat[:: n + 1] += (1 - s) * self.alpha
             self._eta_arr[:n] = s * self._eta_arr[:n] + (1 - s) * active_bx * y
 
         self._m_dirty = True
@@ -242,7 +254,6 @@ class BayesianLinearRegression(base.MiniBatchRegressor):
             decay = s**n_samples
             active_ss = self._ss_arr[:n, :n]
             active_ss *= decay
-            active_ss.flat[:: n + 1] += (1 - decay) * self.alpha
             self._eta_arr[:n] *= decay
             self._ss_arr[np.ix_(idx, idx)] += self.beta * (X_arr.T * weights) @ X_arr
             self._eta_arr[idx] += self.beta * (X_arr.T @ (weights * y_arr))
@@ -293,7 +304,7 @@ class BayesianLinearRegression(base.MiniBatchRegressor):
         if n and self.smoothing is None:
             y_pred_var = 1 / self.beta + float(x_arr @ self._ss_inv_arr @ x_arr)
         elif n:
-            solved = np.linalg.solve(self._ss_arr[:n, :n], x_arr[:n])
+            solved = self._solve_smoothed(x_arr[:n])
             y_pred_var = 1 / self.beta + float(x_arr[:n] @ solved)
         else:
             y_pred_var = 1 / self.beta
