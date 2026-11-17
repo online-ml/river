@@ -4697,7 +4697,7 @@ abrupt concept drift right in the middle.</p>
 <div class="language-text highlight"><pre><span></span><code>MAE: 1.284...
 </code></pre></div></p>
 <p>And here's how it performs with some smoothing:</p>
-<p><div class="language-python highlight"><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">linear_model</span><span class="o">.</span><span class="n">BayesianLinearRegression</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span> <span class="n">smoothing</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+<p><div class="language-python highlight"><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">linear_model</span><span class="o">.</span><span class="n">BayesianLinearRegression</span><span class="p">(</span><span class="n">smoothing</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
 <span class="n">dataset</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span>
     <span class="n">random_data</span><span class="p">([</span><span class="mf">0.1</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="mi">100</span><span class="p">),</span>
     <span class="n">random_data</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">],</span> <span class="mi">100</span><span class="p">)</span>
@@ -4705,7 +4705,7 @@ abrupt concept drift right in the middle.</p>
 <span class="n">metric</span> <span class="o">=</span> <span class="n">metrics</span><span class="o">.</span><span class="n">MAE</span><span class="p">()</span>
 <span class="n">evaluate</span><span class="o">.</span><span class="n">progressive_val_score</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">metric</span><span class="p">)</span>
 </code></pre></div>
-<div class="language-text highlight"><pre><span></span><code>MAE: 0.133...
+<div class="language-text highlight"><pre><span></span><code>MAE: 0.159...
 </code></pre></div></p>
 <p>Smoothing allows the model to gradually "forget" the past, and focus on the more recent data.</p>
 <p>Note how this works better than standard linear regression, even when using an aggressive
