@@ -637,7 +637,8 @@ def test_bayesian_matches_closed_form(smoothing: float | None, learning: str) ->
         if smoothing is None
         else (1 - smoothing) * smoothing ** np.arange(len(X) - 1, -1, -1)
     )
-    precision = alpha * np.eye(X.shape[1]) + beta * (X.T * weights) @ X
+    prior_weight = 1.0 if smoothing is None else smoothing ** len(X)
+    precision = prior_weight * alpha * np.eye(X.shape[1]) + beta * (X.T * weights) @ X
     covariance = np.linalg.inv(precision)
     mean = covariance @ (beta * X.T @ (weights * y))
     probe = np.array([0.25, -0.5, 1.5])
