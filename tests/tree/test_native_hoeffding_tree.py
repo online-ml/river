@@ -298,3 +298,54 @@ def test_hoeffding_tree_ensembles_use_native_members(model) -> None:
     assert all(
         isinstance(member._native_model, NativeHoeffdingTreeClassifier) for member in members
     )
+
+
+def make_imbalanced_stream(n_samples: int, seed: int) -> list[tuple[dict, bool]]:
+    x = np.random.default_rng(seed).random(size=(n_samples, 2))
+    return [({"x0": float(a), "x1": float(b)}, bool(a > 0.98)) for a, b in x]
+
+
+def make_drifting_stream(n_samples: int, seed: int) -> list[tuple[dict, bool]]:
+    x = np.random.default_rng(seed).random(size=(n_samples, 2))
+    return [
+        ({"x0": float(a), "x1": float(b)}, bool(a > 0.5) if i < n_samples // 4 else bool(b > 0.5))
+        for i, (a, b) in enumerate(x)
+    ]
+
+
+@pytest.mark.parametrize(
+    "stream",
+    [make_imbalanced_stream(10_000, seed=7), make_drifting_stream(8_000, seed=5)],
+    ids=["imbalanced", "concept_change"],
+)
+def test_public_hoeffding_tree_keeps_dominated_leaves_learning_like_python(stream) -> None:
+    native = tree.HoeffdingTreeClassifier()
+    python = tree.HoeffdingTreeClassifier(splitter=PythonGaussianSplitter())
+    native_predictions = []
+    python_predictions = []
+    for x, y in stream:
+        native_predictions.append(native.predict_one(x))
+        python_predictions.append(python.predict_one(x))
+        native.learn_one(x, y)
+        python.learn_one(x, y)
+
+    assert native._native_model is not None
+    assert python._native_model is None
+    assert native_predictions == python_predictions
+    assert native.n_nodes == python.n_nodes
+    assert native.n_active_leaves == native.n_leaves
+
+
+def test_public_adaptive_random_forest_learns_imbalanced_stream() -> None:
+    model = forest.ARFClassifier(seed=3)
+    stream = make_imbalanced_stream(10_000, seed=3)
+    true_positives = false_negatives = 0
+    for i, (x, y) in enumerate(stream):
+        if i >= 6_000 and y:
+            if model.predict_one(x):
+                true_positives += 1
+            else:
+                false_negatives += 1
+        model.learn_one(x, y)
+
+    assert true_positives / (true_positives + false_negatives) > 0.9
