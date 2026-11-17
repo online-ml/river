@@ -48,7 +48,7 @@ evaluate.progressive_val_score(dataset, model, metric)
 ```
 
 ```text
-Accuracy: 86.90%
+Accuracy: 87.06%
 ```
 
 ## Methods

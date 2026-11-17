@@ -1255,6 +1255,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#tree" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        tree
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2524,6 +2535,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#tree" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        tree
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2545,6 +2567,10 @@
 <h2 id="linear_model">linear_model<a class="headerlink" href="#linear_model" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Fixed <code>BayesianLinearRegression</code> to use <code>alpha</code> as the prior precision, retain the prior during smoothing, and keep online and mini-batch learning finite and consistent with absent or collinear features.</li>
+</ul>
+<h2 id="tree">tree<a class="headerlink" href="#tree" title="Permanent link">&para;</a></h2>
+<ul>
+<li>The Rust-backed <a href="../../api/tree/HoeffdingTreeClassifier"><code>tree.HoeffdingTreeClassifier</code></a>, along with ensembles such as <a href="../../api/forest/ARFClassifier"><code>forest.ARFClassifier</code></a>, no longer leaves its leaves permanently switched off when one class dominates. Leaves continue learning and can split again when appropriate, restoring the behaviour of version 0.26.1.</li>
 </ul>
 
 

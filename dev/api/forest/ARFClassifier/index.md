@@ -223,7 +223,7 @@ evaluate.progressive_val_score(dataset, model, metric)
 ```
 
 ```text
-Accuracy: 73.47%
+Accuracy: 74.17%
 ```
 
 The total number of warnings and drifts detected, respectively
