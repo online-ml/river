@@ -13,10 +13,12 @@ if typing.TYPE_CHECKING:
 class BayesianLinearRegression(base.MiniBatchRegressor):
     """Bayesian linear regression.
 
-    An advantage of Bayesian linear regression over standard linear regression is that features
-    do not have to scaled beforehand. Another attractive property is that this flavor of linear
-    regression is somewhat insensitive to its hyperparameters. Finally, this model can output
-    instead a predictive distribution rather than just a point estimate.
+    An advantage of Bayesian linear regression over standard linear regression is that features do
+    not have to be scaled beforehand. Another attractive property is that this flavor of linear
+    regression is somewhat insensitive to its hyperparameters. Finally, this model can output a
+    predictive distribution rather than just a point estimate. These properties hold without
+    smoothing; when smoothing is enabled, the predictions depend on `alpha` relative to `beta` and
+    on the scale of the features, so scaling them beforehand (or choosing a small `alpha`) matters.
 
     The downside is that the learning step runs in `O(n^2)` time, whereas the learning step of
     standard linear regression takes `O(n)` time.
@@ -24,13 +26,18 @@ class BayesianLinearRegression(base.MiniBatchRegressor):
     Parameters
     ----------
     alpha
-        Prior parameter.
+        Prior precision of the weights. The prior is N(0, alpha^-1 I), so a smaller `alpha` gives a
+        broader prior. Without smoothing, the prior is washed out as more data arrives. With
+        smoothing, the data weights sum to 1, so `alpha` acts as a fixed ridge penalty that shrinks
+        each direction by beta*l/(alpha + beta*l), where l is the eigenvalue of that direction. When
+        using smoothing, prefer a small `alpha` (e.g. 1e-3) or standardise the features first.
     beta
         Noise parameter.
     smoothing
         Smoothing allows the model to gradually "forget" the past, and focus on the more recent
-        data. It thus enables the model to deal with concept drift. Due to the current
-        implementation, activating smoothing may slow down the model.
+        data. It thus enables the model to deal with concept drift. Note that the prior is not
+        forgotten during smoothing — it is always retained, so `alpha` acts as a ridge penalty (see
+        `alpha`). Due to the current implementation, activating smoothing may slow down the model.
 
     Examples
     --------
@@ -77,6 +84,9 @@ class BayesianLinearRegression(base.MiniBatchRegressor):
     >>> metric = metrics.MAE()
     >>> evaluate.progressive_val_score(dataset, model, metric)
     MAE: 1.284...
+
+    We use a small `alpha` here because, with smoothing on, the default `alpha` would act as a
+    strong ridge penalty and noticeably shrink the coefficients.
 
     And here's how it performs with some smoothing:
 
