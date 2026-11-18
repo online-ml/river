@@ -461,13 +461,16 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
 
                     self._n_active_leaves -= 1
                     self._n_active_leaves += len(leaves)
-                    if parent is None:
-                        self._root = new_split
-                    else:
-                        parent.children[parent_branch] = new_split
+                    self._replace_node(parent, parent_branch, new_split)
 
                 # Manage memory
                 self._enforce_size_limit()
+
+    def _replace_node(self, parent, parent_branch, node):
+        if parent is None:
+            self._root = node
+        else:
+            parent.children[parent_branch] = node
 
     def learn_one(self, x, y, *, w=1.0):
         """Train the model on instance x and corresponding target y.
