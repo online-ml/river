@@ -137,22 +137,28 @@ class TwitchChatStream:
             yield ChatMessageItem(dt=dt, channel=chan, username=user, msg=msg.strip())
 
     def _gen_items(self, sock: socket.socket) -> Iterator[ChatMessageItem]:
+        pending = b""
         while True:
             try:
                 data = sock.recv(self.buffer_size)
-                if not data:
-                    continue
-                resp = data.decode(ENCODING)
-                now = dt.datetime.now()
             except TimeoutError as e:
                 raise TimeoutError(f"Twitch did not respond in {self.timeout:,d} seconds") from e
-            except UnicodeDecodeError:
-                continue
 
-            if self._is_ping(resp):
-                self._send(sock, IrcMessage.PONG, ":tmi.twitch.tv")
+            if not data:
+                if pending:
+                    raise ConnectionError(
+                        "Twitch closed the connection with an incomplete IRC message"
+                    )
+                raise ConnectionError("Twitch closed the connection")
 
-            yield from self._extract_chat_messages(resp, now)
+            pending += data
+            now = dt.datetime.now()
+            while b"\r\n" in pending:
+                line, _, pending = pending.partition(b"\r\n")
+                resp = line.decode(ENCODING)
+                if self._is_ping(resp):
+                    self._send(sock, IrcMessage.PONG, ":tmi.twitch.tv")
+                yield from self._extract_chat_messages(resp, now)
 
     def __iter__(self) -> Iterator[ChatMessageItem]:
         with socket.socket() as sock:

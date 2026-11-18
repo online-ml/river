@@ -7,3 +7,7 @@
 ## tree
 
 - The Rust-backed `tree.HoeffdingTreeClassifier`, along with ensembles such as `forest.ARFClassifier`, no longer leaves its leaves permanently switched off when one class dominates. Leaves continue learning and can split again when appropriate, restoring the behaviour of version 0.26.1.
+
+## stream
+
+- stream.TwitchChatStream now reconstructs messages split across socket reads and raises ConnectionError when the server disconnects.
