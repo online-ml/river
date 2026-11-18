@@ -144,19 +144,6 @@ class BayesianLinearRegression(base.MiniBatchRegressor):
         self.beta = beta
         self.smoothing = smoothing
         self._idx: dict[base.typing.FeatureName, int] = {}
-        # We track:
-        # - `_ss_arr`: the posterior precision matrix, updated by exact rank-1
-        #   additions and so identical across BLAS implementations.
-        # - `_ss_inv_arr`: the posterior covariance, maintained in-place via a
-        #   Sherman-Morrison rank-1 update (one BLAS dger per `learn_one`).
-        # - `_eta_arr = beta * sum_i(y_i * x_i)`: the natural mean, also an
-        #   exact accumulator.
-        # The posterior mean is recovered from these on demand as
-        # `_ss_inv_arr @ _eta_arr` and cached in `_m_arr` until the next
-        # `learn_one`. Recomputing `m` from the natural parameters rather than
-        # propagating it through `m_new = ss_inv @ (ss_old @ m_old + bx*y)`
-        # keeps cross-platform drift roughly linear in BLAS rounding rather
-        # than compounding multiplicatively.
         self._ss_arr = np.zeros((0, 0), dtype=np.float64)
         self._ss_inv_arr = np.zeros((0, 0), dtype=np.float64, order="F")
         self._eta_arr = np.zeros(0, dtype=np.float64)
@@ -167,9 +154,8 @@ class BayesianLinearRegression(base.MiniBatchRegressor):
 
     def _grow(self, needed: int) -> None:
         new_cap = max(needed, max(8, self._cap * 2))
-        diag = 1.0 / self.alpha
-        new_ss = np.eye(new_cap, dtype=np.float64) * diag
-        new_ss_inv = np.eye(new_cap, dtype=np.float64, order="F") * diag
+        new_ss = np.eye(new_cap, dtype=np.float64) * self.alpha
+        new_ss_inv = np.eye(new_cap, dtype=np.float64, order="F") / self.alpha
         new_eta = np.zeros(new_cap, dtype=np.float64)
         if self._cap:
             new_ss[: self._cap, : self._cap] = self._ss_arr
@@ -192,16 +178,30 @@ class BayesianLinearRegression(base.MiniBatchRegressor):
         if not self._m_dirty:
             return
         if self._idx:
-            self._m_arr = self._ss_inv_arr @ self._eta_arr
+            if self.smoothing is None:
+                self._m_arr = self._ss_inv_arr @ self._eta_arr
+            else:
+                n = len(self._idx)
+                self._m_arr = np.zeros(self._cap)
+                self._m_arr[:n] = self._solve_smoothed(self._eta_arr[:n])
         self._m_dirty = False
+
+    def _solve_smoothed(self, rhs: np.ndarray) -> np.ndarray:
+        n = len(self._idx)
+        precision = self._ss_arr[:n, :n]
+        try:
+            return np.linalg.solve(precision, rhs)
+        except np.linalg.LinAlgError:
+            pass
+        eigenvalues, eigenvectors = np.linalg.eigh(precision)
+        scale = max(float(eigenvalues[-1]), np.sqrt(np.finfo(np.float64).tiny))
+        floor = np.sqrt(np.finfo(np.float64).eps) * scale
+        eigenvalues = np.maximum(eigenvalues, floor)
+        return typing.cast(np.ndarray, eigenvectors @ ((eigenvectors.T @ rhs) / eigenvalues))
 
     def learn_one(
         self, x: dict[base.typing.FeatureName, typing.Any], y: base.typing.RegTarget
     ) -> None:
-        # Treat features absent from `x` as observed values of 0. Updating the
-        # full-cap state (rather than just the touched submatrix via np.ix_)
-        # keeps `_ss_inv_arr = inv(_ss_arr)` consistent across
-        # emerging/disappearing feature subsets.
         self._ensure_features(x.keys())
         x_arr = np.zeros(self._cap, dtype=np.float64)
         for f, v in x.items():
@@ -217,13 +217,13 @@ class BayesianLinearRegression(base.MiniBatchRegressor):
             self._eta_arr += bx * y
         else:
             s = self.smoothing
-            new_ss_arr = s * self._ss_arr + (1 - s) * np.outer(bx, x_arr)
-            # TODO: we use standard matrix inversion. This is not very efficient. However, we don't
-            # yet have a formula for the Sherman-Morrison approximation when a smoothing factor is
-            # involved. This is an interesting research direction!
-            self._ss_inv_arr = np.asfortranarray(np.linalg.inv(new_ss_arr))
-            self._ss_arr = new_ss_arr
-            self._eta_arr = s * self._eta_arr + (1 - s) * bx * y
+            n = len(self._idx)
+            active_ss = self._ss_arr[:n, :n]
+            active_bx = bx[:n]
+            active_x = x_arr[:n]
+            active_ss *= s
+            active_ss += (1 - s) * np.outer(active_bx, active_x)
+            self._eta_arr[:n] = s * self._eta_arr[:n] + (1 - s) * active_bx * y
 
         self._m_dirty = True
 
@@ -248,22 +248,17 @@ class BayesianLinearRegression(base.MiniBatchRegressor):
             self._ss_arr[np.ix_(idx, idx)] += self.beta * (X_arr.T @ X_arr)
             self._eta_arr[idx] += self.beta * (X_arr.T @ y_arr)
         else:
-            # With smoothing each row applies an EMA step `S <- s*S + (1-s)*beta*x x^T`, so
-            # after N rows (oldest first) the prior is decayed by s^N and row k (0-based)
-            # carries weight (1-s)*s^(N-1-k). This is the exact closed form of the loop.
             s = self.smoothing
             n_samples = len(X_arr)
             weights = (1 - s) * s ** np.arange(n_samples - 1, -1, -1)
             decay = s**n_samples
-            self._ss_arr[:n, :n] *= decay
+            active_ss = self._ss_arr[:n, :n]
+            active_ss *= decay
             self._eta_arr[:n] *= decay
             self._ss_arr[np.ix_(idx, idx)] += self.beta * (X_arr.T * weights) @ X_arr
             self._eta_arr[idx] += self.beta * (X_arr.T @ (weights * y_arr))
 
-        # `learn_one` keeps `_ss_inv_arr = inv(_ss_arr)` (via Sherman-Morrison without smoothing,
-        # a full inverse with it). Refresh the active block in one inverse so subsequent
-        # `learn_one` updates and `predict_dist_one(...)` see a consistent covariance.
-        if n:
+        if n and self.smoothing is None:
             self._ss_inv_arr[:n, :n] = np.linalg.inv(self._ss_arr[:n, :n])
         self._m_dirty = True
 
@@ -306,8 +301,11 @@ class BayesianLinearRegression(base.MiniBatchRegressor):
             elif n:
                 x_arr[i] = v
         # Bishop equation 3.59
-        if n:
+        if n and self.smoothing is None:
             y_pred_var = 1 / self.beta + float(x_arr @ self._ss_inv_arr @ x_arr)
+        elif n:
+            solved = self._solve_smoothed(x_arr[:n])
+            y_pred_var = 1 / self.beta + float(x_arr[:n] @ solved)
         else:
             y_pred_var = 1 / self.beta
         y_pred_var += diag * unknown_norm_sq

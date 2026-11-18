@@ -82,6 +82,10 @@ impl Leaf {
         self.counts.iter().sum()
     }
 
+    fn reset_observers(&mut self) {
+        self.observers.fill(GaussianObserver::default());
+    }
+
     fn majority_proba(&self) -> Vec<f64> {
         let total = self.total_weight();
         if total == 0.0 {
@@ -514,6 +518,10 @@ impl HoeffdingTreeClassifier {
         self.total_weight_seen += weight;
         let leaf_index = self.learning_leaf_index(x, weight);
         let leaf = &mut self.leaves[leaf_index];
+        if !leaf.active && leaf.depth < self.max_depth {
+            leaf.active = true;
+            leaf.reset_observers();
+        }
         leaf.learn(
             x,
             y,
@@ -670,7 +678,7 @@ impl HoeffdingTreeClassifier {
             return false;
         }
         if dominated {
-            self.leaves[leaf_index].active = false;
+            self.leaves[leaf_index].reset_observers();
             return false;
         }
         let split = {
@@ -730,7 +738,7 @@ impl HoeffdingTreeClassifier {
             let best = match suggestions.pop().flatten() {
                 Some(candidate) => candidate,
                 None => {
-                    self.leaves[leaf_index].active = false;
+                    self.leaves[leaf_index].reset_observers();
                     return false;
                 }
             };
@@ -994,13 +1002,56 @@ mod tests {
     }
 
     #[test]
-    fn dominant_leaf_is_deactivated() {
+    fn dominant_leaf_stays_active_with_reset_observers() {
         let mut tree = tree();
         tree.grace_period = 1.0;
         tree.max_share_to_split = 0.8;
         tree.learn(&[0.0, 0.0], 0, 9.0);
         tree.learn(&[1.0, 1.0], 1, 1.0);
-        assert_eq!(tree.n_active_leaves(), 0);
+        assert_eq!(tree.n_active_leaves(), 1);
+        assert!(tree.leaves[0]
+            .observers
+            .iter()
+            .all(|observer| observer.weight() == 0.0));
+    }
+
+    #[test]
+    fn inactive_leaf_is_reactivated_when_it_learns() {
+        let mut tree = tree();
+        tree.learn(&[0.0, 0.0], 0, 1.0);
+        tree.leaves[0].active = false;
+        tree.leaves[0].observers[0].update(5.0, 3.0);
+        tree.learn(&[1.0, 1.0], 1, 1.0);
+        assert_eq!(tree.n_active_leaves(), 1);
+        assert_eq!(
+            tree.leaves[0]
+                .observers
+                .iter()
+                .map(|observer| observer.weight())
+                .sum::<f64>(),
+            1.0
+        );
+    }
+
+    #[test]
+    fn dominant_leaf_splits_once_it_is_no_longer_dominated() {
+        let mut tree = tree();
+        tree.all_features = true;
+        tree.max_features = 2;
+        tree.grace_period = 10.0;
+        tree.max_share_to_split = 0.9;
+        for _ in 0..20 {
+            tree.learn(&[0.0, 0.0], 0, 1.0);
+        }
+        tree.learn(&[1.0, 1.0], 1, 1.0);
+        assert_eq!(tree.n_nodes(), 1);
+        for index in 0..400 {
+            let value = (index % 20) as f64 / 20.0;
+            let label = usize::from(value > 0.5);
+            tree.learn(&[value, 0.5], label, 1.0);
+        }
+        assert!(tree.n_nodes() > 1);
+        assert_eq!(tree.n_active_leaves(), tree.n_leaves());
     }
 
     #[test]
