@@ -45,8 +45,11 @@ class AdaLeafClassifier(LeafNaiveBayesAdaptive):
         self.rng = rng
         self._mean_error = st.Mean()
 
-    def kill_tree_children(self, hat):
-        pass
+    def kill_tree_children(self, tree):
+        if self.is_active():
+            tree._n_active_leaves -= 1
+        else:
+            tree._n_inactive_leaves -= 1
 
     def learn_one(self, x, y, *, w=1.0, tree=None, parent=None, parent_branch=None):
         if tree.bootstrap_sampling:
@@ -157,9 +160,7 @@ class AdaBranchClassifier(DTBranch):
         for node in self.walk(x, until_leaf=until_leaf):
             if isinstance(node, AdaBranchClassifier) and node._alternate_tree:
                 if isinstance(node._alternate_tree, AdaBranchClassifier):
-                    found_nodes.append(
-                        node._alternate_tree.traverse(x, until_leaf=until_leaf)  # type: ignore
-                    )
+                    found_nodes.extend(node._alternate_tree.traverse(x, until_leaf=until_leaf))
                 else:
                     found_nodes.append(node._alternate_tree)  # type: ignore
 
@@ -171,11 +172,9 @@ class AdaBranchClassifier(DTBranch):
 
         Overrides the base implementation by also including alternate subtrees.
         """
-        for child in self.children:
-            yield from child.iter_leaves()
-
-            if isinstance(child, AdaBranchClassifier) and child._alternate_tree:
-                yield from child._alternate_tree.iter_leaves()
+        yield from super().iter_leaves()
+        if self._alternate_tree is not None:
+            yield from self._alternate_tree.iter_leaves()
 
     def learn_one(self, x, y, *, w=1.0, tree=None, parent=None, parent_branch=None):
         leaf = super().traverse(x, until_leaf=True)
@@ -207,9 +206,11 @@ class AdaBranchClassifier(DTBranch):
         if error_change:
             # Reset the error estimator
             self._mean_error = self._mean_error.clone()
+            self._prune_alternate(tree)
             self._alternate_tree = tree._new_leaf(parent=self)
             self._alternate_tree.depth -= 1  # To ensure we do not skip a tree level
             tree._n_alternate_trees += 1
+            tree._n_active_leaves += 1
         # Condition to replace alternate tree
         elif self._alternate_tree:
             alt_n_obs = self._alternate_tree._mean_error.n
@@ -229,22 +230,17 @@ class AdaBranchClassifier(DTBranch):
                 )
 
                 if bound < (old_error_rate - alt_error_rate):
-                    tree._n_active_leaves -= self.n_leaves
-                    tree._n_active_leaves += self._alternate_tree.n_leaves
-                    self.kill_tree_children(tree)
-
-                    if parent is not None:
-                        parent.children[parent_branch] = self._alternate_tree
-                        self._alternate_tree = None
-                    else:
-                        # Switch tree root
-                        tree._root = tree._root._alternate_tree
-                    tree._n_switch_alternate_trees += 1
-                elif bound < alt_error_rate - old_error_rate:
-                    if isinstance(self._alternate_tree, DTBranch):
-                        self._alternate_tree.kill_tree_children(tree)  # noqa
+                    replacement = self._alternate_tree
                     self._alternate_tree = None
-                    tree._n_pruned_alternate_trees += 1
+                    self.kill_tree_children(tree)
+                    tree._replace_node(parent, parent_branch, replacement)
+                    tree._n_switch_alternate_trees += 1
+                    replacement.learn_one(
+                        x, y, w=w, tree=tree, parent=parent, parent_branch=parent_branch
+                    )
+                    return
+                elif bound < alt_error_rate - old_error_rate:
+                    self._prune_alternate(tree)
 
         # Learn one sample in alternate tree and child nodes
         if self._alternate_tree:
@@ -253,8 +249,8 @@ class AdaBranchClassifier(DTBranch):
                 y,
                 w=w,
                 tree=tree,
-                parent=parent,
-                parent_branch=parent_branch,
+                parent=self,
+                parent_branch=None,
             )
 
         try:
@@ -299,22 +295,16 @@ class AdaBranchClassifier(DTBranch):
                     parent_branch=child_id,
                 )
 
-    def kill_tree_children(self, tree):
-        for child in self.children:
-            # Delete alternate tree if it exists
-            if isinstance(child, DTBranch):
-                if child._alternate_tree:
-                    child._alternate_tree.kill_tree_children(tree)
-                    tree._n_pruned_alternate_trees += 1
-                    child._alternate_tree = None
+    def _prune_alternate(self, tree):
+        if self._alternate_tree is not None:
+            self._alternate_tree.kill_tree_children(tree)
+            tree._n_pruned_alternate_trees += 1
+            self._alternate_tree = None
 
-                # Recursive delete of SplitNodes
-                child.kill_tree_children(tree)  # noqa
-            else:
-                if child.is_active():  # noqa
-                    tree._n_active_leaves -= 1
-                else:
-                    tree._n_inactive_leaves -= 1
+    def kill_tree_children(self, tree):
+        self._prune_alternate(tree)
+        for child in self.children:
+            child.kill_tree_children(tree)
 
 
 class AdaNomBinaryBranchClass(AdaBranchClassifier, NominalBinaryBranch):
