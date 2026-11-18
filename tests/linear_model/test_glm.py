@@ -606,17 +606,60 @@ def test_bayesian_predict_one_distribution_uses_predictive_variance() -> None:
 
 
 @pytest.mark.parametrize("smoothing", [None, 0.8])
+@pytest.mark.parametrize("learning", ["one", "many", "mixed"])
+def test_bayesian_matches_closed_form(smoothing: float | None, learning: str) -> None:
+    alpha = 4.0
+    beta = 2.0
+    X = np.array(
+        [
+            [0.5, -1.0, 2.0],
+            [1.5, 0.25, -0.5],
+            [-0.75, 2.0, 1.0],
+            [2.0, -0.5, 0.25],
+        ]
+    )
+    y = np.array([1.0, -2.0, 0.5, 3.0])
+    columns = ["a", "b", "c"]
+    model = lm.BayesianLinearRegression(alpha=alpha, beta=beta, smoothing=smoothing)
+
+    if learning == "many":
+        model.learn_many(pd.DataFrame(X, columns=columns), pd.Series(y))
+    elif learning == "mixed":
+        for row, target in zip(X[:2], y[:2]):
+            model.learn_one(dict(zip(columns, row)), target)
+        model.learn_many(pd.DataFrame(X[2:], columns=columns), pd.Series(y[2:]))
+    else:
+        for row, target in zip(X, y):
+            model.learn_one(dict(zip(columns, row)), target)
+
+    weights = (
+        np.ones(len(X))
+        if smoothing is None
+        else (1 - smoothing) * smoothing ** np.arange(len(X) - 1, -1, -1)
+    )
+    prior_weight = 1.0 if smoothing is None else smoothing ** len(X)
+    precision = prior_weight * alpha * np.eye(X.shape[1]) + beta * (X.T * weights) @ X
+    covariance = np.linalg.inv(precision)
+    mean = covariance @ (beta * X.T @ (weights * y))
+    probe = np.array([0.25, -0.5, 1.5])
+    prediction = model.predict_dist_one(dict(zip(columns, probe)))
+
+    assert prediction.mu == pytest.approx(probe @ mean)
+    assert prediction.sigma**2 == pytest.approx(1 / beta + probe @ covariance @ probe)
+
+
+@pytest.mark.parametrize("smoothing", [None, 0.8])
 def test_bayesian_learn_many_matches_learn_one(
     frame_backend: FrameBackend, reg_batch: Columnar, smoothing: float | None
 ) -> None:
     """A single `learn_many` must reproduce the row-by-row `learn_one` loop on every backend."""
     data, targets, feats = reg_batch
 
-    one = lm.BayesianLinearRegression(smoothing=smoothing)
+    one = lm.BayesianLinearRegression(alpha=4, beta=2, smoothing=smoothing)
     for x, y in zip(feats, targets):
         one.learn_one(x, y)
 
-    many = lm.BayesianLinearRegression(smoothing=smoothing)
+    many = lm.BayesianLinearRegression(alpha=4, beta=2, smoothing=smoothing)
     many.learn_many(frame_backend.frame(data), frame_backend.series(targets))
 
     # `learn_many` and the `learn_one` loop accumulate the same precision/natural-mean state;
@@ -642,10 +685,10 @@ def test_bayesian_learn_many_chunks_match_single_batch(
     data, targets, feats = reg_batch
     pandas = FRAME_BACKENDS["pandas"]()
 
-    whole = lm.BayesianLinearRegression(smoothing=smoothing)
+    whole = lm.BayesianLinearRegression(alpha=4, beta=2, smoothing=smoothing)
     whole.learn_many(pandas.frame(data), pandas.series(targets))
 
-    chunked = lm.BayesianLinearRegression(smoothing=smoothing)
+    chunked = lm.BayesianLinearRegression(alpha=4, beta=2, smoothing=smoothing)
     for lo in range(0, len(targets), 7):
         hi = lo + 7
         chunk = {c: data[c][lo:hi] for c in data}
@@ -653,6 +696,73 @@ def test_bayesian_learn_many_chunks_match_single_batch(
 
     for x in feats:
         assert math.isclose(chunked.predict_one(x), whole.predict_one(x), rel_tol=1e-9)
+
+
+@pytest.mark.parametrize("smoothing", [None, 0.8])
+def test_bayesian_learn_many_matches_learn_one_with_emerging_features(
+    smoothing: float | None,
+) -> None:
+    first = pd.DataFrame({"a": [1.0, 2.0], "b": [0.5, -1.0]})
+    second = pd.DataFrame({"a": [-0.5, 1.5], "b": [2.0, 0.25], "c": [1.0, -2.0]})
+    targets = [pd.Series([1.0, -1.0]), pd.Series([0.5, 2.0])]
+    one = lm.BayesianLinearRegression(alpha=4, beta=2, smoothing=smoothing)
+    many = lm.BayesianLinearRegression(alpha=4, beta=2, smoothing=smoothing)
+
+    for X, y in zip([first, second], targets):
+        for x, target in stream.iter_frame(X, y):
+            one.learn_one(x, target)
+        many.learn_many(X, y)
+
+    probe: dict[FeatureName, Any] = {"a": 0.25, "b": -0.5, "c": 1.5}
+    got = many.predict_dist_one(probe)
+    want = one.predict_dist_one(probe)
+    assert got.mu == pytest.approx(want.mu)
+    assert got.sigma == pytest.approx(want.sigma)
+
+
+@pytest.mark.parametrize("smoothing,n_samples", [(0.5, 1100), (0.9, 7000)])
+def test_bayesian_smoothing_stays_finite(smoothing: float, n_samples: int) -> None:
+    rng = np.random.default_rng(42)
+    model = lm.BayesianLinearRegression(smoothing=smoothing)
+    probe: dict[FeatureName, Any] = {"a": 1.0, "b": 1.0, "c": 1.0}
+
+    for _ in range(n_samples):
+        values = rng.normal(size=3)
+        x: dict[FeatureName, Any] = dict(zip(probe, values))
+        model.learn_one(x, values[0] - 2 * values[1])
+
+    prediction = model.predict_dist_one(probe)
+    assert math.isfinite(prediction.mu)
+    assert math.isfinite(prediction.sigma)
+
+
+def test_bayesian_smoothing_stays_finite_when_feature_disappears() -> None:
+    model = lm.BayesianLinearRegression(smoothing=0.5)
+    initial: dict[FeatureName, Any] = {"a": 1.0, "b": 1.0}
+    current: dict[FeatureName, Any] = {"a": 1.0}
+    probe: dict[FeatureName, Any] = {"a": 1.0, "b": 1.0}
+    model.learn_one(initial, 1.0)
+
+    for _ in range(1100):
+        model.learn_one(current, 1.0)
+
+    prediction = model.predict_dist_one(probe)
+    assert math.isfinite(prediction.mu)
+    assert math.isfinite(prediction.sigma)
+
+
+def test_bayesian_smoothing_stays_finite_with_collinear_features() -> None:
+    model = lm.BayesianLinearRegression(smoothing=0.5)
+
+    for i in range(100):
+        category = "a" if i % 2 == 0 else "b"
+        x: dict[FeatureName, Any] = {"intercept": 1.0, category: 1.0}
+        model.learn_one(x, float(i % 2))
+
+    probe: dict[FeatureName, Any] = {"intercept": 1.0, "a": 1.0, "b": 0.0}
+    prediction = model.predict_dist_one(probe)
+    assert math.isfinite(prediction.mu)
+    assert math.isfinite(prediction.sigma)
 
 
 def test_logreg_predict_many_matches_predict_one(
