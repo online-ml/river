@@ -29,6 +29,8 @@ __all__ = [
     "matmul2d",
     "minkowski_distance",
     "norm",
+    "norm_pdf",
+    "norm_cdf",
     "outer",
     "prod",
     "sigmoid",
