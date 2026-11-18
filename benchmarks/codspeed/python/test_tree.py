@@ -47,6 +47,18 @@ def test_hoeffding_adaptive_tree_learn(benchmark) -> None:
 
 
 @heavy("tree")
+def test_extremely_fast_hoeffding_adaptive_tree_learn(benchmark) -> None:
+    stream = multiclass_stream(500)
+
+    def run() -> None:
+        model = tree.ExtremelyFastHoeffdingAdaptiveTreeClassifier(seed=42)
+        for x, y in stream:
+            model.learn_one(x, y)
+
+    benchmark(run)
+
+
+@heavy("tree")
 def test_hoeffding_tree_regressor_learn(benchmark) -> None:
     stream = regression_stream(500)
 

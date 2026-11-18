@@ -121,8 +121,12 @@ def test_efdt_split_reevaluation():
 
 
 @pytest.mark.parametrize("depth", [0, 1], ids=["root", "internal"])
-def test_hatc_alternate_split_stays_with_owner(depth):
-    model = tree.HoeffdingAdaptiveTreeClassifier(
+@pytest.mark.parametrize(
+    "model_class",
+    [tree.HoeffdingAdaptiveTreeClassifier, tree.ExtremelyFastHoeffdingAdaptiveTreeClassifier],
+)
+def test_hatc_alternate_split_stays_with_owner(depth, model_class):
+    model = model_class(
         grace_period=8,
         delta=0.9,
         tau=0,
@@ -153,6 +157,39 @@ def test_hatc_alternate_split_stays_with_owner(depth):
     assert owner._alternate_tree.n_branches == 1
     assert model.n_active_leaves == model.n_leaves + owner._alternate_tree.n_leaves
     assert sum(model.predict_proba_one(x).values()) == pytest.approx(1)
+
+
+@pytest.mark.parametrize(
+    ("model_class", "expected_branches"),
+    [
+        (tree.HoeffdingAdaptiveTreeClassifier, 0),
+        (tree.ExtremelyFastHoeffdingAdaptiveTreeClassifier, 1),
+    ],
+)
+@pytest.mark.parametrize("criterion", ["info_gain", "gini", "hellinger"])
+def test_tied_split_candidates(model_class, expected_branches, criterion):
+    model = model_class(
+        grace_period=20, delta=0.1, tau=0.0, bootstrap_sampling=False, split_criterion=criterion
+    )
+    for i in range(20):
+        y = i % 2
+        value = str(1 - y if i < 2 else y)
+        model.learn_one({"a": value, "b": value}, y)
+    assert model.n_branches == expected_branches
+
+
+@pytest.mark.parametrize("criterion", ["info_gain", "gini", "hellinger"])
+def test_efhat_single_uninformative_candidate(criterion):
+    model = tree.ExtremelyFastHoeffdingAdaptiveTreeClassifier(
+        grace_period=20,
+        tau=0.0,
+        bootstrap_sampling=False,
+        merit_preprune=False,
+        split_criterion=criterion,
+    )
+    for i in range(20):
+        model.learn_one({"a": str(i % 2)}, (i // 2) % 2)
+    assert model.n_branches == 0
 
 
 def test_drift_adaptation_hatc():

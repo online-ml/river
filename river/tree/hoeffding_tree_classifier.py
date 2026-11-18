@@ -382,6 +382,9 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
 
         return split_criterion
 
+    def _split_comparison_merit(self, suggestions, criterion, stats) -> float | None:
+        return suggestions[-2].merit if len(suggestions) >= 2 else None
+
     def _attempt_to_split(self, leaf: HTLeaf, parent: DTBranch, parent_branch: int, **kwargs):
         """Attempt to split a leaf.
 
@@ -412,9 +415,11 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
 
             best_split_suggestions = leaf.best_split_suggestions(split_criterion, self)
             best_split_suggestions.sort()
-            should_split = False
-            if len(best_split_suggestions) < 2:
-                should_split = len(best_split_suggestions) > 0
+            comparison_merit = self._split_comparison_merit(
+                best_split_suggestions, split_criterion, leaf.stats
+            )
+            if comparison_merit is None:
+                should_split = bool(best_split_suggestions)
             else:
                 hoeffding_bound = self._hoeffding_bound(
                     split_criterion.range_of_merit(leaf.stats),
@@ -422,12 +427,10 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
                     leaf.total_weight,
                 )
                 best_suggestion = best_split_suggestions[-1]
-                second_best_suggestion = best_split_suggestions[-2]
-                if (
-                    best_suggestion.merit - second_best_suggestion.merit > hoeffding_bound
+                should_split = (
+                    best_suggestion.merit - comparison_merit > hoeffding_bound
                     or hoeffding_bound < self.tau
-                ):
-                    should_split = True
+                )
                 if self.remove_poor_attrs:
                     poor_atts = set()
                     # Add any poor attribute to set
