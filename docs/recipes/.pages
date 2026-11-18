@@ -5,6 +5,7 @@ nav:
     - model-evaluation.md
     - pipelines.md
     - feature-extraction.md
+    - linear-quantile-regression.md
     - saving-loading.md
     - mini-batching.md
     - active-learning.md
