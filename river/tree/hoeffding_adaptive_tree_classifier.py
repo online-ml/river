@@ -249,6 +249,12 @@ class HoeffdingAdaptiveTreeClassifier(HoeffdingTreeClassifier):
 
         return proba
 
+    def _replace_node(self, parent, parent_branch, node):
+        if parent is not None and parent_branch is None:
+            parent._alternate_tree = node
+        else:
+            super()._replace_node(parent, parent_branch, node)
+
     def _new_leaf(self, initial_stats=None, parent=None):
         if initial_stats is None:
             initial_stats = {}

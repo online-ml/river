@@ -54,6 +54,7 @@ from __future__ import annotations
 
 from . import base, splitter
 from .extremely_fast_decision_tree import ExtremelyFastDecisionTreeClassifier
+from .extremely_fast_hoeffding_adaptive_tree import ExtremelyFastHoeffdingAdaptiveTreeClassifier
 from .hoeffding_adaptive_tree_classifier import HoeffdingAdaptiveTreeClassifier
 from .hoeffding_adaptive_tree_regressor import HoeffdingAdaptiveTreeRegressor
 from .hoeffding_tree_classifier import HoeffdingTreeClassifier
@@ -66,6 +67,7 @@ __all__ = [
     "base",
     "splitter",
     "ExtremelyFastDecisionTreeClassifier",
+    "ExtremelyFastHoeffdingAdaptiveTreeClassifier",
     "HoeffdingTreeClassifier",
     "HoeffdingAdaptiveTreeClassifier",
     "HoeffdingTreeRegressor",
