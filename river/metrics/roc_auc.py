@@ -76,12 +76,12 @@ class ROCAUC(metrics.base.BinaryMetric):
         )
 
     def update(self, y_true, y_pred, w=1.0):
-        p_true = y_pred.get(True, 0.0) if isinstance(y_pred, dict) else y_pred
+        p_true = y_pred.get(self.pos_val, 0.0) if isinstance(y_pred, dict) else y_pred
         for t, cm in zip(self.thresholds, self.cms):
             cm.update(y_true == self.pos_val, p_true > t, w)
 
     def revert(self, y_true, y_pred, w=1.0):
-        p_true = y_pred.get(True, 0.0) if isinstance(y_pred, dict) else y_pred
+        p_true = y_pred.get(self.pos_val, 0.0) if isinstance(y_pred, dict) else y_pred
         for t, cm in zip(self.thresholds, self.cms):
             cm.revert(y_true == self.pos_val, p_true > t, w)
 
@@ -100,10 +100,10 @@ class ROCAUC(metrics.base.BinaryMetric):
                 return 0.0
 
         for i, cm in enumerate(self.cms):
-            tp = cm.true_positives(self.pos_val)
-            tn = cm.true_negatives(self.pos_val)
-            fp = cm.false_positives(self.pos_val)
-            fn = cm.false_negatives(self.pos_val)
+            tp = cm.true_positives(True)
+            tn = cm.true_negatives(True)
+            fp = cm.false_positives(True)
+            fn = cm.false_negatives(True)
 
             tprs[i] = safe_div(a=tp, b=tp + fn)
             fprs[i] = safe_div(a=fp, b=fp + tn)
