@@ -21,12 +21,12 @@ def _logit(p: float) -> float:
 
 
 class CalibratedClassifier(base.Wrapper[T], base.Classifier):
-    """Calibrates the probability estimates of a classifier using Platt scaling.
+    r"""Calibrates the probability estimates of a classifier using Platt scaling.
 
     Platt scaling fits a sigmoid curve on top of the raw scores produced by a classifier, so that
     the resulting probabilities better reflect the true likelihood of the positive class. The
     wrapped classifier's predicted probability for the most likely label is taken as a score, and
-    a logistic function of the form $\\hat{p} = \\sigma(a \\cdot s + b)$ is fitted to it.
+    a logistic function of the form $\hat{p} = \sigma(a \cdot s + b)$ is fitted to it.
 
     The slope $a$ and the intercept $b$ are updated online, one stochastic gradient step per
     sample, minimizing the log-loss with respect to the true labels. Both are initialized to $a = 1$
@@ -40,7 +40,6 @@ class CalibratedClassifier(base.Wrapper[T], base.Classifier):
 
     Notes
     -----
-
     A classifier can be very good at picking the right label while still returning probabilities
     that are off. For instance, it may routinely report `p = 0.9` for samples that only come out
     correct 70% of the time. That matters whenever probabilities are consumed downstream, e.g.
@@ -69,7 +68,6 @@ class CalibratedClassifier(base.Wrapper[T], base.Classifier):
 
     Examples
     --------
-
     >>> from river import datasets
     >>> from river import evaluate
     >>> from river import linear_model
