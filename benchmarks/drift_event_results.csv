@@ -1,0 +1,19 @@
+stream, detector, tolerance,matched, missed, false_alarms, mean_delay
+stationery,ADWIN, 30,0,0,(0,)
+stationery,ADWIN, 120,0,0,(0,)
+stationery,KSWIN, 30,0,0,(0,)
+stationery,KSWIN, 120,0,0,(0,)
+stationery,PageHinkley, 30,0,0,(0,)
+stationery,PageHinkley, 120,0,0,(0,)
+abrupt,ADWIN, 30,1,0,(0,)23.0
+abrupt,ADWIN, 120,1,0,(0,)23.0
+abrupt,KSWIN, 30,1,0,(0,)20.0
+abrupt,KSWIN, 120,1,0,(0,)20.0
+abrupt,PageHinkley, 30,1,0,(3,)20.0
+abrupt,PageHinkley, 120,1,0,(3,)20.0
+recurring,ADWIN, 30,1,2,(2,)23.0
+recurring,ADWIN, 120,3,0,(0,)44.333333333333336
+recurring,KSWIN, 30,3,0,(0,)22.333333333333332
+recurring,KSWIN, 120,3,0,(0,)22.333333333333332
+recurring,PageHinkley, 30,0,3,(3,)
+recurring,PageHinkley, 120,3,0,(0,)90.0
