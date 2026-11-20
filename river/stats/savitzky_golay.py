@@ -30,7 +30,6 @@ class SavitzkyGolay(stats.base.RollingUnivariate):
 
     Examples
     --------
-
     Let's smooth a noisy sine wave. The filtered output follows the underlying signal while
     removing most of the noise.
 
@@ -67,7 +66,6 @@ class SavitzkyGolay(stats.base.RollingUnivariate):
 
     Notes
     -----
-
     The filter is useful when you want to follow a slow-moving trend in a noisy signal.
     Consider a temperature probe that drifts upward over time but whose readings jump
     around on every sample. Smoothing the raw readings reveals the underlying trend, which
