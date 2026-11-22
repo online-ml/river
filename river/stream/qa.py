@@ -191,8 +191,8 @@ def simulate_qa(
                 x_copy = deepcopy(x)
             else:
                 x_copy = x
-            yield (i, x_copy, None, kwargs) if kwargs else (i, x_copy, None)
-            yield (i, x, y, kwargs) if kwargs else (i, x, y)
+            yield (i, x_copy, None, kwargs) if kwargs is not None else (i, x_copy, None)
+            yield (i, x, y, kwargs) if kwargs is not None else (i, x, y)
         return
 
     get_moment = _coerce_moment(moment)
@@ -225,7 +225,7 @@ def simulate_qa(
             # Reveal the ground truth and pop the observation from the queue
             yield (
                 (i_old, x_old, y_old, kwargs_old)
-                if kwargs_old
+                if kwargs_old is not None
                 else (
                     i_old,
                     x_old,
@@ -237,12 +237,12 @@ def simulate_qa(
         enqueue(Memento(i, x, y, kwargs, t + d))
         if copy:
             x = deepcopy(x)
-        yield (i, x, None, kwargs) if kwargs else (i, x, None)
+        yield (i, x, None, kwargs) if kwargs is not None else (i, x, None)
 
     for memento in mementos:
         yield (
             (memento.i, memento.x, memento.y, memento.kwargs)
-            if memento.kwargs
+            if memento.kwargs is not None
             else (
                 memento.i,
                 memento.x,

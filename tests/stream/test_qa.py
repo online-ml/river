@@ -64,3 +64,30 @@ def test_progressive_val_score_delay_none_with_moment(model_factory, moment):
     )
     without_moment = evaluate.progressive_val_score(dataset, model_factory(), metrics.Accuracy())
     assert with_moment.get() == without_moment.get()
+
+
+@pytest.mark.parametrize("delay", [None, 0, 1])
+def test_simulate_qa_preserves_empty_kwargs(delay):
+    dataset = [({"a": 1}, 7, {})]
+    events = list(stream.simulate_qa(dataset, moment=None, delay=delay))
+
+    assert events == [
+        (0, {"a": 1}, None, {}),
+        (0, {"a": 1}, 7, {}),
+    ]
+
+
+def test_simulate_qa_preserves_empty_kwargs_when_answer_expires():
+    dataset = [
+        ({"a": 1}, 7, {}),
+        ({"a": 2}, 8, {}),
+    ]
+
+    events = list(stream.simulate_qa(dataset, moment=None, delay=1))
+
+    assert events == [
+        (0, {"a": 1}, None, {}),
+        (0, {"a": 1}, 7, {}),
+        (1, {"a": 2}, None, {}),
+        (1, {"a": 2}, 8, {}),
+    ]
