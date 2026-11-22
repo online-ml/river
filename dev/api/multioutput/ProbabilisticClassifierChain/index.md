@@ -85,4 +85,4 @@ MicroAverage(Jaccard): 51.84%
 >
 > A dictionary that associates a probability which each label.
 
-[^/dev/api/multioutput/ProbabilisticClassifierChain/#1]: Cheng, W., Hüllermeier, E., &amp; Dembczynski, K. J. (2010). Bayes optimal multilabel classification via probabilistic classifier chains. In Proceedings of the 27th international conference on machine learning (ICML-10) (pp. 279-286).
+[^/dev/api/multioutput/ProbabilisticClassifierChain/#1]: Cheng, W., Hüllermeier, E., & Dembczynski, K. J. (2010). Bayes optimal multilabel classification via probabilistic classifier chains. In Proceedings of the 27th international conference on machine learning (ICML-10) (pp. 279-286).

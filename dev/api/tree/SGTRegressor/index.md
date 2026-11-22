@@ -131,6 +131,6 @@ MAE: 1.721818
 
 This implementation enhances the original proposal [^/dev/api/tree/SGTRegressor/#1] by using an incremental strategy to discretize numerical features dynamically, rather than relying on a calibration set and parameterized number of bins. The strategy used is an adaptation of the Quantization Observer (QO) [^/dev/api/tree/SGTRegressor/#2]. Different bin size setting policies are available for selection. They directly related to number of split candidates the tree is going to explore, and thus, how accurate its split decisions are going to be. Besides, the number of stored bins per feature is directly related to the tree's memory usage and runtime.
 
-[^/dev/api/tree/SGTRegressor/#1]: Gouk, H., Pfahringer, B., &amp; Frank, E. (2019, October). Stochastic Gradient Trees. In Asian Conference on Machine Learning (pp. 1094-1109).
+[^/dev/api/tree/SGTRegressor/#1]: Gouk, H., Pfahringer, B., & Frank, E. (2019, October). Stochastic Gradient Trees. In Asian Conference on Machine Learning (pp. 1094-1109).
 
 [^/dev/api/tree/SGTRegressor/#2]: Mastelini, S.M. and de Leon Ferreira, A.C.P., 2021. Using dynamical quantization to perform split attempts in online tree regressors. Pattern Recognition Letters.

@@ -118,4 +118,4 @@ NormalizedMutualInfo: 0.515804
 
 ## References
 
-- Wikipedia contributors. (2021, March 17). Mutual information. In Wikipedia, The Free Encyclopedia, from https://en.wikipedia.org/w/index.php?title=Mutual\_information&amp;oldid=1012714929
+- Wikipedia contributors. (2021, March 17). Mutual information. In Wikipedia, The Free Encyclopedia, from https://en.wikipedia.org/w/index.php?title=Mutual\_information&oldid=1012714929

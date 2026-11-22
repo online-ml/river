@@ -88,4 +88,4 @@ for x, y in dataset.take(5):
 
 The sample generation works as follows: The 3 attributes are generated with the random number generator. The classification function defines whether to classify the instance as class 0 or class 1. Finally, data is balanced, if this option is set by the user.
 
-[^/dev/api/datasets/synth/STAGGER/#1]: Schlimmer, J. C., &amp; Granger, R. H. (1986). Incremental learning from noisy data. Machine learning, 1(3), 317-354.
+[^/dev/api/datasets/synth/STAGGER/#1]: Schlimmer, J. C., & Granger, R. H. (1986). Incremental learning from noisy data. Machine learning, 1(3), 317-354.

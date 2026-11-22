@@ -108,6 +108,6 @@ Sum: 744.
 
 ## References
 
-- [Lai, T. L., &amp; Robbins, H. (1985). Asymptotically efficient adaptive allocation rules. Advances in applied mathematics, 6(1), 4-22.](<https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.674.1620&amp;rep=rep1&amp;type=pdf>)
+- [Lai, T. L., & Robbins, H. (1985). Asymptotically efficient adaptive allocation rules. Advances in applied mathematics, 6(1), 4-22.](<https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.674.1620&amp;rep=rep1&amp;type=pdf>)
 - [Upper Confidence Bounds - The Multi-Armed Bandit Problem and Its Solutions - Lilian Weng](<https://lilianweng.github.io/lil-log/2018/01/23/the-multi-armed-bandit-problem-and-its-solutions.html#upper-confidence-bounds>)
 - [The Upper Confidence Bound Algorithm - Bandit Algorithms](<https://banditalgs.com/2016/09/18/the-upper-confidence-bound-algorithm/>)

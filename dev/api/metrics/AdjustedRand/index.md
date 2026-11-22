@@ -112,6 +112,6 @@ AdjustedRand: 0.242424
 >
 > - **model** — `base.Estimator`
 
-[^/dev/api/metrics/AdjustedRand/#1]: Wikipedia contributors. (2021, January 13). Rand index. In Wikipedia, The Free Encyclopedia, from https://en.wikipedia.org/w/index.php?title=Rand\_index&amp;oldid=1000098911
+[^/dev/api/metrics/AdjustedRand/#1]: Wikipedia contributors. (2021, January 13). Rand index. In Wikipedia, The Free Encyclopedia, from https://en.wikipedia.org/w/index.php?title=Rand\_index&oldid=1000098911
 
 [^/dev/api/metrics/AdjustedRand/#2]: W. M. Rand (1971). "Objective criteria for the evaluation of clustering methods". Journal of the American Statistical Association. American Statistical Association. 66 (336): 846–850. arXiv:1704.01036. doi:10.2307/2284239. JSTOR 2284239.

@@ -2,7 +2,7 @@
 
 Online Oracle Approximating Shrinkage (OAS) covariance.
 
-Like `LedoitWolfCovariance`, OAS shrinks the exponentially weighted sample covariance towards a scaled identity, but uses the Chen, Wiesel, Eldar &amp; Hero (2010) shrinkage intensity, which is often better conditioned for approximately Gaussian data. The intensity is a closed form in the traces of the running covariance, applied on read; the per-step update is a plain O(d^2) exponentially weighted covariance update.
+Like `LedoitWolfCovariance`, OAS shrinks the exponentially weighted sample covariance towards a scaled identity, but uses the Chen, Wiesel, Eldar & Hero (2010) shrinkage intensity, which is often better conditioned for approximately Gaussian data. The intensity is a closed form in the traces of the running covariance, applied on read; the per-step update is a plain O(d^2) exponentially weighted covariance update.
 
 **When to use it.** The same high-dimensional / few-sample situations as `LedoitWolfCovariance`. OAS tends to shrink slightly more aggressively and is a good choice when the data are close to Gaussian; otherwise the two are interchangeable and worth comparing.
 

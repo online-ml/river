@@ -221,6 +221,6 @@ cosine_dist(cms_a, cms_b)
 
 ## References
 
-- [Cormode, G., &amp; Muthukrishnan, S. (2005). An improved data stream summary: the count-min sketch and its applications. Journal of Algorithms, 55(1), 58-75.](<https://www.cse.unsw.edu.au/~cs9314/07s1/lectures/Lin_CS9314_References/cm-latin.pdf>)
+- [Cormode, G., & Muthukrishnan, S. (2005). An improved data stream summary: the count-min sketch and its applications. Journal of Algorithms, 55(1), 58-75.](<https://www.cse.unsw.edu.au/~cs9314/07s1/lectures/Lin_CS9314_References/cm-latin.pdf>)
 - [Count-Min Sketch](<https://florian.github.io//count-min-sketch/>)
 - [Hash functions family generator in Python](<https://stackoverflow.com/questions/2255604/hash-functions-family-generator-in-python>)

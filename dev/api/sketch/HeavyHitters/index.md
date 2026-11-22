@@ -92,4 +92,4 @@ hh[(1, 2, 3)]
 >
 > **update**
 
-[^/dev/api/sketch/HeavyHitters/#1]: Veloso, B., Tabassum, S., Martins, C., Espanha, R., Azevedo, R., &amp; Gama, J. (2020). Interconnect bypass fraud detection: a case study. Annals of Telecommunications, 75(9), 583-596.
+[^/dev/api/sketch/HeavyHitters/#1]: Veloso, B., Tabassum, S., Martins, C., Espanha, R., Azevedo, R., & Gama, J. (2020). Interconnect bypass fraud detection: a case study. Annals of Telecommunications, 75(9), 583-596.

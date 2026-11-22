@@ -2,7 +2,7 @@
 
 Online Ledoit-Wolf shrinkage covariance.
 
-Shrinks the exponentially weighted sample covariance towards a scaled identity (a sphere) by a data-driven intensity, following Ledoit &amp; Wolf (2004). The shrinkage intensity is estimated online from the dispersion of the per-observation scatter around the running covariance, and is recomputed on read; the per-step update stays O(d^2) with no stored window.
+Shrinks the exponentially weighted sample covariance towards a scaled identity (a sphere) by a data-driven intensity, following Ledoit & Wolf (2004). The shrinkage intensity is estimated online from the dispersion of the per-observation scatter around the running covariance, and is recomputed on read; the per-step update stays O(d^2) with no stored window.
 
 **When to use it.** The raw sample covariance is a poor estimate when the number of variables is large relative to the (effective) number of observations: it is noisy and often ill-conditioned or singular, which wrecks anything that inverts it (portfolio optimisation, Mahalanobis distances, Gaussian likelihoods). Shrinkage trades a little bias for a large reduction in variance, producing a well-conditioned, invertible matrix. Ledoit-Wolf picks the shrinkage intensity for you, so it is a strong default when there are many assets relative to clean history.
 

@@ -75,6 +75,6 @@ In this variant, only the left branch statistics are stored and the complete spl
 > - **target\_val** — `base.typing.Target`
 > - **w** — `float`
 
-[^/dev/api/tree/splitter/EBSTSplitter/#1]: Ikonomovska, E., Gama, J., &amp; Džeroski, S. (2011). Learning model trees from evolving data streams. Data mining and knowledge discovery, 23(1), 128-168.
+[^/dev/api/tree/splitter/EBSTSplitter/#1]: Ikonomovska, E., Gama, J., & Džeroski, S. (2011). Learning model trees from evolving data streams. Data mining and knowledge discovery, 23(1), 128-168.
 
 [^/dev/api/tree/splitter/EBSTSplitter/#2]: [Osojnik, Aljaž. 2017. Structured output prediction on Data Streams (Doctoral Dissertation)](<http://kt.ijs.si/theses/phd_aljaz_osojnik.pdf>)

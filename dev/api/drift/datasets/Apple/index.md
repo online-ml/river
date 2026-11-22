@@ -25,4 +25,4 @@ This dataset concerns the daily close price and volume of Apple stock around the
 
 ## References
 
-- https://finance.yahoo.com/quote/AAPL/history?period1=850348800&amp;period2=1084579200&amp;interval=1d&amp;filter=history&amp;frequency=1d
+- https://finance.yahoo.com/quote/AAPL/history?period1=850348800&period2=1084579200&interval=1d&filter=history&frequency=1d

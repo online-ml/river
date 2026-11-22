@@ -142,4 +142,4 @@ Accuracy: 82.24%
 >
 > `dict&#91;base.typing.ClfTarget, float&#93;`: A dictionary that associates a probability which each label.
 
-[^/dev/api/tree/SGTClassifier/#1]: Gouk, H., Pfahringer, B., &amp; Frank, E. (2019, October). Stochastic Gradient Trees. In Asian Conference on Machine Learning (pp. 1094-1109).
+[^/dev/api/tree/SGTClassifier/#1]: Gouk, H., Pfahringer, B., & Frank, E. (2019, October). Stochastic Gradient Trees. In Asian Conference on Machine Learning (pp. 1094-1109).

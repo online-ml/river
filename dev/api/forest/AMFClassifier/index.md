@@ -148,4 +148,4 @@ Accuracy: 84.41%
 
 Only log\_loss used for the computation of the aggregation weights is supported for now, namely the log-loss for multi-class classification.
 
-[^/dev/api/forest/AMFClassifier/#1]: Mourtada, J., Gaïffas, S., &amp; Scornet, E. (2021). AMF: Aggregated Mondrian forests for online learning. Journal of the Royal Statistical Society Series B: Statistical Methodology, 83(3), 505-533.
+[^/dev/api/forest/AMFClassifier/#1]: Mourtada, J., Gaïffas, S., & Scornet, E. (2021). AMF: Aggregated Mondrian forests for online learning. Journal of the Royal Statistical Society Series B: Statistical Methodology, 83(3), 505-533.

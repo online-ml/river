@@ -262,4 +262,4 @@ RMSE: 3.16212
 
 As the Online Extra Trees change the way in which Hoeffding Trees perform split attempts and monitor numerical input features, some of the parameters of the vanilla Hoeffding Tree algorithms are not available.
 
-[^/dev/api/forest/OXTRegressor/#1]: Mastelini, S. M., Nakano, F. K., Vens, C., &amp; de Leon Ferreira, A. C. P. (2022). Online Extra Trees Regressor. IEEE Transactions on Neural Networks and Learning Systems.
+[^/dev/api/forest/OXTRegressor/#1]: Mastelini, S. M., Nakano, F. K., Vens, C., & de Leon Ferreira, A. C. P. (2022). Online Extra Trees Regressor. IEEE Transactions on Neural Networks and Learning Systems.

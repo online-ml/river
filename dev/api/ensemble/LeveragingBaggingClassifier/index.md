@@ -132,4 +132,4 @@ F1: 88.55%
 > - **x**
 > - **kwargs**
 
-[^/dev/api/ensemble/LeveragingBaggingClassifier/#1]: Bifet, A., Holmes, G., &amp; Pfahringer, B. (2010). Leveraging Bagging for Evolving Data Streams. In Joint European conference on machine learning and knowledge discovery in databases (pp. 135-150). Springer, Berlin, Heidelberg.
+[^/dev/api/ensemble/LeveragingBaggingClassifier/#1]: Bifet, A., Holmes, G., & Pfahringer, B. (2010). Leveraging Bagging for Evolving Data Streams. In Joint European conference on machine learning and knowledge discovery in databases (pp. 135-150). Springer, Berlin, Heidelberg.

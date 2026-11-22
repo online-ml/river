@@ -267,4 +267,4 @@ Accuracy: 87.29%
 
 The Extremely Fast Decision Tree (EFDT) [^/dev/api/tree/ExtremelyFastDecisionTreeClassifier/#1] constructs a tree incrementally. The EFDT seeks to select and deploy a split as soon as it is confident the split is useful, and then revisits that decision, replacing the split if it subsequently becomes evident that a better split is available. The EFDT learns rapidly from a stationary distribution and eventually it learns the asymptotic batch tree if the distribution from which the data are drawn is stationary.
 
-[^/dev/api/tree/ExtremelyFastDecisionTreeClassifier/#1]: C. Manapragada, G. Webb, and M. Salehi. Extremely Fast Decision Tree. In Proceedings of the 24th ACM SIGKDD International Conference on Knowledge Discovery &amp; Data Mining (KDD '18). ACM, New York, NY, USA, 1953-1962. DOI: https://doi.org/10.1145/3219819.3220005
+[^/dev/api/tree/ExtremelyFastDecisionTreeClassifier/#1]: C. Manapragada, G. Webb, and M. Salehi. Extremely Fast Decision Tree. In Proceedings of the 24th ACM SIGKDD International Conference on Knowledge Discovery & Data Mining (KDD '18). ACM, New York, NY, USA, 1953-1962. DOI: https://doi.org/10.1145/3219819.3220005

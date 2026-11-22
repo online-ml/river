@@ -86,4 +86,4 @@ Change detected at index 1006, input value: 5
 ## References
 
 - E. S. Page. 1954. Continuous Inspection Schemes. Biometrika 41, 1/2 (1954), 100-115.
-- Sebastião, R., &amp; Fernandes, J. M. (2017, June). Supporting the Page-Hinkley test with empirical mode decomposition for change detection. In International Symposium on Methodologies for Intelligent Systems (pp. 492-498). Springer, Cham.
+- Sebastião, R., & Fernandes, J. M. (2017, June). Supporting the Page-Hinkley test with empirical mode decomposition for change detection. In International Symposium on Methodologies for Intelligent Systems (pp. 492-498). Springer, Cham.

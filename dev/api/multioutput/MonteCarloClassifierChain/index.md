@@ -103,4 +103,4 @@ MicroAverage(Jaccard): 51.79%
 >
 > A dictionary that associates a probability which each label.
 
-[^/dev/api/multioutput/MonteCarloClassifierChain/#1]: Read, J., Martino, L., &amp; Luengo, D. (2014). Efficient monte carlo methods for multi-dimensional learning with classifier chains. Pattern Recognition, 47(3), 1535-1546.
+[^/dev/api/multioutput/MonteCarloClassifierChain/#1]: Read, J., Martino, L., & Luengo, D. (2014). Efficient monte carlo methods for multi-dimensional learning with classifier chains. Pattern Recognition, 47(3), 1535-1546.

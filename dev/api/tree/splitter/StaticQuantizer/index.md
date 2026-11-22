@@ -34,4 +34,4 @@ Firstly, a buffer of size `warm_start` is stored. The data stored in the buffer 
 >
 > **update**
 
-[^/dev/api/tree/splitter/StaticQuantizer/#1]: Gouk, H., Pfahringer, B., &amp; Frank, E. (2019, October). Stochastic Gradient Trees. In Asian Conference on Machine Learning (pp. 1094-1109).
+[^/dev/api/tree/splitter/StaticQuantizer/#1]: Gouk, H., Pfahringer, B., & Frank, E. (2019, October). Stochastic Gradient Trees. In Asian Conference on Machine Learning (pp. 1094-1109).

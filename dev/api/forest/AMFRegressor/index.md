@@ -105,4 +105,4 @@ MAE: 0.4312
 >
 > The prediction.
 
-[^/dev/api/forest/AMFRegressor/#1]: Mourtada, J., Gaïffas, S., &amp; Scornet, E. (2021). AMF: Aggregated Mondrian forests for online learning. Journal of the Royal Statistical Society Series B: Statistical Methodology, 83(3), 505-533.
+[^/dev/api/forest/AMFRegressor/#1]: Mourtada, J., Gaïffas, S., & Scornet, E. (2021). AMF: Aggregated Mondrian forests for online learning. Journal of the Royal Statistical Society Series B: Statistical Methodology, 83(3), 505-533.

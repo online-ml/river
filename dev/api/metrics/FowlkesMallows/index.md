@@ -109,6 +109,6 @@ FowlkesMallows: 47.14%
 >
 > - **model** — `base.Estimator`
 
-[^/dev/api/metrics/FowlkesMallows/#1]: Wikipedia contributors. (2020, December 22). Fowlkes–Mallows index. In Wikipedia, The Free Encyclopedia, from https://en.wikipedia.org/w/index.php?title=Fowlkes%E2%80%93Mallows\_index&amp;oldid=995714222
+[^/dev/api/metrics/FowlkesMallows/#1]: Wikipedia contributors. (2020, December 22). Fowlkes–Mallows index. In Wikipedia, The Free Encyclopedia, from https://en.wikipedia.org/w/index.php?title=Fowlkes%E2%80%93Mallows\_index&oldid=995714222
 
 [^/dev/api/metrics/FowlkesMallows/#2]: E. B. Fowkles and C. L. Mallows (1983). “A method for comparing two hierarchical clusterings”. Journal of the American Statistical Association
