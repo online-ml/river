@@ -6,4 +6,5 @@
 
 ## tree
 
+- Fixed `tree.HoeffdingAdaptiveTreeClassifier` promoting an alternate tree before comparing errors.
 - The Rust-backed `tree.HoeffdingTreeClassifier`, along with ensembles such as `forest.ARFClassifier`, no longer leaves its leaves permanently switched off when one class dominates. Leaves continue learning and can split again when appropriate, restoring the behaviour of version 0.26.1.
