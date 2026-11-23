@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import gc
 import io
+import types
 import typing
 
 import pytest
@@ -84,5 +86,103 @@ def test_a_buffer_passed_in_by_the_caller_is_left_open() -> None:
     buffer = io.StringIO(CONTENT)
 
     _ = list(stream.iter_libsvm(buffer))
+
+    assert not buffer.closed
+
+
+@pytest.mark.parametrize("termination", ["close", "finalize"])
+def test_interrupted_owned_files_are_closed(
+    tmp_path: pathlib.Path,
+    write_file: WriteFile,
+    compression_case: CompressionCase,
+    opened_files: list[typing.TextIO],
+    termination: str,
+) -> None:
+    path = write_file(
+        tmp_path / f"data.svm{compression_case.suffix}",
+        CONTENT,
+        compression_case.written_as,
+    )
+    dataset = stream.iter_libsvm(path, compression=compression_case.read_as)
+    _ = next(dataset)
+    assert len(opened_files) == 1
+    assert not opened_files[0].closed
+
+    if termination == "close":
+        assert isinstance(dataset, types.GeneratorType)
+        dataset.close()
+    else:
+        del dataset
+        _ = gc.collect()
+
+    assert opened_files[0].closed
+
+
+@pytest.mark.parametrize("termination", ["close", "finalize"])
+def test_interrupted_caller_buffers_are_left_open(termination: str) -> None:
+    buffer = io.StringIO(CONTENT)
+    dataset = stream.iter_libsvm(buffer)
+    _ = next(dataset)
+
+    if termination == "close":
+        assert isinstance(dataset, types.GeneratorType)
+        dataset.close()
+    else:
+        del dataset
+        _ = gc.collect()
+
+    assert not buffer.closed
+
+
+@pytest.mark.parametrize(
+    ("content", "target_type"),
+    [
+        (CONTENT + "bad row\n", float),
+        (CONTENT + "1 x:bad\n", float),
+        (CONTENT + "1 bad\n", float),
+        (CONTENT + "1.5 x:1\n", int),
+    ],
+)
+def test_owned_files_are_closed_after_errors(
+    tmp_path: pathlib.Path,
+    write_file: WriteFile,
+    compression_case: CompressionCase,
+    opened_files: list[typing.TextIO],
+    content: str,
+    target_type: type[typing.Any],
+) -> None:
+    path = write_file(
+        tmp_path / f"data.svm{compression_case.suffix}",
+        content,
+        compression_case.written_as,
+    )
+    dataset = stream.iter_libsvm(
+        path, compression=compression_case.read_as, target_type=target_type
+    )
+
+    with pytest.raises(ValueError):
+        list(dataset)
+
+    assert len(opened_files) == 1
+    assert opened_files[0].closed
+
+
+@pytest.mark.parametrize(
+    ("content", "target_type"),
+    [
+        (CONTENT + "bad row\n", float),
+        (CONTENT + "1 x:bad\n", float),
+        (CONTENT + "1 bad\n", float),
+        (CONTENT + "1.5 x:1\n", int),
+    ],
+)
+def test_caller_buffers_are_left_open_after_errors(
+    content: str,
+    target_type: type[typing.Any],
+) -> None:
+    buffer = io.StringIO(content)
+
+    with pytest.raises(ValueError):
+        list(stream.iter_libsvm(buffer, target_type=target_type))
 
     assert not buffer.closed

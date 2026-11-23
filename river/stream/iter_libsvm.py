@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import contextlib
 import os
 import typing
 
@@ -57,28 +58,25 @@ def iter_libsvm(
     [^1]: [LIBSVM documentation](https://www.csie.ntu.edu.tw/~cjlin/libsvm/)
 
     """
-    # If a file is not opened, then we open it
-    if isinstance(filepath_or_buffer, (str, os.PathLike)):
-        buffer = utils.open_filepath(filepath_or_buffer, compression, encoding=encoding)
-        should_close = True
-    else:
-        buffer = filepath_or_buffer
-        should_close = False
+    with contextlib.ExitStack() as stack:
+        # If a file is not opened, then we open it
+        if isinstance(filepath_or_buffer, (str, os.PathLike)):
+            buffer = stack.enter_context(
+                utils.open_filepath(filepath_or_buffer, compression, encoding=encoding)
+            )
+        else:
+            buffer = filepath_or_buffer
 
-    for line in buffer:
-        # Remove carriage return and whitespace
-        line = line.rstrip()
-        # Remove potential end of line comments
-        line = line.split("#")[0]
+        for line in buffer:
+            # Remove carriage return and whitespace
+            line = line.rstrip()
+            # Remove potential end of line comments
+            line = line.split("#")[0]
 
-        y, x_str = line.split(" ", maxsplit=1)
-        y = target_type(y)
-        x = dict([_split_pair(pair) for pair in x_str.split(" ")])
-        yield x, y
-
-    # Close the file if we opened it
-    if should_close:
-        buffer.close()
+            y, x_str = line.split(" ", maxsplit=1)
+            y = target_type(y)
+            x = dict([_split_pair(pair) for pair in x_str.split(" ")])
+            yield x, y
 
 
 def _split_pair(pair: str) -> tuple[FeatureName, float]:

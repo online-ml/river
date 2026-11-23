@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import contextlib
 import functools
 import os
 import re
@@ -235,120 +236,119 @@ def iter_arff(
     [^1]: [ARFF format description from Weka](https://waikato.github.io/weka-wiki/formats_and_processing/arff_stable/)
 
     """
-    # If a file is not opened, then we open it
-    if isinstance(filepath_or_buffer, (str, os.PathLike)):
-        buffer = utils.open_filepath(filepath_or_buffer, compression, encoding=encoding)
-        should_close = True
-    else:
-        buffer = filepath_or_buffer
-        should_close = False
+    with contextlib.ExitStack() as stack:
+        # If a file is not opened, then we open it
+        if isinstance(filepath_or_buffer, (str, os.PathLike)):
+            buffer = stack.enter_context(
+                utils.open_filepath(filepath_or_buffer, compression, encoding=encoding)
+            )
+        else:
+            buffer = filepath_or_buffer
 
-    try:
-        _rel, attrs = read_header(buffer)
-    except ValueError as e:
-        msg = f"Error while parsing header, error was: {e}"
-        raise scipy.io.arff.ParseArffError(msg)
+        try:
+            _rel, attrs = read_header(buffer)
+        except ValueError as e:
+            msg = f"Error while parsing header, error was: {e}"
+            raise scipy.io.arff.ParseArffError(msg)
 
-    names = [attr.name for attr in attrs]
-    n_attrs = len(names)
-    # HACK: it's a bit hacky to rely on class name to determine what casting to apply
-    casts = [float if attr.__class__.__name__ == "NumericAttribute" else None for attr in attrs]
-    nominal_values = [set(attr.values) if attr.type_name == "nominal" else None for attr in attrs]
-    target_names = {target} if isinstance(target, str) else set(target or [])
-    defaults = (
-        {
-            attr.name: attr.values[0] if attr.type_name == "nominal" else 0.0
-            for attr in attrs
-            if attr.name in target_names
-        }
-        if sparse
-        else {}
-    )
+        names = [attr.name for attr in attrs]
+        n_attrs = len(names)
+        # HACK: it's a bit hacky to rely on class name to determine what casting to apply
+        casts = [float if attr.__class__.__name__ == "NumericAttribute" else None for attr in attrs]
+        nominal_values = [
+            set(attr.values) if attr.type_name == "nominal" else None for attr in attrs
+        ]
+        target_names = {target} if isinstance(target, str) else set(target or [])
+        defaults = (
+            {
+                attr.name: attr.values[0] if attr.type_name == "nominal" else 0.0
+                for attr in attrs
+                if attr.name in target_names
+            }
+            if sparse
+            else {}
+        )
 
-    for r in buffer:
-        if len(r) == 0:
-            continue
-
-        x: dict[FeatureName, typing.Any]
-        y: typing.Any | dict[FeatureName, typing.Any] | None
-
-        # Read row
-        if sparse:
-            x = {}
-            row = r.strip()
-            if not row or row.startswith("%"):
+        for r in buffer:
+            if len(r) == 0:
                 continue
-            if row[0] != "{" or row[-1] != "}":
-                raise ValueError
-            entries = row[1:-1].strip()
-            sparse_entries = iter(entries.split(",") if entries else [])
-            for entry in sparse_entries:
-                name_index, val = entry.split(maxsplit=1)
-                index = int(name_index)
-                if not 0 <= index < n_attrs:
+
+            x: dict[FeatureName, typing.Any]
+            y: typing.Any | dict[FeatureName, typing.Any] | None
+
+            # Read row
+            if sparse:
+                x = {}
+                row = r.strip()
+                if not row or row.startswith("%"):
+                    continue
+                if row[0] != "{" or row[-1] != "}":
                     raise ValueError
-                name = names[index]
-                cast = casts[index]
-                if cast is not None:
-                    if val[0] == "?" and val.strip() == "?":
+                entries = row[1:-1].strip()
+                sparse_entries = iter(entries.split(",") if entries else [])
+                for entry in sparse_entries:
+                    name_index, val = entry.split(maxsplit=1)
+                    index = int(name_index)
+                    if not 0 <= index < n_attrs:
+                        raise ValueError
+                    name = names[index]
+                    cast = casts[index]
+                    if cast is not None:
+                        if val[0] == "?" and val.strip() == "?":
+                            if name in target_names:
+                                x[name] = None
+                        else:
+                            x[name] = cast(val)
+                        continue
+
+                    val = val.strip()
+                    if val == "?":
                         if name in target_names:
                             x[name] = None
+                        continue
+
+                    allowed_values = nominal_values[index]
+                    if allowed_values is not None and val in allowed_values:
+                        x[name] = val
+                        continue
+
+                    quoted = val[0] in "'\""
+                    if quoted:
+                        quote = val[0]
+                        while not val.rstrip().endswith(quote):
+                            try:
+                                val += "," + next(sparse_entries)
+                            except StopIteration as error:
+                                raise ValueError from error
+                        val = _parse_quoted_value(val.rstrip())
                     else:
-                        x[name] = cast(val)
-                    continue
-
-                val = val.strip()
-                if val == "?":
-                    if name in target_names:
-                        x[name] = None
-                    continue
-
-                allowed_values = nominal_values[index]
-                if allowed_values is not None and val in allowed_values:
-                    x[name] = val
-                    continue
-
-                quoted = val[0] in "'\""
-                if quoted:
-                    quote = val[0]
-                    while not val.rstrip().endswith(quote):
-                        try:
-                            val += "," + next(sparse_entries)
-                        except StopIteration as error:
-                            raise ValueError from error
-                    val = _parse_quoted_value(val.rstrip())
-                else:
-                    if " " in val or "\t" in val or "'" in val or '"' in val:
+                        if " " in val or "\t" in val or "'" in val or '"' in val:
+                            raise ValueError
+                    if allowed_values is not None and val not in allowed_values:
                         raise ValueError
-                if allowed_values is not None and val not in allowed_values:
-                    raise ValueError
-                x[name] = val
-        else:
-            row = r.strip()
-            if not row or row.startswith("%"):
-                continue
-            x = {}
-            for name, cast, val in zip(names, casts, _parse_dense_row(row, n_attrs)):
-                if val == "?":
+                    x[name] = val
+            else:
+                row = r.strip()
+                if not row or row.startswith("%"):
                     continue
-                if not val:
-                    raise ValueError
-                if val[0] in "'\"":
-                    val = _parse_quoted_value(val)
-                elif cast is None and (" " in val or "\t" in val or "'" in val or '"' in val):
-                    raise ValueError
-                x[name] = cast(val) if cast else val
+                x = {}
+                for name, cast, val in zip(names, casts, _parse_dense_row(row, n_attrs)):
+                    if val == "?":
+                        continue
+                    if not val:
+                        raise ValueError
+                    if val[0] in "'\"":
+                        val = _parse_quoted_value(val)
+                    elif cast is None and (" " in val or "\t" in val or "'" in val or '"' in val):
+                        raise ValueError
+                    x[name] = cast(val) if cast else val
 
-        # Handle target
-        if target is None:
-            y = None
-        elif isinstance(target, str):
-            y = x.pop(target, defaults.get(target)) if target else None
-        else:
-            y = {name: x.pop(name, defaults.get(name)) for name in target}
+            # Handle target
+            if target is None:
+                y = None
+            elif isinstance(target, str):
+                y = x.pop(target, defaults.get(target)) if target else None
+            else:
+                y = {name: x.pop(name, defaults.get(name)) for name in target}
 
-        yield x, y
-
-    # Close the file if we opened it
-    if should_close:
-        buffer.close()
+            yield x, y
