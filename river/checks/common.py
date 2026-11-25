@@ -618,8 +618,11 @@ def check_transform_many_matches_transform_one(model, dataset):
         return
     for i, (x, _) in enumerate(test):
         one = model.transform_one(x)
-        many_row = many.iloc[i].to_dict()
-        _assert_dict_predictions_match(one, many_row)
+        if many.size == 0:  # Empty dataframe
+            assert len(one) == 0
+        else:
+            many_row = many.iloc[i].to_dict()
+            _assert_dict_predictions_match(one, many_row)
 
 
 def check_seeding_is_idempotent(model, dataset):

@@ -595,6 +595,8 @@ nav:
         - api/utils/math/matmul2d.md
         - api/utils/math/minkowski-distance.md
         - api/utils/math/norm.md
+        - api/utils/math/norm-cdf.md
+        - api/utils/math/norm-pdf.md
         - api/utils/math/outer.md
         - api/utils/math/prod.md
         - api/utils/math/sherman-morrison.md
