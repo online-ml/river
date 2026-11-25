@@ -1,7 +1,7 @@
 from marks import heavy
-from workloads import scalar_series
+from workloads import binary_stream, scalar_series
 
-from river import drift
+from river import drift, tree
 
 
 @heavy("drift")
@@ -24,6 +24,21 @@ def test_kswin_update(benchmark) -> None:
 
     def run() -> None:
         detector = drift.KSWIN(seed=42)
+        for x in series:
+            detector.update(x)
+
+    benchmark(run)
+
+
+@heavy("drift")
+def test_d3_update(benchmark) -> None:
+    series = [x for x, _ in binary_stream(1_000)]
+
+    def run() -> None:
+        detector = drift.D3(
+            tree.HoeffdingTreeClassifier(grace_period=40, max_depth=3),
+            window_size=200,
+        )
         for x in series:
             detector.update(x)
 
