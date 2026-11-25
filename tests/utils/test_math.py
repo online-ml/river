@@ -110,3 +110,21 @@ def test_dotvecmat_three_dimensional_vector_times_non_quadratic_matrix() -> None
 
     assert numpy_dotvecmat[0] == river_dotvecmat[0]
     assert numpy_dotvecmat[1] == river_dotvecmat[1]
+
+
+def test_mahalanobis_distance() -> None:
+    inv_cov = np.array([[2.0, 0.5], [0.5, 4.0]])
+    a = np.array([1.0, 2.0])
+    b = np.array([0.0, 4.0])
+    expected = float(np.sqrt((a - b) @ inv_cov @ (a - b)))
+
+    assert utils.math.mahalanobis_distance(a, b, inv_cov) == expected
+    assert (
+        utils.math.mahalanobis_distance({"x": 1.0, "y": 2.0}, {"x": 0.0, "y": 4.0}, inv_cov)
+        == expected
+    )
+    inv_dict = {("x", "x"): 2.0, ("x", "y"): 0.5, ("y", "y"): 4.0}
+    assert (
+        utils.math.mahalanobis_distance({"x": 1.0, "y": 2.0}, {"x": 0.0, "y": 4.0}, inv_dict)
+        == expected
+    )

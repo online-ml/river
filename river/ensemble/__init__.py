@@ -17,6 +17,7 @@ from .bagging import (
 )
 from .boosting import AdaBoostClassifier, ADWINBoostingClassifier, BOLEClassifier
 from .ewa import EWARegressor
+from .groch import GroCHClassifier, LocalLearner, TopologyDistillator
 from .stacking import StackingClassifier
 from .streaming_random_patches import SRPClassifier, SRPRegressor
 from .voting import VotingClassifier
@@ -29,9 +30,12 @@ __all__ = [
     "BaggingRegressor",
     "BOLEClassifier",
     "EWARegressor",
+    "GroCHClassifier",
+    "LocalLearner",
     "LeveragingBaggingClassifier",
     "SRPClassifier",
     "SRPRegressor",
+    "TopologyDistillator",
     "StackingClassifier",
     "VotingClassifier",
 ]

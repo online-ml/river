@@ -22,6 +22,26 @@ MatrixKey = tuple[typing.Any, typing.Any]
 _ValueT = typing.TypeVar("_ValueT")
 
 
+def _safe_inv(A: np.ndarray) -> np.ndarray:
+    """Invert a square matrix with a pure NumPy Gauss-Jordan fallback if LAPACK fails."""
+    try:
+        return np.linalg.inv(A)
+    except Exception:
+        n = len(A)
+        M = np.hstack([A.astype(np.float64).copy(), np.eye(n, dtype=np.float64)])
+        for i in range(n):
+            pivot_row = i + int(np.argmax(np.abs(M[i:, i])))
+            if abs(M[pivot_row, i]) < 1e-15:
+                raise ValueError("Singular matrix cannot be inverted.")
+            if pivot_row != i:
+                M[[i, pivot_row]] = M[[pivot_row, i]]
+            M[i] /= M[i, i]
+            for k in range(n):
+                if k != i:
+                    M[k] -= M[k, i] * M[i]
+        return M[:, n:]
+
+
 class SymmetricMatrix(abc.ABC, typing.Generic[_ValueT]):
     _fmt = ",.3f"
 
@@ -36,6 +56,29 @@ class SymmetricMatrix(abc.ABC, typing.Generic[_ValueT]):
             return self.matrix[i, j]
         except KeyError:
             return self.matrix[j, i]
+
+    def to_numpy(self, columns: Iterable[typing.Any] | None = None) -> np.ndarray:
+        """Return the symmetric matrix as a dense 2D `numpy.ndarray`.
+
+        Parameters
+        ----------
+        columns
+            Ordered sequence of feature names. If omitted, sorted keys are used.
+
+        """
+        names = list(columns) if columns is not None else sorted({i for i, _ in self.matrix})
+        n = len(names)
+        arr = np.zeros((n, n), dtype=np.float64)
+        for r, row in enumerate(names):
+            for c, col in enumerate(names):
+                try:
+                    entry = self[row, col]
+                    arr[r, c] = (
+                        entry.get() if isinstance(entry, stats.base.Statistic) else float(entry)
+                    )
+                except KeyError:
+                    arr[r, c] = 0.0
+        return arr
 
     def __repr__(self) -> str:
         names = sorted({i for i, _ in self.matrix})
@@ -125,6 +168,7 @@ class EmpiricalCovariance(SymmetricMatrix[typing.Any]):
         self._cov: dict[MatrixKey, typing.Any] = {}
         self._cached_keys: tuple[typing.Any, ...] = ()
         self._cached_pairs: list[MatrixKey] = []
+        self._batch_cov: tuple[list[typing.Any], np.ndarray] | None = None
 
     @property
     def matrix(self) -> dict[MatrixKey, typing.Any]:
@@ -148,6 +192,7 @@ class EmpiricalCovariance(SymmetricMatrix[typing.Any]):
             A sample.
 
         """
+        self._batch_cov = None
         ddof = self.ddof
         cov_dict = self._cov
         keys, pairs = self._pairs_for(x)
@@ -177,6 +222,7 @@ class EmpiricalCovariance(SymmetricMatrix[typing.Any]):
             A sample.
 
         """
+        self._batch_cov = None
         cov_dict = self._cov
         keys, pairs = self._pairs_for(x)
 
@@ -199,11 +245,13 @@ class EmpiricalCovariance(SymmetricMatrix[typing.Any]):
             A dataframe of samples.
 
         """
+        was_empty = not self._cov
         frame = utils.dataframe.into_frame(X)
         columns = list(frame.columns)
         X_arr = utils.dataframe.to_numpy(frame)
         mean_arr = X_arr.mean(axis=0)
         cov_arr = np.cov(X_arr.T, ddof=self.ddof)
+        self._batch_cov = (columns, cov_arr) if (was_empty and len(frame) > self.ddof) else None
 
         n = len(frame)
         mean = dict(zip(columns, mean_arr))
@@ -293,6 +341,28 @@ class EmpiricalCovariance(SymmetricMatrix[typing.Any]):
         new = cls(ddof=ddof)
         new._update_from_state(n=n, mean=mean, cov=cov)
         return new
+
+    def to_numpy(self, columns: Iterable[typing.Any] | None = None) -> np.ndarray:
+        if self._batch_cov is not None:
+            batch_cols, cov_arr = self._batch_cov
+            names = list(columns) if columns is not None else sorted(batch_cols)
+            if names == batch_cols:
+                return cov_arr.copy()
+            if set(names).issubset(batch_cols):
+                idx = [batch_cols.index(c) for c in names]
+                return cov_arr[np.ix_(idx, idx)].copy()
+        return super().to_numpy(columns=columns)
+
+    def precision(self, columns: Iterable[typing.Any] | None = None) -> np.ndarray:
+        """Compute the exact inverse covariance (precision) matrix as a 2D `numpy.ndarray`.
+
+        Parameters
+        ----------
+        columns
+            Ordered sequence of feature names. If omitted, sorted keys are used.
+
+        """
+        return _safe_inv(self.to_numpy(columns=columns))
 
 
 class EmpiricalPrecision(SymmetricMatrix[float]):

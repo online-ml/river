@@ -121,6 +121,18 @@ def test_page_hinkley():
     assert detected_indices == expected_indices
 
 
+def test_rddm():
+    rddm = drift.binary.RDDM()
+    detected_indices = perform_test(rddm, data_stream_2)
+    assert len(detected_indices) >= 1
+    assert any(1000 <= i <= 1150 for i in detected_indices)
+
+    cloned = rddm.clone({"n_min": 50})
+    assert cloned.n_min == 50
+    assert not cloned.drift_detected
+    assert not cloned.warning_detected
+
+
 def perform_test(drift_detector, data_stream):
     detected_indices = []
     for i, val in enumerate(data_stream):
