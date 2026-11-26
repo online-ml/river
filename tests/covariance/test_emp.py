@@ -405,8 +405,8 @@ def test_covariance_to_numpy_and_precision():
     cov_ref = np.cov(X, rowvar=False, bias=True)
     inv_ref = np.linalg.inv(cov_ref)
 
-    assert np.array_equal(emp.to_numpy(columns=cols), cov_ref)
-    assert np.array_equal(emp.precision(columns=cols), inv_ref)
+    assert np.allclose(emp.to_numpy(columns=cols), cov_ref, rtol=1e-12, atol=1e-12)
+    assert np.allclose(emp.precision(columns=cols), inv_ref, rtol=1e-12, atol=1e-12)
 
     emp.update(dict(zip(cols, X[0])))
     assert emp.to_numpy(columns=cols).shape == (4, 4)

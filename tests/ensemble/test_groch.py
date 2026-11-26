@@ -68,7 +68,7 @@ def test_groch_pre_populate_and_replacement_policies():
         )
         assert len(groch.CH) == 2
         for x, y in data:
-            groch = groch.learn_one(x, y)
+            groch.learn_one(x, y)
             assert groch.predict_one(x) is not None
         # Trigger eviction directly on group 0 to verify policy behavior
         g0 = groch.CH[0]
@@ -110,7 +110,7 @@ def test_groch_native_vectorized_mahalanobis_distillator():
     )
     for row, y in zip(X, y_vals):
         x_dict = dict(zip(features, row))
-        groch = groch.learn_one(x_dict, str(y))
+        groch.learn_one(x_dict, str(y))
 
     arr = groch._active_distillator.prototypes_array
     assert arr.ndim == 2 and arr.shape[1] == 5 and len(arr) >= 2

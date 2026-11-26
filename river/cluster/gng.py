@@ -114,7 +114,7 @@ class GNG(base.Clusterer):
     >>> gng = cluster.GNG(lambda_=5, max_age=50)
     >>> for i in range(20):
     ...     x = {"x": float(i % 2) * 10.0, "y": float(i % 2) * 10.0}
-    ...     gng = gng.learn_one(x)
+    ...     gng.learn_one(x)
     >>> gng.n_clusters >= 2
     True
     >>> isinstance(gng.predict_one({"x": 0.0, "y": 0.0}), int)
@@ -268,8 +268,8 @@ class GNG(base.Clusterer):
 
         return self
 
-    def learn_one(self, x: dict) -> GNG:
-        return self.learn_array(self._dict_to_array(x, allow_new_features=True))
+    def learn_one(self, x: dict) -> None:
+        self.learn_array(self._dict_to_array(x, allow_new_features=True))
 
     def predict_one(self, x: dict) -> int:
         if not self._units:

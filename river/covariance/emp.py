@@ -74,7 +74,9 @@ class SymmetricMatrix(abc.ABC, typing.Generic[_ValueT]):
                 try:
                     entry = self[row, col]
                     arr[r, c] = (
-                        entry.get() if isinstance(entry, stats.base.Statistic) else float(entry)
+                        entry.get()
+                        if isinstance(entry, stats.base.Statistic)
+                        else float(typing.cast(float, entry))
                     )
                 except KeyError:
                     arr[r, c] = 0.0

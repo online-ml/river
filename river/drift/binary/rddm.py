@@ -36,7 +36,7 @@ class RDDM(base.BinaryDriftAndWarningDetector):
     >>> stream = [0] * 100 + [1] * 100
     >>> drifts = []
     >>> for i, val in enumerate(stream):
-    ...     rddm = rddm.update(val)
+    ...     rddm.update(val)
     ...     if rddm.drift_detected:
     ...         drifts.append(i)
     >>> len(drifts) >= 1
@@ -67,7 +67,7 @@ class RDDM(base.BinaryDriftAndWarningDetector):
         self.warn_limit = warn_limit
         self._reset()
 
-    def _reset(self):
+    def _reset(self) -> None:
         super()._reset()
         self.stored_predictions = [0] * self.min_size_stable_concept
         self.num_stored_instances = 0
@@ -86,7 +86,7 @@ class RDDM(base.BinaryDriftAndWarningDetector):
         self.m_ps_min = float("inf")
         self.reset_learning()
 
-    def reset_learning(self):
+    def reset_learning(self) -> None:
         self.m_n = 1
         self.m_p = 1.0
         self.m_s = 0.0
@@ -95,7 +95,7 @@ class RDDM(base.BinaryDriftAndWarningDetector):
             self.m_s_min = float("inf")
             self.m_ps_min = float("inf")
 
-    def update(self, x: int | float) -> RDDM:
+    def update(self, x: int | float) -> None:
         """Update the detector with a new binary error value (`1` for error, `0` for correct)."""
         if self.rddm_drift:
             self.reset_learning()
@@ -144,7 +144,7 @@ class RDDM(base.BinaryDriftAndWarningDetector):
         self._is_warning_edge = False
 
         if self.m_n <= self.n_min:
-            return self
+            return
 
         if self.m_p + self.m_s < self.m_ps_min:
             self.m_p_min = self.m_p
@@ -157,7 +157,7 @@ class RDDM(base.BinaryDriftAndWarningDetector):
             if self.last_warn_inst == -1:
                 self.first_pos = self.last_pos
                 self.num_stored_instances = 1
-            return self
+            return
 
         if self.m_p + self.m_s > self.m_p_min + self.warning_thresh * self.m_s_min:
             if (self.last_warn_inst != -1) and (
@@ -169,7 +169,7 @@ class RDDM(base.BinaryDriftAndWarningDetector):
                 self.num_stored_instances = 1
                 self.last_warn_pos = -1
                 self.last_warn_inst = -1
-                return self
+                return
 
             self._warning_detected = True
             if self.last_warn_inst == -1:
@@ -182,8 +182,6 @@ class RDDM(base.BinaryDriftAndWarningDetector):
 
         if self.m_n > self.max_size_concept and not self._warning_detected:
             self.rddm_drift = True
-
-        return self
 
     @property
     def is_warning_edge(self) -> bool:

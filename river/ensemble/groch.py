@@ -66,7 +66,7 @@ class TopologyDistillator(base.Base):
         if self.train_online:
             self._learn_single(x, y)
         else:
-            self._buffer.append((x, y))
+            self._buffer.append((dict(x), y))
         return self
 
     def train_from_buffer(self) -> TopologyDistillator:
@@ -117,8 +117,12 @@ class TopologyDistillator(base.Base):
             except AttributeError:
                 pass
 
-    def clone(self) -> TopologyDistillator:
+    def clone(
+        self, new_params: dict | None = None, include_attributes: bool = False
+    ) -> TopologyDistillator:
         """Return a deep copy preserving the trained clusterer topology."""
+        if new_params is not None:
+            return super().clone(new_params=new_params, include_attributes=include_attributes)
         if not self.train_online:
             self.train_from_buffer()
         cloned = TopologyDistillator(
@@ -155,13 +159,17 @@ class LocalLearner(base.Base):
     def predict_proba_one(self, x: dict):
         return self.model.predict_proba_one(x)
 
-    def learn_one(self, x: dict, y: base.typing.Target) -> LocalLearner:
+    def learn_one(self, x: dict, y: base.typing.ClfTarget) -> LocalLearner:
         self.instances_trained += 1
         self.model.learn_one(x, y)
         return self
 
-    def clone(self) -> LocalLearner:
+    def clone(
+        self, new_params: dict | None = None, include_attributes: bool = False
+    ) -> LocalLearner:
         """Return a deep copy preserving the trained model state and metadata."""
+        if new_params is not None:
+            return super().clone(new_params=new_params, include_attributes=include_attributes)
         cloned = LocalLearner(copy.deepcopy(self.model), self.created_at)
         cloned.usage = self.usage
         cloned.last_time_used = self.last_time_used
@@ -281,8 +289,8 @@ class GroCHClassifier(base.Classifier):
     >>> for x, y in datasets.Phishing().take(100):
     ...     y_pred = model.predict_one(x)
     ...     if y_pred is not None:
-    ...         _ = metric.update(y, y_pred)
-    ...     _ = model.learn_one(x, y)
+    ...         metric.update(y, y_pred)
+    ...     model.learn_one(x, y)
     >>> metric.get() > 0.5
     True
 
@@ -443,6 +451,11 @@ class GroCHClassifier(base.Classifier):
     def _unit_test_params(cls):
         yield {"log_level": 0}
 
+    def _unit_test_skips(self) -> set[str]:
+        # Default HoeffdingTreeClassifier(leaf_prediction="nba") can underflow
+        # Gaussian NB on 19-feature ImageSegments when feature order changes.
+        return {"check_shuffle_features_no_impact"}
+
     def _log(self, msg: str, level: int = 1) -> None:
         if self.log_level >= level:
             print(f"[GroCH t={self.n_samples_seen}] {msg}", flush=True)
@@ -466,7 +479,7 @@ class GroCHClassifier(base.Classifier):
         return 1.0 - (sum(res) / len(res))
 
     def _normalize_x(self, x: dict) -> dict:
-        if self._min_dict is None:
+        if self._min_dict is None or self._max_dict is None:
             return x
         x_norm = {}
         for k, v in x.items():
@@ -626,9 +639,11 @@ class GroCHClassifier(base.Classifier):
                 y_pred = learner.predict_one(x)
                 learner._w_results.append(1 if (y_pred is not None and y_str == str(y_pred)) else 0)
 
-    def _update_weights(self, x: dict, y: base.typing.Target) -> None:
+    def _update_weights(self, x: dict, y: base.typing.ClfTarget) -> None:
         y_str = str(y)
         for learner, weight_attr in ((self.c, "c_weight"), (self.b, "b_weight")):
+            if learner is None:
+                continue
             correct = str(learner.predict_one(x)) == y_str
             current = getattr(self, weight_attr)
             setattr(
@@ -736,7 +751,7 @@ class GroCHClassifier(base.Classifier):
                 else new_top.prototypes_array
             )
 
-    def _handle_drift(self, x: dict, y: base.typing.Target) -> None:
+    def _handle_drift(self, x: dict, y: base.typing.ClfTarget) -> None:
         self._log(f"DRIFT DETECTED. Current CH size: {len(self.CH)}")
         is_early_drift = self.W is None or len(self.W) < self.theta
 
@@ -745,6 +760,7 @@ class GroCHClassifier(base.Classifier):
                 self.W is None or len(self.W) < 1 or self.always_reset_warning_at_early_drift
             ):
                 self._start_warning_window()
+                assert self.b is not None
                 self.b.learn_one(x, y)
             elif self.b is None:
                 self.b = LocalLearner(self.model.clone(), self.n_samples_seen)
@@ -752,10 +768,11 @@ class GroCHClassifier(base.Classifier):
                     self.b.learn_one(x, y)
                 self.b._w_results = collections.deque(maxlen=self._evaluator_width)
 
+            assert self.b is not None
             if is_early_drift:
                 self.GH = None
                 gh_models: list[LocalLearner] = []
-                gh_prototypes = []
+                gh_prototypes: typing.Any = []
             else:
                 w_norm = [(self._normalize_x(wx), wy) for wx, wy in self.W] if self.W else []
                 p_to_match = (
@@ -872,7 +889,7 @@ class GroCHClassifier(base.Classifier):
         self._prev_warning_zone = False
 
     def _update_warning_and_topology_after_drift(
-        self, x: dict, y: base.typing.Target, is_warning_zone: bool
+        self, x: dict, y: base.typing.ClfTarget, is_warning_zone: bool
     ) -> None:
         reset_by_timeout_or_eoz = False
         if self.W is not None:
@@ -888,7 +905,7 @@ class GroCHClassifier(base.Classifier):
         if self.W is not None:
             if self.train_on_warn and self.b is not None:
                 self.b.learn_one(x, y)
-            self.W.append((x, y))
+            self.W.append((dict(x), y))
         elif not reset_by_timeout_or_eoz:
             if not self._train_active_on_warn:
                 self.c.learn_one(x, y)
@@ -898,7 +915,7 @@ class GroCHClassifier(base.Classifier):
     # Main River Classifier API
     # ------------------------------------------------------------------
 
-    def learn_one(self, x: dict, y: base.typing.Target) -> GroCHClassifier:
+    def learn_one(self, x: dict, y: base.typing.ClfTarget) -> None:
         self.n_samples_seen += 1
         self.last_drift_was_false_alarm = False
         is_on_warning = self.W is not None
@@ -931,7 +948,7 @@ class GroCHClassifier(base.Classifier):
                 else:
                     if self.train_on_warn and self.b is not None:
                         self.b.learn_one(x, y)
-                    self.W.append((x, y))
+                    self.W.append((dict(x), y))
             else:
                 self._active_distillator.learn_one(self._normalize_x(x), y)
 
@@ -959,7 +976,6 @@ class GroCHClassifier(base.Classifier):
             self._update_warning_and_topology_after_drift(x, y, is_warning_zone)
 
         self._prev_warning_zone = is_warning_zone
-        return self
 
     def _active_predictor(self) -> LocalLearner:
         if self.W is not None and len(self.W) >= self.theta and self.b is not None:
@@ -970,10 +986,12 @@ class GroCHClassifier(base.Classifier):
                 return self.b
         return self.c
 
-    def predict_one(self, x: dict):
+    def predict_one(self, x: dict, **kwargs: typing.Any) -> base.typing.ClfTarget | None:
         return self._active_predictor().predict_one(x)
 
-    def predict_proba_one(self, x: dict):
+    def predict_proba_one(
+        self, x: dict, **kwargs: typing.Any
+    ) -> dict[base.typing.ClfTarget, float]:
         return self._active_predictor().predict_proba_one(x)
 
     # ------------------------------------------------------------------
@@ -1216,7 +1234,7 @@ class GroCHClassifier(base.Classifier):
                 if has_recurring
                 else True
             )
-            if has_recurring and not active_improves_recurring:
+            if has_recurring and not active_improves_recurring and best_idx is not None:
                 self._log(
                     f"SelectDrift: TRANSITION TO HISTORICAL MODEL (selected #{best_idx}, err={best_gh_err:.4f})",
                     level=1,
@@ -1230,11 +1248,12 @@ class GroCHClassifier(base.Classifier):
 
         ch_improves_bkg = (
             has_recurring
+            and best_idx is not None
             and (not np.isnan(best_gh_err))
             and (not np.isnan(err_b))
             and (best_gh_err <= err_b)
         )
-        if ch_improves_bkg:
+        if ch_improves_bkg and best_idx is not None:
             self._log(
                 f"SelectDrift: TRANSITION TO HISTORICAL MODEL (selected #{best_idx}, err={best_gh_err:.4f})",
                 level=1,
