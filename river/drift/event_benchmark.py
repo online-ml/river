@@ -8,9 +8,11 @@ def collect_alarms(detector, values):
 
     return alarms
 
-def score_events(changes, alarms, tolerance = 30):
+def score_events(changes, alarms, tolerance = 30, policy="oldest"):
     if tolerance < 0:
         raise ValueError("tolerance must be nonnegative")
+    if policy not in ("oldest", "nearest"):
+        raise ValueError("unknown matching policy")
 
     remaining = set(changes)
     matches = []
@@ -23,7 +25,7 @@ def score_events(changes, alarms, tolerance = 30):
         ]
 
         if eligible:
-            cp = min(eligible)
+            cp = min(eligible) if policy == "oldest" else max(eligible)
             matches.append((cp, alarm))
             remaining.remove(cp)
         else:

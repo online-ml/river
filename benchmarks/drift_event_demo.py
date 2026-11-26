@@ -1,4 +1,6 @@
 import numpy as np
+import csv
+import sys
 from river import drift
 from river.drift.event_benchmark import collect_alarms, score_events
 
@@ -25,6 +27,24 @@ def make_streams():
         "recurring": (recurring, [500, 1000, 1500]),
     }
 
+def benchmark_cases():
+    for name, (values, changes) in make_streams().items():
+        yield name, values, {"synthetic": changes}
+
+        for dataset in (
+            drift.datasets.AirlinePassengers(),
+            drift.datasets.Bitcoin(),
+        ):
+            refs = {
+                f"ann_{k}": v
+                for k,v in dataset.annotations.items()
+            }
+
+            for policy in ("union", "majority"):
+                refs[policy] = sorted(dataset._annotations_aggregated(policy))
+
+            yield type(dataset).__name__, [y for _, y in dataset], refs
+
 
 def main():
     detectors = {
@@ -33,24 +53,55 @@ def main():
         "PageHinkley": drift.PageHinkley,
     }
 
-    print(
-        "stream, detector, tolerance,"
-        "matched, missed, false_alarms, mean_delay"
-    )
+    writer = csv.writer(sys.stdout)
+    writer.writerow([
+        "stream", "reference", "detector", "policy",
+        "tolerance", "matched", "missed", 
+        "false_alarms", "mean_delay",
+    ])
 
-    for stream_name, (values, changes) in make_streams().items():
-        for detector_name, make_detector in detectors.items():
-            alarms = collect_alarms(make_detector(), values)
+    for stream, values, references in benchmark_cases():
+        alarms = {
+            name: collect_alarms(factory(), values)
+            for name, factory in detectors.items()
+        }
 
+        for reference, changes in references.items():
             for tolerance in (30, 120):
-                result = score_events(changes, alarms, tolerance)
-                delay = result["mean_delay"]
+                rankings = {}
 
+                for policy in ("oldest", "nearest"):
+                    scores = {}
+
+                    for name, observed in alarms.items():
+                        result = score_events(
+                            changes, observed, tolerance, policy
+                        )
+                        delay = result["mean_delay"]
+
+                        scores[name] = (
+                            result["missed"],
+                            result["false_alarms"],
+                            float("inf") if delay is None else delay,
+                        )
+                        writer.writerow([
+                            stream, reference, name, policy, tolerance,
+                            result["matched"], result["missed"],
+                            result["false_alarms"],
+                            "" if delay is None else delay,
+                        ])
+                    
+                    rankings[policy] = sorted(
+                        scores, key=lambda name:(scores[name], name)
+                    )
+                
                 print(
-                    f"{stream_name},{detector_name}, {tolerance},"
-                    f"{result['matched']},{result['missed']},"
-                    f"{result['false_alarms'],}"
-                    f"{'' if delay is None else delay}"
+                    f"{stream}/{reference} changes={len(changes)} "
+                    f"tol={tolerance} "
+                    f"oldest={rankings['oldest']} "
+                    f"nearest={rankings['nearest']} "
+                    f"changed={rankings['oldest'] != rankings['nearest']}",
+                    file=sys.stderr
                 )
 
 
