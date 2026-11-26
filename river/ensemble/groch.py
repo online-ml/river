@@ -141,7 +141,16 @@ class TopologyDistillator(base.Base):
 
 
 class LocalLearner(base.Base):
-    """Wraps a River classifier with Concept History lifecycle metadata."""
+    """Wraps a River classifier with Concept History lifecycle metadata.
+
+    Parameters
+    ----------
+    model
+        Base River classifier instance wrapped by this learner.
+    created_at
+        Stream timestamp (sample index) at which the learner was created.
+
+    """
 
     def __init__(self, model: base.Classifier, created_at: int = 0):
         self.model = model
