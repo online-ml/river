@@ -26,6 +26,7 @@ __all__ = [
     "clamp",
     "dot",
     "dotvecmat",
+    "mahalanobis_distance",
     "matmul2d",
     "minkowski_distance",
     "norm",
@@ -183,6 +184,57 @@ def _manhattan_distance(a: Mapping[Any, float], b: Mapping[Any, float]) -> float
         if k not in a:
             total += abs(v)
     return total
+
+
+def mahalanobis_distance(
+    a: Mapping[Any, float] | np.ndarray,
+    b: Mapping[Any, float] | np.ndarray,
+    inv_cov: Any,
+    features: Iterable[Any] | None = None,
+) -> float:
+    """Mahalanobis distance between two feature vectors.
+
+    Parameters
+    ----------
+    a
+        First vector, either a `dict` mapping feature names to values or a 1D `numpy.ndarray`.
+    b
+        Second vector, same representation as `a`.
+    inv_cov
+        Precision matrix (inverse covariance), either a 2D `numpy.ndarray`, a
+        `river.covariance.SymmetricMatrix`, or a dict keyed by `(feature_i, feature_j)`.
+    features
+        Optional ordered sequence of feature keys when `a` and `b` are dicts. If omitted,
+        uses the sorted union of keys in `a` and `b`.
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> from river.utils.math import mahalanobis_distance
+    >>> inv_cov = np.diag([1.0, 4.0])
+    >>> mahalanobis_distance({"x": 1.0, "y": 2.0}, {"x": 1.0, "y": 3.0}, inv_cov)
+    2.0
+
+    """
+    if isinstance(a, np.ndarray) and isinstance(b, np.ndarray):
+        diff = a - b
+        return float(np.sqrt(np.maximum(0.0, diff @ inv_cov @ diff)))
+
+    if not isinstance(a, Mapping) or not isinstance(b, Mapping):
+        raise TypeError("a and b must both be numpy arrays or both be mappings")
+
+    keys = list(features) if features is not None else sorted({*a.keys(), *b.keys()})
+    diff = np.array([a.get(k, 0.0) - b.get(k, 0.0) for k in keys], dtype=np.float64)
+    if isinstance(inv_cov, np.ndarray):
+        mat = inv_cov
+    elif hasattr(inv_cov, "to_numpy"):
+        mat = inv_cov.to_numpy(keys)
+    else:
+        mat = np.array(
+            [[inv_cov.get((ki, kj), inv_cov.get((kj, ki), 0.0)) for kj in keys] for ki in keys],
+            dtype=np.float64,
+        )
+    return float(np.sqrt(np.maximum(0.0, diff @ mat @ diff)))
 
 
 def softmax(y_pred: MutableMapping[Any, float]) -> MutableMapping[Any, float]:

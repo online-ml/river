@@ -392,3 +392,22 @@ def test_repr_runs():
         prec.update(x)
     assert isinstance(repr(cov), str) and len(repr(cov)) > 0
     assert isinstance(repr(prec), str) and len(repr(prec)) > 0
+
+
+def test_covariance_to_numpy_and_precision():
+    rng = np.random.default_rng(42)
+    X = rng.normal(size=(200, 4))
+    cols = ["a", "b", "c", "d"]
+    df = pd.DataFrame(X, columns=cols)
+
+    emp = covariance.EmpiricalCovariance(ddof=0)
+    emp.update_many(df)
+    cov_ref = np.cov(X, rowvar=False, bias=True)
+    inv_ref = np.linalg.inv(cov_ref)
+
+    assert np.allclose(emp.to_numpy(columns=cols), cov_ref, rtol=1e-12, atol=1e-12)
+    assert np.allclose(emp.precision(columns=cols), inv_ref, rtol=1e-12, atol=1e-12)
+
+    emp.update(dict(zip(cols, X[0])))
+    assert emp.to_numpy(columns=cols).shape == (4, 4)
+    assert emp.precision(columns=cols).shape == (4, 4)
