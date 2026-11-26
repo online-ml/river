@@ -701,6 +701,7 @@ class GroCHClassifier(base.Classifier):
             self._log(f"  Inserted classifier structure: {self._describe_model(snapshot)}", level=3)
 
     def _insert_into_ch(self, check_error_improvement: bool = True) -> None:
+        prototypes: list[dict] | np.ndarray
         if self.custom_mean_nn_dist_func is not None:
             prototypes = self._active_distillator.prototypes
             n_protos = getattr(self._active_distillator, "n_prototypes_created", len(prototypes))

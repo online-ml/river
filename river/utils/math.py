@@ -220,6 +220,9 @@ def mahalanobis_distance(
         diff = a - b
         return float(np.sqrt(np.maximum(0.0, diff @ inv_cov @ diff)))
 
+    if not isinstance(a, Mapping) or not isinstance(b, Mapping):
+        raise TypeError("a and b must both be numpy arrays or both be mappings")
+
     keys = list(features) if features is not None else sorted({*a.keys(), *b.keys()})
     diff = np.array([a.get(k, 0.0) - b.get(k, 0.0) for k in keys], dtype=np.float64)
     if isinstance(inv_cov, np.ndarray):
