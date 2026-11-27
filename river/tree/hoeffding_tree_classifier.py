@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import numbers
+
 from river import base
 from river._river_rust.tree import NativeHoeffdingTreeClassifier
 
@@ -208,7 +210,8 @@ class HoeffdingTreeClassifier(HoeffdingTree, base.Classifier):
         return memory_estimate_period == 1_000_000
 
     def _init_native(self, x, y):
-        if not x:
+        values = x.values() if isinstance(x, dict) else x
+        if not x or not all(isinstance(value, numbers.Number) for value in values):
             self._native_enabled = False
             return
         native_seed = 42 if self._native_random is None else self._native_random.getrandbits(64)
