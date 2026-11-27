@@ -246,16 +246,14 @@ def test_public_hoeffding_tree_keeps_python_backend_for_extended_options(kwargs)
 
 
 def test_public_hoeffding_tree_handles_string_features() -> None:
-    models = [
-        tree.HoeffdingTreeClassifier(grace_period=5),
-        forest.ARFClassifier(n_models=2, seed=42),
-    ]
+    model = tree.HoeffdingTreeClassifier(grace_period=5)
+    arf = forest.ARFClassifier(n_models=2, seed=42)
 
-    for model in models:
-        for i in range(100):
-            model.learn_one({"color": "red" if i % 2 else "blue", "size": float(i % 5)}, i % 2 == 0)
+    for i in range(100):
+        x = {"color": "red" if i % 2 else "blue", "size": float(i % 5)}
+        model.learn_one(x, i % 2 == 0)
+        arf.learn_one(x, i % 2 == 0)
 
-    model, arf = models
     assert model._native_model is None
     assert model.predict_one({"color": "red", "size": 1.0}) is False
     assert model.predict_one({"color": "blue", "size": 1.0}) is True
