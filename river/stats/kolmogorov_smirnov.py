@@ -251,10 +251,27 @@ class KolmogorovSmirnov(stats.base.Bivariate):
 
         for key, delta in (((x, 0), 1), ((y, 1), -1)):
             left, right = _split_keep_right(root, key)
-            left, left_g = _split_greatest(left)
-            val = 0 if left_g is None else left_g.value
 
-            left = _merge(left, left_g)
+            # Invariant: every node stores the full prefix of its value group,
+            # i.e. full(v) = (#x <= v) - (#y <= v). Grab the group's current prefix
+            # from an existing node of the same value if there is one, so that
+            # tied observations are handled correctly.
+            g_l, g_r = _split_smallest(right)
+            if g_l is not None and g_l.key[0] == key[0]:
+                val = g_l.value
+            else:
+                left, left_g = _split_greatest(left)
+                val = 0 if left_g is None else left_g.value
+                left = _merge(left, left_g)
+            right = _merge(g_l, g_r)
+
+            if key[1] == 1:
+                # (v, 0) nodes sort left of (v, 1) but belong to the same value
+                # group: their prefix changes by delta as well
+                mid_l, mid_r = _split_keep_right(left, (key[0], 0))
+                _sum_all(mid_r, delta)
+                left = _merge(mid_l, mid_r)
+
             new_node = _Node(key, val)
             right = _merge(new_node, right)
             _sum_all(right, delta)
@@ -275,6 +292,13 @@ class KolmogorovSmirnov(stats.base.Bivariate):
                 _sum_all(right, delta)
             else:
                 right = _merge(right_l, right)
+
+            if key[1] == 1:
+                # (v, 0) nodes sort left of (v, 1) but belong to the same value
+                # group: their prefix changes by delta as well
+                mid_l, mid_r = _split_keep_right(left, (key[0], 0))
+                _sum_all(mid_r, delta)
+                left = _merge(mid_l, mid_r)
 
             root = _merge(left, right)
 

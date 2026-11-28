@@ -84,12 +84,19 @@ class Cov(stats.base.Bivariate):
         self.cov += w * (dx * (y - self.mean_y._mean) - self.cov) / (denom if denom > 1 else 1)
 
     def revert(self, x: float, y: float, w: float = 1.0) -> None:
+        # Denominator that was used by the update being reverted (computed before
+        # the means are reverted)
+        denom = self.mean_x.n - self.ddof
+        denom = denom if denom > 1 else 1
         dx = x - self.mean_x._mean
         self.mean_x.revert(x, w)
         self.mean_y.revert(y, w)
-        n = self.mean_x.n
-        denom = n - self.ddof
-        self.cov -= w * (dx * (y - self.mean_y._mean) - self.cov) / (denom if denom > 1 else 1)
+        if self.n <= self.ddof:
+            # Same convention as __isub__: the covariance is not estimable when n <= ddof
+            self.cov = 0.0
+            return
+        c = dx * (y - self.mean_y._mean)
+        self.cov = (denom * self.cov - w * c) / (denom - w)
 
     def update_many(self, X: np.ndarray, Y: np.ndarray) -> None:
         dx = X - self.mean_x.get()
